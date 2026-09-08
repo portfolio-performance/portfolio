@@ -45,6 +45,7 @@ import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
@@ -127,6 +128,7 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
     {
         addNewButton(toolBar);
         addFilterButton(toolBar);
+        addExportButton(toolBar);
         addConfigButton(toolBar);
     }
 
@@ -178,6 +180,12 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
         filter.setImageDescriptor(isFiltered ? Images.FILTER_ON.descriptor() : Images.FILTER_OFF.descriptor());
         filter.setToolTipText(Messages.PortfolioFilterRetiredPortfolios);
         toolBar.add(filter);
+    }
+
+    private void addExportButton(ToolBarManager toolBar)
+    {
+        toolBar.add(new SimpleAction(Messages.MenuExportData, Images.EXPORT,
+                        a -> new TableViewerCSVExporter(portfolios).export(getTitle() + ".csv"))); //$NON-NLS-1$
     }
 
     private void addConfigButton(final ToolBarManager toolBar)

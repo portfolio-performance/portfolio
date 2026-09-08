@@ -83,8 +83,8 @@ public class EODHistoricalDataSearchProvider implements SecuritySearchProvider
             var symbol = String.valueOf(code);
 
             // exchange is a 2-character code that can be appended to the symbol
-            var exchange = String.valueOf(json.get("Exchange")); //$NON-NLS-1$
-            if (!exchange.isBlank())
+            var exchange = asString(json.get("Exchange")); //$NON-NLS-1$
+            if (exchange != null && !exchange.isBlank())
             {
                 symbol += '.' + exchange;
             }
@@ -120,9 +120,14 @@ public class EODHistoricalDataSearchProvider implements SecuritySearchProvider
                 }
             }
 
-            return Optional.of(new Result(symbol, String.valueOf(name), String.valueOf(type), String.valueOf(exchange),
-                            String.valueOf(country), String.valueOf(currency), isin, String.valueOf(previousClose),
-                            String.valueOf(previousCloseDate), latestSecurityPrice));
+            return Optional.of(new Result(symbol, asString(name), asString(type), exchange, asString(country),
+                            asString(currency), isin, asString(previousClose), asString(previousCloseDate),
+                            latestSecurityPrice));
+        }
+
+        private static String asString(Object value)
+        {
+            return value != null ? String.valueOf(value) : null;
         }
 
         private Result(String symbol, String name, String type, String exchange, String country, String currency,
@@ -332,12 +337,12 @@ public class EODHistoricalDataSearchProvider implements SecuritySearchProvider
 
             var html = webAccess.get();
 
-            var responseData = (JSONArray) JSONValue.parse(html);
-            if (responseData != null)
+            if (JSONValue.parse(html) instanceof JSONArray responseData)
             {
                 for (int i = 0; i < responseData.size(); i++)
                 {
-                    Result.from((JSONObject) responseData.get(i)).ifPresent(answer::add);
+                    if (responseData.get(i) instanceof JSONObject item)
+                        Result.from(item).ifPresent(answer::add);
                 }
             }
         }

@@ -8,6 +8,7 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
@@ -17,7 +18,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 
-import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.util.Colors;
 
 public class PaginatedTable
@@ -26,12 +26,12 @@ public class PaginatedTable
     {
         String getText(T element);
 
-        default Images getLeadingImage(T element)
+        default Image getLeadingImage(T element)
         {
             return null;
         }
 
-        default Images getTrailingImage(T element)
+        default Image getTrailingImage(T element)
         {
             return null;
         }
@@ -100,11 +100,11 @@ public class PaginatedTable
             label.setText(text);
         }
 
-        public void setLeadingImage(Images image)
+        public void setLeadingImage(Image image)
         {
             if (image != null)
             {
-                leadingImage.setImage(image.image());
+                leadingImage.setImage(image);
                 leadingImage.setVisible(true);
             }
             else
@@ -114,11 +114,11 @@ public class PaginatedTable
             }
         }
 
-        public void setTrailingImage(Images image)
+        public void setTrailingImage(Image image)
         {
             if (image != null)
             {
-                trailingImage.setImage(image.image());
+                trailingImage.setImage(image);
                 trailingImage.setVisible(true);
             }
             else

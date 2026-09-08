@@ -1,0 +1,56 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.86.2.qualifier
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Barclaycard
+Barclays Bank PLC
+Gasstraße 4c
+22761 Hamburg
+Herrn
+Vorname Nachname Kundenservice
+Adress Str. 1 Tel: (0 40) 8 90 99-866
+81241 STADT Mo.-So. 8 - 20 Uhr
+Fax: (0 40) 8 90 99 - 298
+E-Mail: service@barclaycard.de
+Bei Kartenverlust
+Tel: (0 40) 8 90 99 - 877
+Ihre Kontoübersicht vom 19. Juli 2015
+Abrechnungszeitraum: 19.06.2015 - 19.07.2015 Kreditrahmen: EUR         2.800,00
+Freistellungsbetrag, erteilt: EUR             0,00
+IBAN: DE12345678001234567890 Alter Saldo: EUR           609,54 -
+BIC: BARCDEHAXXX Konto: 1234567890 Neuer Saldo: EUR           159,11+
+Beleg- Buchung/
+Beschreibung Karte Betrag in Euro
+datum Valuta
+Alter Saldo vom 18. Juni 2015            609,54-
+Hauptkarte/n, Vorname Nachname
+25.06.2015 27.06.2015 Shell 7730             Muenchen      DE Visa             95,91-
+26.06.2015 27.06.2015 HOTELRES123123456789   11234567895   ES Visa            454,39-
+28.06.2015 01.07.2015 ASFINAG.AT VIDEOMAUT   WIEN          AT Visa             18,00-
+30.06.2015 02.07.2015 AUTOST BRENNERO/FROSIN TOLL WAY      IT Visa             56,60-
+13.07.2015 14.07.2015 Amazon EU              AMAZON.DE     LU Visa             18,99-
+14.07.2015 15.07.2015 PARCHEGGI FIUMICINO AD FIUMICINO     IT Visa              5,00-
+         Seite 1 von 2 Bitte wenden
+Beleg- Buchung/
+Beschreibung Karte Betrag in Euro
+datum Valuta
+16.07.2015 17.07.2015 Amazon EU              AMAZON.DE     LU Visa             26,49-
+16.07.2015 18.07.2015 A 22 BRENNERO BARRIERA VIPITENO      IT Visa             56,60-
+Weitere Kontotransaktionen
+19.07.2015 19.07.2015 Reiseversicherung jährlicher Abschluss /             31,00-
+08.07.2015 08.07.2015 Vorname Nachname /          2.000,00+
+Vorname Nachname
+Neuer Saldo am 19. Juli 2015            159,11+
+Hauptkarte/n, Vorname Nachname
+Umsätze Visa, Karten-Nr. 4912345678909876 : EUR      1.200,35
+Sollzinsen bei Einkäufen und Überweisungen 15,48 % p.a.
+Sollzinsen bei Barabhebungen (einschl. möglicher Gebühren) 17,19 % p.a.
+Guthaben auf Ihrem Konto sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes
+entschädigungsfähig. Nähere Informationen können dem "Informationsbogen für den Einleger" entnommen
+werden, den Sie auf unserer Homepage im Infocenter abrufen können.
+Bitte überprüfen Sie Ihre Kontoübersicht. Eventuelle Beanstandungen teilen Sie uns bitte schriftlich (per Fax:
+(0 40) 8 90 99 - 285) zusammen mit einer Kopie des unterschriebenen Einkaufsbelegs und dem Reklamations-
+grund innerhalb von 6 Wochen nach Erstellungsdatum der Kontoübersicht mit. Das Unterlassen rechtzeitiger
+Einwendungen gilt als Genehmigung.
+Vielen Dank, dass Sie Ihre Barclaycard Kreditkarten eingesetzt haben!
+         Seite 2 von 2

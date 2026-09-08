@@ -55,7 +55,7 @@ public class MarketIdentifierCodes
         MIC2YAHOO.put("XNSE", "NS");
         MIC2YAHOO.put("XOSL", "OL");
         MIC2YAHOO.put("XPAR", "PA");
-        MIC2YAHOO.put("XSAU", "SAU");
+        MIC2YAHOO.put("XSAU", "SR");
         MIC2YAHOO.put("XSGO", "SN");
         MIC2YAHOO.put("XSHE", "SZ");
         MIC2YAHOO.put("XSHG", "SS");

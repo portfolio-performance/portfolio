@@ -1700,6 +1700,78 @@ public class RaiffeisenbankgruppePDFExtractorTest
     }
 
     @Test
+    public void testDividende15()
+    {
+        var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende15.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0012032113"), hasWkn(null), hasTicker(null), //
+                        hasName("ROCHE HOLDING AG Inhaber-Aktien SF 1"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-03-16T00:00"), hasExDate("2026-03-12T00:00"), //
+                        hasShares(100.00), //
+                        hasSource("Dividende15.txt"), //
+                        hasNote(null), //
+                        hasForexGrossValue("CHF", 980.00), //
+                        hasAmount("EUR", 558.26), hasGrossValue("EUR", 1078.58), //
+                        hasTaxes("EUR", 512.32), hasFees("EUR", 8.00))));
+    }
+
+    @Test
+    public void testDividende16()
+    {
+        var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende16.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US17275R1023"), hasWkn(null), hasTicker(null), //
+                        hasName("CISCO SYSTEMS INC. Registered Shares DL-,001"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-01-21T00:00"), hasExDate("2026-01-02T00:00"), //
+                        hasShares(500.00), //
+                        hasSource("Dividende16.txt"), //
+                        hasNote(null), //
+                        hasForexGrossValue("USD", 205.00), //
+                        hasAmount("EUR", 118.20), hasGrossValue("EUR", 174.07), //
+                        hasTaxes("EUR", 47.87), hasFees("EUR", 8.00))));
+    }
+
+    @Test
     public void testKontoauszug01()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());

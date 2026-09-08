@@ -1,0 +1,59 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.86.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+ EMAILVERSAND=N
+DEPOTNUMMER=1234567890
+          DEPOTUNTERBEZEICHNUNG=
+Wertpapierabrechnung VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Herr
+ADRESSZEILE2=Vorname Nachname
+Spitze Verkauf ADRESSZEILE3=Adresse Str. 1
+ADRESSZEILE4=01234 Stadt
+Kommissionsgeschäft ADRESSZEILE5=
+Herr ADRESSZEILE6=
+Vorname Nachname Depot-Nr. Abrechnungs-Nr. BELEGNUMMER=11548
+Adresse Str. 1 1234567890 69859650 / 27.03.2012 SEITENNUMMER=1
+01234 Stadt STEUERERSTATTUNG=N
+Depotinhaber
+Vorname Nachname
+  
+Wir haben für Sie verkauft Stadt, 27.03.2012
+  
+Gattungsbezeichnung Fälligkeit näch. Zinstermin ISIN
+Griechenland EO-FLR Secs 12(23-42) 1 IO 15.10.2015 GRR000000010
+GDP
+Nominal Kurs
+EUR 50,000 0,59761 %
+  
+Handelstag 27.03.2012  Kurswert                    EUR 0,30
+Handelszeit 16:15*
+Börse
+Verwahrart Wertpapierrechnung
+Lagerland Griechenland
+ 
+Wert  Konto-Nr. Betrag zu Ihren Gunsten  
+27.03.2012 1234567890 EUR 0,30
+  
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Veräußerungsgewinn Sonstige EUR              0,30     
+Aktienverlusttopf EUR          3.109,93              3.109,93     
+allgemeiner Verlusttopf EUR          2.454,52              2.454,22     
+Quellensteuertopf EUR              4,27                  4,27     
+zu versteuern EUR              0,00     
+ 
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR              0,00     
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR              0,00     
+ 
+Jahressteuerbescheinigung folgt
+ 
+* Die angegebene Zeit entspricht den Angaben der Handelspartner gemäß der lokalen Zeit in Deutschland
+  (Mitteleuropäische Zeit bzw. Mitteleuropäische Sommerzeit).
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+DAB bank AG > Landsberger Straße 300 > 80687 Stadt > BLZ 701 204 00 > BIC (SWIFT-Code): DABBDEMMXXX > Tel. 0 89 / 88 95 - 60 00 > Sitz: Stadt > AG Stadt, HRB 118190 
+USt.-Ident.-Nr.: DE 161864563 > Aufsichtsratsvorsitzender: Dr. Theodor Weimer > Vorstand: Markus Gunter (Sprecher des Vorstands), Dr. Niklas Dieterich
+ 
+3.31/ABREABHNHANDSPVK/GAAASAFG/011548/280312/013726

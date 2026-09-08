@@ -11,7 +11,6 @@ import java.util.StringJoiner;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
-import name.abuchen.portfolio.datatransfer.Extractor.SecurityUpdateItem;
 import name.abuchen.portfolio.datatransfer.SecurityUpdate;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.AmountField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;

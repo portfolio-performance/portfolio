@@ -41,7 +41,12 @@ public class FinnhubSearchProvider implements SecuritySearchProvider
 
             Object type = json.get("type"); //$NON-NLS-1$
 
-            return Optional.of(new Result(String.valueOf(symbol), String.valueOf(description), String.valueOf(type)));
+            return Optional.of(new Result(String.valueOf(symbol), asString(description), asString(type)));
+        }
+
+        private static String asString(Object value)
+        {
+            return value != null ? String.valueOf(value) : null;
         }
 
         private Result(String symbol, String description, String type)
@@ -173,16 +178,13 @@ public class FinnhubSearchProvider implements SecuritySearchProvider
             String html = new WebAccess("finnhub.io", "api/v1/search").addParameter("q", query)
                             .addHeader("X-Finnhub-Token", apiKey).get();
 
-            JSONObject responseData = (JSONObject) JSONValue.parse(html);
-            if (responseData != null)
+            if (JSONValue.parse(html) instanceof JSONObject responseData
+                            && responseData.get("result") instanceof JSONArray result) //$NON-NLS-1$
             {
-                JSONArray result = (JSONArray) responseData.get("result"); //$NON-NLS-1$
-                if (result != null)
+                for (int ii = 0; ii < result.size(); ii++)
                 {
-                    for (int ii = 0; ii < result.size(); ii++)
-                    {
-                        Result.from((JSONObject) result.get(ii)).ifPresent(answer::add);
-                    }
+                    if (result.get(ii) instanceof JSONObject item)
+                        Result.from(item).ifPresent(answer::add);
                 }
             }
         }

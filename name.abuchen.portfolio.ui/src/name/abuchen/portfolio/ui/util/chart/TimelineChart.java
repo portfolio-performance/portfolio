@@ -134,6 +134,17 @@ public class TimelineChart extends Chart // NOSONAR
         getPlotArea().getControl().addTraverseListener(event -> event.doit = true);
 
         this.contextMenu = new ChartContextMenu(this);
+        this.contextMenu.setLineWidthConfigurable(true);
+    }
+
+    /**
+     * Offers the line width in the context menu. Offered by default; charts
+     * with configurable data series switch it off because the user picks a line
+     * width per data series there.
+     */
+    public void setLineWidthConfigurable(boolean configurable)
+    {
+        contextMenu.setLineWidthConfigurable(configurable);
     }
 
     public void addMarkerLine(LocalDate date, Color color, String label)
@@ -204,7 +215,7 @@ public class TimelineChart extends Chart // NOSONAR
         lineSeries.setDescription(label);
         lineSeries.setDataModel(new TimelineSeriesModel(dates, values));
         lineSeries.enableArea(showArea);
-        lineSeries.setLineWidth(2);
+        lineSeries.setLineWidth(ChartLineWidth.get());
         lineSeries.setSymbolType(PlotSymbolType.NONE);
         lineSeries.setLineColor(color);
         lineSeries.setAntialias(SWT.ON);
@@ -266,7 +277,7 @@ public class TimelineChart extends Chart // NOSONAR
 
             e.gc.setLineStyle(SWT.LINE_SOLID);
             e.gc.setForeground(marker.color);
-            e.gc.setLineWidth(2);
+            e.gc.setLineWidth(ChartLineWidth.get());
             e.gc.drawLine(x, 0, x, e.height);
 
             if (marker.label != null)

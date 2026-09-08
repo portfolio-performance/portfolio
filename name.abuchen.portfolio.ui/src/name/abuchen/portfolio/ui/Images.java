@@ -110,9 +110,6 @@ public enum Images
     VISIBLE("visible.png"), //$NON-NLS-1$
     HIDDEN("hidden.png"), //$NON-NLS-1$
 
-    ARROW_FORWARD("arrow_forward.png"), //$NON-NLS-1$
-    ARROW_BACK("arrow_back.png"), //$NON-NLS-1$
-
     CIRCLE_CHECK("circle_check.svg"), //$NON-NLS-1$
     CIRCLE_SLASH("circle_slash.svg"), //$NON-NLS-1$
     CIRCLE_X_MARK("circle_x_mark.svg"), //$NON-NLS-1$

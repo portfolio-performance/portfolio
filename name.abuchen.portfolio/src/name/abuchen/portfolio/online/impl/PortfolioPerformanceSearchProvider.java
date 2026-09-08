@@ -56,6 +56,9 @@ public class PortfolioPerformanceSearchProvider implements SecuritySearchProvide
 
         public static Optional<ResultItem> from(JSONObject json)
         {
+            if (json == null)
+                return Optional.empty();
+
             var answer = new Result();
 
             answer.provider = (String) json.get("provider"); //$NON-NLS-1$
@@ -65,13 +68,12 @@ public class PortfolioPerformanceSearchProvider implements SecuritySearchProvide
 
             answer.type = SecurityType.convertType(answer.type);
 
-            var markets = (JSONArray) json.get("markets"); //$NON-NLS-1$
-
-            if (markets != null)
+            if (json.get("markets") instanceof JSONArray markets) //$NON-NLS-1$
             {
                 for (var m : markets)
                 {
-                    var market = (JSONObject) m;
+                    if (!(m instanceof JSONObject market))
+                        continue;
 
                     var item = new Result();
                     item.provider = answer.provider;
@@ -83,8 +85,7 @@ public class PortfolioPerformanceSearchProvider implements SecuritySearchProvide
                     item.exchange = (String) market.get("exchange"); //$NON-NLS-1$
                     item.url = (String) market.get("url"); //$NON-NLS-1$
 
-                    var properties = (JSONObject) market.get("properties"); //$NON-NLS-1$
-                    if (properties != null)
+                    if (market.get("properties") instanceof JSONObject properties) //$NON-NLS-1$
                     {
                         item.properties = new HashMap<>();
                         for (var key : properties.keySet()) // NOSONAR
@@ -252,14 +253,14 @@ public class PortfolioPerformanceSearchProvider implements SecuritySearchProvide
             var json = new WebAccess("api.portfolio-performance.info", "/v1/search") //
                             .addParameter(parameter.value, query).get();
 
-            var response = (JSONArray) JSONValue.parse(json);
-            if (response != null)
+            if (JSONValue.parse(json) instanceof JSONArray response)
             {
                 List<ResultItem> answer = new ArrayList<>();
 
                 for (var ii = 0; ii < response.size(); ii++)
                 {
-                    Result.from((JSONObject) response.get(ii)).ifPresent(answer::add);
+                    if (response.get(ii) instanceof JSONObject item)
+                        Result.from(item).ifPresent(answer::add);
                 }
                 return answer;
             }

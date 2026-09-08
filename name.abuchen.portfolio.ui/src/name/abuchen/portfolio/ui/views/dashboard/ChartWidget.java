@@ -211,6 +211,7 @@ public class ChartWidget extends WidgetDelegate<Object>
         GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
 
         chart = new TimelineChart(container);
+        chart.setLineWidthConfigurable(false);
         chart.getTitle().setVisible(false);
         chart.getTitle().setText(title.getText());
         chart.getAxisSet().getYAxis(0).getTick().setVisible(get(ChartShowYAxisConfig.class).getIsShowYAxis());

@@ -4,7 +4,6 @@ import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGros
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.replaceMultipleBlanks;
 import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
-import static name.abuchen.portfolio.util.TextUtil.stripBlanksAndUnderscores;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -117,12 +116,9 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "Wertpapierverkauf" change from BUY to SELL
-                        .section("type").optional() //
-                        .match("^.*(?<type>(Wertpapierkauf|Wertpapierverkauf|Verkauf)).*$") //
-                        .assign((t, v) -> {
-                            if ("Wertpapierverkauf".equals(v.get("type")) || "Verkauf".equals(v.get("type")))
-                                t.setType(PortfolioTransaction.Type.SELL);
-                        })
+                        .section().optional() //
+                        .match("^.*(Wertpapierverkauf|Verkauf .*B.rsenplatz).*$") //
+                        .assign((t, v) -> t.setType(PortfolioTransaction.Type.SELL))
 
                         .oneOf( //
                                         // @formatter:off
@@ -1145,9 +1141,10 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currencyTaxBaseBeforeLossOffset", "grossTaxBaseBeforeLossOffset") //
-                                                        .match("^[\\s]*I[\\s]*n[\\s]*v[\\s]*e[\\s]*s[\\s]*t[\\s]*m[\\s]*e[\\s]*n[\\s]*t[\\s]*\\-[\\s]*A[\\s]*u[\\s]*s[\\s]*s[\\s]*c[\\s]*h[\\s]*.[\\s]*t[\\s]*t[\\s]*u[\\s]*n[\\s]*g[\\s]*[\\s]{1,}(?<currencyTaxBaseBeforeLossOffset>(?:[A-Z][\\s]*){3})[\\-_\\s]{1,}(?<grossTaxBaseBeforeLossOffset>[\\.,\\d_\\s]+)$") //
+                                                        .prepareLine(TextUtil::stripBlanksAndUnderscores) //
+                                                        .match("^Investment\\-Aussch.ttung(?<currencyTaxBaseBeforeLossOffset>[A-Z]{3})\\-?(?<grossTaxBaseBeforeLossOffset>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
-                                                            var grossTaxBaseBeforeLossOffset = Money.of(asCurrencyCode(stripBlanks(v.get("currencyTaxBaseBeforeLossOffset"))), asAmount(stripBlanks(v.get("grossTaxBaseBeforeLossOffset"))));
+                                                            var grossTaxBaseBeforeLossOffset = Money.of(asCurrencyCode(v.get("currencyTaxBaseBeforeLossOffset")), asAmount(v.get("grossTaxBaseBeforeLossOffset")));
 
                                                             v.getTransactionContext().put(ATTRIBUTE_GROSS_TAX_BASE_BEFORE_LOST_OFFSET, grossTaxBaseBeforeLossOffset);
                                                         }))
@@ -1168,17 +1165,18 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currencyBeforeTaxes", "grossBeforeTaxes", "currencyAssessmentBasis", "currencyCreditedForeignWithholdingTax", "creditedForeignWithholdingTax", "grossAssessmentBasis", "currencyDeductedTaxes", "deductedTaxes", "currencyAfterTaxes", "grossAfterTaxes") //
-                                                        .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?<currencyBeforeTaxes>(?:[A-Z][\\s]*){3})[\\s\\-]+(?<grossBeforeTaxes>[\\.,\\d\\s]+).*$") //
-                                                        .match("^[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*b[\\s]*e[\\s]*m[\\s]*e[\\s]*s[\\s]*s[\\s]*u[\\s]*n[\\s]*g[\\s]*s[\\s]*g[\\s]*r[\\s]*u[\\s]*n[\\s]*d[\\s]*l[\\s]*a[\\s]*g[\\s]*e[\\s]*.*(?<currencyAssessmentBasis>(?:[A-Z][\\s]*){3})[\\s\\-]+(?<grossAssessmentBasis>[\\.,\\d\\s]+).*$") //
-                                                        .match("^\\(angerechnete ausl.ndische Quellensteuer:[\\s]*(?<currencyCreditedForeignWithholdingTax>[A-Z]{3})[\\s]+(?<creditedForeignWithholdingTax>[\\.,\\d\\s]+)\\).*$") //
-                                                        .match("^[\\s]*a[\\s]*b[\\s]*g[\\s]*e[\\s]*f[\\s]*.[\\s]*h[\\s]*r[\\s]*t[\\s]*e[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]+(?<currencyDeductedTaxes>[A-Z_\\s]+)[\\-_\\s]+(?<deductedTaxes>[\\.,\\d_\\s]+).*$") //
-                                                        .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n[\\s]*n[\\s]*a[\\s]*c[\\s]*h[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?<currencyAfterTaxes>(?:[A-Z][\\s]*){3})[\\-\\s]+(?<grossAfterTaxes>[\\.,\\d\\s]+).*$") //
+                                                        .prepareLine(TextUtil::stripBlanksAndUnderscores) //
+                                                        .match("^ZuIhrenGunstenvorSteuern:(?<currencyBeforeTaxes>[A-Z]{3})\\-?(?<grossBeforeTaxes>[\\.,\\d]+).*$") //
+                                                        .match("^Steuerbemessungsgrundlage.*?(?<currencyAssessmentBasis>[A-Z]{3})\\-?(?<grossAssessmentBasis>[\\.,\\d]+).*$") //
+                                                        .match("^\\(angerechneteausl.ndischeQuellensteuer:(?<currencyCreditedForeignWithholdingTax>[A-Z]{3})(?<creditedForeignWithholdingTax>[\\.,\\d]+)\\).*$") //
+                                                        .match("^abgef.hrteSteuern(?<currencyDeductedTaxes>[A-Z]{3})\\-?(?<deductedTaxes>[\\.,\\d]+).*$") //
+                                                        .match("^ZuIhrenGunstennachSteuern:(?<currencyAfterTaxes>[A-Z]{3})\\-?(?<grossAfterTaxes>[\\.,\\d]+).*$") //
                                                         .assign((t, v) -> {
-                                                            var grossBeforeTaxes = Money.of(asCurrencyCode(stripBlanks(v.get("currencyBeforeTaxes"))), asAmount(stripBlanks(v.get("grossBeforeTaxes"))));
-                                                            var grossAssessmentBasis = Money.of(asCurrencyCode(stripBlanks(v.get("currencyAssessmentBasis"))), asAmount(stripBlanks(v.get("grossAssessmentBasis"))));
-                                                            var creditedForeignWithholdingTax = Money.of(asCurrencyCode(stripBlanks(v.get("currencyCreditedForeignWithholdingTax"))), asAmount(stripBlanks(v.get("creditedForeignWithholdingTax"))));
-                                                            var deductedTaxes = Money.of(asCurrencyCode(stripBlanksAndUnderscores(v.get("currencyDeductedTaxes"))), asAmount(stripBlanksAndUnderscores(v.get("deductedTaxes"))));
-                                                            var grossAfterTaxes = Money.of(asCurrencyCode(stripBlanks(v.get("currencyAfterTaxes"))), asAmount(stripBlanks(v.get("grossAfterTaxes"))));
+                                                            var grossBeforeTaxes = Money.of(asCurrencyCode(v.get("currencyBeforeTaxes")), asAmount(v.get("grossBeforeTaxes")));
+                                                            var grossAssessmentBasis = Money.of(asCurrencyCode(v.get("currencyAssessmentBasis")), asAmount(v.get("grossAssessmentBasis")));
+                                                            var creditedForeignWithholdingTax = Money.of(asCurrencyCode(v.get("currencyCreditedForeignWithholdingTax")), asAmount(v.get("creditedForeignWithholdingTax")));
+                                                            var deductedTaxes = Money.of(asCurrencyCode(v.get("currencyDeductedTaxes")), asAmount(v.get("deductedTaxes")));
+                                                            var grossAfterTaxes = Money.of(asCurrencyCode(v.get("currencyAfterTaxes")), asAmount(v.get("grossAfterTaxes")));
 
                                                             var totalDeductedTaxes = deductedTaxes.add(creditedForeignWithholdingTax);
                                                             var totalDeductedTaxesFromAmounts = grossAssessmentBasis.subtract(grossAfterTaxes);
@@ -1224,13 +1222,14 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currencyBeforeTaxes", "grossBeforeTaxes", "currencyTaxesBaseBeforeLossOffset", "type", "grossTaxesBaseBeforeLossOffset", "currencyDeductedTaxes", "deductedTaxes") //
-                                                        .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*(G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n|L[\\s]*a[\\s]*s[\\s]*t[\\s]*e[\\s]*n)[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:\\s+(?<currencyBeforeTaxes>(?:[A-Z][\\s]*){3})[\\-\\s]{1,}(?<grossBeforeTaxes>[\\.,\\d\\s]+).*$") //
-                                                        .match("^[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*b[\\s]*e[\\s]*m[\\s]*e[\\s]*s[\\s]*s[\\s]*u[\\s]*n[\\s]*g[\\s]*s[\\s]*g[\\s]*r[\\s]*u[\\s]*n[\\s]*d[\\s]*l[\\s]*a[\\s]*g[\\s]*e[\\s]*v[\\s]*o[\\s]*r[\\s]*V[\\s]*e[\\s]*r[\\s]*l[\\s]*u[\\s]*s[\\s]*t[\\s]*v[\\s]*e[\\s]*r[\\s]*r[\\s]*e[\\s]*c[\\s]*h[\\s]*n[\\s]*u[\\s]*n[\\s]*g[\\s]{1,}([\\(\\s\\d\\)]+)?(?<currencyTaxesBaseBeforeLossOffset>(?:[A-Z][\\s]*){3})(?<type>[\\-\\s]{1,})(?<grossTaxesBaseBeforeLossOffset>[\\.,\\d\\s]+).*$") //
-                                                        .match("^[\\s]*a[\\s]*b[\\s]*g[\\s]*e[\\s]*f[\\s]*.[\\s]*h[\\s]*r[\\s]*t[\\s]*e[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]{1,}(?<currencyDeductedTaxes>[A-Z_\\s]+)[\\-_\\s]{1,}(?<deductedTaxes>[\\.,\\d_\\s]+).*$") //
+                                                        .prepareLine(TextUtil::stripBlanksAndUnderscores) //
+                                                        .match("^ZuIhren(Gunsten|Lasten)vorSteuern:(?<currencyBeforeTaxes>[A-Z]{3})\\-?(?<grossBeforeTaxes>[\\.,\\d]+).*$") //
+                                                        .match("^SteuerbemessungsgrundlagevorVerlustverrechnung(\\(\\d+\\))*(?<currencyTaxesBaseBeforeLossOffset>[A-Z]{3})(?<type>\\-?)(?<grossTaxesBaseBeforeLossOffset>[\\.,\\d]+).*$") //
+                                                        .match("^abgef.hrteSteuern(?<currencyDeductedTaxes>[A-Z]{3})\\-?(?<deductedTaxes>[\\.,\\d]+).*$") //
                                                         .assign((t, v) -> {
-                                                            var grossBeforeTaxes = Money.of(asCurrencyCode(stripBlanks(v.get("currencyBeforeTaxes"))), asAmount(stripBlanks(v.get("grossBeforeTaxes"))));
-                                                            var grossTaxesBaseBeforeLossOffset = Money.of(asCurrencyCode(stripBlanks(v.get("currencyTaxesBaseBeforeLossOffset"))), asAmount(stripBlanks(v.get("grossTaxesBaseBeforeLossOffset"))));
-                                                            var deductedTaxes = Money.of(asCurrencyCode(stripBlanksAndUnderscores(v.get("currencyDeductedTaxes"))), asAmount(stripBlanksAndUnderscores(v.get("deductedTaxes"))));
+                                                            var grossBeforeTaxes = Money.of(asCurrencyCode(v.get("currencyBeforeTaxes")), asAmount(v.get("grossBeforeTaxes")));
+                                                            var grossTaxesBaseBeforeLossOffset = Money.of(asCurrencyCode(v.get("currencyTaxesBaseBeforeLossOffset")), asAmount(v.get("grossTaxesBaseBeforeLossOffset")));
+                                                            var deductedTaxes = Money.of(asCurrencyCode(v.get("currencyDeductedTaxes")), asAmount(v.get("deductedTaxes")));
 
                                                             // Calculate the taxes
                                                             if (!grossBeforeTaxes.isZero() && grossTaxesBaseBeforeLossOffset.isGreaterThan(grossBeforeTaxes) && !"-".equals(trim(v.get("type"))))
@@ -1253,16 +1252,15 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currencyBeforeTaxes", "grossBeforeTaxes", "fxCurrencyAssessmentBasis", "fxGrossAssessmentBasis", "currencyDeductedTaxes", "deductedTaxes", "exchangeRate") //
-                                                        .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*" //
-                                                                        + "(G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n|L[\\s]*a[\\s]*s[\\s]*t[\\s]*e[\\s]*n)" //
-                                                                        + "[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?:[A-Z][\\s]*){3}[\\s]{1,}[\\.,\\d\\s]+[\\s]{1,}(?<currencyBeforeTaxes>(?:[A-Z][\\s]*){3})[\\-\\s]{1,}(?<grossBeforeTaxes>[\\.,\\d\\s]+).*$") //
-                                                        .match("^[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*b[\\s]*e[\\s]*m[\\s]*e[\\s]*s[\\s]*s[\\s]*u[\\s]*n[\\s]*g[\\s]*s[\\s]*g[\\s]*r[\\s]*u[\\s]*n[\\s]*d[\\s]*l[\\s]*a[\\s]*g[\\s]*e[\\s]{1,}([\\(\\s\\d\\)]+)?(?<fxCurrencyAssessmentBasis>(?:[A-Z][\\s]*){3})[\\s]{1,}(?<fxGrossAssessmentBasis>[\\.,\\d\\s]+).*$") //
-                                                        .match("^[\\s]*a[\\s]*b[\\s]*g[\\s]*e[\\s]*f[\\s]*.[\\s]*h[\\s]*r[\\s]*t[\\s]*e[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]{1,}[A-Z_\\s]+[\\-_\\s]{1,}[\\.,\\d_\\s]+[\\s]{1,}(?<currencyDeductedTaxes>[A-Z_\\s]+)[\\-_\\s]{1,}(?<deductedTaxes>[\\.,\\d_\\s]+).*$") //
-                                                        .match("^Umrechnungen zum Devisenkurs [\\s]*(?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .prepareLine(TextUtil::stripBlanksAndUnderscores) //
+                                                        .match("^ZuIhren(Gunsten|Lasten)vorSteuern:[A-Z]{3}[\\.,\\d]+(?<currencyBeforeTaxes>[A-Z]{3})\\-?(?<grossBeforeTaxes>[\\.,\\d]+).*$") //
+                                                        .match("^Steuerbemessungsgrundlage(\\(\\d+\\))*(?<fxCurrencyAssessmentBasis>[A-Z]{3})(?<fxGrossAssessmentBasis>[\\.,\\d]+).*$") //
+                                                        .match("^abgef.hrteSteuern[A-Z]{3}\\-?[\\.,\\d]+(?<currencyDeductedTaxes>[A-Z]{3})\\-?(?<deductedTaxes>[\\.,\\d]+).*$") //
+                                                        .match("^UmrechnungenzumDevisenkurs(?<exchangeRate>[\\.,\\d]+).*$") //
                                                         .assign((t, v) -> {
-                                                            var grossBeforeTaxes = Money.of(asCurrencyCode(stripBlanks(v.get("currencyBeforeTaxes"))), asAmount(stripBlanks(v.get("grossBeforeTaxes"))));
-                                                            var fxGrossAssessmentBasis = Money.of(asCurrencyCode(stripBlanks(v.get("fxCurrencyAssessmentBasis"))), asAmount(stripBlanks(v.get("fxGrossAssessmentBasis"))));
-                                                            var deductedTaxes = Money.of(asCurrencyCode(stripBlanksAndUnderscores(v.get("currencyDeductedTaxes"))), asAmount(stripBlanksAndUnderscores(v.get("deductedTaxes"))));
+                                                            var grossBeforeTaxes = Money.of(asCurrencyCode(v.get("currencyBeforeTaxes")), asAmount(v.get("grossBeforeTaxes")));
+                                                            var fxGrossAssessmentBasis = Money.of(asCurrencyCode(v.get("fxCurrencyAssessmentBasis")), asAmount(v.get("fxGrossAssessmentBasis")));
+                                                            var deductedTaxes = Money.of(asCurrencyCode(v.get("currencyDeductedTaxes")), asAmount(v.get("deductedTaxes")));
 
                                                             var exchangeRate = asExchangeRate(v.get("exchangeRate"));
                                                             var inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
@@ -1301,15 +1299,14 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currencyBeforeTaxes", "grossBeforeTaxes", "currencyAssessmentBasis", "type", "grossAssessmentBasis", "currencyDeductedTaxes", "deductedTaxes") //
-                                                        .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*" //
-                                                                        + "(G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n|L[\\s]*a[\\s]*s[\\s]*t[\\s]*e[\\s]*n)" //
-                                                                        + "[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?<currencyBeforeTaxes>(?:[A-Z][\\s]*){3})[\\-\\s]{1,}(?<grossBeforeTaxes>[\\.,\\d\\s]+).*$") //
-                                                        .match("^[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*b[\\s]*e[\\s]*m[\\s]*e[\\s]*s[\\s]*s[\\s]*u[\\s]*n[\\s]*g[\\s]*s[\\s]*g[\\s]*r[\\s]*u[\\s]*n[\\s]*d[\\s]*l[\\s]*a[\\s]*g[\\s]*e[\\s]{1,}([\\(\\s\\d\\)]+)?(?<currencyAssessmentBasis>(?:[A-Z][\\s]*){3})(?<type>[\\-\\s]{1,})(?<grossAssessmentBasis>[\\.,\\d\\s]+).*$") //
-                                                        .match("^[\\s]*a[\\s]*b[\\s]*g[\\s]*e[\\s]*f[\\s]*.[\\s]*h[\\s]*r[\\s]*t[\\s]*e[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]{1,}(?<currencyDeductedTaxes>[A-Z_\\s]+)[\\-_\\s]{1,}(?<deductedTaxes>[\\.,\\d_\\s]+).*$") //
+                                                        .prepareLine(TextUtil::stripBlanksAndUnderscores) //
+                                                        .match("^ZuIhren(Gunsten|Lasten)vorSteuern:(?<currencyBeforeTaxes>[A-Z]{3})\\-?(?<grossBeforeTaxes>[\\.,\\d]+).*$") //
+                                                        .match("^Steuerbemessungsgrundlage(\\(\\d+\\))*(?<currencyAssessmentBasis>[A-Z]{3})(?<type>\\-?)(?<grossAssessmentBasis>[\\.,\\d]+).*$") //
+                                                        .match("^abgef.hrteSteuern(?<currencyDeductedTaxes>[A-Z]{3})\\-?(?<deductedTaxes>[\\.,\\d]+).*$") //
                                                         .assign((t, v) -> {
-                                                            var grossBeforeTaxes = Money.of(asCurrencyCode(stripBlanks(v.get("currencyBeforeTaxes"))), asAmount(stripBlanks(v.get("grossBeforeTaxes"))));
-                                                            var grossAssessmentBasis = Money.of(asCurrencyCode(stripBlanks(v.get("currencyAssessmentBasis"))), asAmount(stripBlanks(v.get("grossAssessmentBasis"))));
-                                                            var deductedTaxes = Money.of(asCurrencyCode(stripBlanksAndUnderscores(v.get("currencyDeductedTaxes"))), asAmount(stripBlanksAndUnderscores(v.get("deductedTaxes"))));
+                                                            var grossBeforeTaxes = Money.of(asCurrencyCode(v.get("currencyBeforeTaxes")), asAmount(v.get("grossBeforeTaxes")));
+                                                            var grossAssessmentBasis = Money.of(asCurrencyCode(v.get("currencyAssessmentBasis")), asAmount(v.get("grossAssessmentBasis")));
+                                                            var deductedTaxes = Money.of(asCurrencyCode(v.get("currencyDeductedTaxes")), asAmount(v.get("deductedTaxes")));
 
                                                             // Calculate the taxes and store gross amount
                                                             if (!grossBeforeTaxes.isZero() && grossAssessmentBasis.isGreaterThan(grossBeforeTaxes) && !"-".equals(trim(v.get("type"))))
@@ -1338,14 +1335,15 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currencyRefundedTaxes", "refundedTaxes") //
-                                                        .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?:[A-Z][\\s]*){3}[\\-\\s]{1,}[\\.,\\d\\s]+.*$") //
-                                                        .match("^[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*b[\\s]*e[\\s]*m[\\s]*e[\\s]*s[\\s]*s[\\s]*u[\\s]*n[\\s]*g[\\s]*s[\\s]*g[\\s]*r[\\s]*u[\\s]*n[\\s]*d[\\s]*l[\\s]*a[\\s]*g[\\s]*e[\\s]{1,}([\\(\\s\\d\\)]+)?(?:[A-Z][\\s]*){3}[\\-\\s]{1,}[\\.,\\d\\s]+.*$") //
-                                                        .match("^[\\s]*e[\\s]*r[\\s]*s[\\s]*t[\\s]*a[\\s]*t[\\s]*t[\\s]*e[\\s]*t[\\s]*e[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n\\s+[A-Z_\\s]+[\\-_\\s]{1,}[\\.,\\d_\\s]+[\\s]{1,}(?<currencyRefundedTaxes>[A-Z_\\s]+)[\\-_\\s]{1,}(?<refundedTaxes>[\\.,\\d_\\s]+)$") //
+                                                        .prepareLine(TextUtil::stripBlanksAndUnderscores) //
+                                                        .match("^ZuIhrenGunstenvorSteuern:[A-Z]{3}\\-?[\\.,\\d]+.*$") //
+                                                        .match("^Steuerbemessungsgrundlage(\\(\\d+\\))*[A-Z]{3}\\-?[\\.,\\d]+.*$") //
+                                                        .match("^erstatteteSteuern([A-Z]{3}\\-?[\\.,\\d]+)?(?<currencyRefundedTaxes>[A-Z]{3})\\-?(?<refundedTaxes>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.TAX_REFUND);
 
-                                                            t.setCurrencyCode(asCurrencyCode(stripBlanksAndUnderscores(v.get("currencyRefundedTaxes"))));
-                                                            t.setAmount(asAmount(stripBlanksAndUnderscores(v.get("refundedTaxes"))));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currencyRefundedTaxes")));
+                                                            t.setAmount(asAmount(v.get("refundedTaxes")));
                                                     }),
                                         // @formatter:off
                                         // Z u  Ih r e n G u n s t e n v o r S te u e r n :                                                                                                    E U R               1,4 0
@@ -1376,66 +1374,17 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                                             t.setAmount(asAmount(v.get("refundedTaxes")));
                                                         }))
 
-                        .optionalOneOf( //
-                                        // @formatter:off
-                                        // Z  u     I h  r e   n    G  u   n   s  t e   n   v  o  r    S  t e  u   e   r n  :                                                         E  U   R                      1   0  .  5   8  3 , 9 9  U S D           11  .9 5 8 ,  8 5
-                                        // S  te u e rb e m  e ss u n g s g r u n d la g e                                                            E  U   R                    -  1   2  .  6   4  4 , 1 7
-                                        // e r s ta t te t e S t e ue r n                                                                         E  U   R                         3  .  5   3  9 , 5 8  U_ S_ D_ _ _ _ _ _ _ _  _ __ 3_ ._ _ 9_9 _ 9, _3 _ 7_
-                                        // Umrechnungen zum Devisenkurs       1,192200
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("termCurrency", "fxRefundedTaxes", "baseCurrency", "refundedTaxes", "exchangeRate") //
-                                                        .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?:[A-Z][\\s]*){3}[\\-\\s]{1,}[\\.,\\d\\s]+[\\s]{1,}(?:[A-Z][\\s]*){3}[\\-\\s]{1,}[\\.,\\d\\s]+$") //
-                                                        .match("^[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*b[\\s]*e[\\s]*m[\\s]*e[\\s]*s[\\s]*s[\\s]*u[\\s]*n[\\s]*g[\\s]*s[\\s]*g[\\s]*r[\\s]*u[\\s]*n[\\s]*d[\\s]*l[\\s]*a[\\s]*g[\\s]*e[\\s]{1,}([\\(\\s\\d\\)]+)?[\\s]{1,}(?:[A-Z][\\s]*){3}[\\-\\s]{1,}[\\.,\\d\\s]+.*$") //
-                                                        .match("^[\\s]*e[\\s]*r[\\s]*s[\\s]*t[\\s]*a[\\s]*t[\\s]*t[\\s]*e[\\s]*t[\\s]*e[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]{1,}(?<termCurrency>[A-Z_\\s]+)[\\-_\\s]{1,}(?<fxRefundedTaxes>[\\.,\\d_\\s]+)[\\s]{1,}(?<baseCurrency>[A-Z_\\s]+)[\\-_\\s]{1,}(?<refundedTaxes>[\\.,\\d_\\s]+)$") //
-                                                        .match("^Umrechnungen zum Devisenkurs[\\s]{1,}(?<exchangeRate>[\\.,\\d]+).*$") //
-                                                        .assign((t, v) -> {
-                                                            v.put("baseCurrency", asCurrencyCode(stripBlanksAndUnderscores(v.get("baseCurrency"))));
-                                                            v.put("termCurrency", asCurrencyCode(stripBlanksAndUnderscores(v.get("termCurrency"))));
-
-                                                            var rate = asExchangeRate(v);
-                                                            type.getCurrentContext().putType(rate);
-
-                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(stripBlanksAndUnderscores(v.get("refundedTaxes"))));
-                                                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(stripBlanksAndUnderscores(v.get("fxRefundedTaxes"))));
-
-                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                                                        }),
-                                        // @formatter:off
-                                        //  Zu  Ih r e n G u n s t e n v o r S te u e r n :                                                        E  U   R                         9  .  1   1  0 , 3 5  U S D          1  0.  86 1 , 3  6
-                                        // S  te u e rb e m  e ss u n g s g r u n d la g e ( 1 )                                                     E  U   R                         3  .  0   4  7 , 7 1
-                                        //  ab g e f ü h rt e S t e u er n                                                                        E  U   R                           -  8   0  3 , 8 3  U_ _S D_ _ _ _ _ _ _ _  _ _ _ _- _9_ 5_  8__,  3_ 4_
-                                        // Umrechnungen zum Devisenkurs       1,192200
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("termCurrency", "fxTaxes", "baseCurrency", "taxes", "exchangeRate") //
-                                                        .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?:[A-Z][\\s]*){3}[\\-\\s]{1,}[\\.,\\d\\s]+[\\s]{1,}(?:[A-Z][\\s]*){3}[\\-\\s]{1,}[\\.,\\d\\s]+$") //
-                                                        .match("^[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*b[\\s]*e[\\s]*m[\\s]*e[\\s]*s[\\s]*s[\\s]*u[\\s]*n[\\s]*g[\\s]*s[\\s]*g[\\s]*r[\\s]*u[\\s]*n[\\s]*d[\\s]*l[\\s]*a[\\s]*g[\\s]*e[\\s]{1,}([\\(\\s\\d\\)]+)?[\\s]{1,}(?:[A-Z][\\s]*){3}[\\-\\s]{1,}[\\.,\\d\\s]+.*$") //
-                                                        .match("^[\\s]*a[\\s]*b[\\s]*g[\\s]*e[\\s]*f[\\s]*.[\\s]*h[\\s]*r[\\s]*t[\\s]*e[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]{1,}(?<termCurrency>[A-Z_\\s]+)[\\-_\\s]{1,}(?<fxTaxes>[\\.,\\d_\\s]+)[\\s]{1,}(?<baseCurrency>[A-Z_\\s]+)[\\-_\\s]{1,}(?<taxes>[\\.,\\d_\\s]+)$") //
-                                                        .match("^Umrechnungen zum Devisenkurs[\\s]{1,}(?<exchangeRate>[\\.,\\d]+).*$") //
-                                                        .assign((t, v) -> {
-                                                            v.put("baseCurrency", asCurrencyCode(stripBlanksAndUnderscores(v.get("baseCurrency"))));
-                                                            v.put("termCurrency", asCurrencyCode(stripBlanksAndUnderscores(v.get("termCurrency"))));
-
-                                                            var rate = asExchangeRate(v);
-                                                            type.getCurrentContext().putType(rate);
-
-                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(stripBlanksAndUnderscores(v.get("taxes"))));
-                                                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(stripBlanksAndUnderscores(v.get("fxTaxes"))));
-
-                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                                                        }))
-
                         // @formatter:off
                         // XXXXX XXXXX               R   e  f e  r e  n  z  - N   u mmer:     0 8  I F  L  C  B   P  Y 1000J7B
                         // Steuerliche Behandlung: Vorabpauschale Ausland vom 02.01.2020
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^.*R[\\s]*e[\\s]*f[\\s]*e[\\s]*r[\\s]*e[\\s]*n[\\s]*z[\\s]*\\-[\\s]*N[\\s]*u[\\s]*m[\\s]*m[\\s]*e[\\s]*r[\\s]*:[\\s]{1,}(?<note>.*)$")
-                        .find("Steuerliche Behandlung: Vorabpauschale.*") //
+                        .prepareLine(TextUtil::stripBlanksAndUnderscores)
+                        .match("^.*Referenz\\-Nummer:(?<note>.*)$")
+                        .find("SteuerlicheBehandlung:Vorabpauschale.*") //
                         .assign((t, v) -> {
-                            var note = stripBlanks(v.get("note"));
-                            note = (note != null && note.length() > 16) ? note.substring(0, 16) : (note != null ? note : "");
+                            var note = Objects.toString(v.get("note"), "");
+                            note = note.substring(0, Math.min(16, note.length()));
 
                             t.setNote("Vorabpauschale | Ref.-Nr.: " + note);
                         })
@@ -1449,8 +1398,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .prepareLine(TextUtil::stripBlanksAndUnderscores) //
                         .match("^.*Referenz\\-Nummer:(?<note>.*)$")
                         .assign((t, v) -> {
-                            var note = Objects.toString(stripBlanks(v.get("note")), "");
-                            note = note.length() > 16 ? note.substring(0, 16) : note;
+                            var note = Objects.toString(v.get("note"), "");
+                            note = note.substring(0, Math.min(16, note.length()));
 
                             if (t.getType().isCredit())
                                 t.setNote(concatenate(t.getNote(), "Ref.-Nr.: " + note, " | "));

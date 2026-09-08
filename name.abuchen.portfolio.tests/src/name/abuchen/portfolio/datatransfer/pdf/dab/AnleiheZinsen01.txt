@@ -1,0 +1,63 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.86.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+ EMAILVERSAND=N
+DEPOTNUMMER=1234567890
+          DEPOTUNTERBEZEICHNUNG=
+Erträgnisgutschrift VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Herr
+aus Wertpapieren ADRESSZEILE2=Vorname Nachname
+ADRESSZEILE3=Adresse Str. 1
+Zinsen für ADRESSZEILE4=01234 Stadt
+Herr 2 0.08.2010 - 19.08.2011 ADRESSZEILE5=
+ADRESSZEILE6=
+Vorname Nachname Depot-Nr. Abrechnungs-Nr. BELEGNUMMER=1217
+Adresse Str. 1 1234567890 85374419 / 23.08.2011 SEITENNUMMER=1
+01234 Stadt STEUERERSTATTUNG=N
+Depotinhaber
+Vorname Nachname
+  
+Kupongutschrift Stadt, 23.08.2011
+  
+Gattungsbezeichnung Fälligkeit Zinstermin ISIN
+4,1% Griechenland EO-Bonds 2007(12) 20.08.2012 20.08.2011 GR0114020457
+Nominal Zahltag Zinssatz
+EUR 4.000,000 20.08.2011 4,100000 %
+ 
+Wert  Konto-Nr. Betrag zu Ihren Gunsten  
+22.08.2011 1234567890 EUR 120,74
+ 
+ 
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Zinsertrag EUR            164,00     
+Aktienverlusttopf EUR              0,00                  0,00     
+allgemeiner Verlusttopf EUR              0,00                  0,00     
+Quellensteuertopf EUR              0,00                  0,00     
+zu versteuern  EUR            164,00     
+einbehaltene Kapitalertragsteuer EUR             41,00     
+einbehaltener Solidaritätszuschlag  EUR              2,26     
+ 
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR            101,33     
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR              5,57     
+ 
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Stadt für Körperschaften, Steuernummer 143/800/13803.
+ 
+Zahlungstag 20.08.2011
+Zinsen für 365 Tage
+ 
+Jahressteuerbescheinigung folgt
+  
+ 
+Verwahrart: Wertpapierrechnung
+Lagerland: Griechenland
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+DAB bank AG > Landsberger Straße 300 > 80687 Stadt > BLZ 701 204 00 > BIC (SWIFT-Code): DABBDEMMXXX > Tel. 0 89 / 88 95 - 60 00 > Sitz: Stadt > AG Stadt, HRB 118190 
+USt.-Ident.-Nr.: DE 161864563 > Aufsichtsratsvorsitzender: Dr. Theodor Weimer > Vorstand: Markus Gunter, Dr. Markus Walch
+ 
+3.31/ABREEREIERTR/GDBERTRG/001217/240811/000253
+

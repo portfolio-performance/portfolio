@@ -3,10 +3,12 @@ package name.abuchen.portfolio.ui.util;
 import org.eclipse.jface.resource.ColorRegistry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.RGBA;
 import org.eclipse.swt.widgets.Display;
 
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.util.ColorConversion;
 
 public final class Colors
@@ -29,6 +31,12 @@ public final class Colors
         private Color greenForeground = Colors.DARK_GREEN;
         private Color grayForeground = getColor(112, 112, 112); // 707070
         private Color hyperlink = Display.getDefault().getSystemColor(SWT.COLOR_LINK_FOREGROUND);
+
+        // default to the light icons in case the CSS cannot be read
+        private Image arrowDown = Images.resolve("light/arrow_down.svg", false); //$NON-NLS-1$
+        private Image arrowLeft = Images.resolve("light/arrow_left.svg", false); //$NON-NLS-1$
+        private Image arrowRight = Images.resolve("light/arrow_right.svg", false); //$NON-NLS-1$
+        private Image arrowUp = Images.resolve("light/arrow_up.svg", false); //$NON-NLS-1$
 
         public Color defaultForeground()
         {
@@ -138,6 +146,46 @@ public final class Colors
         public void setHyperlink(RGBA color)
         {
             this.hyperlink = getColor(color.rgb);
+        }
+
+        public Image arrowDown()
+        {
+            return arrowDown;
+        }
+
+        public void setArrowDown(String icon)
+        {
+            this.arrowDown = Images.resolve(icon, false);
+        }
+
+        public Image arrowLeft()
+        {
+            return arrowLeft;
+        }
+
+        public void setArrowLeft(String icon)
+        {
+            this.arrowLeft = Images.resolve(icon, false);
+        }
+
+        public Image arrowRight()
+        {
+            return arrowRight;
+        }
+
+        public void setArrowRight(String icon)
+        {
+            this.arrowRight = Images.resolve(icon, false);
+        }
+
+        public Image arrowUp()
+        {
+            return arrowUp;
+        }
+
+        public void setArrowUp(String icon)
+        {
+            this.arrowUp = Images.resolve(icon, false);
         }
     }
 

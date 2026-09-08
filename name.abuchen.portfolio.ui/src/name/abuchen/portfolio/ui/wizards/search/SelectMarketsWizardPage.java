@@ -7,6 +7,7 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -14,8 +15,8 @@ import name.abuchen.portfolio.oauth.OAuthClient;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.online.impl.MarketIdentifierCodes;
 import name.abuchen.portfolio.online.impl.PortfolioPerformanceFeed;
-import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.swt.PaginatedTable;
 import name.abuchen.portfolio.util.TextUtil;
 
@@ -143,9 +144,9 @@ public class SelectMarketsWizardPage extends WizardPage
             }
 
             @Override
-            public Images getLeadingImage(ResultItem e)
+            public Image getLeadingImage(ResultItem e)
             {
-                return e == parent ? Images.ARROW_BACK : null;
+                return e == parent ? Colors.theme().arrowLeft() : null;
             }
         };
 

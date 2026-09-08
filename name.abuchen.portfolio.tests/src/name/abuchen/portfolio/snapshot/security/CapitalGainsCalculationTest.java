@@ -19,10 +19,14 @@ import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.trades.Trade;
+import name.abuchen.portfolio.snapshot.trades.TradeCollector;
+import name.abuchen.portfolio.snapshot.trades.TradeCollectorException;
 import name.abuchen.portfolio.util.Interval;
 
 @SuppressWarnings("nls")
@@ -313,5 +317,170 @@ public class CapitalGainsCalculationTest
 
         assertThat(unrealizedFifo.getForexCaptialGains(), //
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0))));
+    }
+
+    /**
+     * Safeguards the {@link TaxesAndFees#INCLUDED} cost basis: with a purchase
+     * and a sale carrying taxes and fees inside the reporting period, the gains
+     * measured against the fee-inclusive basis must differ from the ex-fee
+     * basis by exactly those embedded charges, on both the FIFO and the
+     * moving-average engine. Crucially the fee-inclusive unrealized gains have
+     * to reconcile with
+     * {@link LazySecurityPerformanceRecord#getCapitalGainsOnHoldings} - i.e.
+     * subtract cleanly from the cost basis reported next to them - which is the
+     * mismatch this change fixes.
+     */
+    @Test
+    public void testCapitalGainsAgainstFeeInclusiveBasis()
+    {
+        var client = new Client();
+
+        Security security = new SecurityBuilder().addPrice("2024-01-01", Values.Quote.factorize(120)) //
+                        .addTo(client);
+
+        // buy inside the interval: pays 10100 including 80 fees + 20 taxes, so
+        // the ex-fee basis is 10000 (100/share) and the fee-inclusive basis is
+        // 10100 (101/share)
+        new PortfolioBuilder() //
+                        .buy(security, "2024-02-01", Values.Share.factorize(100), Values.Amount.factorize(10100),
+                                        Values.Amount.factorize(80), Values.Amount.factorize(20)) //
+                        // sell 40 inside the interval: receives 4550 net after
+                        // 30 fees + 20 taxes, so the gross proceeds are 4600
+                        .sell(security, "2024-03-01", Values.Share.factorize(40), Values.Amount.factorize(4550),
+                                        Values.Amount.factorize(30), Values.Amount.factorize(20)) //
+                        .addTo(client);
+
+        var interval = Interval.of(LocalDate.parse("2023-12-31"), LocalDate.parse("2024-12-31"));
+        LazySecurityPerformanceSnapshot snapshot = LazySecurityPerformanceSnapshot.create(client,
+                        new TestCurrencyConverter(), interval);
+        LazySecurityPerformanceRecord record = snapshot.getRecord(security).orElseThrow(IllegalArgumentException::new);
+
+        // 60 shares remain, valued at 60 * 120 = 7200
+
+        // single buy lot, so FIFO and moving average coincide - both engines
+        // are exercised through the loop
+        for (var method : new CostMethod[] { CostMethod.FIFO, CostMethod.MOVING_AVERAGE })
+        {
+            // realized, ex-fee: gross proceeds - relieved gross cost
+            // 4600 - (40/100) * 10000 = 600
+            var realizedExFee = Money.of(CurrencyUnit.EUR, Values.Amount.factorize(600));
+            assertThat(record.getRealizedCapitalGains(method).getCapitalGains(), is(realizedExFee));
+            assertThat(record.getRealizedCapitalGains(method, TaxesAndFees.NOT_INCLUDED).getCapitalGains(),
+                            is(realizedExFee));
+
+            // realized, fee-inclusive: net proceeds - relieved fee-inclusive
+            // cost
+            // 4550 - (40/100) * 10100 = 510
+            // differs from the ex-fee gains by the sale's 50 charges plus the
+            // relieved 40 of the buy's charges
+            assertThat(record.getRealizedCapitalGains(method, TaxesAndFees.INCLUDED).getCapitalGains(),
+                            is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(510))));
+
+            // unrealized, ex-fee: market value - remaining gross cost
+            // 7200 - (60/100) * 10000 = 1200
+            var unrealizedExFee = Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1200));
+            assertThat(record.getUnrealizedCapitalGains(method).getCapitalGains(), is(unrealizedExFee));
+            assertThat(record.getUnrealizedCapitalGains(method, TaxesAndFees.NOT_INCLUDED).getCapitalGains(),
+                            is(unrealizedExFee));
+
+            // unrealized, fee-inclusive: market value - remaining fee-inclusive
+            // cost
+            // 7200 - (60/100) * 10100 = 1140
+            var unrealizedInclusive = Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1140));
+            assertThat(record.getUnrealizedCapitalGains(method, TaxesAndFees.INCLUDED).getCapitalGains(),
+                            is(unrealizedInclusive));
+
+            // the reconciliation this change is about: the fee-inclusive
+            // unrealized gains subtract cleanly from the fee-inclusive cost
+            // reported next to them (market value - cost with charges)
+            assertThat(record.getUnrealizedCapitalGains(method, TaxesAndFees.INCLUDED).getCapitalGains(),
+                            is(record.getCapitalGainsOnHoldings(method)));
+            assertThat(record.getCapitalGainsOnHoldings(method), is(unrealizedInclusive));
+        }
+    }
+
+    /**
+     * Reconciles the two cost bases against the second engine that computes the
+     * very same figures: a closed {@link Trade} reports its profit and loss
+     * both including the taxes and fees embedded in its trades
+     * ({@link Trade#getProfitLoss()}) and without them
+     * ({@link Trade#getProfitLossWithoutTaxesAndFees()}), which must be the
+     * realized capital gains measured against the fee-inclusive and the ex-fee
+     * basis respectively.
+     * <p>
+     * The comparison only holds under three conditions, hence the scenario
+     * below: the trade has to be closed, because {@link Trade} values an open
+     * position at today's price instead of at the end of the reporting period;
+     * the reporting period has to span the entire history, because the capital
+     * gains are scoped to the interval while the trade is not; and the
+     * scenario has to be single-currency, because {@link Trade} converts with
+     * the historic day rate whereas the capital gains use the exchange rate
+     * recorded on the transaction itself.
+     */
+    @Test
+    public void testTradeProfitLossMatchesRealizedCapitalGains() throws TradeCollectorException
+    {
+        var client = new Client();
+
+        Security security = new SecurityBuilder().addPrice("2024-01-01", Values.Quote.factorize(120)) //
+                        .addTo(client);
+
+        // buy: pays 10100 including 80 fees + 20 taxes, so the ex-fee basis is
+        // 10000; sell all of it: receives 11400 net after 60 fees + 40 taxes,
+        // so the gross proceeds are 11500
+        new PortfolioBuilder() //
+                        .buy(security, "2024-02-01", Values.Share.factorize(100), Values.Amount.factorize(10100),
+                                        Values.Amount.factorize(80), Values.Amount.factorize(20)) //
+                        .sell(security, "2024-03-01", Values.Share.factorize(100), Values.Amount.factorize(11400),
+                                        Values.Amount.factorize(60), Values.Amount.factorize(40)) //
+                        .addTo(client);
+
+        var converter = new TestCurrencyConverter();
+
+        var trades = new TradeCollector(client, converter).collect(security);
+        assertThat(trades.size(), is(1));
+
+        Trade trade = trades.get(0);
+        assertThat(trade.getEnd().isPresent(), is(true));
+
+        var interval = Interval.of(LocalDate.parse("2023-12-31"), LocalDate.parse("2024-12-31"));
+        LazySecurityPerformanceRecord record = LazySecurityPerformanceSnapshot.create(client, converter, interval)
+                        .getRecord(security).orElseThrow(IllegalArgumentException::new);
+
+        // 11500 - 10000 = 1500
+        var gainsExFee = Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1500));
+        // 11400 - 10100 = 1300, i.e. less by the 200 of charges on both legs
+        var gainsInclusive = Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1300));
+
+        assertThat(trade.getProfitLossWithoutTaxesAndFees(), is(gainsExFee));
+        assertThat(trade.getProfitLoss(), is(gainsInclusive));
+
+        // a single lot bought and sold in one go, so FIFO and moving average
+        // arrive at the same figures - both engines are exercised through the
+        // loop
+        for (var method : new CostMethod[] { CostMethod.FIFO, CostMethod.MOVING_AVERAGE })
+        {
+            assertThat(record.getRealizedCapitalGains(method, TaxesAndFees.NOT_INCLUDED).getCapitalGains(),
+                            is(gainsExFee));
+            assertThat(record.getRealizedCapitalGains(method, TaxesAndFees.INCLUDED).getCapitalGains(),
+                            is(gainsInclusive));
+
+            // nothing held at the end, hence the trade's profit and loss is
+            // realized in full and nothing may leak into the unrealized gains
+            assertThat(record.getUnrealizedCapitalGains(method, TaxesAndFees.NOT_INCLUDED).getCapitalGains(),
+                            is(Money.of(CurrencyUnit.EUR, 0)));
+            assertThat(record.getUnrealizedCapitalGains(method, TaxesAndFees.INCLUDED).getCapitalGains(),
+                            is(Money.of(CurrencyUnit.EUR, 0)));
+        }
+
+        assertThat(record.getRealizedCapitalGains(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED).getCapitalGains(),
+                        is(trade.getProfitLossWithoutTaxesAndFees()));
+        assertThat(record.getRealizedCapitalGains(CostMethod.FIFO, TaxesAndFees.INCLUDED).getCapitalGains(),
+                        is(trade.getProfitLoss()));
+
+        assertThat(record.getRealizedCapitalGains(CostMethod.MOVING_AVERAGE, TaxesAndFees.NOT_INCLUDED)
+                        .getCapitalGains(), is(trade.getProfitLossMovingAverageWithoutTaxesAndFees()));
+        assertThat(record.getRealizedCapitalGains(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED).getCapitalGains(),
+                        is(trade.getProfitLossMovingAverage()));
     }
 }

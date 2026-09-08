@@ -66,6 +66,18 @@ public class ExchangeRatesListTab implements AbstractTabbedView.Tab
         indeces.refresh();
     }
 
+    @Inject
+    @org.eclipse.e4.core.di.annotations.Optional
+    public void onChartLineWidthChanged(
+                    @UIEventTopic(UIConstants.Event.Global.CHART_LINE_WIDTH_CHANGED) Object obj)
+    {
+        // the view is not rebuilt by the line width change because the tab
+        // creates the chart itself and is not an information pane
+
+        if (chart != null && !chart.isDisposed())
+            refreshChart((ExchangeRateTimeSeries) indeces.getStructuredSelection().getFirstElement());
+    }
+
     @Override
     public Composite createTab(Composite parent)
     {

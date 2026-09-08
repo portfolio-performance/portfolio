@@ -138,6 +138,11 @@ public abstract class Transaction implements Annotated, Adaptable
             return true;
         }
 
+        /**
+         * Creates one weighted, independently rounded piece. This is lossy for
+         * partitions; use Apportionment plus {@link #piece(long, long)} when
+         * pieces must reconcile.
+         */
         public Unit split(double weight)
         {
             Money newAmount = Money.of(amount.getCurrencyCode(), Math.round(amount.getAmount() * weight));
@@ -145,13 +150,27 @@ public abstract class Transaction implements Annotated, Adaptable
             if (forex == null)
                 return new Unit(type, newAmount);
 
-            // when splitting units with forex currency values, small amounts
-            // can lead to rounding errors for which the validity check in the
-            // constructor would throw an exception. We accept the rounding
-            // errors when splitting an unit, e.g. when grouping by taxonomy
-
             Money newForex = Money.of(forex.getCurrencyCode(), Math.round(forex.getAmount() * weight));
             return new Unit(type, newAmount, newForex, exchangeRate, false);
+        }
+
+        /**
+         * Creates an apportioned copy, preserving type and exchange rate. The
+         * forex amount is ignored when this unit has none.
+         */
+        public Unit piece(long newAmount, long newForexAmount)
+        {
+            Money amountOfPiece = Money.of(amount.getCurrencyCode(), newAmount);
+
+            if (forex == null)
+                return new Unit(type, amountOfPiece);
+
+            // Apportioned amount and forex can still disagree with the
+            // unchanged rate by more than the constructor tolerance for small
+            // values.
+
+            Money forexOfPiece = Money.of(forex.getCurrencyCode(), newForexAmount);
+            return new Unit(type, amountOfPiece, forexOfPiece, exchangeRate, false);
         }
 
         public Type getType()

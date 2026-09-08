@@ -233,6 +233,8 @@ public class Messages extends NLS
     public static String LabelTradeCalendarTSX;
     public static String LabelTradeCalendarUseDefault;
     public static String LabelTradeCalendarVSE;
+    public static String LabelTradeGroupingCombined;
+    public static String LabelTradeGroupingPerLot;
     public static String LabelTrailTransferFromXtoY;
     public static String LabelTrailWithoutTaxesAndFees;
     public static String LabelTrailXofYShares;

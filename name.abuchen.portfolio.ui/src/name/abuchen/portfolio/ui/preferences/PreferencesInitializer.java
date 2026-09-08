@@ -10,6 +10,7 @@ import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.PresetValues;
 import name.abuchen.portfolio.ui.editor.ClientInput;
 import name.abuchen.portfolio.ui.util.ValueColorScheme;
+import name.abuchen.portfolio.ui.util.chart.ChartLineWidth;
 
 public class PreferencesInitializer extends AbstractPreferenceInitializer
 {
@@ -34,6 +35,7 @@ public class PreferencesInitializer extends AbstractPreferenceInitializer
                         Platform.getOS().equals(Platform.OS_LINUX) || (Platform.getOS().equals(Platform.OS_MACOSX)
                                         && Platform.getOSArch().equals(Platform.ARCH_X86_64)
                                         && compareOSVersion("13.0") >= 0)); //$NON-NLS-1$
+        store.setDefault(UIConstants.Preferences.CHART_LINE_WIDTH, ChartLineWidth.DEFAULT_WIDTH);
         store.setDefault(UIConstants.Preferences.ALPHAVANTAGE_CALL_FREQUENCY_LIMIT, 5);
         store.setDefault(UIConstants.Preferences.CALENDAR, "default"); //$NON-NLS-1$
         store.setDefault(UIConstants.Preferences.PRESET_VALUE_TIME, PresetValues.TimePreset.MIDNIGHT.name());

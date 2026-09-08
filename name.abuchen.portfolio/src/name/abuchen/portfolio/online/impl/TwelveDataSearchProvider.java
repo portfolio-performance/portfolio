@@ -3,6 +3,7 @@ package name.abuchen.portfolio.online.impl;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -50,10 +51,16 @@ public class TwelveDataSearchProvider implements SecuritySearchProvider
         private String currencyCode;
 
         @SuppressWarnings("nls")
-        public static Result from(JSONObject json)
+        public static Optional<Result> from(JSONObject json)
         {
+            if (json == null)
+                return Optional.empty();
+
             // Extract values from the JSON object
             var tickerSymbol = (String) json.get("symbol");
+            if (tickerSymbol == null)
+                return Optional.empty();
+
             var name = (String) json.get("instrument_name");
             var exchange = (String) json.get("mic_code");
             var type = (String) json.get("instrument_type");
@@ -65,10 +72,13 @@ public class TwelveDataSearchProvider implements SecuritySearchProvider
 
             // Combine the symbol and exchange codes to create the security ID
             var symbol = new StringBuilder(tickerSymbol);
-            symbol.append(".");
-            symbol.append(exchange);
+            if (exchange != null && !exchange.isBlank())
+            {
+                symbol.append(".");
+                symbol.append(exchange);
+            }
 
-            return new Result(symbol.toString(), name, exchange, type, currencyCode);
+            return Optional.of(new Result(symbol.toString(), name, exchange, type, currencyCode));
         }
 
         public Result(String symbol, String name, String exchange, String type, String currencyCode)
@@ -188,20 +198,16 @@ public class TwelveDataSearchProvider implements SecuritySearchProvider
 
     void extract(List<ResultItem> answer, String json)
     {
-        var jsonObject = (JSONObject) JSONValue.parse(json);
-
-        if (jsonObject.isEmpty())
+        if (!(JSONValue.parse(json) instanceof JSONObject jsonObject) || jsonObject.isEmpty())
             return;
 
-        var jsonArray = (JSONArray) jsonObject.get("data"); //$NON-NLS-1$
-
-        if (jsonArray == null || jsonArray.isEmpty())
+        if (!(jsonObject.get("data") instanceof JSONArray jsonArray) || jsonArray.isEmpty()) //$NON-NLS-1$
             return;
 
         for (Object element : jsonArray)
         {
-            var item = (JSONObject) element;
-            answer.add(Result.from(item));
+            if (element instanceof JSONObject item)
+                Result.from(item).ifPresent(answer::add);
         }
     }
 }

@@ -25,6 +25,7 @@ import name.abuchen.portfolio.online.impl.TwelveDataSearchProvider;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.PresetValues;
 import name.abuchen.portfolio.ui.util.ValueColorScheme;
+import name.abuchen.portfolio.ui.util.chart.ChartLineWidth;
 import name.abuchen.portfolio.util.FormatHelper;
 import name.abuchen.portfolio.util.TradeCalendarManager;
 
@@ -42,6 +43,17 @@ public class Preference2EnvAddon
 
         if (broker != null && !Objects.equals(currentScheme, ValueColorScheme.current().getIdentifier()))
             broker.post(UIConstants.Event.Global.VALUE_COLOR_SCHEME_CHANGED, scheme);
+    }
+
+    @Inject
+    @Optional
+    public void setChartLineWidth(@Preference(value = UIConstants.Preferences.CHART_LINE_WIDTH) int lineWidth)
+    {
+        int currentWidth = ChartLineWidth.get();
+        ChartLineWidth.set(lineWidth);
+
+        if (broker != null && currentWidth != ChartLineWidth.get())
+            broker.post(UIConstants.Event.Global.CHART_LINE_WIDTH_CHANGED, ChartLineWidth.get());
     }
 
     @Inject

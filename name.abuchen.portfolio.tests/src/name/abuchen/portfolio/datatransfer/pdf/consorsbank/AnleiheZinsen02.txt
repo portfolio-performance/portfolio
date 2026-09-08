@@ -1,0 +1,50 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.86.2.qualifier
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Consorsbank • 90318 Nürnberg
+Depotnummer: 1234567890
+1504753979/00
+Vermerk der Bank: 2000
+Vorname Nachname 2
+Adress Str. 1
+01234 Stadt Datum: 27.02.2018
+Seite: 1 von 2
+Zinsgutschrift
+Wertpapierbezeichnung WKN ISIN
+Griechenland EO-Bonds 2012(23) Ser.1 A1G1UA GR0128010676
+Bestand Kupontag
+150 EUR 24.02.2018
+Zinssatz 3,00 % Schlusstag 21.02.2018
+Brutto 4,50 EUR
+Netto zugunsten IBAN DE34 7012 0400 9876 5432 10 4,50 EUR
+Valuta 26.02.2018 BIC DABBDEMMXXX
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil d‘Administration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé
+Depotnummer: 1234567890
+1504753979/00
+Vermerk der Bank: 2000
+2
+Datum: 27.02.2018
+Seite: 2 von 2
+Details zur Abrechnung
+Steuerpflichtiger Gesamtertrag 4,50 EUR
+Mit Verrechnungstopf "Allgemein" verrechnet -4,50 EUR
+Mit Sparerpauschbetrag verrechnet 0,00 EUR
+Mit Quellensteuer verrechnet 0,00 EUR
+somit verrechnete Quellensteuer 0,00 EUR
+Bemessungsgrundlage für Kapitalertragsteuer gesamt 0,00 EUR
+Details zu den Verrechnungstöpfen
+Verrechnungstopf "Allgemein" vor der Abrechnung 420,18 EUR
+Mit Verrechnungstopf "Allgemein" verrechnet -4,50 EUR
+Verrechnungstopf "Allgemein" nach der Abrechnung 415,68 EUR
+Sparerpauschbetrag vor der Abrechnung 0,00 EUR
+Mit Sparerpauschbetrag verrechnet 0,00 EUR
+Sparerpauschbetrag nach der Abrechnung 0,00 EUR
+Verrechnungstopf "Quellensteuer" vor der Abrechnung 170,09 EUR
+Änderung Verrechnungstopf "Quellensteuer" 0,00 EUR
+Verrechnungstopf "Quellensteuer" nach der Abrechnung 170,09 EUR
+

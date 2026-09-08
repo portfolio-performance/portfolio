@@ -64,6 +64,11 @@ CustomColors {
 	gray-foreground: #808080;
 	
 	hyperlink: #6FC5EE;
+
+	arrow-down: "dark/arrow_down.svg";
+	arrow-left: "dark/arrow_left.svg";
+	arrow-right: "dark/arrow_right.svg";
+	arrow-up: "dark/arrow_up.svg";
 }
 
 ValueColorScheme.standard {

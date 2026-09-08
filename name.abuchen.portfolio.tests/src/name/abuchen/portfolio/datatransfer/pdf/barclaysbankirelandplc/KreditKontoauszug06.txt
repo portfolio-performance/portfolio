@@ -1,0 +1,124 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.86.2.qualifier
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Barclays Bank Ireland PLC
+Hamburg Branch
+Gasstraße 4c
+22761 Hamburg
+Barclaycard | 22792 Hamburg
+Herrn Produkt ID: 1234567890
+Vorname Nachname
+Adress Str. 1
+01234 STADT
+Kontoauszug vom 18. März 2021
+Abrechnungszeitraum: 19.02.2021 - 18.03.2021 Alter Saldo: EUR           132,19 -
+Barclaycard Kontonr.: 1234567890 Neuer Saldo: EUR           256,53 -
+IBAN: DE12 3456 7890 1234 5678 12 Kreditrahmen: EUR        12.800,00
+BIC: BARCDEHAXXX Offener Verfügungsrahmen: EUR         1.828,17
+Konto-Saldo und Rückzahlung
+Bezeichnung/Individueller Verwendungszweck Neuer Saldo Rückzahlungsoptionen Nächste Zahlung
+(EUR) (EUR)
+Allgemeine Umsätze    971,83- s. Hinweis oben      34,14
+Gesamt (EUR)    971,83-      34,14
+BBarclays Bank Ireland PLC Hamburg Branch, Gasstraße 4c, 22761 Hamburg
+barclaycard.de
+Handelregister Hamburg HRB: 153530 | USt-IdNr.: DE 319 453 063 | Finanzdienstleistungen sind nach § 4 Nr. 8 UStG steuerfrei / Financial Services are VAT exempt |
+BIC BARCDEHAXXX | Hauptsitz: One Molesworth Street Dublin 2 D02 RF29 | Reg. Ireland: 396330 | Ständiger Vertreter: Tobias Grieß | Vorstand der Barclays Bank Ireland PLC:
+Francesco Ceccato und Keith Smithson. Eine Liste mit den Namen sowie weiteren persönlichen Informationen zu den Vorständen der Gesellschaft kann am Geschäftssitz der
+Gesellschaft eingesehen werden.
+         Seite 1 von 4 Bitte wenden
+Umsatzübersicht
+Beleg- Buchungs-/ Beschreibung Karte Betrag (EUR)
+datum Valutadatum
+Alter Saldo vom 18. Februar 2021            132,19-
+Hauptkarte/n, Vorname Nachname
+18.02.2021 19.02.2021 Laden 1 Filiale        Muenchen      DE Visa A             10,16-
+18.02.2021 19.02.2021 Laden 1 Filiale        Muenchen      DE Visa A             25,90-
+13.03.2021 15.03.2021 Laden 2 Filiale        Muenchen      DE Visa A             33,91-
+16.03.2021 17.03.2021 Laden 3 Filiale        ECHING        DE Visa A             39,45-
+Barclays Bank Ireland PLC Hamburg Branch, Gasstraße 4c, 22761 Hamburg
+barclaycard.de
+Handelregister Hamburg HRB: 153530 | USt-IdNr.: DE 319 453 063 | Finanzdienstleistungen sind nach § 4 Nr. 8 UStG steuerfrei / Financial Services are VAT exempt |
+BIC BARCDEHAXXX | Hauptsitz: One Molesworth Street Dublin 2 D02 RF29 | Reg. Ireland: 396330 | Ständiger Vertreter: Tobias Grieß | Vorstand der Barclays Bank Ireland PLC:
+Francesco Ceccato und Keith Smithson. Eine Liste mit den Namen sowie weiteren persönlichen Informationen zu den Vorständen der Gesellschaft kann am Geschäftssitz der
+Gesellschaft eingesehen werden.
+         Seite 2 von 4 Bitte wenden
+Umsatzübersicht
+Beleg- Buchungs-/ Beschreibung Karte Betrag (EUR)
+datum Valutadatum
+17.03.2021 18.03.2021 Laden 4 Filiale        POECKING      DE Visa A             14,92-
+Sonstige Umsätze
+18.03.2021 18.03.2021 Monatl. Zinsen für Einkäufe/Überweisungen              1,68-
+Neuer Saldo am 18. März 2021            256,53-
+Hauptkarte/n, Vorname Nachname
+Umsätze Visa Karten-Nr. 491234XXXXXX9876  EUR           124,34
+Zinssätze
+Allgemeine Umsätze
+Allgemeine Umsätze sind alle Umsätze, für deren Rückzahlung Sie keinen Ratenkauf eingerichtet haben. Für diese
+allgemeinen Umsätze gelten folgende Sollzinssätze:
+Sollzinsen bei Einkäufen und Überweisungen (einschl. möglicher Gebühren) 15,23 % p.a.
+Sollzinsen bei Barabhebungen (einschl. möglicher Gebühren) 16,94 % p.a.
+Sofern Sie alle allgemeinen Umsätze bis zum 15.04.2021 vollständig zurückgezahlt haben, fallen die oben
+genannten Zinsen nicht an. Bei Teilzahlung werden Zinsen taggenau ab dem Buchungs-/Valutadatum berechnet.
+Der Barclaycard Ratenkauf
+Für einzelne Umsätze ab 95 Euro bieten wir Ihnen auch den Barclaycard Ratenkauf an. Diesen richten Sie ganz
+einfach per App oder im Online-Banking zu einem vergünstigten Sollzinssatz ein. Die Gesamtkosten werden Ihnen
+vor der Aktivierung transparent ausgewiesen. Bitte beachten Sie, dass Ihr Barclaycard Konto für die Nutzung
+eines Barclaycard Ratenkaufs nicht im Zahlungsverzug sein darf. Mehr Infos unter barclaycard.de/ratenkauf.
+Für folgende Umsätze aus diesem Kontoauszug können Sie einen Barclaycard Ratenkauf einrichten:
+Belegdatum Beschreibung Betrag (EUR) Einrichtung
+möglich bis
+06.03.2021 GoFndMe* Bricks4theKid Dublin        IE            107,00- 12.04.2021
+Wichtige Hinweise
+Bitte überprüfen Sie Ihren Kontoauszug. Eventuelle Beanstandungen können Sie uns schnell und sicher über die
+Nachrichtfunktion des Online-Banking oder in sonstiger Textform mitteilen, z.B. per Post oder Fax an die Nummer
+040 89099-285. Bitte nennen Sie den Reklamationsgrund und erheben Sie Ihre Einwendung innerhalb von 6
+Wochen nach Zugang des Kontoauszuges. Es genügt die Absendung innerhalb der Frist. Das Unterlassen
+rechtzeitiger Einwendungen gilt als Genehmigung.
+Guthaben auf Ihrem Konto sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes
+entschädigungsfähig. Nähere Informationen finden Sie im "Informationsbogen für Einleger" auf barclaycard.de
+unter "AGB & Dokumente".
+Barclays Bank Ireland PLC Hamburg Branch, Gasstraße 4c, 22761 Hamburg
+barclaycard.de
+Handelregister Hamburg HRB: 153530 | USt-IdNr.: DE 319 453 063 | Finanzdienstleistungen sind nach § 4 Nr. 8 UStG steuerfrei / Financial Services are VAT exempt |
+BIC BARCDEHAXXX | Hauptsitz: One Molesworth Street Dublin 2 D02 RF29 | Reg. Ireland: 396330 | Ständiger Vertreter: Tobias Grieß | Vorstand der Barclays Bank Ireland PLC:
+Francesco Ceccato und Keith Smithson. Eine Liste mit den Namen sowie weiteren persönlichen Informationen zu den Vorständen der Gesellschaft kann am Geschäftssitz der
+Gesellschaft eingesehen werden.
+         Seite 3 von 4 Bitte wenden
+Vielen Dank, dass Sie Ihre Barclaycard Kreditkarten eingesetzt haben!
+Schon gewusst: Wir bieten auch Ratenkredite an
+Unser Ratenkredit gibt Ihnen Spielraum für Ihre Ideen. Und ist für Sie als Barclaycard Kunde besonders einfach und
+schnell. Gern erstellen wir Ihnen ein kostenloses und unverbindliches Angebot.
+Alle Informationen finden Sie mit einem Klick auf barclaycard.de/kredit
+Sie haben sie: Deutschlands erste Sofortkaufen- & Späterzahlen-Karte
+Bezahlen Sie einfach, wie noch nie:  Online und im Laden (kontaktlos, mobil, weltweit), per Überweisung und
+Rechnungsscan.
+Zahlen Sie flexibel zurück, wie noch nie:  Machen Sie einzelne Ausgaben per App zu Raten und begleichen Sie Ihre
+Monatsrechnung in festen Raten, in flexiblen Teilbeträgen oder voll.
+Haben Sie alles unter Kontrolle, wie noch nie:  Per App und mit frei wählbaren Benachrichtigungen mit dem
+Smartphone alle Ausgaben in Echtzeit im Blick behalten.
+Neue Konditionen: Ab jetzt bieten wir den Ratenkauf zu 0% an
+Mit dem Barclaycard Ratenkauf machen Sie Ausgaben ab 95 Euro zu Raten. So bleiben Sie stets finanziell flexibel. Der
+Sollzins von 0,00% p.a. gilt für Ratenkäufe unter 500 Euro mit einer Laufzeit von drei Monaten. Längere Laufzeiten
+und höhere Ratenkäufe sind möglich. Details zu Konditionen im Online-Banking.
+Einfach gleich ausprobieren in unserer App oder im Online Banking.
+Hinweis: Die Einrichtung dieser Rückzahlungsoption setzt eine ordnungsgemäße Führung des Barclaycard Kontos
+voraus. Barclaycard behält sich vor, die Konditionen zu ändern.
+Alles unter Kontrolle mit der Barclaycard App
+Mit unserer App haben Sie jederzeit alle Umsätze im Blick und managen Ihre Rückzahlungen einfach per Fingertipp.
+Per Push-Nachricht gibt's auf Wunsch automatisch alle wichtigen Details zu Ihrem Konto. Sie können unsere App im
+App Store oder Google Play Store downloaden.
+Ein kleiner Schritt zu mehr Sicherheit
+Online zu bezahlen wird immer beliebter. Damit das auch besonders sicher ist, setzen wir einen neuen
+EU-Sicherheitsstandard um - die starke Kundenauthentifizierung. Deshalb werden Sie zukünftig häufiger gebeten, Ihre
+Online-Zahlungen freizugeben. Hierzu benötigen Sie die Barclaycard App oder das Online-Banking. Dieses Verfahren
+ersetzt ab September schrittweise das bisherige mTan-Verfahren. Mehr Infos finden Sie hier:
+www.barclaycard.de/sicher-online-einkaufen
+Barclays Bank Ireland PLC Hamburg Branch, Gasstraße 4c, 22761 Hamburg
+barclaycard.de
+Handelregister Hamburg HRB: 153530 | USt-IdNr.: DE 319 453 063 | Finanzdienstleistungen sind nach § 4 Nr. 8 UStG steuerfrei / Financial Services are VAT exempt |
+BIC BARCDEHAXXX | Hauptsitz: One Molesworth Street Dublin 2 D02 RF29 | Reg. Ireland: 396330 | Ständiger Vertreter: Tobias Grieß | Vorstand der Barclays Bank Ireland PLC:
+Francesco Ceccato und Keith Smithson. Eine Liste mit den Namen sowie weiteren persönlichen Informationen zu den Vorständen der Gesellschaft kann am Geschäftssitz der
+Gesellschaft eingesehen werden.
+         Seite 4 von 4

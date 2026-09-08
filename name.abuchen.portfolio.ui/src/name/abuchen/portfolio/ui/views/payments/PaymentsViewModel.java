@@ -27,9 +27,11 @@ import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.snapshot.security.SnapshotCache;
 import name.abuchen.portfolio.snapshot.trades.Trade;
 import name.abuchen.portfolio.snapshot.trades.TradeCollector;
 import name.abuchen.portfolio.snapshot.trades.TradeCollectorException;
+import name.abuchen.portfolio.snapshot.trades.TradeGrouping;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.util.Interval;
@@ -565,7 +567,7 @@ public class PaymentsViewModel
 
     public List<Trade> collectTrades(Client filteredClient)
     {
-        TradeCollector collector = new TradeCollector(filteredClient, converter);
+        var collector = new TradeCollector(filteredClient, converter, TradeGrouping.COMBINED, new SnapshotCache());
         List<Trade> trades = new ArrayList<>();
         getClient().getSecurities().forEach(s -> {
             try

@@ -100,13 +100,19 @@ public class CoinGeckoSearchProvider implements SecuritySearchProvider
     public List<ResultItem> search(String query) throws IOException
     {
         CoinGeckoQuoteFeed feed = Factory.getQuoteFeed(CoinGeckoQuoteFeed.class);
+        return filter(feed.getCoins(), query);
+    }
 
+    /* package */ static List<ResultItem> filter(List<Coin> coins, String query)
+    {
         List<ResultItem> items = new ArrayList<>();
-        List<Coin> coins = feed.getCoins();
 
         for (Coin coin : coins)
         {
-            if (coin.getName().contains(query) || coin.getId().contains(query))
+            // name is optional and therefore can be null
+            var name = coin.getName();
+
+            if ((name != null && name.contains(query)) || coin.getId().contains(query))
                 items.add(new Result(coin));
         }
 

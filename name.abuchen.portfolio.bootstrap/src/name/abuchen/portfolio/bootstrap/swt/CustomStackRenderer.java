@@ -11,6 +11,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 
@@ -21,17 +23,36 @@ public class CustomStackRenderer extends StackRenderer
 {
     private static final String SELECTED_PART = "name.abuchen.portfolio.selectedPart"; //$NON-NLS-1$
 
-    
-    
     @Override
     public Object createWidget(MUIElement element, Object parent)
     {
-        CTabFolder tabFolder = (CTabFolder)super.createWidget(element, parent);
-        
-        // remove the wrap alignment as the tool bar should never to into the second row
-        tabFolder.setTopRight(tabFolder.getTopRight(), SWT.RIGHT);
-        
+        var tabFolder = (CTabFolder) super.createWidget(element, parent);
+
+        preventWrappingOfTopRight(tabFolder);
+
         return tabFolder;
+    }
+
+    /**
+     * Keeps the tool bar in the top right corner out of a second row. The
+     * renderer aligns the corner with SWT.WRAP and lays it out with a RowLayout
+     * that wraps by default. Both let the tool bar jump into an additional row
+     * while the tab folder is being laid out. On Linux that extra row remains
+     * visible for a moment before it collapses again.
+     */
+    private void preventWrappingOfTopRight(CTabFolder tabFolder)
+    {
+        var topRight = tabFolder.getTopRight();
+        if (topRight == null || topRight.isDisposed())
+            return;
+
+        if (topRight instanceof Composite composite && composite.getLayout() instanceof RowLayout layout && layout.wrap)
+        {
+            layout.wrap = false;
+            composite.requestLayout();
+        }
+
+        tabFolder.setTopRight(topRight, SWT.RIGHT);
     }
 
     @Override

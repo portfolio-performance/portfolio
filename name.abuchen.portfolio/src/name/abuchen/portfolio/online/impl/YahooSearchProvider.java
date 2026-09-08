@@ -68,30 +68,25 @@ public class YahooSearchProvider implements SecuritySearchProvider
 
     /* protected */void extractFrom(List<ResultItem> answer, String html)
     {
-        JSONObject jsonObject = (JSONObject) JSONValue.parse(html);
-        if (jsonObject == null)
+        if (!(JSONValue.parse(html) instanceof JSONObject jsonObject))
             return;
 
-        jsonObject = (JSONObject) jsonObject.get("finance"); //$NON-NLS-1$
-        if (jsonObject == null)
+        if (!(jsonObject.get("finance") instanceof JSONObject finance)) //$NON-NLS-1$
             return;
 
-        JSONArray jsonArray = (JSONArray) jsonObject.get("result"); //$NON-NLS-1$
-        if (jsonArray == null || jsonArray.isEmpty())
+        if (!(finance.get("result") instanceof JSONArray results) || results.isEmpty()) //$NON-NLS-1$
             return;
 
-        jsonObject = (JSONObject) jsonArray.get(0);
-        if (jsonObject == null)
+        if (!(results.get(0) instanceof JSONObject firstResult))
             return;
 
-        JSONArray items = (JSONArray) jsonObject.get("documents"); //$NON-NLS-1$
-        if (items == null || items.isEmpty())
+        if (!(firstResult.get("documents") instanceof JSONArray items) || items.isEmpty()) //$NON-NLS-1$
             return;
 
         for (int ii = 0; ii < items.size(); ii++)
         {
-            JSONObject item = (JSONObject) items.get(ii);
-            YahooSymbolSearch.Result.from(item).ifPresent(answer::add);
+            if (items.get(ii) instanceof JSONObject item)
+                YahooSymbolSearch.Result.from(item).ifPresent(answer::add);
         }
     }
 }

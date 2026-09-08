@@ -75,6 +75,7 @@ import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.ChartColorWheel;
+import name.abuchen.portfolio.ui.util.chart.ChartLineWidth;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
 import name.abuchen.portfolio.ui.util.chart.TimelineSeriesModel;
 import name.abuchen.portfolio.ui.util.format.AxisTickPercentNumberFormat;
@@ -885,6 +886,8 @@ public class SecuritiesChart
         subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_PERCENTAGE_AXIS));
         subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_MAIN_HORIZONTAL_LINES));
         subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_PERCENTAGE_HORIZONTAL_LINES));
+        subMenuChartSettings.add(new Separator());
+        ChartLineWidth.addMenu(subMenuChartSettings);
         manager.add(subMenuChartScaling);
         manager.add(subMenuChartDevelopment);
         manager.add(subMenuChartMarker);
@@ -1163,8 +1166,8 @@ public class SecuritiesChart
                 lineSeries.setSymbolType(PlotSymbolType.NONE);
                 Color color = isSingleSecurityMode ? colorQuote : new Color(colorWheel.getRGB(security));
                 boolean enableArea = !showAreaRelativeToFirstQuote && isSingleSecurityMode;
-                configureSeriesPainter(lineSeries, dates, values, color, 2, LineStyle.SOLID, enableArea,
-                                !isSingleSecurityMode);
+                configureSeriesPainter(lineSeries, dates, values, color, ChartLineWidth.get(), LineStyle.SOLID,
+                                enableArea, !isSingleSecurityMode);
 
                 chart.adjustRange();
 
@@ -1365,7 +1368,7 @@ public class SecuritiesChart
             ILineSeries<Integer> lineSeriesLimit = (ILineSeries<Integer>) chart.getSeriesSet()
                             .createSeries(SeriesType.LINE, lineID);
             lineSeriesLimit.setDataModel(new TimelineSeriesModel(dates, values));
-            lineSeriesLimit.setLineWidth(2);
+            lineSeriesLimit.setLineWidth(ChartLineWidth.get());
             lineSeriesLimit.setLineStyle(LineStyle.DASH);
             lineSeriesLimit.enableArea(false);
             lineSeriesLimit.setSymbolType(PlotSymbolType.NONE);
@@ -1390,7 +1393,7 @@ public class SecuritiesChart
                         lineID);
         lineSeriesSMA.setDataModel(new TimelineSeriesModel(smaLines.getDates(), smaLines.getValues()));
 
-        lineSeriesSMA.setLineWidth(2);
+        lineSeriesSMA.setLineWidth(ChartLineWidth.get());
         lineSeriesSMA.enableArea(false);
         lineSeriesSMA.setSymbolType(PlotSymbolType.NONE);
         lineSeriesSMA.setAntialias(swtAntialias);
@@ -1412,7 +1415,7 @@ public class SecuritiesChart
         ILineSeries<Integer> lineSeriesEMA = (ILineSeries<Integer>) chart.getSeriesSet().createSeries(SeriesType.LINE,
                         lineID);
         lineSeriesEMA.setDataModel(new TimelineSeriesModel(emaLines.getDates(), emaLines.getValues()));
-        lineSeriesEMA.setLineWidth(2);
+        lineSeriesEMA.setLineWidth(ChartLineWidth.get());
         lineSeriesEMA.enableArea(false);
         lineSeriesEMA.setSymbolType(PlotSymbolType.NONE);
         lineSeriesEMA.setAntialias(swtAntialias);
@@ -1785,7 +1788,7 @@ public class SecuritiesChart
                         .setDataModel(new TimelineSeriesModel(lowerBand.getDates(), lowerBand.getValues()));
 
         lineSeriesBollingerBandsLowerBand.setLineStyle(LineStyle.SOLID);
-        lineSeriesBollingerBandsLowerBand.setLineWidth(2);
+        lineSeriesBollingerBandsLowerBand.setLineWidth(ChartLineWidth.get());
         lineSeriesBollingerBandsLowerBand.setSymbolType(PlotSymbolType.NONE);
         lineSeriesBollingerBandsLowerBand.setAntialias(swtAntialias);
         lineSeriesBollingerBandsLowerBand.setLineColor(colorBollingerBands);
@@ -1800,7 +1803,7 @@ public class SecuritiesChart
         lineSeriesBollingerBandsMiddleBand
                         .setDataModel(new TimelineSeriesModel(middleBand.getDates(), middleBand.getValues()));
 
-        lineSeriesBollingerBandsMiddleBand.setLineWidth(2);
+        lineSeriesBollingerBandsMiddleBand.setLineWidth(ChartLineWidth.get());
         lineSeriesBollingerBandsMiddleBand.setLineStyle(LineStyle.DOT);
         lineSeriesBollingerBandsMiddleBand.setSymbolType(PlotSymbolType.NONE);
         lineSeriesBollingerBandsMiddleBand.setAntialias(swtAntialias);
@@ -1816,7 +1819,7 @@ public class SecuritiesChart
         lineSeriesBollingerBandsUpperBand
                         .setDataModel(new TimelineSeriesModel(upperBand.getDates(), upperBand.getValues()));
 
-        lineSeriesBollingerBandsUpperBand.setLineWidth(2);
+        lineSeriesBollingerBandsUpperBand.setLineWidth(ChartLineWidth.get());
         lineSeriesBollingerBandsUpperBand.setLineStyle(LineStyle.SOLID);
         lineSeriesBollingerBandsUpperBand.setSymbolType(PlotSymbolType.NONE);
         lineSeriesBollingerBandsUpperBand.setAntialias(swtAntialias);
@@ -1859,7 +1862,7 @@ public class SecuritiesChart
                             new TimelineSeriesModel(macdLines.get().getDates(), macdLines.get().getValues()));
 
             lineSeriesMacd.setLineStyle(LineStyle.SOLID);
-            lineSeriesMacd.setLineWidth(2);
+            lineSeriesMacd.setLineWidth(ChartLineWidth.get());
             lineSeriesMacd.enableArea(false);
             lineSeriesMacd.setSymbolType(PlotSymbolType.NONE);
             lineSeriesMacd.setAntialias(swtAntialias);
@@ -1878,7 +1881,7 @@ public class SecuritiesChart
                             new TimelineSeriesModel(signalLines.get().getDates(), signalLines.get().getValues()));
 
             lineSeriesSignal.setLineStyle(LineStyle.DOT);
-            lineSeriesSignal.setLineWidth(2);
+            lineSeriesSignal.setLineWidth(ChartLineWidth.get());
             lineSeriesSignal.enableArea(false);
             lineSeriesSignal.setSymbolType(PlotSymbolType.NONE);
             lineSeriesSignal.setAntialias(swtAntialias);
@@ -1993,8 +1996,8 @@ public class SecuritiesChart
         series.setYAxisId(0);
         series.enableStep(true);
 
-        configureSeriesPainter(series, dates.toArray(new LocalDate[0]), Doubles.toArray(values), color, 2,
-                        LineStyle.SOLID, false, seriesCounter == 0);
+        configureSeriesPainter(series, dates.toArray(new LocalDate[0]), Doubles.toArray(values), color,
+                        ChartLineWidth.get(), LineStyle.SOLID, false, seriesCounter == 0);
 
         setupTooltipDisplayCalculatedQuote(label);
     }

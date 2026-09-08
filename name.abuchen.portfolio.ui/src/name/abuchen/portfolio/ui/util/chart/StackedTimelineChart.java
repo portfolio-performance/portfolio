@@ -86,6 +86,17 @@ public class StackedTimelineChart extends Chart // NOSONAR
         });
 
         this.contextMenu = new ChartContextMenu(this);
+        this.contextMenu.setLineWidthConfigurable(true);
+    }
+
+    /**
+     * Offers the line width in the context menu. Offered by default; charts
+     * with configurable data series switch it off because the user picks a line
+     * width per data series there.
+     */
+    public void setLineWidthConfigurable(boolean configurable)
+    {
+        contextMenu.setLineWidthConfigurable(configurable);
     }
 
     public void setDates(List<LocalDate> dates)
@@ -105,7 +116,7 @@ public class StackedTimelineChart extends Chart // NOSONAR
         series.setDescription(label);
         series.setYSeries(values);
 
-        series.setLineWidth(2);
+        series.setLineWidth(ChartLineWidth.get());
         series.setSymbolType(PlotSymbolType.NONE);
         series.setAntialias(SWT.ON);
 

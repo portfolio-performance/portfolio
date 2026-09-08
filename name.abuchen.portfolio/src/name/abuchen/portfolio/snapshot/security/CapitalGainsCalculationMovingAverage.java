@@ -9,6 +9,7 @@ import java.util.List;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
@@ -18,8 +19,22 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
 /* package */class CapitalGainsCalculationMovingAverage extends AbstractCapitalGainsCalculation
 {
     private long heldShares = 0;
-    private long movingAverageNetCost = 0;
-    private long movingAverageNetCostForex = 0;
+    private long movingAverageCost = 0;
+    private long movingAverageCostForex = 0;
+
+    private final TaxesAndFees taxesAndFees;
+
+    /**
+     * Measures gains against the cost basis with or without the taxes and fees
+     * embedded in a trade. {@link TaxesAndFees#NOT_INCLUDED} is the basis
+     * {@link name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot} needs,
+     * because it carries fees and taxes as separate terms of its breakdown and
+     * would otherwise subtract them twice.
+     */
+    public CapitalGainsCalculationMovingAverage(TaxesAndFees taxesAndFees)
+    {
+        this.taxesAndFees = taxesAndFees;
+    }
 
     @Override
     public void visit(CurrencyConverter converter, CalculationLineItem.ValuationAtStart valuation)
@@ -29,8 +44,8 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
         Money value = valuation.getValue();
         Money converted = value.with(converter.at(valuation.getDateTime()));
 
-        movingAverageNetCost += converted.getAmount();
-        movingAverageNetCostForex += value.getAmount();
+        movingAverageCost += converted.getAmount();
+        movingAverageCostForex += value.getAmount();
         heldShares += position.getShares();
     }
 
@@ -41,14 +56,20 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
         String termCurrency = getTermCurrency();
         String securityCurrency = getSecurity().getCurrencyCode();
 
-        long netAmountForex = t.getGrossValue(converter.with(securityCurrency)).getAmount();
-        long netAmount = t.getGrossValue(converter).getAmount();
+        // the basis: the gross value leaves out the taxes and fees embedded in
+        // the trade, the monetary amount takes them in - on both legs, as a
+        // sale's gross value is the proceeds before the charges are deducted
+        var forexBasis = taxesAndFees.isIncluded()
+                        ? t.getMonetaryAmount(converter.with(securityCurrency)).getAmount()
+                        : t.getGrossValue(converter.with(securityCurrency)).getAmount();
+        var termBasis = taxesAndFees.isIncluded() ? t.getMonetaryAmount(converter).getAmount()
+                        : t.getGrossValue(converter).getAmount();
 
         switch (t.getType())
         {
             case BUY, DELIVERY_INBOUND:
-                movingAverageNetCost += netAmount;
-                movingAverageNetCostForex += netAmountForex;
+                movingAverageCost += termBasis;
+                movingAverageCostForex += forexBasis;
                 heldShares += t.getShares();
                 break;
 
@@ -57,8 +78,8 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
                 long remaining = heldShares - sold;
                 if (remaining < 0)
                 {
-                    movingAverageNetCost = 0;
-                    movingAverageNetCostForex = 0;
+                    movingAverageCost = 0;
+                    movingAverageCostForex = 0;
                     heldShares = 0;
                     // FIXME Oops. More sold than bought.
                     PortfolioLog.warning(MessageFormat.format(Messages.MsgNegativeHoldingsDuringFIFOCostCalculation,
@@ -67,15 +88,15 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
                 }
                 else
                 {
-                    var averageCosts = Math.round(movingAverageNetCost / (double) heldShares * sold);
-                    var averageCostsForex = Math.round(movingAverageNetCostForex / (double) heldShares * sold);
+                    var averageCosts = Math.round(movingAverageCost / (double) heldShares * sold);
+                    var averageCostsForex = Math.round(movingAverageCostForex / (double) heldShares * sold);
 
-                    long gain = netAmount - averageCosts;
+                    long gain = termBasis - averageCosts;
                     long gainForex = 0L;
 
-                    // netAmountForex can be zero because an outbound delivery
-                    // can be zero value
-                    if (!termCurrency.equals(securityCurrency) && netAmountForex != 0)
+                    // forexBasis can be zero because an outbound delivery can
+                    // be zero value
+                    if (!termCurrency.equals(securityCurrency) && forexBasis != 0)
                     {
                         // Calculate currency gains as the difference between
                         // the average costs in the security currency with the
@@ -89,14 +110,14 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
                         // [average costs in USD] * [sale transaction exchange
                         // rate] - [average costs in EUR]
 
-                        // calculate the exchange rate out of netAmount /
-                        // netAmountForex because
+                        // calculate the exchange rate out of termBasis /
+                        // forexBasis because
                         // a) we want to take the actual exchange rate of the
                         // transaction and
                         // b) the account currency might be different that the
                         // reporting currency
 
-                        var exchangeRate = BigDecimal.valueOf(netAmount / (double) netAmountForex)
+                        var exchangeRate = BigDecimal.valueOf(termBasis / (double) forexBasis)
                                         .setScale(Values.MC.getPrecision(), Values.MC.getRoundingMode());
 
                         gainForex = BigDecimal.valueOf(averageCostsForex) //
@@ -107,8 +128,8 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
                     realizedCapitalGains.addCapitalGains(Money.of(termCurrency, gain));
                     realizedCapitalGains.addForexCaptialGains(Money.of(termCurrency, gainForex));
 
-                    movingAverageNetCost -= averageCosts;
-                    movingAverageNetCostForex -= averageCostsForex;
+                    movingAverageCost -= averageCosts;
+                    movingAverageCostForex -= averageCostsForex;
                     heldShares = remaining;
                 }
                 break;
@@ -150,22 +171,21 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
                         .collect(MoneyCollectors.sum(getSecurity().getCurrencyCode()));
         Money convertedEndValue = endValue.with(converter.at(valuationAtEndDate));
 
-        var netAmount = convertedEndValue.getAmount();
-        var netAmountForex = endValue.getAmount();
+        var endAmount = convertedEndValue.getAmount();
+        var endAmountForex = endValue.getAmount();
 
-        long gain = netAmount - movingAverageNetCost;
+        long gain = endAmount - movingAverageCost;
         long gainForex = 0L;
 
-        // netAmountForex can be zero because an outbound delivery can be zero
-        // value
-        if (!termCurrency.equals(securityCurrency) && netAmountForex != 0)
+        // endAmountForex can be zero if there is no holding value at the end
+        if (!termCurrency.equals(securityCurrency) && endAmountForex != 0)
         {
-            var exchangeRate = BigDecimal.valueOf(netAmount / (double) netAmountForex)
+            var exchangeRate = BigDecimal.valueOf(endAmount / (double) endAmountForex)
                             .setScale(Values.MC.getPrecision(), Values.MC.getRoundingMode());
 
-            gainForex = BigDecimal.valueOf(movingAverageNetCostForex) //
+            gainForex = BigDecimal.valueOf(movingAverageCostForex) //
                             .multiply(exchangeRate) //
-                            .subtract(BigDecimal.valueOf(movingAverageNetCost)) //
+                            .subtract(BigDecimal.valueOf(movingAverageCost)) //
                             .setScale(0, RoundingMode.HALF_DOWN).longValue();
         }
 

@@ -216,11 +216,11 @@ public class PerformanceView extends AbstractHistoricView
 
         createCalculationItem(folder, Messages.PerformanceTabCalculation);
 
-        snapshotStart = createStatementOfAssetsItem(folder, Messages.PerformanceTabAssetsAtStart);
+        snapshotStart = createStatementOfAssetsItem(folder, Messages.PerformanceTabAssetsAtStart, "start"); //$NON-NLS-1$
         snapshotStart.getTableViewer().addSelectionChangedListener(
                         e -> setInformationPaneInput(e.getStructuredSelection().getFirstElement()));
 
-        snapshotEnd = createStatementOfAssetsItem(folder, Messages.PerformanceTabAssetsAtEnd);
+        snapshotEnd = createStatementOfAssetsItem(folder, Messages.PerformanceTabAssetsAtEnd, "end"); //$NON-NLS-1$
         snapshotEnd.getTableViewer().addSelectionChangedListener(
                         e -> setInformationPaneInput(e.getStructuredSelection().getFirstElement()));
 
@@ -250,9 +250,10 @@ public class PerformanceView extends AbstractHistoricView
         return folder;
     }
 
-    private StatementOfAssetsViewer createStatementOfAssetsItem(CTabFolder folder, String title)
+    private StatementOfAssetsViewer createStatementOfAssetsItem(CTabFolder folder, String title, String instanceId)
     {
-        StatementOfAssetsViewer viewer = make(StatementOfAssetsViewer.class);
+        var viewer = make(StatementOfAssetsViewer.class);
+        viewer.setInstanceId(instanceId);
         Control control = viewer.createControl(folder, false);
 
         CTabItem item = new CTabItem(folder, SWT.NONE);
