@@ -1,0 +1,51 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TARGOBANK AG & Co. KGaA
+Postfach 10 11 52
+47011 Duisburg
+www.targobank.de
+HERR
+KZapeA zbyGVMut
+SSDVOENR. 8
+43767 mOhDWQxPr
+sdfnmler, oRVnaA 15.02.2013
+Dividendengutschrift
+Steuerbeilage Depot-Nr. 880600132508
+Konto-Nr. 5842249299
+APPLE INC. REGISTERED SHARES O.N. WKN ISIN
+865985 US0378331005
+Stück 15,0000
+Kapitalertrag- Solidaritäts-
+steuer zuschlag
+25,00 % * 5,50 %
+Steuerliche Bemessungsgrundlagen zur Ertragsgutschrift - keine Steuerbescheinigung
+Dividendenanteil Inland 0,00 EUR
+Zinsanteil Inland 0,00 EUR
+Dividendenanteil auf ausländische Dividenden, Veräußerungsgewinne, Stillhalterprämien 29,83 EUR
+und Termingeschäfte (§ 20 Abs. 2 EStG)
+Miet- und Pachterträge sowie Gewinne aus der Veräußerung von Immobilien 0,00 EUR
+Anrechenbare ausländische Quellensteuer 4,47 EUR
+Erträge / Verluste nach §20 EStG 29,83 EUR
+Auf- oder Abbau von steuerlichen Verrechnungsmöglichkeiten
+Verlustverrechnung aus Aktienhandel: 0,00 EUR
+Verlustverrechnung aus sonstigen Geschäften: 0,00 EUR
+Nutzung des Sparerpauschbetrages / Freistellungsauftrages -7,27 EUR
+Anrechnung ausländischer Quellensteuer ** -17,88 EUR
+Bemessungsgrundlage 4,68 EUR
+Kapitalertragsteuer (KESt): 1,17 EUR
+Solidaritätszuschlag auf KESt: 0,06 EUR
+Kirchensteuer auf KESt: 0,00 EUR
+Gesamtsumme Steuern 1,23 EUR
+Transaktionsreferenz  IND00009801615D00094890632
+* KESt grundsätzlich 25%. Bei Einbehalt von Kirchensteuer ändert sich der KESt-Satz entsprechend Ihres Kirchensteuersatzes.
+** Quellensteuer multipliziert mit 4 als Ertragsäquivalent
+Dieser Beleg wurde maschinell erstellt und wird nicht unterschrieben. Irrtum vorbehalten.
+Persönlich haftender und geschäftsführender Gesellschafter: TARGO Management AG
+Vorstand: Franz Josef Nick (Vorsitzender); Peter Klein; Pascal Laugel; Jürgen Lieberknecht; Berthold Rüsing; Maria Topaler
+C Vorsitzender des Aufsichtsrates: Eckart Thomä
+Sitz der Gesellschaft: Düsseldorf · Handelsregister Amtsgericht Düsseldorf HRB 48380
+USt-ID-Nr.: DE 811 285 485 · USt-ID-Nr. des umsatzsteuerlichen Organträgers: DE 261 486 989
+C240 01 © w 05.05(F1C240)
+M 18 DIN A4  02  02.10
