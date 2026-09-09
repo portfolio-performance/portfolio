@@ -4,6 +4,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
@@ -15,7 +16,15 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundDelivery;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.feeRefund;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundCash;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundCash;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.skippedItem;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
@@ -35,6 +44,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
@@ -953,13 +963,13 @@ public class TigerBrokersPteLtdPDFExtractorTest
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement09_late24.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(countSecurities(results), is(2L));
+        assertThat(countSecurities(results), is(3L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(2L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(5));
+        assertThat(countSkippedItems(results), is(5L));
+        assertThat(results.size(), is(11));
         new AssertImportActions().check(results, "USD");
 
         // check securities
@@ -993,6 +1003,61 @@ public class TigerBrokersPteLtdPDFExtractorTest
                         hasSource("AccountStatement09_late24.txt"), hasNote(null), //
                         hasAmount("USD", 36.94), hasGrossValue("USD", 43.46), //
                         hasTaxes("USD", 6.52), hasFees("USD", 0.00))));
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2024-12-20"), hasExDate(null), //
+                                        hasShares(72.00), //
+                                        hasSource("AccountStatement09_late24.txt"), //
+                                        hasNote("Dividend Accruals"), //
+                                        hasAmount("USD", 53.69), hasGrossValue("USD", 63.17), //
+                                        hasTaxes("USD", 9.48), hasFees("USD", 0.00)))));
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2024-12-26"), hasExDate(null), //
+                                        hasShares(72.00), //
+                                        hasSource("AccountStatement09_late24.txt"), //
+                                        hasNote("Dividend Accruals"), //
+                                        hasAmount("USD", 53.69), hasGrossValue("USD", 53.69), //
+                                        hasTaxes("USD", 0.00), hasFees("USD", 0.00)))));
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2024-12-23"), hasExDate(null), //
+                                        hasShares(25.00), //
+                                        hasSource("AccountStatement09_late24.txt"), //
+                                        hasNote("Dividend Accruals"), //
+                                        hasAmount("USD", 36.94), hasGrossValue("USD", 43.46), //
+                                        hasTaxes("USD", 6.52), hasFees("USD", 0.00)))));
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2024-12-30"), hasExDate(null), //
+                                        hasShares(25.00), //
+                                        hasSource("AccountStatement09_late24.txt"), //
+                                        hasNote("Dividend Accruals"), //
+                                        hasAmount("USD", 36.94), hasGrossValue("USD", 36.94), //
+                                        hasTaxes("USD", 0.00), hasFees("USD", 0.00)))));
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2024-12-23"), hasExDate(null), //
+                                        hasShares(54.00), //
+                                        hasSource("AccountStatement09_late24.txt"), //
+                                        hasNote("Dividend Accruals"), //
+                                        hasAmount("USD", 38.31), hasGrossValue("USD", 45.07), //
+                                        hasTaxes("USD", 6.76), hasFees("USD", 0.00)))));
     }
 
     @Test
@@ -1042,8 +1107,8 @@ public class TigerBrokersPteLtdPDFExtractorTest
         assertThat(countAccountTransactions(results), is(8L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(12));
+        assertThat(countSkippedItems(results), is(13L));
+        assertThat(results.size(), is(25));
         new AssertImportActions().check(results, "USD");
 
         assertThat(results, hasItem(purchase( //
@@ -1064,5 +1129,385 @@ public class TigerBrokersPteLtdPDFExtractorTest
                         hasAmount("USD", 37.08), hasGrossValue("USD", 43.62), //
                         hasTaxes("USD", 6.54), hasFees("USD", 0.00))));
 
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2024-12-20"), hasExDate(null), //
+                                        hasShares(72.00), //
+                                        hasSource("AccountStatement11_late24.txt"), //
+                                        hasNote("Dividend Accruals"), //
+                                        hasAmount("USD", 53.69), hasGrossValue("USD", 63.17), //
+                                        hasTaxes("USD", 9.48), hasFees("USD", 0.00)))));
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2024-12-26"), hasExDate(null), //
+                                        hasShares(72.00), //
+                                        hasSource("AccountStatement11_late24.txt"), //
+                                        hasNote("Dividend Accruals"), //
+                                        hasAmount("USD", 53.69), hasGrossValue("USD", 53.69), //
+                                        hasTaxes("USD", 0.00), hasFees("USD", 0.00)))));
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2024-12-23"), hasExDate(null), //
+                                        hasShares(25.00), //
+                                        hasSource("AccountStatement11_late24.txt"), //
+                                        hasNote("Dividend Accruals"), //
+                                        hasAmount("USD", 36.94), hasGrossValue("USD", 43.46), //
+                                        hasTaxes("USD", 6.52), hasFees("USD", 0.00)))));
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2024-12-30"), hasExDate(null), //
+                                        hasShares(25.00), //
+                                        hasSource("AccountStatement11_late24.txt"), //
+                                        hasNote("Dividend Accruals"), //
+                                        hasAmount("USD", 36.94), hasGrossValue("USD", 36.94), //
+                                        hasTaxes("USD", 0.00), hasFees("USD", 0.00)))));
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2025-01-02"), hasExDate(null), //
+                                        hasShares(54.00), //
+                                        hasSource("AccountStatement11_late24.txt"), //
+                                        hasNote("Dividend Accruals"), //
+                                        hasAmount("USD", 38.31), hasGrossValue("USD", 38.31), //
+                                        hasTaxes("USD", 0.00), hasFees("USD", 0.00)))));
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2025-03-21"), hasExDate(null), //
+                                        hasShares(72.00), //
+                                        hasSource("AccountStatement11_late24.txt"), //
+                                        hasNote("Dividend Accruals"), //
+                                        hasAmount("USD", 23.57), hasGrossValue("USD", 27.73), //
+                                        hasTaxes("USD", 4.16), hasFees("USD", 0.00)))));
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2025-03-25"), hasExDate(null), //
+                                        hasShares(72.00), //
+                                        hasSource("AccountStatement11_late24.txt"), //
+                                        hasNote("Dividend Accruals"), //
+                                        hasAmount("USD", 23.57), hasGrossValue("USD", 23.57), //
+                                        hasTaxes("USD", 0.00), hasFees("USD", 0.00)))));
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2025-03-24"), hasExDate(null), //
+                                        hasShares(54.00), //
+                                        hasSource("AccountStatement11_late24.txt"), //
+                                        hasNote("Dividend Accruals"), //
+                                        hasAmount("USD", 32.85), hasGrossValue("USD", 38.65), //
+                                        hasTaxes("USD", 5.80), hasFees("USD", 0.00)))));
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2025-05-01"), hasExDate(null), //
+                                        hasShares(54.00), //
+                                        hasSource("AccountStatement11_late24.txt"), //
+                                        hasNote("Dividend Accruals"), //
+                                        hasAmount("USD", 32.85), hasGrossValue("USD", 32.85), //
+                                        hasTaxes("USD", 0.00), hasFees("USD", 0.00)))));
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2025-03-27"), hasExDate(null), //
+                                        hasShares(25.00), //
+                                        hasSource("AccountStatement11_late24.txt"), //
+                                        hasNote("Dividend Accruals"), //
+                                        hasAmount("USD", 38.50), hasGrossValue("USD", 45.30), //
+                                        hasTaxes("USD", 6.80), hasFees("USD", 0.00)))));
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2025-03-31"), hasExDate(null), //
+                                        hasShares(25.00), //
+                                        hasSource("AccountStatement11_late24.txt"), //
+                                        hasNote("Dividend Accruals"), //
+                                        hasAmount("USD", 38.50), hasGrossValue("USD", 38.50), //
+                                        hasTaxes("USD", 0.00), hasFees("USD", 0.00)))));
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2025-06-24"), hasExDate(null), //
+                                        hasShares(73.00), //
+                                        hasSource("AccountStatement11_late24.txt"), //
+                                        hasNote("Dividend Accruals"), //
+                                        hasAmount("USD", 36.90), hasGrossValue("USD", 36.90), //
+                                        hasTaxes("USD", 0.00), hasFees("USD", 0.00)))));
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2025-07-03"), hasExDate(null), //
+                                        hasShares(25.00), //
+                                        hasSource("AccountStatement11_late24.txt"), //
+                                        hasNote("Dividend Accruals"), //
+                                        hasAmount("USD", 37.08), hasGrossValue("USD", 37.08), //
+                                        hasTaxes("USD", 0.00), hasFees("USD", 0.00)))));
+    }
+
+    @Test
+    public void testAccountStatement12()
+    {
+        var extractor = new TigerBrokersPteLtdPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement12.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(3L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(9L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(1L));
+        assertThat(results.size(), is(14));
+        new AssertImportActions().check(results, "USD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("QQQ"), //
+                        hasName("Invesco QQQ"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("VOO"), //
+                        hasName("Vanguard S&P 500 ETF"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("VT"), //
+                        hasName("Vanguard Total World Stock ETF"), //
+                        hasCurrencyCode("USD"))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-04-08T11:28:50"), hasShares(1), //
+                        hasSource("AccountStatement12.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 108.42), hasGrossValue("USD", 106.43), //
+                        hasTaxes("USD", 0.00), hasFees("USD", (0.99 + 1.00)))));
+
+        // check dividend transactions
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-01-02"), hasExDate(null), //
+                        hasShares(54), //
+                        hasSource("AccountStatement12.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 38.31), hasGrossValue("USD", 45.07), //
+                        hasTaxes("USD", 6.76), hasFees("USD", 0.00))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-03-25"), hasExDate(null), //
+                        hasShares(72), //
+                        hasSource("AccountStatement12.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 23.57), hasGrossValue("USD", 27.73), //
+                        hasTaxes("USD", 4.16), hasFees("USD", 0.00))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-03-31"), hasExDate(null), //
+                        hasShares(25), //
+                        hasSource("AccountStatement12.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 38.50), hasGrossValue("USD", 45.30), //
+                        hasTaxes("USD", 6.80), hasFees("USD", 0.00))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-05-01"), hasExDate(null), //
+                        hasShares(54), //
+                        hasSource("AccountStatement12.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 32.85), hasGrossValue("USD", 38.65), //
+                        hasTaxes("USD", 5.80), hasFees("USD", 0.00))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-06-24"), hasExDate(null), //
+                        hasShares(73), //
+                        hasSource("AccountStatement12.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 36.90), hasGrossValue("USD", 43.41), //
+                        hasTaxes("USD", 6.51), hasFees("USD", 0.00))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-07-03"), hasExDate(null), //
+                        hasShares(25), //
+                        hasSource("AccountStatement12.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 37.08), hasGrossValue("USD", 43.62), //
+                        hasTaxes("USD", 6.54), hasFees("USD", 0.00))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-07-31"), hasExDate(null), //
+                        hasShares(54), //
+                        hasSource("AccountStatement12.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 27.13), hasGrossValue("USD", 31.92), //
+                        hasTaxes("USD", 4.79), hasFees("USD", 0.00))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-09-23"), hasExDate(null), //
+                        hasShares(73), //
+                        hasSource("AccountStatement12.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 29.66), hasGrossValue("USD", 34.90), //
+                        hasTaxes("USD", 5.24), hasFees("USD", 0.00))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-10-01"), hasExDate(null), //
+                        hasShares(25), //
+                        hasSource("AccountStatement12.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 36.97), hasGrossValue("USD", 43.50), //
+                        hasTaxes("USD", 6.53), hasFees("USD", 0.00))));
+
+        // check skipped item
+        // "Dividend Accruals" are not paid out yet, there is no cash flow
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2025-09-22"), hasExDate(null), //
+                                        hasShares(54), //
+                                        hasSource("AccountStatement12.txt"), //
+                                        hasNote("Dividend Accruals"), //
+                                        hasAmount("USD", 31.85), hasGrossValue("USD", 37.47), //
+                                        hasTaxes("USD", 5.62), hasFees("USD", 0.00)))));
+    }
+
+    @Test
+    public void testAccountStatement13()
+    {
+        var extractor = new TigerBrokersPteLtdPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement13.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(15L));
+        assertThat(countBuySell(results), is(52L));
+        assertThat(countAccountTransactions(results), is(57L));
+        assertThat(countAccountTransfers(results), is(5L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(9L));
+        assertThat(results.size(), is(138));
+        new AssertImportActions().check(results, "SGD", "USD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("U11.SI"), //
+                        hasName("UOB"), //
+                        hasCurrencyCode("SGD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("O"), //
+                        hasName("Realty Income"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("D05.SI"), //
+                        hasName("DBS"), //
+                        hasCurrencyCode("SGD"))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-10-16T13:16:02"), hasShares(100.00), //
+                        hasSource("AccountStatement13.txt"), //
+                        hasNote(null), //
+                        hasAmount("SGD", 3453.46), hasGrossValue("SGD", 3450.00), //
+                        hasTaxes("SGD", 0.00), hasFees("SGD", (1.38 + 1.04 + 1.04)))));
+
+        // check sale transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-08-25T14:42:32"), hasShares(100.00), //
+                        hasSource("AccountStatement13.txt"), //
+                        hasNote(null), //
+                        hasAmount("SGD", 1675.33), hasGrossValue("SGD", 1678.00), //
+                        hasTaxes("SGD", 0.00), hasFees("SGD", (0.68 + 0.99 + 1.00)))));
+
+        // check deposit and removal transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-08-06"), hasAmount("SGD", 432.18), //
+                        hasSource("AccountStatement13.txt"), hasNote(null))));
+
+        assertThat(results, hasItem(removal(hasDate("2025-08-07"), hasAmount("SGD", 10.00), //
+                        hasSource("AccountStatement13.txt"), hasNote(null))));
+
+        assertThat(results, hasItem(deposit(hasDate("2025-11-05"), hasAmount("SGD", 20000.00), //
+                        hasSource("AccountStatement13.txt"), hasNote(null))));
+
+        // check dividend transaction without withholding tax
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-09-04"), hasExDate(null), //
+                        hasShares(2200.00), //
+                        hasSource("AccountStatement13.txt"), //
+                        hasNote(null), //
+                        hasAmount("SGD", 2.05), hasGrossValue("SGD", 2.05), //
+                        hasTaxes("SGD", 0.00), hasFees("SGD", 0.00))));
+
+        // check dividend transaction with withholding tax
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-12-15"), hasExDate(null), //
+                        hasShares(652.7321), //
+                        hasSource("AccountStatement13.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 158.31), hasGrossValue("USD", 175.91), //
+                        hasTaxes("USD", 17.60), hasFees("USD", 0.00))));
+
+        // check fee refund transaction
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2025-10-16"), //
+                        hasSource("AccountStatement13.txt"), //
+                        hasNote("Coupon Rebate"), //
+                        hasAmount("USD", 0.99), hasGrossValue("USD", 0.99), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+
+        // check inbound delivery transaction
+        assertThat(results, hasItem(inboundDelivery( //
+                        hasDate("2025-09-01T15:38:02"), hasShares(200.00), //
+                        hasSource("AccountStatement13.txt"), //
+                        hasNote("EXTERNAL IN"), //
+                        hasAmount("SGD", 6842.00), hasGrossValue("SGD", 6842.00), //
+                        hasTaxes("SGD", 0.00), hasFees("SGD", 0.00))));
+
+        // check skipped item
+        // "Dividend Accruals" are announced but not paid out yet
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2025-10-31"), hasExDate(null), //
+                                        hasShares(3000.00), //
+                                        hasSource("AccountStatement13.txt"), //
+                                        hasNote("Dividend Accruals"), //
+                                        hasAmount("SGD", 167.55), hasGrossValue("SGD", 167.55), //
+                                        hasTaxes("SGD", 0.00), hasFees("SGD", 0.00)))));
     }
 }
