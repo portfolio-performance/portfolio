@@ -1,0 +1,58 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.87.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+ Seite 1
+Depotnummer
+ 8000075900
+ Kundennummer xxxxxxxxxx
+ Namexxxxxx
+Abrechnungsnr. 54861333620
+Namexxx Datum 17.02.2026
+Namexxx Ihr Berater Herr Namexxx
+Namexxx Telefon 030/xxxxx 
+Strxxx. xx
+PLZ Berlin
+ 
+  
+ 
+Dividendengutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 65 ASML HOLDING N.V. NL0010273215 (A1J4U4)
+AANDELEN OP NAAM EO -,09
+Zahlbarkeitstag 18.02.2026 Dividende pro Stück 1,60 EUR
+Bestandsstichtag 06.02.2026 Herkunftsland Niederlande
+Ex-Tag 09.02.2026 Art der Dividende Schlussdividende
+Geschäftsjahr 01.01.2025 - 31.12.2025
+Dividendengutschrift 104,00+ EUR
+Einbehaltene Quellensteuer 15 % auf 104,00 EUR 15,60- EUR
+Anrechenbare Quellensteuer 15 % auf 104,00 EUR 15,60 EUR
+Kapitalertragsteuerpflichtige Dividende 104,00 EUR
+Verrechnete anrechenbare ausländische Quellensteuer
+(Verhältnis 100/25) auf 15,60 EUR 62,40 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 41,60 EUR
+Kapitalertragsteuer 25 % auf 41,60 EUR 10,40- EUR
+Solidaritätszuschlag 5,5 % auf 10,40 EUR 0,57- EUR
+Ausmachender Betrag 77,43+ EUR
+Lagerstelle Clearstream Banking FFM (849000 / 40030000)
+Den Betrag buchen wir zu Gunsten des Kontos 100xxxxxxx (IBAN DE69 xxxx xxxx xxxx xxxx xx), BLZ 10120100 (BIC
+WELADED1WBB). 
+Keine Steuerbescheinigung. 
+0858.02180100.0001794ER01
+
+Seite 2
+Depotnummer xxxxxxxxxx
+Kundennummer xxxxxxxxxx
+Abrechnungsnr. 54861333620
+Datum 17.02.2026
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2026 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 15.449,33
+Ertrag 15,60
+0,00 0,00 0,00 15,60- 41,60
+Nachher 0,00 0,00 0,00 0,00 15.490,93
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0858.02180100.0001795ER01

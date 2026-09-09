@@ -1,0 +1,66 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.87.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+ Seite 1 von 2
+Depotnummer
+ 80000xxxxx
+ Kundennummer xxxxxxxxxx
+ Name Name
+Auftragsnummer 673747/44.00
+Herrn u.Frau Datum 18.06.2026
+Name Ihr Berater Herr Name
+Name Telefon 030/xxxx
+Str. xx Rechnungsnummer W00858-0000502603/26
+PLZ Berlin Umsatzsteuer-ID DE814386567 
+ 
+Wertpapier Abrechnung Verkauf 
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 465 TYSON FOODS INC. US9024941034 (870625)
+REG. SHARES CL.A DL -,10 
+Handels-/Ausführungsplatz Tradegate (Best Execution)
+Börsensegment XGAT
+Market-Order
+Limit bestens
+Schlusstag/-Zeit 18.06.2026 17:43:22 Auftraggeber Name.
+Ausführungskurs 48,86 EUR Auftragserteilung/ -ort Persönlich im Institut
+Kurswert 22.719,90 EUR
+Ermittlung steuerrelevante Erträge
+Veräußerungsverlust 2.115,75- EUR
+Eingebuchte Aktienverluste 2.115,75 EUR
+Ausmachender Betrag 22.719,90 EUR
+ 
+Den Gegenwert buchen wir mit Valuta 22.06.2026 zu Gunsten des Kontos xxxxxxxxxx
+(IBAN DE69 xxxx xxxx xxxx xxxx xx), BLZ 10120100 (BIC WELADED1WBB).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+Steuerliche Ausgleichrechnung
+Verrechnete Aktienverluste 2.115,75- EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 2.115,75 EUR
+0858.06182053.0002195OR07  
+Seite 2 von 2
+Depotnummer 8000075900
+Kundennummer 1064817006
+Auftragsnummer 673747/44.00
+Datum 18.06.2026
+Kapitalertragsteuer 25,00% auf 2.115,75 EUR 528,94 EUR
+Solidaritätszuschlag 5,50% auf 528,94 EUR 29,09 EUR
+Ausmachender Betrag 558,03 EUR
+ 
+Den Gegenwert buchen wir mit Valuta 18.06.2026 zu Gunsten des Kontos xxxxxxxxxx
+(IBAN DE69 DE69 xxxx xxxx xxxx xxxx xx), BLZ 10120100 (BIC WELADED1WBB).
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Initiator der Besprechung war das Institut.
+ 
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verlustverrechnungstöpfe 2026 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 412.714,24
+Verkauf 2.115,75 0,00 0,00 0,00 0,00
+Steuerausgleich 2.115,75- 0,00 0,00 0,00 2.115,75-
+Nachher 0,00 0,00 0,00 0,00 410.598,49
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0858.06182053.0002196OR07  

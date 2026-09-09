@@ -1,0 +1,62 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.87.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+ Seite 1
+Depotnummer
+ 8000075900
+ Kundennummer xxxxxxxxxx
+ Name
+Abrechnungsnr. 59465024890
+Herrn u.Frau Datum 04.04.2025
+Name Ihr Berater Herr Name
+Name Telefon 030/8 97 98-xxx 
+Str. xx
+PLZ Berlin
+ 
+  
+ 
+Dividendengutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 550 NOVO-NORDISK AS DK0062498333 (A3EU6F)
+NAVNE-AKTIER B DK 0,1
+Zahlbarkeitstag 01.04.2025 Dividende pro Stück 7,90 DKK
+Bestandsstichtag 27.03.2025 Herkunftsland Dänemark
+Ex-Tag 28.03.2025
+Geschäftsjahr 01.01.2025 - 31.12.2025
+Devisenkurs EUR / DKK 7,4820
+Devisenkursdatum 04.04.2025
+Dividendengutschrift 4.345,00 DKK 580,73+ EUR
+Umrechnung in EUR 580,73 EUR
+Einbehaltene Quellensteuer 27 % auf 4.345,00 DKK 156,80- EUR
+Anrechenbare Quellensteuer 15 % auf 580,73 EUR 87,11 EUR
+Kapitalertragsteuerpflichtige Dividende 580,73 EUR
+Verrechnete anrechenbare ausländische Quellensteuer
+(Verhältnis 100/25) auf 87,11 EUR 348,44 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 232,29 EUR
+Kapitalertragsteuer 25 % auf 232,29 EUR 58,07- EUR
+Solidaritätszuschlag 5,5 % auf 58,07 EUR 3,19- EUR
+Ausmachender Betrag 362,67+ EUR
+12 % rückforderbare Quellensteuer 521,40 DKK
+Lagerstelle Clearstream Banking FFM (849000 / 40030000)
+Den Betrag buchen wir zu Gunsten des Kontos xxxxxxxxxx (IBAN DE69 xxxx xxxx xxxx xxxx xx), BLZ 101 201 00 (BIC
+WELADED1WBB). 
+Keine Steuerbescheinigung. 
+0858.04050100.0001216ER01
+
+Seite 2
+Depotnummer xxxxxxxxxx
+Kundennummer xxxxxxxxxx
+Abrechnungsnr. 59465024890
+Datum 04.04.2025
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2025 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 1.602,00 0,00 0,00 0,00 5.539,02
+Ertrag 87,11
+0,00 0,00 0,00 87,11- 232,29
+Nachher 1.602,00 0,00 0,00 0,00 5.771,31
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0858.04050100.0001217ER01

@@ -1,0 +1,74 @@
+```
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.87.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+ Seite 1 von 2
+Depotnummer
+ xxxxxxxxxx
+ Kundennummer xxxxxxxxxx
+ Name
+Auftragsnummer 505279/90.00
+Herrn u.Frau Datum 02.04.2026
+Name Ihr Berater Herr Name
+Name Telefon 030/xxxx
+Str. xx Rechnungsnummer W00858-0000285362/26
+PLZ Berlin Umsatzsteuer-ID DE814386567 
+ 
+Wertpapier Abrechnung Kauf 
+Nominale Wertpapierbezeichnung ISIN (WKN)
+NOK 1.425.000,00 1,375 % NORWEGEN, KÖNIGREICH NO0010875230 (A28TXS)
+NK-ANL. 2020(30) 
+Handels-/Ausführungsplatz Gettex (gemäß Weisung)
+Börsensegment MUND
+Limit-Order
+Limit 88,50 % 
+Schlusstag/-Zeit 02.04.2026 10:48:46 Zinstermin Monat(e) 19. August
+Ausführungskurs 88,228 % Zinslauf ab 19.02.2020
+Fällig am 19.08.2030
+Auftraggeber Name
+Auftragserteilung/ -ort telefonisch
+Devisenkurs (EUR/NOK) 11,207 vom 02.04.2026
+Kurswert 112.184,26- EUR
+Stückzinsen für 232 Tage per 07.04.2026 1.111,28- EUR
+Ermittlung steuerrelevante Erträge
+Stückzinsen für 232 Tage per 07.04.2026 1.111,28- EUR
+Eingebuchte Aktienverluste 1.111,28 EUR
+Ausmachender Betrag 113.295,54- EUR
+ 
+Den Gegenwert buchen wir mit Valuta 08.04.2026 zu Lasten des Kontos 1000087112
+(IBAN DE69 xxxx xxxx xxxx xxxx xx), BLZ 10120100 (BIC WELADED1WBB).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Steuerliche Ausgleichrechnung
+Verrechnete Aktienverluste 1.111,28- EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 1.111,28 EUR
+0858.04022055.0001413OR07  
+Seite 2 von 2
+Depotnummer xxxxxxxxxx
+Kundennummer xxxxxxxxxx
+Auftragsnummer 505279/90.00
+Datum 02.04.2026
+Kapitalertragsteuer 25,00% auf 1.111,28 EUR 277,82 EUR
+Solidaritätszuschlag 5,50% auf 277,82 EUR 15,28 EUR
+Ausmachender Betrag 293,10 EUR
+ 
+Den Gegenwert buchen wir mit Valuta 02.04.2026 zu Gunsten des Kontos 1000087112
+(IBAN DE69 xxxx xxxx xxxx xxxx xx), BLZ 10120100 (BIC WELADED1WBB).
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Initiator der Besprechung war der Kunde.
+ 
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verlustverrechnungstöpfe 2026 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 136.099,85
+Kauf 1.111,28 0,00 0,00 0,00 0,00
+Steuerausgleich 1.111,28- 0,00 0,00 0,00 1.111,28-
+Nachher 0,00 0,00 0,00 0,00 134.988,57
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0858.04022055.0001414OR07  
+
+```
