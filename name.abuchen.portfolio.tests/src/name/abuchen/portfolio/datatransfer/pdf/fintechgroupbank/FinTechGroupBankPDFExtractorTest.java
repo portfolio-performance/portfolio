@@ -5101,6 +5101,93 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testFlatExDegiroVerkauf10()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroVerkauf10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US7479066000"), hasWkn("A40M9N"), hasTicker(null), //
+                        hasName("QUANTUM CORP."), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-08-14T15:30"), hasShares(60.00), //
+                        hasSource("FlatExDegiroVerkauf10.txt"), //
+                        hasNote("Transaktion-Nr.: 5164291571"), //
+                        hasAmount("EUR", 1326.94 - 58.02), hasGrossValue("EUR", 1274.85), //
+                        hasForexGrossValue("USD", 1480.79), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 0.03))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2026-08-14T15:30"), hasShares(60.00), //
+                        hasSource("FlatExDegiroVerkauf10.txt"), //
+                        hasNote("Transaktion-Nr.: 5164291571"), //
+                        hasAmount("EUR", 58.02), hasGrossValue("EUR", 58.02), //
+                        hasForexGrossValue("USD", 67.39), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testFlatExDegiroVerkauf10WithSecurityInEUR()
+    {
+        var security = new Security("QUANTUM CORP.", "EUR");
+        security.setIsin("US7479066000");
+        security.setWkn("A40M9N");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new FinTechGroupBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroVerkauf10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-08-14T15:30"), hasShares(60.00), //
+                        hasSource("FlatExDegiroVerkauf10.txt"), //
+                        hasNote("Transaktion-Nr.: 5164291571"), //
+                        hasAmount("EUR", 1326.94 - 58.02), hasGrossValue("EUR", 1274.85), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 0.03))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2026-08-14T15:30"), hasShares(60.00), //
+                        hasSource("FlatExDegiroVerkauf10.txt"), //
+                        hasNote("Transaktion-Nr.: 5164291571"), //
+                        hasAmount("EUR", 58.02), hasGrossValue("EUR", 58.02), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testCryptoVerkauf01()
     {
         List<Exception> errors = new ArrayList<>();
@@ -6037,8 +6124,8 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testFlatExDegiroDividende13()
     {
-        // Gross Value is wrong, because we missing fx rate for the german taxes
-        // 2,99 EUR
+        // The document does not contain an exchange rate, it is derived from
+        // the amounts: (33,00 USD - 4,95 USD - 24,57 USD) / 2,99 EUR
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
@@ -6050,9 +6137,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "USD");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -6060,17 +6148,14 @@ public class FinTechGroupBankPDFExtractorTest
                         hasName("J.M. SMUCKER CO."), //
                         hasCurrencyCode("USD"))));
 
-        // check dividends transaction has failure message because of missing
-        // exchange rate for EUR taxes
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionMissingExchangeRateIfInForex, //
-                        dividend( //
-                                        hasDate("2025-12-01T00:00"), hasExDate("2025-11-14"), //
-                                        hasShares(30.00), //
-                                        hasSource("FlatExDegiroDividende13.txt"), //
-                                        hasNote("Transaktion-Nr. : 6155515228"), //
-                                        hasAmount("USD", 24.57), hasGrossValue("USD", 29.52), // Wrong gross value, is 33.00 USD
-                                        hasTaxes("USD", 4.95), hasFees("USD", 0.00))))); // Missing 2.99 EUR tax conversion
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-12-01T00:00"), hasExDate("2025-11-14"), //
+                        hasShares(30.00), //
+                        hasSource("FlatExDegiroDividende13.txt"), //
+                        hasNote("Transaktion-Nr. : 6155515228"), //
+                        hasAmount("USD", 24.57), hasGrossValue("USD", 33.00), //
+                        hasTaxes("USD", 4.95 + 3.48), hasFees("USD", 0.00))));
     }
 
     @Test
@@ -6145,6 +6230,8 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testFlatExDegiroDividende16()
     {
+        // The document does not contain an exchange rate, it is derived from
+        // the amounts: (2,61 USD - 0,39 USD - 1,95 USD) / 0,23 EUR
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
@@ -6156,10 +6243,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, "EUR");
+        new AssertImportActions().check(results, "USD");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -6167,17 +6254,14 @@ public class FinTechGroupBankPDFExtractorTest
                         hasName("MASTERCARD INC. A"), //
                         hasCurrencyCode("USD"))));
 
-        // check dividends transaction has failure message because of missing
-        // exchange rate for EUR taxes
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionMissingExchangeRateIfInForex, //
-                        dividend( //
-                                        hasDate("2026-02-09T00:00"), hasExDate("2026-01-09"), //
-                                        hasShares(3.00), //
-                                        hasSource("FlatExDegiroDividende16.txt"), //
-                                        hasNote("Transaktion-Nr. : 4773716165"), //
-                                        hasAmount("USD", 1.95), hasGrossValue("USD", 2.34), //
-                                        hasTaxes("USD", 0.39), hasFees("USD", 0.00)))));
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-02-09T00:00"), hasExDate("2026-01-09"), //
+                        hasShares(3.00), //
+                        hasSource("FlatExDegiroDividende16.txt"), //
+                        hasNote("Transaktion-Nr. : 4773716165"), //
+                        hasAmount("USD", 1.95), hasGrossValue("USD", 2.61), //
+                        hasTaxes("USD", 0.39 + 0.27), hasFees("USD", 0.00))));
     }
 
     @Test
