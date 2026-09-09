@@ -403,6 +403,17 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                         .match("^.*(?<date>[\\d]{2}\\-[\\w]+\\-[\\d]{4}) [\\.,'\\d]+ [\\.,'\\d]+ [\\.,'\\d]+$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
+                        // @formatter:off
+                        // Booking amount ID Ex date Record Date Posting Date Pay Date Conversion Rate
+                        // 43640515029 15-Apr-2025 15-Apr-2025 02-Apr-2025 30-Apr-2025 56,11 1,000000 56,11
+                        //
+                        // Buchungsbetrag-ID Ex-Tag Record Date Einstellungsdatum Zahltag Umrechnungskurs
+                        // 45865563189 15-Jul-2025 16-Jul-2025 - 17-Jul-2025 19.50 1.000000 19.50
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^[\\d]+ (?<exDate>[\\d]{2}\\-[\\w]+\\-[\\d]{4}) .* [\\.,'\\d]+ [\\.,'\\d]+ [\\.,'\\d]+$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
                         .oneOf( //
                                         // @formatter:off
                                         // Net Amount - - - - - 47,69 1,000000 47,69
@@ -549,7 +560,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final var type = new DocumentType("Kontoauszugsbericht", //
+        final var type01 = new DocumentType("Kontoauszugsbericht", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // Währung : CHF
@@ -558,14 +569,14 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         .match("^W.hrung : (?<currency>[A-Z]{3}).*$") //
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
 
-        this.addDocumentTyp(type);
+        this.addDocumentTyp(type01);
 
         // @formatter:off
         // 26-Nov-2024 26-Nov-2024 DEPOSIT (6980803089, 6083903733) 700,00 700,00
         // @formatter:on
-        var depositBlock = new Block("^[\\d]{2}\\-[\\w]+\\-[\\d]{4} [\\d]{2}\\-[\\w]+\\-[\\d]{4} (DEPOSIT) .* [\\.,'\\d]+ [\\.,'\\d]+$");
-        type.addBlock(depositBlock);
-        depositBlock.set(new Transaction<AccountTransaction>()
+        var depositBlock_Format01 = new Block("^[\\d]{2}\\-[\\w]+\\-[\\d]{4} [\\d]{2}\\-[\\w]+\\-[\\d]{4} (DEPOSIT) .* [\\.,'\\d]+ [\\.,'\\d]+$");
+        type01.addBlock(depositBlock_Format01);
+        depositBlock_Format01.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
@@ -581,6 +592,51 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(v.get("note"));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // Devise: EUR 20-janv.-2026 - 17-févr.-2026
+        // @formatter:on
+        var currencyRange = new Block("^Devise: [A-Z]{3}.*$") //
+                        .asRange(section -> section //
+                                        .attributes("currency") //
+                                        .match("^Devise: (?<currency>[A-Z]{3}).*$"));
+
+        // @formatter:off
+        // 21-janv.-2026 -2 986,54 13,46
+        // 20-janv.-2026 3 000,00 3 000,00
+        // @formatter:on
+        var dateRange = new Block("^[\\d]{2}\\-[^\\-]+\\-[\\d]{4} (\\-)?[\\.,\\d\\s]+ (\\-)?[\\.,\\d\\s]+$") //
+                        .asRange(section -> section //
+                                        .attributes("date") //
+                                        .match("^(?<date>[\\d]{2}\\-[^\\-]+\\-[\\d]{4}) (\\-)?[\\.,\\d\\s]+ (\\-)?[\\.,\\d\\s]+$"));
+
+        final var type02 = new DocumentType("Comptes rendus des transactions", currencyRange, dateRange);
+        this.addDocumentTyp(type02);
+
+        // @formatter:off
+        // Transfert d’espèces Retrait -3 000,00 -
+        // Transfert d’espèces Dépôts 3 000,00 -
+        // @formatter:on
+        var depositRemovalBlock_Format02 = new Block("^Transfert d.esp.ces (D.p.ts|Retrait) (\\-)?[\\.,\\d\\s]+ \\-$");
+        type02.addBlock(depositRemovalBlock_Format02);
+        depositRemovalBlock_Format02.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
+
+                        .section("type", "amount") //
+                        .documentRange("date", "currency") //
+                        .match("^Transfert d.esp.ces (?<type>(D.p.ts|Retrait)) (\\-)?(?<amount>[\\.,\\d\\s]+) \\-$") //
+                        .assign((t, v) -> {
+                            // Is type --> "Retrait" change from DEPOSIT to REMOVAL
+                            if ("Retrait".equals(trim(v.get("type"))))
+                                t.setType(AccountTransaction.Type.REMOVAL);
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
                         })
 
                         .wrap(TransactionItem::new));

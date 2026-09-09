@@ -5,6 +5,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -981,7 +982,8 @@ public class SaxoBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-04-30T00:00"), hasShares(604.00), //
+                        hasDate("2025-04-30T00:00"), hasExDate("2025-04-15T00:00"), //
+                        hasShares(604.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Event Id 9369584"), //
                         hasAmount("USD", 47.69), hasGrossValue("USD", 56.11), //
@@ -1015,7 +1017,8 @@ public class SaxoBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-05-01T00:00"), hasShares(69.00), //
+                        hasDate("2025-05-01T00:00"), hasExDate("2025-04-11T00:00"), //
+                        hasShares(69.00), //
                         hasSource("Dividende02.txt"), //
                         hasNote("Event Id 9369517"), //
                         hasAmount("USD", 6.97), hasGrossValue("USD", 8.20), //
@@ -1049,7 +1052,8 @@ public class SaxoBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-07-17T00:00"), hasShares(75.00), //
+                        hasDate("2025-07-17T00:00"), hasExDate("2025-07-15T00:00"), //
+                        hasShares(75.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote("Event Id 9413396"), //
                         hasAmount("CHF", 12.67), hasGrossValue("CHF", 19.50), //
@@ -1106,5 +1110,41 @@ public class SaxoBankPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2024-11-26"), hasAmount("CHF", 700.00), //
                         hasSource("Kontoauszug01.txt"), hasNote(null))));
+    }
+
+    @Test
+    public void testKontoauszug02()
+    {
+        var extractor = new SaxoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2026-01-21"), hasAmount("EUR", 3000.00), //
+                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-01-21"), hasAmount("EUR", 3000.00), //
+                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-01-20"), hasAmount("EUR", 2999.00), //
+                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-01-20"), hasAmount("EUR", 1.00), //
+                        hasSource("Kontoauszug02.txt"), hasNote(null))));
     }
 }
