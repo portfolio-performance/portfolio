@@ -1,0 +1,40 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.82.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Postbank
+Beratungsteam
+sooDtvB 24/7-Kundenservice (0228) 5500-5500
+ njZjfKCwLul 
+Ja ZSyBQWpEqw 7 
+64912 dEuXberb
+7. April 2026
+Abrechnung: Kauf von Wertpapieren 
+Depotinhaber: CasBIST sgnIyOpBKPQ
+Filialnummer Depotnummer Wertpapierbezeichnung Seite
+045 6394160 08 XTRACKERS STOXX EUROPE 600 INH.ANT.1C O.N. 1/1
+WKN DBX1A7 Nominal ST 0,6526
+ISIN LU0328475792 Kurs EUR 153,24
+Verwahrart Girosammel / Zwischenverwahrung Euroclear
+Geschäft Kommissionsgeschäft
+Börse Frankfurt a.M. - Deutsche Börse - Frankfurter Wertpapierbörse (FWB) - Xetra
+Belegnummer 9867409933 / 344685043 Schlusstag/-zeit MEZ 07.04.2026 / 08:00:50
+Ihre Referenz PBI03
+Auftragsart sonstiger Auftrag
+Abrechnung Währung Betrag
+Kurswert EUR 100,00
+Provision EUR 0,90
+Provisions-Rabatt EUR -0,90
+Belastung
+Buchung auf Kontonummer 6136110 68 mit Wertstellung 09.04.2026 EUR 100,00
+Die Wertpapiere haben wir entsprechend der Abrechnung gebucht. Unser Geschäftsverkehr mit Ihnen wird durch unsere Allgemeinen Geschäftsbedingungen 
+und die Sonderbedingungen für Wertpapiergeschäfte geregelt. Bitte überprüfen Sie diese Abrechnung schnellstmöglich und richten Sie etwaige Einwendungen 
+in den Geschäftsräumen der Bank oder schriftlich an Deutsche Bank AG, QM - Support, 04082 Leipzig. Andernfalls gilt diese Abrechnung als genehmigt. 
+Die unter § 4 Nr. 8 UStG im Inland fallenden Bank- und Finanzdienstleistungen sind von der Umsatzsteuer befreit, sofern Umsatzsteuer nicht gesondert 
+ausgewiesen ist. Soweit der Leistungsempfänger umsatzsteuerlicher Unternehmer ist und seinen Sitz in einem anderen EU-Mitgliedstaat hat und die Bank 
+und Finanzdienstleistungen nach dortigem Recht umsatzsteuerpflichtig sind, gilt die Steuerschuldnerschaft des Leistungsempfängers. Umsatzsteuer ID 
+Nr.: Deutsche Bank AG, 60262 Frankfurt DE114103379
+Postbank - eine Niederlassung der Deutsche Bank AG - Vorsitzender des Aufsichtsrats: Alexander R. Wynaendts - Vorstand: Christian Sewing (Vorsitzender),
+James von Moltke, Raja Akram, Fabrizio Campelli, Marcus Chromik, Bernd Leukert, Alexander von zur Mühlen, Laura Padovani, Claudio de Sanctis, Rebecca Short 
+Deutsche Bank Aktiengesellschaft mit Sitz in Frankfurt am Main, Amtsgericht Frankfurt am Main, HRB Nr. 30 000, Umsatzsteuer-Id.-Nr. DE114103379; www.postbank.de
+TR00000001 20260407 205_000_
