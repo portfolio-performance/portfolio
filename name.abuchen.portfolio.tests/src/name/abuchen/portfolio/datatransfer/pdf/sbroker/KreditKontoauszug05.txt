@@ -1,0 +1,47 @@
+```
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.87.1.qualifier
+System: win32 | x86_64 | 21.0.12.1+1-LTS-4 | Oracle Corporation
+-----------------------------------------
+Allgemeine Fragen zu 
+Ihrer VISA Card
+SPARKASSE SCHWEINFURT-HASSBERGE, 97410 SCHWEINFURT beantwortet Ihnen:
+Tel.: +49 (0)89 411 116 - 336
+Fax: +49 (0)89 411 116 - 400
+E-Mail: kreditkartenservice@qards.de
+Bei Kartenverlust wählen Sie bitte:
+Tel.: +49 (0)89 411 116 - 446
+Herrn
+Max Max
+ort
+Strasse 9
+99999 Dorf
+Abrechnung: August 2026
+Abrechnungsdatum: 4. August 2026
+Ihre Abrechnung vom 02.07.2026 bis 04.08.2026 VISA Card-Nummer: 9999 62XX XXXX 9999
+Karteninhaber: Max Max
+Seite 1 von 1
+Datum Datum Angabe des Unternehmens / Währung Betrag Kurs Betrag in 
+Beleg Buchung Verwendungszweck EUR
+02.07.26 Saldo letzte Abrechnung 183,21 -
+02.07.26 03.07.26 Lastschrift 183,21 +
+16.07.26 17.07.26 DHL*XNU63V52QKQR, BONN 6,19 -
+21.07.26 22.07.26 DHL*28MQNWECKZ6Q, BONN 7,69 -
+26.07.26 27.07.26 visunext SE, Emsdetten 491,64 -
+29.07.26 30.07.26 WWW.LEGOLANDHOLIDAYS.D, 572,20 -
+GUENZBURG
+03.08.26 04.08.26 ALIEXPRESSCOM, Luxembourg 37,56 -
+Neuer Saldo 1.115,28 -
+Sehr geehrter Herr Max Max,
+bitte prüfen Sie diese Abrechnung/Saldenmitteilung auf ihre Richtigkeit. Etwaige Einwendungen müssen Ihrer Sparkasse unter qards
+Kartenservice, Postfach 2562, 94015 Passau unverzüglich nach Zugang dieser Abrechnung/Saldenmitteilung schriftlich mitgeteilt
+werden.
+Der Rechnungsbetrag wird Ihrem Konto Nr. XXXX XX99 99, Hinweis:
+BLZ 793 501 01 belastet. Über Zinsen und Gebühren informieren auch der Preisaushang
+und das Preisverzeichnis in den Geschäftsstellen Ihres
+Der monatliche Verfügungsrahmen Ihrer VISA Card beträgt Kreditinstitutes.
+2.000 EUR. Umsatzsteuernummer: DE133906578
+Wechseln Sie jetzt zur S-pushTAN-App, um Kartenzahlungen bei Ihren Online-Einkäufen freizugeben und profitieren Sie dabei
+von mehr Schnelligkeit und Komfort. Registrieren Sie sich einfach & bequem unter: sparkasse.de/3dsecure
+
+```
