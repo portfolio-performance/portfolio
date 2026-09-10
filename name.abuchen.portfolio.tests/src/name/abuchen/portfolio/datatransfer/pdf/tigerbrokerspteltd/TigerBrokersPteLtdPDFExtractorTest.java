@@ -17,7 +17,9 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundCash;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundDelivery;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundCash;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
@@ -1487,6 +1489,33 @@ public class TigerBrokersPteLtdPDFExtractorTest
                         hasNote("Coupon Rebate"), //
                         hasAmount("USD", 0.99), hasGrossValue("USD", 0.99), //
                         hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+
+        // check currency transfer transaction
+        // "Buy USD.SGD" --> SGD is sold, USD is bought
+        assertThat(results, hasItem(outboundCash( //
+                        hasDate("2025-09-09T13:52:45"), //
+                        hasSource("AccountStatement13.txt"), //
+                        hasNote("USD/SGD 1.28688"), //
+                        hasAmount("SGD", 5000.00))));
+
+        assertThat(results, hasItem(inboundCash( //
+                        hasDate("2025-09-09T13:52:45"), //
+                        hasSource("AccountStatement13.txt"), //
+                        hasNote("USD/SGD 1.28688"), //
+                        hasAmount("USD", 3885.36))));
+
+        // "Sell USD.SGD" --> USD is sold, SGD is bought
+        assertThat(results, hasItem(outboundCash( //
+                        hasDate("2025-10-16T01:14:03"), //
+                        hasSource("AccountStatement13.txt"), //
+                        hasNote("USD/SGD 1.29103"), //
+                        hasAmount("USD", 5000.00))));
+
+        assertThat(results, hasItem(inboundCash( //
+                        hasDate("2025-10-16T01:14:03"), //
+                        hasSource("AccountStatement13.txt"), //
+                        hasNote("USD/SGD 1.29103"), //
+                        hasAmount("SGD", 6455.15))));
 
         // check inbound delivery transaction
         assertThat(results, hasItem(inboundDelivery( //
