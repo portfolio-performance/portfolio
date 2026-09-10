@@ -1702,7 +1702,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-01-22T16:14")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(250)));
         assertThat(entry.getSource(), is("FinTechVerkauf01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 980001189"));
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 980001189 | Zinsbetrag 9.264,06 EUR"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("EUR", Values.Amount.factorize(16508.16))));
@@ -4179,7 +4179,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-03-27T17:34")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10)));
         assertThat(entry.getSource(), is("FlatExDegiroKauf01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1225591278"));
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1225591278 | Zinsbetrag 6,25 EUR"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("EUR", Values.Amount.factorize(1704.15))));
@@ -4220,7 +4220,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-09-04T09:53"), hasShares(20.00), //
                         hasSource("FlatExDegiroKauf02.txt"), //
-                        hasNote("Transaktion-Nr.: 3409315621"), //
+                        hasNote("Transaktion-Nr.: 3409315621 | Zinsbetrag 1,25 EUR"), //
                         hasAmount("EUR", 1138.15), hasGrossValue("EUR", 1127.54), //
                         hasForexGrossValue("USD", 1215.15), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 4.71))));
@@ -4256,7 +4256,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-09-04T09:53"), hasShares(20.00), //
                         hasSource("FlatExDegiroKauf02.txt"), //
-                        hasNote("Transaktion-Nr.: 3409315621"), //
+                        hasNote("Transaktion-Nr.: 3409315621 | Zinsbetrag 1,25 EUR"), //
                         hasAmount("EUR", 1138.15), hasGrossValue("EUR", 1127.54), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 4.71))));
     }
@@ -4290,7 +4290,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-12-18T15:19"), hasShares(20.00), //
                         hasSource("FlatExDegiroKauf03.txt"), //
-                        hasNote("Transaktion-Nr.: 3527408249"), //
+                        hasNote("Transaktion-Nr.: 3527408249 | Zinsbetrag 3,31 EUR"), //
                         hasAmount("EUR", 1172.56 + 0.87), hasGrossValue("EUR", 1162.83), //
                         hasForexGrossValue("USD", 1268.41), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 4.70))));
@@ -4335,7 +4335,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-12-18T15:19"), hasShares(20.00), //
                         hasSource("FlatExDegiroKauf03.txt"), //
-                        hasNote("Transaktion-Nr.: 3527408249"), //
+                        hasNote("Transaktion-Nr.: 3527408249 | Zinsbetrag 3,31 EUR"), //
                         hasAmount("EUR", 1172.56 + 0.87), hasGrossValue("EUR", 1162.83), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 4.70))));
 
@@ -4479,7 +4479,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results, hasItem(purchase( //
                         hasDate("2025-12-23T10:00"), hasShares(20.00), //
                         hasSource("FlatExDegiroKauf07.txt"), //
-                        hasNote("Transaktion-Nr.: 1234567890"), //
+                        hasNote("Transaktion-Nr.: 1234567890 | Zinsbetrag 33,14 EUR"), //
                         hasAmount("EUR", 1902.31), hasGrossValue("EUR", 1901.24), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 1.07))));
     }

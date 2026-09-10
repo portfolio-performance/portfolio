@@ -427,6 +427,28 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^[\\s]*(?<note2>[\\d]+).*$") //
                                                         .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + v.get("note2"))))
 
+                        .optionalOneOf( //
+                        // @formatter:off
+                                        // Lagerstelle   : Clearstream Nat.        Zinsbetrag    :              6,25 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note", "amount", "currency") //
+                                                        .match("^.* (?<note>Zinsbetrag)[:\\s]{1,}(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(),
+                                                                        v.get("note") + " " + v.get("amount") + " "
+                                                                                        + v.get("currency"),
+                                                                        " | "))),
+                                        // @formatter:off
+                                        // Lagerland      Deutschland             Zinsbetrag     EUR             9.264,06
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note", "currency", "amount") //
+                                                        .match("^.* (?<note>Zinsbetrag)[:\\s]{1,}(?<currency>[A-Z]{3})[\\s]{1,}(?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(),
+                                                                        v.get("note") + " " + v.get("amount") + " "
+                                                                                        + v.get("currency"),
+                                                                        " | "))))
+
                         .wrap((t, ctx) -> {
                             var item = new BuySellEntryItem(t);
 
