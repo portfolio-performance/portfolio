@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.datatransfer.pdf.tigerbrokerspteltd;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.feeRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
@@ -15,14 +17,10 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundDelivery;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.feeRefund;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundCash;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundCash;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.skippedItem;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
