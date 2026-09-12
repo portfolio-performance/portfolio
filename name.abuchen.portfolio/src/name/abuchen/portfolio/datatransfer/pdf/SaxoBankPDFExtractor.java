@@ -434,9 +434,8 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                                             // therefore we
                                                             // calculate the
                                                             // shares
-                                                            var amountPerShare = BigDecimal
-                                                                            .valueOf(asAmount(v.get("amountPerShare")));
-                                                            var amount = BigDecimal.valueOf(asAmount(v.get("amount")));
+                                                            var amountPerShare = asBigDecimal(v.get("amountPerShare"));
+                                                            var amount = asBigDecimal(v.get("amount"));
 
                                                             var shares = amount.divide(amountPerShare,
                                                                             Values.Share.precision(),
@@ -818,6 +817,13 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
     protected long asShares(String value)
     {
         return ExtractorUtils.convertToNumberLong(value, Values.Share,
+                        ExtractorUtils.guessNumberLocale(value, Locale.GERMANY));
+    }
+
+    @Override
+    protected BigDecimal asBigDecimal(String value)
+    {
+        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share,
                         ExtractorUtils.guessNumberLocale(value, Locale.GERMANY));
     }
 
