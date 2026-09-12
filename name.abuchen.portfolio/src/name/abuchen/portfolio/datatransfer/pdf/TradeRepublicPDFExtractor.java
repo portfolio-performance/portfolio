@@ -1867,7 +1867,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "currency", "isin") //
                                                         .find("WERTPAPIER BESTELLUNG \\/ BETRAG WERT( HANDELSPLATZ)?")
                                                         .match("^(?<name>.*)$") //
-                                                        .match("^.*[\\.,\\d]+ Stk\\. [\\.,\\d]+ (?<currency>\\p{Sc})( .*)?$") //
+                                                        .match(".*[\\.,\\d]+ Stk\\. [\\.,\\d]+ (?<currency>\\p{Sc})( .*)?$") //
                                                         .match("^(ISIN: )?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
@@ -4042,7 +4042,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setNote("Steuerkorrektur");
 
                             v.markAsFailure(Messages.MsgErrorTransactionTaxCorrectionUnsupported);
                         })
