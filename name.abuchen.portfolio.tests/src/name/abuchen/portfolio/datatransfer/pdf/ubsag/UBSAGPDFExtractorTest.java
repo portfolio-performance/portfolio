@@ -5,6 +5,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -824,32 +825,20 @@ public class UBSAGPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("US6541061031"));
-        assertThat(security.getWkn(), is("957150"));
-        assertThat(security.getTickerSymbol(), is("NKE"));
-        assertThat(security.getName(), is("AKT -B- NIKE INC."));
-        assertThat(security.getCurrencyCode(), is("USD"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("US6541061031"), hasWkn("957150"), hasTicker("NKE"), //
+                        hasName("AKT -B- NIKE INC."), //
+                        hasCurrencyCode("USD"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-28T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(20)));
-        assertThat(transaction.getSource(), is("Dividende01.txt"));
-        assertThat(transaction.getNote(), is("Auftrags-Nr. 3256654"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(3.85))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(5.50))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(1.65))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-
-        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(6.10))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2021-12-28T00:00"), hasExDate("2021-12-03T00:00"), //
+                        hasShares(20), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote("Auftrags-Nr. 3256654"), //
+                        hasAmount("CHF", 3.85), hasGrossValue("CHF", 5.50), //
+                        hasForexGrossValue("USD", 6.10), //
+                        hasTaxes("CHF", 1.65), hasFees("CHF", 0.00))));
     }
 
     @Test
@@ -880,26 +869,20 @@ public class UBSAGPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-28T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(20)));
-        assertThat(transaction.getSource(), is("Dividende01.txt"));
-        assertThat(transaction.getNote(), is("Auftrags-Nr. 3256654"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(3.85))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(5.50))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(1.65))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-
-        var c = new CheckCurrenciesAction();
-        var account = new Account();
-        account.setCurrencyCode("CHF");
-        var s = c.process(transaction, account);
-        assertThat(s, is(Status.OK_STATUS));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2021-12-28T00:00"), hasExDate("2021-12-03T00:00"), //
+                        hasShares(20), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote("Auftrags-Nr. 3256654"), //
+                        hasAmount("CHF", 3.85), hasGrossValue("CHF", 5.50), //
+                        hasTaxes("CHF", 1.65), hasFees("CHF", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("CHF");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
@@ -929,7 +912,8 @@ public class UBSAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-12-20T00:00"), hasShares(546), //
+                        hasDate("2023-12-20T00:00"), hasExDate("2023-11-16T00:00"), //
+                        hasShares(546), //
                         hasSource("Dividende02.txt"), //
                         hasNote("Auftrags-Nr. 4083256 | FX-Marge: 2.62 CHF"), //
                         hasAmount("CHF", 155.64), hasGrossValue("CHF", 155.64), //
@@ -966,7 +950,8 @@ public class UBSAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-12-20T00:00"), hasShares(546), //
+                        hasDate("2023-12-20T00:00"), hasExDate("2023-11-16T00:00"), //
+                        hasShares(546), //
                         hasSource("Dividende02.txt"), //
                         hasNote("Auftrags-Nr. 4083256 | FX-Marge: 2.62 CHF"), //
                         hasAmount("CHF", 155.64), hasGrossValue("CHF", 155.64), //
