@@ -93,7 +93,8 @@ public class DeutscheBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2014-12-15"), hasShares(380), //
+                        hasDate("2014-12-15"), hasExDate("2014-12-04"), //
+                        hasShares(380), //
                         hasSource("Dividende01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 64.88), hasGrossValue("EUR", 87.13), //
@@ -129,7 +130,8 @@ public class DeutscheBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2014-12-15"), hasShares(380), //
+                        hasDate("2014-12-15"), hasExDate("2014-12-04"), //
+                        hasShares(380), //
                         hasSource("Dividende01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 64.88), hasGrossValue("EUR", 87.13), //
@@ -163,7 +165,8 @@ public class DeutscheBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2014-12-15"), hasShares(123), //
+                        hasDate("2014-12-15"), hasExDate(null), //
+                        hasShares(123), //
                         hasSource("Dividende02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 14.95), hasGrossValue("EUR", 20.22), //
@@ -382,7 +385,8 @@ public class DeutscheBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-09-05T00:00"), hasShares(60.00), //
+                        hasDate("2023-09-05T00:00"), hasExDate("2023-09-01T00:00"), //
+                        hasShares(60.00), //
                         hasSource("Dividende07.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 259.22), hasGrossValue("EUR", 360.00), //
@@ -416,7 +420,8 @@ public class DeutscheBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-12-15T00:00"), hasShares(170.00), //
+                        hasDate("2023-12-15T00:00"), hasExDate("2023-11-30T00:00"), //
+                        hasShares(170.00), //
                         hasSource("Dividende08.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 58.22), hasGrossValue("USD", 78.21), //
@@ -450,7 +455,8 @@ public class DeutscheBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-07-31T00:00"), hasShares(200.00), //
+                        hasDate("2025-07-31T00:00"), hasExDate("2025-07-02T00:00"), //
+                        hasShares(200.00), //
                         hasSource("Dividende09.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 102.40), hasGrossValue("EUR", 137.53), //
@@ -486,7 +492,8 @@ public class DeutscheBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-07-31T00:00"), hasShares(200.00), //
+                        hasDate("2025-07-31T00:00"), hasExDate("2025-07-02T00:00"), //
+                        hasShares(200.00), //
                         hasSource("Dividende09.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 102.40), hasGrossValue("EUR", 137.53), //
@@ -520,7 +527,8 @@ public class DeutscheBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-12-05T00:00"), hasShares(10.00), //
+                        hasDate("2025-12-05T00:00"), hasExDate(null), //
+                        hasShares(10.00), //
                         hasSource("Dividende10.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 381.03), hasGrossValue("EUR", 500.00), //
@@ -559,7 +567,8 @@ public class DeutscheBankPDFExtractorTest
 
         // check foreign currency dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-12-10T00:00"), hasShares(100.00), //
+                        hasDate("2025-12-10T00:00"), hasExDate("2025-11-19T00:00"), //
+                        hasShares(100.00), //
                         hasSource("Dividende11.txt"), hasNote(null), hasAmount("USD", 18.62), //
                         hasGrossValue("USD", 25.00), hasTaxes("USD", 3.75 + 2.50 + 0.13), //
                         hasFees("USD", 0.00))));
@@ -592,7 +601,8 @@ public class DeutscheBankPDFExtractorTest
 
         // check dividends (here: interest) transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-11-24T00:00"), hasShares(10.00), //
+                        hasDate("2025-11-24T00:00"), hasExDate("2025-11-24T00:00"), //
+                        hasShares(10.00), //
                         hasSource("Kupon01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 33.46), hasGrossValue("EUR", 40.00), //
