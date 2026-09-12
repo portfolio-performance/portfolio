@@ -1089,6 +1089,41 @@ public class SaxoBankPDFExtractorTest
     }
 
     @Test
+    public void testDividende04()
+    {
+        var extractor = new SaxoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0011683594"), hasWkn(null), hasTicker("VDIV"), //
+                        hasName("VanEck Morningstar Dvlp Mkts Dvd Leaders UCITS ETF"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-09-10T00:00"), hasExDate("2026-09-02T00:00"), //
+                        hasShares(54.00), //
+                        hasSource("Dividende04.txt"), //
+                        hasNote("Event Id 9593275"), //
+                        hasAmount("EUR", 18.36), hasGrossValue("EUR", 21.60), //
+                        hasTaxes("EUR", 3.24), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testKontoauszug01()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());

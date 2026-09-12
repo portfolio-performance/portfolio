@@ -7,6 +7,7 @@ import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Locale;
 
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
@@ -378,7 +379,29 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Description (?<name>.*) Dividende pro Aktie [\\.,'\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .match("^Symbol (?<tickerSymbol>[A-Z0-9\\._-]{1,10}(?:\\.[A-Z]{1,4})?):.*$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
-                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Event Cash dividend Dividend per share 0.40 EUR
+                                        // VanEck Morningstar Dvlp Mkts Dvd Leaders
+                                        // Description Conversion Rate 1.000000
+                                        // UCITS ETF
+                                        // Symbol VDIV:xetr Corporate Actions - Cash Dividends 21.60 EUR
+                                        // ISIN NL0011683594 Corporate Actions - Withholding Tax -3.24 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "name", "name1", "tickerSymbol", "isin") //
+                                                        .match("^Event .* Dividend per share [\\.,'\\d]+ (?<currency>[A-Z]{3})$") //
+                                                        .match("^(?<name>.*)$") //
+                                                        .match("^Description .*$") //
+                                                        .match("^(?<name1>.*)$") //
+                                                        .match("^Symbol (?<tickerSymbol>[A-Z0-9\\._-]{1,10}(?:\\.[A-Z]{1,4})?):.*$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .assign((t, v) -> {
+                                                            v.put("name", trim(v.get("name")) + " "
+                                                                            + trim(v.get("name1")));
+
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }))
 
                         .oneOf( //
                                         // @formatter:off
@@ -394,7 +417,33 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^.*Geeignete Menge (?<shares>[\\.,\\d]+)$") //
-                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
+                                        // Event Cash dividend Dividend per share 0.40 EUR
+                                        // Symbol VDIV:xetr Corporate Actions - Cash Dividends 21.60 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amountPerShare", "amount") //
+                                                        .match("^Event .* Dividend per share (?<amountPerShare>[\\.,'\\d]+) [A-Z]{3}$") //
+                                                        .match("^.*Corporate Actions \\- Cash Dividends (?<amount>[\\.,'\\d]+) [A-Z]{3}$") //
+                                                        .assign((t, v) -> {
+                                                            // The eligible
+                                                            // quantity is not
+                                                            // stated in the
+                                                            // document,
+                                                            // therefore we
+                                                            // calculate the
+                                                            // shares
+                                                            var amountPerShare = BigDecimal
+                                                                            .valueOf(asAmount(v.get("amountPerShare")));
+                                                            var amount = BigDecimal.valueOf(asAmount(v.get("amount")));
+
+                                                            var shares = amount.divide(amountPerShare,
+                                                                            Values.Share.precision(),
+                                                                            RoundingMode.HALF_UP);
+                                                            t.setShares(shares.movePointRight(Values.Share.precision())
+                                                                            .longValue());
+                                                        }))
 
                         // @formatter:off
                         // 43640515029 15-Apr-2025 15-Apr-2025 02-Apr-2025 30-Apr-2025 56,11 1,000000 56,11
@@ -630,7 +679,9 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                         .documentRange("date", "currency") //
                         .match("^Transfert d.esp.ces (?<type>(D.p.ts|Retrait)) (\\-)?(?<amount>[\\.,\\d\\s]+) \\-$") //
                         .assign((t, v) -> {
+                        // @formatter:off
                             // Is type --> "Retrait" change from DEPOSIT to REMOVAL
+                            // @formatter:on
                             if ("Retrait".equals(trim(v.get("type"))))
                                 t.setType(AccountTransaction.Type.REMOVAL);
 
