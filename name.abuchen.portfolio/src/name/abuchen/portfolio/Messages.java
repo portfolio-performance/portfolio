@@ -195,6 +195,7 @@ public class Messages extends NLS
     public static String LabelSearchAll;
     public static String LabelSearchBond;
     public static String LabelSearchCloseEndFund;
+    public static String LabelSearchCommodity;
     public static String LabelSearchCryptoCurrency;
     public static String LabelSearchCurrency;
     public static String LabelSearchETC;
