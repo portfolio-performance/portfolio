@@ -1842,10 +1842,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
-                        // The ex-ante cost information only announces the
-                        // upcoming
-                        // transaction, it does not book anything. The booking
-                        // itself is
+                        // The ex-ante cost information only announces the upcoming
+                        // transaction, it does not book anything. The booking itself is
                         // processed with the securities settlement document.
                         .section("type") //
                         .match("^(?<type>EX\\-ANTE KOSTENINFORMATION ZUM WERTPAPIER(KAUF|VERKAUF))$") //
@@ -1867,7 +1865,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "currency", "isin") //
                                                         .find("WERTPAPIER BESTELLUNG \\/ BETRAG WERT( HANDELSPLATZ)?")
                                                         .match("^(?<name>.*)$") //
-                                                        .match(".*[\\.,\\d]+ Stk\\. [\\.,\\d]+ (?<currency>\\p{Sc})( .*)?$") //
+                                                        .match("^.*[\\.,\\d]+ Stk\\. [\\.,\\d]+ (?<currency>\\p{Sc})( .*)?$") //
                                                         .match("^(ISIN: )?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
@@ -4007,7 +4005,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
     {
         final var type = new DocumentType("Steuerkorrektur f.r Rechnung am [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} angewendet", //
                         documentContext -> documentContext //
-                        // @formatter:off
+                                        // @formatter:off
                                         // Steuerkorrektur für Rechnung am 02.07.2026 angewendet
                                         // @formatter:on
                                         .section("date") //
@@ -4027,10 +4025,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
-                        // The interest and dividend amounts of this document
-                        // have already
-                        // been settled with the original statement. Only the
-                        // tax correction
+                        // The interest and dividend amounts of this document have already
+                        // been settled with the original statement. Only the tax correction
                         // is left over and has to be booked manually.
                         // @formatter:off
                         // KORREKTURDETAILS: Dein Konto wurde mit 1,86 EUR belastet. Das entspricht der obigen Steuerkorrektur.
@@ -4042,6 +4038,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
+                            t.setNote("Steuerkorrektur");
 
                             v.markAsFailure(Messages.MsgErrorTransactionTaxCorrectionUnsupported);
                         })
