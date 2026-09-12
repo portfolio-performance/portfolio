@@ -11869,7 +11869,7 @@ public class TradeRepublicPDFExtractorTest
                         taxes( //
                                         hasDate("2026-07-02T00:00"), //
                                         hasSource("Zinsabrechnung11.txt"), //
-                                        hasNote(null), //
+                                        hasNote("Steuerkorrektur"), //
                                         hasAmount("EUR", 1.86), hasGrossValue("EUR", 1.86), //
                                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
