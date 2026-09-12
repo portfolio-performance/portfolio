@@ -285,6 +285,13 @@ public class ZuercherKantonalbankPDFExtractor extends AbstractPDFExtractor
                         .match("^Zahlbar (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
+                        // @formatter:off
+                        // Ex-Tag 23.11.2023
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Ex\\-Tag (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
                         .oneOf( //
                                         // @formatter:off
                                         // zum Kurs  von GBP/CHF 1.09551 CHF
