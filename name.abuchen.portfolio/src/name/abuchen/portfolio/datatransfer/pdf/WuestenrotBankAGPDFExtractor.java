@@ -43,9 +43,13 @@ public class WuestenrotBankAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // für den Zeitraum von 3.8.2026 bis 31.8.2026 Wüstenrot FLEX - das Online Sparkonto
                                         // @formatter:on
-                                        .section("year") //
-                                        .match("^f.r den Zeitraum von [\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4} bis [\\d]{1,2}\\.[\\d]{1,2}\\.(?<year>[\\d]{4}).*$") //
-                                        .assign((ctx, v) -> ctx.put("year", v.get("year"))));
+                                        .section("startMonth", "startYear", "endYear") //
+                                        .match("^f.r den Zeitraum von [\\d]{1,2}\\.(?<startMonth>[\\d]{1,2})\\.(?<startYear>[\\d]{4}) bis [\\d]{1,2}\\.[\\d]{1,2}\\.(?<endYear>[\\d]{4}).*$") //
+                                        .assign((ctx, v) -> {
+                                            ctx.put("startMonth", v.get("startMonth"));
+                                            ctx.put("startYear", v.get("startYear"));
+                                            ctx.put("endYear", v.get("endYear"));
+                                        }));
 
         this.addDocumentTyp(type);
 
@@ -65,14 +69,15 @@ public class WuestenrotBankAGPDFExtractor extends AbstractPDFExtractor
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("date", "note", "type", "amount") //
-                        .documentContext("currency", "year") //
+                        .documentContext("currency", "startMonth", "startYear", "endYear") //
                         .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.) (?<note>(?!Habenzinsen|Bonuszinsen|Kapitalertragsteuer).*) [\\d]{1,2}\\.[\\d]{1,2}\\.(?<type>\\s(\\-)?)(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             // Is type --> "-" change from DEPOSIT to REMOVAL
                             if ("-".equals(trim(v.get("type"))))
                                 t.setType(AccountTransaction.Type.REMOVAL);
 
-                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setDateTime(asDate(v.get("date") + getYearOfBooking(v.get("date"), v.get("startMonth"),
+                                            v.get("startYear"), v.get("endYear"))));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(trim(v.get("note")));
@@ -93,17 +98,21 @@ public class WuestenrotBankAGPDFExtractor extends AbstractPDFExtractor
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .section("date", "note", "amount") //
-                        .documentContext("currency", "year") //
+                        .documentContext("currency", "startMonth", "startYear", "endYear") //
                         .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.) (?<note>Habenzinsen) [\\d]{1,2}\\.[\\d]{1,2}\\. (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setDateTime(asDate(v.get("date") + getYearOfBooking(v.get("date"), v.get("startMonth"),
+                                            v.get("startYear"), v.get("endYear"))));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(trim(v.get("note")));
                         })
 
-                        // The withholding tax on the credit interest is the
-                        // first capital gains tax booking of the statement.
+                        // The statement does not link a capital gains tax
+                        // booking to the interest it belongs to, the order is
+                        // the only available information. The credit interest
+                        // is booked before the bonus interest, so its tax is
+                        // the first capital gains tax booking.
                         .section("tax").optional() //
                         .documentContext("currency") //
                         .match("^[\\d]{1,2}\\.[\\d]{1,2}\\. Kapitalertragsteuer [\\d]{1,2}\\.[\\d]{1,2}\\. \\-(?<tax>[\\.,\\d]+)$") //
@@ -129,18 +138,19 @@ public class WuestenrotBankAGPDFExtractor extends AbstractPDFExtractor
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .section("date", "note", "amount") //
-                        .documentContext("currency", "year") //
+                        .documentContext("currency", "startMonth", "startYear", "endYear") //
                         .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.) (?<note>Bonuszinsen) [\\d]{1,2}\\.[\\d]{1,2}\\. (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setDateTime(asDate(v.get("date") + getYearOfBooking(v.get("date"), v.get("startMonth"),
+                                            v.get("startYear"), v.get("endYear"))));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(trim(v.get("note")));
                         })
 
-                        // The withholding tax on the bonus interest follows the
-                        // capital gains tax booking of the credit interest and
-                        // is therefore the second one.
+                        // If the statement also contains credit interest, the
+                        // first capital gains tax booking belongs to it and the
+                        // tax of the bonus interest is the second one.
                         .section("tax").optional() //
                         .documentContext("currency") //
                         .find("[\\d]{1,2}\\.[\\d]{1,2}\\. Kapitalertragsteuer [\\d]{1,2}\\.[\\d]{1,2}\\. \\-[\\.,\\d]+") //
@@ -153,6 +163,40 @@ public class WuestenrotBankAGPDFExtractor extends AbstractPDFExtractor
                             t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                         })
 
+                        // Without credit interest there is only one capital
+                        // gains tax booking and it belongs to the bonus
+                        // interest. The section above has then found nothing,
+                        // otherwise the tax is already assigned.
+                        .section("tax").optional() //
+                        .documentContext("currency") //
+                        .match("^[\\d]{1,2}\\.[\\d]{1,2}\\. Kapitalertragsteuer [\\d]{1,2}\\.[\\d]{1,2}\\. \\-(?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            if (!t.getUnitSum(Unit.Type.TAX).isZero())
+                                return;
+
+                            var tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
+
+                            t.addUnit(new Unit(Unit.Type.TAX, tax));
+
+                            t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
+                        })
+
                         .wrap(TransactionItem::new));
+    }
+
+    /**
+     * The booking lines contain the day and the month only, the year has to be
+     * taken from the period of the statement. If that period crosses a year
+     * boundary, every booking from the first month of the period onwards
+     * belongs to the first year and all others to the second one.
+     */
+    private String getYearOfBooking(String date, String startMonth, String startYear, String endYear)
+    {
+        if (startYear.equals(endYear))
+            return endYear;
+
+        var month = Integer.parseInt(date.split("\\.")[1]);
+
+        return month >= Integer.parseInt(startMonth) ? startYear : endYear;
     }
 }
