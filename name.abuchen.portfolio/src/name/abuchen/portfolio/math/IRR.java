@@ -8,6 +8,9 @@ import name.abuchen.portfolio.math.NewtonGoalSeek.Function;
 
 public final class IRR
 {
+
+    private static final double MIN_CENTER = 0.6e-5; // IRR < -99,999%
+
     private IRR()
     {
     }
@@ -20,7 +23,7 @@ public final class IRR
 
         double center = (left + right) / 2;
 
-        if (right - left < 0.001d)
+        if (center < MIN_CENTER || right - left < Math.sqrt(center) / 800)
             return center;
 
         double fCenter = f.compute(center);
@@ -50,7 +53,11 @@ public final class IRR
         if (Math.signum(fLeft) == Math.signum(fRight))
             guess = 1.05;
         else
+        {
             guess = halving(npv, 0, 1, fLeft, fRight);
+            if (guess < MIN_CENTER)
+                return -1;
+        }
 
         return NewtonGoalSeek.seek(npv, derivative, guess) - 1;
     }
