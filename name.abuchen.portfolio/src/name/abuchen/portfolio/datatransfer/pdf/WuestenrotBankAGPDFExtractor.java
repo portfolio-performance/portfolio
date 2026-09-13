@@ -49,7 +49,25 @@ public class WuestenrotBankAGPDFExtractor extends AbstractPDFExtractor
                                             ctx.put("startMonth", v.get("startMonth"));
                                             ctx.put("startYear", v.get("startYear"));
                                             ctx.put("endYear", v.get("endYear"));
-                                        }));
+                                        })
+
+                                        // @formatter:off
+                                        // 31.8. Habenzinsen 31.8. 0,28
+                                        // 31.8. Bonuszinsen 31.8. 70,99
+                                        // @formatter:on
+                                        .section("interest").optional().multipleTimes() //
+                                        .match("^[\\d]{1,2}\\.[\\d]{1,2}\\. (?<interest>Habenzinsen|Bonuszinsen) [\\d]{1,2}\\.[\\d]{1,2}\\. [\\.,\\d]+$") //
+                                        .assign((ctx, v) -> ctx.put("interestCount",
+                                                        String.valueOf(asInt(ctx.get("interestCount")) + 1)))
+
+                                        // @formatter:off
+                                        // 31.8. Kapitalertragsteuer 31.8. -0,07
+                                        // 31.8. Kapitalertragsteuer 31.8. -17,75
+                                        // @formatter:on
+                                        .section("tax").optional().multipleTimes() //
+                                        .match("^[\\d]{1,2}\\.[\\d]{1,2}\\. (?<tax>Kapitalertragsteuer) [\\d]{1,2}\\.[\\d]{1,2}\\. \\-[\\.,\\d]+$") //
+                                        .assign((ctx, v) -> ctx.put("taxCount",
+                                                        String.valueOf(asInt(ctx.get("taxCount")) + 1))));
 
         this.addDocumentTyp(type);
 
@@ -109,14 +127,22 @@ public class WuestenrotBankAGPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // The statement does not link a capital gains tax
-                        // booking to the interest it belongs to, the order is
-                        // the only available information. The credit interest
-                        // is booked before the bonus interest, so its tax is
-                        // the first capital gains tax booking.
+                        // booking to the interest it belongs to, the bank only
+                        // books them in the same order. They are therefore
+                        // paired by position, but solely if the statement holds
+                        // exactly one tax booking per interest booking. With
+                        // any other combination no tax is assigned at all
+                        // rather than assigning it to the wrong interest. The
+                        // credit interest is booked first, so its tax is the
+                        // first capital gains tax booking.
                         .section("tax").optional() //
                         .documentContext("currency") //
+                        .documentContextOptionally("interestCount", "taxCount") //
                         .match("^[\\d]{1,2}\\.[\\d]{1,2}\\. Kapitalertragsteuer [\\d]{1,2}\\.[\\d]{1,2}\\. \\-(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
+                            if (asInt(v.get("interestCount")) != asInt(v.get("taxCount")))
+                                return;
+
                             var tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
 
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
@@ -148,14 +174,18 @@ public class WuestenrotBankAGPDFExtractor extends AbstractPDFExtractor
                             t.setNote(trim(v.get("note")));
                         })
 
-                        // If the statement also contains credit interest, the
-                        // first capital gains tax booking belongs to it and the
-                        // tax of the bonus interest is the second one.
+                        // Two interest bookings and two tax bookings: the first
+                        // tax booking belongs to the credit interest, so the
+                        // one of the bonus interest is the second.
                         .section("tax").optional() //
                         .documentContext("currency") //
+                        .documentContextOptionally("interestCount", "taxCount") //
                         .find("[\\d]{1,2}\\.[\\d]{1,2}\\. Kapitalertragsteuer [\\d]{1,2}\\.[\\d]{1,2}\\. \\-[\\.,\\d]+") //
                         .match("^[\\d]{1,2}\\.[\\d]{1,2}\\. Kapitalertragsteuer [\\d]{1,2}\\.[\\d]{1,2}\\. \\-(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
+                            if (asInt(v.get("interestCount")) != asInt(v.get("taxCount")))
+                                return;
+
                             var tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
 
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
@@ -163,15 +193,15 @@ public class WuestenrotBankAGPDFExtractor extends AbstractPDFExtractor
                             t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                         })
 
-                        // Without credit interest there is only one capital
-                        // gains tax booking and it belongs to the bonus
-                        // interest. The section above has then found nothing,
-                        // otherwise the tax is already assigned.
+                        // The bonus interest is the only interest booking of
+                        // the statement, hence the single tax booking belongs
+                        // to it and the section above has found nothing.
                         .section("tax").optional() //
                         .documentContext("currency") //
+                        .documentContextOptionally("interestCount", "taxCount") //
                         .match("^[\\d]{1,2}\\.[\\d]{1,2}\\. Kapitalertragsteuer [\\d]{1,2}\\.[\\d]{1,2}\\. \\-(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            if (!t.getUnitSum(Unit.Type.TAX).isZero())
+                            if (asInt(v.get("interestCount")) != 1 || asInt(v.get("taxCount")) != 1)
                                 return;
 
                             var tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
@@ -198,5 +228,14 @@ public class WuestenrotBankAGPDFExtractor extends AbstractPDFExtractor
         var month = Integer.parseInt(date.split("\\.")[1]);
 
         return month >= Integer.parseInt(startMonth) ? startYear : endYear;
+    }
+
+    /**
+     * Returns the counter held in the document context, zero if the counted
+     * booking does not occur in the statement at all.
+     */
+    private int asInt(String value)
+    {
+        return value == null ? 0 : Integer.parseInt(value);
     }
 }
