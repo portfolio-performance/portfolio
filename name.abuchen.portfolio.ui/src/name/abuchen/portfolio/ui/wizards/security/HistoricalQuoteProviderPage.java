@@ -271,7 +271,7 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
                             + getModel().getCurrencyCode()
                             + String.valueOf(getModel().getFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID));
         else if (MFAPIQuoteFeed.ID.equals(getFeed()))
-            return MFAPIQuoteFeed.ID + String.valueOf(getModel().getFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID));
+            return MFAPIQuoteFeed.ID + String.valueOf(getModel().getFeedProperty(MFAPIQuoteFeed.SCHEME_CODE));
         else if (EODHistoricalDataQuoteFeed.ID.equals(getFeed()))
             return EODHistoricalDataQuoteFeed.ID + getModel().getTickerSymbol();
         else if (QuandlQuoteFeed.ID.equals(getFeed()))

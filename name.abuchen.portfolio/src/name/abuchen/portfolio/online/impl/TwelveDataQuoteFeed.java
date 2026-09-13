@@ -91,12 +91,6 @@ public class TwelveDataQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public boolean mergeDownloadRequests()
-    {
-        return true;
-    }
-
-    @Override
     public Optional<LatestSecurityPrice> getLatestQuote(Security security)
     {
         LocalDate quoteStartDate = LocalDate.now();
