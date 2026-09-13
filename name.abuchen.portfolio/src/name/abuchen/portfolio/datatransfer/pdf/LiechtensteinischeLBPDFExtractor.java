@@ -26,9 +26,9 @@ import name.abuchen.portfolio.money.Values;
  */
 
 @SuppressWarnings("nls")
-public class LiechtensteinischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
+public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
 {
-    public LiechtensteinischeLandesbankAGPDFExtractor(Client client)
+    public LiechtensteinischeLBPDFExtractor(Client client)
     {
         super(client);
 
