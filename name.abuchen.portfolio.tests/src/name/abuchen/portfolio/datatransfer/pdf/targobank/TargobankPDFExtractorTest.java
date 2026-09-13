@@ -1,7 +1,9 @@
 package name.abuchen.portfolio.datatransfer.pdf.targobank;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
@@ -19,6 +21,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
@@ -2578,37 +2581,42 @@ public class TargobankPDFExtractorTest
     }
 
     @Test
-    public void testSteuerbehandlungVonDividende10()
+    public void testKontoauszug01()
     {
         var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende10.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug01.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(countSecurities(results), is(1L));
+        assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransactions(results), is(5L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(2));
+        assertThat(results.size(), is(5));
         new AssertImportActions().check(results, "EUR");
 
-        // check security
-        assertThat(results, hasItem(security( //
-                        hasIsin("US0378331005"), hasWkn("865985"), hasTicker(null), //
-                        hasName("APPLE INC. REGISTERED SHARES O.N."), //
-                        hasCurrencyCode("EUR"))));
+        // check transactions
+        assertThat(results, hasItem(deposit(hasDate("2025-10-13"), hasAmount("EUR", 1111.11), //
+                        hasSource("Kontoauszug01.txt"), hasNote("INTERNE UMBUCHUNG HABEN TARGOBANK KONTO"))));
 
-        // check taxes transaction
-        assertThat(results, hasItem(taxes( //
-                        hasDate("2013-02-15T00:00"), hasShares(15.00), //
-                        hasSource("SteuerbehandlungVonDividende10.txt"), //
-                        hasNote("Tr.-Nr.: IND00009801615D00094890632"), //
-                        hasAmount("EUR", 1.17 + 0.06), hasGrossValue("EUR", 1.17 + 0.06), //
+        assertThat(results, hasItem(deposit(hasDate("2025-10-13"), hasAmount("EUR", 0.03), //
+                        hasSource("Kontoauszug01.txt"), hasNote("INTERNE UMBUCHUNG HABEN TARGOBANK KONTO"))));
+
+        assertThat(results, hasItem(removal(hasDate("2025-10-13"), hasAmount("EUR", 4436.70), //
+                        hasSource("Kontoauszug01.txt"), hasNote("INTERNE UMBUCHUNG SOLL TARGO OLB"))));
+
+        assertThat(results, hasItem(removal(hasDate("2025-10-13"), hasAmount("EUR", 0.03), //
+                        hasSource("Kontoauszug01.txt"), hasNote("INTERNE UMBUCHUNG SOLL TARGO OLB"))));
+
+        assertThat(results, hasItem(fee( //
+                        hasDate("2025-10-02"), //
+                        hasSource("Kontoauszug01.txt"), //
+                        hasNote("Grundgebühr für September 2025"), //
+                        hasAmount("EUR", 3.95), hasGrossValue("EUR", 3.95), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 

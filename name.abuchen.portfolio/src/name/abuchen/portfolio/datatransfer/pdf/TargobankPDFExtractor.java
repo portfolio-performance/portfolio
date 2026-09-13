@@ -77,6 +77,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
         addDividendeTransaction_Format02();
         addTaxesTreatmentTransaction_Format01();
         addTaxesTreatmentTransaction_Format02();
+        addAccountStatementTransaction();
         addNonImportableTransaction();
     }
 
@@ -723,6 +724,81 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
 
                             return item;
                         });
+    }
+
+    private void addAccountStatementTransaction()
+    {
+        final var type = new DocumentType("F I N A N Z S T A T U S", //
+                        documentContext -> documentContext //
+                        // @formatter:off
+                                        // F I N A N Z S T A T U S vom 01.10.2025 - 31.10.2025
+                                        // @formatter:on
+                                        .section("year") //
+                                        .match("^F I N A N Z S T A T U S vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\- [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}).*$") //
+                                        .assign((ctx, v) -> ctx.put("year", v.get("year")))
+
+                                        // @formatter:off
+                                        // Gesamtguthaben EUR 7.480,65
+                                        // @formatter:on
+                                        .section("currency") //
+                                        .match("^Gesamtguthaben (?<currency>[A-Z]{3}) [\\.,\\d]+$") //
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
+        this.addDocumentTyp(type);
+
+        // @formatter:off
+        // The booking table has the columns "Ausgaben", "Einnahmen" and "Guthaben/Kredit",
+        // but the text extraction does not preserve the column positions. Every booking
+        // therefore reads as "<amount> <balance>" and the direction can only be taken from
+        // the booking text. Booking texts that are not listed below are skipped on purpose,
+        // a booking with the wrong sign would be worse than a missing one.
+        //
+        // Datum Tag Buchungstext Ausgaben Einnahmen Guthaben/Kredit
+        // 13.10 MO INTERNE UMBUCHUNG HABEN TARGOBANK KONTO 1.111,11 1.111,11
+        // 13.10 MO INTERNE UMBUCHUNG SOLL TARGO OLB 4.436,70 0,03
+        // @formatter:on
+        var depositRemovalBlock = new Block(
+                        "^[\\d]{2}\\.[\\d]{2} (MO|DI|MI|DO|FR|SA|SO) INTERNE UMBUCHUNG (HABEN|SOLL) .*$");
+        type.addBlock(depositRemovalBlock);
+        depositRemovalBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
+
+                        .section("date", "note", "type", "amount") //
+                        .documentContext("year", "currency") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}) (MO|DI|MI|DO|FR|SA|SO) (?<note>INTERNE UMBUCHUNG (?<type>HABEN|SOLL) .*) (?<amount>[\\.,\\d]+) [\\.,\\d]+$") //
+                        .assign((t, v) -> {
+                            // Is type --> "SOLL" change from DEPOSIT to REMOVAL
+                            if ("SOLL".equals(v.get("type")))
+                                t.setType(AccountTransaction.Type.REMOVAL);
+
+                            t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(trim(v.get("note")));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // 02.10 DO Grundgebühr für September 2025 3,95 1.111,11
+        // @formatter:on
+        var feeBlock = new Block("^[\\d]{2}\\.[\\d]{2} (MO|DI|MI|DO|FR|SA|SO) Grundgeb.hr .*$");
+        type.addBlock(feeBlock);
+        feeBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
+
+                        .section("date", "note", "amount") //
+                        .documentContext("year", "currency") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}) (MO|DI|MI|DO|FR|SA|SO) (?<note>Grundgeb.hr .*) (?<amount>[\\.,\\d]+) [\\.,\\d]+$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(trim(v.get("note")));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 
     private void addNonImportableTransaction()
