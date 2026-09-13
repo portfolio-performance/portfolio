@@ -1,0 +1,56 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.87.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+ Seite 1
+Depotnummer
+ xxxxxxxxxx
+ Kundennummer xxxxxxxxxx
+ Name Name
+Abrechnungsnr. 73164322720
+Herrn u.Frau Datum 19.08.2026
+Name Ihr Berater Herr Name
+Name Telefon 030/xxxxx 
+Str. xx
+PLZ Berlin
+ 
+  
+ 
+Zinsgutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+NOK 1.425.000,00 NORWEGEN, KÖNIGREICH NO0010875230 (A28TXS)
+NK-ANL. 2020(30)
+Zahlbarkeitstag 19.08.2026 Zinssatz p. a. 1,375 %
+Bestandsstichtag 17.08.2026 Laufzeit Zinsschein 360 Tag(e) 
+Kupon per 19.08.2026 Herkunftsland Norwegen
+Zinstermin Monat(e) August 
+Devisenkurs EUR / NOK 10,9341 
+Devisenkursdatum 19.08.2026
+Zinsertrag 19.593,75 NOK 1.791,99+ EUR
+Umrechnung in EUR 1.791,99 EUR
+Kapitalertragsteuerpflichtiger Ertrag 1.791,99 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 1.791,99 EUR
+Kapitalertragsteuer 25 % auf 1.791,99 EUR 448,00- EUR
+Solidaritätszuschlag 5,5 % auf 448,00 EUR 24,64- EUR
+Ausmachender Betrag 1.319,35+ EUR
+Lagerstelle CLEARSTREAM BANKING EUROPE (849000 / 40030000)
+Den Betrag buchen wir zu Gunsten des Kontos xxxxxxxxxx (IBAN DE69 xxxx xxxx xxxx xxxx xx), BLZ 101 201 00 (BIC
+WELADED1WBB). 
+Keine Steuerbescheinigung. 
+0858.08200100.0000268ER02
+
+Seite 2
+Depotnummer xxxxxxxxxx
+Kundennummer xxxxxxxxxx
+Abrechnungsnr. 73164322720
+Datum 19.08.2026
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2026 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 405.081,87
+Ertrag 0,00 0,00 0,00 0,00 1.791,99
+Nachher 0,00 0,00 0,00 0,00 406.873,86
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0858.08200100.0000269ER02
