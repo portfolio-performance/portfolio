@@ -387,6 +387,13 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Zu Lasten .* Valuta (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}).*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
+                        // @formatter:off
+                        // Extag: 5.5.2022
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Extag: (?<exDate>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
                         .oneOf( //
                                         // @formatter:off
                                         // Zu Gunsten IBAN AT11 1111 1111 1111 1111 Valuta 07.06.2022 478,50 EUR
