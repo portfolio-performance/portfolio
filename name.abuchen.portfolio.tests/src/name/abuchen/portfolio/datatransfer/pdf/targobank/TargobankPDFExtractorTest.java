@@ -24,6 +24,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.skippedItem;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
@@ -2592,10 +2593,10 @@ public class TargobankPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(5L));
+        assertThat(countAccountTransactions(results), is(3L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countSkippedItems(results), is(2L));
         assertThat(results.size(), is(5));
         new AssertImportActions().check(results, "EUR");
 
@@ -2606,16 +2607,51 @@ public class TargobankPDFExtractorTest
         assertThat(results, hasItem(deposit(hasDate("2025-10-13"), hasAmount("EUR", 0.03), //
                         hasSource("Kontoauszug01.txt"), hasNote("INTERNE UMBUCHUNG HABEN TARGOBANK KONTO"))));
 
-        assertThat(results, hasItem(removal(hasDate("2025-10-13"), hasAmount("EUR", 4436.70), //
-                        hasSource("Kontoauszug01.txt"), hasNote("INTERNE UMBUCHUNG SOLL TARGO OLB"))));
-
-        assertThat(results, hasItem(removal(hasDate("2025-10-13"), hasAmount("EUR", 0.03), //
-                        hasSource("Kontoauszug01.txt"), hasNote("INTERNE UMBUCHUNG SOLL TARGO OLB"))));
-
         assertThat(results, hasItem(fee( //
                         hasDate("2025-10-02"), //
                         hasSource("Kontoauszug01.txt"), //
                         hasNote("Grundgebühr für September 2025"), //
+                        hasAmount("EUR", 3.95), hasGrossValue("EUR", 3.95), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check skipped items of the savings account
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        removal(hasDate("2025-10-13"), hasAmount("EUR", 4436.70), //
+                                        hasSource("Kontoauszug01.txt"), //
+                                        hasNote("INTERNE UMBUCHUNG SOLL TARGO OLB")))));
+
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        removal(hasDate("2025-10-13"), hasAmount("EUR", 0.03), //
+                                        hasSource("Kontoauszug01.txt"), //
+                                        hasNote("INTERNE UMBUCHUNG SOLL TARGO OLB")))));
+    }
+
+    @Test
+    public void testKontoauszug02()
+    {
+        var extractor = new TargobankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2026-08-04"), //
+                        hasSource("Kontoauszug02.txt"), //
+                        hasNote("Grundgebühr für Juli 2026"), //
                         hasAmount("EUR", 3.95), hasGrossValue("EUR", 3.95), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }

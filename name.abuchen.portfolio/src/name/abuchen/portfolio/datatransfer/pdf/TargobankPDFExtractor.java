@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
+import static name.abuchen.portfolio.util.TextUtil.replaceMultipleBlanks;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.time.LocalDate;
@@ -728,45 +729,74 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final var type = new DocumentType("F I N A N Z S T A T U S", //
-                        documentContext -> documentContext //
-                        // @formatter:off
-                                        // F I N A N Z S T A T U S vom 01.10.2025 - 31.10.2025
-                                        // @formatter:on
-                                        .section("year") //
+        // @formatter:off
+        // The period and the currency are valid for the whole document. Because the
+        // document type already uses ranges to tell the two accounts apart, they are
+        // provided as a range spanning the complete document as well.
+        //
+        // F I N A N Z S T A T U S vom 01.10.2025 - 31.10.2025
+        // Gesamtguthaben EUR 7.480,65
+        // @formatter:on
+        var documentRange = new Block("^F I N A N Z S T A T U S vom .*$") //
+                        .asRange(section -> section //
+                                        .attributes("year", "currency") //
                                         .match("^F I N A N Z S T A T U S vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\- [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}).*$") //
-                                        .assign((ctx, v) -> ctx.put("year", v.get("year")))
+                                        .match("^Gesamtguthaben (?<currency>[A-Z]{3}) [\\.,\\d]+$"));
 
-                                        // @formatter:off
-                                        // Gesamtguthaben EUR 7.480,65
-                                        // @formatter:on
-                                        .section("currency") //
-                                        .match("^Gesamtguthaben (?<currency>[A-Z]{3}) [\\.,\\d]+$") //
-                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
+        // @formatter:off
+        // The document contains the bookings of the current account and of the savings
+        // account in two tables of the same layout. Only the table of the current account
+        // is imported, the bookings of the savings account are skipped. The tables are
+        // told apart by their header line, which -- unlike the identically named line of
+        // the summary at the beginning of the document -- carries no balance.
+        //
+        // ONLINE-KONTO                            5333333333 EUR
+        // EUR TAGESGELDKONTO                      5222222250 EUR
+        // @formatter:on
+        var currentAccountRange = new Block("^ONLINE\\-KONTO[\\s]{1,}[\\d]+ [A-Z]{3}$", //
+                        "^Dieser Finanzstatus ist gleichzeitig Ihr Kontoauszug Nr\\. [\\d]+$") //
+                                        .asRange(section -> section //
+                                                        .attributes("accountType") //
+                                                        .match("^(?<accountType>ONLINE\\-KONTO)[\\s]{1,}[\\d]+ [A-Z]{3}$"));
+
+        var savingsAccountRange = new Block("^EUR TAGESGELDKONTO[\\s]{1,}[\\d]+ [A-Z]{3}$") //
+                        .asRange(section -> section //
+                                        .attributes("accountType") //
+                                        .match("^EUR (?<accountType>TAGESGELDKONTO)[\\s]{1,}[\\d]+ [A-Z]{3}$"));
+
+        final var type = new DocumentType("F I N A N Z S T A T U S", documentRange, currentAccountRange,
+                        savingsAccountRange);
         this.addDocumentTyp(type);
 
         // @formatter:off
-        // The booking table has the columns "Ausgaben", "Einnahmen" and "Guthaben/Kredit",
-        // but the text extraction does not preserve the column positions. Every booking
-        // therefore reads as "<amount> <balance>" and the direction can only be taken from
-        // the booking text. Booking texts that are not listed below are skipped on purpose,
-        // a booking with the wrong sign would be worse than a missing one.
+        // The booking table has the columns "Belastungen", "Gutschriften" and
+        // "Guthaben/Kredit", but the text extraction does not preserve the column
+        // positions and no sign is printed. Every booking therefore reads as
+        // "<amount> <balance>" and the direction can only be taken from the booking
+        // text. Booking texts that are not listed below are skipped on purpose, a
+        // booking with the wrong sign would be worse than a missing one.
         //
         // Datum Tag Buchungstext Ausgaben Einnahmen Guthaben/Kredit
         // 13.10 MO INTERNE UMBUCHUNG HABEN TARGOBANK KONTO 1.111,11 1.111,11
         // 13.10 MO INTERNE UMBUCHUNG SOLL TARGO OLB 4.436,70 0,03
         // @formatter:on
         var depositRemovalBlock = new Block(
-                        "^[\\d]{2}\\.[\\d]{2} (MO|DI|MI|DO|FR|SA|SO) INTERNE UMBUCHUNG (HABEN|SOLL) .*$");
+                        "^[\\d]{2}\\.[\\d]{2}\\.? (MO|DI|MI|DO|FR|SA|SO) INTERNE UMBUCHUNG (HABEN|SOLL) .*$");
         type.addBlock(depositRemovalBlock);
         depositRemovalBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("date", "note", "type", "amount") //
-                        .documentContext("year", "currency") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}) (MO|DI|MI|DO|FR|SA|SO) (?<note>INTERNE UMBUCHUNG (?<type>HABEN|SOLL) .*) (?<amount>[\\.,\\d]+) [\\.,\\d]+$") //
+                        .documentRange("year", "currency", "accountType") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2})\\.? (MO|DI|MI|DO|FR|SA|SO) (?<note>INTERNE UMBUCHUNG (?<type>HABEN|SOLL) .*) (?<amount>[\\.,\\d]+) [\\.,\\d]+$") //
                         .assign((t, v) -> {
+                            // Only the bookings of the current account are
+                            // imported
+                            if (!"ONLINE-KONTO".equals(v.get("accountType")))
+                                v.getTransactionContext().skipTransaction(
+                                                Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
                             // Is type --> "SOLL" change from DEPOSIT to REMOVAL
                             if ("SOLL".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.REMOVAL);
@@ -774,28 +804,35 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setNote(trim(v.get("note")));
+                            t.setNote(replaceMultipleBlanks(trim(v.get("note"))));
                         })
 
                         .wrap(TransactionItem::new));
 
         // @formatter:off
         // 02.10 DO Grundgebühr für September 2025 3,95 1.111,11
+        // 04.08. DI Grundgebühr für Juli      2026 3,95 1.489,25
         // @formatter:on
-        var feeBlock = new Block("^[\\d]{2}\\.[\\d]{2} (MO|DI|MI|DO|FR|SA|SO) Grundgeb.hr .*$");
+        var feeBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.? (MO|DI|MI|DO|FR|SA|SO) Grundgeb.hr .*$");
         type.addBlock(feeBlock);
         feeBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         .section("date", "note", "amount") //
-                        .documentContext("year", "currency") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}) (MO|DI|MI|DO|FR|SA|SO) (?<note>Grundgeb.hr .*) (?<amount>[\\.,\\d]+) [\\.,\\d]+$") //
+                        .documentRange("year", "currency", "accountType") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2})\\.? (MO|DI|MI|DO|FR|SA|SO) (?<note>Grundgeb.hr .*) (?<amount>[\\.,\\d]+) [\\.,\\d]+$") //
                         .assign((t, v) -> {
+                            // Only the bookings of the current account are
+                            // imported
+                            if (!"ONLINE-KONTO".equals(v.get("accountType")))
+                                v.getTransactionContext().skipTransaction(
+                                                Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
                             t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setNote(trim(v.get("note")));
+                            t.setNote(replaceMultipleBlanks(trim(v.get("note"))));
                         })
 
                         .wrap(TransactionItem::new));
