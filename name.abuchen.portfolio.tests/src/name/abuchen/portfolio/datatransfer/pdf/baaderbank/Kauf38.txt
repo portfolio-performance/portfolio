@@ -1,0 +1,65 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.5
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Baader Bank AG   Weihenstephaner Straße 4   85716 Unterschleißheim Gartenstraße 67
+T  00800 00 586336*   F  +49 89 5150 2442    service@baaderbank.de 76135 Karlsruhe
+www.finanzen.net/zero
++49 89 5455 8188
+Seite 1/2
+Herrn Karlsruhe
+02.03.2026
+BLLnRss VbXjl
+XXXXX-XXXX-XXX. X yXCbSeB mVcZD
+13013 pBCUQchPlGW Stamm-Nr.: 0886101    Portfolio: 1
+Depot-Nr.: 0062639585
+Vorgangs-Nr.: 453010440
+Referenz-Nr.: 495116874
+Wertpapierabrechnung: Kauf
+Auftragsdatum: 02.03.2026 Ausführungsplatz: GETTEX - MM Munich
+Auftragszeit: 14:09:43:00
+Nominale ISIN: IE00BF4RFH31 WKN: A2DWBY Kurs 
+STK 20 iShsIII-MSCI Wld Sm.Ca.UCI.ETF EUR 8,38
+Registered Shares USD(Acc)o.N.
+Auftraggeber: Depotinhaber
+Art der Auftragserteilung: Orderroutingssystem
+Kurswert EUR 167,60
+Finanzkommission Baader EUR 0,50
+Handelsplatzabhängige Gutschrift Baader EUR 0,40 -
+Vermittlungsentgelt Finanzen EUR 0,90
+Zu Lasten Konto 4376051208 Valuta: 04.03.2026 EUR 168,60
+Die Wertpapiere buchen wir zu Gunsten Ihres Depots.
+Details zur Ausführung: Handels- Handels- 
+Nominale Kurs Ausführungsplatz datum uhrzeit 
+STK   20 EUR 8,38 GETTEX - MM Munich 02.03.2026 14:09:43:976
+Verwahrart: Wertpapierrechnung Zeitzone der Handelsuhrzeit: MEZ/MESZ
+Lagerstelle: 1419 MIC des Ausführungsplatzes: MUNC
+Lagerland: Luxemburg
+Für die Ausführung dieses Auftrags gelten die Usancen des jeweiligen Ausführungsplatzes.
+Diese Auftragsbestätigung/Abrechnung wurde von der Baader Bank AG erstellt. Bitte prüfen Sie diese auf Richtigkeit und Vollständigkeit. Etwaige 
+Einwendungen gegen diese Auftragsbestätigung/Abrechnung müssen nach Zugang unverzüglich bei der Baader Bank AG erhoben werden. 
+Dieser Auftrag erfolgte ohne Empfehlung der Bank. Es wurde keine Anlageberatung und keine individuelle Aufklärung durch die Bank erbracht.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+finanzen.net zero GmbH, Gartenstraße 67, 76135 Karlsruhe • Impressum unter: www.finanzen.net/zero/impressum
+finanzen.net zero GmbH erbringt Anlagevermittlung als gebundener Vermittler der DonauCapital Wertpapier GmbH 
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender), Martin Zoller • Vorsitzender des Aufsichtsrates: Dr. Louis Hagen • Amtsgericht München HRB 121537 • 
+Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336* • service@baaderbank.de
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen. WPABRECHNUNG-060.114
+Wertpapierabrechnung: Kauf
+Fortsetzung: Seite 2/2
+Die Aushändigung des Fondsprospektes/Offering Memorandum sowie des aktuellen Rechenschaftsberichtes durch die Bank ist im Rahmen der 
+Kooperation der Bank mit Ihrem Finanzdienstleister nicht erforderlich bzw. wird von diesem übernommen. Sofern Sie einen Fondsprospekt 
+wünschen, wenden Sie sich daher bitte direkt an den Finanzdienstleister.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+finanzen.net zero GmbH, Gartenstraße 67, 76135 Karlsruhe • Impressum unter: www.finanzen.net/zero/impressum
+finanzen.net zero GmbH erbringt Anlagevermittlung als gebundener Vermittler der DonauCapital Wertpapier GmbH 
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender), Martin Zoller • Vorsitzender des Aufsichtsrates: Dr. Louis Hagen • Amtsgericht München HRB 121537 • 
+Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336* • service@baaderbank.de
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen. WPABRECHNUNG-060.114
