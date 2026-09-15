@@ -57,6 +57,7 @@ public class PDFImportAssistant
         extractors.add(new BundesschatzPDFExtractor(client));
         extractors.add(new C24BankGmbHPDFExtractor(client));
         extractors.add(new CetesDirectoPDFExtractor(client));
+        extractors.add(new ChasePDFExtractor(client));
         extractors.add(new ComdirectPDFExtractor(client));
         extractors.add(new CommerzbankPDFExtractor(client));
         extractors.add(new CommSecPDFExtractor(client));
