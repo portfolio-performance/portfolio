@@ -319,6 +319,13 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                         .match("^Zahlungstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
+                        // @formatter:off
+                        // Ex-Tag 16.09.2019
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Ex\\-Tag (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
                         .oneOf( //
                                         // @formatter:off
                                         // Ausmachender Betrag USD 1,57
@@ -426,6 +433,13 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                         .section("date") //
                         .match("^Zahlungstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Extag 27.01.2010
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Extag (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
 
                         // @formatter:off
                         // For dividend transactions, the gross amount is calculated.
