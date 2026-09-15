@@ -1,0 +1,52 @@
+```
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.86.2.qualifier
+System: win32 | x86_64 | 21.0.12+8-LTS | Azul Systems, Inc.
+-----------------------------------------
+RECHNUNG
+Wenn unzustellbar zurück an Postfach Deutsche Postanschrift Geschäftssitz
+Advanzia Bank S.A., Postfach 4108, D-54231 Trier
+Advanzia Bank S.A. Advanzia Bank S.A.
+nkeqea JnTMs Postfach 4108 14, rue Gabriel Lippmann
+D-54231 Trier Parc d'Activité Syrdall 2
+vcFoYODejKovft STR. 29 L-5365 Munsbach
+18021 ZxvYbETrXs Kontakt
+Deutschland Tel: 0800 880 11 20 (aus dem dt. Festnetz)
+Tel: +49 345 21 97 30 30 (Mobilfunk u. Ausland)
+service@gebuhrenfrei.com
+Rechnung Gebührenfrei Mastercard Gold (Kreditkartennummer: ************9460)
+Abrechnung vom 04.12.2023 bis 03.01.2024 Rechnung vom 03.01.2024
+Datum Beschreibung Ort Betrag EUR
+ALTER SALDO 0,00
+09.12.2023 tfNYesQXO 16569540 jSiJCLzb 131,50
+12.12.2023 TOP cLu xwJDBZBkg fJGDD rYoFgv 700,00
+19.12.2023 TOP gZu SQlrWnllz JDrHc svoMNz -700,00
+01.01.2024 fdxIckwhI VKfH LEiv 33,00
+03.01.2024 NEUER SALDO 164,50
+Mindestbetrag fällig am 22.01.2024 30,00
+Kreditlimit Verfügbar Saldo Mindestbetrag Fällig am
+6.000,00 EUR 5.835,50 EUR 164,50 EUR 30,00 EUR 22.01.2024
+Bitte überweisen Sie auf unsere unten genannte Bankverbindung. Überweisungen müssen von einem Konto des
+Karteninhabers erfolgen. In der Rechnung sind die gebuchten Transaktionen und Zinsen bis zum 03.01.2024
+berücksichtigt. Noch nicht gebuchte Transaktionen aus diesem Monat werden auf der Folgerechnung
+ausgewiesen. Werden Einwendungen gegen den Rechnungsabschluss nicht innerhalb von sechs Wochen nach
+dessen Zugang schriftlich erhoben, gilt er als genehmigt. Bei Änderungen Ihrer E-Mail- oder Postadresse
+informieren Sie uns bitte rechtzeitig.
+Überweisen Sie bitte ausschließlich unter folgenden Angaben:
+Begünstigter: aHWthA KHiFB
+Kreditinstitut: Advanzia Bank S.A.
+IBAN: Ci510825376632162300 - BIC: KboRoRot
+Verwendungszweck: Mastercard
+Fällig am: 22.01.2024
+Bitte beachten Sie, dass eine abweichende Angabe dieser Daten zu einer Verzögerung der Buchung Ihrer
+Einzahlung führen kann.
+Jeder Kunde hat eine persönliche IBAN, auf die Einzahlungen für das eigene Kreditkartenkonto zu tätigen sind.
+Einzahlungen auf eine abweichende IBAN können nicht Ihrem Kreditkartenkonto zugeordnet werden, auch wenn
+im Verwendungszweck Ihre Kreditkartennummer oder eine andere Information angegeben wurde.
+Bitte beachten Sie unsere geänderten Servicezeiten. Diese sind werktags von Montag-Freitag von 8 bis 22 Uhr.
+Mit unserer App haben Sie rund um die Uhr Zugang zu den Informationen Ihrer Kreditkarte. Hier können Sie unter
+anderem auch Ihre Daten ändern oder die Sperrung Ihrer Kreditkarte veranlassen. Auch können Sie uns über das
+Kontaktformular eine Nachricht zukommen lassen.
+Gesetzliche Vertreter: Nishant Fafalia, Kaj Larsen, Patrick Thilges - RC Lux: B 109476 . VAT: LU 20992462 1/1
+
+```
