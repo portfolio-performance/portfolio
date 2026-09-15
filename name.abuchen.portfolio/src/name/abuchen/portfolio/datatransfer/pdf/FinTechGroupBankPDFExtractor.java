@@ -139,11 +139,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             // @formatter:on
                             if (v.get("notation") != null && !v.get("notation").startsWith("St"))
                             {
-                                var shares = asBigDecimal(v.get("shares"));
-                                t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
-
-                                if (t.getPortfolioTransaction().getType().isPurchase())
-                                    type.getCurrentContext().putBoolean("isPurchaseBonds", true);
+                                t.setShares(asBondNominal(v.get("shares")));
                             }
                             else if ("St.".equals(v.get("notation")))
                             {
@@ -234,6 +230,34 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                             var fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }),
+                                        // @formatter:off
+                                        // When bonds are traded, the accrued interest ("Zinsbetrag") is part of the
+                                        // purchase price and therefore part of the gross value.
+                                        //
+                                        // Ausgeführt    :    2.000,000000 USD     Kurswert      :           1.126,29 EUR
+                                        // Kurs          :       60,690000 %       Provision     :               5,90 EUR
+                                        // Devisenkurs   :        1,077697         Eigene Spesen :               0,00 EUR
+                                        // Lagerstelle   : Clearstream Lux.        Zinsbetrag    :               1,25 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("gross", "baseCurrency", "termCurrency",
+                                                                        "exchangeRate", "accruedInterest") //
+                                                        .match("^Ausgef.hrt([:\\s]+)?[\\s]{1,}[\\.,\\d]+ (?<termCurrency>[A-Z]{3})[\\s]{1,}Kurswert([:\\s]+)?(?<gross>[\\.,\\d]+) (?<baseCurrency>[A-Z]{3})$") //
+                                                        .match("^Kurs[:\\s]{1,}[\\.,\\d]+ %.*$") //
+                                                        .match("^Devisenkurs[:\\s]{1,}(?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .match("^.* Zinsbetrag[:\\s]{1,}(?<accruedInterest>[\\.,\\d]+) [A-Z]{3}$") //
+                                                        .assign((t, v) -> {
+                                                            var rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            var gross = Money.of(rate.getBaseCurrency(),
+                                                                            asAmount(v.get("gross")) + asAmount(
+                                                                                            v.get("accruedInterest")));
+                                                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t,
+                                                                            type.getCurrentContext());
                                                         }),
                                         // @formatter:off
                                         // Ausgeführt    :    2.000,000000 USD     Kurswert      :           1.126,29 EUR
@@ -403,6 +427,28 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^[\\s]*(?<note2>[\\d]+).*$") //
                                                         .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + v.get("note2"))))
 
+                        .optionalOneOf( //
+                        // @formatter:off
+                                        // Lagerstelle   : Clearstream Nat.        Zinsbetrag    :              6,25 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note", "amount", "currency") //
+                                                        .match("^.* (?<note>Zinsbetrag)[:\\s]{1,}(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(),
+                                                                        v.get("note") + " " + v.get("amount") + " "
+                                                                                        + v.get("currency"),
+                                                                        " | "))),
+                                        // @formatter:off
+                                        // Lagerland      Deutschland             Zinsbetrag     EUR             9.264,06
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note", "currency", "amount") //
+                                                        .match("^.* (?<note>Zinsbetrag)[:\\s]{1,}(?<currency>[A-Z]{3})[\\s]{1,}(?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(),
+                                                                        v.get("note") + " " + v.get("amount") + " "
+                                                                                        + v.get("currency"),
+                                                                        " | "))))
+
                         .wrap((t, ctx) -> {
                             var item = new BuySellEntryItem(t);
 
@@ -423,12 +469,6 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             // Finally, we remove the flag.
                             // @formatter:on
                             type.getCurrentContext().remove("negativeTax");
-
-                            // @formatter:off
-                            // If we purchase bonds, then the interest amount "Zinsbetrag" is fee and has been marked so.
-                            // Finally, we remove the flag.
-                            // @formatter:on
-                            type.getCurrentContext().remove("isPurchaseBonds");
 
                             return item;
                         });
@@ -787,6 +827,11 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
 
                         .optionalOneOf( //
+                                        // @formatter:off
+                                        // Kurs          : 24,6800 USD             Kurswert      :           1.274,85 EUR
+                                        // Devisenkurs   : 1,161544                Provision     :               5,90 EUR
+                                        // Valuta        : 17.08.2026            **Einbeh. Steuer:             -58,02 EUR
+                                        // @formatter:on
                                         section -> section //
                                                         .attributes("exchangeRate", "taxRefund", "currency") //
                                                         .match("^Devisenkurs[:\\s]{1,}(?<exchangeRate>[\\.,\\d]+).*$") //
@@ -806,6 +851,13 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                                                                 t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().subtract(taxRefund));
                                                                 }
+                                                            else if (t.getPortfolioTransaction().getType().isLiquidation() && t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
+                                                            {
+                                                                type.getCurrentContext().putBoolean("negativeTax", true);
+
+                                                                var taxRefund = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxRefund")));
+                                                                t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().subtract(taxRefund));
+                                                            }
                                                         }),
                                         // @formatter:off
                                         // Lagerland    : Deutschland           **Einbeh. Steuer :            -100,00 EUR
@@ -1036,8 +1088,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("shares") //
                                                         .match("^St\\.\\/Nominale[:\\s]{1,}(?<shares>[\\.,\\d]+).*$") //
                                                         .assign((t, v) -> {
-                                                            var shares = asBigDecimal(v.get("shares"));
-                                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                                            t.setShares(asBondNominal(v.get("shares")));
                                                         }),
                                         // @formatter:off
                                         // Gesamt Stückzahl - Aktien 641.745 Stück
@@ -1208,6 +1259,64 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }))
+
+                        // @formatter:off
+                        // Some documents do not contain an exchange rate, although the withheld
+                        // tax is stated in a currency other than the dividend. In this case we
+                        // derive the exchange rate from the amounts of the document:
+                        //
+                        // exchange rate = (gross dividend - withholding tax - final amount) / withheld tax
+                        //
+                        // This only works for a withheld tax. A refunded tax (negative amount) is
+                        // handled by the section below.
+                        //
+                        // Extag           :      11.03.2026      Bruttodividende :            0,15 USD
+                        //                                       *Einbeh. Steuer  :            0,01 EUR
+                        // Quellenst.-satz :           15,00 %    Gez. Quellenst. :            0,02 USD
+                        //                                        Endbetrag       :            0,12 USD
+                        // @formatter:on
+                        .section("fxGross", "termCurrency", "tax", "baseCurrency", "withHoldingTax", "amount").optional() //
+                        .match("^.*(Bruttoaussch.ttung|Bruttodividende|Bruttothesaurierung|Zinsbetrag)[:\\s]{1,}(?<fxGross>[\\.,\\d]+) (?<termCurrency>[A-Z]{3})$") //
+                        .match("^.*[\\*]+Einbeh\\. Steuer[:\\s]{1,}(?<tax>[\\.,\\d]+) (?<baseCurrency>[A-Z]{3})$") //
+                        .match("^.* Gez\\. (Quellenst\\.|Quellensteuer)[:\\s]{1,}(?<withHoldingTax>[\\.,\\d]+) [A-Z]{3}$") //
+                        .match("^.*Endbetrag[:\\s]{1,}(?<amount>[\\.,\\d]+) [A-Z]{3}$") //
+                        .assign((t, v) -> {
+                            // Do not overwrite an exchange rate stated in the document
+                            if (type.getCurrentContext().getType(ExtrExchangeRate.class).isPresent())
+                                return;
+
+                            if (asCurrencyCode(v.get("baseCurrency")).equals(asCurrencyCode(v.get("termCurrency"))))
+                                return;
+
+                            var tax = asAmount(v.get("tax"));
+                            var fxTax = asAmount(v.get("fxGross")) - asAmount(v.get("withHoldingTax")) - asAmount(v.get("amount"));
+
+                            if (tax <= 0 || fxTax <= 0)
+                                return;
+
+                            var exchangeRate = BigDecimal.valueOf(fxTax).divide(BigDecimal.valueOf(tax), 10, RoundingMode.HALF_UP);
+
+                            type.getCurrentContext().putType(new ExtrExchangeRate(exchangeRate, //
+                                            asCurrencyCode(v.get("baseCurrency")), asCurrencyCode(v.get("termCurrency"))));
+                        })
+
+                        // @formatter:off
+                        // If the tax is refunded (negative amount) and is stated in a currency
+                        // other than the dividend, the refund is credited to the account of the
+                        // tax currency, while the dividend is credited to the account of the
+                        // dividend currency. Two different accounts cannot be addressed by a
+                        // single imported transaction, therefore we report a failure.
+                        //
+                        // Extag           :      09.01.2026      Bruttodividende :            2,61 USD
+                        //                                       *Einbeh. Steuer  :           -0,23 EUR
+                        //                                        Endbetrag       :            2,84 USD
+                        // @formatter:on
+                        .section("currency").optional() //
+                        .match("^.*[\\*]+Einbeh\\. Steuer[:\\s]{1,}\\-[\\.,\\d]+ (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> {
+                            if (!t.getCurrencyCode().equals(asCurrencyCode(v.get("currency"))))
+                                v.markAsFailure(Messages.MsgErrorTransactionMissingExchangeRateIfInForex);
+                        })
 
                         .optionalOneOf( //
                                         // @formatter:off
@@ -2220,8 +2329,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                             // @formatter:on
                                                             if (v.get("notation") != null && !v.get("notation").startsWith("St"))
                                                             {
-                                                                var shares = asBigDecimal(v.get("shares"));
-                                                                t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                                                t.setShares(asBondNominal(v.get("shares")));
                                                             }
                                                             else if ("St.".equals(v.get("notation")))
                                                             {
@@ -2372,8 +2480,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             // @formatter:on
                             if (v.get("notation") != null && !v.get("notation").startsWith("St"))
                             {
-                                var shares = asBigDecimal(v.get("shares"));
-                                t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                t.setShares(asBondNominal(v.get("shares")));
                             }
                             else if ("St.".equals(v.get("notation")))
                             {
@@ -2651,8 +2758,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             // @formatter:on
                             if (v.get("notation") != null && !v.get("notation").startsWith("St"))
                             {
-                                var shares = asBigDecimal(v.get("shares"));
-                                t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                t.setShares(asBondNominal(v.get("shares")));
                             }
                             else if ("St.".equals(v.get("notation")))
                             {
@@ -2882,8 +2988,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             // @formatter:on
                             if (v.get("notation") != null && !v.get("notation").startsWith("St"))
                             {
-                                var shares = asBigDecimal(v.get("shares"));
-                                t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                t.setShares(asBondNominal(v.get("shares")));
                             }
                             else if ("St.".equals(v.get("notation")))
                             {
@@ -3053,30 +3158,35 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // Devisenkurs   : 1,192200(x)             Provision     :
                                         // Valuta        : 02.12.2020            **Einbeh. Steuer:              -0,84 EUR
+                                        //
+                                        // Devisenkurs   : 1,161544                Provision     :               5,90 EUR
+                                        // Valuta        : 17.08.2026            **Einbeh. Steuer:             -58,02 EUR
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("exchangeRate", "fxAmount", "fxCurrency") //
+                                                        .attributes("exchangeRate", "gross", "baseCurrency") //
                                                         .match("^Devisenkurs[:\\s]{1,}(?<exchangeRate>[\\.,\\d]+).*$") //
-                                                        .match("^.* [\\*]+[\\s]*Einbeh\\. Steuer[:\\s]{1,}\\-(?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[A-Z]{3})$") //
+                                                        .match("^.* [\\*]+[\\s]*Einbeh\\. Steuer[:\\s]{1,}\\-(?<gross>[\\.,\\d]+) (?<baseCurrency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
+                                                            v.put("termCurrency", t.getSecurity().getCurrencyCode());
+
                                                             type.getCurrentContext().putBoolean("negativeTax", true);
 
-                                                            if (!t.getCurrencyCode().contentEquals(v.get("fxCurrency")))
+                                                            if (!t.getSecurity().getCurrencyCode().contentEquals(v.get("baseCurrency")))
                                                             {
-                                                                var fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
+                                                                var rate = asExchangeRate(v);
+                                                                type.getCurrentContext().putType(rate);
 
-                                                                var exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                                                                var inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                                                                var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                                var fxGross = rate.convert(rate.getTermCurrency(), gross);
 
-                                                                var amount = Money.of(t.getCurrencyCode(), BigDecimal.valueOf(fxAmount.getAmount())
-                                                                                .multiply(inverseRate).setScale(0, RoundingMode.HALF_UP).longValue());
+                                                                checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
 
-                                                                t.setMonetaryAmount(amount);
+                                                                t.setMonetaryAmount(gross);
                                                             }
                                                             else
                                                             {
-                                                                t.setCurrencyCode(asCurrencyCode(v.get("fxCurrency")));
-                                                                t.setAmount(asAmount(v.get("fxAmount")));
+                                                                t.setCurrencyCode(asCurrencyCode(v.get("baseCurrency")));
+                                                                t.setAmount(asAmount(v.get("gross")));
                                                             }
                                                         }),
                                         // @formatter:off
@@ -3516,8 +3626,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                             // @formatter:on
                                                             if (v.get("notation") != null && !v.get("notation").startsWith("St"))
                                                             {
-                                                                var shares = asBigDecimal(v.get("shares"));
-                                                                t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                                                t.setShares(asBondNominal(v.get("shares")));
                                                             }
                                                             else if ("St.".equals(v.get("notation")))
                                                             {
@@ -3944,26 +4053,6 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .match("^.* Gesamtgeb.hr[:\\s]{1,}(?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("negative"))
-                                processFeeEntries(t, v, type);
-                        })
-
-                        // @formatter:off
-                        // Lagerstelle   : Clearstream Nat.        Zinsbetrag    :              6,25 EUR
-                        // @formatter:on
-                        .section("fee", "currency").optional() //
-                        .match("^.* Zinsbetrag[:\\s]{1,}(?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
-                        .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("negative") && type.getCurrentContext().getBoolean("isPurchaseBonds"))
-                                processFeeEntries(t, v, type);
-                        })
-
-                        // @formatter:off
-                        // Lagerland      Deutschland             Zinsbetrag     EUR             9.264,06
-                        // @formatter:on
-                        .section("fee", "currency").optional() //
-                        .match("^.* Zinsbetrag[:\\s]{1,}(?<currency>[A-Z]{3})[\\s]{1,}(?<fee>[\\.,\\d]+)$") //
-                        .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("negative") && type.getCurrentContext().getBoolean("isPurchaseBonds"))
                                 processFeeEntries(t, v, type);
                         });
     }
