@@ -118,6 +118,40 @@ public class TradegateAGPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf03()
+    {
+        var extractor = new TradegateAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE0005AJA0P1"), hasWkn("A41L70"), hasTicker(null), //
+                        hasName("Legal&General ETF-Gl.Qual.Div. Reg.Shs USD Dis. oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-05-27T16:17:00"), hasShares(2.673510), //
+                        hasSource("Kauf03.txt"), //
+                        hasNote("Order-/Ref.nr. 9876543"), //
+                        hasAmount("EUR", 25.00), hasGrossValue("EUR", 25.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         var extractor = new TradegateAGPDFExtractor(new Client());
