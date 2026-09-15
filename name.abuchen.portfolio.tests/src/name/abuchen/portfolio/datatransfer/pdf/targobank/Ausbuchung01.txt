@@ -1,0 +1,37 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TARGOBANK AG
+Postfach 10 02 30
+47002 Duisburg
+TARGOBANK AG - Postfach 10 02 30 - 47002 Duisburg
+www.targobank.de
+HERR
+xxxx
+........................................................................................................................................................................................................
+Ausbuchung aus Ihrem Depot 09.12.2025
+Rechnungsnummer: TIT-2025-0223620158-000yyyy
+xxxx
+Sehr geehrter Depotkunde,
+wir teilen Ihnen mit, dass wir von Ihrem oben genannten Konto per Ausbuchung eine Übertragung mit
+den folgenden Merkmalen vorgenommen haben.
+Tag der Übertragung 09.12.2025
+Lieferung an ING-DIBA AG
+Begünstigter xxxx
+50010yyy 80023yyyy
+Stück/Nominal Produkt Verwahrart Neuer Bestand
+WKN/ISIN
+34,0000 ST MUL-AMUN ST600 BANK ETF A Girosammelverwahrung 0,0000 ST
+LYX01W / LU1834983477
+18,0000 ST ISHARES MDAX UC.ETF EOA Girosammelverwahrung 0,0000 ST
+593392 / DE0005933923
+Mit freundlichen Grüßen
+Ihre TARGOBANK
+Dieser Beleg wurde maschinell erstellt und wird nicht unterschrieben. Irrtum vorbehalten.
+Seite 1
+TARGOBANK AG | Vorstand: Isabelle Chevelard (Vorsitzende); Christophe Jéhan (stellv. Vorsitzender); Berthold Rüsing; Maria Topaler; Marco Voosen
+Vorsitzender des Aufsichtsrates:  René Dangel | Sitz der Gesellschaft: Düsseldorf
+Handelsregister Amtsgericht Düsseldorf HRB 83351 | USt-ID-Nr.: DE 811 285 485
+USt-ID-Nr. des umsatzsteuerlichen Organträgers: DE 811 623 326
+KH.20251210.020847.5002.0002.19941 X 0 R

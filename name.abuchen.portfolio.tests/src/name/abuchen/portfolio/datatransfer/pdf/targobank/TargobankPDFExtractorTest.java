@@ -1,10 +1,13 @@
 package name.abuchen.portfolio.datatransfer.pdf.targobank;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -16,9 +19,12 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.skippedItem;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
@@ -464,7 +470,8 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-06-24T00:00"), hasShares(81.00), //
+                        hasDate("2020-06-24T00:00"), hasExDate("2020-06-11"), //
+                        hasShares(81.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote("R.-Nr.: CPS-2020-0123456789-0001234"), //
                         hasAmount("EUR", 21.18), hasGrossValue("EUR", 21.18), //
@@ -500,7 +507,8 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-06-24T00:00"), hasShares(81.00), //
+                        hasDate("2020-06-24T00:00"), hasExDate("2020-06-11"), //
+                        hasShares(81.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote("R.-Nr.: CPS-2020-0123456789-0001234"), //
                         hasAmount("EUR", 21.18), hasGrossValue("EUR", 21.18), //
@@ -578,7 +586,8 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-06-24T00:00"), hasShares(81.00), //
+                        hasDate("2020-06-24T00:00"), hasExDate("2020-06-11"), //
+                        hasShares(81.00), //
                         hasSource("Dividende01.txt; SteuerbehandlungVonDividende01.txt"), //
                         hasNote("R.-Nr.: CPS-2020-0123456789-0001234 | Tr.-Nr.: INDTBK1234567890"), //
                         hasAmount("EUR", 15.59), hasGrossValue("EUR", 21.18), //
@@ -616,7 +625,8 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-06-24T00:00"), hasShares(81.00), //
+                        hasDate("2020-06-24T00:00"), hasExDate("2020-06-11"), //
+                        hasShares(81.00), //
                         hasSource("Dividende01.txt; SteuerbehandlungVonDividende01.txt"), //
                         hasNote("R.-Nr.: CPS-2020-0123456789-0001234 | Tr.-Nr.: INDTBK1234567890"), //
                         hasAmount("EUR", 15.59), hasGrossValue("EUR", 21.18), //
@@ -659,7 +669,8 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-06-24T00:00"), hasShares(81.00), //
+                        hasDate("2020-06-24T00:00"), hasExDate("2020-06-11"), //
+                        hasShares(81.00), //
                         hasSource("Dividende01.txt; SteuerbehandlungVonDividende01.txt"), //
                         hasNote("R.-Nr.: CPS-2020-0123456789-0001234 | Tr.-Nr.: INDTBK1234567890"), //
                         hasAmount("EUR", 15.59), hasGrossValue("EUR", 21.18), //
@@ -696,7 +707,8 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-06-24T00:00"), hasShares(81.00), //
+                        hasDate("2020-06-24T00:00"), hasExDate("2020-06-11"), //
+                        hasShares(81.00), //
                         hasSource("Dividende01.txt; SteuerbehandlungVonDividende01.txt"), //
                         hasNote("R.-Nr.: CPS-2020-0123456789-0001234 | Tr.-Nr.: INDTBK1234567890"), //
                         hasAmount("EUR", 15.59), hasGrossValue("EUR", 21.18), //
@@ -737,7 +749,8 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-06-24T00:00"), hasShares(61.00), //
+                        hasDate("2020-06-24T00:00"), hasExDate("2020-06-11"), //
+                        hasShares(61.00), //
                         hasSource("Dividende02.txt"), //
                         hasNote("R.-Nr.: CPS-2020-0123456789-0001234"), //
                         hasAmount("EUR", 15.29), hasGrossValue("EUR", 15.29), //
@@ -810,7 +823,8 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-06-24T00:00"), hasShares(61.00), //
+                        hasDate("2020-06-24T00:00"), hasExDate("2020-06-11"), //
+                        hasShares(61.00), //
                         hasSource("Dividende02.txt"), //
                         hasNote("R.-Nr.: CPS-2020-0123456789-0001234"), //
                         hasAmount("EUR", 15.29), hasGrossValue("EUR", 15.29), //
@@ -856,7 +870,8 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-06-24T00:00"), hasShares(61.00), //
+                        hasDate("2020-06-24T00:00"), hasExDate("2020-06-11"), //
+                        hasShares(61.00), //
                         hasSource("Dividende02.txt"), //
                         hasNote("R.-Nr.: CPS-2020-0123456789-0001234"), //
                         hasAmount("EUR", 15.29), hasGrossValue("EUR", 15.29), //
@@ -900,7 +915,8 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-04-27T00:00"), hasShares(1700.00), //
+                        hasDate("2020-04-27T00:00"), hasExDate("2020-04-22"), //
+                        hasShares(1700.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote("R.-Nr.: CPS-2020-0223620168-0001148"), //
                         hasAmount("EUR", 279.64), hasGrossValue("EUR", 279.64), //
@@ -936,7 +952,8 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-04-27T00:00"), hasShares(1700.00), //
+                        hasDate("2020-04-27T00:00"), hasExDate("2020-04-22"), //
+                        hasShares(1700.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote("R.-Nr.: CPS-2020-0223620168-0001148"), //
                         hasAmount("EUR", 279.64), hasGrossValue("EUR", 279.64), //
@@ -1014,7 +1031,8 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-04-27T00:00"), hasShares(1700.00), //
+                        hasDate("2020-04-27T00:00"), hasExDate("2020-04-22"), //
+                        hasShares(1700.00), //
                         hasSource("Dividende03.txt; SteuerbehandlungVonDividende03.txt"), //
                         hasNote("R.-Nr.: CPS-2020-0223620168-0001148 | Tr.-Nr.: INDTBK12120CG000130O00"), //
                         hasAmount("EUR", 228.01), hasGrossValue("EUR", 279.64), //
@@ -1052,7 +1070,8 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-04-27T00:00"), hasShares(1700.00), //
+                        hasDate("2020-04-27T00:00"), hasExDate("2020-04-22"), //
+                        hasShares(1700.00), //
                         hasSource("Dividende03.txt; SteuerbehandlungVonDividende03.txt"), //
                         hasNote("R.-Nr.: CPS-2020-0223620168-0001148 | Tr.-Nr.: INDTBK12120CG000130O00"), //
                         hasAmount("EUR", 228.01), hasGrossValue("EUR", 279.64), //
@@ -1095,7 +1114,8 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-04-27T00:00"), hasShares(1700.00), //
+                        hasDate("2020-04-27T00:00"), hasExDate("2020-04-22"), //
+                        hasShares(1700.00), //
                         hasSource("Dividende03.txt; SteuerbehandlungVonDividende03.txt"), //
                         hasNote("R.-Nr.: CPS-2020-0223620168-0001148 | Tr.-Nr.: INDTBK12120CG000130O00"), //
                         hasAmount("EUR", 228.01), hasGrossValue("EUR", 279.64), //
@@ -1132,7 +1152,8 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-04-27T00:00"), hasShares(1700.00), //
+                        hasDate("2020-04-27T00:00"), hasExDate("2020-04-22"), //
+                        hasShares(1700.00), //
                         hasSource("Dividende03.txt; SteuerbehandlungVonDividende03.txt"), //
                         hasNote("R.-Nr.: CPS-2020-0223620168-0001148 | Tr.-Nr.: INDTBK12120CG000130O00"), //
                         hasAmount("EUR", 228.01), hasGrossValue("EUR", 279.64), //
@@ -1173,7 +1194,8 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-07-10T00:00"), hasShares(1790.00), //
+                        hasDate("2020-07-10T00:00"), hasExDate("2020-07-08"), //
+                        hasShares(1790.00), //
                         hasSource("Dividende04.txt"), //
                         hasNote("R.-Nr.: NUMMER"), //
                         hasAmount("EUR", 17.90), hasGrossValue("EUR", 17.90), //
@@ -1246,7 +1268,8 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-07-10T00:00"), hasShares(1790.00), //
+                        hasDate("2020-07-10T00:00"), hasExDate("2020-07-08"), //
+                        hasShares(1790.00), //
                         hasSource("Dividende04.txt"), //
                         hasNote("R.-Nr.: NUMMER"), //
                         hasAmount("EUR", 17.90), hasGrossValue("EUR", 17.90), //
@@ -1292,7 +1315,8 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-07-10T00:00"), hasShares(1790.00), //
+                        hasDate("2020-07-10T00:00"), hasExDate("2020-07-08"), //
+                        hasShares(1790.00), //
                         hasSource("Dividende04.txt"), //
                         hasNote("R.-Nr.: NUMMER"), //
                         hasAmount("EUR", 17.90), hasGrossValue("EUR", 17.90), //
@@ -1336,12 +1360,13 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-08-31T00:00"), hasShares(235.00), //
+                        hasDate("2020-08-31T00:00"), hasExDate("2020-08-21"), //
+                        hasShares(235.00), //
                         hasSource("Dividende05.txt"), //
                         hasNote("R.-Nr.: NUMMER"), //
-                        hasAmount("EUR", 20.82 + 3.67), hasGrossValue("EUR", 20.82 + 3.67), //
+                        hasAmount("EUR", 20.82), hasGrossValue("EUR", 20.82 + 3.67), //
                         hasForexGrossValue("USD", 29.41), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 3.67), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1372,11 +1397,12 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-08-31T00:00"), hasShares(235.00), //
+                        hasDate("2020-08-31T00:00"), hasExDate("2020-08-21"), //
+                        hasShares(235.00), //
                         hasSource("Dividende05.txt"), //
                         hasNote("R.-Nr.: NUMMER"), //
-                        hasAmount("EUR", 20.82 + 3.67), hasGrossValue("EUR", 20.82 + 3.67), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        hasAmount("EUR", 20.82), hasGrossValue("EUR", 20.82 + 3.67), //
+                        hasTaxes("EUR", 3.67), hasFees("EUR", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
@@ -1452,12 +1478,13 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-08-31T00:00"), hasShares(235.00), //
+                        hasDate("2020-08-31T00:00"), hasExDate("2020-08-21"), //
+                        hasShares(235.00), //
                         hasSource("Dividende05.txt"), //
                         hasNote("R.-Nr.: NUMMER"), //
-                        hasAmount("EUR", 20.82 + 3.67), hasGrossValue("EUR", 20.82 + 3.67), //
+                        hasAmount("EUR", 20.82), hasGrossValue("EUR", 20.82 + 3.67), //
                         hasForexGrossValue("USD", 29.41), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 3.67), hasFees("EUR", 0.00))));
 
         // check cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
@@ -1500,11 +1527,12 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-08-31T00:00"), hasShares(235.00), //
+                        hasDate("2020-08-31T00:00"), hasExDate("2020-08-21"), //
+                        hasShares(235.00), //
                         hasSource("Dividende05.txt"), //
                         hasNote("R.-Nr.: NUMMER"), //
-                        hasAmount("EUR", 20.82 + 3.67), hasGrossValue("EUR", 20.82 + 3.67), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        hasAmount("EUR", 20.82), hasGrossValue("EUR", 20.82 + 3.67), //
+                        hasTaxes("EUR", 3.67), hasFees("EUR", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
@@ -1560,11 +1588,12 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-08-31T00:00"), hasShares(235.00), //
+                        hasDate("2020-08-31T00:00"), hasExDate("2020-08-21"), //
+                        hasShares(235.00), //
                         hasSource("Dividende05.txt"), //
                         hasNote("R.-Nr.: NUMMER"), //
-                        hasAmount("EUR", 20.82 + 3.67), hasGrossValue("EUR", 20.82 + 3.67), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+                        hasAmount("EUR", 20.82), hasGrossValue("EUR", 20.82 + 3.67), //
+                        hasTaxes("EUR", 3.67), hasFees("EUR", 0.00))));
 
         // check cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
@@ -1607,11 +1636,12 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-08-31T00:00"), hasShares(235.00), //
+                        hasDate("2020-08-31T00:00"), hasExDate("2020-08-21"), //
+                        hasShares(235.00), //
                         hasSource("Dividende05.txt"), //
                         hasNote("R.-Nr.: NUMMER"), //
-                        hasAmount("EUR", 20.82 + 3.67), hasGrossValue("EUR", 20.82 + 3.67), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        hasAmount("EUR", 20.82), hasGrossValue("EUR", 20.82 + 3.67), //
+                        hasTaxes("EUR", 3.67), hasFees("EUR", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
@@ -1665,7 +1695,8 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-12-15T00:00"), hasShares(1227.00), //
+                        hasDate("2022-12-15T00:00"), hasExDate("2022-12-15"), //
+                        hasShares(1227.00), //
                         hasSource("Dividende06.txt"), //
                         hasNote("R.-Nr.: CPS-2022-0223620024-0002215"), //
                         hasAmount("EUR", 217.69), hasGrossValue("EUR", 217.69), //
@@ -1736,7 +1767,8 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-12-15T00:00"), hasShares(1227.00), //
+                        hasDate("2022-12-15T00:00"), hasExDate("2022-12-15"), //
+                        hasShares(1227.00), //
                         hasSource("Dividende06.txt; SteuerbehandlungVonDividende06.txt"), //
                         hasNote("R.-Nr.: CPS-2022-0223620024-0002215 | Tr.-Nr.: INDTBK34822CG020886O00"), //
                         hasAmount("EUR", 175.04), hasGrossValue("EUR", 217.69), //
@@ -1772,7 +1804,8 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-12-15T00:00"), hasShares(1227.00), //
+                        hasDate("2022-12-15T00:00"), hasExDate("2022-12-15"), //
+                        hasShares(1227.00), //
                         hasSource("Dividende06.txt; SteuerbehandlungVonDividende06.txt"), //
                         hasNote("R.-Nr.: CPS-2022-0223620024-0002215 | Tr.-Nr.: INDTBK34822CG020886O00"), //
                         hasAmount("EUR", 175.04), hasGrossValue("EUR", 217.69), //
@@ -1806,12 +1839,13 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-12-18T00:00"), hasShares(4.00), //
+                        hasDate("2024-12-18T00:00"), hasExDate("2024-12-02"), //
+                        hasShares(4.00), //
                         hasSource("Dividende07.txt"), //
                         hasNote("R.-Nr.: CPS-2024-0223620171-0003969"), //
-                        hasAmount("EUR", 6.71 + 1.18), hasGrossValue("EUR", 6.71 + 1.18), //
+                        hasAmount("EUR", 6.71), hasGrossValue("EUR", 6.71 + 1.18), //
                         hasForexGrossValue("USD", 8.24), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 1.18), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1842,11 +1876,12 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-12-18T00:00"), hasShares(4.00), //
+                        hasDate("2024-12-18T00:00"), hasExDate("2024-12-02"), //
+                        hasShares(4.00), //
                         hasSource("Dividende07.txt"), //
                         hasNote("R.-Nr.: CPS-2024-0223620171-0003969"), //
-                        hasAmount("EUR", 6.71 + 1.18), hasGrossValue("EUR", 6.71 + 1.18), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        hasAmount("EUR", 6.71), hasGrossValue("EUR", 6.71 + 1.18), //
+                        hasTaxes("EUR", 1.18), hasFees("EUR", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
@@ -1887,7 +1922,7 @@ public class TargobankPDFExtractorTest
                         hasDate("2024-12-18T00:00"), hasShares(4.00), //
                         hasSource("SteuerbehandlungVonDividende07.txt"), //
                         hasNote("Tr.-Nr.: INDTBK35424CG007898O00"), //
-                        hasAmount("EUR", 0.83 + 1.18), hasGrossValue("EUR", 0.83 + 1.18), //
+                        hasAmount("EUR", 0.83), hasGrossValue("EUR", 0.83), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
@@ -1920,7 +1955,8 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-12-18T00:00"), hasShares(4.00), //
+                        hasDate("2024-12-18T00:00"), hasExDate("2024-12-02"), //
+                        hasShares(4.00), //
                         hasSource("Dividende07.txt; SteuerbehandlungVonDividende07.txt"), //
                         hasNote("R.-Nr.: CPS-2024-0223620171-0003969 | Tr.-Nr.: INDTBK35424CG007898O00"), //
                         hasAmount("EUR", 7.06 - 1.18), hasGrossValue("EUR", 7.89), //
@@ -1958,7 +1994,8 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-12-18T00:00"), hasShares(4.00), //
+                        hasDate("2024-12-18T00:00"), hasExDate("2024-12-02"), //
+                        hasShares(4.00), //
                         hasSource("Dividende07.txt; SteuerbehandlungVonDividende07.txt"), //
                         hasNote("R.-Nr.: CPS-2024-0223620171-0003969 | Tr.-Nr.: INDTBK35424CG007898O00"), //
                         hasAmount("EUR", 7.06 - 1.18), hasGrossValue("EUR", 7.89), //
@@ -2001,7 +2038,8 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-12-18T00:00"), hasShares(4.00), //
+                        hasDate("2024-12-18T00:00"), hasExDate("2024-12-02"), //
+                        hasShares(4.00), //
                         hasSource("Dividende07.txt; SteuerbehandlungVonDividende07.txt"), //
                         hasNote("R.-Nr.: CPS-2024-0223620171-0003969 | Tr.-Nr.: INDTBK35424CG007898O00"), //
                         hasAmount("EUR", 7.06 - 1.18), hasGrossValue("EUR", 7.89), //
@@ -2038,7 +2076,8 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-12-18T00:00"), hasShares(4.00), //
+                        hasDate("2024-12-18T00:00"), hasExDate("2024-12-02"), //
+                        hasShares(4.00), //
                         hasSource("Dividende07.txt; SteuerbehandlungVonDividende07.txt"), //
                         hasNote("R.-Nr.: CPS-2024-0223620171-0003969 | Tr.-Nr.: INDTBK35424CG007898O00"), //
                         hasAmount("EUR", 7.06 - 1.18), hasGrossValue("EUR", 7.89), //
@@ -2079,12 +2118,13 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-10-01T00:00"), hasShares(127.00), //
+                        hasDate("2020-10-01T00:00"), hasExDate("2020-09-14"), //
+                        hasShares(127.00), //
                         hasSource("Dividende08.txt"), //
                         hasNote("R.-Nr.: CPS-2020-0223111111-0001111"), //
-                        hasAmount("EUR", 37.70 + 6.65), hasGrossValue("EUR", 37.70 + 6.65), //
+                        hasAmount("EUR", 37.70), hasGrossValue("EUR", 37.70 + 6.65), //
                         hasForexGrossValue("USD", 52.07), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 6.65), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -2115,11 +2155,12 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-10-01T00:00"), hasShares(127.00), //
+                        hasDate("2020-10-01T00:00"), hasExDate("2020-09-14"), //
+                        hasShares(127.00), //
                         hasSource("Dividende08.txt"), //
                         hasNote("R.-Nr.: CPS-2020-0223111111-0001111"), //
-                        hasAmount("EUR", 37.70 + 6.65), hasGrossValue("EUR", 37.70 + 6.65), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        hasAmount("EUR", 37.70), hasGrossValue("EUR", 37.70 + 6.65), //
+                        hasTaxes("EUR", 6.65), hasFees("EUR", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
@@ -2160,7 +2201,7 @@ public class TargobankPDFExtractorTest
                         hasDate("2020-10-01T00:00"), hasShares(127.00), //
                         hasSource("SteuerbehandlungVonDividende08.txt"), //
                         hasNote("Tr.-Nr.: INDTBK27620CG00000"), //
-                        hasAmount("EUR", 4.68 + 6.65), hasGrossValue("EUR", 4.68 + 6.65), //
+                        hasAmount("EUR", 4.68), hasGrossValue("EUR", 4.68), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
@@ -2193,7 +2234,8 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-10-01T00:00"), hasShares(127.00), //
+                        hasDate("2020-10-01T00:00"), hasExDate("2020-09-14"), //
+                        hasShares(127.00), //
                         hasSource("Dividende08.txt; SteuerbehandlungVonDividende08.txt"), //
                         hasNote("R.-Nr.: CPS-2020-0223111111-0001111 | Tr.-Nr.: INDTBK27620CG00000"), //
                         hasAmount("EUR", 33.02), hasGrossValue("EUR", 44.35), //
@@ -2231,7 +2273,8 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-10-01T00:00"), hasShares(127.00), //
+                        hasDate("2020-10-01T00:00"), hasExDate("2020-09-14"), //
+                        hasShares(127.00), //
                         hasSource("Dividende08.txt; SteuerbehandlungVonDividende08.txt"), //
                         hasNote("R.-Nr.: CPS-2020-0223111111-0001111 | Tr.-Nr.: INDTBK27620CG00000"), //
                         hasAmount("EUR", 39.67 - 6.65), hasGrossValue("EUR", 44.35), //
@@ -2274,7 +2317,8 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-10-01T00:00"), hasShares(127.00), //
+                        hasDate("2020-10-01T00:00"), hasExDate("2020-09-14"), //
+                        hasShares(127.00), //
                         hasSource("Dividende08.txt; SteuerbehandlungVonDividende08.txt"), //
                         hasNote("R.-Nr.: CPS-2020-0223111111-0001111 | Tr.-Nr.: INDTBK27620CG00000"), //
                         hasAmount("EUR", 39.67 - 6.65), hasGrossValue("EUR", 44.35), //
@@ -2311,7 +2355,8 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-10-01T00:00"), hasShares(127.00), //
+                        hasDate("2020-10-01T00:00"), hasExDate("2020-09-14"), //
+                        hasShares(127.00), //
                         hasSource("Dividende08.txt; SteuerbehandlungVonDividende08.txt"), //
                         hasNote("R.-Nr.: CPS-2020-0223111111-0001111 | Tr.-Nr.: INDTBK27620CG00000"), //
                         hasAmount("EUR", 39.67 - 6.65), hasGrossValue("EUR", 44.35), //
@@ -2323,5 +2368,341 @@ public class TargobankPDFExtractorTest
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
+    }
+
+    @Test
+    public void testDividende09()
+    {
+        var extractor = new TargobankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US0378331005"), hasWkn("865985"), hasTicker(null), //
+                        hasName("APPLE INC. REGISTERED SHARES O.N."), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2013-02-14T00:00"), hasExDate("2013-02-07"), //
+                        hasShares(15.00), //
+                        hasSource("Dividende09.txt"), //
+                        hasNote("R.-Nr.: EE2-505-DC00-88560860962"), //
+                        hasAmount("EUR", 25.36), hasGrossValue("EUR", 25.36 + 4.47), //
+                        hasForexGrossValue("USD", 39.75), //
+                        hasTaxes("EUR", 4.47), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende09WithSecurityInEUR()
+    {
+        var security = new Security("APPLE INC. REGISTERED SHARES O.N.", "EUR");
+        security.setIsin("US0378331005");
+        security.setWkn("865985");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new TargobankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2013-02-14T00:00"), hasExDate("2013-02-07"), //
+                        hasShares(15.00), //
+                        hasSource("Dividende09.txt"), //
+                        hasNote("R.-Nr.: EE2-505-DC00-88560860962"), //
+                        hasAmount("EUR", 25.36), hasGrossValue("EUR", 25.36 + 4.47), //
+                        hasTaxes("EUR", 4.47), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testSteuerbehandlungVonDividende09()
+    {
+        var extractor = new TargobankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende09.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US0378331005"), hasWkn("865985"), hasTicker(null), //
+                        hasName("APPLE INC. REGISTERED SHARES O.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check cancellation transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        taxes( //
+                                        hasDate("2013-02-15T00:00"), hasShares(15.00), //
+                                        hasSource("SteuerbehandlungVonDividende09.txt"), //
+                                        hasNote("Tr.-Nr.: IND00009801615D00094890632"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
+    public void testDividende09MitSteuerbehandlungVonDividende09()
+    {
+        var extractor = new TargobankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "Dividende09.txt", "SteuerbehandlungVonDividende09.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US0378331005"), hasWkn("865985"), hasTicker(null), //
+                        hasName("APPLE INC. REGISTERED SHARES O.N."), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2013-02-14T00:00"), hasExDate("2013-02-07"), //
+                        hasShares(15.00), //
+                        hasSource("Dividende09.txt"), //
+                        hasNote("R.-Nr.: EE2-505-DC00-88560860962"), //
+                        hasAmount("EUR", 25.36), hasGrossValue("EUR", 25.36 + 4.47), //
+                        hasForexGrossValue("USD", 39.75), //
+                        hasTaxes("EUR", 4.47), hasFees("EUR", 0.00))));
+
+        // check cancellation transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        taxes( //
+                                        hasDate("2013-02-15T00:00"), hasShares(15.00), //
+                                        hasSource("SteuerbehandlungVonDividende09.txt"), //
+                                        hasNote("Tr.-Nr.: IND00009801615D00094890632"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
+    public void testDividende09MitSteuerbehandlungVonDividende09_SourceFilesReversed()
+    {
+        var extractor = new TargobankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende09.txt", "Dividende09.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US0378331005"), hasWkn("865985"), hasTicker(null), //
+                        hasName("APPLE INC. REGISTERED SHARES O.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2013-02-14T00:00"), hasExDate("2013-02-07"), //
+                        hasShares(15.00), //
+                        hasSource("Dividende09.txt"), //
+                        hasNote("R.-Nr.: EE2-505-DC00-88560860962"), //
+                        hasAmount("EUR", 25.36), hasGrossValue("EUR", 25.36 + 4.47), //
+                        hasTaxes("EUR", 4.47), hasFees("EUR", 0.00))));
+
+        // check cancellation transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        taxes( //
+                                        hasDate("2013-02-15T00:00"), hasShares(15.00), //
+                                        hasSource("SteuerbehandlungVonDividende09.txt"), //
+                                        hasNote("Tr.-Nr.: IND00009801615D00094890632"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
+    public void testKontoauszug01()
+    {
+        var extractor = new TargobankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(2L));
+        assertThat(results.size(), is(5));
+        new AssertImportActions().check(results, "EUR");
+
+        // check transactions
+        assertThat(results, hasItem(deposit(hasDate("2025-10-13"), hasAmount("EUR", 1111.11), //
+                        hasSource("Kontoauszug01.txt"), hasNote("INTERNE UMBUCHUNG HABEN TARGOBANK KONTO"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2025-10-13"), hasAmount("EUR", 0.03), //
+                        hasSource("Kontoauszug01.txt"), hasNote("INTERNE UMBUCHUNG HABEN TARGOBANK KONTO"))));
+
+        assertThat(results, hasItem(fee( //
+                        hasDate("2025-10-02"), //
+                        hasSource("Kontoauszug01.txt"), //
+                        hasNote("Grundgebühr für September 2025"), //
+                        hasAmount("EUR", 3.95), hasGrossValue("EUR", 3.95), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check skipped items of the savings account
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        removal(hasDate("2025-10-13"), hasAmount("EUR", 4436.70), //
+                                        hasSource("Kontoauszug01.txt"), //
+                                        hasNote("INTERNE UMBUCHUNG SOLL TARGO OLB")))));
+
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        removal(hasDate("2025-10-13"), hasAmount("EUR", 0.03), //
+                                        hasSource("Kontoauszug01.txt"), //
+                                        hasNote("INTERNE UMBUCHUNG SOLL TARGO OLB")))));
+    }
+
+    @Test
+    public void testKontoauszug02()
+    {
+        var extractor = new TargobankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2026-08-04"), //
+                        hasSource("Kontoauszug02.txt"), //
+                        hasNote("Grundgebühr für Juli 2026"), //
+                        hasAmount("EUR", 3.95), hasGrossValue("EUR", 3.95), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testAusbuchung01()
+    {
+        var extractor = new TargobankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Ausbuchung01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(2L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(2L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1834983477"), hasWkn("LYX01W"), hasTicker(null), //
+                        hasName("MUL-AMUN ST600 BANK ETF A"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0005933923"), hasWkn("593392"), hasTicker(null), //
+                        hasName("ISHARES MDAX UC.ETF EOA"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check unsupported transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        outboundDelivery( //
+                                        hasDate("2025-12-09T00:00"), hasShares(34.00), //
+                                        hasSource("Ausbuchung01.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        outboundDelivery( //
+                                        hasDate("2025-12-09T00:00"), hasShares(18.00), //
+                                        hasSource("Ausbuchung01.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 }
