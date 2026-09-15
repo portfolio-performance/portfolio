@@ -1,0 +1,93 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": [
+    "Renovate manages ONLY the Maven dependencies embedded in the Eclipse target platform definitions.",
+    "pom.xml and GitHub Actions are handled by Dependabot (.github/dependabot.yml).",
+    "The p2 update sites (<repository>/<unit> entries) are updated manually on a quarterly schedule and are deliberately out of scope."
+  ],
+  "extends": ["config:recommended"],
+  "enabledManagers": ["custom.regex"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Maven <dependency> entries inside the <location type=\"Maven\"> blocks of the target definitions. The p2 <repository>/<unit> elements carry no groupId/artifactId/version tags and therefore never match.",
+      "managerFilePatterns": [
+        "portfolio-target-definition/portfolio-target-definition.target",
+        "portfolio-target-definition/portfolio-target-definition-local-dev.target"
+      ],
+      "matchStrings": [
+        "<groupId>(?<groupId>[^<]+)</groupId>\\s*<artifactId>(?<artifactId>[^<]+)</artifactId>\\s*<version>(?<currentValue>[^<]+)</version>"
+      ],
+      "depNameTemplate": "{{{groupId}}}:{{{artifactId}}}",
+      "datasourceTemplate": "maven",
+      "versioningTemplate": "maven"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "PDFBox 1.8 is deliberately kept next to 3.x for the legacy PDF extractors. name.abuchen.portfolio.pdfbox1 requires org.apache.pdfbox [1.8.17,2.0.0), so never leave the 1.x line.",
+      "matchDatasources": ["maven"],
+      "matchPackageNames": [
+        "org.apache.pdfbox:pdfbox",
+        "org.apache.pdfbox:fontbox",
+        "org.apache.pdfbox:jempbox"
+      ],
+      "matchCurrentVersion": "/^1\\./",
+      "groupName": "Apache PDFBox 1.8 (legacy)",
+      "allowedVersions": "<2.0.0"
+    },
+    {
+      "description": "PDFBox 3.x artifacts move together. name.abuchen.portfolio.pdfbox3 requires org.apache.pdfbox [3.0.3,4.0.0), so a 4.x bump needs a manual manifest change and is blocked here.",
+      "matchDatasources": ["maven"],
+      "matchPackageNames": [
+        "org.apache.pdfbox:pdfbox",
+        "org.apache.pdfbox:fontbox",
+        "org.apache.pdfbox:pdfbox-io"
+      ],
+      "matchCurrentVersion": "/^3\\./",
+      "groupName": "Apache PDFBox 3.x",
+      "allowedVersions": "<4.0.0"
+    },
+    {
+      "description": "ASM artifacts are released as one unit.",
+      "matchDatasources": ["maven"],
+      "matchPackageNames": ["org.ow2.asm:**"],
+      "groupName": "ASM"
+    },
+    {
+      "description": "TwelveMonkeys ImageIO artifacts share a release train across both group ids.",
+      "matchDatasources": ["maven"],
+      "matchPackageNames": ["com.twelvemonkeys.common:**", "com.twelvemonkeys.imageio:**"],
+      "groupName": "TwelveMonkeys ImageIO"
+    },
+    {
+      "description": "Jackson core artifacts are released together.",
+      "matchDatasources": ["maven"],
+      "matchPackageNames": ["com.fasterxml.jackson.core:**"],
+      "groupName": "Jackson"
+    },
+    {
+      "description": "json-path pulls in the matching json-smart/accessors-smart pair.",
+      "matchDatasources": ["maven"],
+      "matchPackageNames": ["com.jayway.jsonpath:json-path", "net.minidev:**"],
+      "groupName": "JSONPath"
+    },
+    {
+      "description": "Guava and its failureaccess companion are released together; stay on the -jre flavour, the -android builds target older APIs.",
+      "matchDatasources": ["maven"],
+      "matchPackageNames": ["com.google.guava:**"],
+      "groupName": "Guava"
+    },
+    {
+      "matchDatasources": ["maven"],
+      "matchPackageNames": ["com.google.guava:guava"],
+      "allowedVersions": "/^\\d+(\\.\\d+)*-jre$/"
+    },
+    {
+      "description": "The treemap bundles are published in the project's own Maven repo, not on Maven Central.",
+      "matchDatasources": ["maven"],
+      "matchPackageNames": ["de.engehausen:**"],
+      "registryUrls": ["https://portfolio-performance.github.io/portfolio-maven-repo/"]
+    }
+  ]
+}
