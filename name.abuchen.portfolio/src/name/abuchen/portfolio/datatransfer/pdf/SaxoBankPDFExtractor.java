@@ -7,6 +7,7 @@ import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Locale;
 
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
@@ -378,7 +379,29 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Description (?<name>.*) Dividende pro Aktie [\\.,'\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .match("^Symbol (?<tickerSymbol>[A-Z0-9\\._-]{1,10}(?:\\.[A-Z]{1,4})?):.*$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
-                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Event Cash dividend Dividend per share 0.40 EUR
+                                        // VanEck Morningstar Dvlp Mkts Dvd Leaders
+                                        // Description Conversion Rate 1.000000
+                                        // UCITS ETF
+                                        // Symbol VDIV:xetr Corporate Actions - Cash Dividends 21.60 EUR
+                                        // ISIN NL0011683594 Corporate Actions - Withholding Tax -3.24 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "name", "name1", "tickerSymbol", "isin") //
+                                                        .match("^Event .* Dividend per share [\\.,'\\d]+ (?<currency>[A-Z]{3})$") //
+                                                        .match("^(?<name>.*)$") //
+                                                        .match("^Description .*$") //
+                                                        .match("^(?<name1>.*)$") //
+                                                        .match("^Symbol (?<tickerSymbol>[A-Z0-9\\._-]{1,10}(?:\\.[A-Z]{1,4})?):.*$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .assign((t, v) -> {
+                                                            v.put("name", trim(v.get("name")) + " "
+                                                                            + trim(v.get("name1")));
+
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }))
 
                         .oneOf( //
                                         // @formatter:off
@@ -394,7 +417,32 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^.*Geeignete Menge (?<shares>[\\.,\\d]+)$") //
-                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
+                                        // Event Cash dividend Dividend per share 0.40 EUR
+                                        // Symbol VDIV:xetr Corporate Actions - Cash Dividends 21.60 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amountPerShare", "amount") //
+                                                        .match("^Event .* Dividend per share (?<amountPerShare>[\\.,'\\d]+) [A-Z]{3}$") //
+                                                        .match("^.*Corporate Actions \\- Cash Dividends (?<amount>[\\.,'\\d]+) [A-Z]{3}$") //
+                                                        .assign((t, v) -> {
+                                                            // The eligible
+                                                            // quantity is not
+                                                            // stated in the
+                                                            // document,
+                                                            // therefore we
+                                                            // calculate the
+                                                            // shares
+                                                            var amountPerShare = asBigDecimal(v.get("amountPerShare"));
+                                                            var amount = asBigDecimal(v.get("amount"));
+
+                                                            var shares = amount.divide(amountPerShare,
+                                                                            Values.Share.precision(),
+                                                                            RoundingMode.HALF_UP);
+                                                            t.setShares(shares.movePointRight(Values.Share.precision())
+                                                                            .longValue());
+                                                        }))
 
                         // @formatter:off
                         // 43640515029 15-Apr-2025 15-Apr-2025 02-Apr-2025 30-Apr-2025 56,11 1,000000 56,11
@@ -402,6 +450,17 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                         .section("date") //
                         .match("^.*(?<date>[\\d]{2}\\-[\\w]+\\-[\\d]{4}) [\\.,'\\d]+ [\\.,'\\d]+ [\\.,'\\d]+$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Booking amount ID Ex date Record Date Posting Date Pay Date Conversion Rate
+                        // 43640515029 15-Apr-2025 15-Apr-2025 02-Apr-2025 30-Apr-2025 56,11 1,000000 56,11
+                        //
+                        // Buchungsbetrag-ID Ex-Tag Record Date Einstellungsdatum Zahltag Umrechnungskurs
+                        // 45865563189 15-Jul-2025 16-Jul-2025 - 17-Jul-2025 19.50 1.000000 19.50
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^[\\d]+ (?<exDate>[\\d]{2}\\-[\\w]+\\-[\\d]{4}) .* [\\.,'\\d]+ [\\.,'\\d]+ [\\.,'\\d]+$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -549,7 +608,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final var type = new DocumentType("Kontoauszugsbericht", //
+        final var type01 = new DocumentType("Kontoauszugsbericht", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // Währung : CHF
@@ -558,14 +617,14 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         .match("^W.hrung : (?<currency>[A-Z]{3}).*$") //
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
 
-        this.addDocumentTyp(type);
+        this.addDocumentTyp(type01);
 
         // @formatter:off
         // 26-Nov-2024 26-Nov-2024 DEPOSIT (6980803089, 6083903733) 700,00 700,00
         // @formatter:on
-        var depositBlock = new Block("^[\\d]{2}\\-[\\w]+\\-[\\d]{4} [\\d]{2}\\-[\\w]+\\-[\\d]{4} (DEPOSIT) .* [\\.,'\\d]+ [\\.,'\\d]+$");
-        type.addBlock(depositBlock);
-        depositBlock.set(new Transaction<AccountTransaction>()
+        var depositBlock_Format01 = new Block("^[\\d]{2}\\-[\\w]+\\-[\\d]{4} [\\d]{2}\\-[\\w]+\\-[\\d]{4} (DEPOSIT) .* [\\.,'\\d]+ [\\.,'\\d]+$");
+        type01.addBlock(depositBlock_Format01);
+        depositBlock_Format01.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
@@ -581,6 +640,53 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(v.get("note"));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // Devise: EUR 20-janv.-2026 - 17-févr.-2026
+        // @formatter:on
+        var currencyRange = new Block("^Devise: [A-Z]{3}.*$") //
+                        .asRange(section -> section //
+                                        .attributes("currency") //
+                                        .match("^Devise: (?<currency>[A-Z]{3}).*$"));
+
+        // @formatter:off
+        // 21-janv.-2026 -2 986,54 13,46
+        // 20-janv.-2026 3 000,00 3 000,00
+        // @formatter:on
+        var dateRange = new Block("^[\\d]{2}\\-[^\\-]+\\-[\\d]{4} (\\-)?[\\.,\\d\\s]+ (\\-)?[\\.,\\d\\s]+$") //
+                        .asRange(section -> section //
+                                        .attributes("date") //
+                                        .match("^(?<date>[\\d]{2}\\-[^\\-]+\\-[\\d]{4}) (\\-)?[\\.,\\d\\s]+ (\\-)?[\\.,\\d\\s]+$"));
+
+        final var type02 = new DocumentType("Comptes rendus des transactions", currencyRange, dateRange);
+        this.addDocumentTyp(type02);
+
+        // @formatter:off
+        // Transfert d’espèces Retrait -3 000,00 -
+        // Transfert d’espèces Dépôts 3 000,00 -
+        // @formatter:on
+        var depositRemovalBlock_Format02 = new Block("^Transfert d.esp.ces (D.p.ts|Retrait) (\\-)?[\\.,\\d\\s]+ \\-$");
+        type02.addBlock(depositRemovalBlock_Format02);
+        depositRemovalBlock_Format02.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
+
+                        .section("type", "amount") //
+                        .documentRange("date", "currency") //
+                        .match("^Transfert d.esp.ces (?<type>(D.p.ts|Retrait)) (\\-)?(?<amount>[\\.,\\d\\s]+) \\-$") //
+                        .assign((t, v) -> {
+                        // @formatter:off
+                            // Is type --> "Retrait" change from DEPOSIT to REMOVAL
+                            // @formatter:on
+                            if ("Retrait".equals(trim(v.get("type"))))
+                                t.setType(AccountTransaction.Type.REMOVAL);
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
                         })
 
                         .wrap(TransactionItem::new));
@@ -711,6 +817,13 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
     protected long asShares(String value)
     {
         return ExtractorUtils.convertToNumberLong(value, Values.Share,
+                        ExtractorUtils.guessNumberLocale(value, Locale.GERMANY));
+    }
+
+    @Override
+    protected BigDecimal asBigDecimal(String value)
+    {
+        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share,
                         ExtractorUtils.guessNumberLocale(value, Locale.GERMANY));
     }
 
