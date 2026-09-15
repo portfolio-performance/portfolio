@@ -111,7 +111,7 @@ public class PDFImportAssistant
         extractors.add(new OldenburgischeLandesbankAGPDFExtractor(client));
         extractors.add(new LGTBankPDFExtractor(client));
         extractors.add(new LibertyVorsorgeAGPDFExtractor(client));
-        extractors.add(new LiechtensteinischeLandesbankAGPDFExtractor(client));
+        extractors.add(new LiechtensteinischeLBPDFExtractor(client));
         extractors.add(new LimeTradingCorpPDFExtractor(client));
         extractors.add(new OnvistaPDFExtractor(client));
         extractors.add(new OpenBankSAPDFExtractor(client));

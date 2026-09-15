@@ -26,9 +26,9 @@ import name.abuchen.portfolio.money.Values;
  */
 
 @SuppressWarnings("nls")
-public class LiechtensteinischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
+public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
 {
-    public LiechtensteinischeLandesbankAGPDFExtractor(Client client)
+    public LiechtensteinischeLBPDFExtractor(Client client)
     {
         super(client);
 
@@ -200,6 +200,13 @@ public class LiechtensteinischeLandesbankAGPDFExtractor extends AbstractPDFExtra
                         .section("date") //
                         .match("^Zu Ihren Gunsten Valuta (?<date>[\\d]{1,2}\\. .* [\\d]{4}) [\\w]{3} [\\.'\\d]+$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Ex-Datum 06.11.2023
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Ex\\-Datum (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
 
                         // @formatter:off
                         // Zu Ihren Gunsten Valuta 20. November 2023 CHF 5.65
