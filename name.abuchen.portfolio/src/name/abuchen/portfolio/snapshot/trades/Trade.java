@@ -332,14 +332,41 @@ public class Trade implements Adaptable
         return entryValue;
     }
 
+    /**
+     * The moving average acquisition cost of the shares, or null when the
+     * trade has none: a short position was never acquired. Every moving
+     * average value of the trade is null together with this one.
+     */
     public Money getEntryValueMovingAverage()
     {
         return entryValueMovingAverage.get();
     }
 
+    public Money getEntryValueWithoutTaxesAndFees()
+    {
+        return entryValueWithoutTaxesAndFees;
+    }
+
+    /** @see #getEntryValueMovingAverage() for when this is null */
+    public Money getEntryValueMovingAverageWithoutTaxesAndFees()
+    {
+        return entryValueMovingAverageWithoutTaxesAndFees.get();
+    }
+
     public Money getExitValue()
     {
         return exitValue;
+    }
+
+    /**
+     * The exit value without the taxes and fees of the closing transactions.
+     * For an open trade this is identical to {@link #getExitValue()}: the exit
+     * is a valuation at the current market price, and no charges have been
+     * incurred.
+     */
+    public Money getExitValueWithoutTaxesAndFees()
+    {
+        return exitValueWithoutTaxesAndFees;
     }
 
     public Money getProfitLoss()
@@ -350,9 +377,11 @@ public class Trade implements Adaptable
             return entryValue.subtract(exitValue);
     }
 
+    /** @see #getEntryValueMovingAverage() for when this is null */
     public Money getProfitLossMovingAverage()
     {
-        return exitValue.subtract(entryValueMovingAverage.get());
+        var entry = entryValueMovingAverage.get();
+        return entry != null ? exitValue.subtract(entry) : null;
     }
 
     public Money getProfitLossWithoutTaxesAndFees()
@@ -363,9 +392,11 @@ public class Trade implements Adaptable
             return entryValueWithoutTaxesAndFees.subtract(exitValueWithoutTaxesAndFees);
     }
 
+    /** @see #getEntryValueMovingAverage() for when this is null */
     public Money getProfitLossMovingAverageWithoutTaxesAndFees()
     {
-        return exitValueWithoutTaxesAndFees.subtract(entryValueMovingAverageWithoutTaxesAndFees.get());
+        var entry = entryValueMovingAverageWithoutTaxesAndFees.get();
+        return entry != null ? exitValueWithoutTaxesAndFees.subtract(entry) : null;
     }
 
     public long getHoldingPeriod()
@@ -386,9 +417,16 @@ public class Trade implements Adaptable
             return 1 - (exitValue.getAmount() / (double) entryValue.getAmount());
     }
 
+    /**
+     * @return NaN when the moving average acquisition cost is undefined
+     * @see #getEntryValueMovingAverage()
+     */
     public double getReturnMovingAverage()
     {
-        return (exitValue.getAmount() / (double) entryValueMovingAverage.get().getAmount()) - 1;
+        var entry = entryValueMovingAverage.get();
+        if (entry == null)
+            return Double.NaN;
+        return (exitValue.getAmount() / (double) entry.getAmount()) - 1;
     }
 
     /**
@@ -437,6 +475,13 @@ public class Trade implements Adaptable
     private Money getMovingAverageCost(Client client, CurrencyConverter converter, SnapshotCache snapshotCache,
                     TaxesAndFees taxesAndFees)
     {
+        // a position that was never acquired has no acquisition cost: for a
+        // short trade the answer is "undefined", not a number the caller has
+        // to know is meaningless
+
+        if (!isLong())
+            return null;
+
         var interval = Interval.of(LocalDate.MIN, realClosingTransaction != null
                         ? realClosingTransaction.getDateTime().toLocalDate()
                         : LocalDate.now());

@@ -14,6 +14,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
+import name.abuchen.portfolio.model.AttributeFieldType;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
@@ -28,7 +29,7 @@ import name.abuchen.portfolio.ui.views.dashboard.ChartHeightConfig;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardData;
 import name.abuchen.portfolio.ui.views.dashboard.EnumBasedConfig;
 import name.abuchen.portfolio.ui.views.dashboard.WidgetDelegate;
-import name.abuchen.portfolio.ui.views.settings.AttributeFieldType;
+import name.abuchen.portfolio.ui.views.settings.AttributeFieldTypeLabels;
 import name.abuchen.portfolio.ui.views.settings.SettingsView;
 
 public class FollowUpWidget extends AbstractSecurityListWidget<FollowUpWidget.FollowUpItem>
@@ -163,7 +164,8 @@ public class FollowUpWidget extends AbstractSecurityListWidget<FollowUpWidget.Fo
             return;
 
         var label = new StyledLabel(parent, SWT.WRAP);
-        label.setText(MessageFormat.format(Messages.MsgHintNoAttributesConfigured, AttributeFieldType.DATE.toString()));
+        label.setText(MessageFormat.format(Messages.MsgHintNoAttributesConfigured,
+                        AttributeFieldTypeLabels.label(AttributeFieldType.DATE)));
         label.setOpenLinkHandler(d -> view.getPart().activateView(SettingsView.class, 1));
     }
 

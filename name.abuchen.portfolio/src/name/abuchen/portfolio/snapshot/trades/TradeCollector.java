@@ -229,8 +229,9 @@ public class TradeCollector
         List<TransactionPair<PortfolioTransaction>> open = openTransactions.get(pair.getOwner());
 
         if (open == null || open.isEmpty())
-            throw new TradeCollectorException(MessageFormat.format(Messages.MsgErrorTradeCollector_NoHoldingsForSell,
-                            pair.getTransaction().getSecurity(), pair.getOwner(), pair));
+            throw new TradeCollectorException(TradeCollectorException.Reason.NO_HOLDINGS_FOR_SELL,
+                            MessageFormat.format(Messages.MsgErrorTradeCollector_NoHoldingsForSell,
+                                            pair.getTransaction().getSecurity(), pair.getOwner(), pair));
 
         long sharesToDistribute = pair.getTransaction().getShares();
 
@@ -269,9 +270,10 @@ public class TradeCollector
 
         if (sharesToDistribute > 0)
         {
-            throw new TradeCollectorException(MessageFormat.format(
-                            Messages.MsgErrorTradeCollector_MissingHoldingsForSell, pair.getTransaction().getSecurity(),
-                            pair.getOwner(), Values.Share.format(sharesToDistribute), pair));
+            throw new TradeCollectorException(TradeCollectorException.Reason.MISSING_HOLDINGS_FOR_SELL,
+                            MessageFormat.format(Messages.MsgErrorTradeCollector_MissingHoldingsForSell,
+                                            pair.getTransaction().getSecurity(), pair.getOwner(),
+                                            Values.Share.format(sharesToDistribute), pair));
         }
 
         // if no lot has been consumed at all (a closing transaction without
@@ -357,7 +359,7 @@ public class TradeCollector
 
         List<TransactionPair<PortfolioTransaction>> positions = openTransactions.get(outbound);
         if (positions == null || positions.isEmpty())
-            throw new TradeCollectorException(
+            throw new TradeCollectorException(TradeCollectorException.Reason.NO_HOLDINGS_FOR_TRANSFER,
                             MessageFormat.format(Messages.MsgErrorTradeCollector_NoHoldingsForTransfer,
                                             pair.getTransaction().getSecurity(), outbound, inbound, pair));
 
@@ -393,7 +395,7 @@ public class TradeCollector
 
         if (sharesToTransfer > 0)
         {
-            throw new TradeCollectorException(
+            throw new TradeCollectorException(TradeCollectorException.Reason.MISSING_HOLDINGS_FOR_TRANSFER,
                             MessageFormat.format(Messages.MsgErrorTradeCollector_MissingHoldingsForTransfer,
                                             pair.getTransaction().getSecurity(), outbound, inbound,
                                             Values.Share.format(sharesToTransfer), pair));
