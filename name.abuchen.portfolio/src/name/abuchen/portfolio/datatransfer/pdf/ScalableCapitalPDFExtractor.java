@@ -579,8 +579,10 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
         // are already imported with the corresponding individual statement.
         //
         // A block starts with the first tax line directly above the interest
-        // and ends with the last tax line directly below the interest. Lines
-        // without booking date (e.g. page breaks) are skipped.
+        // and ends with the last tax line directly below the interest. Only
+        // page headers and footers are skipped. Any other line (e.g. another
+        // booking or a detail line like "2,02 Stk. VICI Properties (...)")
+        // stops the search.
         //
         // @formatter:off
         // 01.04.2026 31.03.2026 Auf Kundenebene einbehaltene oder erstattete Kapitalertragssteuer -0,36 EUR
@@ -594,7 +596,15 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         .compile("^(?<dates>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
                                         + ".*(Kapitalertrag(s)?steuer|Solidarit.tszuschlag|Kirchensteuer).* " //
                                         + "[\\-\\+][\\.,\\d]+ [A-Z]{3}[\\s]*$");
-        var bookingLine = Pattern.compile("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .*$");
+        var pageBreakLine = Pattern.compile("^(Kontoauszug" //
+                        + "|Zeitraum .*" //
+                        + "|Buchung Wertstellung Beschreibung Betrag" //
+                        + "|.*Seitzstra.e.*" //
+                        + "|.*80538 M.nchen.*" //
+                        + "|.*Gesch.ftsf.hrer.*" //
+                        + "|.*Aufsichtsrat.*" //
+                        + "|.*HRB 217778.*" //
+                        + "|Urmoneit.*)?[\\s]*$");
 
         var interestSplittingStrategy = (SplittingStrategy) lines -> {
             var spans = new ArrayList<LineSpan>();
@@ -612,7 +622,8 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                 // search upwards for related taxes
                 for (var jj = ii - 1; jj >= 0; jj--)
                 {
-                    if (!bookingLine.matcher(lines[jj]).matches())
+                    // skip page headers and footers
+                    if (pageBreakLine.matcher(lines[jj]).matches())
                         continue;
 
                     var taxMatcher = interestTaxLine.matcher(lines[jj]);
@@ -625,7 +636,8 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                 // search downwards for related taxes
                 for (var jj = ii + 1; jj < lines.length; jj++)
                 {
-                    if (!bookingLine.matcher(lines[jj]).matches())
+                    // skip page headers and footers
+                    if (pageBreakLine.matcher(lines[jj]).matches())
                         continue;
 
                     var taxMatcher = interestTaxLine.matcher(lines[jj]);
