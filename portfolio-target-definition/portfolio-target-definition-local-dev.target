@@ -245,31 +245,31 @@
 			<dependency>
 				<groupId>com.twelvemonkeys.common</groupId>
 				<artifactId>common-image</artifactId>
-				<version>3.13.1</version>
+				<version>3.15.1</version>
 				<type>jar</type>
 			</dependency>
 			<dependency>
 				<groupId>com.twelvemonkeys.common</groupId>
 				<artifactId>common-io</artifactId>
-				<version>3.13.1</version>
+				<version>3.15.1</version>
 				<type>jar</type>
 			</dependency>
 			<dependency>
 				<groupId>com.twelvemonkeys.common</groupId>
 				<artifactId>common-lang</artifactId>
-				<version>3.13.1</version>
+				<version>3.15.1</version>
 				<type>jar</type>
 			</dependency>
 			<dependency>
 				<groupId>com.twelvemonkeys.imageio</groupId>
 				<artifactId>imageio-bmp</artifactId>
-				<version>3.13.1</version>
+				<version>3.15.1</version>
 				<type>jar</type>
 			</dependency>
 			<dependency>
 				<groupId>com.twelvemonkeys.imageio</groupId>
 				<artifactId>imageio-core</artifactId>
-				<version>3.13.1</version>
+				<version>3.15.1</version>
 				<type>jar</type>
 			</dependency>
 		</dependencies>
