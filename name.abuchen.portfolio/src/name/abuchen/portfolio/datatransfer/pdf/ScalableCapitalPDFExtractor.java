@@ -3,18 +3,23 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.LineSpan;
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.SplittingStrategy;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -451,22 +456,46 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
+                        .oneOf( //
                         // @formatter:off
-                        // Gesamt 13,69 EUR
-                        // @formatter:on
-                        .section("currency", "amount") //
-                        .match("^Gesamt (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
+                                        // Gesamt 13,69 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^Gesamt (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // If there is no interest section, the
+                                        // interest amount is zero.
+                                        // @formatter:off
+                                        // Kontostand am 30.06.2026 137,93 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency") //
+                                                        .match("^Kontostand am [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?[\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(0L);
+                                                        }))
 
+                        // The interest and the related taxes are imported with
+                        // the
+                        // account statement (Kontoauszug), therefore this
+                        // document is
+                        // not processed.
                         // @formatter:off
                         // Kontostand am 31.03.2025 726,58 EUR (Soll- & Habenzinsen berücksichtigt)
+                        // Kontostand am 30.06.2026 137,93 EUR
                         // @formatter:on
                         .section("date") //
                         .match("^Kontostand am (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+
+                            v.markAsFailure(Messages.MsgErrorTransactionAlternativeDocumentRequired);
+                        })
 
                         // @formatter:off
                         // Zeitraum 01.01.2025 - 31.03.2025
@@ -488,10 +517,12 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // 07.04.2025 07.04.2025 Überweisung +29.715,63 EUR
         // 14.08.2025 15.08.2025 Lastschrift +558,52 EUR
+        // 13.08.2026 13.08.2026 Neue Einzahlung auf das Geldkonto +50,00 EUR
         // @formatter:on
         var depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
                         + "(.berweisung" //
                         + "|Lastschrift" //
+                        + "|Neue Einzahlung auf das Geldkonto" //
                         + "|Direct debit) " //
                         + "\\+[\\.,\\d]+ [A-Z]{3}[\\s]*$");
         type.addBlock(depositBlock);
@@ -503,6 +534,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
                                         + "(?<note>(.berweisung" //
                                         + "|Lastschrift" //
+                                        + "|Neue Einzahlung auf das Geldkonto" //
                                         + "|Direct debit)) " //
                                         + "\\+(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
                         .assign((t, v) -> {
@@ -516,9 +548,12 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
         // @formatter:off
         // 03.04.2025 04.04.2025 Prime-Abonnementgebühr -4,99 EUR
+        // 13.08.2026 13.08.2026 Überweisung -50,00 EUR
         // @formatter:on
-        var removalBlock = new Block(
-                        "^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Prime\\-Abonnementgeb.hr) \\-[\\.,\\d]+ [A-Z]{3}[\\s]*$");
+        var removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                        + "(Prime\\-Abonnementgeb.hr" //
+                        + "|.berweisung) " //
+                        + "\\-[\\.,\\d]+ [A-Z]{3}[\\s]*$");
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
@@ -526,7 +561,8 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "note", "amount", "currency") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
-                                        + "(?<note>(Prime\\-Abonnementgeb.hr)) " //
+                                        + "(?<note>(Prime\\-Abonnementgeb.hr" //
+                                        + "|.berweisung)) " //
                                         + "\\-(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
@@ -537,59 +573,137 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
+        // Interest and the related taxes are listed with the same booking
+        // and value date. The taxes can be listed above or below the interest.
+        // All other taxes (e.g. dividends or sales) are ignored, because they
+        // are already imported with the corresponding individual statement.
+        //
+        // A block starts with the first tax line directly above the interest
+        // and ends with the last tax line directly below the interest. Lines
+        // without booking date (e.g. page breaks) are skipped.
+        //
         // @formatter:off
-        // 01.07.2025 30.06.2025 Abgezogener oder erstatteter Solidaritätszuschlag auf Kundenebene -0,77 EUR
-        // 01.07.2025 30.06.2025 Auf Kundenebene einbehaltene oder erstattete Kapitalertragssteuer -14,07 EUR
-        // 01.01.2026 31.12.2025 Auf Kundenebene einbehaltene oder erstattete Kirchensteuer -1,10 EUR 
+        // 01.04.2026 31.03.2026 Auf Kundenebene einbehaltene oder erstattete Kapitalertragssteuer -0,36 EUR
+        // 01.04.2026 31.03.2026 Erhaltene Zinsen +1,44 EUR
+        // 01.04.2026 31.03.2026 Abgezogener oder erstatteter Solidaritätszuschlag auf Kundenebene -0,02 EUR
         // @formatter:on
-        var taxesBlock = new Block(
-                        "^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (.*oder erstattete.*) [\\-|\\+][\\.,\\d]+ [A-Z]{3}[\\s]*$");
-        type.addBlock(taxesBlock);
-        taxesBlock.set(new Transaction<AccountTransaction>()
+        var interestLine = Pattern.compile("^(?<dates>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                        + "Erhaltene Zinsen " //
+                        + "[\\-\\+][\\.,\\d]+ [A-Z]{3}[\\s]*$");
+        var interestTaxLine = Pattern
+                        .compile("^(?<dates>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                        + ".*(Kapitalertrag(s)?steuer|Solidarit.tszuschlag|Kirchensteuer).* " //
+                                        + "[\\-\\+][\\.,\\d]+ [A-Z]{3}[\\s]*$");
+        var bookingLine = Pattern.compile("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .*$");
 
-                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
+        var interestSplittingStrategy = (SplittingStrategy) lines -> {
+            var spans = new ArrayList<LineSpan>();
 
-                        .section("date", "note", "type", "amount", "currency") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
-                                        + ".*" //
-                                        + "(?<note>(Solidarit.tszuschlag|Kapitalertrag(s)?steuer|Kirchensteuer)).*" //
-                                        + "(?<type>[\\-|\\+])(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
-                        .assign((t, v) -> {
-                            // Is type --> "+" change from TAXES to TAX_REFUND
-                            if ("+".equals(v.get("type")))
-                                t.setType(AccountTransaction.Type.TAX_REFUND);
+            for (var ii = 0; ii < lines.length; ii++)
+            {
+                var matcher = interestLine.matcher(lines[ii]);
+                if (!matcher.matches())
+                    continue;
 
-                            t.setDateTime(asDate(v.get("date")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setNote(v.get("note"));
-                        })
+                var dates = matcher.group("dates");
+                var startLine = ii;
+                var endLine = ii;
 
-                        .wrap(TransactionItem::new));
+                // search upwards for related taxes
+                for (var jj = ii - 1; jj >= 0; jj--)
+                {
+                    if (!bookingLine.matcher(lines[jj]).matches())
+                        continue;
 
-        // @formatter:off
-        // 01.07.2025 30.06.2025 Erhaltene Zinsen +56,27 EUR
-        // @formatter:on
-        var interestBlock = new Block(
-                        "^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Erhaltene Zinsen) [\\-|\\+][\\.,\\d]+ [A-Z]{3}[\\s]*$");
+                    var taxMatcher = interestTaxLine.matcher(lines[jj]);
+                    if (!taxMatcher.matches() || !dates.equals(taxMatcher.group("dates")))
+                        break;
+
+                    startLine = jj;
+                }
+
+                // search downwards for related taxes
+                for (var jj = ii + 1; jj < lines.length; jj++)
+                {
+                    if (!bookingLine.matcher(lines[jj]).matches())
+                        continue;
+
+                    var taxMatcher = interestTaxLine.matcher(lines[jj]);
+                    if (!taxMatcher.matches() || !dates.equals(taxMatcher.group("dates")))
+                        break;
+
+                    endLine = jj;
+                }
+
+                spans.add(new LineSpan(startLine, endLine));
+            }
+
+            return spans;
+        };
+
+        var interestBlock = new Block(interestSplittingStrategy);
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
+                        // @formatter:off
+                        // 01.07.2025 30.06.2025 Erhaltene Zinsen +56,27 EUR
+                        // @formatter:on
                         .section("date", "type", "amount", "currency") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*" //
-                                        + "(?<type>[\\-|\\+])(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                        + "Erhaltene Zinsen " //
+                                        + "(?<type>[\\-\\+])(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
                         .assign((t, v) -> {
-                         v.markAsFailure(Messages.MsgErrorTransactionAlternativeDocumentRequired);
-
-                         // Is type --> "-" change from INTEREST to INTEREST_CHARGE
+                            // Is type --> "-" change from INTEREST to
+                            // INTEREST_CHARGE
                             if ("-".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.INTEREST_CHARGE);
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
+
+                            type.getCurrentContext().remove("interestTax");
+                        })
+
+                        // @formatter:off
+                        // 01.07.2025 30.06.2025 Abgezogener oder erstatteter Solidaritätszuschlag auf Kundenebene -0,77 EUR
+                        // 01.07.2025 30.06.2025 Auf Kundenebene einbehaltene oder erstattete Kapitalertragssteuer -14,07 EUR
+                        // 01.01.2026 31.12.2025 Auf Kundenebene einbehaltene oder erstattete Kirchensteuer -1,10 EUR
+                        // 08.04.2025 10.04.2025 Abgezogener oder erstatteter Solidaritätszuschlag auf Kundenebene +1,40 EUR
+                        // @formatter:on
+                        .section("type", "tax").optional().multipleTimes() //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                                        + ".*(Kapitalertrag(s)?steuer|Solidarit.tszuschlag|Kirchensteuer).* " //
+                                        + "(?<type>[\\-\\+])(?<tax>[\\.,\\d]+) [A-Z]{3}[\\s]*$") //
+                        .assign((t, v) -> {
+                            var tax = asAmount(v.get("tax"));
+
+                            // Is type --> "+" it is a tax refund, which reduces
+                            // the taxes
+                            if ("+".equals(v.get("type")))
+                                tax = -tax;
+
+                            var context = type.getCurrentContext();
+                            var interestTax = context.containsKey("interestTax")
+                                            ? Long.parseLong(context.get("interestTax"))
+                                            : 0L;
+                            context.put("interestTax", Long.toString(interestTax + tax));
+                        })
+
+                        .conclude(t -> {
+                            var context = type.getCurrentContext();
+                            if (!context.containsKey("interestTax"))
+                                return;
+
+                            var interestTax = Long.parseLong(context.get("interestTax"));
+                            context.remove("interestTax");
+
+                            if (interestTax > 0)
+                                t.addUnit(new Unit(Unit.Type.TAX, Money.of(t.getCurrencyCode(), interestTax)));
+
+                            t.setAmount(t.getAmount() - interestTax);
                         })
 
                         .wrap(TransactionItem::new));
