@@ -35,7 +35,8 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
         addDividendsTransaction();
         addPaymentTransaction();
         addInterestTransaction();
-        addAccountStatementTransaction();
+        addAccountStatementTransaction_Format01();
+        addAccountStatementTransaction_Format02();
         addNonImportableTransaction();
     }
 
@@ -593,7 +594,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new);
     }
 
-    private void addAccountStatementTransaction()
+    private void addAccountStatementTransaction_Format01()
     {
         var baseCurrencyRange = new Block("^KONTOAUSZUG in (?<baseCurrency>[A-Z]{3})$") //
                         .asRange(section -> section //
@@ -661,6 +662,37 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                                 return new TransactionItem(t);
                             return null;
                         }));
+    }
+
+    private void addAccountStatementTransaction_Format02()
+    {
+        final var type = new DocumentType("Transaction statement in [A-Z]{3}");
+        this.addDocumentTyp(type);
+
+        // @formatter:off
+        // 08.04.2026 1075394350 Incoming payment +40’000.00 CHF 08.04.2026 40’001.00 CHF
+        // @formatter:on
+        var depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ Incoming payment \\+[\\.'’\\d]+ [A-Z]{3} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .*$");
+        type.addBlock(depositBlock);
+        depositBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
+
+                        .section("amount", "currency", "date") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                                        + "[\\d]+ " //
+                                        + "Incoming payment " //
+                                        + "\\+(?<amount>[\\.'’\\d]+) " //
+                                        + "(?<currency>[A-Z]{3}) " //
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                        + ".*$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 
     private void addNonImportableTransaction()
@@ -809,7 +841,9 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        return ExtractorUtils.convertToNumberLong(value, Values.Amount, "de", "CH");
+        // Depending on the document, the Swiss grouping separator is extracted
+        // either as apostrophe (') or as right single quotation mark (’).
+        return ExtractorUtils.convertToNumberLong(value.replace('’', '\''), Values.Amount, "de", "CH");
     }
 
     @Override
