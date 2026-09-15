@@ -87,6 +87,13 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
+                        // Ex-Tag 24.06.2021 Art der Dividende Schlussdividende
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Ex\\-Tag (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
+                        // @formatter:off
                         // Ausmachender Betrag 84,05+ EUR
                         // @formatter:on
                         .section("amount", "currency") //
