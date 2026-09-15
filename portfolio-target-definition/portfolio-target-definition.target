@@ -351,7 +351,7 @@
 			<dependency>
 				<groupId>com.auth0</groupId>
 				<artifactId>java-jwt</artifactId>
-				<version>4.5.2</version>
+				<version>4.6.1</version>
 				<type>jar</type>
 			</dependency>
 		</dependencies>
