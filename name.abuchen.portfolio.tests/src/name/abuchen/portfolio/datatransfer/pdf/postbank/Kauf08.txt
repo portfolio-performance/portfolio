@@ -1,0 +1,43 @@
+PDFBox Version: 3.0.5 != 1.8.17
+Portfolio Performance Version: 0.78.1
+System: linux | x86_64 | 21.0.11+10-1-26.04.2-Ubuntu | Ubuntu
+-----------------------------------------
+Postbank
+Beratungsteam
+CufAZyQ 24/7-Kundenservice (0228) 5500-5500
+ xXkOHsJs 
+ibjlTwdaQ. 43 
+60943 QKikNLZW
+1. Juni 2026
+Abrechnung: Kauf von Wertpapieren 
+Depotinhaber: ATNzPji QlbbCRfT
+Filialnummer Depotnummer Wertpapierbezeichnung Seite
+212 7338056 00 PROCTER & GAMBLE CO., THE RG.SH. O.N. 1/1
+WKN 852062 Nominal ST 14
+ISIN US7427181091 Kurs EUR 121,42
+Verwahrart Wertpapierrechnung USA/Kanada
+Geschäft Kommissionsgeschäft
+Börse Frankfurt - Deutsche Börse - Frankfurter Wertpapierbörse
+Belegnummer 1603718970 / 128935901 Schlusstag/-zeit MEZ 01.06.2026 / 15:34:02
+Auftragsart Limitauftrag
+Abrechnung Währung Betrag
+Kurswert EUR 1.699,88
+Provision EUR 17,95
+Fremde Spesen und Auslagen EUR 3,12
+Belastung
+Buchung auf Kontonummer 6529818 00 mit Wertstellung 03.06.2026 EUR 1.720,95
+Summe der in der Abrechnung enthaltenen Provisionen und Auslagen EUR 21,07
+Zu dem abgerechneten Geschäft haben wir keine Empfehlung gegeben. Daher liegt keine entsprechende 
+Beratungsdokumentation vor.
+Die Wertpapiere haben wir entsprechend der Abrechnung gebucht. Unser Geschäftsverkehr mit Ihnen wird durch unsere Allgemeinen Geschäftsbedingungen 
+und die Sonderbedingungen für Wertpapiergeschäfte geregelt. Bitte überprüfen Sie diese Abrechnung schnellstmöglich und richten Sie etwaige Einwendungen 
+in den Geschäftsräumen der Bank oder schriftlich an Deutsche Bank AG, QM - Support, 04082 Leipzig. Andernfalls gilt diese Abrechnung als genehmigt. 
+Die unter § 4 Nr. 8 UStG im Inland fallenden Bank- und Finanzdienstleistungen sind von der Umsatzsteuer befreit, sofern Umsatzsteuer nicht gesondert 
+ausgewiesen ist. Soweit der Leistungsempfänger umsatzsteuerlicher Unternehmer ist und seinen Sitz in einem anderen EU-Mitgliedstaat hat und die Bank 
+und Finanzdienstleistungen nach dortigem Recht umsatzsteuerpflichtig sind, gilt die Steuerschuldnerschaft des Leistungsempfängers. Umsatzsteuer ID 
+Nr.: Deutsche Bank AG, 60262 Frankfurt DE114103379
+Postbank - eine Niederlassung der Deutsche Bank AG - Vorsitzender des Aufsichtsrats: Alexander R. Wynaendts - Vorstand: Christian Sewing (Vorsitzender),
+James von Moltke, Raja Akram, Fabrizio Campelli, Marcus Chromik, Marie-Jeanne Deverdun, Stefan Hoops, Bernd Leukert, Alexander von zur Mühlen,
+Laura Padovani, Claudio de Sanctis, Rebecca Short
+Deutsche Bank Aktiengesellschaft mit Sitz in Frankfurt am Main, Amtsgericht Frankfurt am Main, HRB Nr. 30 000, Umsatzsteuer-Id.-Nr. DE114103379; www.postbank.de
+TR00000001 20260601 970_000_
