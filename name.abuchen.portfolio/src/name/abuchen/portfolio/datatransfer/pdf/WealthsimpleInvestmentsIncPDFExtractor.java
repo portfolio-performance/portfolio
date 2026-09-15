@@ -400,6 +400,19 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                                         })
                         )
 
+                // @formatter:off
+                // Dec 22 ACWV-iShares Edge MSCI Min Vol Global ETF: 15-DEC-20 (record date) 8.3610 shares, gross 6.61 USD, – – $8.55
+                //
+                // Wealthsimple labels the column "record date", but the value is the ex-date.
+                // The year is given with two digits only and asDate() has no matching format,
+                // therefore the date is assembled by hand.
+                // @formatter:on
+                .section("exDay", "exMonth", "exYear").optional()
+                .match("^[\\w]{3,4} [\\d]{2} .*: "
+                                + "(?<exDay>[\\d]{2})\\-(?<exMonth>[\\w]{3})\\-(?<exYear>[\\d]{2}) "
+                                + "\\(record date\\).*$")
+                .assign((t, v) -> t.setExDate(asDate(v.get("exDay") + " " + v.get("exMonth") + " 20" + v.get("exYear"))))
+
                 .wrap(t -> {
                     type.getCurrentContext().removeType(DividendTaxTransactionsItem.class);
 
@@ -450,6 +463,19 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
+
+                // @formatter:off
+                // Dec 22 ACWV-iShares Edge MSCI Min Vol Global ETF: 15-DEC-20 (record date) 8.3610 shares, gross 6.61 USD, – – $8.55
+                //
+                // Wealthsimple labels the column "record date", but the value is the ex-date.
+                // The year is given with two digits only and asDate() has no matching format,
+                // therefore the date is assembled by hand.
+                // @formatter:on
+                .section("exDay", "exMonth", "exYear").optional()
+                .match("^[\\w]{3,4} [\\d]{2} .*: "
+                                + "(?<exDay>[\\d]{2})\\-(?<exMonth>[\\w]{3})\\-(?<exYear>[\\d]{2}) "
+                                + "\\(record date\\).*$")
+                .assign((t, v) -> t.setExDate(asDate(v.get("exDay") + " " + v.get("exMonth") + " 20" + v.get("exYear"))))
 
                 .wrap(TransactionItem::new));
 
