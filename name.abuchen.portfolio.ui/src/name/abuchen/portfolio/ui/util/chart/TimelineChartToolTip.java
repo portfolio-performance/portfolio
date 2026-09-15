@@ -133,6 +133,20 @@ public class TimelineChartToolTip extends AbstractChartToolTip
         return categoryEnabled ? getFocusCategoryAt(event) : getFocusDateAt(event);
     }
 
+    @Override
+    protected int getFocusPixelX()
+    {
+        Object focus = getFocusedObject();
+        IAxis xAxis = getChart().getAxisSet().getXAxis(0);
+
+        if (focus instanceof LocalDate date)
+            return xAxis.getPixelCoordinate(date.toEpochDay());
+        else if (focus instanceof Integer index)
+            return xAxis.getPixelCoordinate(index);
+        else
+            return -1;
+    }
+
     private Integer getFocusCategoryAt(Event event)
     {
         IAxis xAxis = getChart().getAxisSet().getXAxes()[0];
