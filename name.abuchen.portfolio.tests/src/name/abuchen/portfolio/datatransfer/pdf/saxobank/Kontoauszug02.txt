@@ -1,0 +1,57 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.5
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+IJcdRZ kOAvl JuBVi ezL - 21732561
+Comptes rendus des transactions
+Période du rapport: 20-janv.-2026 - 17-févr.-2026
+Généré le: 17-févr.-2026 08:35:50 08:35:50 (W. Europe Standard Time)
+XdAbHq SjLyS cLGjf IIF Saxo Bank A/S FR Branch
+La VpJGzXTyRIEa 62 10 Rue de la Paix
+58811 Divatte-sur-zvgzk 75002 Paris
+France France
+Saxo Bank A/S FR Branch / 10 Rue de la Paix / 75002 Paris / France gWBhdj FKWva DWWKx Izw Période du rapport
+Devise: EUR 20-janv.-2026 - 17-févr.-2026
+Page 1 de 3 Compte(s): Tous les comptes Généré le: 17-févr.-2026
+Transactions, EUR
+Période du rapport
+20-janv.-2026 au 17-févr.-2026
+Type Instrument Événement Quantité Liquidités
+21-janv.-2026 -2 986,54 13,46
+Transfert d’espèces Retrait -3 000,00 -
+Deposit Type Taux de change Montant de liquidités Montant enregistré
+Retrait 1,000000 -3 000,00 EUR -3 000,00 EUR
+Transfert d’espèces Dépôts 3 000,00 -
+Deposit Type Taux de change Montant de liquidités Montant enregistré
+Dépôts 1,000000 3 000,00 EUR 3 000,00 EUR
+Opération Amundi PEA MSCI Emerging Asia UCITS EUR ETF Acheter 30 @ 31,91 EUR -957,42 -
+Commission Crédit de commission client Nombre d’actions Montant enregistré
+-2,00 EUR 2,00 EUR -957,42 EUR -957,42 EUR
+Coût total Taux de change ID d'opération ISIN
+-2,00 EUR 1,000000 6553757085 FR0013412012
+Opération Amundi PEA S&P 500 UCITS ETF Acheter 40 @ 50,73 EUR -2 029,12 -
+Nombre d’actions Montant enregistré Taux de change ID d'opération
+-2 029,12 EUR -2 029,12 EUR 1,000000 6553738910
+ISIN
+FR0011871128
+Saxo Bank A/S FR Branch / 10 Rue de la Paix / 75002 Paris / France eAFdaO fLYlR lKepV yzI Période du rapport
+Devise: EUR 20-janv.-2026 - 17-févr.-2026
+Page 2 de 3 Compte(s): Tous les comptes Généré le: 17-févr.-2026
+Transactions, EUR
+Période du rapport
+20-janv.-2026 au 17-févr.-2026
+Type Instrument Événement Quantité Liquidités
+20-janv.-2026 3 000,00 3 000,00
+Transfert d’espèces Dépôts 2 999,00 -
+IBAN Nom du détenteur de l’IBAN Deposit Type Taux de change
+Zq5254834517440942791040r15 Mlle NbQsan sbi External 1,000000
+Montant de liquidités Montant enregistré
+2 999,00 EUR 2 999,00 EUR
+Transfert d’espèces Dépôts 1,00 -
+IBAN Nom du détenteur de l’IBAN Deposit Type Taux de change
+iZ8365712471719767369757k52 Mlle xzbZng XJm External 1,000000
+Montant de liquidités Montant enregistré
+1,00 EUR 1,00 EUR
+Saxo Bank A/S FR Branch / 10 Rue de la Paix / 75002 Paris / France Melody Linda Marie Kar Période du rapport
+Devise: EUR 20-janv.-2026 - 17-févr.-2026
+Page 3 de 3 Compte(s): Tous les comptes Généré le: 17-févr.-2026
