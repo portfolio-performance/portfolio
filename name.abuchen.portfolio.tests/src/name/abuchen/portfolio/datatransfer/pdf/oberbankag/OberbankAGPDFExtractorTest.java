@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf.oberbankag;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
@@ -21,6 +22,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundDeli
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.skippedItem;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
@@ -336,11 +338,11 @@ public class OberbankAGPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransactions(results), is(2L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(2));
+        assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
         // check security
@@ -355,6 +357,14 @@ public class OberbankAGPDFExtractorTest
                         hasSource("FreierErhalt01.txt"), //
                         hasNote("Abrechnungs-Nr. 888888"), //
                         hasAmount("EUR", 1199.76), hasGrossValue("EUR", 1199.76), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2021-02-05T00:00"), //
+                        hasSource("FreierErhalt01.txt"), //
+                        hasNote("Abrechnungs-Nr. 888888"), //
+                        hasAmount("EUR", 7.25), hasGrossValue("EUR", 7.25), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
@@ -474,10 +484,10 @@ public class OberbankAGPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countSkippedItems(results), is(1L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -487,13 +497,16 @@ public class OberbankAGPDFExtractorTest
                         hasName("3 Banken Mensch&Umwelt Aktienf.(R) Miteigentumsanteile - Thesaurierend"), //
                         hasCurrencyCode("EUR"))));
 
-        // check tax refund transaction
-        assertThat(results, hasItem(taxRefund( //
-                        hasDate("2021-02-03T00:00"), hasShares(5.98), //
-                        hasExDate("2021-02-01T00:00"), hasSource("AusschuettungsgleicherErtrag01.txt"), //
-                        hasNote("Abrechnungs-Nr. 888888"), //
-                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        taxRefund( //
+                                        hasDate("2021-02-03T00:00"), hasShares(5.98), //
+                                        hasExDate("2021-02-01T00:00"), //
+                                        hasSource("AusschuettungsgleicherErtrag01.txt"), //
+                                        hasNote("Abrechnungs-Nr. 888888"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
