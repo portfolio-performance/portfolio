@@ -647,6 +647,23 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Valutatag : (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
+                        .optionalOneOf( //
+                        // @formatter:off
+                                        // Ex-Tag : 27.08.2015
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("exDate") //
+                                                        .match("^Ex\\-Tag : (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate")))),
+                                        // @formatter:off
+                                        // Ex-Tag : 15. Juni 2011
+                                        // Ex-Tag : 29. April 2010 Zahlungsprovision : EUR 0,50
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("exDate") //
+                                                        .match("^Ex\\-Tag : (?<exDate>[\\d]{2}\\. [\\D]+ [\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate")))))
+
                         .oneOf( //
                                         // @formatter:off
                                         // Dividende Netto : USD 2,23
@@ -814,6 +831,14 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .section("date") //
                         .match("^.* mit Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Extag                         15.06.2016
+                        // Extag: 02.05.2022
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Extag(:)?[\\s]{1,}(?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
 
                         // @formatter:off
                         //                                                       Beträge in FW        Beträge in EUR
