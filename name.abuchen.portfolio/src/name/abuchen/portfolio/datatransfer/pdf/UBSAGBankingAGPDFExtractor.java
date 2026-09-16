@@ -422,6 +422,13 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
+                        // VERFALL 28.12.2021 EX-TAG 03.12.2021 DIVIDENDE
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^.*EX\\-TAG (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
+                        // @formatter:off
                         // GUTSCHRIFT KONTO 292-614724.40R VALUTA 28.12.2021 CHF 3.85
                         // @formatter:on
                         .section("currency", "amount") //
