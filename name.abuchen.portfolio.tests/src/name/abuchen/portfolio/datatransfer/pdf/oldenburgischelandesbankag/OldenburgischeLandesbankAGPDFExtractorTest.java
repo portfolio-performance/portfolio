@@ -6,6 +6,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -514,7 +515,8 @@ public class OldenburgischeLandesbankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-05-15T00:00"), hasShares(71.851808), //
+                        hasDate("2023-05-15T00:00"), hasExDate("2023-05-15T00:00"), //
+                        hasShares(71.851808), //
                         hasSource("Dividende01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 7.44), hasGrossValue("EUR", 7.44), //
@@ -548,7 +550,8 @@ public class OldenburgischeLandesbankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-09-27T00:00"), hasShares(5.200029), //
+                        hasDate("2023-09-27T00:00"), hasExDate("2023-09-14T00:00"), //
+                        hasShares(5.200029), //
                         hasSource("Dividende02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.84), hasGrossValue("EUR", 0.84), //
@@ -584,7 +587,8 @@ public class OldenburgischeLandesbankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-09-27T00:00"), hasShares(5.200029), //
+                        hasDate("2023-09-27T00:00"), hasExDate("2023-09-14T00:00"), //
+                        hasShares(5.200029), //
                         hasSource("Dividende02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.84), hasGrossValue("EUR", 0.84), //
@@ -625,7 +629,8 @@ public class OldenburgischeLandesbankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-10-16T00:00"), hasShares(89.540503), //
+                        hasDate("2023-10-16T00:00"), hasExDate("2023-10-16T00:00"), //
+                        hasShares(89.540503), //
                         hasSource("Dividende03.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 35.37), hasGrossValue("EUR", 35.37), //
@@ -659,7 +664,8 @@ public class OldenburgischeLandesbankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-02-15T00:00"), hasShares(26.634225), //
+                        hasDate("2024-02-15T00:00"), hasExDate("2024-02-15T00:00"), //
+                        hasShares(26.634225), //
                         hasSource("Dividende04.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 4.15), hasGrossValue("EUR", 5.62), //
@@ -695,7 +701,8 @@ public class OldenburgischeLandesbankAGPDFExtractorTest
         assertThat(results, hasItem(withFailureMessage( //
                         Messages.MsgErrorTransactionOrderCancellationUnsupported, //
                         dividend( //
-                                        hasDate("2023-09-13T00:00"), hasShares(95.967357), //
+                                        hasDate("2023-09-13T00:00"), hasExDate("2023-09-06T00:00"), //
+                                        hasShares(95.967357), //
                                         hasSource("StornoDividende01.txt"), //
                                         hasNote(null), //
                                         hasAmount("EUR", 15.88), hasGrossValue("EUR", 16.31), //
