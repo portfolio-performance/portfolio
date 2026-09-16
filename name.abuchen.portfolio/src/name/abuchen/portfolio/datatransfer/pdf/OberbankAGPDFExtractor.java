@@ -337,7 +337,12 @@ public class OberbankAGPDFExtractor extends AbstractPDFExtractor
 
                         .conclude(ExtractorUtils.fixGrossValueA())
 
-                        .wrap(TransactionItem::new);
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                            return new TransactionItem(t);
+                        });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -347,7 +352,28 @@ public class OberbankAGPDFExtractor extends AbstractPDFExtractor
     {
         final var type = new DocumentType("(Durchf.hrungsanzeig[\\s]*e[\\s]+" //
                         + "(Freier Erhalt" //
-                        + "|Freie Lieferung))");
+                        + "|Freie Lieferung))", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // Schlusstag 05.02.2021
+                                        // @formatter:on
+                                        .section("date") //
+                                        .match("^Schlusstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                                        .assign((ctx, v) -> ctx.put("date", v.get("date")))
+
+                                        // @formatter:off
+                                        // Auftrags-Nr. 999999-05.02.2021
+                                        // @formatter:on
+                                        .section("note").optional() //
+                                        .match("^(?<note>Auftrags-Nr\\. [\\d]+)-[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
+                                        .assign((ctx, v) -> ctx.put("note", v.get("note")))
+
+                                        // @formatter:off
+                                        // 888888 - 05.02.2021
+                                        // @formatter:on
+                                        .section("note1").optional() //
+                                        .match("^(?<note1>[\\d]+) - [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
+                                        .assign((ctx, v) -> ctx.put("note1", v.get("note1"))));
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<PortfolioTransaction>();
@@ -424,6 +450,35 @@ public class OberbankAGPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new);
+
+        // The incidental costs are not part of the acquisition value, they are
+        // charged to the account separately.
+        var feeBlock = new Block("^[\\s]*Nebenkosten:[\\s]+[\\.,\\d]+ [A-Z]{3}$");
+        type.addBlock(feeBlock);
+        feeBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
+
+                        // @formatter:off
+                        //   Nebenkosten:                                                                       7,25 EUR
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .documentContext("date") //
+                        .documentContextOptionally("note", "note1") //
+                        .match("^[\\s]*Nebenkosten:[\\s]+(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+
+                            if (v.containsKey("note"))
+                                t.setNote(v.get("note"));
+
+                            if (v.containsKey("note1"))
+                                t.setNote(concatenate(t.getNote(), "Abrechnungs-Nr. " + v.get("note1"), " | "));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 
     private void addNonImportableTransaction()
