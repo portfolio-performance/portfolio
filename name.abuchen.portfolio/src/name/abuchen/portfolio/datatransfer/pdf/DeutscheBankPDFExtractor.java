@@ -397,6 +397,13 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
+                        // Ursprungsland USA Ex-Tag 04.12.2014
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Ursprungsland .* Ex\\-Tag (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
+                        // @formatter:off
                         // Gutschrift mit Wert 15.12.2014 64,88 EUR
                         // @formatter:on
                         .section("amount", "currency") //
