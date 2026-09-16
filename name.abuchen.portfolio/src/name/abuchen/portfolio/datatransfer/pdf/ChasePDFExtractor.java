@@ -40,7 +40,8 @@ public class ChasePDFExtractor extends AbstractPDFExtractor
         // 18. Aug. 2026 Von AAenlaJXh gtmAV +5,00 € 5,00 €
         // 18. Aug. 2026 Von zxVORVRSn SYnNM +36.427,04 € 36.432,04 €
         // @formatter:on
-        var depositRemovalBlock = new Block("^[\\d]{1,2}\\. [\\p{L}]{3,4}(\\.)? [\\d]{4} (Von|An) .* [\\-\\+][\\.,\\d]+ \\p{Sc} (\\-)?[\\.,\\d]+ \\p{Sc}$");
+        var depositRemovalBlock = new Block(
+                        "^[\\d]{1,2}\\. .{3,5} [\\d]{4} (Von|An) .* [\\-\\+][\\.,\\d]+ \\p{Sc} (\\-)?[\\.,\\d]+ \\p{Sc}$");
         type.addBlock(depositRemovalBlock);
         depositRemovalBlock.set(new Transaction<AccountTransaction>()
 
@@ -50,7 +51,7 @@ public class ChasePDFExtractor extends AbstractPDFExtractor
                         // 18. Aug. 2026 Von AAenlaJXh gtmAV +5,00 € 5,00 €
                         // @formatter:on
                         .section("day", "month", "year", "type", "amount", "currency") //
-                        .match("^(?<day>[\\d]{1,2})\\. (?<month>[\\p{L}]{3,4}(\\.)?) (?<year>[\\d]{4}) (Von|An) .* (?<type>[\\-\\+])(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (\\-)?[\\.,\\d]+ \\p{Sc}$") //
+                        .match("^(?<day>[\\d]{1,2})\\. (?<month>.{3,5}) (?<year>[\\d]{4}) (Von|An) .* (?<type>[\\-\\+])(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (\\-)?[\\.,\\d]+ \\p{Sc}$") //
                         .assign((t, v) -> {
                             // Is type --> "-" change from DEPOSIT to REMOVAL
                             if ("-".equals(v.get("type")))
