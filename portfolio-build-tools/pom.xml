@@ -22,6 +22,7 @@ name.abuchen.portfolio/src/name/abuchen/portfolio/model|labels
 name.abuchen.portfolio/src/name/abuchen/portfolio/online/impl|exchange-labels
 name.abuchen.portfolio/src/name/abuchen/portfolio/online/impl|eurostathicp-labels
 name.abuchen.portfolio/src/name/abuchen/portfolio/snapshot|labels
+name.abuchen.portfolio.rest/src/name/abuchen/portfolio/rest|messages
 name.abuchen.portfolio.ui/src/name/abuchen/portfolio/ui|messages
 name.abuchen.portfolio.ui/src/name/abuchen/portfolio/ui/parts|samplemessages
 name.abuchen.portfolio.ui/src/name/abuchen/portfolio/ui/views/settings|labels

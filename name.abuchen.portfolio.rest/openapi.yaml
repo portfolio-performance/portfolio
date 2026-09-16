@@ -1,0 +1,2458 @@
+openapi: 3.1.0
+
+info:
+  title: Portfolio Performance REST API
+  version: 1.0.0
+  license:
+    name: Eclipse Public License 1.0
+    identifier: EPL-1.0
+  description: |
+    A **local** HTTP/JSON API into the running Portfolio Performance desktop
+    application, so that scripts and AI agents can read and edit the data of
+    open portfolio files.
+
+    ## How to reach it
+
+    - Base URL `http://127.0.0.1:{port}` (default port **5712**), **loopback only**.
+    - The server binds `127.0.0.1` and is **off by default**; the user enables it
+      in Preferences → REST API.
+    - Every request needs a **bearer token** — except the pairing endpoints below,
+      whose purpose is to obtain one. See the `bearerAuth` scheme.
+    - The server serves this document at `GET /v1/openapi.yaml`, unauthenticated,
+      so the contract of the running server is discoverable at runtime.
+
+    ## How to get a token (interactive pairing)
+
+    Each client holds its own token. To obtain one:
+
+    1. `POST /v1/auth/requests` with your program's name. The user is asked to
+       approve or decline the request inside Portfolio Performance — tell them
+       to look at the application.
+    2. Poll `GET /v1/auth/requests/{id}` every 1–2 seconds. While the answer is
+       `pending`, keep polling; the request expires after 2 minutes.
+    3. On `approved`, the response carries the token — **exactly once**. Store it;
+       it cannot be retrieved again. The user chooses whether the grant is
+       permanent or expires when the application quits.
+
+    Every `401` response carries the pairing endpoint in its `pairingEndpoint`
+    field, so this flow is discoverable at runtime. Users can also mint a token
+    manually (Preferences → REST API → "Add client") for headless setups, and can
+    revoke any client there at any time.
+
+    ## Constraints that are not expressible in this document
+
+    These are enforced by the server but cannot be described as schema or security,
+    so they are stated here. Each violation is reported as a distinct problem type
+    (see the `Problem` schema):
+
+    - **Loopback Host only.** The API must be addressed as `127.0.0.1`, `[::1]` or
+      `localhost`. A request whose `Host` header names any other authority is
+      rejected `403 forbidden-host`. This defeats DNS rebinding — a web page cannot
+      point its own domain at 127.0.0.1 and reach the API.
+    - **No browser origin.** Any request that carries an `Origin` header is rejected
+      `403 browser-origin-forbidden`. A web page therefore cannot reach this API.
+    - **Bounded request body.** A body larger than 1 MiB is rejected
+      `413 request-too-large` without being read to the end. Every legitimate
+      request is far smaller; the limit exists because bodies are buffered whole.
+    - **Per-file access.** Only files the user has individually enabled are visible.
+      A file that exists but is not enabled answers exactly like one that does not
+      exist (`404 not-found`) — the token must not let a client enumerate files the
+      user did not share.
+
+    ## Methods
+
+    A path serves only the methods listed for it in this document; the only
+    `POST` endpoint is the pairing request — v1 has **no create endpoints for
+    portfolio data**. Calling any method that a path does not list returns
+    `405 method-not-allowed`.
+
+    ## Query parameters
+
+    An operation accepts only the query parameters listed for it here, and an
+    operation that lists none accepts none. Anything else is rejected
+    `400 invalid-request`, with one `errors` entry per offending name
+    (`code: unknown-parameter`) that names the parameters the endpoint does
+    accept — send two typos and you learn about both in one round trip.
+
+    This is deliberate rather than lenient: an ignored parameter would be
+    answered with a complete, confident-looking report computed from defaults.
+    `GET .../holdings?currency=USD` — a plausible misremembering of
+    `reportingCurrency` — would return the base-currency statement of assets,
+    and only a client that compared the echoed `reportingCurrency` against what
+    it sent would notice. Failing the request is the only answer that cannot be
+    mistaken for the requested one.
+
+    **Names are case-sensitive**, exactly as spelled here: `reportingcurrency`
+    is rejected, not treated as `reportingCurrency`. Accepting a case variant
+    would mean guessing, and the response says so, naming the parameter meant.
+
+    ## Writes are not saved
+
+    A write (`PATCH`, `DELETE`) mutates the **in-memory** file and marks it dirty,
+    exactly as if the user had edited it in the UI. The change is visible
+    immediately, but **there is no save endpoint** — only the user saves the file
+    (or discards the change by closing without saving).
+
+    While the user has a modal dialog open or is editing a table cell, writes are
+    rejected with `423 user-interaction` rather than silently clobbered. This is
+    **normal and temporary**: respect the `Retry-After` header and try again. Reads
+    are unaffected.
+
+servers:
+  - url: http://127.0.0.1:{port}
+    description: Loopback interface of the running application
+    variables:
+      port:
+        default: "5712"
+        description: The port configured in Preferences → REST API
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Discovery
+    description: Learn the contract before you hold a token
+  - name: Pairing
+    description: Obtain a bearer token interactively, approved by the user
+  - name: Files
+    description: The open portfolio files you are allowed to address
+  - name: Instruments
+    description: Securities held in a file (stocks, funds, crypto, …)
+  - name: Cash accounts
+    description: Accounts holding cash in a single currency
+  - name: Investment accounts
+    description: Accounts holding instrument positions
+  - name: Holdings
+    description: The statement of assets — every holding valued at a date
+  - name: Performance
+    description: Return and value-change of the file over an interval
+  - name: Trades
+    description: Matched buy/sell pairs, computed from the transactions
+
+paths:
+  /v1/openapi.yaml:
+    get:
+      operationId: getOpenApiDocument
+      tags: [Discovery]
+      summary: This API's own OpenAPI description
+      description: |
+        Serves this very document, so a client can discover the full contract at
+        runtime. No bearer token required — the document carries no user data and
+        describes the pairing flow itself, so it is reachable before you hold a
+        token. The `Host` (loopback) and `Origin` (no-browser) checks still apply.
+
+        What you get back is the description of the **running** server, so it can
+        never drift from the endpoints actually served.
+      security: []
+      responses:
+        "200":
+          description: The OpenAPI document, as YAML.
+          content:
+            application/yaml:
+              schema:
+                type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/auth/requests:
+    post:
+      operationId: createPairingRequest
+      tags: [Pairing]
+      summary: Ask the user for API access
+      description: |
+        Files an access request that the user answers inside Portfolio
+        Performance. No bearer token required. At most one request may be
+        pending at a time, and after a decline new requests are rejected for a
+        cool-down period — both are reported `429` with `Retry-After`.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [clientName]
+              properties:
+                clientName:
+                  type: string
+                  maxLength: 64
+                  description: |
+                    The name of your program, shown to the user in the approval
+                    prompt. Control characters are stripped.
+            examples:
+              default:
+                value:
+                  clientName: Claude Code
+      responses:
+        "201":
+          description: The request is filed and awaiting the user's decision.
+          headers:
+            Location:
+              description: The status resource to poll.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PairingRequestCreated"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+        "429":
+          $ref: "#/components/responses/TooManyPairingRequests"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/auth/requests/{id}:
+    get:
+      operationId: pollPairingRequest
+      tags: [Pairing]
+      summary: Poll the state of an access request
+      description: |
+        Returns the request's state. `pending` can be read any number of times;
+        a terminal state (`approved` with the token, `denied`, `expired`) is
+        delivered **exactly once** — afterwards, and for ids never issued, the
+        answer is `404`. Poll every 1–2 seconds.
+      security: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The request id from `POST /v1/auth/requests`
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The state of the request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PairingRequestStatus"
+              examples:
+                pending:
+                  value:
+                    status: pending
+                approved:
+                  value:
+                    status: approved
+                    token: wZ4mJc9Y3K…
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files:
+    get:
+      operationId: listFiles
+      tags: [Files]
+      summary: List the files you may address
+      description: |
+        Lists only files that are **open and enabled**. Address a file in the
+        `{file}` path segment below by either its `id` or its `alias`.
+      responses:
+        "200":
+          description: The addressable files
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/File"
+              examples:
+                default:
+                  value:
+                    items:
+                      - id: 5f3c1e2a-0b7d-4a1e-9c2f-8d6b3a1e0f42
+                        alias: main
+                        label: portfolio.xml
+                        path: /Users/me/portfolio.xml
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/instruments:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    get:
+      operationId: listInstruments
+      tags: [Instruments]
+      summary: List the instruments in a file
+      responses:
+        "200":
+          description: The instruments in the file
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Instrument"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/instruments/{uuid}:
+    parameters:
+      - $ref: "#/components/parameters/File"
+      - $ref: "#/components/parameters/Uuid"
+    get:
+      operationId: getInstrument
+      tags: [Instruments]
+      summary: Read a single instrument
+      responses:
+        "200":
+          description: The instrument
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Instrument"
+              examples:
+                default:
+                  value:
+                    uuid: 8a1e0c4b-2f5d-4e6a-b1c3-7d9f0a2e4c68
+                    name: Apple Inc.
+                    currencyCode: USD
+                    isin: US0378331005
+                    wkn: "865985"
+                    tickerSymbol: AAPL
+                    note: Core holding
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    patch:
+      operationId: patchInstrument
+      tags: [Instruments]
+      summary: Update an instrument (JSON Merge Patch)
+      description: |
+        A **JSON Merge Patch** (RFC 7386), *not* the full target state: fields you
+        omit stay untouched, and an explicit `null` clears an optional field.
+        Returns the updated instrument.
+
+        Any field that is unknown or not writable is rejected `422`, never a silent
+        no-op — a typo must not look like success. All violations are reported at
+        once so they can be fixed in one round-trip.
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: "#/components/schemas/InstrumentPatch"
+            examples:
+              renameAndClearNote:
+                summary: Rename and clear the note
+                value:
+                  name: Apple
+                  note: null
+      responses:
+        "200":
+          description: The updated instrument
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Instrument"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    delete:
+      operationId: deleteInstrument
+      tags: [Instruments]
+      summary: Delete an instrument
+      description: |
+        Deletes the instrument. **Rejected `409 delete-blocked`** if transactions
+        or investment plans reference it — deleting it in the application would
+        cascade into transaction history, which the API refuses to do on a client's
+        behalf. Watchlist and taxonomy membership do not block the delete.
+      responses:
+        "204":
+          description: Deleted
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/instruments/attribute-types:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    get:
+      operationId: listInstrumentAttributeTypes
+      tags: [Instruments]
+      summary: List the custom attribute definitions for instruments
+      description: |
+        The user-defined and built-in attribute types that apply to an
+        instrument. A client uses this to resolve an attribute id to its
+        display name and value `type`. Compound types (`limit-price`,
+        `bookmark`, `image`) are listed with `supported: false`; the API
+        does not read or write them in v1.
+      responses:
+        "200":
+          description: The applicable attribute definitions.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/AttributeDefinition"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/cash-accounts:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    get:
+      operationId: listCashAccounts
+      tags: [Cash accounts]
+      summary: List the cash accounts in a file
+      responses:
+        "200":
+          description: The cash accounts in the file
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/CashAccount"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/cash-accounts/{uuid}:
+    parameters:
+      - $ref: "#/components/parameters/File"
+      - $ref: "#/components/parameters/Uuid"
+    get:
+      operationId: getCashAccount
+      tags: [Cash accounts]
+      summary: Read a single cash account
+      responses:
+        "200":
+          description: The cash account
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CashAccount"
+              examples:
+                default:
+                  value:
+                    uuid: c4b2a1e0-3f6d-4a2e-8b1c-5d7f9a0e2c46
+                    name: Cash Account
+                    currencyCode: EUR
+                    note: Settlement account
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/investment-accounts:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    get:
+      operationId: listInvestmentAccounts
+      tags: [Investment accounts]
+      summary: List the investment accounts in a file
+      responses:
+        "200":
+          description: The investment accounts in the file
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/InvestmentAccount"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/investment-accounts/{uuid}:
+    parameters:
+      - $ref: "#/components/parameters/File"
+      - $ref: "#/components/parameters/Uuid"
+    get:
+      operationId: getInvestmentAccount
+      tags: [Investment accounts]
+      summary: Read a single investment account
+      description: |
+        An investment account holds **only** instrument positions. Its cash side is
+        a separate cash account, named by `referenceCashAccount`.
+      responses:
+        "200":
+          description: The investment account
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvestmentAccount"
+              examples:
+                default:
+                  value:
+                    uuid: d9f0a2e4-1c6b-4e8a-9b2c-3d5f7a1e0c48
+                    name: Broker
+                    referenceCashAccount: c4b2a1e0-3f6d-4a2e-8b1c-5d7f9a0e2c46
+                    note: Main brokerage
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/holdings:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    get:
+      operationId: listHoldings
+      tags: [Holdings]
+      summary: List the file's holdings, valued at a date
+      description: |
+        Every holding — instrument positions and cash account balances uniformly —
+        valued at the given date in the reporting currency. Instrument positions
+        with zero shares at the date are omitted; cash accounts always appear,
+        even with a zero balance. Items are sorted by name.
+      parameters:
+        - name: date
+          in: query
+          required: false
+          description: |
+            The valuation date (default: today). Each instrument is valued with
+            the latest price on or before this date; the holding's `price.date`
+            makes the staleness visible. Future dates are allowed and value at
+            the last known prices.
+          schema:
+            type: string
+            format: date
+        - $ref: "#/components/parameters/ReportingCurrency"
+      responses:
+        "200":
+          description: The holdings at the valuation date
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [date, reportingCurrency, totalAssets, items]
+                properties:
+                  date:
+                    type: string
+                    format: date
+                    description: The effective valuation date.
+                  reportingCurrency:
+                    type: string
+                    description: |
+                      The currency every amount in this report has been converted
+                      into — the `reportingCurrency` query parameter, or the
+                      file's base currency. Not to be confused with a
+                      `MonetaryValue`'s `currency` (one amount) or an entity's
+                      `currencyCode` (its own declared currency).
+                  totalAssets:
+                    $ref: "#/components/schemas/MonetaryValue"
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Holding"
+              examples:
+                default:
+                  value:
+                    date: "2026-07-20"
+                    reportingCurrency: EUR
+                    totalAssets: { value: 1600, currency: EUR }
+                    items:
+                      - type: instrument
+                        uuid: 8a1e0c4b-2f5d-4e6a-b1c3-7d9f0a2e4c68
+                        name: Apple Inc.
+                        shares: 10
+                        price: { value: 110.5, currency: USD, date: "2026-07-17" }
+                        valuation: { value: 1100, currency: EUR }
+                        localValuation: { value: 1105, currency: USD }
+                        weight: 0.6875
+                      - type: cash-account
+                        uuid: c4b2a1e0-3f6d-4a2e-8b1c-5d7f9a0e2c46
+                        name: Broker Cash
+                        valuation: { value: 500, currency: EUR }
+                        weight: 0.3125
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/performance:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    get:
+      operationId: getPerformance
+      tags: [Performance]
+      summary: Performance of the file between two valuation dates
+      description: |
+        The portfolio's performance between the opening and closing valuation
+        dates, in the reporting currency: the time-weighted return (TTWROR) and
+        the money-weighted return (IRR), plus the value-change `breakdown` that
+        reconciles the opening to the closing value.
+
+        The breakdown is a signed decomposition — the money fields add up to the
+        closing value:
+        `openingValue + unrealizedCapitalGains + realizedCapitalGains + income +
+        fees + taxes + currencyGains + netDeposits = closingValue`. `fees` and
+        `taxes` are therefore negative. `netDeposits` is the external capital
+        flow (deposits less removals) over the period; it is *not* part of the
+        performance-driven change, but is required for the value reconciliation.
+
+        `costMethod` chooses how a security's gains split into realized and
+        unrealized; it does not affect their sum, nor the returns.
+
+        `openingDate` and `closingDate` are **valuation snapshot dates, not a
+        record range**. The opening balance is measured as of the end of
+        `openingDate`, so an activity dated exactly on `openingDate` belongs to
+        the opening balance, not the period's flows; an activity on
+        `closingDate` is in the period. (A record-selection endpoint such as a
+        future transactions list uses an inclusive `[from, to]` range instead —
+        the two conventions are named differently on purpose.) A cash flow on
+        `closingDate` also weighs on `ttwror` as opening capital does, as the
+        time-weighted return has no sub-period after the final day to neutralise
+        it against.
+      parameters:
+        - name: openingDate
+          in: query
+          required: true
+          description: |
+            The opening valuation date. `openingValue` equals
+            `GET .../holdings?date={openingDate}`'s `totalAssets`.
+          schema:
+            type: string
+            format: date
+        - name: closingDate
+          in: query
+          required: false
+          description: |
+            The closing valuation date (default: today). `closingValue` equals
+            `GET .../holdings?date={closingDate}`'s `totalAssets`. Must be
+            strictly after `openingDate`; an empty or inverted range is rejected
+            `400 invalid-range`.
+          schema:
+            type: string
+            format: date
+        - $ref: "#/components/parameters/ReportingCurrency"
+        - name: costMethod
+          in: query
+          required: false
+          description: |
+            The cost basis method used to split capital gains into realized and
+            unrealized (default: `fifo`). Echoed in the response.
+          schema:
+            type: string
+            enum: [fifo, moving-average]
+            default: fifo
+      responses:
+        "200":
+          description: The performance over the interval
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Performance"
+              examples:
+                default:
+                  value:
+                    openingDate: "2024-01-01"
+                    closingDate: "2024-12-31"
+                    reportingCurrency: EUR
+                    costMethod: fifo
+                    ttwror: 0.0723
+                    irr: 0.0685
+                    breakdown:
+                      openingValue: { value: 100000, currency: EUR }
+                      unrealizedCapitalGains: { value: 4200, currency: EUR }
+                      realizedCapitalGains: { value: 1500, currency: EUR }
+                      income: { value: 900, currency: EUR }
+                      fees: { value: -120, currency: EUR }
+                      taxes: { value: -300, currency: EUR }
+                      currencyGains: { value: 210, currency: EUR }
+                      netDeposits: { value: 5000, currency: EUR }
+                      closingValue: { value: 111390, currency: EUR }
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/performance/instruments:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    get:
+      operationId: listInstrumentPerformance
+      tags: [Performance]
+      summary: The performance report, broken down by instrument
+      description: |
+        Per-instrument return, valuation, gains, income, expenses and risk over
+        the same interval the aggregate `GET .../performance` covers, in the
+        reporting currency. Items are sorted by name.
+
+        **Which instruments appear.** Every instrument the interval touched:
+        any transaction inside it, or a non-zero position at either end. A
+        position sold during the period therefore stays in, with `shares: 0` and
+        a zero `closingValue` but real `realizedCapitalGains`, dividends and
+        fees — dropping it would silently erase part of the period's
+        performance. An instrument never held and never traded does not appear.
+
+        **Cost.** `timeWeighted` and `risk` are backed by a full daily valuation
+        series per instrument; every other group is a cheap linear pass. Use
+        `?metrics=` to leave that series unbuilt. Asking for `timeWeighted` and
+        `risk` together costs no more than asking for either, as they share one
+        series. A request for all groups over every instrument of a large file
+        with a long interval is slow; there is no pagination.
+
+        **Signs.** Every money field here is a magnitude: `fees` is the sum of
+        the fees charged and is positive. Only fields that are terms of a
+        reconciling sum are signed, which is why the aggregate endpoint's
+        `breakdown.fees` is negative and this one is not — that breakdown has to
+        add up by plain addition, and this resource publishes no such sum.
+
+        `openingDate` and `closingDate` are valuation snapshot dates, not a
+        record range, exactly as on the aggregate endpoint.
+      parameters:
+        - $ref: "#/components/parameters/OpeningDate"
+        - $ref: "#/components/parameters/ClosingDate"
+        - $ref: "#/components/parameters/ReportingCurrency"
+        - $ref: "#/components/parameters/InstrumentCostMethod"
+        - $ref: "#/components/parameters/TaxesAndFees"
+        - $ref: "#/components/parameters/Metrics"
+      responses:
+        "200":
+          description: The per-instrument performance over the interval
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/InstrumentPerformanceContext"
+                  - type: object
+                    required: [items]
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/InstrumentPerformance"
+              examples:
+                default:
+                  value:
+                    openingDate: "2025-01-01"
+                    closingDate: "2025-12-31"
+                    reportingCurrency: EUR
+                    costMethod: fifo
+                    taxesAndFees: included
+                    metrics:
+                      [valuation, gains, income, expenses, moneyWeighted, timeWeighted, risk]
+                    items:
+                      - uuid: 5c1a0b7e-3d4f-4a2b-9c8e-1f0a2b3c4d5e
+                        name: iShares Core MSCI World
+                        currencyCode: USD
+                        valuation:
+                          shares: 152.5
+                          openingValue: { value: 15200, currency: EUR }
+                          closingValue: { value: 18432.1, currency: EUR }
+                          periodCostBasis: { value: 16218.9, currency: EUR }
+                        gains:
+                          realizedCapitalGains: { value: 0, currency: EUR }
+                          realizedCurrencyComponent: { value: 0, currency: EUR }
+                          unrealizedCapitalGains: { value: 2213.2, currency: EUR }
+                          unrealizedCurrencyComponent: { value: 410, currency: EUR }
+                        income:
+                          dividends: { value: 312.4, currency: EUR }
+                          dividendCount: 4
+                          lastDividend: "2025-11-14"
+                        expenses:
+                          fees: { value: 18.9, currency: EUR }
+                          taxes: { value: 74.2, currency: EUR }
+                        moneyWeighted: { irr: 0.0755 }
+                        timeWeighted: { ttwror: 0.0812, ttwrorAnnualized: 0.0395 }
+                        risk:
+                          volatility: 0.142
+                          semiVolatility: 0.098
+                          maxDrawdown: 0.231
+                          longestDrawdownDays: 412
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/performance/instruments/{uuid}:
+    parameters:
+      - $ref: "#/components/parameters/File"
+      - $ref: "#/components/parameters/Uuid"
+    get:
+      operationId: getInstrumentPerformance
+      tags: [Performance]
+      summary: One instrument's performance over the interval
+      description: |
+        A member lookup of `GET .../performance/instruments`: it returns exactly
+        the item the collection would contain, with the item's fields merged
+        into the same context object and no `items` array. If the collection
+        would not contain the instrument, there is nothing to return, hence the
+        two distinct 404s below.
+
+        This route is genuinely cheaper than the collection, but for one reason:
+        the daily series behind `timeWeighted` and `risk` is built per
+        instrument and on demand, so serializing one instrument leaves the other
+        series unbuilt.
+
+        Note that `reportingCurrency` and `currencyCode` sit next to each other
+        here and mean different things — see `MonetaryValue.currency`.
+      parameters:
+        - $ref: "#/components/parameters/OpeningDate"
+        - $ref: "#/components/parameters/ClosingDate"
+        - $ref: "#/components/parameters/ReportingCurrency"
+        - $ref: "#/components/parameters/InstrumentCostMethod"
+        - $ref: "#/components/parameters/TaxesAndFees"
+        - $ref: "#/components/parameters/Metrics"
+      responses:
+        "200":
+          description: The instrument's performance over the interval
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/InstrumentPerformanceContext"
+                  - $ref: "#/components/schemas/InstrumentPerformance"
+              examples:
+                default:
+                  value:
+                    openingDate: "2025-01-01"
+                    closingDate: "2025-12-31"
+                    reportingCurrency: EUR
+                    costMethod: fifo
+                    taxesAndFees: included
+                    metrics: [valuation]
+                    uuid: 5c1a0b7e-3d4f-4a2b-9c8e-1f0a2b3c4d5e
+                    name: iShares Core MSCI World
+                    currencyCode: USD
+                    valuation:
+                      shares: 152.5
+                      openingValue: { value: 15200, currency: EUR }
+                      closingValue: { value: 18432.1, currency: EUR }
+                      periodCostBasis: { value: 16218.9, currency: EUR }
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          description: |
+            Either the file or the instrument is unknown (`not-found`), or the
+            instrument exists but the interval contains nothing of it —
+            `no-activity-in-period`. The two call for different client
+            behaviour: correct the id, versus report that nothing was held.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/trades:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    get:
+      operationId: listTrades
+      tags: [Trades]
+      summary: List the file's trades
+      description: |
+        Every trade in the file, across all instruments and securities
+        accounts. Sorted by instrument name; the trades of one instrument keep
+        the order they were matched in, which is chronological.
+
+        A trade is a set of purchases matched against the sales that closed
+        them. It is **computed, not stored**: it has no identity that survives
+        the next call, it cannot be created, changed or deleted through this
+        API, and there is no `/trades/{id}`. To change a trade, change the
+        transactions behind it. Address a trade by the filter that produced it.
+
+        Lot matching is always FIFO; `grouping` decides how the matched lots
+        are gathered into trades, it does not select a matching strategy.
+
+        An **open** trade has no `end`. Its `exitValue`, `profitLoss` and
+        `return` are a valuation at the market price of `valuationDate` rather
+        than a realized result, and its `holdingPeriodDays` runs until that
+        date — so two calls on different days legitimately return different
+        numbers for the same trade. Use `status` to tell the two kinds apart,
+        and `direction`: for a short trade profit is entry minus exit, and the
+        share count is positive either way.
+
+        A security whose transactions do not reconcile — a sale covering more
+        shares than were held, a transfer of shares that are not there — is
+        reported in `warnings` and contributes no trades. Note a sale into an
+        account holding nothing is *not* such a case: it opens a short
+        position, reported as an open trade with `direction: short`. The request still
+        succeeds: one unreconcilable security, which an import can leave
+        behind, must not make the resource unreadable. **A client that ignores
+        `warnings` will read a partial list as a complete one.**
+      parameters:
+        - $ref: "#/components/parameters/TradeStatus"
+        - $ref: "#/components/parameters/TradeGrouping"
+        - $ref: "#/components/parameters/TradeCostMethod"
+        - $ref: "#/components/parameters/TradeTaxesAndFees"
+        - $ref: "#/components/parameters/ReportingCurrency"
+      responses:
+        "200":
+          description: The file's trades
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TradesResponse"
+              examples:
+                default:
+                  value:
+                    reportingCurrency: EUR
+                    costMethod: fifo
+                    taxesAndFees: included
+                    grouping: combined
+                    valuationDate: "2026-08-27"
+                    status: [open, closed]
+                    warnings: []
+                    items:
+                      - status: closed
+                        direction: long
+                        instrument:
+                          uuid: 8a1e0c4b-2f5d-4e6a-b1c3-7d9f0a2e4c68
+                          name: Apple Inc.
+                          currencyCode: USD
+                        portfolio:
+                          uuid: 1d3f5a7c-9e0b-4c2d-8f6a-3b5d7e9f1a2c
+                          name: Broker Depot
+                        start: "2024-03-04T00:00:00"
+                        end: "2025-11-18T00:00:00"
+                        shares: 10
+                        transactionCount: 2
+                        entryValue: { value: 1010.5, currency: EUR }
+                        exitValue: { value: 1320, currency: EUR }
+                        profitLoss: { value: 309.5, currency: EUR }
+                        holdingPeriodDays: 624
+                        irr: 0.1782
+                        return: 0.3063
+                        note: rebalancing
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/instruments/{uuid}/trades:
+    parameters:
+      - $ref: "#/components/parameters/File"
+      - $ref: "#/components/parameters/Uuid"
+    get:
+      operationId: listInstrumentTrades
+      tags: [Trades]
+      summary: List one instrument's trades
+      description: |
+        The trades of a single instrument — a sub-collection of the
+        instrument, filtered exactly as `GET .../trades` is.
+
+        An instrument that exists but was never traded has an **empty** list of
+        trades, not no list: this returns `200` with `items: []`, not a `404`.
+        That differs from `GET .../performance/instruments/{uuid}`, which does
+        404, because there the uuid identifies the single item the response
+        consists of, while here it identifies the instrument the collection
+        belongs to. A `404` from this route means the instrument is unknown.
+
+        A trade is a set of purchases matched against the sales that closed
+        them. It is **computed, not stored**: it has no identity that survives
+        the next call, it cannot be created, changed or deleted through this
+        API, and there is no `/trades/{id}`. To change a trade, change the
+        transactions behind it. Address a trade by the filter that produced it.
+
+        Lot matching is always FIFO; `grouping` decides how the matched lots
+        are gathered into trades, it does not select a matching strategy.
+
+        An **open** trade has no `end`. Its `exitValue`, `profitLoss` and
+        `return` are a valuation at the market price of `valuationDate` rather
+        than a realized result, and its `holdingPeriodDays` runs until that
+        date — so two calls on different days legitimately return different
+        numbers for the same trade. Use `status` to tell the two kinds apart,
+        and `direction`: for a short trade profit is entry minus exit, and the
+        share count is positive either way.
+
+        A security whose transactions do not reconcile — a sale covering more
+        shares than were held, a transfer of shares that are not there — is
+        reported in `warnings` and contributes no trades. Note a sale into an
+        account holding nothing is *not* such a case: it opens a short
+        position, reported as an open trade with `direction: short`. The request still
+        succeeds: one unreconcilable security, which an import can leave
+        behind, must not make the resource unreadable. **A client that ignores
+        `warnings` will read a partial list as a complete one.**
+      parameters:
+        - $ref: "#/components/parameters/TradeStatus"
+        - $ref: "#/components/parameters/TradeGrouping"
+        - $ref: "#/components/parameters/TradeCostMethod"
+        - $ref: "#/components/parameters/TradeTaxesAndFees"
+        - $ref: "#/components/parameters/ReportingCurrency"
+      responses:
+        "200":
+          description: The instrument's trades
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TradesResponse"
+              examples:
+                default:
+                  value:
+                    reportingCurrency: EUR
+                    costMethod: fifo
+                    taxesAndFees: included
+                    grouping: combined
+                    valuationDate: "2026-08-27"
+                    status: [open, closed]
+                    warnings: []
+                    items:
+                      - status: closed
+                        direction: long
+                        instrument:
+                          uuid: 8a1e0c4b-2f5d-4e6a-b1c3-7d9f0a2e4c68
+                          name: Apple Inc.
+                          currencyCode: USD
+                        portfolio:
+                          uuid: 1d3f5a7c-9e0b-4c2d-8f6a-3b5d7e9f1a2c
+                          name: Broker Depot
+                        start: "2024-03-04T00:00:00"
+                        end: "2025-11-18T00:00:00"
+                        shares: 10
+                        transactionCount: 2
+                        entryValue: { value: 1010.5, currency: EUR }
+                        exitValue: { value: 1320, currency: EUR }
+                        profitLoss: { value: 309.5, currency: EUR }
+                        holdingPeriodDays: 624
+                        irr: 0.1782
+                        return: 0.3063
+                        note: rebalancing
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: |
+        A per-client access token, obtained through interactive pairing
+        (`POST /v1/auth/requests`) or minted manually in Preferences → REST API
+        ("Add client"). The user can revoke each client individually; a
+        session-scoped token additionally expires when the application quits.
+
+  parameters:
+    File:
+      name: file
+      in: path
+      required: true
+      description: |
+        A file's `id` or `alias`, as returned by `GET /v1/files`. An alias that
+        matches several records is rejected `409 ambiguous-alias`; use the `id`.
+      schema:
+        type: string
+    Uuid:
+      name: uuid
+      in: path
+      required: true
+      description: The `uuid` of the entity within the file
+      schema:
+        type: string
+    OpeningDate:
+      name: openingDate
+      in: query
+      required: true
+      description: |
+        The opening valuation date. An activity dated exactly on it belongs to
+        the opening balance, not to the period.
+      schema:
+        type: string
+        format: date
+    ClosingDate:
+      name: closingDate
+      in: query
+      required: false
+      description: |
+        The closing valuation date (default: today). Must be strictly after
+        `openingDate`; an empty or inverted range is rejected `400
+        invalid-range`. Future dates are accepted and value at the last known
+        prices.
+      schema:
+        type: string
+        format: date
+    ReportingCurrency:
+      name: reportingCurrency
+      in: query
+      required: false
+      description: |
+        The currency the whole report is expressed in (default: the file's base
+        currency). A currency pair without an exchange rate series converts 1:1
+        — the same silent fallback the application itself applies.
+
+        Request and response name this concept identically, so a client can send
+        back what it read. The two other currency concepts keep their own names:
+        a `MonetaryValue`'s `currency` is what one amount is expressed in, and an
+        entity's `currencyCode` is its own declared currency.
+      schema:
+        type: string
+    InstrumentCostMethod:
+      name: costMethod
+      in: query
+      required: false
+      description: |
+        The cost basis method (default: `fifo`). It shifts the split between
+        realized and unrealized gains and the `periodCostBasis` that goes with
+        them; it does not affect `closingValue`, `ttwror` or `irr`. Echoed in
+        the response.
+      schema:
+        type: string
+        enum: [fifo, moving-average]
+        default: fifo
+    TaxesAndFees:
+      name: taxesAndFees
+      in: query
+      required: false
+      description: |
+        Whether the taxes and fees embedded in a trade are part of the cost
+        basis (default: `included`). It applies to `periodCostBasis` and to the
+        capital gains figures **together**, so that the two stay comparable.
+
+        It does *not* change `expenses.fees` and `expenses.taxes`, which always
+        report the charges themselves, nor any return ratio. Echoed in the
+        response.
+      schema:
+        type: string
+        enum: [included, excluded]
+        default: included
+    Metrics:
+      name: metrics
+      in: query
+      required: false
+      description: |
+        A comma-separated selection of metric groups (default: all seven). An
+        unselected group is an absent key in each item; a selected group keeps
+        the exact meaning it has when every group is requested — this projects a
+        fixed schema, it does not compose one.
+
+        Selection is by group because the cost boundary is a group boundary:
+        `timeWeighted` and `risk` are backed by a daily valuation series per
+        instrument and dominate the cost of a request, while the other five are
+        cheap linear passes. An unknown group name is rejected `400
+        invalid-value`. Echoed in the response.
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+            [valuation, gains, income, expenses, moneyWeighted, timeWeighted, risk]
+      style: form
+      explode: false
+    TradeStatus:
+      name: status
+      in: query
+      required: false
+      description: |
+        Which trades to return (default: both). A comma-separated list of
+        `open` and `closed`. Echoed in the response as an array, in the order
+        above rather than the order sent.
+      schema:
+        type: array
+        items:
+          type: string
+          enum: [open, closed]
+        default: [open, closed]
+      style: form
+      explode: false
+    TradeGrouping:
+      name: grouping
+      in: query
+      required: false
+      description: |
+        How matched lots are gathered into trades (default: `combined`).
+        `combined` makes one trade out of the acquisitions that a sale closed;
+        `per-lot` reports each acquisition as its own trade.
+
+        This is **not** a lot matching strategy — matching is always FIFO and
+        cannot be changed. An unknown value is rejected rather than silently
+        treated as `combined`. Echoed in the response.
+      schema:
+        type: string
+        enum: [combined, per-lot]
+        default: combined
+    TradeCostMethod:
+      name: costMethod
+      in: query
+      required: false
+      description: |
+        The cost basis method (default: `fifo`). It changes `entryValue`,
+        `profitLoss` and `return`, which are then computed against the moving
+        average cost of the shares rather than the matched lots.
+
+        It does **not** change `irr`, which is derived from the actual cash
+        flows and has no moving-average counterpart — so a request with
+        `moving-average` returns a deliberately mixed-basis item. Nor does it
+        change `exitValue`, which is what the shares realized or are worth.
+
+        `entryValue`, `profitLoss` and `return` are `null` — always all three
+        together — for a trade whose moving average cost is undefined. That is
+        the case for every **short** trade, which was never acquired and so has
+        no acquisition cost, and for a trade no performance record backs.
+        `exitValue` and `irr` stay defined. Echoed in the response.
+      schema:
+        type: string
+        enum: [fifo, moving-average]
+        default: fifo
+    TradeTaxesAndFees:
+      name: taxesAndFees
+      in: query
+      required: false
+      description: |
+        Whether the taxes and fees of the trade's own transactions are part of
+        its values (default: `included`). It moves `entryValue`, `exitValue`
+        and `profitLoss` **together**, so that
+        `profitLoss = exitValue - entryValue` keeps holding for a long trade
+        (and `entryValue - exitValue` for a short one).
+
+        It does not change `irr` or `return`, matching the rule the performance
+        resource states. It has no effect on the exit side of an **open**
+        trade: that is a valuation at the market price, on which no charges
+        have been incurred. Echoed in the response.
+      schema:
+        type: string
+        enum: [included, excluded]
+        default: included
+
+  schemas:
+    TradesResponse:
+      type: object
+      description: |
+        The trades matching the request, with the parameters they were computed
+        with echoed back and the securities that could not be reconciled.
+      required:
+        [
+          reportingCurrency,
+          costMethod,
+          taxesAndFees,
+          grouping,
+          valuationDate,
+          status,
+          warnings,
+          items,
+        ]
+      properties:
+        reportingCurrency:
+          type: string
+          description: |
+            The currency every amount in this response has been converted into
+            — the `reportingCurrency` query parameter, or the file's base
+            currency. Not to be confused with a `MonetaryValue`'s `currency`
+            (one amount) or an instrument's `currencyCode` (its own declared
+            currency).
+        costMethod:
+          type: string
+          enum: [fifo, moving-average]
+        taxesAndFees:
+          type: string
+          enum: [included, excluded]
+        grouping:
+          type: string
+          enum: [combined, per-lot]
+        valuationDate:
+          type: string
+          format: date
+          description: |
+            The date the open trades were valued at, and the date their holding
+            period runs to. Closed trades do not depend on it.
+        status:
+          type: array
+          description: The selected statuses, in declaration order.
+          items:
+            type: string
+            enum: [open, closed]
+        warnings:
+          type: array
+          description: |
+            The securities the collector could not reconcile, each contributing
+            no trades to `items`. Always present, empty when nothing failed —
+            a client must be able to tell "nothing went wrong" from "this
+            endpoint cannot report problems".
+          items:
+            $ref: "#/components/schemas/TradeWarning"
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Trade"
+
+    TradeWarning:
+      type: object
+      description: |
+        One security whose transactions do not add up, and which therefore
+        contributes no trades. The message is English regardless of the
+        application's language.
+      required: [instrument, code, message]
+      properties:
+        instrument:
+          $ref: "#/components/schemas/InstrumentReference"
+        code:
+          type: string
+          description: Why the collector gave up on this security.
+          enum:
+            [
+              no-holdings-for-sell,
+              missing-holdings-for-sell,
+              no-holdings-for-transfer,
+              missing-holdings-for-transfer,
+            ]
+        message:
+          type: string
+
+    InstrumentReference:
+      type: object
+      description: |
+        A pointer to an instrument. Join to `GET .../instruments/{uuid}` by
+        `uuid`; the ISIN, WKN and ticker are deliberately not repeated here.
+      required: [uuid, name, currencyCode]
+      properties:
+        uuid:
+          type: string
+        name:
+          type: string
+        currencyCode:
+          type: [string, "null"]
+          description: |
+            The instrument's own declared currency, or `null` for a
+            currency-less instrument such as an index or a CPI series. The key
+            is **always present** (hence `required`); only its value may be
+            null — the same rule as on `Instrument`.
+
+    PortfolioReference:
+      type: object
+      description: |
+        A pointer to a securities account. Join to
+        `GET .../investment-accounts/{uuid}` by `uuid`.
+      required: [uuid, name]
+      properties:
+        uuid:
+          type: string
+        name:
+          type: string
+
+    Trade:
+      type: object
+      description: |
+        One set of purchases matched against the sales that closed them. Has no
+        id: a trade is recomputed on every request and its identity would not
+        survive `grouping` changing or a transaction being edited.
+      required:
+        [
+          status,
+          direction,
+          instrument,
+          portfolio,
+          start,
+          end,
+          shares,
+          transactionCount,
+          entryValue,
+          exitValue,
+          profitLoss,
+          holdingPeriodDays,
+          irr,
+          return,
+        ]
+      properties:
+        status:
+          type: string
+          enum: [open, closed]
+          description: |
+            `closed` when the shares have been fully sold. An `open` trade has
+            a null `end`, and its exit-side values are a valuation rather than
+            a realized result.
+        direction:
+          type: string
+          enum: [long, short]
+          description: |
+            `long` when the trade opened with a purchase. For a `short` trade
+            `profitLoss` is entry minus exit, the reverse of a long one — and
+            `shares` is positive in both cases, so this cannot be inferred from
+            the other fields.
+        instrument:
+          $ref: "#/components/schemas/InstrumentReference"
+        portfolio:
+          $ref: "#/components/schemas/PortfolioReference"
+        start:
+          type: string
+          description: |
+            When the trade was opened, as a **local** date and time in
+            `YYYY-MM-DDTHH:MM:SS` — always with seconds, and deliberately
+            without a UTC offset: the model records no timezone, and adding the
+            server's would attribute one the file may not have been kept in.
+            Not an RFC 3339 `date-time` for that reason.
+        end:
+          type: [string, "null"]
+          description: |
+            When the trade was closed, in the same format as `start`; `null`
+            while the trade is open.
+        shares:
+          type: number
+          description: The number of shares the trade covers, always positive.
+        transactionCount:
+          type: integer
+          description: |
+            How many transactions the trade was matched from — 2 for a clean
+            buy and sell, more for an accumulated or partially sold position.
+        entryValue:
+          oneOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+            - type: "null"
+          description: |
+            What acquiring the shares cost. Follows `costMethod` and
+            `taxesAndFees`. `null` when `costMethod=moving-average` and the
+            moving average cost is undefined for this trade — in particular for
+            every `short` trade, which was never acquired. `profitLoss` and
+            `return` are `null` whenever this is.
+        exitValue:
+          $ref: "#/components/schemas/MonetaryValue"
+          description: |
+            What selling the shares realized, or — for an open trade — what
+            they are worth at `valuationDate`. Follows `taxesAndFees` for a
+            closed trade; an open trade has incurred no charges. Does not
+            follow `costMethod`.
+        profitLoss:
+          oneOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+            - type: "null"
+          description: |
+            `exitValue - entryValue` for a long trade, the reverse for a
+            short one — so check `direction` before subtracting the two
+            yourself. Signed: it is a term of that reconciling difference.
+            Follows `costMethod` and `taxesAndFees`, and is `null` under
+            exactly the same condition as `entryValue`.
+        holdingPeriodDays:
+          type: integer
+          description: |
+            The share-weighted average number of days the shares were held,
+            counted to `end` or, for an open trade, to `valuationDate`.
+        irr:
+          type: [number, "null"]
+          description: |
+            The internal rate of return as a fraction (0.0523 is 5.23 %),
+            annualized, from the trade's actual cash flows. Does **not** follow
+            `costMethod` or `taxesAndFees` — there is no variant of it. `null`
+            when the model cannot define it.
+        return:
+          type: [number, "null"]
+          description: |
+            The total return as a fraction (0.0523 is 5.23 %), not annualized.
+            Follows `costMethod` but not `taxesAndFees`. `null` when the model
+            cannot define it, and always when `entryValue` is.
+        note:
+          type: string
+          description: The note on the trade's last transaction, when it has one.
+
+    File:
+      type: object
+      description: An open, enabled portfolio file you may address.
+      required: [id, label, path]
+      properties:
+        id:
+          type: string
+          description: |
+            Stable identity of the file, keyed by path. Address the file by this or
+            by `alias`.
+        alias:
+          type: string
+          description: Optional human-friendly handle the user assigned to the file.
+        label:
+          type: string
+          description: The file's display label in the application.
+        path:
+          type: string
+          description: |
+            The file's path on disk. Identity is keyed by path, so a *different*
+            file copied over an enabled path inherits that path's access.
+
+    PairingRequestCreated:
+      type: object
+      description: A filed access request, awaiting the user's decision.
+      required: [id, status]
+      properties:
+        id:
+          type: string
+          description: Poll `GET /v1/auth/requests/{id}` with this.
+        status:
+          type: string
+          const: pending
+
+    PairingRequestStatus:
+      type: object
+      description: The state of an access request.
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [pending, approved, denied, expired]
+        token:
+          type: string
+          description: |
+            The bearer token; present only while `status` is `approved`, and
+            delivered exactly once.
+
+    Instrument:
+      type: object
+      description: A security — stock, fund, bond, crypto, …
+      required: [uuid, name, currencyCode]
+      properties:
+        uuid:
+          type: string
+        name:
+          type: string
+        currencyCode:
+          type: [string, "null"]
+          description: |
+            ISO 4217 currency code, or `null` for a currency-less instrument such
+            as an index or a CPI series. The key is **always present** (hence
+            `required`); only its value may be null.
+        isin:
+          type: string
+          description: Omitted when not set.
+        wkn:
+          type: string
+          description: Omitted when not set.
+        tickerSymbol:
+          type: string
+          description: Omitted when not set.
+        note:
+          type: string
+          description: Omitted when not set.
+        attributes:
+          type: object
+          description: |
+            The instrument's set custom attributes, keyed by attribute id.
+            Only attributes that have a value and a supported scalar type
+            appear; the key is omitted entirely when none do. Each value is
+            typed JSON — a string, number, or boolean (dates are ISO-8601
+            strings). Resolve an id to its precise type via
+            `GET /v1/files/{file}/instruments/attribute-types`.
+          additionalProperties:
+            oneOf:
+              - type: string
+              - type: number
+              - type: boolean
+
+    InstrumentPatch:
+      type: object
+      description: |
+        A JSON Merge Patch (RFC 7386) over an instrument. Every field is optional;
+        an omitted field is left untouched. Fields typed `["string","null"]` accept
+        an explicit `null` to clear them. Custom attributes are patched through the
+        nested `attributes` object. Everything else — prices, quote feeds, events,
+        the retired flag — is read-only in v1.
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Non-empty; cannot be cleared.
+        currencyCode:
+          type: [string, "null"]
+          description: |
+            A known ISO 4217 currency, or `null` to clear it (marking the
+            instrument an index). Clearing is rejected for an exchange rate
+            (`exchange-rate-requires-currency`). Any currency change — including
+            clearing — is **rejected while the instrument has transactions**
+            (`locked-by-transactions`), matching the UI's rule.
+        isin:
+          type: [string, "null"]
+        wkn:
+          type: [string, "null"]
+        tickerSymbol:
+          type: [string, "null"]
+        note:
+          type: [string, "null"]
+        attributes:
+          type: object
+          description: |
+            A nested merge patch over the custom attributes, keyed by attribute
+            id: a present value sets the attribute, an explicit `null` clears it,
+            an absent id is left untouched. Values are typed JSON per the
+            attribute's `type` (see the attribute-types endpoint). Writing an
+            unknown id, a non-applicable or compound-typed attribute, or a value
+            of the wrong type is rejected with 422 `validation`.
+          additionalProperties:
+            oneOf:
+              - type: string
+              - type: number
+              - type: boolean
+              - type: "null"
+
+    AttributeDefinition:
+      type: object
+      description: A custom attribute definition applicable to an instrument.
+      required: [id, name, type, supported]
+      properties:
+        id:
+          type: string
+          description: Stable identifier; the key used in an instrument's `attributes` map.
+        name:
+          type: string
+          description: User-facing name (the desktop UI shows this, not the id).
+        columnLabel:
+          type: string
+          description: Short label; omitted when not set.
+        type:
+          type: string
+          description: |
+            The value type. Supported scalars — `string`, `boolean`, `date`
+            (ISO-8601), `amount`, `quote`, `shares`, `percent` (a fraction,
+            e.g. 0.007 for 0.7%), `number` (an unscaled decimal; where the
+            desktop reads such an attribute as a percentage — the expected
+            dividends column — 5 means 5%). Compound — `limit-price`,
+            `bookmark`, `image` — appear with `supported: false`.
+          enum:
+            - string
+            - boolean
+            - date
+            - amount
+            - quote
+            - shares
+            - percent
+            - number
+            - limit-price
+            - bookmark
+            - image
+        supported:
+          type: boolean
+          description: Whether v1 can read and write this attribute.
+
+    CashAccount:
+      type: object
+      description: An account holding cash in a single currency.
+      required: [uuid, name, currencyCode]
+      properties:
+        uuid:
+          type: string
+        name:
+          type: string
+        currencyCode:
+          type: string
+          description: ISO 4217 currency code.
+        note:
+          type: string
+          description: Omitted when not set.
+
+    InvestmentAccount:
+      type: object
+      description: |
+        An account holding instrument positions. Its cash side is a separate cash
+        account, named by `referenceCashAccount`.
+      required: [uuid, name]
+      properties:
+        uuid:
+          type: string
+        name:
+          type: string
+        referenceCashAccount:
+          type: string
+          description: |
+            The `uuid` of the cash account backing this investment account. Omitted
+            when not set.
+        note:
+          type: string
+          description: Omitted when not set.
+
+    MonetaryValue:
+      type: object
+      description: |
+        An amount of money: a plain decimal number (never scientific notation on
+        the wire) plus its ISO 4217 currency code.
+      required: [value, currency]
+      properties:
+        value:
+          type: number
+        currency:
+          type: string
+          description: |
+            The currency of *this amount*. The API keeps three currency concepts
+            apart on purpose: `currency` is what one amount is expressed in,
+            `reportingCurrency` is what a whole report has been converted into,
+            and `currencyCode` is an entity's own declared currency.
+
+    Price:
+      type: object
+      description: |
+        The price per share a valuation is based on: the latest price on or
+        before the valuation date — possibly well before it (stale quote, or the
+        fallback to the price of the position's last transaction).
+      required: [value]
+      properties:
+        value:
+          type: number
+        currency:
+          type: string
+          description: |
+            The instrument's own currency. Omitted for the rare instrument
+            without a currency.
+        date:
+          type: string
+          format: date
+          description: The date the price is from.
+
+    Holding:
+      type: object
+      description: |
+        One line of the statement of assets — an instrument position or a cash
+        account balance.
+      required: [type, uuid, name, valuation, weight]
+      properties:
+        type:
+          type: string
+          enum: [instrument, cash-account]
+        uuid:
+          type: string
+          description: |
+            Joins to `GET .../instruments/{uuid}` (type `instrument`) or
+            `GET .../cash-accounts/{uuid}` (type `cash-account`) for master data.
+        name:
+          type: string
+        shares:
+          type: number
+          description: The number of shares held. Instruments only.
+        price:
+          allOf:
+            - $ref: "#/components/schemas/Price"
+          description: Instruments only.
+        valuation:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: The holding's value in the reporting currency.
+        weight:
+          type: number
+          description: The holding's fraction (0–1) of total assets — not a percentage.
+        localValuation:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: |
+            The holding's value in its own currency, before conversion into the
+            reporting currency. Present only when the two currencies differ.
+
+    Performance:
+      type: object
+      description: |
+        The return and value-change of the file between two valuation dates.
+      required:
+        - openingDate
+        - closingDate
+        - reportingCurrency
+        - costMethod
+        - ttwror
+        - irr
+        - breakdown
+      properties:
+        openingDate:
+          type: string
+          format: date
+          description: The opening valuation date.
+        closingDate:
+          type: string
+          format: date
+          description: The effective closing valuation date.
+        reportingCurrency:
+          type: string
+          description: |
+            The currency every amount in the breakdown is expressed in — the
+            `reportingCurrency` query parameter, or the file's base currency.
+            Not to be confused with a `MonetaryValue`'s `currency` (one amount)
+            or an entity's `currencyCode` (its own declared currency).
+        costMethod:
+          type: string
+          enum: [fifo, moving-average]
+          description: |
+            The cost basis method the realized/unrealized split was computed
+            with — echoed because it moves the numbers, so a stored response
+            stays interpretable.
+        ttwror:
+          type: [number, "null"]
+          description: |
+            The true time-weighted rate of return over the interval, as a
+            fraction (0.0723 is 7.23 %) — not a percentage. `null` when the
+            model cannot define it for the interval.
+        irr:
+          type: [number, "null"]
+          description: |
+            The internal (money-weighted) rate of return over the interval, as a
+            fraction — not a percentage. `null` when the model cannot define it
+            for the interval.
+        breakdown:
+          $ref: "#/components/schemas/PerformanceBreakdown"
+
+    PerformanceBreakdown:
+      type: object
+      description: |
+        A signed decomposition of the value change: the fields add up to the
+        closing value —
+        `openingValue + unrealizedCapitalGains + realizedCapitalGains + income +
+        fees + taxes + currencyGains + netDeposits = closingValue`.
+      required:
+        - openingValue
+        - unrealizedCapitalGains
+        - realizedCapitalGains
+        - income
+        - fees
+        - taxes
+        - currencyGains
+        - netDeposits
+        - closingValue
+      properties:
+        openingValue:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: The portfolio's value at `openingDate`.
+        unrealizedCapitalGains:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: The change in value of positions still held; negative for a loss.
+        realizedCapitalGains:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: The gains locked in by sales during the interval; negative for a loss.
+        income:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: Dividends and interest received, net of interest charged.
+        fees:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: Fees paid, as a negative contribution (positive only for a net refund).
+        taxes:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: Taxes paid, as a negative contribution (positive only for a net refund).
+        currencyGains:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: The gain or loss attributable to exchange rate movements.
+        netDeposits:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: |
+            External capital flow over the interval: deposits and inbound
+            deliveries less removals and outbound deliveries. Not part of the
+            performance-driven change, but required for the value reconciliation.
+        closingValue:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: The portfolio's value at `closingDate`.
+
+    InstrumentPerformanceContext:
+      type: object
+      description: |
+        The interval and the parameters a per-instrument report was computed
+        with. All six are echoed, so that a stored or forwarded response stays
+        interpretable — three of them move the numbers.
+      required:
+        - openingDate
+        - closingDate
+        - reportingCurrency
+        - costMethod
+        - taxesAndFees
+        - metrics
+      properties:
+        openingDate:
+          type: string
+          format: date
+          description: The opening valuation date.
+        closingDate:
+          type: string
+          format: date
+          description: The effective closing valuation date.
+        reportingCurrency:
+          type: string
+          description: |
+            The currency every amount in this report has been converted into.
+            Not to be confused with a `MonetaryValue`'s `currency` (one amount)
+            or an instrument's `currencyCode` (its own declared currency) — on
+            the item route the last two sit right next to this one.
+        costMethod:
+          type: string
+          enum: [fifo, moving-average]
+          description: The cost basis method that was applied.
+        taxesAndFees:
+          type: string
+          enum: [included, excluded]
+          description: |
+            Whether the cost basis includes the taxes and fees embedded in a
+            trade.
+        metrics:
+          type: array
+          description: The metric groups present in each item, in schema order.
+          items:
+            type: string
+            enum:
+              [valuation, gains, income, expenses, moneyWeighted, timeWeighted, risk]
+
+    InstrumentPerformance:
+      type: object
+      description: |
+        One instrument's performance over the interval. Only the identity fields
+        are always present; each metric group appears exactly if it was
+        selected.
+      required: [uuid, name]
+      properties:
+        uuid:
+          type: string
+          description: |
+            Joins to `GET .../instruments/{uuid}` for the master data. The ISIN,
+            WKN and ticker are deliberately not repeated here.
+        name:
+          type: string
+        currencyCode:
+          type: string
+          description: |
+            The instrument's *own* declared currency — what explains a non-zero
+            currency component below. Omitted for the rare instrument without
+            one. Distinct from `reportingCurrency`, which every amount in this
+            report is expressed in.
+        valuation:
+          $ref: "#/components/schemas/InstrumentValuation"
+        gains:
+          $ref: "#/components/schemas/InstrumentGains"
+        income:
+          $ref: "#/components/schemas/InstrumentIncome"
+        expenses:
+          $ref: "#/components/schemas/InstrumentExpenses"
+        moneyWeighted:
+          type: object
+          required: [irr]
+          properties:
+            irr:
+              type: [number, "null"]
+              description: |
+                The internal (money-weighted) rate of return on this instrument
+                over the interval, as a fraction — not a percentage. `null` when
+                the model cannot define it.
+        timeWeighted:
+          type: object
+          required: [ttwror, ttwrorAnnualized]
+          properties:
+            ttwror:
+              type: [number, "null"]
+              description: |
+                The true time-weighted rate of return over the interval, as a
+                fraction (0.0812 is 8.12 %). `null` when the model cannot define
+                it.
+            ttwrorAnnualized:
+              type: [number, "null"]
+              description: |
+                The same return expressed as an annual rate. `null` when the
+                model cannot define it.
+        risk:
+          $ref: "#/components/schemas/InstrumentRisk"
+
+    InstrumentValuation:
+      type: object
+      description: |
+        What the position was worth at each end of the interval, and what it
+        stands in the books at.
+      required: [shares, openingValue, closingValue, periodCostBasis]
+      properties:
+        shares:
+          type: number
+          description: The number of shares held at `closingDate`; 0 for a position sold during the period.
+        openingValue:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: |
+            The position's value at `openingDate`; zero for an instrument first
+            acquired during the period.
+        closingValue:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: |
+            The position's value at `closingDate`. Equals this instrument's
+            `valuation` in `GET .../holdings?date={closingDate}`.
+        periodCostBasis:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: |
+            The cost basis of the shares still held, **relative to this
+            period**: a lot carried in from before `openingDate` enters at its
+            valuation on that date, not at what was once paid for it. A position
+            bought years ago therefore shows this period's opening value here,
+            and its lifetime gain is not derivable from this resource. (The
+            unqualified acquisition cost is a separate, period-independent
+            figure this API does not yet publish.)
+
+            Whether the taxes and fees embedded in a purchase are part of it is
+            decided by `taxesAndFees`, which governs the capital gains figures
+            in the same breath — so that
+            `closingValue - periodCostBasis = gains.unrealizedCapitalGains`
+            holds under either setting.
+
+    InstrumentGains:
+      type: object
+      description: |
+        Capital gains, split into the part locked in by sales and the part still
+        on the books. Both are measured against `periodCostBasis`, hence
+        `closingValue - periodCostBasis = unrealizedCapitalGains`.
+      required:
+        - realizedCapitalGains
+        - realizedCurrencyComponent
+        - unrealizedCapitalGains
+        - unrealizedCurrencyComponent
+      properties:
+        realizedCapitalGains:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: The gains locked in by sales during the interval; negative for a loss.
+        realizedCurrencyComponent:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: |
+            The part of `realizedCapitalGains` attributable to exchange rate
+            movements. It is **contained in** that figure, not additional to it
+            — do not add the two. Zero unless the instrument's `currencyCode`
+            differs from `reportingCurrency`.
+        unrealizedCapitalGains:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: The gains on the shares still held; negative for a loss.
+        unrealizedCurrencyComponent:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: |
+            The part of `unrealizedCapitalGains` attributable to exchange rate
+            movements, contained in it exactly as its realized counterpart is.
+
+    InstrumentIncome:
+      type: object
+      description: What the instrument paid out during the interval.
+      required: [dividends, dividendCount]
+      properties:
+        dividends:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: The gross dividends received during the interval.
+        dividendCount:
+          type: integer
+          description: The number of dividend payments during the interval.
+        lastDividend:
+          type: string
+          format: date
+          description: |
+            The date of the most recent payment. Omitted when there was none —
+            never a placeholder date.
+
+    InstrumentExpenses:
+      type: object
+      description: |
+        What the instrument cost during the interval: the charges embedded in
+        its trades and dividends, plus the standalone fee and tax bookings
+        attributed to it, net of refunds.
+      required: [fees, taxes]
+      properties:
+        fees:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: |
+            The fees charged, as a positive magnitude — unlike the aggregate
+            endpoint's `breakdown.fees`, which is negated so that its
+            decomposition adds up.
+        taxes:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: The taxes charged, as a positive magnitude.
+
+    InstrumentRisk:
+      type: object
+      description: |
+        Risk measures derived from the instrument's daily valuation series over
+        the interval. All are fractions, never percentages.
+      required: [volatility, semiVolatility, maxDrawdown, longestDrawdownDays]
+      properties:
+        volatility:
+          type: [number, "null"]
+          description: The standard deviation of the return series.
+        semiVolatility:
+          type: [number, "null"]
+          description: The standard deviation of the negative returns only.
+        maxDrawdown:
+          type: [number, "null"]
+          description: |
+            The deepest peak-to-trough decline, as a **positive** fraction
+            (0.231 is a 23.1 % drawdown), matching the application's own sign
+            convention rather than the negative one charts often use.
+        longestDrawdownDays:
+          type: integer
+          description: |
+            The length in days of the longest stretch spent below a previous
+            peak. This is **not** the duration of the deepest drawdown, which is
+            a different and shorter interval — hence the name.
+
+    FieldError:
+      type: object
+      description: One field-level violation within a `Problem`.
+      required: [field, code, message]
+      properties:
+        field:
+          type: string
+          description: The offending field (or the resource facet that blocks the operation).
+        code:
+          type: string
+          description: A stable, machine-readable reason.
+          enum:
+            - required
+            - invalid-type
+            - invalid-value
+            - invalid-range
+            - too-long
+            - unknown-field
+            - unknown-parameter
+            - unknown-currency
+            - locked-by-transactions
+            - exchange-rate-requires-currency
+            - referenced
+            - unknown-attribute
+            - attribute-not-applicable
+            - unsupported-attribute-type
+        message:
+          type: string
+          description: Human-readable explanation of this one violation.
+
+    Problem:
+      type: object
+      description: |
+        An error, following RFC 9457 (`application/problem+json`). `title` is
+        invariant for a given `type`; anything specific to the one occurrence is in
+        `detail`. Validation and conflict problems additionally carry `errors`.
+      required: [type, title, status]
+      properties:
+        type:
+          type: string
+          format: uri
+          description: |
+            A URI identifying the problem kind. The distinct values are enumerated
+            below; note especially that a **404 never distinguishes** an unknown
+            file from a file that exists but is not enabled, that
+            `no-activity-in-period` is the one 404 that says the addressed entity
+            *does* exist, and that the three
+            **409** kinds each call for a different response:
+            `file-not-open` (a human must open the file), `ambiguous-alias` (retry
+            with the `id`), `delete-blocked` (give up — the instrument is referenced).
+            `method-not-allowed` (405) is returned for any method a path does not
+            list; v1 has no create endpoints.
+          enum:
+            - https://portfolio-performance.info/rest/problems/invalid-request
+            - https://portfolio-performance.info/rest/problems/unauthorized
+            - https://portfolio-performance.info/rest/problems/forbidden-host
+            - https://portfolio-performance.info/rest/problems/browser-origin-forbidden
+            - https://portfolio-performance.info/rest/problems/not-found
+            - https://portfolio-performance.info/rest/problems/no-activity-in-period
+            - https://portfolio-performance.info/rest/problems/method-not-allowed
+            - https://portfolio-performance.info/rest/problems/request-too-large
+            - https://portfolio-performance.info/rest/problems/file-not-open
+            - https://portfolio-performance.info/rest/problems/ambiguous-alias
+            - https://portfolio-performance.info/rest/problems/delete-blocked
+            - https://portfolio-performance.info/rest/problems/validation
+            - https://portfolio-performance.info/rest/problems/user-interaction
+            - https://portfolio-performance.info/rest/problems/pairing-pending
+            - https://portfolio-performance.info/rest/problems/pairing-cooldown
+            - https://portfolio-performance.info/rest/problems/internal-error
+        title:
+          type: string
+          description: Short, human-readable summary of the problem kind.
+        status:
+          type: integer
+          description: The HTTP status code, repeated for convenience.
+        detail:
+          type: string
+          description: |
+            Human-readable explanation specific to this occurrence. Present only
+            when there is something occurrence-specific to say.
+        errors:
+          type: array
+          description: |
+            Present on validation (`422`), some conflict (`409`), and invalid
+            query parameter (`400`) problems: all field-level violations,
+            reported at once.
+          items:
+            $ref: "#/components/schemas/FieldError"
+        pairingEndpoint:
+          type: string
+          description: |
+            RFC 9457 extension member, present on `401 unauthorized`: the path
+            where a client requests access interactively (`/v1/auth/requests`).
+
+  responses:
+    BadRequest:
+      description: |
+        The request body is not a JSON object, or a query parameter is unknown to
+        this operation or invalid (`invalid-request`). Either way the offending
+        names are itemized in `errors`, one entry each.
+
+        **Every operation can answer this**, including those that take no body and
+        list no parameters: an operation that lists none accepts none, and rejects
+        anything sent.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+
+    Unauthorized:
+      description: |
+        Missing or invalid bearer token (`unauthorized`). The problem body
+        carries a `pairingEndpoint` extension member naming the path where a
+        client can request access interactively.
+      headers:
+        WWW-Authenticate:
+          description: Always `Bearer`.
+          schema:
+            type: string
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+          examples:
+            default:
+              value:
+                type: https://portfolio-performance.info/rest/problems/unauthorized
+                title: Missing or invalid bearer token
+                status: 401
+                pairingEndpoint: /v1/auth/requests
+
+    Forbidden:
+      description: |
+        The request was not addressed as loopback (`forbidden-host`) or it carried
+        an `Origin` header (`browser-origin-forbidden`).
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+
+    NotFound:
+      description: |
+        Unknown file, **file not enabled**, or unknown entity (`not-found`). A file
+        that is not enabled is deliberately indistinguishable from one that does not
+        exist.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+
+    Conflict:
+      description: |
+        The addressed file or entity cannot serve the request in its current state:
+        `file-not-open` (enabled but not open — a human must open it),
+        `ambiguous-alias` (the alias matches several records — use the `id`), or, on
+        delete, `delete-blocked` (the instrument is referenced by transactions or
+        plans).
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+
+    ValidationFailed:
+      description: |
+        One or more fields were rejected (`validation`). See `errors` for every
+        violation; nothing is applied unless everything validates.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+          examples:
+            unknownCurrency:
+              value:
+                type: https://portfolio-performance.info/rest/problems/validation
+                title: Validation failed
+                status: 422
+                errors:
+                  - field: currencyCode
+                    code: unknown-currency
+                    message: XYZ is not a known currency
+
+    TooManyPairingRequests:
+      description: |
+        Another pairing request is awaiting the user's decision
+        (`pairing-pending`), or a previous request was declined and a cool-down
+        is active (`pairing-cooldown`). Respect `Retry-After`.
+      headers:
+        Retry-After:
+          description: Seconds to wait before retrying.
+          schema:
+            type: integer
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+
+    Locked:
+      description: |
+        A modal dialog is open or the user is editing a table cell, so the write was
+        refused rather than clobbered (`user-interaction`). **Normal and
+        temporary** — respect `Retry-After` and try again.
+      headers:
+        Retry-After:
+          description: Seconds to wait before retrying.
+          schema:
+            type: integer
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+
+    InternalError:
+      description: An unexpected error (`internal-error`).
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
