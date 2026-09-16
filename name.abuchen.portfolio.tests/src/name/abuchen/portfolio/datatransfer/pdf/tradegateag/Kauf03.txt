@@ -1,0 +1,41 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.83.2
+System: linux | x86_64 | 21.0.10+7-Ubuntu-124.04 | Ubuntu
+-----------------------------------------
+Tradegate AG · Kurfürstendamm 129d · 10711 Berlin
+Datum 27.05.2026
+Herrn Kundennummer 12345678
+Total Egal IBAN DE48 1111 2222 3333 4444 55
+Dumdideldumweg 19 Investment-Depot 00123456.123
+12345 Investcity Order-/Ref.nr. 9876543
+E-Mail support@tradegate.direct
+Seite 1 von 1
+Wertpapierabrechnung
+Ihr Sparplan wurde ausgeführt:
+Orderart Kauf Börsenplatz Außerbörslich/OTC
+Wertpapierart ETP
+ISIN IE0005AJA0P1
+WKN A41L70
+Wertpapier Legal&General ETF-Gl.Qual.Div. Reg.Shs USD Dis. oN
+Verwahrart Wertpapierrechnung
+Lagerland Vereinigtes Königreich
+Ordertyp Market
+Stück ausgeführt 2,673510
+Ausführungskurs 9,3510 EUR
+Handelstag/-zeit 27.05.2026 16:17:00
+Wertpapierabrechnung
+Kurswert 25,00 EUR
+Orderprovision 0,00 EUR
+Fremde Gebühren und Spesen 0,00 EUR
+Ausmachender Betrag 25,00 EUR
+Der Abrechnungsbetrag i. H. v. 25,00 EUR wird Ihrem o. g. Verrechnungskonto mit Valuta 29.05.2026 belastet.
+DieWertpapiere habenwir entsprechend IhrerWertpapierabrechnung gebucht. Bitte prüfen Sie dieseWertpapierabrechnung
+unverzüglich und richten etwaige Einwendungenunverzüglich an tradegate.direct, Kurfürstendamm129d, 10711Berlin oder
+an beschwerdemanagement@tradegate.direct. Andernfalls gilt diese Wertpapierabrechnung als genehmigt.
+Beratungsfreies Geschäft
+Diese Mitteilung wurde maschinell erstellt und wird von der Bank nicht unterschrieben.
+tradegate.direct ein Service der Tradegate AG
+Tradegate AG · Kurfürstendamm 129d · 10711 Berlin
+Telefon: +49 (0)30 515 657 700 · E-Mail: info@tradegate.direct · Internet: www.tradegate.direct
+Handelsregister: Amtsgericht Berlin-Charlottenburg, HRB 71506 B · USt-ID: DE 155 528 522 · BIC: TRDADEBBDIR · BLZ: 103 106 66
+Aufsichtsratsvorsitzender: Frank-Uwe Fricke · Vorstand: Holger Timm (Vorsitzender), Kerstin Timm, Jörg Hartmann, Thorsten Commichau, Karsten Haesen
