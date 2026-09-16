@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf.swissquote;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
@@ -2317,5 +2318,29 @@ public class SwissquotePDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(interestCharge(hasDate("2023-12-31"), hasAmount("USD", 41.39), //
                         hasSource("Kontoauszug01.txt"), hasNote("Sollzinsen"))));
+    }
+
+    @Test
+    public void testKontoauszug02()
+    {
+        var extractor = new SwissquotePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-04-08"), hasAmount("CHF", 40000.00), //
+                        hasSource("Kontoauszug02.txt"), hasNote(null))));
     }
 }
