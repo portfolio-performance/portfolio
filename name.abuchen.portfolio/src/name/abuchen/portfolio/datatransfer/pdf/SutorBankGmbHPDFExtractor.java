@@ -356,6 +356,13 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
+                        // Ex Datum - Tag 01. März 2021
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Ex Datum \\- Tag (?<exDate>[\\d]{1,2}\\. .* [\\d]{4})$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
+                        // @formatter:off
                         // Ausmachender Betrag EUR 12,15
                         // @formatter:on
                         .section("currency", "amount") //
