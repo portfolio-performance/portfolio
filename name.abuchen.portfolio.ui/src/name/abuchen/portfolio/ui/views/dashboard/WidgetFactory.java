@@ -274,6 +274,17 @@ public enum WidgetFactory
                                     .withColoredValues(false) //
                                     .build()),
 
+    ANNUALIZED_VOLATILITY(Messages.LabelVolatilityAnnualized, Messages.LabelRiskIndicators, //
+                    (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
+                                    .with(Values.Percent2) //
+                                    .with((ds, period) -> {
+                                        PerformanceIndex index = data.calculate(ds, period);
+                                        return index.getVolatility().getAnnualizedStandardDeviation();
+                                    }) //
+                                    .withTooltip((ds, period) -> Messages.TooltipVolatilityAnnualized) //
+                                    .withColoredValues(false) //
+                                    .build()),
+
     SHARPE_RATIO(Messages.LabelSharpeRatio, Messages.LabelRiskIndicators, //
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
                                     .with(Values.PercentPlain) //
