@@ -1,0 +1,32 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.6.qualifier
+System: macosx | aarch64 | 21.0.9+10-LTS | Eclipse Adoptium
+-----------------------------------------
+Wertpapier-Abrechnu n g                        Dividende
+888888 - 16.06.2025
+Depotnummer Betreuer
+Mustermann Max 111-1111.11 Z 3
+23
+Wertpapiernummer Bezeichnung Nominale/Stück
+AT0000821103 UNIQA Insurance Group AG Stk .             338,00
+Stamm-Aktien o.N.
+Ertrag EUR              202,80
+Ertrag 0,6 EUR
+KESt EUR              -55,77
+Summe EUR              147,03
+Extag 12.06.2025
+Verrechnung
+Verwahrart, Positionsdaten
+SVK Sammelverwahrung Wert 16.06.2025 EUR              147,03
+Wien zu Gunsten Konto AT11 1111 1111 1111 1111
+      Seite 1 von 2
+Oberbank AG, Rechtsform: Aktiengesellschaft, Sitz: Linz, Firmenbuch Nr. FN 79063w, Landesgericht Linz, DVR: 0019020, UID-Nr. ATU22852606
+Wertpapier-Abrechnung
+888888 - 16.06.2025
+Depotbezeichnung Depotnummer Betreuer
+Mustermann Max 111-1111.11 Z 3
+23
+KESt-Neubestand                                                                    338,00 STK
+---------------------------------------------------------------------------------------------
+Die KESt wird an das Finanzamt für Großbetriebe abgeführt.
+Oberbank AG, Rechtsform: Aktiengesellschaft, Sitz: Linz, Firmenbuch Nr. FN 79063w, Landesgericht Linz, DVR: 0019020, UID-Nr. ATU22852606       Seite 2 von 2
