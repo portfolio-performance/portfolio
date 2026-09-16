@@ -1,0 +1,64 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.87.0
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Consorsbank • 90318 Nürnberg
+Depotnummer: 7731468801
+1501642667/00
+Vermerk der Bank: 1000
+2
+nCeld sjDqXgRv
+Datum: 07.07.2026
+Fk XesBURSLC 6
+Seite: 1 von 2
+58381 MVwNApE
+Dividendengutschrift
+Wertpapierbezeichnung WKN ISIN
+COCA-COLA CO., THE Registered Shares DL -,25 850663 US1912161007
+Bestand
+25 Stück
+Dividende pro Stück 0,53 USD Schlusstag 14.06.2026
+Brutto in USD 13,25 USD
+abzgl. Quellensteuer 15,00 % von 13,25 USD 1,99 USD
+11,26 USD
+Netto in USD
+Devisenkurs 1,14630 USD / EUR
+11,56 EUR
+Brutto in EUR
+1,74 EUR
+Quellensteuer in EUR
+11,26 USD
+Netto in USD zugunsten IBAN DE49 6789 3605 4408 5892 04
+Valuta 01.07.2026 BIC DABBDEMMXXX
+Anrechenbare Quellensteuer EUR
+15,00 % von 13,25 USD 1,74
+Bitte beachten Sie die weiteren Informationen auf Seite 2.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil d‘Administration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé
+1EEB2591-3A99-CFFD-D19E-17X22315LRv0
+Depotnummer: 0428318068
+1501642667/00
+Vermerk der Bank: 1000
+2
+Datum: 07.07.2026
+Seite: 2 von 2
+Details zur Abrechnung
+Steuerpflichtiger Gesamtertrag 11,56 EUR
+Mit Verrechnungstopf "Allgemein" verrechnet 0,00 EUR
+Mit Sparerpauschbetrag verrechnet -11,56 EUR
+Mit Quellensteuer verrechnet 0,00 EUR
+somit verrechnete Quellensteuer 0,00 EUR
+Bemessungsgrundlage für Kapitalertragsteuer gesamt 0,00 EUR
+Details zu den Verrechnungstöpfen
+Verrechnungstopf "Allgemein" vor der Abrechnung 0,00 EUR
+Mit Verrechnungstopf "Allgemein" verrechnet 0,00 EUR
+Verrechnungstopf "Allgemein" nach der Abrechnung 0,00 EUR
+Sparerpauschbetrag vor der Abrechnung 673,33 EUR
+Mit Sparerpauschbetrag verrechnet -11,56 EUR
+Sparerpauschbetrag nach der Abrechnung 661,77 EUR
+Verrechnungstopf "Quellensteuer" vor der Abrechnung 73,69 EUR
+Änderung Verrechnungstopf "Quellensteuer" 1,74 EUR
+Verrechnungstopf "Quellensteuer" nach der Abrechnung 75,43 EUR
