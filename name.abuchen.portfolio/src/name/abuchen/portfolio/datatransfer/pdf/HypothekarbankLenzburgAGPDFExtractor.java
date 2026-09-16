@@ -367,6 +367,14 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
+                        // Valor: 18575459 / IE00B3RBWM25 Ex Datum: 13.06.2024
+                        // Ex Datum: 02.04.2024
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^.*Ex Datum: (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
+                        // @formatter:off
                         // Gutschrift 351.413.308 Valuta 26.06.2024 CHF  116.96
                         // @formatter:on
                         .section("currency", "amount") //
