@@ -33,6 +33,7 @@ public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
         super(client);
 
         addBankIdentifier("Liechtensteinische Landesbank");
+        addBankIdentifier("Liechtensteinische");
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -90,12 +91,22 @@ public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
                         .match("^Anzahl \\/ Nominal (?<shares>[\\.'\\d]+)$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
+                        .oneOf( //
                         // @formatter:off
-                        // Zu Ihren Lasten Valuta 22. November 2023 CHF 145.56
-                        // @formatter:on
-                        .section("date") //
-                        .match("^Zu Ihren (Lasten|Gunsten) Valuta (?<date>[\\d]{1,2}\\. .* [\\d]{4}) [\\w]{3} [\\.'\\d]+$") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                                        // Abschlussdatum 09.11.2022 / 10:15:38 CET
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "time") //
+                                                        .match("^Abschlussdatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\/ (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}).*$") //
+                                                        .assign((t, v) -> t
+                                                                        .setDate(asDate(v.get("date"), v.get("time")))),
+                                        // @formatter:off
+                                        // Abschlussdatum 17.11.2023
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Abschlussdatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))))
 
                         // @formatter:off
                         // Zu Ihren Lasten Valuta 22. November 2023 CHF 145.56
@@ -137,6 +148,7 @@ public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
                         .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
     }
 
     private void addDividendeTransaction()
@@ -338,6 +350,25 @@ public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "tax").optional() //
                         .match("^[\\d]+ % Quellensteuer (?<currency>[\\w]{3}) (\\-)?(?<tax>[\\.'\\d]+)$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
+    }
+
+    private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
+    {
+        transaction //
+
+        // @formatter:off
+                        // Lieferspesen EUR 25.22
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^Lieferspesen (?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.'\\d]+)$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Fremde Brokergebühren EUR 0.84
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^(Fremde )?Brokergeb.hren (?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.'\\d]+)$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
     @Override

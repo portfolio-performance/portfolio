@@ -80,7 +80,7 @@ public class LiechtensteinischeLBPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-11-22T00:00"), hasShares(1.394011), //
+                        hasDate("2023-11-17T00:00"), hasShares(1.394011), //
                         hasSource("Kauf01.txt"), //
                         hasNote("Auftragsnummer XXXXXXXXX"), //
                         hasAmount("CHF", 145.56), hasGrossValue("CHF", 145.56), //
@@ -114,7 +114,7 @@ public class LiechtensteinischeLBPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-11-23T00:00"), hasShares(.561522), //
+                        hasDate("2023-11-20T00:00"), hasShares(.561522), //
                         hasSource("Kauf02.txt"), //
                         hasNote("Auftragsnummer XXXXXXXXX"), //
                         hasAmount("CHF", 52.21), hasGrossValue("CHF", 52.13), //
@@ -148,7 +148,7 @@ public class LiechtensteinischeLBPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-12-04T00:00"), hasShares(0.203319), //
+                        hasDate("2023-11-30T09:00:19"), hasShares(0.203319), //
                         hasSource("Kauf03.txt"), //
                         hasNote("Auftragsnummer XXXXXXXXX"), //
                         hasAmount("CHF", 48.12), hasGrossValue("CHF", 48.08), //
@@ -182,7 +182,7 @@ public class LiechtensteinischeLBPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-10-09T00:00"), hasShares(0.4282), //
+                        hasDate("2023-10-05T09:00:16"), hasShares(0.4282), //
                         hasSource("Kauf04.txt"), //
                         hasNote("Auftragsnummer XXXXXXXXX"), //
                         hasAmount("CHF", 46.90), hasGrossValue("CHF", 46.73), //
@@ -218,7 +218,7 @@ public class LiechtensteinischeLBPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-10-09T00:00"), hasShares(0.4282), //
+                        hasDate("2023-10-05T09:00:16"), hasShares(0.4282), //
                         hasSource("Kauf04.txt"), //
                         hasNote("Auftragsnummer XXXXXXXXX"), //
                         hasAmount("CHF", 46.90), hasGrossValue("CHF", 46.73), //
@@ -228,6 +228,40 @@ public class LiechtensteinischeLBPDFExtractorTest
                             var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
+    }
+
+    @Test
+    public void testWertpapierKauf05()
+    {
+        var extractor = new LiechtensteinischeLBPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000BASF111"), hasWkn("11450563"), hasTicker(null), //
+                        hasName("N Akt BASF SE"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-11-09T10:15:38"), hasShares(25.00), //
+                        hasSource("Kauf05.txt"), //
+                        hasNote("Auftragsnummer 468729311"), //
+                        hasAmount("EUR", 1219.48), hasGrossValue("EUR", 1191.63), //
+                        hasTaxes("EUR", 1.79), hasFees("EUR", 25.22 + 0.84))));
     }
 
     @Test
@@ -257,7 +291,7 @@ public class LiechtensteinischeLBPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2023-11-07T00:00"), hasShares(0.062), //
+                        hasDate("2023-11-02T00:00"), hasShares(0.062), //
                         hasSource("Verkauf01.txt"), //
                         hasNote("Auftragsnummer XXXXXXXXX"), //
                         hasAmount("CHF", 55.10), hasGrossValue("CHF", 55.10), //
@@ -293,7 +327,7 @@ public class LiechtensteinischeLBPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2023-11-07T00:00"), hasShares(0.062), //
+                        hasDate("2023-11-02T00:00"), hasShares(0.062), //
                         hasSource("Verkauf01.txt"), //
                         hasNote("Auftragsnummer XXXXXXXXX"), //
                         hasAmount("CHF", 55.10), hasGrossValue("CHF", 55.10), //
@@ -332,7 +366,7 @@ public class LiechtensteinischeLBPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2023-10-09T00:00"), hasShares(0.36666), //
+                        hasDate("2023-10-05T09:20:31"), hasShares(0.36666), //
                         hasSource("Verkauf02.txt"), //
                         hasNote("Auftragsnummer XXXXXXXXX"), //
                         hasAmount("CHF", 9.12), hasGrossValue("CHF", 9.13), //
@@ -366,7 +400,7 @@ public class LiechtensteinischeLBPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2023-10-06T00:00"), hasShares(0.164426), //
+                        hasDate("2023-10-04T20:45:56"), hasShares(0.164426), //
                         hasSource("Verkauf03.txt"), //
                         hasNote("Auftragsnummer 616526383"), //
                         hasAmount("CHF", 39.81), hasGrossValue("CHF", 39.87), //
@@ -377,9 +411,9 @@ public class LiechtensteinischeLBPDFExtractorTest
     @Test
     public void testWertpapierVerkauf03WithSecurityInCHF()
     {
-        var security = new Security("Ant CANDRIAM SUSTAINABLE SICAV - Bond Euro Cap -I-", "CHF");
-        security.setIsin("LU1313769793");
-        security.setWkn("30270619");
+        var security = new Security("Reg Shs Amgen Inc", "CHF");
+        security.setIsin("US0311621009");
+        security.setWkn("907582");
 
         var client = new Client();
         client.addSecurity(security);
@@ -388,7 +422,7 @@ public class LiechtensteinischeLBPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -402,11 +436,11 @@ public class LiechtensteinischeLBPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2023-11-07T00:00"), hasShares(0.062), //
-                        hasSource("Verkauf01.txt"), //
-                        hasNote("Auftragsnummer XXXXXXXXX"), //
-                        hasAmount("CHF", 55.10), hasGrossValue("CHF", 55.10), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        hasDate("2023-10-04T20:45:56"), hasShares(0.164426), //
+                        hasSource("Verkauf03.txt"), //
+                        hasNote("Auftragsnummer 616526383"), //
+                        hasAmount("CHF", 39.81), hasGrossValue("CHF", 39.87), //
+                        hasTaxes("CHF", 0.06), hasFees("CHF", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var s = c.process((PortfolioTransaction) tx, new Portfolio());
