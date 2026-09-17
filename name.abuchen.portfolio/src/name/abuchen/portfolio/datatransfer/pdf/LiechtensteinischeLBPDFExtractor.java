@@ -79,7 +79,7 @@ public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
                         .section("name", "currency", "isin", "wkn") //
                         .find("Auftragsnummer .*") //
                         .match("^(?<name>.*)$") //
-                        .match("^Kurs (?<currency>[\\w]{3}) [\\.'\\d]+$") //
+                        .match("^Kurs (?<currency>[A-Z]{3}) [\\.'\\d]+$") //
                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                         .match("^Valorennummer (?<wkn>[A-Z0-9]{5,9})$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
@@ -113,7 +113,7 @@ public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
                         // Zu Ihren Gunsten Valuta 7. November 2023 CHF 55.10
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Zu Ihren (Lasten|Gunsten) Valuta [\\d]{1,2}\\. .* [\\d]{4} (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$") //
+                        .match("^Zu Ihren (Lasten|Gunsten) Valuta [\\d]{1,2}\\. .* [\\d]{4} (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -124,8 +124,8 @@ public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
                         // Umrechnungskurs EUR/CHF 0.964296
                         // @formatter:on
                         .section("fxGross", "baseCurrency", "termCurrency", "exchangeRate").optional()
-                        .match("^Bruttobetrag [\\w]{3} (?<fxGross>[\\.'\\d]+)$") //
-                        .match("^Umrechnungskurs (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.'\\d]+)$") //
+                        .match("^Bruttobetrag [A-Z]{3} (?<fxGross>[\\.'\\d]+)$") //
+                        .match("^Umrechnungskurs (?<baseCurrency>[A-Z]{3})\\/(?<termCurrency>[A-Z]{3}) (?<exchangeRate>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             ExtrExchangeRate rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
@@ -182,7 +182,7 @@ public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<name>.*)$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .match("^Valorennummer (?<wkn>[A-Z0-9]{5,9})$") //
-                                                        .match("^Zahlungswert (?<currency>[\\w]{3}) [\\.'\\d]+$") //
+                                                        .match("^Zahlungswert (?<currency>[A-Z]{3}) [\\.'\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Auftragsnummer XXXXXXXXX
@@ -196,7 +196,7 @@ public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<name>.*)$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .match("^Valorennummer (?<wkn>[A-Z0-9]{5,9})$") //
-                                                        .match("^Zahlungswert (?<currency>[\\w]{3}) [\\.'\\d]+ pro St.ck$") //
+                                                        .match("^Zahlungswert (?<currency>[A-Z]{3}) [\\.'\\d]+ pro St.ck$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off
@@ -210,7 +210,7 @@ public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
                         // Zu Ihren Gunsten Valuta 20. November 2023 CHF 5.65
                         // @formatter:on
                         .section("date") //
-                        .match("^Zu Ihren Gunsten Valuta (?<date>[\\d]{1,2}\\. .* [\\d]{4}) [\\w]{3} [\\.'\\d]+$") //
+                        .match("^Zu Ihren Gunsten Valuta (?<date>[\\d]{1,2}\\. .* [\\d]{4}) [A-Z]{3} [\\.'\\d]+$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
@@ -224,7 +224,7 @@ public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
                         // Zu Ihren Gunsten Valuta 20. November 2023 CHF 5.65
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Zu Ihren Gunsten Valuta (?<date>[\\d]{1,2}\\. .* [\\d]{4}) (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$") //
+                        .match("^Zu Ihren Gunsten Valuta (?<date>[\\d]{1,2}\\. .* [\\d]{4}) (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -235,8 +235,8 @@ public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
                         // Umrechnungskurs USD/CHF 0.882477
                         // @formatter:on
                         .section("fxGross", "baseCurrency", "termCurrency", "exchangeRate").optional()
-                        .match("^Bruttobetrag [\\w]{3} (?<fxGross>[\\.'\\d]+)$") //
-                        .match("^Umrechnungskurs (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.'\\d]+)$") //
+                        .match("^Bruttobetrag [A-Z]{3} (?<fxGross>[\\.'\\d]+)$") //
+                        .match("^Umrechnungskurs (?<baseCurrency>[A-Z]{3})\\/(?<termCurrency>[A-Z]{3}) (?<exchangeRate>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             ExtrExchangeRate rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
@@ -267,7 +267,7 @@ public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
                                         // Kontoauszug in EUR 01.12.2023 - 31.12.2023
                                         // @formatter:on
                                         .section("currency", "year") //
-                                        .match("^Kontoauszug in (?<currency>[\\w]{3}) [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}).*$") //
+                                        .match("^Kontoauszug in (?<currency>[A-Z]{3}) [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}).*$") //
                                         .assign((ctx, v) -> {
                                             ctx.put("currency", asCurrencyCode(v.get("currency")));
                                             ctx.put("year", v.get("year"));
@@ -334,21 +334,21 @@ public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
                         // Eidgenössische Stempelsteuer CHF -0.01
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Eidgen.ssische Stempelsteuer (?<currency>[\\w]{3}) (\\-)?(?<tax>[\\.'\\d]+)$") //
+                        .match("^Eidgen.ssische Stempelsteuer (?<currency>[A-Z]{3}) (\\-)?(?<tax>[\\.'\\d]+)$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Finanztransaktionssteuer Spanien EUR 0.10
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Finanztransaktionssteuer .* (?<currency>[\\w]{3}) (\\-)?(?<tax>[\\.'\\d]+)$") //
+                        .match("^Finanztransaktionssteuer .* (?<currency>[A-Z]{3}) (\\-)?(?<tax>[\\.'\\d]+)$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // 15 % Quellensteuer USD -1.13
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^[\\d]+ % Quellensteuer (?<currency>[\\w]{3}) (\\-)?(?<tax>[\\.'\\d]+)$") //
+                        .match("^[\\d]+ % Quellensteuer (?<currency>[A-Z]{3}) (\\-)?(?<tax>[\\.'\\d]+)$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
@@ -360,14 +360,14 @@ public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
                         // Lieferspesen EUR 25.22
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Lieferspesen (?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.'\\d]+)$") //
+                        .match("^Lieferspesen (?<currency>[A-Z]{3}) (\\-)?(?<fee>[\\.'\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Fremde Brokergebühren EUR 0.84
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^(Fremde )?Brokergeb.hren (?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.'\\d]+)$") //
+                        .match("^(Fremde )?Brokergeb.hren (?<currency>[A-Z]{3}) (\\-)?(?<fee>[\\.'\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
