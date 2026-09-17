@@ -1276,6 +1276,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         + "|DIVIDENDO" //
                         + "|DISTRIBUZIONE" //
                         + "|Distribution" //
+                        + "|REKLASSIFI(ERZ|ZIER)UNG US\\-DIVIDENDE" //
                         + "|KAPITALREDUKTION)", //
                         "(ABRECHNUNG ZINSEN|AUSSCH.TTUNGSGLEICHER ERTRAG)");
         this.addDocumentTyp(type);
@@ -1535,6 +1536,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("exDate") //
                                                         .match("^.* (ex-tag|Ex-Tag|Ex-Date|l'ex-tag|Ex-Datum)[\\s]*(?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})\\.$") //
+                                                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate")))),
+
+                                        // @formatter:off
+                                        // Du siehst dann eine Stornierung und eine neue Gutschrift einer früheren Dividende vom 19.03.2025 (ursprüngliches Ex-
+                                        // Datum).
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("exDate") //
+                                                        .match("^.*fr.heren Dividende vom (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\(urspr.ngliches Ex.*$") //
                                                         .assign((t, v) -> t.setExDate(asDate(v.get("exDate")))),
 
                                         // @formatter:off

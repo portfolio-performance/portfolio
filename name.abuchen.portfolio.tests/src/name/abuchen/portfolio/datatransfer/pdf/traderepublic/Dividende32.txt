@@ -1,0 +1,71 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.87.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+wCgRm ozGEr clKMLF SEITE 1 von 2
+saerwqr-ewrwer-ftcBeM 37 DATUM 08.09.2026
+43633 JknRUWokkR DEPOT 9287279168
+REKLASSIFIERZUNG US-DIVIDENDE
+ÜBERSICHT
+US Real Estate Investment Trusts (REITs) und einige Unternehmen aktualisieren regelmäßig die steuerliche Klassifizierung von Dividenden nach deren 
+Auszahlung. In solchen Fällen sind wir verpflichtet, diese Dividende in deinem Konto zu aktualisieren, um die endgültige steuerliche Behandlung des 
+Unternehmens widerzuspiegeln. Du siehst dann eine Stornierung und eine neue Gutschrift einer früheren Dividende vom 19.03.2025 (ursprüngliches Ex-
+Datum). Das sind routinemäßige steuerliche Anpassungen, um sicherzustellen, dass die steuerliche Behandlung und deine Steuerbescheinigung korrekt 
+sind. Es handelt sich dabei nicht um eine neue Dividende. Deine Bruttodividende bleibt unverändert, nur die steuerliche Einstufung wird aktualisiert.
+POSITION ANZAHL ERTRAG BETRAG
+Gladstone Commercial 12.28 USD
+429.736709 Stücke 0.02858 USD
+US3765361080
+GESAMT 12.28 USD
+ABRECHNUNG
+POSITION BETRAG
+Quellensteuer für US-Emittenten -1.84 USD
+Zwischensumme 10.44 USD
+Zwischensumme 1.0797 USD/EUR 9.67 EUR
+Kapitalertragsteuer 1.0797 USD/EUR -1.12 EUR
+Kirchensteuer 1.0797 USD/EUR -0.09 EUR
+Solidaritätszuschlag 1.0797 USD/EUR -0.07 EUR
+GESAMT 8.39 EUR
+BUCHUNG
+VERRECHNUNGSKONTO DATUM DER ZAHLUNG BETRAG
+OK05792257352129629674 31.03.2025 8.39 EUR
+US3765361080 nicht in Sammelverwahrung
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Wird keine Umsatzsteuer ausgewiesen, handelt es sich um eine umsatzsteuerfreie Leistung gemäß § 4 Nr. 8 UStG
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+NvcKn SAdjg RBAyun SEITE 2 von 2
+etert4-retet-iSuFOl 81 DATUM 08.09.2026
+45956 RuvPZlpTjf DEPOT 8092890769
+STEUERLICHE BEHANDLUNG
+BERECHNUNG DER STEUERBEMESSUNGSGRUNDLAGE BETRAG
+Kapitalertrag 12,28 USD
+Zwischensumme 1.0797 EUR/USD 11,37 EUR
+STEUERBEMESSUNGSGRUNDLAGE 11,37 EUR
+BERECHNUNG DER STEUERN BETRAG
+Kapitalertrag 12,28 USD
+Quellensteuer für US-Emittenten -1,84 USD
+Steuerbemessungsgrundlage 11,37 EUR
+Kapitalertragsteuer -2,79 EUR
+Quellensteuertopf Gutschrift 1,67 EUR
+Kirchensteuer -0,22 EUR
+Anpassung Kirchensteuer (Quellensteuertopf Gutschrift) 0,13 EUR
+Solidaritätszuschlag -0,15 EUR
+Anpassung Solidaritätszuschlag (Quellensteuertopf Gutschrift) 0,08 EUR
+GESAMTE STEUERN 2,98 EUR
+VERRECHNUNGSTÖPFE
+VERRECHNUNGSTÖPFE VORHER VERÄNDERUNG NACHHER
+Verlustverrechnungstopf Aktien 4.622,63 EUR 0,00 EUR 4.622,63 EUR
+Verlustverrechnungstopf Allgemein 0,00 EUR 0,00 EUR 0,00 EUR
+Freistellungsauftrag 0,00 EUR 0,00 EUR 0,00 EUR
+Quellensteuertopf 0,00 EUR 0,00 EUR 0,00 EUR
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
