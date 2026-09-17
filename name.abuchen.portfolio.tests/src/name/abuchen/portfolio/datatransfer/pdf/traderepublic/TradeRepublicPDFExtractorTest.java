@@ -9236,6 +9236,77 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testDividende32()
+    {
+        var extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende32.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US3765361080"), hasWkn(null), hasTicker(null), //
+                        hasName("Gladstone Commercial"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-03-31"), hasExDate("2025-03-19"), //
+                        hasShares(429.736709), //
+                        hasSource("Dividende32.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 8.39), hasGrossValue("EUR", 11.37), //
+                        hasForexGrossValue("USD", 12.28), //
+                        hasTaxes("EUR", (1.70 + 1.12 + 0.09 + 0.07)), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende32WithSecurityInEUR()
+    {
+        var security = new Security("Gladstone Commercial", "EUR");
+        security.setIsin("US3765361080");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new TradeRepublicPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende32.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-03-31"), hasExDate("2025-03-19"), //
+                        hasShares(429.736709), //
+                        hasSource("Dividende32.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 8.39), hasGrossValue("EUR", 11.37), //
+                        hasTaxes("EUR", (1.70 + 1.12 + 0.09 + 0.07)), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testBarausschuettung01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
