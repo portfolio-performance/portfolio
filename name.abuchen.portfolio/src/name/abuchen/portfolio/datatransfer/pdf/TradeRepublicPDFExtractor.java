@@ -1887,10 +1887,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .section("shares") //
                         .match("^.* (?<shares>[\\.,\\d]+) Stk\\. [\\.,\\d]+ \\p{Sc}( .*)?$") //
                         .assign((t, v) -> {
-                            if (!v.get("shares").contains(","))
-                                t.setShares(asShares(v.get("shares"), "en", "US"));
-                            else
+                            // The quantity is either German formatted with
+                            // grouped
+                            // thousands (1.000) or US formatted with a decimal
+                            // point
+                            // (0.851192)
+                            if (v.get("shares").contains(",") || v.get("shares").matches("[\\d]{1,3}(\\.[\\d]{3})+"))
                                 t.setShares(asShares(v.get("shares")));
+                            else
+                                t.setShares(asShares(v.get("shares"), "en", "US"));
                         })
 
                         .oneOf( //
