@@ -1,8 +1,13 @@
 package name.abuchen.portfolio.datatransfer.pdf.degiro;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.feeRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -14,9 +19,13 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interestCharge;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.skippedItem;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
@@ -542,13 +551,13 @@ public class DegiroPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug07.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(countSecurities(results), is(1L));
+        assertThat(countSecurities(results), is(3L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(34L));
+        assertThat(countAccountTransactions(results), is(47L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(13L));
         assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(35));
+        assertThat(results.size(), is(50));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
@@ -628,13 +637,13 @@ public class DegiroPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug08.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(countSecurities(results), is(52L));
+        assertThat(countSecurities(results), is(53L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(137L));
+        assertThat(countAccountTransactions(results), is(138L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(2L));
+        assertThat(countItemsWithFailureMessage(results), is(5L));
         assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(189));
+        assertThat(results.size(), is(191));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
@@ -774,8 +783,30 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Kontoauszug08.txt"));
         assertThat(transaction.getNote(), is("Dividendensteuer: US6907321029"));
 
+        // @formatter:off
+        // 22-08-2019 11:28 20-08-2019 BAIDU INC. - AMERICAN US0567521085 ADR/GDR Weitergabegebühr USD -0,01 USD -0,01
+        //
+        // The document does not contain an exchange rate for this fee, therefore
+        // the transaction cannot be imported and is reported to the user.
+        // @formatter:on
+        // check transaction without exchange rate
+        TransactionItem missingExchangeRate = (TransactionItem) results.stream()
+                        .filter(TransactionItem.class::isInstance) //
+                        .collect(Collectors.toList()).get(127);
+
+        assertThat(missingExchangeRate.getFailureMessage(),
+                        is(Messages.MsgErrorTransactionMissingExchangeRateIfInForex));
+
+        transaction = (AccountTransaction) missingExchangeRate.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-08-22T11:28")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.01))));
+        assertThat(transaction.getSource(), is("Kontoauszug08.txt"));
+        assertThat(transaction.getNote(), is("US0567521085: ADR/GDR Weitergabegebühr"));
+
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .collect(Collectors.toList()).get(127).getSubject();
+                        .collect(Collectors.toList()).get(128).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-06-24T17:20")));
@@ -787,7 +818,7 @@ public class DegiroPDFExtractorTest
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.31))));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .collect(Collectors.toList()).get(128).getSubject();
+                        .collect(Collectors.toList()).get(129).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-05-21T08:34")));
@@ -799,31 +830,22 @@ public class DegiroPDFExtractorTest
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.01))));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .collect(Collectors.toList()).get(129).getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-02-01T16:32")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.50))));
-        assertThat(transaction.getSource(), is("Kontoauszug08.txt"));
-        assertThat(transaction.getNote(), is("Einrichtung von Handelsmodalitäten 2019"));
-
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .collect(Collectors.toList()).get(130).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-02-01T16:32")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.50))));
         assertThat(transaction.getSource(), is("Kontoauszug08.txt"));
-        assertThat(transaction.getNote(), is("Einrichtung von Handelsmodalitäten 2019 (NASDAQ - NDQ)"));
+        assertThat(transaction.getNote(), is("Einrichtung von Handelsmodalitäten 2019 (New York Stock Exchange - NSY)"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .collect(Collectors.toList()).get(131).getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-02-01T13:35")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-02-01T16:32")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.50))));
         assertThat(transaction.getSource(), is("Kontoauszug08.txt"));
-        assertThat(transaction.getNote(), is("Einrichtung von Handelsmodalitäten 2019"));
+        assertThat(transaction.getNote(), is("Einrichtung von Handelsmodalitäten 2019 (NASDAQ - NDQ)"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .collect(Collectors.toList()).get(132).getSubject();
@@ -832,16 +854,16 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-02-01T13:35")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.50))));
         assertThat(transaction.getSource(), is("Kontoauszug08.txt"));
-        assertThat(transaction.getNote(), is("Einrichtung von Handelsmodalitäten 2019 (NASDAQ - NDQ)"));
+        assertThat(transaction.getNote(), is("Einrichtung von Handelsmodalitäten 2019 (New York Stock Exchange - NSY)"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .collect(Collectors.toList()).get(133).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-02-01T13:34")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-02-01T13:35")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.50))));
         assertThat(transaction.getSource(), is("Kontoauszug08.txt"));
-        assertThat(transaction.getNote(), is("Einrichtung von Handelsmodalitäten 2019"));
+        assertThat(transaction.getNote(), is("Einrichtung von Handelsmodalitäten 2019 (NASDAQ - NDQ)"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .collect(Collectors.toList()).get(134).getSubject();
@@ -850,19 +872,28 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-02-01T13:34")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.50))));
         assertThat(transaction.getSource(), is("Kontoauszug08.txt"));
-        assertThat(transaction.getNote(), is("Einrichtung von Handelsmodalitäten 2019 (NASDAQ - NDQ)"));
+        assertThat(transaction.getNote(), is("Einrichtung von Handelsmodalitäten 2019 (New York Stock Exchange - NSY)"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .collect(Collectors.toList()).get(135).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-09-05T11:34")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-02-01T13:34")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.50))));
         assertThat(transaction.getSource(), is("Kontoauszug08.txt"));
-        assertThat(transaction.getNote(), is("Einrichtung von Handelsmodalitäten 2018"));
+        assertThat(transaction.getNote(), is("Einrichtung von Handelsmodalitäten 2019 (NASDAQ - NDQ)"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .collect(Collectors.toList()).get(136).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-09-05T11:34")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.50))));
+        assertThat(transaction.getSource(), is("Kontoauszug08.txt"));
+        assertThat(transaction.getNote(), is("Einrichtung von Handelsmodalitäten 2018 (New York Stock Exchange - NSY)"));
+
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .collect(Collectors.toList()).get(137).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-09-05T11:34")));
@@ -1097,11 +1128,11 @@ public class DegiroPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(11L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(21L));
+        assertThat(countAccountTransactions(results), is(23L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countItemsWithFailureMessage(results), is(3L));
         assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(32));
+        assertThat(results.size(), is(34));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
@@ -1328,7 +1359,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-05-03T17:14")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.12))));
         assertThat(transaction.getSource(), is("Kontoauszug12.txt"));
-        assertThat(transaction.getNote(), is("Einrichtung von Handelsmodalitäten 2021"));
+        assertThat(transaction.getNote(), is("Einrichtung von Handelsmodalitäten 2021 (Euronext Amsterdam - EAM)"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(11)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
@@ -1336,7 +1367,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-01T12:03")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.06))));
         assertThat(transaction.getSource(), is("Kontoauszug12.txt"));
-        assertThat(transaction.getNote(), is("Einrichtung von Handelsmodalitäten 2021"));
+        assertThat(transaction.getNote(), is("Einrichtung von Handelsmodalitäten 2021 (Euronext Amsterdam - EAM)"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(12)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
@@ -1344,7 +1375,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-01T11:21")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.02))));
         assertThat(transaction.getSource(), is("Kontoauszug12.txt"));
-        assertThat(transaction.getNote(), is("Einrichtung von Handelsmodalitäten 2021"));
+        assertThat(transaction.getNote(), is("Einrichtung von Handelsmodalitäten 2021 (Euronext Amsterdam - EAM)"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(13)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
@@ -1352,7 +1383,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-31T13:16")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.30))));
         assertThat(transaction.getSource(), is("Kontoauszug12.txt"));
-        assertThat(transaction.getNote(), is("Einrichtung von Handelsmodalitäten 2021"));
+        assertThat(transaction.getNote(), is("Einrichtung von Handelsmodalitäten 2021 (Euronext Amsterdam - EAM)"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(14)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
@@ -1360,7 +1391,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-08-05T18:46")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.01))));
         assertThat(transaction.getSource(), is("Kontoauszug12.txt"));
-        assertThat(transaction.getNote(), is("Einrichtung von Handelsmodalitäten 2020"));
+        assertThat(transaction.getNote(), is("Einrichtung von Handelsmodalitäten 2020 (Euronext Amsterdam - EAM)"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(15)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
@@ -1368,7 +1399,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-04-01T11:20")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.26))));
         assertThat(transaction.getSource(), is("Kontoauszug12.txt"));
-        assertThat(transaction.getNote(), is("Einrichtung von Handelsmodalitäten 2020"));
+        assertThat(transaction.getNote(), is("Einrichtung von Handelsmodalitäten 2020 (Euronext Amsterdam - EAM)"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(16)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
@@ -2381,6 +2412,172 @@ public class DegiroPDFExtractorTest
     }
 
     @Test
+    public void testKontoauszug16()
+    {
+        var extractor = new DegiroPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug16.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(4L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(18L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(22));
+        new AssertImportActions().check(results, "CHF", "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B3XXRP09"), hasTicker(null), //
+                        hasName("VANGUARD S&P 500 UCITS ETF USD"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B8GKDB10"), hasTicker(null), //
+                        hasName("VANGUARD FTSE ALL-WORLD HIGH DIV"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B945VV12"), hasTicker(null), //
+                        hasName("VANGUARD FTSE DEVELOPED EUROPE"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("DK0062498333"), hasTicker(null), //
+                        hasName("NOVO NORDISK A/S"), //
+                        hasCurrencyCode("DKK"))));
+
+        // check dividende transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-07-03T07:32"), hasExDate(null), //
+                        hasShares(0.00), //
+                        hasSource("Kontoauszug16.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 85.89), hasGrossValue("CHF", 85.89), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        hasForexGrossValue("USD", 108.27))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-07-03T07:24"), hasExDate(null), //
+                        hasShares(0.00), //
+                        hasSource("Kontoauszug16.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 215.29), hasGrossValue("CHF", 215.29), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        hasForexGrossValue("USD", 271.40))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-07-03T07:17"), hasExDate(null), //
+                        hasShares(0.00), //
+                        hasSource("Kontoauszug16.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 213.65), hasGrossValue("EUR", 213.65), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-04-03T08:57"), hasExDate(null), //
+                        hasShares(0.00), //
+                        hasSource("Kontoauszug16.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 90.41), hasGrossValue("CHF", 90.41), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        hasForexGrossValue("USD", 105.49))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-04-03T07:33"), hasExDate(null), //
+                        hasShares(0.00), //
+                        hasSource("Kontoauszug16.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 90.41), hasGrossValue("CHF", 90.41), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        hasForexGrossValue("USD", 105.49))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-04-03T07:31"), hasExDate(null), //
+                        hasShares(0.00), //
+                        hasSource("Kontoauszug16.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 90.41), hasGrossValue("CHF", 90.41), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        hasForexGrossValue("USD", 105.49))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-04-03T07:30"), hasExDate(null), //
+                        hasShares(0.00), //
+                        hasSource("Kontoauszug16.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 35.37), hasGrossValue("EUR", 35.37), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-04-03T07:25"), hasExDate(null), //
+                        hasShares(0.00), //
+                        hasSource("Kontoauszug16.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 100.99), hasGrossValue("CHF", 100.99), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        hasForexGrossValue("USD", 117.83))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-04-02T06:10"), hasExDate(null), //
+                        hasShares(0.00), //
+                        hasSource("Kontoauszug16.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 36.76), hasGrossValue("CHF", 50.35), //
+                        hasTaxes("CHF", 13.59), hasFees("CHF", 0.00), //
+                        hasForexGrossValue("DKK", 395.00))));
+
+        // check cancellation (Storno) transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionOrderCancellationUnsupported, //
+                        dividend( //
+                                        hasDate("2025-04-03T08:47"), hasExDate(null), //
+                                        hasShares(0.00), //
+                                        hasSource("Kontoauszug16.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("CHF", 180.82), hasGrossValue("CHF", 180.82), //
+                                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00)))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-06-26T08:39"), hasAmount("CHF", 1500.00), //
+                        hasSource("Kontoauszug16.txt"), hasNote("Einzahlung"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2025-05-26T08:39"), hasAmount("CHF", 1500.00), //
+                        hasSource("Kontoauszug16.txt"), hasNote("Einzahlung"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2025-04-28T08:42"), hasAmount("CHF", 1500.00), //
+                        hasSource("Kontoauszug16.txt"), hasNote("Einzahlung"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2025-03-26T08:39"), hasAmount("CHF", 2000.00), //
+                        hasSource("Kontoauszug16.txt"), hasNote("Einzahlung"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2025-02-26T08:56"), hasAmount("CHF", 1500.00), //
+                        hasSource("Kontoauszug16.txt"), hasNote("Einzahlung"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2025-01-28T10:54"), hasAmount("CHF", 1500.00), //
+                        hasSource("Kontoauszug16.txt"), hasNote("Einzahlung"))));
+
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2025-02-06T17:17"), //
+                        hasSource("Kontoauszug16.txt"), //
+                        hasNote("Einrichtung von Handelsmodalitäten 2025 (Tradegate AG - TDG)"), //
+                        hasAmount("EUR", 2.50), hasGrossValue("EUR", 2.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(fee( //
+                        hasDate("2025-02-06T17:17"), //
+                        hasSource("Kontoauszug16.txt"), //
+                        hasNote("Einrichtung von Handelsmodalitäten 2025 (Xetra - XET)"), //
+                        hasAmount("EUR", 2.50), hasGrossValue("EUR", 2.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testRekeningoverzicht01()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
@@ -2475,7 +2672,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-09-02T21:29")));
         assertThat(transaction.getSource(), is("Rekeningoverzicht02.txt"));
-        assertThat(transaction.getNote(), is("DEGIRO Aansluitingskosten 2021"));
+        assertThat(transaction.getNote(), is("DEGIRO Aansluitingskosten 2021 (Borsa Italiana S.p.A. - MIL)"));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.50))));
     }
 
@@ -3509,6 +3706,444 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getNote(), is("Interest"));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.88))));
     }
+
+    @Test
+    public void testAccountStatement02()
+    {
+        var extractor = new DegiroPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(73L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(3L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(74));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("PLOPTTC00011"), hasTicker(null), //
+                        hasName("CD PROJEKT SA"), //
+                        hasCurrencyCode("PLN"))));
+
+        // check dividende transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-06-28T04:43"), hasExDate(null), //
+                        hasShares(0.00), //
+                        hasSource("AccountStatement02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1.87), hasGrossValue("EUR", 2.31), //
+                        hasTaxes("EUR", 0.44), hasFees("EUR", 0.00), //
+                        hasForexGrossValue("PLN", 10.00))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-06-21T06:26"), hasExDate(null), //
+                        hasShares(0.00), //
+                        hasSource("AccountStatement02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1.82), hasGrossValue("EUR", 2.25), //
+                        hasTaxes("EUR", 0.43), hasFees("EUR", 0.00), //
+                        hasForexGrossValue("PLN", 10.00))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2022-07-14T08:47"), hasExDate(null), //
+                        hasShares(0.00), //
+                        hasSource("AccountStatement02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1.68), hasGrossValue("EUR", 2.07), //
+                        hasTaxes("EUR", 0.39), hasFees("EUR", 0.00), //
+                        hasForexGrossValue("PLN", 10.00))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2021-06-09T07:31"), hasExDate(null), //
+                        hasShares(0.00), //
+                        hasSource("AccountStatement02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 9.06), hasGrossValue("EUR", 11.19), //
+                        hasTaxes("EUR", 2.13), hasFees("EUR", 0.00), //
+                        hasForexGrossValue("PLN", 50.00))));
+
+        // check cancellation (Storno) transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionOrderCancellationUnsupported, //
+                        dividend( //
+                                        hasDate("2021-07-23T15:02"), hasExDate(null), //
+                                        hasShares(0.00), //
+                                        hasSource("AccountStatement02.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("PLN", 50.00), hasGrossValue("PLN", 50.00), //
+                                        hasTaxes("PLN", 0.00), hasFees("PLN", 0.00)))));
+
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionOrderCancellationUnsupported, //
+                        taxRefund( //
+                                        hasDate("2021-07-23T15:02"), //
+                                        hasSource("AccountStatement02.txt"), //
+                                        hasNote("Dividend Tax: PLOPTTC00011"), //
+                                        hasAmount("PLN", 9.50), hasGrossValue("PLN", 9.50), //
+                                        hasTaxes("PLN", 0.00), hasFees("PLN", 0.00)))));
+
+        // check transaction without exchange rate
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionMissingExchangeRateIfInForex, //
+                        dividend( //
+                                        hasDate("2021-07-23T15:03"), hasExDate(null), //
+                                        hasShares(0.00), //
+                                        hasSource("AccountStatement02.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("PLN", 40.50), hasGrossValue("PLN", 50.00), //
+                                        hasTaxes("PLN", 9.50), hasFees("PLN", 0.00)))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-04-30T09:10"), hasAmount("EUR", 2550.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("flatex Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2024-04-08T09:10"), hasAmount("EUR", 2500.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("flatex Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2024-02-29T11:30"), hasAmount("EUR", 2500.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("flatex Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2024-01-30T11:10"), hasAmount("EUR", 2500.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("flatex Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2024-01-03T11:30"), hasAmount("EUR", 2500.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("flatex Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2023-12-08T11:10"), hasAmount("EUR", 2500.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("flatex Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2023-11-06T11:10"), hasAmount("EUR", 2500.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("flatex Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2023-10-03T11:41"), hasAmount("EUR", 2500.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("flatex Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2023-09-14T11:21"), hasAmount("EUR", 2500.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("flatex Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2023-08-01T11:31"), hasAmount("EUR", 2500.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("flatex Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2023-07-18T11:21"), hasAmount("EUR", 3000.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("flatex Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2023-07-14T11:11"), hasAmount("EUR", 2500.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("flatex Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2023-07-12T17:27"), hasAmount("EUR", 1.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2023-03-30T21:11"), hasAmount("EUR", 2300.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("flatex Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2023-02-28T16:03"), hasAmount("EUR", 2200.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("flatex Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2023-02-03T15:11"), hasAmount("EUR", 2000.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("flatex Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2023-01-05T09:21"), hasAmount("EUR", 4000.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("flatex Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2022-11-08T11:10"), hasAmount("EUR", 2700.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("flatex Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2022-10-06T14:50"), hasAmount("EUR", 2500.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("flatex Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2022-09-08T20:50"), hasAmount("EUR", 2500.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("flatex Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2022-08-17T20:50"), hasAmount("EUR", 2000.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("flatex Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2022-07-20T08:50"), hasAmount("EUR", 3000.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("flatex Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2022-06-01T20:50"), hasAmount("EUR", 2200.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("flatex Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2022-05-02T15:50"), hasAmount("EUR", 3000.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("flatex Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2022-04-01T15:50"), hasAmount("EUR", 4000.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("flatex Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2022-03-01T22:20"), hasAmount("EUR", 2500.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("flatex Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2022-02-14T14:50"), hasAmount("EUR", 2000.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("flatex Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2022-01-24T20:50"), hasAmount("EUR", 5000.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("flatex Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2021-11-12T23:20"), hasAmount("EUR", 2900.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("flatex Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2021-09-29T20:50"), hasAmount("EUR", 730.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("flatex Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2021-07-06T15:50"), hasAmount("EUR", 1500.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("flatex Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2021-06-07T14:50"), hasAmount("EUR", 1000.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("flatex Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2021-05-06T20:50"), hasAmount("EUR", 3105.70), //
+                        hasSource("AccountStatement02.txt"), hasNote("flatex Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2021-03-30T18:56"), hasAmount("EUR", 2000.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2021-03-05T18:55"), hasAmount("EUR", 6185.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2021-01-27T12:11"), hasAmount("EUR", 13041.39), //
+                        hasSource("AccountStatement02.txt"), hasNote("Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2021-01-25T14:09"), hasAmount("EUR", 2000.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2020-12-03T14:45"), hasAmount("EUR", 2000.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2020-11-17T16:11"), hasAmount("EUR", 2500.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2020-10-30T19:02"), hasAmount("EUR", 2500.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2020-07-10T18:41"), hasAmount("EUR", 7908.40), //
+                        hasSource("AccountStatement02.txt"), hasNote("Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2020-07-10T14:48"), hasAmount("EUR", 2146.92), //
+                        hasSource("AccountStatement02.txt"), hasNote("Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2020-06-11T18:43"), hasAmount("EUR", 3308.58), //
+                        hasSource("AccountStatement02.txt"), hasNote("Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2020-05-07T18:54"), hasAmount("EUR", 4609.20), //
+                        hasSource("AccountStatement02.txt"), hasNote("Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2020-04-14T13:55"), hasAmount("EUR", 6321.60), //
+                        hasSource("AccountStatement02.txt"), hasNote("Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2020-04-14T13:55"), hasAmount("EUR", 2509.20), //
+                        hasSource("AccountStatement02.txt"), hasNote("Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2020-03-06T12:36"), hasAmount("EUR", 1796.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2020-02-10T18:29"), hasAmount("EUR", 1322.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2020-02-03T15:34"), hasAmount("EUR", 1465.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2019-12-10T11:08"), hasAmount("EUR", 50.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2019-11-22T12:26"), hasAmount("EUR", 0.01), //
+                        hasSource("AccountStatement02.txt"), hasNote("Deposit"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2018-06-06T16:56"), hasAmount("EUR", 20.00), //
+                        hasSource("AccountStatement02.txt"), hasNote("Deposit"))));
+
+        // check interest charge transaction
+        assertThat(results, hasItem(interestCharge( //
+                        hasDate("2022-10-01T14:01"), //
+                        hasSource("AccountStatement02.txt"), //
+                        hasNote("Flatex Interest"), //
+                        hasAmount("EUR", 0.08), hasGrossValue("EUR", 0.08), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(interestCharge( //
+                        hasDate("2022-07-02T14:12"), //
+                        hasSource("AccountStatement02.txt"), //
+                        hasNote("Flatex Interest"), //
+                        hasAmount("EUR", 0.53), hasGrossValue("EUR", 0.53), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(interestCharge( //
+                        hasDate("2022-04-02T15:20"), //
+                        hasSource("AccountStatement02.txt"), //
+                        hasNote("Flatex Interest"), //
+                        hasAmount("EUR", 0.06), hasGrossValue("EUR", 0.06), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(interestCharge( //
+                        hasDate("2021-12-31T03:00"), //
+                        hasSource("AccountStatement02.txt"), //
+                        hasNote("Flatex Interest"), //
+                        hasAmount("EUR", 0.41), hasGrossValue("EUR", 0.41), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(interestCharge( //
+                        hasDate("2021-10-01T23:30"), //
+                        hasSource("AccountStatement02.txt"), //
+                        hasNote("Flatex Interest"), //
+                        hasAmount("EUR", 0.20), hasGrossValue("EUR", 0.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(interestCharge( //
+                        hasDate("2021-07-02T15:40"), //
+                        hasSource("AccountStatement02.txt"), //
+                        hasNote("Flatex Interest"), //
+                        hasAmount("EUR", 0.02), hasGrossValue("EUR", 0.02), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2024-02-05T07:17"), //
+                        hasSource("AccountStatement02.txt"), //
+                        hasNote("Giro Exchange Connection Fee 2024"), //
+                        hasAmount("EUR", 2.50), hasGrossValue("EUR", 2.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(fee( //
+                        hasDate("2024-02-05T07:17"), //
+                        hasSource("AccountStatement02.txt"), //
+                        hasNote("Giro Exchange Connection Fee 2024"), //
+                        hasAmount("EUR", 2.50), hasGrossValue("EUR", 2.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(fee( //
+                        hasDate("2024-02-05T07:17"), //
+                        hasSource("AccountStatement02.txt"), //
+                        hasNote("Giro Exchange Connection Fee 2024"), //
+                        hasAmount("EUR", 2.50), hasGrossValue("EUR", 2.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(fee( //
+                        hasDate("2023-03-01T15:07"), //
+                        hasSource("AccountStatement02.txt"), //
+                        hasNote("Giro Exchange Connection Fee 2023"), //
+                        hasAmount("EUR", 2.50), hasGrossValue("EUR", 2.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(fee( //
+                        hasDate("2023-01-03T13:59"), //
+                        hasSource("AccountStatement02.txt"), //
+                        hasNote("Giro Exchange Connection Fee 2023"), //
+                        hasAmount("EUR", 2.50), hasGrossValue("EUR", 2.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(fee( //
+                        hasDate("2023-01-03T13:59"), //
+                        hasSource("AccountStatement02.txt"), //
+                        hasNote("Giro Exchange Connection Fee 2023"), //
+                        hasAmount("EUR", 2.50), hasGrossValue("EUR", 2.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(fee( //
+                        hasDate("2022-02-03T10:00"), //
+                        hasSource("AccountStatement02.txt"), //
+                        hasNote("Giro Exchange Connection Fee 2022"), //
+                        hasAmount("EUR", 2.50), hasGrossValue("EUR", 2.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(fee( //
+                        hasDate("2022-02-03T10:00"), //
+                        hasSource("AccountStatement02.txt"), //
+                        hasNote("Giro Exchange Connection Fee 2022"), //
+                        hasAmount("EUR", 2.50), hasGrossValue("EUR", 2.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testAccountStatement_french01()
+    {
+        var extractor = new DegiroPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement_french01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(3L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(7L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(10));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("SE0020050417"), hasTicker(null), //
+                        hasName("BOLIDEN AB"), //
+                        hasCurrencyCode("SEK"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("FI0009003727"), hasTicker(null), //
+                        hasName("WARTSILA OYJ ABP"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US02079K3059"), hasTicker(null), //
+                        hasName("ALPHABET INC CLASS A"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividende transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-05-07T07:10"), hasExDate(null), //
+                        hasShares(0.00), //
+                        hasSource("AccountStatement_french01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 22.59), hasGrossValue("EUR", 32.27), //
+                        hasTaxes("EUR", 9.68), hasFees("EUR", 0.00), //
+                        hasForexGrossValue("SEK", 352.00))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-03-24T07:04"), hasExDate(null), //
+                        hasShares(0.00), //
+                        hasSource("AccountStatement_french01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 15.92), hasGrossValue("EUR", 24.49), //
+                        hasTaxes("EUR", 8.57), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-12-16T07:13"), hasExDate(null), //
+                        hasShares(0.00), //
+                        hasSource("AccountStatement_french01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1.06), hasGrossValue("EUR", 1.25), //
+                        hasTaxes("EUR", 0.19), hasFees("EUR", 0.00), //
+                        hasForexGrossValue("USD", 1.47))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-10-08T14:50"), hasAmount("EUR", 9500.00), //
+                        hasSource("AccountStatement_french01.txt"), hasNote("Dépôt flatex"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2025-10-07T21:51"), hasAmount("EUR", 500.00), //
+                        hasSource("AccountStatement_french01.txt"), hasNote("Dépôt flatex"))));
+
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2026-04-07T09:44"), //
+                        hasSource("AccountStatement_french01.txt"), //
+                        hasNote("Frais de connexion aux places boursières 2026 (London Stock Exchange (LSE) - LSE)"), //
+                        hasAmount("EUR", 2.50), hasGrossValue("EUR", 2.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check fee refund transaction
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2026-02-25T16:19"), //
+                        hasSource("AccountStatement_french01.txt"), //
+                        hasNote("Remboursement offre promotionnelle"), //
+                        hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
 
     @Test
     public void testTransaktionsuebersicht01()
@@ -4818,7 +5453,7 @@ public class DegiroPDFExtractorTest
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getName(), is("GENERAL ELECTRIC"));
+        assertThat(security.getName(), is("GENERAL ELECTRIC COMPANY COMMON STOCK"));
         assertThat(security.getIsin(), is("US3696043013"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -5120,7 +5755,7 @@ public class DegiroPDFExtractorTest
         // check security
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security1.getName(), is("GENERAL ELECTRIC"));
+        assertThat(security1.getName(), is("GENERAL ELECTRIC COMPANY COMMON STOCK"));
         assertThat(security1.getIsin(), is("US3696043013"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -5192,13 +5827,13 @@ public class DegiroPDFExtractorTest
         // check security
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security1.getName(), is("ISHARES MSCI EUROPE ESG"));
+        assertThat(security1.getName(), is("ISHARES MSCI EUROPE ESG SCREENED UCITS ETF EUR ACC"));
         assertThat(security1.getIsin(), is("IE00BFNM3D14"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security2.getName(), is("ISHARES DJ EUROPE"));
+        assertThat(security2.getName(), is("ISHARES DJ EUROPE SUSTAINABILITY (BLACKROCK ASSET MA..."));
         assertThat(security2.getIsin(), is("IE00B52VJ196"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -5522,7 +6157,7 @@ public class DegiroPDFExtractorTest
         // check security
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security1.getName(), is("ISHARES DJ EUROPE"));
+        assertThat(security1.getName(), is("ISHARES DJ EUROPE SUSTAINABILITY (BLACKROCK ASSET MA..."));
         assertThat(security1.getIsin(), is("IE00B52VJ196"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -5534,7 +6169,7 @@ public class DegiroPDFExtractorTest
 
         Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security3.getName(), is("ISHARES MSCI EUROPE ESG"));
+        assertThat(security3.getName(), is("ISHARES MSCI EUROPE ESG SCREENED UCITS ETF EUR ACC"));
         assertThat(security3.getIsin(), is("IE00BFNM3D14"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -5576,7 +6211,7 @@ public class DegiroPDFExtractorTest
 
         Security security10 = results.stream().filter(SecurityItem.class::isInstance).skip(9).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security10.getName(), is("ETF ISHARES S&P 500 CHF"));
+        assertThat(security10.getName(), is("ETF ISHARES S&P 500 CHF HEDGED (ISHARES)"));
         assertThat(security10.getIsin(), is("IE00B88DZ566"));
         assertThat(security10.getCurrencyCode(), is("CHF"));
 
@@ -5594,7 +6229,7 @@ public class DegiroPDFExtractorTest
 
         Security security13 = results.stream().filter(SecurityItem.class::isInstance).skip(12).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security13.getName(), is("LYXOR UCITS ETF S&P500"));
+        assertThat(security13.getName(), is("LYXOR UCITS ETF S&P500 VIX FU EN ROL LUX"));
         assertThat(security13.getIsin(), is("LU0832435464"));
         assertThat(security13.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -5612,7 +6247,7 @@ public class DegiroPDFExtractorTest
 
         Security security16 = results.stream().filter(SecurityItem.class::isInstance).skip(16).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security16.getName(), is("CSAM ISHARES SPI (CH)"));
+        assertThat(security16.getName(), is("CSAM ISHARES SPI (CH) (CREDIT SUISSE ASSET MANAGEMENT)"));
         assertThat(security16.getIsin(), is("CH0237935652"));
         assertThat(security16.getCurrencyCode(), is("CHF"));
 
@@ -5843,11 +6478,11 @@ public class DegiroPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(4L));
-        assertThat(countBuySell(results), is(11L));
+        assertThat(countBuySell(results), is(10L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countSkippedItems(results), is(1L));
         assertThat(results.size(), is(15));
         new AssertImportActions().check(results, "EUR");
 
@@ -5856,17 +6491,17 @@ public class DegiroPDFExtractorTest
                         hasIsin("DE0007472060"), hasTicker(null), //
                         hasName("WIRECARD AG"), //
                         hasCurrencyCode("EUR"))));
-        
+
         assertThat(results, hasItem(security( //
                         hasIsin("DE000A0D8Q49"), hasTicker(null), //
-                        hasName("ISHARES DOW JONES U.S."), //
+                        hasName("ISHARES DOW JONES U.S. SELECT DIVIDEND UCITS (DE) ETF"), //
                         hasCurrencyCode("EUR"))));
-        
+
         assertThat(results, hasItem(security( //
                         hasIsin("DE000C5F3ZF0"), hasTicker(null), //
                         hasName("ODX1 C12700.00 05JUN20"), //
                         hasCurrencyCode("EUR"))));
-        
+
         assertThat(results, hasItem(security( //
                         hasIsin("DE000C5F3ZG8"), hasTicker(null), //
                         hasName("ODX1 P12700.00 05JUN20"), //
@@ -5875,80 +6510,89 @@ public class DegiroPDFExtractorTest
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasSecurity(hasIsin("DE0007472060")), //
-                        hasDate("2021-01-07T20:36"), hasShares(90), //
+                        hasDate("2021-01-07T20:36"), hasShares(90.00), //
                         hasSource("Transaktionsuebersicht21.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 97.92), hasGrossValue("EUR", 97.92), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-        
-        // check buy sell transaction
+
         assertThat(results, hasItem(sale( //
                         hasSecurity(hasIsin("DE0007472060")), //
-                        hasDate("2021-01-07T20:36"), hasShares(90), //
+                        hasDate("2021-01-07T20:36"), hasShares(90.00), //
                         hasSource("Transaktionsuebersicht21.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 97.92), hasGrossValue("EUR", 97.92), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-        
+
         assertThat(results, hasItem(purchase( //
                         hasSecurity(hasIsin("DE0007472060")), //
-                        hasDate("2020-06-24T16:26"), hasShares(30), //
+                        hasDate("2020-06-24T16:26"), hasShares(30.00), //
                         hasSource("Transaktionsuebersicht21.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 347.06), hasGrossValue("EUR", 345.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 2.06))));
-        
+
         assertThat(results, hasItem(purchase( //
                         hasSecurity(hasIsin("DE0007472060")), //
-                        hasDate("2020-06-19T11:24"), hasShares(20), //
+                        hasDate("2020-06-19T11:24"), hasShares(20.00), //
                         hasSource("Transaktionsuebersicht21.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 442.08), hasGrossValue("EUR", 440.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 2.08))));
-        
+
         assertThat(results, hasItem(purchase( //
                         hasSecurity(hasIsin("DE0007472060")), //
-                        hasDate("2020-06-18T14:04"), hasShares(10), //
+                        hasDate("2020-06-18T14:04"), hasShares(10.00), //
                         hasSource("Transaktionsuebersicht21.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 452.08), hasGrossValue("EUR", 450.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 2.08))));
-        
+
         assertThat(results, hasItem(purchase( //
                         hasSecurity(hasIsin("DE0007472060")), //
-                        hasDate("2020-06-18T10:57"), hasShares(18), //
+                        hasDate("2020-06-18T10:57"), hasShares(18.00), //
                         hasSource("Transaktionsuebersicht21.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 1074.27), hasGrossValue("EUR", 1072.08), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 2.19))));
-        
-        assertThat(results, hasItem(sale( //
-                        hasSecurity(hasIsin("DE000C5F3ZF0")), //
-                        hasDate("2020-06-05T13:30"), hasShares(1), //
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("DE000A0D8Q49")), //
+                        hasDate("2020-06-10T16:18"), hasShares(4.00), //
                         hasSource("Transaktionsuebersicht21.txt"), //
                         hasNote(null), //
-                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-        
+                        hasAmount("EUR", 222.07), hasGrossValue("EUR", 220.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 2.07))));
+
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        sale( //
+                                        hasSecurity(hasIsin("DE000C5F3ZF0")), //
+                                        hasDate("2020-06-05T13:30"), hasShares(1.00), //
+                                        hasSource("Transaktionsuebersicht21.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+
         assertThat(results, hasItem(sale( //
                         hasSecurity(hasIsin("DE000C5F3ZG8")), //
-                        hasDate("2020-06-05T11:32"), hasShares(1), //
+                        hasDate("2020-06-05T11:32"), hasShares(1.00), //
                         hasSource("Transaktionsuebersicht21.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 499.25), hasGrossValue("EUR", 500.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.75))));
-                
+
         assertThat(results, hasItem(purchase( //
                         hasSecurity(hasIsin("DE000C5F3ZG8")), //
-                        hasDate("2020-06-05T10:43"), hasShares(1), //
+                        hasDate("2020-06-05T10:43"), hasShares(1.00), //
                         hasSource("Transaktionsuebersicht21.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 150.75), hasGrossValue("EUR", 150.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.75))));
-        
+
         assertThat(results, hasItem(purchase( //
                         hasSecurity(hasIsin("DE000C5F3ZF0")), //
-                        hasDate("2020-06-05T10:22"), hasShares(1), //
+                        hasDate("2020-06-05T10:22"), hasShares(1.00), //
                         hasSource("Transaktionsuebersicht21.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 150.75), hasGrossValue("EUR", 150.00), //
@@ -5966,143 +6610,152 @@ public class DegiroPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(6L));
-        assertThat(countBuySell(results), is(13L));
+        assertThat(countBuySell(results), is(11L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countSkippedItems(results), is(2L));
         assertThat(results.size(), is(19));
         new AssertImportActions().check(results, "EUR");
-        
+
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin("US88160R1014"), hasTicker(null), //
                         hasName("TESLA INC"), //
                         hasCurrencyCode("USD"))));
-        
+
         assertThat(results, hasItem(security( //
                         hasIsin("DE000C34JCK6"), hasTicker(null), //
                         hasName("ODX1 P12300.00 03MAY19"), //
                         hasCurrencyCode("EUR"))));
-        
+
         assertThat(results, hasItem(security( //
                         hasIsin("DE000C3311N4"), hasTicker(null), //
                         hasName("ODX4 C12300.00 26APR19"), //
                         hasCurrencyCode("EUR"))));
-        
+
         assertThat(results, hasItem(security( //
                         hasIsin("DE000C3311K0"), hasTicker(null), //
                         hasName("ODX4 P12200.00 26APR19"), //
                         hasCurrencyCode("EUR"))));
-        
+
         assertThat(results, hasItem(security( //
                         hasIsin("DE000C3311P9"), hasTicker(null), //
                         hasName("ODX4 P12300.00 26APR19"), //
                         hasCurrencyCode("EUR"))));
-        
+
         assertThat(results, hasItem(security( //
                         hasIsin("DE000C34JCJ8"), hasTicker(null), //
                         hasName("ODX1 C12300.00 03MAY19"), //
                         hasCurrencyCode("EUR"))));
-        
 
         // check buy sell transaction
-        assertThat(results, hasItem(purchase( //
-                        hasDate("2019-04-26T17:52"), hasShares(2), //
-                        hasSource("Transaktionsuebersicht22.txt"), //
-                        hasNote(null), //
-                        hasAmount("EUR", 430.77), hasGrossValue("EUR", 430.26), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.51))));
-        
-        assertThat(results, hasItem(purchase( //
-                        hasDate("2019-04-26T20:23"), hasShares(1), //
-                        hasSource("Transaktionsuebersicht22.txt"), //
-                        hasNote(null), //
-                        hasAmount("EUR", 210.21), hasGrossValue("EUR", 209.71), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.50))));
-        
         assertThat(results, hasItem(sale( //
-                        hasDate("2019-04-29T16:11"), hasShares(3), //
+                        hasSecurity(hasIsin("US88160R1014")), //
+                        hasDate("2019-04-29T16:11"), hasShares(3.00), //
                         hasSource("Transaktionsuebersicht22.txt"), //
                         hasNote(null), //
-                        hasAmount("EUR", 645.18), hasGrossValue("EUR", 645.69), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.51))));
-        
+                        hasAmount("EUR", 645.18), hasGrossValue("EUR", 646.34), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", (0.65 + 0.51)), //
+                        hasForexGrossValue("USD", 720.00))));
+
         assertThat(results, hasItem(purchase( //
                         hasSecurity(hasIsin("DE000C34JCK6")), //
-                        hasDate("2019-04-29T09:16"), hasShares(1), //
+                        hasDate("2019-04-29T09:16"), hasShares(1.00), //
                         hasSource("Transaktionsuebersicht22.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 250.90), hasGrossValue("EUR", 250.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.90))));
-        
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US88160R1014")), //
+                        hasDate("2019-04-26T20:23"), hasShares(1.00), //
+                        hasSource("Transaktionsuebersicht22.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 210.21), hasGrossValue("EUR", 209.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", (0.21 + 0.50)), //
+                        hasForexGrossValue("USD", 234.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US88160R1014")), //
+                        hasDate("2019-04-26T17:52"), hasShares(2.00), //
+                        hasSource("Transaktionsuebersicht22.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 430.77), hasGrossValue("EUR", 429.83), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", (0.43 + 0.51)), //
+                        hasForexGrossValue("USD", 480.00))));
+
         assertThat(results, hasItem(sale( //
                         hasSecurity(hasIsin("DE000C3311N4")), //
-                        hasDate("2019-04-26T13:39"), hasShares(5), //
+                        hasDate("2019-04-26T13:39"), hasShares(5.00), //
                         hasSource("Transaktionsuebersicht22.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 89.00), hasGrossValue("EUR", 89.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-        
-        assertThat(results, hasItem(sale( //
-                        hasSecurity(hasIsin("DE000C3311K0")), //
-                        hasDate("2019-04-26T13:39"), hasShares(1), //
-                        hasSource("Transaktionsuebersicht22.txt"), //
-                        hasNote(null), //
-                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-        
-        assertThat(results, hasItem(sale( //
-                        hasSecurity(hasIsin("DE000C3311P9")), //
-                        hasDate("2019-04-26T13:39"), hasShares(4), //
-                        hasSource("Transaktionsuebersicht22.txt"), //
-                        hasNote(null), //
-                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-        
+
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        sale( //
+                                        hasSecurity(hasIsin("DE000C3311K0")), //
+                                        hasDate("2019-04-26T13:39"), hasShares(1.00), //
+                                        hasSource("Transaktionsuebersicht22.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        sale( //
+                                        hasSecurity(hasIsin("DE000C3311P9")), //
+                                        hasDate("2019-04-26T13:39"), hasShares(4.00), //
+                                        hasSource("Transaktionsuebersicht22.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+
         assertThat(results, hasItem(purchase( //
                         hasSecurity(hasIsin("DE000C34JCK6")), //
-                        hasDate("2019-04-26T13:01"), hasShares(1), //
+                        hasDate("2019-04-26T13:01"), hasShares(1.00), //
                         hasSource("Transaktionsuebersicht22.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 375.90), hasGrossValue("EUR", 375.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.90))));
-        
+
         assertThat(results, hasItem(purchase( //
                         hasSecurity(hasIsin("DE000C34JCJ8")), //
-                        hasDate("2019-04-26T13:01"), hasShares(1), //
+                        hasDate("2019-04-26T13:01"), hasShares(1.00), //
                         hasSource("Transaktionsuebersicht22.txt"), //
-                        hasNote(null),
+                        hasNote(null), //
                         hasAmount("EUR", 375.90), hasGrossValue("EUR", 375.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.90))));
-        
+
         assertThat(results, hasItem(purchase( //
                         hasSecurity(hasIsin("DE000C3311P9")), //
-                        hasDate("2019-04-26T12:30"), hasShares(1), //
+                        hasDate("2019-04-26T12:30"), hasShares(1.00), //
                         hasSource("Transaktionsuebersicht22.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 50.90), hasGrossValue("EUR", 50.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.90))));
-        
+
         assertThat(results, hasItem(purchase( //
                         hasSecurity(hasIsin("DE000C3311N4")), //
-                        hasDate("2019-04-26T10:40"), hasShares(1), //
+                        hasDate("2019-04-26T10:40"), hasShares(1.00), //
                         hasSource("Transaktionsuebersicht22.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 25.90), hasGrossValue("EUR", 25.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.90))));
-        
+
         assertThat(results, hasItem(purchase( //
                         hasSecurity(hasIsin("DE000C3311P9")), //
-                        hasDate("2019-04-26T10:00"), hasShares(1), //
+                        hasDate("2019-04-26T10:00"), hasShares(1.00), //
                         hasSource("Transaktionsuebersicht22.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 100.90), hasGrossValue("EUR", 100.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.90))));
-        
+
         assertThat(results, hasItem(purchase( //
                         hasSecurity(hasIsin("DE000C3311N4")), //
-                        hasDate("2019-04-26T09:11"), hasShares(1), //
+                        hasDate("2019-04-26T09:11"), hasShares(1.00), //
                         hasSource("Transaktionsuebersicht22.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 50.90), hasGrossValue("EUR", 50.00), //
@@ -6399,7 +7052,7 @@ public class DegiroPDFExtractorTest
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getName(), is("LUMINAR TECHNOLOGIES"));
+        assertThat(security.getName(), is("LUMINAR TECHNOLOGIES INC. - CLASS A COMMON STOCK"));
         assertThat(security.getIsin(), is("US5504241051"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -6816,6 +7469,873 @@ public class DegiroPDFExtractorTest
     }
 
     @Test
+    public void testTransactions_english02()
+    {
+        var extractor = new DegiroPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Transactions_english02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(39L));
+        assertThat(countBuySell(results), is(72L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(5L));
+        assertThat(results.size(), is(116));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("JE00B1VS3333"), hasTicker(null), //
+                        hasName("WISDOMTREE PHYSICAL SILVER INDIVIDUAL SECURITIES ETC"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US17888H1032"), hasTicker(null), //
+                        hasName("CIVITAS RESOURCES INC"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US78454L1008"), hasTicker(null), //
+                        hasName("SM ENERGY CO"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US5322751042"), hasTicker(null), //
+                        hasName("LIGHTWAVE LOGIC INC"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US7731211089"), hasTicker(null), //
+                        hasName("ROCKET LAB CORP"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("CA29872L2066"), hasTicker(null), //
+                        hasName("EURO SUN MINING INC"), //
+                        hasCurrencyCode("CAD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US88262P1021"), hasTicker(null), //
+                        hasName("TEXAS PACIFIC LAND CORP"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("AN8068571086"), hasTicker(null), //
+                        hasName("SLB NV"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("BMG9460G1015"), hasTicker(null), //
+                        hasName("VALARIS LTD"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0000009082"), hasTicker(null), //
+                        hasName("KONINKLIJKE KPN NV"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US76655K1034"), hasTicker(null), //
+                        hasName("RIGETTI COMPUTING INC"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US18539C2044"), hasTicker(null), //
+                        hasName("CLEARWAY ENERGY INC CLASS C"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0000124141"), hasTicker(null), //
+                        hasName("VEOLIA ENVIRONNEMENT SA"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US1270971039"), hasTicker(null), //
+                        hasName("COTERRA ENERGY INC"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US20825C1045"), hasTicker(null), //
+                        hasName("CONOCOPHILLIPS"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US03674X1063"), hasTicker(null), //
+                        hasName("ANTERO RESOURCES CORP"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0000371243"), hasTicker(null), //
+                        hasName("NEDAP NV"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("BMG0112X1056"), hasTicker(null), //
+                        hasName("AEGON LTD"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US6516391066"), hasTicker(null), //
+                        hasName("NEWMONT CORPORATION"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("GB00BZ3CNK81"), hasTicker(null), //
+                        hasName("TORM PLC CLASS A"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0011540547"), hasTicker(null), //
+                        hasName("ABN AMRO BANK NV"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0000302636"), hasTicker(null), //
+                        hasName("VAN LANSCHOT KEMPEN NV"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0010273215"), hasTicker(null), //
+                        hasName("ASML HOLDING NV"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("NO0011082075"), hasTicker(null), //
+                        hasName("HOEGH AUTOLINERS ASA"), //
+                        hasCurrencyCode("NOK"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0000289213"), hasTicker(null), //
+                        hasName("WERELDHAVE NV"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("BE0003816338"), hasTicker(null), //
+                        hasName("CMB TECH NV"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0000360618"), hasTicker(null), //
+                        hasName("SBM OFFSHORE NV"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0010558797"), hasTicker(null), //
+                        hasName("OCI NV"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0000303709"), hasTicker(null), //
+                        hasName("AEGON"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0010478248"), hasTicker(null), //
+                        hasName("ATARI - TD"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0014008D33"), hasTicker(null), //
+                        hasName("ATARI - NON TRADEABLE"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("GB00BP6MXD84"), hasTicker(null), //
+                        hasName("SHELL PLC"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("GB00B03MLX29"), hasTicker(null), //
+                        hasName("ROYAL DUTCH SHELLA"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0009739416"), hasTicker(null), //
+                        hasName("POSTNL NV"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL00150003E1"), hasTicker(null), //
+                        hasName("FUGRO NV CLASS C"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL00150004A7"), hasTicker(null), //
+                        hasName("FUGRO"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL00150001Y3"), hasTicker(null), //
+                        hasName("FUGRO RIGHTS"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0000352565"), hasTicker(null), //
+                        hasName("FUGRO"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("BE0003818359"), hasTicker(null), //
+                        hasName("GALAPAGOS NV"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("JE00B1VS3333")), //
+                        hasDate("2026-02-04T10:32"), hasShares(30.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2054.28), hasGrossValue("EUR", 2051.28), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US17888H1032")), //
+                        hasDate("2026-01-30T00:00"), hasShares(40.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 928.84), hasGrossValue("EUR", 928.84), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        hasForexGrossValue("USD", 1095.20))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US78454L1008")), //
+                        hasDate("2026-01-30T00:00"), hasShares(58.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 928.84), hasGrossValue("EUR", 928.84), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        hasForexGrossValue("USD", 1095.20))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US5322751042")), //
+                        hasDate("2026-01-16T21:59"), hasShares(130.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 518.81), hasGrossValue("EUR", 515.52), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", (1.29 + 2.00)), //
+                        hasForexGrossValue("USD", 598.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US7731211089")), //
+                        hasDate("2026-01-07T21:28"), hasShares(6.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 432.52), hasGrossValue("EUR", 429.45), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", (1.07 + 2.00)), //
+                        hasForexGrossValue("USD", 501.63))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("CA29872L2066")), //
+                        hasDate("2026-01-07T21:26"), hasShares(1500.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 357.91), hasGrossValue("EUR", 357.02), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.89), //
+                        hasForexGrossValue("CAD", 577.50))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("CA29872L2066")), //
+                        hasDate("2026-01-07T21:26"), hasShares(2000.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 477.21), hasGrossValue("EUR", 476.02), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.19), //
+                        hasForexGrossValue("CAD", 770.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("CA29872L2066")), //
+                        hasDate("2026-01-07T21:26"), hasShares(500.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 121.30), hasGrossValue("EUR", 119.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", (0.30 + 2.00)), //
+                        hasForexGrossValue("CAD", 192.50))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US88262P1021")), //
+                        hasDate("2025-12-23T00:00"), hasShares(6.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1542.46), hasGrossValue("EUR", 1542.46), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        hasForexGrossValue("USD", 1816.80))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US88262P1021")), //
+                        hasDate("2025-12-23T00:00"), hasShares(2.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1542.46), hasGrossValue("EUR", 1542.46), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        hasForexGrossValue("USD", 1816.80))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("AN8068571086")), //
+                        hasDate("2025-12-16T15:30"), hasShares(65.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2131.15), hasGrossValue("EUR", 2123.84), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", (5.31 + 2.00)), //
+                        hasForexGrossValue("USD", 2502.50))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("BMG9460G1015")), //
+                        hasDate("2025-12-08T15:30"), hasShares(40.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2037.47), hasGrossValue("EUR", 2030.39), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", (5.08 + 2.00)), //
+                        hasForexGrossValue("USD", 2365.60))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("NL0000009082")), //
+                        hasDate("2025-11-06T15:13"), hasShares(600.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2289.00), hasGrossValue("EUR", 2286.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("NL0000009082")), //
+                        hasDate("2025-11-06T15:12"), hasShares(100.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 384.10), hasGrossValue("EUR", 381.10), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US76655K1034")), //
+                        hasDate("2025-10-16T18:33"), hasShares(100.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 4131.98), hasGrossValue("EUR", 4144.34), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", (10.36 + 2.00)), //
+                        hasForexGrossValue("USD", 4838.07))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US18539C2044")), //
+                        hasDate("2025-09-29T16:23"), hasShares(100.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2420.05), hasGrossValue("EUR", 2412.02), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", (6.03 + 2.00)), //
+                        hasForexGrossValue("USD", 2830.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US88262P1021")), //
+                        hasDate("2025-06-23T20:30"), hasShares(2.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1827.58), hasGrossValue("EUR", 1821.03), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", (4.55 + 2.00)), //
+                        hasForexGrossValue("USD", 2106.91))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US76655K1034")), //
+                        hasDate("2025-06-13T15:30"), hasShares(100.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1008.34), hasGrossValue("EUR", 1003.83), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", (2.51 + 2.00)), //
+                        hasForexGrossValue("USD", 1155.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0000124141")), //
+                        hasDate("2025-04-28T13:45"), hasShares(75.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2383.90), hasGrossValue("EUR", 2379.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 4.90))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US1270971039")), //
+                        hasDate("2025-01-31T15:30"), hasShares(75.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2053.31), hasGrossValue("EUR", 2046.19), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", (5.12 + 2.00)), //
+                        hasForexGrossValue("USD", 2122.50))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US17888H1032")), //
+                        hasDate("2025-01-30T21:32"), hasShares(40.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1999.13), hasGrossValue("EUR", 1992.15), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", (4.98 + 2.00)), //
+                        hasForexGrossValue("USD", 2078.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US20825C1045")), //
+                        hasDate("2025-01-27T20:17"), hasShares(20.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1959.48), hasGrossValue("EUR", 1952.60), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", (4.88 + 2.00)), //
+                        hasForexGrossValue("USD", 2046.90))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US03674X1063")), //
+                        hasDate("2025-01-27T19:04"), hasShares(70.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2439.03), hasGrossValue("EUR", 2447.15), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", (6.12 + 2.00)), //
+                        hasForexGrossValue("USD", 2566.55))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("NL0000371243")), //
+                        hasDate("2025-01-13T09:00"), hasShares(18.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 996.60), hasGrossValue("EUR", 993.60), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("BMG0112X1056")), //
+                        hasDate("2024-12-17T11:08"), hasShares(211.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1184.09), hasGrossValue("EUR", 1187.09), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US6516391066")), //
+                        hasDate("2024-11-22T17:56"), hasShares(11.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 461.24), hasGrossValue("EUR", 458.09), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", (1.15 + 2.00)), //
+                        hasForexGrossValue("USD", 476.19))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US03674X1063")), //
+                        hasDate("2024-11-22T15:31"), hasShares(70.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2219.20), hasGrossValue("EUR", 2211.67), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", (5.53 + 2.00)), //
+                        hasForexGrossValue("USD", 2303.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US6516391066")), //
+                        hasDate("2024-11-22T15:30"), hasShares(13.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 546.43), hasGrossValue("EUR", 543.07), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", (1.36 + 2.00)), //
+                        hasForexGrossValue("USD", 565.50))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("GB00BZ3CNK81")), //
+                        hasDate("2024-10-15T21:32"), hasShares(75.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2073.86), hasGrossValue("EUR", 2066.69), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", (5.17 + 2.00)), //
+                        hasForexGrossValue("USD", 2250.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("NL0011540547")), //
+                        hasDate("2024-10-10T09:32"), hasShares(155.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2446.00), hasGrossValue("EUR", 2449.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("NL0000302636")), //
+                        hasDate("2024-10-10T09:14"), hasShares(60.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2643.00), hasGrossValue("EUR", 2640.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("NL0010273215")), //
+                        hasDate("2024-09-16T09:00"), hasShares(2.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1470.20), hasGrossValue("EUR", 1467.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("NO0011082075")), //
+                        hasDate("2024-06-07T11:04"), hasShares(300.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2932.31), hasGrossValue("EUR", 2920.11), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", (7.30 + 4.90)), //
+                        hasForexGrossValue("NOK", 33600.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("NL0000289213")), //
+                        hasDate("2024-04-25T09:00"), hasShares(150.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2151.00), hasGrossValue("EUR", 2148.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("BE0003816338")), //
+                        hasDate("2024-04-03T10:10"), hasShares(145.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2379.45), hasGrossValue("EUR", 2379.45), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("NL0000371243")), //
+                        hasDate("2024-03-27T17:09"), hasShares(30.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2037.00), hasGrossValue("EUR", 2034.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("BE0003816338")), //
+                        hasDate("2024-03-11T12:49"), hasShares(145.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2354.80), hasGrossValue("EUR", 2354.80), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("BE0003816338")), //
+                        hasDate("2024-03-11T12:49"), hasShares(145.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2354.80), hasGrossValue("EUR", 2354.80), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("NL0000360618")), //
+                        hasDate("2024-02-28T09:07"), hasShares(91.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1178.45), hasGrossValue("EUR", 1178.45), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("NL0000360618")), //
+                        hasDate("2024-02-28T09:07"), hasShares(69.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 896.55), hasGrossValue("EUR", 893.55), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("NL0010558797")), //
+                        hasDate("2023-11-01T09:52"), hasShares(100.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2188.00), hasGrossValue("EUR", 2185.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("BMG0112X1056")), //
+                        hasDate("2023-10-02T08:17"), hasShares(211.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 966.80), hasGrossValue("EUR", 966.80), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("NL0000303709")), //
+                        hasDate("2023-10-02T08:17"), hasShares(211.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 966.80), hasGrossValue("EUR", 966.80), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("NL0011540547")), //
+                        hasDate("2023-09-22T10:05"), hasShares(155.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2033.50), hasGrossValue("EUR", 2030.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("NL0000303709")), //
+                        hasDate("2023-08-18T11:13"), hasShares(211.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 999.98), hasGrossValue("EUR", 996.98), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FR0010478248")), //
+                        hasDate("2023-01-23T19:53"), hasShares(1765.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 333.06), hasGrossValue("EUR", 333.06), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0010478248")), //
+                        hasDate("2023-01-23T19:53"), hasShares(1765.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 333.06), hasGrossValue("EUR", 333.06), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0010478248")), //
+                        hasDate("2023-01-23T19:53"), hasShares(1765.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 333.06), hasGrossValue("EUR", 333.06), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FR0010478248")), //
+                        hasDate("2023-01-23T19:53"), hasShares(1765.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 333.06), hasGrossValue("EUR", 333.06), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FR0014008D33")), //
+                        hasDate("2022-04-05T09:52"), hasShares(353.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 57.89), hasGrossValue("EUR", 57.89), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0010478248")), //
+                        hasDate("2022-04-05T09:52"), hasShares(353.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 57.89), hasGrossValue("EUR", 57.89), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        sale( //
+                                        hasSecurity(hasIsin("FR0014008D33")), //
+                                        hasDate("2022-03-25T00:00"), hasShares(1412.00), //
+                                        hasSource("Transactions_english02.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0014008D33")), //
+                        hasDate("2022-03-25T00:00"), hasShares(353.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 57.89), hasGrossValue("EUR", 57.89), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasSecurity(hasIsin("FR0014008D33")), //
+                                        hasDate("2022-03-11T00:00"), hasShares(1412.00), //
+                                        hasSource("Transactions_english02.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("GB00BP6MXD84")), //
+                        hasDate("2022-01-31T06:45"), hasShares(213.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 4855.34), hasGrossValue("EUR", 4855.34), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("GB00B03MLX29")), //
+                        hasDate("2022-01-31T06:45"), hasShares(213.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 4855.34), hasGrossValue("EUR", 4855.34), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("NL0009739416")), //
+                        hasDate("2021-12-16T13:43"), hasShares(300.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1094.33), hasGrossValue("EUR", 1092.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 2.33))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("NL00150003E1")), //
+                        hasDate("2021-05-26T08:10"), hasShares(304.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2693.44), hasGrossValue("EUR", 2693.44), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("NL00150004A7")), //
+                        hasDate("2021-05-26T08:10"), hasShares(304.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2693.44), hasGrossValue("EUR", 2693.44), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0010478248")), //
+                        hasDate("2021-05-13T09:53"), hasShares(1412.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1004.20), hasGrossValue("EUR", 999.70), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 4.50))));
+
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        sale( //
+                                        hasSecurity(hasIsin("NL00150001Y3")), //
+                                        hasDate("2020-12-29T17:21"), hasShares(8.00), //
+                                        hasSource("Transactions_english02.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("NL00150004A7")), //
+                        hasDate("2020-12-21T00:00"), hasShares(304.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2333.50), hasGrossValue("EUR", 2333.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("NL0000352565")), //
+                        hasDate("2020-12-21T00:00"), hasShares(608.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2333.50), hasGrossValue("EUR", 2333.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("NL0000352565")), //
+                        hasDate("2020-12-15T09:37"), hasShares(275.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 583.00), hasGrossValue("EUR", 583.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("NL0000352565")), //
+                        hasDate("2020-12-15T09:37"), hasShares(275.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 583.00), hasGrossValue("EUR", 583.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        sale( //
+                                        hasSecurity(hasIsin("NL00150001Y3")), //
+                                        hasDate("2020-12-08T00:00"), hasShares(325.00), //
+                                        hasSource("Transactions_english02.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("NL0000352565")), //
+                        hasDate("2020-12-08T00:00"), hasShares(275.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 583.00), hasGrossValue("EUR", 583.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasSecurity(hasIsin("NL00150001Y3")), //
+                                        hasDate("2020-12-02T00:00"), hasShares(333.00), //
+                                        hasSource("Transactions_english02.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("BE0003816338")), //
+                        hasDate("2020-11-19T17:23"), hasShares(145.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 981.04), hasGrossValue("EUR", 978.75), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 2.29))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("GB00B03MLX29")), //
+                        hasDate("2020-09-24T09:05"), hasShares(92.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1034.55), hasGrossValue("EUR", 1032.24), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 2.31))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("BE0003818359")), //
+                        hasDate("2020-09-08T12:43"), hasShares(12.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1233.57), hasGrossValue("EUR", 1231.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 2.37))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FR0010478248")), //
+                        hasDate("2020-08-20T16:50"), hasShares(401.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 125.85), hasGrossValue("EUR", 125.91), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.06))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FR0010478248")), //
+                        hasDate("2020-08-20T16:50"), hasShares(3200.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1000.30), hasGrossValue("EUR", 1004.80), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 4.50))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0010478248")), //
+                        hasDate("2020-07-13T13:27"), hasShares(3600.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1003.50), hasGrossValue("EUR", 999.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 4.50))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0010478248")), //
+                        hasDate("2020-07-01T12:01"), hasShares(1.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 4.28), hasGrossValue("EUR", 0.28), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 4.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("NL0000352565")), //
+                        hasDate("2020-05-06T15:40"), hasShares(333.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1074.58), hasGrossValue("EUR", 1072.26), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 2.32))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("GB00B03MLX29")), //
+                        hasDate("2020-05-04T16:11"), hasShares(121.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1805.44), hasGrossValue("EUR", 1802.90), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 2.54))));
+    }
+
+    @Test
     public void testTransakcje01()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
@@ -6927,7 +8447,7 @@ public class DegiroPDFExtractorTest
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getName(), is("APHRIA INC. - COMMON"));
+        assertThat(security.getName(), is("APHRIA INC. - COMMON SHARES"));
         assertThat(security.getIsin(), is("CA03765K1049"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -7166,7 +8686,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-10-28T08:50")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(200.00))));
         assertThat(transaction.getSource(), is("EstrattoConto01.txt"));
-        assertThat(transaction.getNote(), is("Deposito"));
+        assertThat(transaction.getNote(), is("Deposito flatex"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
@@ -7174,7 +8694,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-09-29T08:50")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(200.00))));
         assertThat(transaction.getSource(), is("EstrattoConto01.txt"));
-        assertThat(transaction.getNote(), is("Deposito"));
+        assertThat(transaction.getNote(), is("Deposito flatex"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(2)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
@@ -7182,7 +8702,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-09-20T08:50")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(300.00))));
         assertThat(transaction.getSource(), is("EstrattoConto01.txt"));
-        assertThat(transaction.getNote(), is("Deposito"));
+        assertThat(transaction.getNote(), is("Deposito flatex"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(3)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
@@ -7255,14 +8775,14 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-10-12T10:50")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6000.00))));
         assertThat(transaction.getSource(), is("EstrattoConto02.txt"));
-        assertThat(transaction.getNote(), is("Deposito"));
+        assertThat(transaction.getNote(), is("Deposito flatex"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .skip(1).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-10-11T10:50")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3000.00))));
         assertThat(transaction.getSource(), is("EstrattoConto02.txt"));
-        assertThat(transaction.getNote(), is("Deposito"));
+        assertThat(transaction.getNote(), is("Deposito flatex"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .skip(2).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
@@ -7270,14 +8790,14 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-08-09T10:51")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
         assertThat(transaction.getSource(), is("EstrattoConto02.txt"));
-        assertThat(transaction.getNote(), is("Deposito"));
+        assertThat(transaction.getNote(), is("Deposito flatex"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .skip(3).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-08-05T11:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
         assertThat(transaction.getSource(), is("EstrattoConto02.txt"));
-        assertThat(transaction.getNote(), is("Deposito"));
+        assertThat(transaction.getNote(), is("Deposito flatex"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .skip(4).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
@@ -7285,7 +8805,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-07-12T10:50")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1750.00))));
         assertThat(transaction.getSource(), is("EstrattoConto02.txt"));
-        assertThat(transaction.getNote(), is("Deposito"));
+        assertThat(transaction.getNote(), is("Deposito flatex"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .skip(5).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
@@ -7293,7 +8813,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-13T08:50")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2400.00))));
         assertThat(transaction.getSource(), is("EstrattoConto02.txt"));
-        assertThat(transaction.getNote(), is("Deposito"));
+        assertThat(transaction.getNote(), is("Deposito flatex"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .skip(6).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
@@ -7301,7 +8821,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-02-25T09:20")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1700.00))));
         assertThat(transaction.getSource(), is("EstrattoConto02.txt"));
-        assertThat(transaction.getNote(), is("Deposito"));
+        assertThat(transaction.getNote(), is("Deposito flatex"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .skip(7).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
@@ -7309,7 +8829,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-01-11T09:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1500.00))));
         assertThat(transaction.getSource(), is("EstrattoConto02.txt"));
-        assertThat(transaction.getNote(), is("Deposito"));
+        assertThat(transaction.getNote(), is("Deposito flatex"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .skip(8).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
@@ -7317,7 +8837,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-11-12T08:50")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1300.00))));
         assertThat(transaction.getSource(), is("EstrattoConto02.txt"));
-        assertThat(transaction.getNote(), is("Deposito"));
+        assertThat(transaction.getNote(), is("Deposito flatex"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .skip(9).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
@@ -7325,7 +8845,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-11-10T08:50")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2200.00))));
         assertThat(transaction.getSource(), is("EstrattoConto02.txt"));
-        assertThat(transaction.getNote(), is("Deposito"));
+        assertThat(transaction.getNote(), is("Deposito flatex"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .skip(10).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
@@ -7333,7 +8853,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-09-29T08:50")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2500.00))));
         assertThat(transaction.getSource(), is("EstrattoConto02.txt"));
-        assertThat(transaction.getNote(), is("Deposito"));
+        assertThat(transaction.getNote(), is("Deposito flatex"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .skip(11).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
@@ -7341,7 +8861,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-12T08:50")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4600.00))));
         assertThat(transaction.getSource(), is("EstrattoConto02.txt"));
-        assertThat(transaction.getNote(), is("Deposito"));
+        assertThat(transaction.getNote(), is("Deposito flatex"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .skip(12).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
@@ -7349,7 +8869,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-06T08:50")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4032.40))));
         assertThat(transaction.getSource(), is("EstrattoConto02.txt"));
-        assertThat(transaction.getNote(), is("Deposito"));
+        assertThat(transaction.getNote(), is("Deposito flatex"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .skip(13).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
@@ -7357,7 +8877,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-05-06T08:50")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4253.00))));
         assertThat(transaction.getSource(), is("EstrattoConto02.txt"));
-        assertThat(transaction.getNote(), is("Deposito"));
+        assertThat(transaction.getNote(), is("Deposito flatex"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .skip(14).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
@@ -7365,7 +8885,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-01T08:50")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4253.00))));
         assertThat(transaction.getSource(), is("EstrattoConto02.txt"));
-        assertThat(transaction.getNote(), is("Deposito"));
+        assertThat(transaction.getNote(), is("Deposito flatex"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .skip(15).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
@@ -7373,7 +8893,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-23T08:50")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3319.00))));
         assertThat(transaction.getSource(), is("EstrattoConto02.txt"));
-        assertThat(transaction.getNote(), is("Deposito"));
+        assertThat(transaction.getNote(), is("Deposito flatex"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .skip(16).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
@@ -7381,7 +8901,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-21T08:50")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1197.00))));
         assertThat(transaction.getSource(), is("EstrattoConto02.txt"));
-        assertThat(transaction.getNote(), is("Deposito"));
+        assertThat(transaction.getNote(), is("Deposito flatex"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .skip(17).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
@@ -7389,7 +8909,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-20T08:50")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7765.00))));
         assertThat(transaction.getSource(), is("EstrattoConto02.txt"));
-        assertThat(transaction.getNote(), is("Deposito"));
+        assertThat(transaction.getNote(), is("Deposito flatex"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .skip(18).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
@@ -7397,7 +8917,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-08T09:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.00))));
         assertThat(transaction.getSource(), is("EstrattoConto02.txt"));
-        assertThat(transaction.getNote(), is("Deposito"));
+        assertThat(transaction.getNote(), is("Deposito flatex"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .skip(19).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
@@ -7749,7 +9269,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-31T13:15")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.50))));
         assertThat(transaction.getSource(), is("EstrattoConto02.txt"));
-        assertThat(transaction.getNote(), is("DEGIRO Costi di connessione 2021"));
+        assertThat(transaction.getNote(), is("DEGIRO Costi di connessione 2021 (New York Stock Exchange - NSY)"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .collect(Collectors.toList()).get(48).getSubject();
@@ -7831,7 +9351,7 @@ public class DegiroPDFExtractorTest
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getName(), is("VANGUARD FTSE ALL-"));
+        assertThat(security.getName(), is("VANGUARD FTSE ALL- WORLD UCITS ETF - (USD) ACCUMULATING"));
         assertThat(security.getIsin(), is("IE00BK5BQT80"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -7911,6 +9431,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-22T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2020-05-14T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(20)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -8054,6 +9575,2279 @@ public class DegiroPDFExtractorTest
     }
 
     @Test
+    public void testTransactions_french03()
+    {
+        var extractor = new DegiroPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Transactions_french03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(64L));
+        assertThat(countBuySell(results), is(213L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(2L));
+        assertThat(results.size(), is(279));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0010273215"), hasTicker(null), //
+                        hasName("ASML HOLDING NV"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US21873S1087"), hasTicker(null), //
+                        hasName("COREWEAVE INC"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US7655041058"), hasTicker(null), //
+                        hasName("RICHTECH ROBOTICS INC"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US36317J2096"), hasTicker(null), //
+                        hasName("GALAXY DIGITAL INC"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("FI4000297767"), hasTicker(null), //
+                        hasName("NORDEA BANK ABP"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US94106L1098"), hasTicker(null), //
+                        hasName("WASTE MANAGEMENT INC."), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0013341781"), hasTicker(null), //
+                        hasName("2CRSI PROMESSES"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("DK0062498333"), hasTicker(null), //
+                        hasName("NOVO-NORDISK AS"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE0002PG6CA6"), hasTicker(null), //
+                        hasName("VANECK RARE EARTH AND STRATEGIC METALS UCITS ETF"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0000226223"), hasTicker(null), //
+                        hasName("STMICROELECTRONICS"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0000121014"), hasTicker(null), //
+                        hasName("LVMH MOET HENNESSY LOUIS VUITTON SE"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1829221024"), hasTicker(null), //
+                        hasName("AMUNDI NASDAQ-100 II UCITS ETF ACC"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US6098391054"), hasTicker(null), //
+                        hasName("MONOLITHIC POWER SYSTE"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE000I8KRLL9"), hasTicker(null), //
+                        hasName("ISHARES MSCI GLOBAL SEMICONDUCTORS UCITS ETF"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US8716071076"), hasTicker(null), //
+                        hasName("SYNOPSYS INC. - COMMO"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0000120321"), hasTicker(null), //
+                        hasName("L'OREAL"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B0M63516"), hasTicker(null), //
+                        hasName("ISHARES MSCI BRAZIL UCITS ETF USD (DIST)"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("SE0000202624"), hasTicker(null), //
+                        hasName("GETINGE AB"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US2172041061"), hasTicker(null), //
+                        hasName("COPART INC. - COMMON"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US0404132054"), hasTicker(null), //
+                        hasName("ARISTA NETWORKS  INC. COMMON STOCK"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BTJRMP35"), hasTicker(null), //
+                        hasName("XTRACKERS MSCI EMERGING MARKETS UCITS ETF 1C"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1841731745"), hasTicker(null), //
+                        hasName("AMUNDI MSCI CHINA UCITS ETF ACC"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0013269123"), hasTicker(null), //
+                        hasName("RUBIS"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US78573M1045"), hasTicker(null), //
+                        hasName("SABRE CORPORATION - CO"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BZCQB185"), hasTicker(null), //
+                        hasName("ISHARES MSCI INDIA UCITS ETF USD ACC (EUR)"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0000121485"), hasTicker(null), //
+                        hasName("KERING"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0012032048"), hasTicker(null), //
+                        hasName("ROCHE HOLDING AG"), //
+                        hasCurrencyCode("CHF"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("SE0012673267"), hasTicker(null), //
+                        hasName("EVOLUTION AB (PUBL)"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US7561091049"), hasTicker(null), //
+                        hasName("REALTY INCOME CORPORAT"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0000031775"), hasTicker(null), //
+                        hasName("VICAT SA"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US1912161007"), hasTicker(null), //
+                        hasName("COCA-COLA COMPANY (THE"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US02079K3059"), hasTicker(null), //
+                        hasName("ALPHABET INC. - CLASS A"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0000053381"), hasTicker(null), //
+                        hasName("DERICHEBOURG SA"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B3WJKG14"), hasTicker(null), //
+                        hasName("ISHARES S&P 500 INF TECH SECTOR UCITS ETF USD(ACC)"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US88160R1014"), hasTicker(null), //
+                        hasName("TESLA MOTORS INC. - C"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US2546871060"), hasTicker(null), //
+                        hasName("WALT DISNEY COMPANY (T"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US5949181045"), hasTicker(null), //
+                        hasName("MICROSOFT CORPORATION"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US0231351067"), hasTicker(null), //
+                        hasName("AMAZON.COM INC. - COM"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000ZAL1111"), hasTicker(null), //
+                        hasName("ZALANDO SE"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US0079031078"), hasTicker(null), //
+                        hasName("ADVANCED MICRO DEVICES"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0014008VX5"), hasTicker(null), //
+                        hasName("EUROAPI SA"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US70450Y1038"), hasTicker(null), //
+                        hasName("PAYPAL HOLDINGS INC."), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0000120859"), hasTicker(null), //
+                        hasName("IMERYS"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US5801351017"), hasTicker(null), //
+                        hasName("MCDONALDS CORPORATION"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0000051732"), hasTicker(null), //
+                        hasName("ATOS SE"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0011052257"), hasTicker(null), //
+                        hasName("GLOBAL BIOENERGIES"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0011726835"), hasTicker(null), //
+                        hasName("GTT"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US30303M1027"), hasTicker(null), //
+                        hasName("META PLATFORMS INC"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US8740391003"), hasTicker(null), //
+                        hasName("ADR ON TAIWAN SEMICONDUCTOR MANUFACTURING CO"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US88579Y1010"), hasTicker(null), //
+                        hasName("3M COMPANY COMMON STOC"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0000121964"), hasTicker(null), //
+                        hasName("KLEPIERRE"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0210483332"), hasTicker(null), //
+                        hasName("COMPAGNIE FINANCIERE RICHEMONT SA"), //
+                        hasCurrencyCode("CHF"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0244767585"), hasTicker(null), //
+                        hasName("UBS GROUP AG REGISTERE"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BTN1Y115"), hasTicker(null), //
+                        hasName("MEDTRONIC PLC. ORDINAR"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL00150001Q9"), hasTicker(null), //
+                        hasName("STELLANTIS"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US2254011081"), hasTicker(null), //
+                        hasName("CREDIT SUISSE GROUP AM"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR001400GG91"), hasTicker(null), //
+                        hasName("GLOBAL BIOENERGIES - NON TRADEABLE"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0010112524"), hasTicker(null), //
+                        hasName("NEXITY"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0000124141"), hasTicker(null), //
+                        hasName("VEOLIA ENVIRON."), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0004007813"), hasTicker(null), //
+                        hasName("KAUFMAN ET BROAD"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0000121972"), hasTicker(null), //
+                        hasName("SCHNEIDER ELECTRIC"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0000045072"), hasTicker(null), //
+                        hasName("CREDIT AGRICOLE"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0010220475"), hasTicker(null), //
+                        hasName("ALSTOM"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US0378331005"), hasTicker(null), //
+                        hasName("APPLE INC. - COMMON ST"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("NL0010273215")), //
+                        hasDate("2025-12-05T15:22"), hasShares(1.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 894.15), hasGrossValue("CHF", 901.00), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.25 + 4.60)), //
+                        hasForexGrossValue("EUR", 960.40))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US21873S1087")), //
+                        hasDate("2025-12-03T19:06"), hasShares(10.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 621.51), hasGrossValue("CHF", 624.94), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.56 + 1.87)), //
+                        hasForexGrossValue("USD", 780.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US21873S1087")), //
+                        hasDate("2025-12-02T17:11"), hasShares(10.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 644.23), hasGrossValue("CHF", 640.75), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.61 + 1.87)), //
+                        hasForexGrossValue("USD", 798.49))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US7655041058")), //
+                        hasDate("2025-12-02T17:00"), hasShares(100.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 283.39), hasGrossValue("CHF", 280.82), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.70 + 1.87)), //
+                        hasForexGrossValue("USD", 350.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US36317J2096")), //
+                        hasDate("2025-12-02T16:57"), hasShares(20.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 412.15), hasGrossValue("CHF", 409.25), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.03 + 1.87)), //
+                        hasForexGrossValue("USD", 510.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("NL0010273215")), //
+                        hasDate("2025-12-02T15:30"), hasShares(1.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 872.91), hasGrossValue("CHF", 879.69), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.19 + 4.59)), //
+                        hasForexGrossValue("EUR", 939.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FI4000297767")), //
+                        hasDate("2025-12-01T19:04"), hasShares(100.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 1431.30), hasGrossValue("CHF", 1438.54), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (3.59 + 3.65)), //
+                        hasForexGrossValue("EUR", 1536.50))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US94106L1098")), //
+                        hasDate("2025-11-17T15:30"), hasShares(3.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 500.62), hasGrossValue("CHF", 497.52), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.25 + 1.85)), //
+                        hasForexGrossValue("USD", 627.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FR0013341781")), //
+                        hasDate("2025-11-13T17:29"), hasShares(50.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 625.40), hasGrossValue("CHF", 631.50), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.57 + 4.53)), //
+                        hasForexGrossValue("EUR", 683.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("DK0062498333")), //
+                        hasDate("2025-11-04T09:33"), hasShares(20.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 786.61), hasGrossValue("CHF", 780.08), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.96 + 4.57)), //
+                        hasForexGrossValue("EUR", 840.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("IE0002PG6CA6")), //
+                        hasDate("2025-11-04T09:04"), hasShares(50.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 510.14), hasGrossValue("CHF", 506.07), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.27 + 2.80)), //
+                        hasForexGrossValue("EUR", 545.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0013341781")), //
+                        hasDate("2025-11-03T17:17"), hasShares(50.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 470.02), hasGrossValue("CHF", 464.29), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.16 + 4.57)), //
+                        hasForexGrossValue("EUR", 500.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US7655041058")), //
+                        hasDate("2025-10-20T19:41"), hasShares(100.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 433.69), hasGrossValue("CHF", 430.76), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.08 + 1.85)), //
+                        hasForexGrossValue("USD", 545.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("NL0000226223")), //
+                        hasDate("2025-10-20T16:45"), hasShares(40.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 954.88), hasGrossValue("CHF", 961.81), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.40 + 4.53)), //
+                        hasForexGrossValue("EUR", 1040.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("IE0002PG6CA6")), //
+                        hasDate("2025-10-17T09:15"), hasShares(50.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 544.10), hasGrossValue("CHF", 539.97), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.35 + 2.78)), //
+                        hasForexGrossValue("EUR", 586.60))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FR0000121014")), //
+                        hasDate("2025-10-15T09:13"), hasShares(1.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 555.53), hasGrossValue("CHF", 561.50), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.40 + 4.57)), //
+                        hasForexGrossValue("EUR", 602.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US7655041058")), //
+                        hasDate("2025-10-14T15:38"), hasShares(100.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 479.61), hasGrossValue("CHF", 476.56), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.19 + 1.86)), //
+                        hasForexGrossValue("USD", 595.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("LU1829221024")), //
+                        hasDate("2025-10-07T13:52"), hasShares(6.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 483.24), hasGrossValue("CHF", 487.26), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.22 + 2.80)), //
+                        hasForexGrossValue("EUR", 522.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US36317J2096")), //
+                        hasDate("2025-10-03T19:50"), hasShares(20.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 574.66), hasGrossValue("CHF", 571.36), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.43 + 1.87)), //
+                        hasForexGrossValue("USD", 720.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US6098391054")), //
+                        hasDate("2025-10-03T15:57"), hasShares(1.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 754.83), hasGrossValue("CHF", 758.59), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.89 + 1.87)), //
+                        hasForexGrossValue("USD", 950.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0013341781")), //
+                        hasDate("2025-10-03T15:52"), hasShares(50.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 649.61), hasGrossValue("CHF", 643.41), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.61 + 4.59)), //
+                        hasForexGrossValue("EUR", 690.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("NL0010273215")), //
+                        hasDate("2025-10-01T15:55"), hasShares(1.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 772.37), hasGrossValue("CHF", 778.91), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.94 + 4.60)), //
+                        hasForexGrossValue("EUR", 830.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("IE000I8KRLL9")), //
+                        hasDate("2025-10-01T15:44"), hasShares(40.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 304.39), hasGrossValue("CHF", 307.98), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.77 + 2.82)), //
+                        hasForexGrossValue("EUR", 328.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US8716071076")), //
+                        hasDate("2025-09-24T20:54"), hasShares(1.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 373.28), hasGrossValue("CHF", 370.48), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.93 + 1.87)), //
+                        hasForexGrossValue("USD", 466.90))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0000120321")), //
+                        hasDate("2025-09-24T10:34"), hasShares(2.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 696.05), hasGrossValue("CHF", 689.73), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.73 + 4.59)), //
+                        hasForexGrossValue("EUR", 740.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0000120321")), //
+                        hasDate("2025-09-24T10:34"), hasShares(2.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 696.05), hasGrossValue("CHF", 689.73), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.73 + 4.59)), //
+                        hasForexGrossValue("EUR", 740.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US8716071076")), //
+                        hasDate("2025-09-23T18:57"), hasShares(1.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 393.81), hasGrossValue("CHF", 390.96), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.98 + 1.87)), //
+                        hasForexGrossValue("USD", 495.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("IE00B0M63516")), //
+                        hasDate("2025-09-23T15:07"), hasShares(20.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 385.09), hasGrossValue("CHF", 388.87), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.97 + 2.81)), //
+                        hasForexGrossValue("EUR", 415.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("SE0000202624")), //
+                        hasDate("2025-09-22T09:03"), hasShares(15.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 264.14), hasGrossValue("CHF", 268.46), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.67 + 3.65)), //
+                        hasForexGrossValue("EUR", 286.50))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("DK0062498333")), //
+                        hasDate("2025-08-13T14:00"), hasShares(10.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 409.30), hasGrossValue("CHF", 403.67), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.01 + 4.62)), //
+                        hasForexGrossValue("EUR", 430.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("DK0062498333")), //
+                        hasDate("2025-07-30T14:30"), hasShares(30.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 1249.05), hasGrossValue("CHF", 1241.37), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (3.11 + 4.57)), //
+                        hasForexGrossValue("EUR", 1338.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US2172041061")), //
+                        hasDate("2025-07-17T18:16"), hasShares(25.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 928.90), hasGrossValue("CHF", 924.71), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.32 + 1.87)), //
+                        hasForexGrossValue("USD", 1152.50))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US0404132054")), //
+                        hasDate("2025-07-17T15:30"), hasShares(10.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 875.37), hasGrossValue("CHF", 879.43), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.19 + 1.87)), //
+                        hasForexGrossValue("USD", 1090.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("DK0062498333")), //
+                        hasDate("2025-06-27T15:30"), hasShares(10.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 553.87), hasGrossValue("CHF", 547.90), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.37 + 4.60)), //
+                        hasForexGrossValue("EUR", 586.70))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("NL0000226223")), //
+                        hasDate("2025-06-26T17:38"), hasShares(46.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 1107.25), hasGrossValue("CHF", 1114.63), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.78 + 4.60)), //
+                        hasForexGrossValue("EUR", 1187.49))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US2172041061")), //
+                        hasDate("2025-06-13T20:03"), hasShares(25.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 995.76), hasGrossValue("CHF", 991.40), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.48 + 1.88)), //
+                        hasForexGrossValue("USD", 1225.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0000121014")), //
+                        hasDate("2025-06-06T13:57"), hasShares(2.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 889.81), hasGrossValue("CHF", 882.99), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.21 + 4.61)), //
+                        hasForexGrossValue("EUR", 943.10))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("DK0062498333")), //
+                        hasDate("2025-05-13T17:19"), hasShares(10.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 554.69), hasGrossValue("CHF", 548.69), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.38 + 4.62)), //
+                        hasForexGrossValue("EUR", 585.30))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("NL0010273215")), //
+                        hasDate("2025-04-30T15:14"), hasShares(2.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 1081.58), hasGrossValue("CHF", 1074.29), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.69 + 4.60)), //
+                        hasForexGrossValue("EUR", 1150.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("IE00BTJRMP35")), //
+                        hasDate("2025-04-22T16:30"), hasShares(5.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 235.25), hasGrossValue("CHF", 231.86), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.58 + 2.81)), //
+                        hasForexGrossValue("EUR", 248.92))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("LU1841731745")), //
+                        hasDate("2025-04-22T14:39"), hasShares(20.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 304.28), hasGrossValue("CHF", 305.04), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.76), //
+                        hasForexGrossValue("EUR", 326.48))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("LU1841731745")), //
+                        hasDate("2025-04-22T14:39"), hasShares(20.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 301.67), hasGrossValue("CHF", 305.23), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.76 + 2.80)), //
+                        hasForexGrossValue("EUR", 326.68))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("DK0062498333")), //
+                        hasDate("2025-04-16T11:47"), hasShares(15.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 790.58), hasGrossValue("CHF", 784.05), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.97 + 4.56)), //
+                        hasForexGrossValue("EUR", 846.45))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("NL0000226223")), //
+                        hasDate("2025-04-07T16:30"), hasShares(36.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 580.64), hasGrossValue("CHF", 574.58), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.44 + 4.62)), //
+                        hasForexGrossValue("EUR", 612.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("DK0062498333")), //
+                        hasDate("2025-04-01T16:21"), hasShares(9.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 552.81), hasGrossValue("CHF", 546.76), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.37 + 4.68)), //
+                        hasForexGrossValue("EUR", 575.10))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("LU1829221024")), //
+                        hasDate("2025-03-13T16:36"), hasShares(6.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 417.79), hasGrossValue("CHF", 413.86), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.04 + 2.89)), //
+                        hasForexGrossValue("EUR", 432.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("DK0062498333")), //
+                        hasDate("2025-03-13T11:38"), hasShares(8.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 553.49), hasGrossValue("CHF", 547.41), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.37 + 4.71)), //
+                        hasForexGrossValue("EUR", 572.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("NL0010273215")), //
+                        hasDate("2025-02-28T15:16"), hasShares(1.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 642.54), hasGrossValue("CHF", 636.33), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.59 + 4.62)), //
+                        hasForexGrossValue("EUR", 679.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US0404132054")), //
+                        hasDate("2025-02-26T20:16"), hasShares(10.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 858.83), hasGrossValue("CHF", 854.81), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.14 + 1.88)), //
+                        hasForexGrossValue("USD", 958.80))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FR0013269123")), //
+                        hasDate("2025-02-13T09:01"), hasShares(40.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 977.16), hasGrossValue("CHF", 984.27), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.45 + 4.66)), //
+                        hasForexGrossValue("EUR", 1036.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US6098391054")), //
+                        hasDate("2025-02-06T18:11"), hasShares(1.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 590.30), hasGrossValue("CHF", 586.95), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.47 + 1.88)), //
+                        hasForexGrossValue("USD", 650.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US78573M1045")), //
+                        hasDate("2025-01-31T15:30"), hasShares(50.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 152.84), hasGrossValue("CHF", 155.12), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.39 + 1.89)), //
+                        hasForexGrossValue("USD", 170.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("DK0062498333")), //
+                        hasDate("2025-01-17T16:31"), hasShares(2.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 150.64), hasGrossValue("CHF", 145.65), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.37 + 4.62)), //
+                        hasForexGrossValue("EUR", 155.26))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("IE00BZCQB185")), //
+                        hasDate("2025-01-17T10:32"), hasShares(50.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 411.66), hasGrossValue("CHF", 409.69), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.03 + 0.94)), //
+                        hasForexGrossValue("EUR", 438.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0000121485")), //
+                        hasDate("2025-01-17T09:01"), hasShares(2.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 450.07), hasGrossValue("CHF", 444.35), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.11 + 4.61)), //
+                        hasForexGrossValue("EUR", 475.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("CH0012032048")), //
+                        hasDate("2025-01-14T09:27"), hasShares(1.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 262.00), hasGrossValue("CHF", 268.00), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 6.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("SE0012673267")), //
+                        hasDate("2024-12-23T14:22"), hasShares(2.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 134.81), hasGrossValue("CHF", 130.83), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.33 + 3.65)), //
+                        hasForexGrossValue("EUR", 140.52))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("SE0012673267")), //
+                        hasDate("2024-12-09T15:31"), hasShares(5.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 395.71), hasGrossValue("CHF", 391.10), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.98 + 3.63)), //
+                        hasForexGrossValue("EUR", 422.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US7561091049")), //
+                        hasDate("2024-12-09T15:30"), hasShares(10.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 493.73), hasGrossValue("CHF", 490.64), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.23 + 1.86)), //
+                        hasForexGrossValue("USD", 560.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("SE0012673267")), //
+                        hasDate("2024-11-27T09:02"), hasShares(5.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 400.99), hasGrossValue("CHF", 396.37), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.99 + 3.63)), //
+                        hasForexGrossValue("EUR", 428.10))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("DK0062498333")), //
+                        hasDate("2024-11-26T11:30"), hasShares(6.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 570.92), hasGrossValue("CHF", 576.93), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.44 + 4.57)), //
+                        hasForexGrossValue("EUR", 618.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0000120321")), //
+                        hasDate("2024-11-25T13:02"), hasShares(3.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 928.45), hasGrossValue("CHF", 921.56), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.31 + 4.58)), //
+                        hasForexGrossValue("EUR", 990.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FR0000031775")), //
+                        hasDate("2024-11-07T15:12"), hasShares(20.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 683.84), hasGrossValue("CHF", 690.19), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.72 + 4.63)), //
+                        hasForexGrossValue("EUR", 730.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("DK0062498333")), //
+                        hasDate("2024-11-07T14:30"), hasShares(4.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 381.00), hasGrossValue("CHF", 375.43), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.94 + 4.63)), //
+                        hasForexGrossValue("EUR", 399.20))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0000121485")), //
+                        hasDate("2024-11-01T14:56"), hasShares(1.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 220.73), hasGrossValue("CHF", 215.55), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.54 + 4.64)), //
+                        hasForexGrossValue("EUR", 229.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0000120321")), //
+                        hasDate("2024-10-30T09:32"), hasShares(2.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 660.32), hasGrossValue("CHF", 654.07), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.64 + 4.61)), //
+                        hasForexGrossValue("EUR", 698.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("SE0012673267")), //
+                        hasDate("2024-10-29T13:45"), hasShares(5.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 420.63), hasGrossValue("CHF", 415.93), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.04 + 3.66)), //
+                        hasForexGrossValue("EUR", 445.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FI4000297767")), //
+                        hasDate("2024-10-21T16:23"), hasShares(40.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 414.76), hasGrossValue("CHF", 410.06), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.03 + 3.67)), //
+                        hasForexGrossValue("EUR", 438.40))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("NL0010273215")), //
+                        hasDate("2024-10-16T10:19"), hasShares(1.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 600.56), hasGrossValue("CHF", 594.46), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.49 + 4.61)), //
+                        hasForexGrossValue("EUR", 635.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0000120321")), //
+                        hasDate("2024-10-16T09:04"), hasShares(2.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 654.22), hasGrossValue("CHF", 647.99), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.62 + 4.61)), //
+                        hasForexGrossValue("EUR", 692.40))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0000121014")), //
+                        hasDate("2024-10-16T09:00"), hasShares(2.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 1108.11), hasGrossValue("CHF", 1100.74), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.76 + 4.61)), //
+                        hasForexGrossValue("EUR", 1175.80))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("NL0010273215")), //
+                        hasDate("2024-10-15T17:13"), hasShares(1.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 652.88), hasGrossValue("CHF", 646.64), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.62 + 4.62)), //
+                        hasForexGrossValue("EUR", 690.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("LU1841731745")), //
+                        hasDate("2024-10-15T09:14"), hasShares(40.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 624.22), hasGrossValue("CHF", 619.85), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.55 + 2.82)), //
+                        hasForexGrossValue("EUR", 661.76))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US1912161007")), //
+                        hasDate("2024-10-01T16:16"), hasShares(10.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 609.78), hasGrossValue("CHF", 613.19), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.53 + 1.88)), //
+                        hasForexGrossValue("USD", 725.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US02079K3059")), //
+                        hasDate("2024-10-01T15:32"), hasShares(2.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 284.44), hasGrossValue("CHF", 287.04), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.72 + 1.88)), //
+                        hasForexGrossValue("USD", 338.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FR0000053381")), //
+                        hasDate("2024-09-27T17:12"), hasShares(60.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 301.52), hasGrossValue("CHF", 305.96), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.76 + 3.68)), //
+                        hasForexGrossValue("EUR", 324.30))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("IE00B3WJKG14")), //
+                        hasDate("2024-09-26T09:04"), hasShares(15.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 413.72), hasGrossValue("CHF", 415.71), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.04 + 0.95)), //
+                        hasForexGrossValue("EUR", 436.95))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US88160R1014")), //
+                        hasDate("2024-09-24T15:38"), hasShares(2.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 430.54), hasGrossValue("CHF", 433.51), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.08 + 1.89)), //
+                        hasForexGrossValue("USD", 510.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("NL0000226223")), //
+                        hasDate("2024-09-20T17:01"), hasShares(30.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 710.24), hasGrossValue("CHF", 703.83), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.76 + 4.65)), //
+                        hasForexGrossValue("EUR", 744.60))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0000121014")), //
+                        hasDate("2024-09-18T15:47"), hasShares(1.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 567.44), hasGrossValue("CHF", 561.41), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.41 + 4.62)), //
+                        hasForexGrossValue("EUR", 599.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US2546871060")), //
+                        hasDate("2024-09-16T15:32"), hasShares(5.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 386.44), hasGrossValue("CHF", 389.29), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.97 + 1.88)), //
+                        hasForexGrossValue("USD", 460.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US5949181045")), //
+                        hasDate("2024-09-11T21:54"), hasShares(2.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 717.41), hasGrossValue("CHF", 721.09), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.80 + 1.88)), //
+                        hasForexGrossValue("USD", 844.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US0231351067")), //
+                        hasDate("2024-09-10T19:45"), hasShares(2.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 302.92), hasGrossValue("CHF", 305.55), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.76 + 1.87)), //
+                        hasForexGrossValue("USD", 360.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US88160R1014")), //
+                        hasDate("2024-09-05T15:33"), hasShares(3.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 569.23), hasGrossValue("CHF", 572.54), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.43 + 1.88)), //
+                        hasForexGrossValue("USD", 675.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("DE000ZAL1111")), //
+                        hasDate("2024-08-21T10:46"), hasShares(15.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 339.54), hasGrossValue("CHF", 345.07), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.86 + 4.67)), //
+                        hasForexGrossValue("EUR", 362.10))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US0079031078")), //
+                        hasDate("2024-08-20T16:03"), hasShares(5.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 689.27), hasGrossValue("CHF", 692.91), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.73 + 1.91)), //
+                        hasForexGrossValue("USD", 805.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("NL0000226223")), //
+                        hasDate("2024-08-13T10:52"), hasShares(20.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 512.57), hasGrossValue("CHF", 506.65), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.27 + 4.65)), //
+                        hasForexGrossValue("EUR", 536.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FR0014008VX5")), //
+                        hasDate("2024-08-13T10:47"), hasShares(2.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 7.56), hasGrossValue("CHF", 7.58), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.02), //
+                        hasForexGrossValue("EUR", 7.98))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FR0014008VX5")), //
+                        hasDate("2024-08-13T10:47"), hasShares(23.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 82.31), hasGrossValue("CHF", 87.18), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.22 + 4.65)), //
+                        hasForexGrossValue("EUR", 91.77))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US70450Y1038")), //
+                        hasDate("2024-07-30T15:40"), hasShares(3.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 170.74), hasGrossValue("CHF", 173.09), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.43 + 1.92)), //
+                        hasForexGrossValue("USD", 195.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("NL0000226223")), //
+                        hasDate("2024-07-29T16:33"), hasShares(15.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 456.12), hasGrossValue("CHF", 450.28), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.13 + 4.71)), //
+                        hasForexGrossValue("EUR", 471.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("DK0062498333")), //
+                        hasDate("2024-07-19T15:49"), hasShares(3.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 358.87), hasGrossValue("CHF", 353.22), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.89 + 4.76)), //
+                        hasForexGrossValue("EUR", 365.70))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FR0000120859")), //
+                        hasDate("2024-07-19T10:51"), hasShares(5.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 155.29), hasGrossValue("CHF", 160.44), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.40 + 4.75)), //
+                        hasForexGrossValue("EUR", 165.50))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US0079031078")), //
+                        hasDate("2024-07-17T21:55"), hasShares(5.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 708.75), hasGrossValue("CHF", 705.04), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.77 + 1.94)), //
+                        hasForexGrossValue("USD", 800.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("IE00B3WJKG14")), //
+                        hasDate("2024-07-17T16:12"), hasShares(15.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 425.64), hasGrossValue("CHF", 423.61), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.06 + 0.97)), //
+                        hasForexGrossValue("EUR", 438.75))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("DK0062498333")), //
+                        hasDate("2024-07-02T13:56"), hasShares(5.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 649.35), hasGrossValue("CHF", 642.98), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.61 + 4.76)), //
+                        hasForexGrossValue("EUR", 665.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("IE000I8KRLL9")), //
+                        hasDate("2024-06-20T15:36"), hasShares(40.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 308.96), hasGrossValue("CHF", 305.31), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.77 + 2.88)), //
+                        hasForexGrossValue("EUR", 320.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("IE00B0M63516")), //
+                        hasDate("2024-06-20T15:24"), hasShares(10.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 200.86), hasGrossValue("CHF", 197.49), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.49 + 2.88)), //
+                        hasForexGrossValue("EUR", 207.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0013269123")), //
+                        hasDate("2024-06-17T09:00"), hasShares(15.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 389.46), hasGrossValue("CHF", 383.82), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.96 + 4.68)), //
+                        hasForexGrossValue("EUR", 403.80))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US5801351017")), //
+                        hasDate("2024-06-11T15:30"), hasShares(1.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 229.10), hasGrossValue("CHF", 226.60), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.57 + 1.93)), //
+                        hasForexGrossValue("USD", 253.01))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US0231351067")), //
+                        hasDate("2024-06-06T22:00"), hasShares(3.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 492.00), hasGrossValue("CHF", 495.17), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.23 + 1.94)), //
+                        hasForexGrossValue("USD", 555.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US02079K3059")), //
+                        hasDate("2024-06-05T15:30"), hasShares(3.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 466.84), hasGrossValue("CHF", 469.96), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.17 + 1.95)), //
+                        hasForexGrossValue("USD", 525.45))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("IE00BZCQB185")), //
+                        hasDate("2024-06-05T10:42"), hasShares(40.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 334.28), hasGrossValue("CHF", 332.48), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.83 + 0.97)), //
+                        hasForexGrossValue("EUR", 343.40))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FR0000051732")), //
+                        hasDate("2024-06-05T10:29"), hasShares(60.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 56.93), hasGrossValue("CHF", 61.85), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.15 + 4.77)), //
+                        hasForexGrossValue("EUR", 63.60))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US5949181045")), //
+                        hasDate("2024-04-30T15:46"), hasShares(2.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 731.79), hasGrossValue("CHF", 728.01), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.82 + 1.96)), //
+                        hasForexGrossValue("USD", 798.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FI4000297767")), //
+                        hasDate("2024-04-24T15:33"), hasShares(30.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 325.84), hasGrossValue("CHF", 321.21), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.81 + 3.82)), //
+                        hasForexGrossValue("EUR", 330.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("NL0000226223")), //
+                        hasDate("2024-04-24T09:29"), hasShares(15.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 579.04), hasGrossValue("CHF", 572.80), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.44 + 4.80)), //
+                        hasForexGrossValue("EUR", 588.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FR0011052257")), //
+                        hasDate("2024-04-23T11:46"), hasShares(12.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 16.57), hasGrossValue("CHF", 21.39), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.05 + 4.77)), //
+                        hasForexGrossValue("EUR", 21.96))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US1912161007")), //
+                        hasDate("2024-04-12T17:32"), hasShares(10.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 535.26), hasGrossValue("CHF", 531.99), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.33 + 1.94)), //
+                        hasForexGrossValue("USD", 585.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FR0011726835")), //
+                        hasDate("2024-04-05T14:17"), hasShares(3.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 407.80), hasGrossValue("CHF", 413.64), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.03 + 4.81)), //
+                        hasForexGrossValue("EUR", 421.50))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US5801351017")), //
+                        hasDate("2024-04-04T21:59"), hasShares(1.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 245.30), hasGrossValue("CHF", 242.73), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.61 + 1.96)), //
+                        hasForexGrossValue("USD", 270.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FR0000120859")), //
+                        hasDate("2024-04-04T09:00"), hasShares(5.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 146.82), hasGrossValue("CHF", 152.03), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.38 + 4.83)), //
+                        hasForexGrossValue("EUR", 154.30))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0000121485")), //
+                        hasDate("2024-03-21T10:26"), hasShares(1.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 365.46), hasGrossValue("CHF", 359.77), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.90 + 4.79)), //
+                        hasForexGrossValue("EUR", 369.80))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("LU1841731745")), //
+                        hasDate("2024-03-20T15:23"), hasShares(19.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 248.20), hasGrossValue("CHF", 244.69), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.61 + 2.90)), //
+                        hasForexGrossValue("EUR", 253.95))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("LU1841731745")), //
+                        hasDate("2024-03-20T10:46"), hasShares(1.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 15.76), hasGrossValue("CHF", 12.82), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.03 + 2.91)), //
+                        hasForexGrossValue("EUR", 13.30))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US30303M1027")), //
+                        hasDate("2024-03-14T14:30"), hasShares(1.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 439.29), hasGrossValue("CHF", 442.32), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.10 + 1.93)), //
+                        hasForexGrossValue("USD", 501.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US7561091049")), //
+                        hasDate("2024-03-13T15:48"), hasShares(10.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 466.77), hasGrossValue("CHF", 463.69), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.16 + 1.92)), //
+                        hasForexGrossValue("USD", 530.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("IE00B0M63516")), //
+                        hasDate("2024-03-13T13:48"), hasShares(10.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 233.22), hasGrossValue("CHF", 229.75), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.58 + 2.89)), //
+                        hasForexGrossValue("EUR", 240.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US8740391003")), //
+                        hasDate("2024-03-12T16:34"), hasShares(3.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 384.26), hasGrossValue("CHF", 387.15), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.97 + 1.92)), //
+                        hasForexGrossValue("USD", 439.50))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US88579Y1010")), //
+                        hasDate("2024-03-12T14:31"), hasShares(4.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 351.09), hasGrossValue("CHF", 353.89), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.88 + 1.92)), //
+                        hasForexGrossValue("USD", 402.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FR0000121964")), //
+                        hasDate("2024-03-12T10:49"), hasShares(10.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 227.02), hasGrossValue("CHF", 232.30), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.58 + 4.70)), //
+                        hasForexGrossValue("EUR", 242.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("CH0210483332")), //
+                        hasDate("2024-03-12T09:00"), hasShares(3.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 430.80), hasGrossValue("CHF", 436.80), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 6.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("CH0244767585")), //
+                        hasDate("2024-03-11T20:42"), hasShares(6.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 161.32), hasGrossValue("CHF", 163.65), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.41 + 1.92)), //
+                        hasForexGrossValue("USD", 186.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FR0011052257")), //
+                        hasDate("2024-03-07T09:14"), hasShares(50.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 95.62), hasGrossValue("CHF", 100.59), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.25 + 4.72)), //
+                        hasForexGrossValue("EUR", 104.50))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("IE00BTN1Y115")), //
+                        hasDate("2024-02-27T16:00"), hasShares(6.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 441.17), hasGrossValue("CHF", 444.19), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.11 + 1.91)), //
+                        hasForexGrossValue("USD", 504.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US30303M1027")), //
+                        hasDate("2024-02-20T15:33"), hasShares(1.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 415.50), hasGrossValue("CHF", 418.45), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.04 + 1.91)), //
+                        hasForexGrossValue("USD", 475.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("CH0210483332")), //
+                        hasDate("2023-11-10T17:30"), hasShares(3.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 326.10), hasGrossValue("CHF", 320.10), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 6.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0014008VX5")), //
+                        hasDate("2023-10-18T11:59"), hasShares(19.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 86.39), hasGrossValue("CHF", 86.17), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.22), //
+                        hasForexGrossValue("EUR", 91.01))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0014008VX5")), //
+                        hasDate("2023-10-18T11:58"), hasShares(6.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 31.95), hasGrossValue("CHF", 27.22), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.07 + 4.66)), //
+                        hasForexGrossValue("EUR", 28.74))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US5801351017")), //
+                        hasDate("2023-10-16T21:34"), hasShares(1.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 226.40), hasGrossValue("CHF", 223.94), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.56 + 1.90)), //
+                        hasForexGrossValue("USD", 249.50))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("NL00150001Q9")), //
+                        hasDate("2023-10-16T20:37"), hasShares(20.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 354.37), hasGrossValue("CHF", 357.16), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.89 + 1.90)), //
+                        hasForexGrossValue("USD", 396.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("DE000ZAL1111")), //
+                        hasDate("2023-10-12T15:32"), hasShares(15.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 319.84), hasGrossValue("CHF", 314.36), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.79 + 4.69)), //
+                        hasForexGrossValue("EUR", 330.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0000121014")), //
+                        hasDate("2023-09-27T16:56"), hasShares(1.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 679.93), hasGrossValue("CHF", 673.49), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.69 + 4.75)), //
+                        hasForexGrossValue("EUR", 698.80))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0000051732")), //
+                        hasDate("2023-08-07T14:10"), hasShares(40.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 300.00), hasGrossValue("CHF", 294.53), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.74 + 4.73)), //
+                        hasForexGrossValue("EUR", 306.80))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("IE00BZCQB185")), //
+                        hasDate("2023-07-14T14:54"), hasShares(30.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 199.85), hasGrossValue("CHF", 198.38), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.50 + 0.97)), //
+                        hasForexGrossValue("EUR", 205.86))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US30303M1027")), //
+                        hasDate("2023-07-13T15:30"), hasShares(1.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 268.50), hasGrossValue("CHF", 271.11), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.68 + 1.93)), //
+                        hasForexGrossValue("USD", 313.70))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("SE0000202624")), //
+                        hasDate("2023-06-27T14:52"), hasShares(15.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 228.56), hasGrossValue("CHF", 224.17), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.56 + 3.83)), //
+                        hasForexGrossValue("EUR", 229.50))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0011726835")), //
+                        hasDate("2023-06-23T09:00"), hasShares(3.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 269.54), hasGrossValue("CHF", 264.06), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.66 + 4.82)), //
+                        hasForexGrossValue("EUR", 269.85))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0000053381")), //
+                        hasDate("2023-06-22T09:05"), hasShares(60.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 292.19), hasGrossValue("CHF", 287.64), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.72 + 3.83)), //
+                        hasForexGrossValue("EUR", 294.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0013269123")), //
+                        hasDate("2023-06-13T15:56"), hasShares(10.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 248.27), hasGrossValue("CHF", 242.86), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.61 + 4.80)), //
+                        hasForexGrossValue("EUR", 249.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("CH0244767585")), //
+                        hasDate("2023-06-13T00:00"), hasShares(6.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 108.16), hasGrossValue("CHF", 108.16), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        hasForexGrossValue("USD", 119.48))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US2254011081")), //
+                        hasDate("2023-06-13T00:00"), hasShares(150.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 120.28), hasGrossValue("CHF", 120.28), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        hasForexGrossValue("USD", 132.87))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US78573M1045")), //
+                        hasDate("2023-06-08T18:31"), hasShares(16.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 48.09), hasGrossValue("CHF", 47.97), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.12), //
+                        hasForexGrossValue("USD", 53.44))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US78573M1045")), //
+                        hasDate("2023-06-08T18:31"), hasShares(23.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 69.13), hasGrossValue("CHF", 68.96), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.17), //
+                        hasForexGrossValue("USD", 76.82))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US78573M1045")), //
+                        hasDate("2023-06-08T18:31"), hasShares(10.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 30.06), hasGrossValue("CHF", 29.98), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.08), //
+                        hasForexGrossValue("USD", 33.40))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US78573M1045")), //
+                        hasDate("2023-06-08T18:31"), hasShares(1.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 4.96), hasGrossValue("CHF", 3.00), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.01 + 1.95)), //
+                        hasForexGrossValue("USD", 3.34))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US88160R1014")), //
+                        hasDate("2023-05-30T15:30"), hasShares(3.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 539.98), hasGrossValue("CHF", 543.27), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.35 + 1.94)), //
+                        hasForexGrossValue("USD", 600.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US70450Y1038")), //
+                        hasDate("2023-05-22T16:37"), hasShares(3.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 170.82), hasGrossValue("CHF", 168.45), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.42 + 1.95)), //
+                        hasForexGrossValue("USD", 188.04))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US30303M1027")), //
+                        hasDate("2023-05-22T15:42"), hasShares(1.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 222.33), hasGrossValue("CHF", 224.84), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.56 + 1.95)), //
+                        hasForexGrossValue("USD", 250.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FI4000297767")), //
+                        hasDate("2023-05-02T10:34"), hasShares(30.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 299.32), hasGrossValue("CHF", 294.73), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.74 + 3.85)), //
+                        hasForexGrossValue("EUR", 300.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FR001400GG91")), //
+                        hasDate("2023-04-03T08:39"), hasShares(12.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 24.18), hasGrossValue("CHF", 24.18), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        hasForexGrossValue("EUR", 24.84))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0011052257")), //
+                        hasDate("2023-04-03T08:39"), hasShares(12.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 24.18), hasGrossValue("CHF", 24.18), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        hasForexGrossValue("EUR", 24.84))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR001400GG91")), //
+                        hasDate("2023-03-23T00:00"), hasShares(12.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 24.18), hasGrossValue("CHF", 24.18), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        hasForexGrossValue("EUR", 24.84))));
+
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        sale( //
+                                        hasSecurity(hasIsin("FR001400GG91")), //
+                                        hasDate("2023-03-23T00:00"), hasShares(50.00), //
+                                        hasSource("Transactions_french03.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("CHF", 0.00), hasGrossValue("CHF", 0.00), //
+                                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00)))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US2254011081")), //
+                        hasDate("2023-03-15T17:23"), hasShares(100.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 176.69), hasGrossValue("CHF", 175.27), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.44 + 0.98)), //
+                        hasForexGrossValue("USD", 190.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US30303M1027")), //
+                        hasDate("2023-03-15T17:19"), hasShares(1.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 179.01), hasGrossValue("CHF", 180.44), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.45 + 0.98)), //
+                        hasForexGrossValue("USD", 194.62))));
+
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasSecurity(hasIsin("FR001400GG91")), //
+                                        hasDate("2023-03-08T00:00"), hasShares(50.00), //
+                                        hasSource("Transactions_french03.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("CHF", 0.00), hasGrossValue("CHF", 0.00), //
+                                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00)))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US88579Y1010")), //
+                        hasDate("2023-03-02T15:30"), hasShares(4.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 414.43), hasGrossValue("CHF", 412.40), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.03 + 1.00)), //
+                        hasForexGrossValue("USD", 438.68))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("IE00BTJRMP35")), //
+                        hasDate("2023-02-17T15:54"), hasShares(5.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 232.67), hasGrossValue("CHF", 232.09), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.58), //
+                        hasForexGrossValue("EUR", 235.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0013269123")), //
+                        hasDate("2023-02-17T15:54"), hasShares(15.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 391.00), hasGrossValue("CHF", 385.17), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.97 + 4.86)), //
+                        hasForexGrossValue("EUR", 390.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0000120859")), //
+                        hasDate("2023-02-17T14:41"), hasShares(10.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 419.24), hasGrossValue("CHF", 413.34), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.04 + 4.86)), //
+                        hasForexGrossValue("EUR", 419.20))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("IE00BTN1Y115")), //
+                        hasDate("2023-01-26T19:45"), hasShares(6.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 450.24), hasGrossValue("CHF", 448.12), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.12 + 1.00)), //
+                        hasForexGrossValue("USD", 488.16))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("CH0012032048")), //
+                        hasDate("2023-01-24T10:16"), hasShares(1.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 301.00), hasGrossValue("CHF", 295.00), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 6.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FR0010112524")), //
+                        hasDate("2023-01-16T10:31"), hasShares(20.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 556.43), hasGrossValue("CHF", 562.75), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.40 + 4.92)), //
+                        hasForexGrossValue("EUR", 560.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0000031775")), //
+                        hasDate("2023-01-13T14:55"), hasShares(20.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 496.24), hasGrossValue("CHF", 490.07), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.23 + 4.94)), //
+                        hasForexGrossValue("EUR", 489.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("NL00150001Q9")), //
+                        hasDate("2023-01-12T16:19"), hasShares(30.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 445.20), hasGrossValue("CHF", 447.33), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.12 + 1.01)), //
+                        hasForexGrossValue("USD", 480.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FR0000051732")), //
+                        hasDate("2023-01-12T10:19"), hasShares(30.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 386.28), hasGrossValue("CHF", 392.19), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.98 + 4.93)), //
+                        hasForexGrossValue("EUR", 390.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US88160R1014")), //
+                        hasDate("2023-01-06T15:38"), hasShares(3.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 288.03), hasGrossValue("CHF", 286.32), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.72 + 0.99)), //
+                        hasForexGrossValue("USD", 306.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("IE00BZCQB185")), //
+                        hasDate("2023-01-04T16:36"), hasShares(30.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 199.80), hasGrossValue("CHF", 199.30), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.50), //
+                        hasForexGrossValue("EUR", 202.80))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US8740391003")), //
+                        hasDate("2023-01-04T16:31"), hasShares(3.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 209.64), hasGrossValue("CHF", 208.13), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.52 + 0.99)), //
+                        hasForexGrossValue("USD", 224.25))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US2546871060")), //
+                        hasDate("2022-12-16T16:45"), hasShares(5.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 417.47), hasGrossValue("CHF", 415.44), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.04 + 0.99)), //
+                        hasForexGrossValue("USD", 447.50))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US2254011081")), //
+                        hasDate("2022-12-14T15:30"), hasShares(50.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 150.76), hasGrossValue("CHF", 149.40), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.37 + 0.99)), //
+                        hasForexGrossValue("USD", 161.50))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US88160R1014")), //
+                        hasDate("2022-12-13T16:29"), hasShares(2.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 304.77), hasGrossValue("CHF", 303.02), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.76 + 0.99)), //
+                        hasForexGrossValue("USD", 327.96))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US88160R1014")), //
+                        hasDate("2022-12-06T15:35"), hasShares(3.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 507.69), hasGrossValue("CHF", 505.43), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.27 + 0.99)), //
+                        hasForexGrossValue("USD", 540.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("LU1841731745")), //
+                        hasDate("2022-12-02T12:39"), hasShares(20.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 298.74), hasGrossValue("CHF", 295.04), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.74 + 2.96)), //
+                        hasForexGrossValue("EUR", 300.68))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FR0000124141")), //
+                        hasDate("2022-11-22T09:08"), hasShares(20.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 486.42), hasGrossValue("CHF", 492.48), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.23 + 4.83)), //
+                        hasForexGrossValue("EUR", 500.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0011052257")), //
+                        hasDate("2022-11-18T16:16"), hasShares(50.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 204.30), hasGrossValue("CHF", 198.96), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.50 + 4.84)), //
+                        hasForexGrossValue("EUR", 202.25))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("NL00150001Q9")), //
+                        hasDate("2022-11-10T15:30"), hasShares(25.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 344.39), hasGrossValue("CHF", 346.24), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.86 + 0.99)), //
+                        hasForexGrossValue("USD", 355.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US02079K3059")), //
+                        hasDate("2022-11-09T18:12"), hasShares(5.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 437.44), hasGrossValue("CHF", 435.36), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.09 + 0.99)), //
+                        hasForexGrossValue("USD", 443.70))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FR0004007813")), //
+                        hasDate("2022-11-04T17:00"), hasShares(20.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 492.02), hasGrossValue("CHF", 498.11), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.24 + 4.85)), //
+                        hasForexGrossValue("EUR", 503.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US0231351067")), //
+                        hasDate("2022-11-04T16:58"), hasShares(5.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 446.34), hasGrossValue("CHF", 444.24), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.11 + 0.99)), //
+                        hasForexGrossValue("USD", 446.20))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("NL00150001Q9")), //
+                        hasDate("2022-11-04T15:22"), hasShares(25.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 335.35), hasGrossValue("CHF", 337.18), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.84 + 0.99)), //
+                        hasForexGrossValue("USD", 337.50))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FR0000121972")), //
+                        hasDate("2022-11-04T14:54"), hasShares(5.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 646.06), hasGrossValue("CHF", 652.53), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.63 + 4.84)), //
+                        hasForexGrossValue("EUR", 660.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FR0000124141")), //
+                        hasDate("2022-11-04T14:53"), hasShares(20.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 452.76), hasGrossValue("CHF", 458.74), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.14 + 4.84)), //
+                        hasForexGrossValue("EUR", 464.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FR0000045072")), //
+                        hasDate("2022-11-02T09:03"), hasShares(30.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 273.51), hasGrossValue("CHF", 279.06), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.70 + 4.85)), //
+                        hasForexGrossValue("EUR", 282.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US30303M1027")), //
+                        hasDate("2022-10-28T16:35"), hasShares(5.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 498.33), hasGrossValue("CHF", 496.10), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.24 + 0.99)), //
+                        hasForexGrossValue("USD", 499.04))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FR0000121964")), //
+                        hasDate("2022-10-28T16:13"), hasShares(20.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 396.57), hasGrossValue("CHF", 402.44), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.00 + 4.87)), //
+                        hasForexGrossValue("EUR", 405.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0000051732")), //
+                        hasDate("2022-10-28T16:11"), hasShares(50.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 484.56), hasGrossValue("CHF", 478.49), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.20 + 4.87)), //
+                        hasForexGrossValue("EUR", 483.90))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FR0004007813")), //
+                        hasDate("2022-10-26T10:52"), hasShares(10.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 242.73), hasGrossValue("CHF", 248.22), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.62 + 4.87)), //
+                        hasForexGrossValue("EUR", 250.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FR0000121972")), //
+                        hasDate("2022-10-26T09:28"), hasShares(5.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 651.61), hasGrossValue("CHF", 658.12), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.64 + 4.87)), //
+                        hasForexGrossValue("EUR", 662.50))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0004007813")), //
+                        hasDate("2022-09-20T12:41"), hasShares(14.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 296.83), hasGrossValue("CHF", 291.36), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.73 + 4.74)), //
+                        hasForexGrossValue("EUR", 302.40))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0000124141")), //
+                        hasDate("2022-09-19T15:29"), hasShares(20.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 413.11), hasGrossValue("CHF", 407.35), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.02 + 4.74)), //
+                        hasForexGrossValue("EUR", 423.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FR0010220475")), //
+                        hasDate("2022-09-19T09:22"), hasShares(25.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 454.07), hasGrossValue("CHF", 459.96), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.15 + 4.74)), //
+                        hasForexGrossValue("EUR", 475.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FR0000045072")), //
+                        hasDate("2022-08-08T13:50"), hasShares(30.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 285.48), hasGrossValue("CHF", 290.50), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.72 + 4.30)), //
+                        hasForexGrossValue("EUR", 297.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0004007813")), //
+                        hasDate("2022-07-12T16:55"), hasShares(16.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 412.91), hasGrossValue("CHF", 407.54), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.02 + 4.35)), //
+                        hasForexGrossValue("EUR", 414.40))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0000121972")), //
+                        hasDate("2022-07-05T10:06"), hasShares(5.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 566.75), hasGrossValue("CHF", 560.95), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.41 + 4.39)), //
+                        hasForexGrossValue("EUR", 564.50))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0010112524")), //
+                        hasDate("2022-06-29T15:40"), hasShares(7.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 176.37), hasGrossValue("CHF", 175.93), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.44), //
+                        hasForexGrossValue("EUR", 176.40))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0010112524")), //
+                        hasDate("2022-06-29T15:40"), hasShares(12.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 302.34), hasGrossValue("CHF", 301.58), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.76), //
+                        hasForexGrossValue("EUR", 302.40))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0010112524")), //
+                        hasDate("2022-06-29T15:40"), hasShares(1.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 29.61), hasGrossValue("CHF", 25.14), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.06 + 4.41)), //
+                        hasForexGrossValue("EUR", 25.20))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0000121964")), //
+                        hasDate("2022-06-29T15:15"), hasShares(15.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 299.28), hasGrossValue("CHF", 294.12), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.74 + 4.42)), //
+                        hasForexGrossValue("EUR", 294.30))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0000045072")), //
+                        hasDate("2022-05-06T09:55"), hasShares(60.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 626.71), hasGrossValue("CHF", 620.57), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.56 + 4.58)), //
+                        hasForexGrossValue("EUR", 599.70))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0000121964")), //
+                        hasDate("2022-03-25T10:22"), hasShares(15.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 354.98), hasGrossValue("CHF", 349.60), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.88 + 4.50)), //
+                        hasForexGrossValue("EUR", 343.50))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0000124141")), //
+                        hasDate("2022-03-25T09:04"), hasShares(20.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 576.83), hasGrossValue("CHF", 570.89), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.43 + 4.51)), //
+                        hasForexGrossValue("EUR", 560.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US0378331005")), //
+                        hasDate("2022-03-24T20:57"), hasShares(6.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 970.89), hasGrossValue("CHF", 973.83), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.43 + 0.51)), //
+                        hasForexGrossValue("USD", 1044.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0010220475")), //
+                        hasDate("2022-03-11T11:41"), hasShares(25.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 511.43), hasGrossValue("CHF", 505.65), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.27 + 4.51)), //
+                        hasForexGrossValue("EUR", 496.25))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("NL00150001Q9")), //
+                        hasDate("2022-03-08T16:38"), hasShares(50.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 646.07), hasGrossValue("CHF", 643.95), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.61 + 0.51)), //
+                        hasForexGrossValue("USD", 695.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("CH0210483332")), //
+                        hasDate("2022-02-22T09:01"), hasShares(4.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 494.50), hasGrossValue("CHF", 500.00), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 5.50))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0000121972")), //
+                        hasDate("2022-02-01T10:57"), hasShares(5.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 792.37), hasGrossValue("CHF", 785.82), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.97 + 4.58)), //
+                        hasForexGrossValue("EUR", 758.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("FR0000124141")), //
+                        hasDate("2022-01-28T13:29"), hasShares(30.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 976.71), hasGrossValue("CHF", 983.74), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.45 + 4.58)), //
+                        hasForexGrossValue("EUR", 945.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("CH0210483332")), //
+                        hasDate("2022-01-27T11:19"), hasShares(4.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 530.70), hasGrossValue("CHF", 525.20), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 5.50))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US0378331005")), //
+                        hasDate("2022-01-19T20:46"), hasShares(6.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 922.91), hasGrossValue("CHF", 920.08), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.31 + 0.52)), //
+                        hasForexGrossValue("USD", 1007.40))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US0378331005")), //
+                        hasDate("2022-01-19T17:21"), hasShares(5.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 769.15), hasGrossValue("CHF", 771.59), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.92 + 0.52)), //
+                        hasForexGrossValue("USD", 840.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FR0000124141")), //
+                        hasDate("2022-01-13T14:25"), hasShares(30.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 1014.91), hasGrossValue("CHF", 1007.77), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.53 + 4.61)), //
+                        hasForexGrossValue("EUR", 966.60))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("NL00150001Q9")), //
+                        hasDate("2022-01-05T18:24"), hasShares(50.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 960.46), hasGrossValue("CHF", 957.54), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.40 + 0.52)), //
+                        hasForexGrossValue("USD", 1048.50))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US0378331005")), //
+                        hasDate("2021-12-16T15:54"), hasShares(5.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 817.42), hasGrossValue("CHF", 816.60), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.82), //
+                        hasForexGrossValue("USD", 887.30))));
+    }
+
+    @Test
     public void testTransakce01()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
@@ -8081,7 +11875,7 @@ public class DegiroPDFExtractorTest
 
         Security security40 = results.stream().filter(SecurityItem.class::isInstance).skip(40).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security40.getName(), is("SOLARWINDS CORPORATION"));
+        assertThat(security40.getName(), is("SOLARWINDS CORPORATION COMMON STOCK"));
         assertThat(security40.getIsin(), is("US83417Q2049"));
         assertThat(security40.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -8146,7 +11940,7 @@ public class DegiroPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(47L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countItemsWithFailureMessage(results), is(2L));
         assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(54));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
@@ -8680,7 +12474,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        // check 1st tax refund transaction
+        // check 2nd cancellation (Storno) transaction - counter booking of the
+        // cancelled dividend above
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(39)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
@@ -9469,7 +13264,7 @@ public class DegiroPDFExtractorTest
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security2.getName(), is("VANGUARD FTSE ALL-"));
+        assertThat(security2.getName(), is("VANGUARD FTSE ALL- WORLD UCITS ETF - (USD) ACCUMULATING"));
         assertNull(security2.getWkn());
         assertNull(security2.getTickerSymbol());
         assertThat(security2.getIsin(), is("IE00BK5BQT80"));
