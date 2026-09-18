@@ -1,0 +1,123 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.1
+-----------------------------------------
+LTOG LyRATR TBDnXv
+LPCpwnu 57
+9616 QgoxkNfjTkt
+aHfwJKHzoZM
+Benutzername: ****ZEj
+Kontoauszug von 20-06-2024 bis 19-07-2024
+Datum Uhrze Valutadatum Produkt ISIN Beschreibung FX Änderung Saldo
+16-07-2024 10:45 15-07-2024 FLATEX CHF BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer CHF -14.88 CHF 1’274.23
+16-07-2024 10:45 15-07-2024 Überweisung auf Ihr Geldkonto bei der flatex Bank: 14.88 CHF 1’289.11
+CHF
+13-07-2024 06:52 12-07-2024 Währungswechsel (Einbuchung) CHF 14.88 CHF 1’274.23
+13-07-2024 06:52 12-07-2024 Währungswechsel (Ausbuchung) 1.0277 EUR -15.29 EUR 0.00
+11-07-2024 11:45 10-07-2024 Auszahlung von Ihrem Geldkonto bei der flatex Bank: 631.2 CHF 1’259.35
+CHF
+11-07-2024 11:45 10-07-2024 FLATEX CHF BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer CHF 631.20 CHF 1’890.55
+11-07-2024 07:21 10-07-2024 Gebühr für Kapitalmaßnahme EUR -1.50 EUR 15.29
+11-07-2024 07:21 10-07-2024 DEFAMA DEUTSCHE FACHMARKT AG DE000A13SUL5 Dividende EUR 22.80 EUR 16.79
+11-07-2024 07:21 10-07-2024 DEFAMA DEUTSCHE FACHMARKT AG DE000A13SUL5 Dividendensteuer EUR -6.01 EUR -6.01
+10-07-2024 16:19 10-07-2024 DEERE & CO US2441991054 Währungswechsel (Einbuchung) 1.1093 USD 698.03 USD 0.00
+10-07-2024 16:19 10-07-2024 DEERE & CO US2441991054 Währungswechsel (Ausbuchung) CHF -629.25 CHF 1’259.35
+10-07-2024 16:19 10-07-2024 DEERE & CO US2441991054 DEGIRO Transaktionsgebühren und/oder Fremdkosten CHF -1.95 CHF 1’888.60
+10-07-2024 16:19 10-07-2024 DEERE & CO US2441991054 Kauf 2 zu je 349.0165 USD (US2441991054) USD -698.03 USD -698.03
+08-07-2024 02:40 30-06-2024 Flatex Interest Income EUR 0.00 EUR 0.00
+07-07-2024 08:11 30-06-2024 Flatex Interest Income CHF 0.00 CHF 1’890.55
+04-07-2024 12:46 03-07-2024 FLATEX CHF BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer CHF -27.26 CHF 1’890.55
+04-07-2024 12:46 03-07-2024 Überweisung auf Ihr Geldkonto bei der flatex Bank: 27.26 CHF 1’917.81
+CHF
+Die flatexDEGIRO Bank Dutch Branch, die unter dem Namen www.degiro.ch Konto
+DEGIRO tätig ist, ist die niederländische Niederlassung der clients@degiro.ch
+flatexDEGIRO Bank AG. Die flatexDEGIRO Bank AG wird primär von
+der deutschen Finanzaufsicht (BaFin) beaufsichtigt. In den Amstelplein 1 1096 HA 2024-07-19
+Niederlanden ist sie bei der DNB registriert und wird von der AFM und Seite 1 / 4
+der DNB beaufsichtigt.
+jHtd IkORsn eIFppT
+llilDvK 57
+6623 TTtpKBPwAVB
+VtaVjsJRqnZ
+Benutzername: ****DiB
+Datum Uhrze Valutadatum Produkt ISIN Beschreibung FX Änderung Saldo
+03-07-2024 17:17 02-07-2024 Überweisung auf Ihr Geldkonto bei der flatex Bank: 7.46 CHF CHF 1’890.55
+03-07-2024 17:17 02-07-2024 FLATEX CHF BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer CHF -7.46 CHF 1’883.09
+03-07-2024 07:20 02-07-2024 Währungswechsel (Einbuchung) CHF 27.26 CHF 1’890.55
+03-07-2024 07:20 02-07-2024 Währungswechsel (Ausbuchung) 1.1091 USD -30.23 USD 0.00
+02-07-2024 12:15 01-07-2024 Überweisung auf Ihr Geldkonto bei der flatex Bank: 476.43 CHF 1’863.29
+CHF
+02-07-2024 12:15 01-07-2024 FLATEX CHF BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer CHF -476.43 CHF 1’386.86
+02-07-2024 07:43 01-07-2024 Währungswechsel (Einbuchung) CHF 7.46 CHF 1’863.29
+02-07-2024 07:43 01-07-2024 Währungswechsel (Ausbuchung) 1.1106 USD -8.29 USD 30.23
+02-07-2024 07:36 01-07-2024 Gebühr für Kapitalmaßnahme USD -0.72 USD 38.52
+02-07-2024 07:35 01-07-2024 NIKE INC 'B' US6541061031 Dividende USD 8.51 USD 39.24
+02-07-2024 07:35 01-07-2024 NIKE INC 'B' US6541061031 Dividendensteuer USD -1.28 USD 30.73
+02-07-2024 07:08 01-07-2024 Gebühr für Kapitalmaßnahme USD -1.84 USD 32.01
+02-07-2024 07:07 01-07-2024 COCA-COLA US1912161007 Dividendensteuer USD -4.51 USD 33.85
+02-07-2024 07:07 01-07-2024 COCA-COLA US1912161007 Dividende USD 30.07 USD 38.36
+01-07-2024 18:25 01-07-2024 NIKE INC 'B' US6541061031 Währungswechsel (Einbuchung) 1.104 USD 1’127.85 USD 8.29
+01-07-2024 18:25 01-07-2024 NIKE INC 'B' US6541061031 Währungswechsel (Ausbuchung) CHF -1’021.63 CHF 1’855.83
+01-07-2024 18:25 01-07-2024 NIKE INC 'B' US6541061031 DEGIRO Transaktionsgebühren und/oder Fremdkosten CHF -1.94 CHF 2’877.46
+01-07-2024 18:25 01-07-2024 NIKE INC 'B' US6541061031 Kauf 15 zu je 75.19 USD (US6541061031) USD -1’127.85 USD -1’119.56
+Die flatexDEGIRO Bank Dutch Branch, die unter dem Namen www.degiro.ch Konto
+DEGIRO tätig ist, ist die niederländische Niederlassung der clients@degiro.ch
+flatexDEGIRO Bank AG. Die flatexDEGIRO Bank AG wird primär von
+der deutschen Finanzaufsicht (BaFin) beaufsichtigt. In den Amstelplein 1 1096 HA 2024-07-19
+Niederlanden ist sie bei der DNB registriert und wird von der AFM und Seite 2 / 4
+der DNB beaufsichtigt.
+gUFm PHqsYS HVgZWS
+KaAeGrP 76
+1738 PyFtTeHjxPq
+nDcZsqmSNVP
+Benutzername: ****IhM
+Datum Uhrze Valutadatum Produkt ISIN Beschreibung FX Änderung Saldo
+01-07-2024 08:43 28-06-2024 Einzahlung CHF 1’500.00 CHF 2’879.40
+01-07-2024 07:30 28-06-2024 Gebühr für Kapitalmaßnahme USD -0.92 USD 8.29
+01-07-2024 07:29 28-06-2024 PEPSICO INC US7134481081 Dividende USD 10.84 USD 9.21
+01-07-2024 07:29 28-06-2024 PEPSICO INC US7134481081 Dividendensteuer USD -1.63 USD -1.63
+27-06-2024 09:45 26-06-2024 Auszahlung von Ihrem Geldkonto bei der flatex Bank: 615.07 CHF 1’379.40
+CHF
+27-06-2024 09:45 26-06-2024 FLATEX CHF BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer CHF 615.07 CHF 1’994.47
+26-06-2024 18:45 26-06-2024 STRYKER CORP. US8636671013 Währungswechsel (Einbuchung) 1.1114 USD 681.45 USD 0.00
+26-06-2024 18:45 26-06-2024 STRYKER CORP. US8636671013 Währungswechsel (Ausbuchung) CHF -613.15 CHF 1’379.40
+26-06-2024 18:45 26-06-2024 STRYKER CORP. US8636671013 DEGIRO Transaktionsgebühren und/oder Fremdkosten CHF -1.92 CHF 1’992.55
+26-06-2024 18:45 26-06-2024 STRYKER CORP. US8636671013 Kauf 2 zu je 340.725 USD (US8636671013) USD -681.45 USD -681.45
+25-06-2024 11:45 24-06-2024 Auszahlung von Ihrem Geldkonto bei der flatex Bank: CHF 1’994.47
+1’042.36 CHF
+25-06-2024 11:45 24-06-2024 FLATEX CHF BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer CHF 1’042.36 CHF 3’036.83
+24-06-2024 17:36 24-06-2024 DEFAMA DEUTSCHE FACHMARKT AG DE000A13SUL5 Währungswechsel (Einbuchung) 1.0406 EUR 810.00 EUR 0.00
+24-06-2024 17:36 24-06-2024 DEFAMA DEUTSCHE FACHMARKT AG DE000A13SUL5 Währungswechsel (Ausbuchung) CHF -778.41 CHF 1’994.47
+24-06-2024 17:36 24-06-2024 DEFAMA DEUTSCHE FACHMARKT AG DE000A13SUL5 Kauf 30 zu je 27 EUR (DE000A13SUL5) EUR -810.00 EUR -810.00
+24-06-2024 17:29 24-06-2024 DEFAMA DEUTSCHE FACHMARKT AG DE000A13SUL5 Währungswechsel (Einbuchung) 1.0407 EUR 270.00 EUR 0.00
+24-06-2024 17:28 24-06-2024 DEFAMA DEUTSCHE FACHMARKT AG DE000A13SUL5 Währungswechsel (Ausbuchung) CHF -259.44 CHF 2’772.88
+24-06-2024 17:28 24-06-2024 DEFAMA DEUTSCHE FACHMARKT AG DE000A13SUL5 DEGIRO Transaktionsgebühren und/oder Fremdkosten CHF -4.71 CHF 3’032.32
+24-06-2024 17:28 24-06-2024 DEFAMA DEUTSCHE FACHMARKT AG DE000A13SUL5 Kauf 10 zu je 27 EUR (DE000A13SUL5) EUR -270.00 EUR -270.00
+Die flatexDEGIRO Bank Dutch Branch, die unter dem Namen www.degiro.ch Konto
+DEGIRO tätig ist, ist die niederländische Niederlassung der clients@degiro.ch
+flatexDEGIRO Bank AG. Die flatexDEGIRO Bank AG wird primär von
+der deutschen Finanzaufsicht (BaFin) beaufsichtigt. In den Amstelplein 1 1096 HA 2024-07-19
+Niederlanden ist sie bei der DNB registriert und wird von der AFM und Seite 3 / 4
+der DNB beaufsichtigt.
+oiuT QPgICC kCBkjx
+WSzxKvd 11
+3255 EAXkzgqccnD
+rqOLcRlfVfD
+Benutzername: ****nTR
+Datum Uhrze Valutadatum Produkt ISIN Beschreibung FX Änderung Saldo
+22-06-2024 07:26 21-06-2024 Währungswechsel (Einbuchung) CHF 0.20 CHF 3’037.03
+22-06-2024 07:26 21-06-2024 Währungswechsel (Ausbuchung) 1.0485 EUR -0.21 EUR 0.00
+21-06-2024 10:59 30-04-2024 Gebühr für Kapitalmaßnahme EUR -1.01 EUR 0.21
+21-06-2024 10:59 30-04-2024 L'ORÉAL FR0000120321 Dividendensteuer EUR -3.07 EUR 1.22
+21-06-2024 10:59 30-04-2024 L'ORÉAL FR0000120321 Dividende EUR 13.20 EUR 4.29
+21-06-2024 10:57 30-04-2024 Gebühr für Kapitalmaßnahme EUR 0.99 EUR -8.91
+21-06-2024 10:57 30-04-2024 L'ORÉAL FR0000120321 Dividende EUR -13.20 EUR -9.90
+21-06-2024 10:57 30-04-2024 L'ORÉAL FR0000120321 Dividendensteuer EUR 3.30 EUR 3.30
+20-06-2024 10:15 19-06-2024 Überweisung auf Ihr Geldkonto bei der flatex Bank: 87.07 CHF 3’036.83
+CHF
+20-06-2024 10:15 19-06-2024 FLATEX CHF BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer CHF -87.07 CHF 2’949.76
+Die flatexDEGIRO Bank Dutch Branch, die unter dem Namen www.degiro.ch Konto
+DEGIRO tätig ist, ist die niederländische Niederlassung der clients@degiro.ch
+flatexDEGIRO Bank AG. Die flatexDEGIRO Bank AG wird primär von
+der deutschen Finanzaufsicht (BaFin) beaufsichtigt. In den Amstelplein 1 1096 HA 2024-07-19
+Niederlanden ist sie bei der DNB registriert und wird von der AFM und Seite 4 / 4
+der DNB beaufsichtigt.

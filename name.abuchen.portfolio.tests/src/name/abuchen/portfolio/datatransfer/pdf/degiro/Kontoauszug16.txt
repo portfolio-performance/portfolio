@@ -1,0 +1,142 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.77.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+rpLt pqonmJBJ naEX
+bVlssULDtOodVEk 13
+8307 Illnau-Effretikon
+Switzerland
+Benutzername: *******980
+Kontoauszug von 01-01-2025 bis 10-07-2025
+Datum Uhrze Valutadatum Produkt ISIN Beschreibung FX Änderung Saldo
+06-07-2025 18:53 30-06-2025 Flatex Interest Income EUR 0.00 EUR 0.00
+05-07-2025 10:01 30-06-2025 Flatex Interest Income CHF 0.00 CHF 2’018.69
+04-07-2025 06:52 03-07-2025 Währungswechsel (Einbuchung) CHF 301.17 CHF 2’018.69
+04-07-2025 06:52 03-07-2025 Währungswechsel (Ausbuchung) 1.2606 USD -379.67 USD 0.00
+04-07-2025 06:52 03-07-2025 Währungswechsel (Einbuchung) CHF 199.27 CHF 1’717.52
+04-07-2025 06:52 03-07-2025 Währungswechsel (Ausbuchung) 1.0722 EUR -213.65 EUR 0.00
+03-07-2025 07:32 02-07-2025 VANGUARD S&P 500 UCITS ETF USD IE00B3XXRP09 Dividende USD 108.27 USD 379.67
+03-07-2025 07:24 02-07-2025 VANGUARD FTSE ALL-WORLD HIGH DIV IE00B8GKDB10 Dividende USD 271.40 USD 271.40
+03-07-2025 07:17 02-07-2025 VANGUARD FTSE DEVELOPED EUROPE IE00B945VV12 Dividende EUR 213.65 EUR 213.65
+26-06-2025 08:39 25-06-2025 Einzahlung CHF 1’500.00 CHF 1’518.25
+16-06-2025 09:23 16-06-2025 VERBIO VEREINIGTE BIOENERGIE AG DE000A0JL9W6 Währungswechsel (Einbuchung) 1.0599 EUR 1’667.31 EUR 0.00
+16-06-2025 09:23 16-06-2025 VERBIO VEREINIGTE BIOENERGIE AG DE000A0JL9W6 Währungswechsel (Ausbuchung) CHF -1’573.04 CHF 18.25
+16-06-2025 09:23 16-06-2025 VERBIO VEREINIGTE BIOENERGIE AG DE000A0JL9W6 DEGIRO Transaktionsgebühren und/oder Fremdkosten CHF -4.62 CHF 1’591.29
+16-06-2025 09:23 16-06-2025 VERBIO VEREINIGTE BIOENERGIE AG DE000A0JL9W6 Kauf 149 zu je 11.19 EUR (DE000A0JL9W6) EUR -1’667.31 EUR -1’667.31
+13-06-2025 17:20 13-06-2025 Auszahlung von Ihrem Geldkonto bei der flatexDEGIRO CHF 1’595.91
+Bank: 1’904.73 CHF
+13-06-2025 17:20 13-06-2025 Degiro Cash Sweep Transfer CHF 1’904.73 CHF 3’500.64
+13-06-2025 16:50 13-06-2025 VANGUARD FTSE DEVELOPED EUROPE IE00B945VV12 DEGIRO Transaktionsgebühren und/oder Fremdkosten CHF -2.82 CHF 1’595.91
+Die flatexDEGIRO Bank Dutch Branch, die unter dem Namen DEGIRO tätig ist, ist die niederländische Niederlassung der flatexDEGIRO www.degiro.ch Konto
+Bank AG. Die flatexDEGIRO Bank AG wird primär von der deutschen Finanzaufsicht (BaFin) beaufsichtigt. In den Niederlanden ist sie bei clients@degiro.ch
+der DNB registriert und wird von der AFM und der DNB beaufsichtigt. Amstelplein 1 1096 HA 2025-07-10
+Seite 1 / 5
+Herr SdGTgqUs kLvR
+LbITEPoLoISKxxJ 13
+8307 Illnau-Effretikon
+Switzerland
+Benutzername: *******980
+Datum Uhrze Valutadatum Produkt ISIN Beschreibung FX Änderung Saldo
+13-06-2025 16:50 13-06-2025 VANGUARD FTSE DEVELOPED EUROPE IE00B945VV12 Kauf 60 zu je 40.1 CHF (IE00B945VV12) CHF -2’406.00 CHF 1’598.73
+12-06-2025 10:20 12-06-2025 Auszahlung von Ihrem Geldkonto bei der flatexDEGIRO CHF 4’004.73
+Bank: 2’665.27 CHF
+12-06-2025 10:20 12-06-2025 Degiro Cash Sweep Transfer CHF 2’665.27 CHF 6’670.00
+12-06-2025 09:42 12-06-2025 VANGUARD FTSE ALL-WORLD HIGH DIV IE00B8GKDB10 DEGIRO Transaktionsgebühren und/oder Fremdkosten CHF -2.83 CHF 4’004.73
+12-06-2025 09:42 12-06-2025 VANGUARD FTSE ALL-WORLD HIGH DIV IE00B8GKDB10 Kauf 44 zu je 60.51 CHF (IE00B8GKDB10) CHF -2’662.44 CHF 4’007.56
+26-05-2025 09:30 26-05-2025 Degiro Cash Sweep Transfer CHF -1’500.00 CHF 6’670.00
+26-05-2025 09:30 26-05-2025 Überweisung auf Ihr Geldkonto bei der flatexDEGIRO Bank: CHF 8’170.00
+1’500 CHF
+26-05-2025 08:39 23-05-2025 Einzahlung CHF 1’500.00 CHF 6’670.00
+14-05-2025 12:21 14-05-2025 Überweisung auf Ihr Geldkonto bei der flatexDEGIRO Bank: CHF 5’170.00
+3’070 CHF
+14-05-2025 12:21 14-05-2025 Degiro Cash Sweep Transfer CHF -3’070.00 CHF 2’100.00
+14-05-2025 11:34 14-05-2025 VANGUARD FTSE DEVELOPED EUROPE IE00B945VV12 DEGIRO Transaktionsgebühren und/oder Fremdkosten CHF -2.82 CHF 5’170.00
+14-05-2025 11:34 14-05-2025 VANGUARD FTSE DEVELOPED EUROPE IE00B945VV12 Kauf 31 zu je 39.875 CHF (IE00B945VV12) CHF -1’236.13 CHF 5’172.82
+14-05-2025 11:32 14-05-2025 AMUNDI MSCI FUTURE MOBILITY ESG LU2023679090 DEGIRO Transaktionsgebühren und/oder Fremdkosten CHF -2.82 CHF 6’408.94
+14-05-2025 11:32 14-05-2025 AMUNDI MSCI FUTURE MOBILITY ESG LU2023679090 Verkauf 235 zu je 17.314 CHF (LU2023679090) CHF 4’068.79 CHF 6’411.76
+14-05-2025 11:32 14-05-2025 AMUNDI MSCI FUTURE MOBILITY ESG LU2023679090 Verkauf 135 zu je 17.318 CHF (LU2023679090) CHF 2’337.93 CHF 2’342.97
+08-05-2025 14:39 08-05-2025 VANGUARD S&P 500 UCITS ETF USD IE00B3XXRP09 DEGIRO Transaktionsgebühren und/oder Fremdkosten CHF -2.80 CHF 5.04
+08-05-2025 14:39 08-05-2025 VANGUARD S&P 500 UCITS ETF USD IE00B3XXRP09 Kauf 17 zu je 88.5 CHF (IE00B3XXRP09) CHF -1’504.50 CHF 7.84
+28-04-2025 08:42 25-04-2025 Einzahlung CHF 1’500.00 CHF 1’512.34
+07-04-2025 20:12 07-04-2025 Auszahlung von Ihrem Geldkonto bei der flatexDEGIRO CHF 12.34
+Bank: 168.6 CHF
+Die flatexDEGIRO Bank Dutch Branch, die unter dem Namen DEGIRO tätig ist, ist die niederländische Niederlassung der flatexDEGIRO www.degiro.ch Konto
+Bank AG. Die flatexDEGIRO Bank AG wird primär von der deutschen Finanzaufsicht (BaFin) beaufsichtigt. In den Niederlanden ist sie bei clients@degiro.ch
+der DNB registriert und wird von der AFM und der DNB beaufsichtigt. Amstelplein 1 1096 HA 2025-07-10
+Seite 2 / 5
+Herr aPuFuMis AXUC
+ZeUqhiXRldMxbYv 13
+8307 Illnau-Effretikon
+Switzerland
+Benutzername: *******980
+Datum Uhrze Valutadatum Produkt ISIN Beschreibung FX Änderung Saldo
+07-04-2025 20:12 07-04-2025 Degiro Cash Sweep Transfer CHF 168.60 CHF 180.94
+07-04-2025 16:24 07-04-2025 NU HOLDINGS LTD KYG6683N1034 Währungswechsel (Einbuchung) 1.0597 EUR 734.23 EUR 0.00
+07-04-2025 16:24 07-04-2025 NU HOLDINGS LTD KYG6683N1034 Währungswechsel (Ausbuchung) CHF -692.86 CHF 12.34
+07-04-2025 16:24 07-04-2025 NU HOLDINGS LTD KYG6683N1034 DEGIRO Transaktionsgebühren und/oder Fremdkosten CHF -3.68 CHF 705.20
+07-04-2025 16:24 07-04-2025 NU HOLDINGS LTD KYG6683N1034 Kauf 85 zu je 8.638 EUR (KYG6683N1034) EUR -734.23 EUR -734.23
+07-04-2025 10:09 07-04-2025 NOVO NORDISK A/S DK0062498333 Währungswechsel (Einbuchung) 1.0673 EUR 1’660.80 EUR 0.00
+07-04-2025 10:09 07-04-2025 NOVO NORDISK A/S DK0062498333 Währungswechsel (Ausbuchung) CHF -1’556.07 CHF 708.88
+07-04-2025 10:09 07-04-2025 NOVO NORDISK A/S DK0062498333 DEGIRO Transaktionsgebühren und/oder Fremdkosten CHF -3.65 CHF 2’264.95
+07-04-2025 10:09 07-04-2025 NOVO NORDISK A/S DK0062498333 Kauf 30 zu je 55.36 EUR (DK0062498333) EUR -1’660.80 EUR -1’660.80
+05-04-2025 13:31 31-03-2025 Flatex Interest Income CHF 0.00 CHF 2’268.60
+05-04-2025 11:20 31-03-2025 Flatex Interest Income EUR 0.00 EUR 0.00
+04-04-2025 20:50 04-04-2025 Überweisung auf Ihr Geldkonto bei der flatexDEGIRO Bank: CHF 2’268.60
+168.6 CHF
+04-04-2025 20:50 04-04-2025 Degiro Cash Sweep Transfer CHF -168.60 CHF 2’100.00
+04-04-2025 07:46 03-04-2025 Währungswechsel (Einbuchung) CHF 191.39 CHF 2’268.60
+04-04-2025 07:46 03-04-2025 Währungswechsel (Ausbuchung) 1.1668 USD -223.32 USD 0.00
+04-04-2025 07:46 03-04-2025 Währungswechsel (Einbuchung) CHF 33.50 CHF 2’077.21
+04-04-2025 07:46 03-04-2025 Währungswechsel (Ausbuchung) 1.0557 EUR -35.37 EUR 0.00
+03-04-2025 08:57 02-04-2025 VANGUARD S&P 500 UCITS ETF USD IE00B3XXRP09 Dividende USD 105.49 USD 223.32
+Die flatexDEGIRO Bank Dutch Branch, die unter dem Namen DEGIRO tätig ist, ist die niederländische Niederlassung der flatexDEGIRO www.degiro.ch Konto
+Bank AG. Die flatexDEGIRO Bank AG wird primär von der deutschen Finanzaufsicht (BaFin) beaufsichtigt. In den Niederlanden ist sie bei clients@degiro.ch
+der DNB registriert und wird von der AFM und der DNB beaufsichtigt. Amstelplein 1 1096 HA 2025-07-10
+Seite 3 / 5
+Herr sWnZTMJy nMEo
+RRAGtMbNVRIgXxN 13
+8307 Illnau-Effretikon
+Switzerland
+Benutzername: *******980
+Datum Uhrze Valutadatum Produkt ISIN Beschreibung FX Änderung Saldo
+03-04-2025 08:47 02-04-2025 VANGUARD S&P 500 UCITS ETF USD IE00B3XXRP09 Dividende USD -210.98 USD 117.83
+03-04-2025 07:33 02-04-2025 VANGUARD S&P 500 UCITS ETF USD IE00B3XXRP09 Dividende USD 105.49 USD 328.81
+03-04-2025 07:31 02-04-2025 VANGUARD S&P 500 UCITS ETF USD IE00B3XXRP09 Dividende USD 105.49 USD 223.32
+03-04-2025 07:30 02-04-2025 VANGUARD FTSE DEVELOPED EUROPE IE00B945VV12 Dividende EUR 35.37 EUR 35.37
+03-04-2025 07:25 02-04-2025 VANGUARD FTSE ALL-WORLD HIGH DIV IE00B8GKDB10 Dividende USD 117.83 USD 117.83
+02-04-2025 06:40 01-04-2025 Währungswechsel (Einbuchung) CHF 36.76 CHF 2’043.71
+02-04-2025 06:40 01-04-2025 Währungswechsel (Ausbuchung) 7.8449 DKK -288.35 DKK 0.00
+02-04-2025 06:10 01-04-2025 NOVO NORDISK A/S DK0062498333 Dividende DKK 395.00 DKK 288.35
+02-04-2025 06:10 01-04-2025 NOVO NORDISK A/S DK0062498333 Dividendensteuer DKK -106.65 DKK -106.65
+26-03-2025 08:39 25-03-2025 Einzahlung CHF 2’000.00 CHF 2’006.95
+04-03-2025 09:40 04-03-2025 VANGUARD S&P 500 UCITS ETF USD IE00B3XXRP09 DEGIRO Transaktionsgebühren und/oder Fremdkosten CHF -2.82 CHF 6.95
+04-03-2025 09:40 04-03-2025 VANGUARD S&P 500 UCITS ETF USD IE00B3XXRP09 Kauf 15 zu je 99.49 CHF (IE00B3XXRP09) CHF -1’492.35 CHF 9.77
+26-02-2025 08:56 25-02-2025 Einzahlung CHF 1’500.00 CHF 1’502.12
+20-02-2025 14:58 20-02-2025 NOVO NORDISK A/S DK0062498333 Währungswechsel (Einbuchung) 1.0584 EUR 1’590.00 EUR 0.00
+20-02-2025 14:58 20-02-2025 NOVO NORDISK A/S DK0062498333 Währungswechsel (Ausbuchung) CHF -1’502.33 CHF 2.12
+20-02-2025 14:58 20-02-2025 NOVO NORDISK A/S DK0062498333 DEGIRO Transaktionsgebühren und/oder Fremdkosten CHF -3.68 CHF 1’504.45
+20-02-2025 14:58 20-02-2025 NOVO NORDISK A/S DK0062498333 Kauf 20 zu je 79.5 EUR (DK0062498333) EUR -1’590.00 EUR -1’590.00
+07-02-2025 07:04 06-02-2025 Währungswechsel (Ausbuchung) CHF -4.71 CHF 1’508.13
+07-02-2025 07:04 06-02-2025 Währungswechsel (Einbuchung) 1.0616 EUR 5.00 EUR 0.00
+Die flatexDEGIRO Bank Dutch Branch, die unter dem Namen DEGIRO tätig ist, ist die niederländische Niederlassung der flatexDEGIRO www.degiro.ch Konto
+Bank AG. Die flatexDEGIRO Bank AG wird primär von der deutschen Finanzaufsicht (BaFin) beaufsichtigt. In den Niederlanden ist sie bei clients@degiro.ch
+der DNB registriert und wird von der AFM und der DNB beaufsichtigt. Amstelplein 1 1096 HA 2025-07-10
+Seite 4 / 5
+Herr FXKqmNgq McdT
+zuqUUrzRUqOuXbC 13
+8307 Illnau-Effretikon
+Switzerland
+Benutzername: *******980
+Datum Uhrze Valutadatum Produkt ISIN Beschreibung FX Änderung Saldo
+06-02-2025 17:17 31-01-2025 Einrichtung von Handelsmodalitäten 2025 (Tradegate AG - EUR -2.50 EUR -5.00
+TDG)
+06-02-2025 17:17 31-01-2025 Einrichtung von Handelsmodalitäten 2025 (Xetra - XET) EUR -2.50 EUR -2.50
+28-01-2025 10:54 24-01-2025 Einzahlung CHF 1’500.00 CHF 1’512.84
+10-01-2025 00:32 02-01-2025 Flatex Interest Income CHF 0.00 CHF 12.84
+06-01-2025 04:30 02-01-2025 Flatex Interest Income EUR 0.00 EUR 0.00
+03-01-2025 09:33 03-01-2025 VANGUARD S&P 500 UCITS ETF USD IE00B3XXRP09 DEGIRO Transaktionsgebühren und/oder Fremdkosten CHF -2.82 CHF 12.84
+03-01-2025 09:33 03-01-2025 VANGUARD S&P 500 UCITS ETF USD IE00B3XXRP09 Kauf 17 zu je 101.5 CHF (IE00B3XXRP09) CHF -1’725.50 CHF 15.66
+Die flatexDEGIRO Bank Dutch Branch, die unter dem Namen DEGIRO tätig ist, ist die niederländische Niederlassung der flatexDEGIRO www.degiro.ch Konto
+Bank AG. Die flatexDEGIRO Bank AG wird primär von der deutschen Finanzaufsicht (BaFin) beaufsichtigt. In den Niederlanden ist sie bei clients@degiro.ch
+der DNB registriert und wird von der AFM und der DNB beaufsichtigt. Amstelplein 1 1096 HA 2025-07-10
+Seite 5 / 5

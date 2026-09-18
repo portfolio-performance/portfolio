@@ -1,0 +1,24 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.3
+----------------------------------------- olxUvYTH njwzUy
+gMhSxhUlbyf 1 1
+9344 TiXAICkVun
+Benutzername: ***********TvB
+Transaktionsübersicht von 30-04-2023 bis 02-09-2023
+Datum Uhrzei Produkt ISIN Börse Venue Anzahl Kurs Wert in Wert Wechse Transaktionst Lokalwährung lkurs gebühren Gesamt
+17-08-2023 09:50 VANGUARD FTSE ALL- IE00BK5BQT80 XET XETA 5 100 EUR -500.00 EUR -478.55 CHF 1.0448 -0.96 CHF -479.51 CHF
+WORLD UCITS ETF - (USD)
+ACCUMULATING
+20-07-2023 09:04 VANGUARD FTSE ALL- IE00BK5BQT80 XET XETA 3 100.9 EUR -302.70 EUR -290.84 CHF 1.0408 -0.96 CHF -291.80 CHF
+WORLD UCITS ETF - (USD)
+ACCUMULATING
+28-06-2023 16:45 LIBERTY GLOBAL PLC - C GB00B8W67662 NDQ CDED 12 16.855 USD -202.26 USD -181.49 CHF 1.1145 -1.96 CHF -183.45 CHF
+13-06-2023 00:00 UBS GROUP AG CH0244767585 SWX 2 18.3662 CHF -36.73 CHF -36.73 CHF CHF -36.73 CHF
+13-06-2023 00:00 CREDIT SUISSE GROUP CH0012138530 SWX -50 0.817 CHF 40.85 CHF 40.85 CHF CHF 40.85 CHF
+09-06-2023 13:03 JM AB SE0000806994 OMX XSTO 8 144 SEK -1'152.00 SEK -95.80 CHF 12.0248 -4.77 CHF -100.57 CHF
+Die flatexDEGIRO Bank Dutch Branch, die unter dem Namen www.degiro.ch Konto
+DEGIRO tätig ist, ist die niederländische Niederlassung der clients@degiro.ch
+flatexDEGIRO Bank AG. Die flatexDEGIRO Bank AG wird primär von
+der deutschen Finanzaufsicht (BaFin) beaufsichtigt. In den Amstelplein 1 1096 HA 2023-09-02
+Niederlanden ist sie bei der DNB registriert und wird von der AFM und Seite 1 / 1
+der DNB beaufsichtigt.
