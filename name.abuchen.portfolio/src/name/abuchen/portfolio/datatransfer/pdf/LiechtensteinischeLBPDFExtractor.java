@@ -259,6 +259,7 @@ public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
                                         // Auftragsnummer XXXXXXXXX
                                         // Reg Shs Pearson PLC
                                         // ISIN GB0006776081
+                                        // Valorennummer 400018
                                         // Zahlungswert GBP 0.07 pro Stück
                                         // @formatter:on
                                         section -> section //
@@ -459,7 +460,7 @@ public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
         // XXXXX XXXXX
         // Auftragsnummer: XXXXXXXXX
         // @formatter:on
-        Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}. Gutschrift [\\d]{2}\\.[\\d]{2}.*$");
+        Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. Gutschrift [\\d]{2}\\.[\\d]{2}\\..*$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
@@ -467,7 +468,7 @@ public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "amount", "note") //
                         .documentContext("currency", "year") //
-                        .match("^[\\d]{2}\\.[\\d]{2}. Gutschrift (?<date>[\\d]{2}\\.[\\d]{2}.) (?<amount>[\\.'\\d]+) [\\.'\\d]+$") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\. Gutschrift (?<date>[\\d]{2}\\.[\\d]{2}\\.) (?<amount>[\\.'\\d]+) [\\.'\\d]+$") //
                         .match("^(?<note>Auftragsnummer: .*)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date") + v.get("year")));
