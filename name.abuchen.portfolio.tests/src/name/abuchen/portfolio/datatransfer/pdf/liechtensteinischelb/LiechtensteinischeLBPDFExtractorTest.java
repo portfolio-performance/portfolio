@@ -18,10 +18,14 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.skippedItem;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
@@ -38,6 +42,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
@@ -265,6 +270,40 @@ public class LiechtensteinischeLBPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf06()
+    {
+        var extractor = new LiechtensteinischeLBPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "USD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US91282CGX39"), hasWkn("126441977"), hasTicker(null), //
+                        hasName("3.875% Treasury Nts United States 2023-30.04.25"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-11-22T18:16:07"), hasShares(75.00), //
+                        hasSource("Kauf06.txt"), //
+                        hasNote("Auftragsnummer 343253140 | Marchzinsen 25 Tage: 20.07 USD"), //
+                        hasAmount("USD", 7512.58), hasGrossValue("USD", 7501.32), //
+                        hasTaxes("USD", 11.26), hasFees("USD", 0.00))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         var extractor = new LiechtensteinischeLBPDFExtractor(new Client());
@@ -449,6 +488,118 @@ public class LiechtensteinischeLBPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf04()
+    {
+        var extractor = new LiechtensteinischeLBPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("ZAE000015889"), hasWkn("104977"), hasTicker(null), //
+                        hasName("Reg Shs Naspers Ltd -N-"), //
+                        hasCurrencyCode("ZAR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2023-01-23T08:00:50"), hasShares(10.00), //
+                        hasSource("Verkauf04.txt"), //
+                        hasNote("Auftragsnummer 570384475"), //
+                        hasAmount("EUR", 1773.47), hasGrossValue("EUR", 1776.93), //
+                        hasForexGrossValue("ZAR", 34080.00), //
+                        hasTaxes("EUR", (51.10 / 19.179094)), hasFees("EUR", (15.41 / 19.179094)))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf04WithSecurityInEUR()
+    {
+        var security = new Security("Reg Shs Naspers Ltd -N-", "EUR");
+        security.setIsin("ZAE000015889");
+        security.setWkn("104977");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new LiechtensteinischeLBPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2023-01-23T08:00:50"), hasShares(10.00), //
+                        hasSource("Verkauf04.txt"), //
+                        hasNote("Auftragsnummer 570384475"), //
+                        hasAmount("EUR", 1773.47), hasGrossValue("EUR", 1776.93), //
+                        hasTaxes("EUR", (51.10 / 19.179094)), hasFees("EUR", (15.41 / 19.179094)), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testWertpapierVerkaufStorno01()
+    {
+        var extractor = new LiechtensteinischeLBPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufStorno01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("HU0000403340"), hasWkn("36909223"), hasTicker(null), //
+                        hasName("2.75% Bonds Hungary 2017-22.12.26 Series D"), //
+                        hasCurrencyCode("HUF"))));
+
+        // check cancellation (Storno) transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionOrderCancellationUnsupported, //
+                        sale( //
+                                        hasDate("2025-12-10T15:25:31"), hasShares(54000.00), //
+                                        hasSource("VerkaufStorno01.txt"), //
+                                        hasNote("Auftragsnummer 159818771 | Marchzinsen 355 Tage: 144'434.00 HUF"), //
+                                        hasAmount("EUR", 13684.70), hasGrossValue("EUR", 13705.26), //
+                                        hasForexGrossValue("HUF", 5224851.00), //
+                                        hasTaxes("EUR", (8053.27 / 391.768348)), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
     public void testDividende01()
     {
         var extractor = new LiechtensteinischeLBPDFExtractor(new Client());
@@ -604,6 +755,103 @@ public class LiechtensteinischeLBPDFExtractorTest
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
+    }
+
+    @Test
+    public void testDividende03()
+    {
+        var extractor = new LiechtensteinischeLBPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0012214059"), hasWkn("1221405"), hasTicker(null), //
+                        hasName("N Akt Holcim AG"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-05-22T00:00"), hasExDate("2025-05-19T00:00"), //
+                        hasShares(75.00), //
+                        hasSource("Dividende03.txt"), //
+                        hasNote("Auftragsnummer 736150083"), //
+                        hasAmount("CHF", 232.50), hasGrossValue("CHF", 232.50), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+    }
+
+    @Test
+    public void testDepoteingang01()
+    {
+        var extractor = new LiechtensteinischeLBPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depoteingang01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "ZAR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("ZAE000015889"), hasWkn("104977"), hasTicker(null), //
+                        hasName("Reg Shs Naspers Ltd -N-"), //
+                        hasCurrencyCode("ZAR"))));
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        inboundDelivery( //
+                                        hasDate("2022-11-04T00:00"), hasShares(50.00), //
+                                        hasSource("Depoteingang01.txt"), //
+                                        hasNote("Auftragsnummer 556171599"), //
+                                        hasAmount("ZAR", 0.00), hasGrossValue("ZAR", 0.00), //
+                                        hasTaxes("ZAR", 0.00), hasFees("ZAR", 0.00)))));
+    }
+
+    @Test
+    public void testFestgeld01()
+    {
+        var extractor = new LiechtensteinischeLBPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Festgeld01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "HUF");
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        removal(hasDate("2023-06-06T00:00"), hasAmount("HUF", 3770000.00), //
+                                        hasSource("Festgeld01.txt"), hasNote("Auftragsnummer 305856191")))));
     }
 
     @Test
