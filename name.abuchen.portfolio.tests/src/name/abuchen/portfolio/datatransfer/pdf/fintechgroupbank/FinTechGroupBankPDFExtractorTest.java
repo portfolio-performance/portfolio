@@ -6789,6 +6789,33 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testFlatExSammelabrechnungDevisen01()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExSammelabrechnungDevisen01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        deposit(hasDate("2021-03-05T00:00"), hasAmount("EUR", 1840.17), //
+                                        hasSource("FlatExSammelabrechnungDevisen01.txt"), //
+                                        hasNote("Auftrag Nr. 5122608575")))));
+    }
+
+    @Test
     public void testFlatExKontoauszug01()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
