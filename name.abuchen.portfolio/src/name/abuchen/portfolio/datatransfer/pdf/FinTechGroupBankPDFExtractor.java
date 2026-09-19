@@ -577,32 +577,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         // multiple times. Repeated occurrences must be ignored to prevent
         // the creation of duplicate blocks.
 
-        var startsWith = Pattern.compile("^Nr\\.[\\s]*[\\d]+\\/[\\d]+[\\s]{1,}(Kauf|Verkauf).*$");
-        var splittingStrategy = (SplittingStrategy) lines -> {
-            var blockIdentifiers = new HashSet<String>();
-
-            // first: find the start of the blocks
-            var blockStarts = new ArrayList<Integer>();
-
-            for (var ii = 0; ii < lines.length; ii++)
-            {
-                var matcher = startsWith.matcher(lines[ii]);
-                if (matcher.matches() && blockIdentifiers.add(lines[ii]))
-                    blockStarts.add(ii);
-            }
-
-            // second: convert to line spans
-            var spans = new ArrayList<LineSpan>();
-            for (var ii = 0; ii < blockStarts.size(); ii++)
-            {
-                int startLine = blockStarts.get(ii);
-                var endLine = ii + 1 < blockStarts.size() ? blockStarts.get(ii + 1) - 1 : lines.length - 1;
-                spans.add(new LineSpan(startLine, endLine));
-            }
-            return spans;
-        };
-
-        var firstRelevantLine = new Block(splittingStrategy);
+        var firstRelevantLine = new Block(createSplittingStrategy("^Nr\\.[\\s]*[\\d]+\\/[\\d]+[\\s]{1,}(Kauf|Verkauf).*$"));
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -916,7 +891,16 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^Auftrag Nr\\. [\\d]+ \\- (Kauf|Verkauf) vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$");
+        // In summary statements of foreign exchange transactions, each block
+        // starts with a line that contains an order number and a transaction
+        // type, e.g.:
+        // Auftrag Nr. 5122608575 - Verkauf vom 05.03.2021
+        //
+        // Due to page breaks in the PDF document, this header line can appear
+        // multiple times. Repeated occurrences must be ignored to prevent
+        // the creation of duplicate blocks.
+
+        var firstRelevantLine = new Block(createSplittingStrategy("^Auftrag Nr\\. [\\d]+ \\- (Kauf|Verkauf) vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$"));
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -4089,6 +4073,41 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             if (!type.getCurrentContext().getBoolean("negative"))
                                 processFeeEntries(t, v, type);
                         });
+    }
+
+    /**
+     * Creates a splitting strategy that starts a new block for every line
+     * matching the given pattern. Due to page breaks in the PDF document, a
+     * header line can appear multiple times. Repeated occurrences are ignored
+     * to prevent the creation of duplicate blocks.
+     */
+    private SplittingStrategy createSplittingStrategy(String startsWith)
+    {
+        var pattern = Pattern.compile(startsWith);
+
+        return lines -> {
+            var blockIdentifiers = new HashSet<String>();
+
+            // first: find the start of the blocks
+            var blockStarts = new ArrayList<Integer>();
+
+            for (var ii = 0; ii < lines.length; ii++)
+            {
+                var matcher = pattern.matcher(lines[ii]);
+                if (matcher.matches() && blockIdentifiers.add(lines[ii]))
+                    blockStarts.add(ii);
+            }
+
+            // second: convert to line spans
+            var spans = new ArrayList<LineSpan>();
+            for (var ii = 0; ii < blockStarts.size(); ii++)
+            {
+                int startLine = blockStarts.get(ii);
+                var endLine = ii + 1 < blockStarts.size() ? blockStarts.get(ii + 1) - 1 : lines.length - 1;
+                spans.add(new LineSpan(startLine, endLine));
+            }
+            return spans;
+        };
     }
 
     @Override
