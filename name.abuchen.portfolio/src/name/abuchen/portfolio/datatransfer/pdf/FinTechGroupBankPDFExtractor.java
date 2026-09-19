@@ -47,6 +47,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         addBuySellCryptoTransaction();
         addBuyStockDividendeTransaction();
         addSummaryStatementBuySellTransaction();
+        addSummaryStatementForeignExchangeTransaction();
         addSellTransaction();
         addSellForOptionsTransaction();
         addDividendTransaction();
@@ -241,8 +242,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         // Lagerstelle   : Clearstream Lux.        Zinsbetrag    :               1,25 EUR
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("gross", "baseCurrency", "termCurrency",
-                                                                        "exchangeRate", "accruedInterest") //
+                                                        .attributes("gross", "baseCurrency", "termCurrency", "exchangeRate", "accruedInterest") //
                                                         .match("^Ausgef.hrt([:\\s]+)?[\\s]{1,}[\\.,\\d]+ (?<termCurrency>[A-Z]{3})[\\s]{1,}Kurswert([:\\s]+)?(?<gross>[\\.,\\d]+) (?<baseCurrency>[A-Z]{3})$") //
                                                         .match("^Kurs[:\\s]{1,}[\\.,\\d]+ %.*$") //
                                                         .match("^Devisenkurs[:\\s]{1,}(?<exchangeRate>[\\.,\\d]+).*$") //
@@ -251,13 +251,10 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                             var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            var gross = Money.of(rate.getBaseCurrency(),
-                                                                            asAmount(v.get("gross")) + asAmount(
-                                                                                            v.get("accruedInterest")));
+                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")) + asAmount(v.get("accruedInterest")));
                                                             var fxGross = rate.convert(rate.getTermCurrency(), gross);
 
-                                                            checkAndSetGrossUnit(gross, fxGross, t,
-                                                                            type.getCurrentContext());
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }),
                                         // @formatter:off
                                         // Ausgeführt    :    2.000,000000 USD     Kurswert      :           1.126,29 EUR
@@ -428,26 +425,20 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + v.get("note2"))))
 
                         .optionalOneOf( //
-                        // @formatter:off
+                                        // @formatter:off
                                         // Lagerstelle   : Clearstream Nat.        Zinsbetrag    :              6,25 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note", "amount", "currency") //
                                                         .match("^.* (?<note>Zinsbetrag)[:\\s]{1,}(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(),
-                                                                        v.get("note") + " " + v.get("amount") + " "
-                                                                                        + v.get("currency"),
-                                                                        " | "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note") + " " + v.get("amount") + " " + v.get("currency"), " | "))),
                                         // @formatter:off
                                         // Lagerland      Deutschland             Zinsbetrag     EUR             9.264,06
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note", "currency", "amount") //
                                                         .match("^.* (?<note>Zinsbetrag)[:\\s]{1,}(?<currency>[A-Z]{3})[\\s]{1,}(?<amount>[\\.,\\d]+)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(),
-                                                                        v.get("note") + " " + v.get("amount") + " "
-                                                                                        + v.get("currency"),
-                                                                        " | "))))
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note") + " " + v.get("amount") + " " + v.get("currency"), " | "))))
 
                         .wrap((t, ctx) -> {
                             var item = new BuySellEntryItem(t);
@@ -916,6 +907,49 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
         addSummaryStatementTaxReturnBlock(type);
         addSummaryStatementFeesBlock(type);
+    }
+
+    private void addSummaryStatementForeignExchangeTransaction()
+    {
+        final var type = new DocumentType("Sammelabrechnung \\- Devisengesch.fte \\-");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block("^Auftrag Nr\\. [\\d]+ \\- (Kauf|Verkauf) vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
+
+                        // @formatter:off
+                        // Auftrag Nr. 5122608575 - Verkauf vom 05.03.2021
+                        // Buchungstag     : 05.03.2021              Betrag         :        2.200,00 USD
+                        // Valutadatum     : 09.03.2021             *Devisenkurs    :        1,195540
+                        // Fremdwhrg.konto : 1014905918              Gebühr         :            0,00 EUR
+                        //                                           Endbetrag      :        1.840,17 EUR
+                        // @formatter:on
+                        .section("note", "type", "date", "amount", "currency") //
+                        .match("^(?<note>Auftrag Nr\\. [\\d]+) \\- (?<type>(Kauf|Verkauf)) vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
+                        .match("^Buchungstag[:\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .match("^.* Endbetrag[:\\s]{1,}(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> {
+                            // Is type --> "Kauf" change from DEPOSIT to REMOVAL
+                            if ("Kauf".equals(v.get("type")))
+                                t.setType(AccountTransaction.Type.REMOVAL);
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(trim(v.get("note")));
+                        })
+
+                        // A foreign exchange transaction is booked on two accounts
+                        // in different currencies and cannot be imported as a single
+                        // transaction. We skip it and inform the user.
+                        .wrap(t -> new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
     }
 
     private void addSellTransaction()
