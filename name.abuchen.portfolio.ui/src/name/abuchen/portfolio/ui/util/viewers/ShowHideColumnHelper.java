@@ -28,14 +28,11 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.ViewerColumn;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
@@ -554,146 +551,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
         this.policy.getViewer().getControl().addDisposeListener(e -> ShowHideColumnHelper.this.widgetDisposed());
 
-        installForegroundColorWorkaround(this.policy.getViewer().getControl());
-    }
-
-    /**
-     * Workaround for a long-standing SWT/GTK3 bug on Linux where a
-     * per-cell foreground color set via {@link CellLabelProvider#getForeground}
-     * (and thus {@link TableItem#setForeground} / {@link TreeItem#setForeground})
-     * is silently ignored by the native GTK3 renderer, so colored values
-     * (e.g. gains/losses) always appear in the default text color.
-     * <p>
-     * The color is still stored correctly on the item -- only the native
-     * paint ignores it -- so we suppress native text painting for the cell
-     * and redraw the text ourselves using the already-set foreground color.
-     * <p>
-     * See https://bugs.eclipse.org/bugs/show_bug.cgi?id=218420 and
-     * https://forum.portfolio-performance.info/t/farben-rot-und-grun-in-vermogensaufstellung-depot-werden-unter-linux-mint-nicht-angezeigt/25590
-     */
-    private static void installForegroundColorWorkaround(Control control)
-    {
-        if (!Platform.OS_LINUX.equals(Platform.getOS()))
-            return;
-
-        // suppress native (broken) foreground text painting only for cells
-        // that actually carry a custom color; normal cells stay natively
-        // rendered (correct ellipsis/truncation, less repaint work)
-        control.addListener(SWT.EraseItem, event -> {
-            if (getCustomForeground(event) != null)
-                event.detail &= ~SWT.FOREGROUND;
-        });
-
-        control.addListener(SWT.PaintItem, ShowHideColumnHelper::paintForegroundWorkaround);
-    }
-
-    /**
-     * Returns the cell's foreground color if -- and only if -- it differs
-     * from the control's own default foreground, i.e. a custom color was
-     * actually set via {@link CellLabelProvider#getForeground}. Returns
-     * {@code null} for normal, non-colored cells, since
-     * {@link TableItem#getForeground(int)} / {@link TreeItem#getForeground(int)}
-     * never return {@code null} themselves -- they fall back to the
-     * inherited item or control foreground.
-     */
-    private static Color getCustomForeground(Event event)
-    {
-        Color foreground;
-        if (event.item instanceof TableItem tableItem)
-            foreground = tableItem.getForeground(event.index);
-        else if (event.item instanceof TreeItem treeItem)
-            foreground = treeItem.getForeground(event.index);
-        else
-            return null;
-
-        var controlForeground = ((Control) event.widget).getForeground();
-        return foreground.equals(controlForeground) ? null : foreground;
-    }
-    
-        
-    private static void paintForegroundWorkaround(Event event)
-    {
-        var foreground = getCustomForeground(event);
-        if (foreground == null)
-            return; // no custom color -- native rendering already handled it correctly
-
-        String text;
-        Image image;
-        Rectangle imageBounds;
-        Rectangle textBounds;
-        int alignment;
-
-        if (event.item instanceof TableItem tableItem)
-        {
-            text = tableItem.getText(event.index);
-            image = tableItem.getImage(event.index);
-            imageBounds = tableItem.getImageBounds(event.index);
-            textBounds = tableItem.getTextBounds(event.index);
-            alignment = tableItem.getParent().getColumn(event.index).getStyle()
-                            & (SWT.LEFT | SWT.CENTER | SWT.RIGHT);
-        }
-        else if (event.item instanceof TreeItem treeItem)
-        {
-            text = treeItem.getText(event.index);
-            image = treeItem.getImage(event.index);
-            imageBounds = treeItem.getImageBounds(event.index);
-            textBounds = treeItem.getTextBounds(event.index);
-            TreeColumn column = treeItem.getParent().getColumn(event.index);
-            alignment = column.getStyle() & (SWT.LEFT | SWT.CENTER | SWT.RIGHT);
-        }
-        else
-        {
-            return;
-        }
-
-        var gc = event.gc;
-
-        // SWT.FOREGROUND also gates the native pixbuf/icon renderer, not
-        // just the text renderer -- since we suppressed it for this cell,
-        // we have to redraw the (up/down arrow) image ourselves too, at
-        // its native position
-        if (image != null && !image.isDisposed())
-            gc.drawImage(image, imageBounds.x, imageBounds.y);
-
-        if (text == null || text.isEmpty())
-            return;
-
-        var oldForeground = gc.getForeground();
-
-        // use the native selection text color for contrast/consistency
-        // when selected, otherwise the custom (correctly stored, but
-        // natively unrendered) foreground color
-        var isSelected = (event.detail & SWT.SELECTED) != 0;
-        gc.setForeground(isSelected ? event.display.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT) : foreground);
-
-        var extent = gc.textExtent(text);
-
-        // prefer SWT's own computed text origin (already accounts for the
-        // image taking up space at the left), falling back to a manual
-        // alignment calculation if unavailable -- getTextBounds() returns
-        // an empty rectangle when the column has no pixbuf renderer set up
-        int x;
-        if (!textBounds.isEmpty())
-        {
-            x = textBounds.x;
-        }
-        else if ((alignment & SWT.RIGHT) != 0)
-        {
-            x = event.x + Math.max(0, event.width - extent.x);
-        }
-        else if ((alignment & SWT.CENTER) != 0)
-        {
-            x = event.x + Math.max(0, (event.width - extent.x) / 2);
-        }
-        else
-        {
-            x = event.x;
-        }
-
-        var y = event.y + Math.max(0, (event.height - extent.y) / 2);
-        gc.drawText(text, x, y, true);
-
-        gc.setForeground(oldForeground);
+        GtkForegroundColorWorkaround.install(this.policy.getViewer().getControl());
     }
 
     private void widgetDisposed()
