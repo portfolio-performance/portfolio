@@ -1006,12 +1006,17 @@ public class LiechtensteinischeLBPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransactions(results), is(2L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(1));
+        assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-06-08"), hasAmount("EUR", 1364.73), //
+                        hasSource("Kontoauszug03.txt"), //
+                        hasNote("Auftragsnummer: 824427279 | E-Banking Kontoübertrag"))));
 
         // check fee transaction
         assertThat(results, hasItem(fee( //

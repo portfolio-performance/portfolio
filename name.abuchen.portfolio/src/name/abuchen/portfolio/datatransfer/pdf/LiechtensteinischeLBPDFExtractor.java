@@ -480,6 +480,30 @@ public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new));
 
         // @formatter:off
+        // 08.06. E-Banking Kontoübertrag 08.06. 1'364.73 4'214.37
+        // Auftrag von XXXXX XXXXX
+        // Auftragsnummer: 824427279
+        // @formatter:on
+        Block depositBlock_Format02 = new Block("^[\\d]{2}\\.[\\d]{2}\\. E\\-Banking Konto.bertrag.* [\\d]{2}\\.[\\d]{2}\\..*$");
+        type.addBlock(depositBlock_Format02);
+        depositBlock_Format02.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
+
+                        .section("note1", "date", "amount", "note2") //
+                        .documentContext("currency", "year") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\. (?<note1>E\\-Banking Konto.bertrag).* (?<date>[\\d]{2}\\.[\\d]{2}\\.) (?<amount>[\\.'\\d]+) [\\.'\\d]+$") //
+                        .match("^(?<note2>Auftragsnummer: .*)$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(concatenate(trim(v.get("note2")), trim(v.get("note1")), " | "));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
         // 28.06. Gebühren 30.06. 215.09 1.35
         // All-in-Gebühr
         // Periode 14.05.2024-30.06.2024
