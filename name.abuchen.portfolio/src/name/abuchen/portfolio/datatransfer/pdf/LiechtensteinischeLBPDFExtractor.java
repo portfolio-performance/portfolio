@@ -480,6 +480,56 @@ public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new));
 
         // @formatter:off
+        // 28.06. Gebühren 30.06. 215.09 1.35
+        // All-in-Gebühr
+        // Periode 14.05.2024-30.06.2024
+        // Auftragsnummer: 668110724
+        // @formatter:on
+        Block feesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. Geb.hren [\\d]{2}\\.[\\d]{2}\\..*$");
+        type.addBlock(feesBlock);
+        feesBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
+
+                        .section("date", "amount", "note1", "note2") //
+                        .documentContext("currency", "year") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\. Geb.hren (?<date>[\\d]{2}\\.[\\d]{2}\\.) (?<amount>[\\.'\\d]+) [\\.'\\d]+$") //
+                        .match("^(?<note1>.*[Gg]eb.hr)$") //
+                        .match("^(?<note2>Auftragsnummer: .*)$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(concatenate(trim(v.get("note2")), trim(v.get("note1")), " | "));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // 28.06. Zinszahlung Callgeld 28.06. 70.70 72.05
+        // Call Deposit CHF, 0.65%, 10.05.23 (1965781)
+        // Auftragsnummer: 669550491
+        // @formatter:on
+        Block interestBlock_Format02 = new Block("^[\\d]{2}\\.[\\d]{2}\\. Zinszahlung .* [\\d]{2}\\.[\\d]{2}\\..*$");
+        type.addBlock(interestBlock_Format02);
+        interestBlock_Format02.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
+
+                        .section("note1", "date", "amount", "note2") //
+                        .documentContext("currency", "year") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\. (?<note1>Zinszahlung .*) (?<date>[\\d]{2}\\.[\\d]{2}\\.) (?<amount>[\\.'\\d]+) [\\.'\\d]+$") //
+                        .match("^(?<note2>Auftragsnummer: .*)$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(concatenate(trim(v.get("note2")), trim(v.get("note1")), " | "));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
         // Per 31. Dezember 2023
         // Abrechnungsperiode 30.09.2023-31.12.2023
         // Habenzins 456.60

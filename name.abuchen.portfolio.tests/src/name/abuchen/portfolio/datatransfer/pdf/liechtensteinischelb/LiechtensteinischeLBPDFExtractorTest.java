@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf.liechtensteinischelb;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
@@ -955,6 +956,70 @@ public class LiechtensteinischeLBPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(interest(hasDate("2023-12-31"), hasAmount("EUR", 456.60), //
                         hasSource("Kontoauszug01.txt"), hasNote("30.09.2023 - 31.12.2023"))));
+    }
+
+    @Test
+    public void testKontoauzug02()
+    {
+        var extractor = new LiechtensteinischeLBPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2024-06-30"), //
+                        hasSource("Kontoauszug02.txt"), //
+                        hasNote("Auftragsnummer: 668110724 | All-in-Gebühr"), //
+                        hasAmount("CHF", 215.09), hasGrossValue("CHF", 215.09), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+
+        // check interest transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2024-06-28"), //
+                        hasSource("Kontoauszug02.txt"), //
+                        hasNote("Auftragsnummer: 669550491 | Zinszahlung Callgeld"), //
+                        hasAmount("CHF", 70.70), hasGrossValue("CHF", 70.70), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+    }
+
+    @Test
+    public void testKontoauzug03()
+    {
+        var extractor = new LiechtensteinischeLBPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2026-06-30"), //
+                        hasSource("Kontoauszug03.txt"), //
+                        hasNote("Auftragsnummer: 827183171 | Anlagegebühr"), //
+                        hasAmount("EUR", 447.50), hasGrossValue("EUR", 447.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test

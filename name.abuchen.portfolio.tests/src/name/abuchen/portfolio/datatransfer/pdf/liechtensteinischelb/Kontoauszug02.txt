@@ -1,0 +1,48 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.87.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Liechtensteinische
+Landesbank AG
+Städtle 44 · Postfach 384
+9490 Vaduz · Liechtenstein
+Telefon +423 506 89 78
+Fax +423 424 43 58
+Sitz Vaduz
+Registerbehörde: AJU
+HR FL-0001.000.289-1
+Herr oder Frau
+LNlq oder TxkgnaZ Berschin EMfl wCoai
+cUvyvtIupJEF 42 Referenz Ios / wLd
+Direktwahl +423 594 82 69
+5086 XCC
+Direktfax +423 763 43 50
+Vaduz, 30. Juni 2024
+Kontonummer 1111.2222.3333 Mandatskonto CHF
+IBAN LI95 6912 5109 8087 5048 5 / BIC LILALI2X
+Kontoauszug in CHF 01.06.2024 - 30.06.2024
+Datum Buchungstext / Details Valuta Zu Ihren Lasten Zu Ihren Gunsten Saldo in CHF
+31.05. Saldovortrag 216.44
+28.06. Gebühren 30.06. 215.09 1.35
+All-in-Gebühr
+Periode 14.05.2024-30.06.2024
+Auftragsnummer: 668110724
+28.06. Zinszahlung Callgeld 28.06. 70.70 72.05
+Call Deposit CHF, 0.65%, 10.05.23 (1965781)
+Auftragsnummer: 669550491
+Saldo per 30.06.2024 72.05
+Umsatz 215.09 70.70
+Konditionen
+Sollzinsen
+01.04.2024 - 30.06.2024 0.00 %
+Habenzinsen
+01.04.2024 - 30.06.2024 0.00 %
+Bei Überschreitungen des laufenden Kontos beträgt der aktuelle Sollzinssatz 0.00% pro Jahr ab dem Zeitpunkt der
+Überschreitung. Als Referenzzinssatz gilt: SARON 3M Compound, zuzüglich einer Marge von 8.50%. Der Sollzinssatz wird
+jeweils am ersten eines neuen Kalenderquartals aktualisiert und passt sich bei einer Änderung des Referenzzinssatzes
+automatisch entsprechend an und ist ab diesem Tag wirksam. Vorbehalten bleiben anderslautende Vereinbarungen.
+Einlagen auf diesem Konto sind nach Massgabe des Einlagensicherungs- und Anlegerentschädigungsgesetzes (EAG)
+grundsätzlich erstattungsfähig. Nähere Informationen können dem Informationsbogen für Einleger entnommen werden, den
+Sie auch unter www.llb.li/eag einsehen können.
+Elektronisch zugestellt
+ACC_STMT_MTH_DT_LLB  20240628 56107-244432264-437784845 EBANKING
