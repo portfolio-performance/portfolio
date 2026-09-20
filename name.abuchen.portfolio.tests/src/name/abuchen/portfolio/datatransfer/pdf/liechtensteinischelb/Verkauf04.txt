@@ -1,0 +1,40 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.87.1.202609180847
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Liechtensteinische
+Landesbank AG
+Städtle 44 · Postfach 384
+9490 Vaduz · Liechtenstein
+Telefon +423 236 02 30
+Fax +423 236 88 30
+Sitz Vaduz
+Registerbehörde: AJU
+HR FL-0001.000.289-1
+Herr oder Frau 
+nqdU oder rmIYGMF vXFLwBQG wmvp XtcZZ
+VfVSuqjMtJZT 51 Referenz tlt / hgl
+Direktwahl +423 075 08 08
+3238 iwL 
+Direktfax +423 236 95 50
+Vaduz, 23. Januar 2023
+Portfolionummer 1111.2222.3333
+LLB Consult ESG
+Börsenabrechnung - Ihr Verkauf
+Auftragsnummer 570384475
+Reg Shs Naspers Ltd -N-
+Anzahl / Nominal 10
+Kurs ZAR 3'408.00
+ISIN ZAE000015889
+Valorennummer 104977
+Handelsplatz JSE Johannesburg Stock Exchange
+Abschlussdatum 23.01.2023 / 08:00:50 CET
+Bruttobetrag ZAR 34'080.00
+Eidgenössische Stempelsteuer ZAR -51.10
+Fremde Brokergebühren ZAR -15.41
+Nettobetrag ZAR 34'013.49
+Umrechnungskurs EUR/ZAR 19.179094
+Zu Ihren Gunsten Valuta 26. Januar 2023 EUR 1'773.47
+Den Betrag haben wir gutgeschrieben: Konto 9999.9999.7777 Mandatskonto EUR.
+Elektronisch zugestellt
+STEX 834660 29681383 13375-135134044-972214489 EBANKING
