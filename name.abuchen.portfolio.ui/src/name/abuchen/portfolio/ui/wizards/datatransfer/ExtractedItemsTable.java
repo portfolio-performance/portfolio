@@ -609,7 +609,7 @@ public class ExtractedItemsTable
         setColumnWidth(layout, column, "type", 130); //$NON-NLS-1$
         addDropDownEditor(column, this::getTypeOptionsForEditor,
                         (entry, option) -> typeConverter.getTypeLabel(typeConverter.getOriginalItem(entry), option),
-                        typeConverter::getCurrentType, (entry, option) -> {
+                        this::getEffectiveType, (entry, option) -> {
                             typeConverter.changeType(entry, option);
                             onTypesChanged.run();
                         });
@@ -1039,6 +1039,23 @@ public class ExtractedItemsTable
     }
 
     /**
+     * Returns the type as it is displayed and imported: with the option to
+     * convert buy/sell transactions into deliveries, an unchanged purchase or
+     * sale is imported as delivery. Used to check the current type; the
+     * conversion of the entry itself stays unchanged.
+     */
+    private EntryTypeConverter.TypeOption getEffectiveType(ExtractedEntry entry)
+    {
+        var current = typeConverter.getCurrentType(entry);
+
+        if (current == EntryTypeConverter.TypeOption.ORIGINAL && convertToDelivery.getAsBoolean()
+                        && typeConverter.getOriginalItem(entry).getSubject() instanceof BuySellEntry)
+            return EntryTypeConverter.TypeOption.DELIVERY;
+
+        return current;
+    }
+
+    /**
      * The types offered in the dropdown: the same as in the context menu, and
      * only if the user may change the type.
      */
@@ -1120,7 +1137,7 @@ public class ExtractedItemsTable
         for (var option : options.entrySet())
         {
             var targets = option.getValue();
-            var isCurrent = targets.stream().allMatch(t -> typeConverter.getCurrentType(t.getLeft()) == t.getRight());
+            var isCurrent = targets.stream().allMatch(t -> getEffectiveType(t.getLeft()) == t.getRight());
 
             manager.add(new MenuContribution(option.getKey(), () -> {
                 for (var target : targets)

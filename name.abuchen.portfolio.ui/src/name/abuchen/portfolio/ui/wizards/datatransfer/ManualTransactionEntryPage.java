@@ -515,9 +515,14 @@ public class ManualTransactionEntryPage extends AbstractWizardPage
      */
     private void removeEntries(List<ExtractedEntry> selected)
     {
-        entries.removeAll(selected);
+        // a security must not be removed while an editor is open: the
+        // transaction created by the editor could no longer be linked to it
+        var toRemove = editorOpen ? selected.stream()
+                        .filter(entry -> !(entry.getItem() instanceof Extractor.SecurityItem)).toList() : selected;
 
-        for (var entry : selected)
+        entries.removeAll(toRemove);
+
+        for (var entry : toRemove)
         {
             if (!(entry.getItem() instanceof Extractor.SecurityItem))
                 continue;

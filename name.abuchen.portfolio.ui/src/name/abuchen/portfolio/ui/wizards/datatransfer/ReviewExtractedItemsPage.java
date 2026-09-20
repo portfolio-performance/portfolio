@@ -35,6 +35,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -51,7 +52,9 @@ import name.abuchen.portfolio.datatransfer.actions.CheckTransactionDateAction;
 import name.abuchen.portfolio.datatransfer.actions.CheckValidTypesAction;
 import name.abuchen.portfolio.datatransfer.actions.DetectDuplicatesAction;
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
+import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.ui.Messages;
@@ -126,6 +129,9 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     private Button cbConvertToDelivery;
     private Button cbRemoveDividends;
     private Button cbImportNotesFromSource;
+
+    /** the row with the import options; options which are not needed are hidden */
+    private Composite optionsRow;
 
     private final Client client;
     private final Extractor extractor;
@@ -263,16 +269,19 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         // one currency
         populateAccountSelectionContainer(Collections.emptyList());
 
-        cbConvertToDelivery = new Button(container, SWT.CHECK);
+        optionsRow = new Composite(container, SWT.NONE);
+        GridLayoutFactory.fillDefaults().numColumns(3).spacing(20, 0).applyTo(optionsRow);
+
+        cbConvertToDelivery = new Button(optionsRow, SWT.CHECK);
         cbConvertToDelivery.setText(Messages.LabelConvertBuySellIntoDeliveryTransactions);
         cbConvertToDelivery.setSelection(
                         preferences.getBoolean(IMPORT_CONVERT_BUYSELL_TO_DELIVERY + extractor.getLabel()));
 
-        cbRemoveDividends = new Button(container, SWT.CHECK);
+        cbRemoveDividends = new Button(optionsRow, SWT.CHECK);
         cbRemoveDividends.setText(Messages.LabelRemoveDividends);
         cbRemoveDividends.setSelection(preferences.getBoolean(IMPORT_REMOVE_DIVIDENDS + extractor.getLabel()));
 
-        cbImportNotesFromSource = new Button(container, SWT.CHECK);
+        cbImportNotesFromSource = new Button(optionsRow, SWT.CHECK);
         cbImportNotesFromSource.setText(Messages.LabelImportNotesFromSource);
 
         // default behavior is to import the notes -> check if the key exists
@@ -289,11 +298,9 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
         FormDataFactory.startingWith(targetContainer) //
                         .top(new FormAttachment(0, 0)).left(new FormAttachment(0, 0)).right(new FormAttachment(100, 0))
-                        .thenBelow(cbConvertToDelivery) //
-                        .thenRight(cbRemoveDividends) //
-                        .thenRight(cbImportNotesFromSource);
+                        .thenBelow(optionsRow);
 
-        FormDataFactory.startingWith(cbConvertToDelivery) //
+        FormDataFactory.startingWith(optionsRow) //
                         .thenBelow(compositeTable).right(targetContainer).bottom(new FormAttachment(80, 0)) //
                         .thenBelow(errorTable).right(targetContainer).bottom(new FormAttachment(100, 0));
 
@@ -564,6 +571,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         populateAccountSelectionContainer(entries);
         checkEntries(entries);
 
+        updateOptionVisibility(allEntries);
+
         itemsTable.getTableViewer().setInput(allEntries);
         itemsTable.updateColumnVisibility();
     }
@@ -715,6 +724,37 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         primaryContainer.getParent().getParent().layout(true, true);
 
         preselectDropDowns();
+    }
+
+    /**
+     * Shows only the options which are relevant for the imported entries: the
+     * conversion into deliveries only if there are purchases or sales, the
+     * additional removal only if there are dividends. Calculated once after the
+     * documents have been read, so that an option does not disappear while the
+     * user is working with it.
+     */
+    private void updateOptionVisibility(List<ExtractedEntry> entries)
+    {
+        var hasBuySell = entries.stream().anyMatch(e -> e.getItem().getSubject() instanceof BuySellEntry);
+        var hasDividends = entries.stream()
+                        .anyMatch(e -> e.getItem().getSubject() instanceof AccountTransaction transaction
+                                        && transaction.getType() == AccountTransaction.Type.DIVIDENDS);
+
+        setOptionVisible(cbConvertToDelivery, hasBuySell);
+        setOptionVisible(cbRemoveDividends, hasDividends);
+
+        optionsRow.layout(true);
+        optionsRow.getParent().layout(true, true);
+    }
+
+    private void setOptionVisible(Button option, boolean isVisible)
+    {
+        option.setVisible(isVisible);
+
+        // do not leave a gap for a hidden option
+        var data = new GridData();
+        data.exclude = !isVisible;
+        option.setLayoutData(data);
     }
 
     /**
