@@ -1,0 +1,78 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.87.1.qualifier
+System: win32 | x86_64 | 21.0.12.1+1-LTS-4 | Oracle Corporation
+-----------------------------------------
+Scalable Capital Bank GmbH • Seitzstraße 8e • 80538 München • Deutschland 
+PXjiMDo Sioukd
+Frankenweg 7 
+24936 qVHKmXq Datum 04.05.2026
+Deutschland Seite 1 / 3
+Kontoauszug 
+Zeitraum 01.04.2026 - 30.04.2026 
+Auszug Nr. 2620079108 
+Verrechnungskonto dz00680242890150309168 (eiIFatYIlRJ) 
+Kontostand am 01.04.2026 1.525,04 EUR 
+Kontostand am 30.04.2026 887,93 EUR 
+Buchung Wertstellung Beschreibung Betrag 
+01.04.2026 31.03.2026 Erhaltene Zinsen +12,95 EUR 
+01.04.2026 31.03.2026 Auf Kundenebene einbehaltene oder erstattete Kapitalertragssteuer -3,24 EUR 
+01.04.2026 31.03.2026 Abgezogener oder erstatteter Solidaritätszuschlag auf Kundenebene -0,18 EUR 
+07.04.2026 08.04.2026 Abgezogener oder erstatteter Solidaritätszuschlag auf Kundenebene +0,01 EUR 
+07.04.2026 08.04.2026 Kapitalmaßnahme Ausschüttungen -0,70 EUR 
+VICI Properties (US9256521090) 
+07.04.2026 08.04.2026 Auf Kundenebene einbehaltene oder erstattete Kapitalertragssteuer +0,07 EUR 
+07.04.2026 08.04.2026 US Quellensteuer +0,11 EUR 
+07.04.2026 08.04.2026 US Quellensteuer -0,10 EUR 
+07.04.2026 08.04.2026 Kapitalmaßnahme Ausschüttungen +0,68 EUR 
+VICI Properties (US9256521090) 
+Scalable Capital Bank GmbH • Seitzstraße 8e, 80538 München • HRB 217778 • Amtsgericht München • USt.-Id. Nr.: DE300434774 Seite 
+Geschäftsführer: Florian Prucker, Martin Krebs, Dirk Franzmeyer, Dr. Andreas Schranzhofer 1 / 3
+Aufsichtsrat: Patrick Olson (Vorsitzender) 
+Kontoauszug 
+Zeitraum 01.04.2026 - 30.04.2026 
+Buchung Wertstellung Beschreibung Betrag 
+07.04.2026 08.04.2026 Abgezogener oder erstatteter Solidaritätszuschlag auf Kundenebene -0,01 EUR 
+07.04.2026 08.04.2026 Auf Kundenebene einbehaltene oder erstattete Kapitalertragssteuer -0,07 EUR 
+07.04.2026 08.04.2026 Kapitalmaßnahme Ausschüttungen +0,02 EUR 
+VICI Properties (US9256521090) 
+07.04.2026 08.04.2026 Auf Kundenebene einbehaltene oder erstattete Kapitalertragssteuer -0,01 EUR 
+13.04.2026 13.04.2026 US Quellensteuer -2,60 EUR 
+13.04.2026 13.04.2026 Kapitalmaßnahme Ausschüttungen +17,31 EUR 
+VICI Properties (US9256521090) 
+13.04.2026 13.04.2026 Auf Kundenebene einbehaltene oder erstattete Kapitalertragssteuer -1,73 EUR 
+13.04.2026 13.04.2026 Abgezogener oder erstatteter Solidaritätszuschlag auf Kundenebene -0,09 EUR 
+20.04.2026 22.04.2026 Kauf eines Finanzinstruments -250,00 EUR 
+9,80 Stk. DEFAMA Deutsche Fachmarkt AG (DE000A13SUL5) 
+20.04.2026 22.04.2026 Kauf eines Finanzinstruments -50,00 EUR 
+2,02 Stk. VICI Properties (US9256521090) 
+20.04.2026 22.04.2026 Kauf eines Finanzinstruments -50,00 EUR 
+0,81 Stk. LEG Immobilien (DE000LEG1110) 
+20.04.2026 22.04.2026 Kauf eines Finanzinstruments -250,00 EUR 
+1,93 Stk. Krones (DE0006335003) 
+20.04.2026 22.04.2026 Kauf eines Finanzinstruments -50,00 EUR 
+2,11 Stk. Vonovia (DE000A1ML7J1) 
+Scalable Capital Bank GmbH • Seitzstraße 8e, 80538 München • HRB 217778 • Amtsgericht München • USt.-Id. Nr.: DE300434774 Seite 
+Geschäftsführer: Florian Prucker, Martin Krebs, Dirk Franzmeyer, Dr. Andreas Schranzhofer 2 / 3
+Aufsichtsrat: Patrick Olson (Vorsitzender) 
+Kontoauszug 
+Zeitraum 01.04.2026 - 30.04.2026 
+Verteilung Ihrer Einlagen 
+zum Wertstellungsdatum 30.04.2026 
+Absolut 
+Deutsche Managed Euro Fund 887,93 EUR 
+Kontostand 887,93 EUR 
+PRIME+ Broker Guthaben wird auf die Scalable Capital Bank sowie Partnerbanken verteilt. Dabei werden auch das bei der
+jeweiligen Bank durch Scalable verwahrte Guthaben, die jeweilige gesetzliche Einlagensicherung von 100.000 € pro Kunde und
+Bank und etwaige ergänzende Sicherungseinrichtungen berücksichtigt. Alle anderen Guthaben verteilen wir neben der Scalable
+Capital Bank auf Partnerbanken und qualifizierte Geldmarktfonds. Diese Regeln für die Verteilung von Guthaben können ohne
+Ankündigung geändert werden. Die Verteilung der Guthaben ist veränderlich und hängt unter anderem von den verfügbaren
+Kapazitäten und Konditionen ab. Kundengelder bei Banken sind durch die gesetzliche Einlagensicherung bis zu 100.000 € pro
+Kunde pro Bank geschützt. Statt der Einlagensicherung gelten bei qualifizierten Geldmarktfonds die OGAW-Schutzstandards
+unabhängig vom Anlagebetrag. Mehr Informationen finden Sie unter https://de.scalable.capital/dokumente-information
+Sofern Sie Credit nutzen, beträgt der Zinssatz für die eingeräumte Kontoüberziehung 4,24 %. Für eine Kontoüberziehung außerhalb der Credit-Nutzung fällt ein Zinssatz
+von 4,24 % an. 
+Bitte überprüfen Sie die Informationen auf Richtigkeit und melden Sie etwaige Einwände unverzüglich bei uns.
+Verwenden Sie dafür den Menüpunkt Support im Kundenbereich. 
+Scalable Capital Bank GmbH • Seitzstraße 8e, 80538 München • HRB 217778 • Amtsgericht München • USt.-Id. Nr.: DE300434774 Seite 
+Geschäftsführer: Florian Prucker, Martin Krebs, Dirk Franzmeyer, Dr. Andreas Schranzhofer 3 / 3
+Aufsichtsrat: Patrick Olson (Vorsitzender) 
