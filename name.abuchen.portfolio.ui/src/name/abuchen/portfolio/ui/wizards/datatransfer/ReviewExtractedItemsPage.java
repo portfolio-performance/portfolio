@@ -6,11 +6,13 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -30,6 +32,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
@@ -66,6 +69,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     private static final String IMPORT_TARGET = "import-target"; //$NON-NLS-1$
     private static final String IMPORT_TARGET_PORTFOLIO = IMPORT_TARGET + "-portfolio-"; //$NON-NLS-1$
     private static final String IMPORT_TARGET_ACCOUNT = IMPORT_TARGET + "-account-"; //$NON-NLS-1$
+    private static final String IMPORT_TARGET_SECONDARY_ACCOUNT = IMPORT_TARGET + "-secondary-account-"; //$NON-NLS-1$
     /**
      * Preference for the import wizard to convert "BuySell" transactions to
      * "Delivery" transactions
@@ -95,7 +99,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     private TableViewer errorTableViewer;
 
     /**
-     * the composite holding the dropdowns for primary account and portfolio
+     * the composite holding the dropdowns for primary account
      */
     private Composite primaryContainer;
 
@@ -104,15 +108,20 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
      */
     private Composite secondaryContainer;
 
-    private Label lblTransferTo;
+    /**
+     * the composite holding the dropdowns for the primary portfolio and - if
+     * needed - the offset portfolio. It is placed between the accounts and the
+     * transfers so that it is not read as part of one of the transfer rows.
+     */
+    private Composite portfolioContainer;
 
     private ComboViewer primaryPortfolio;
     private ComboViewer secondaryPortfolio;
 
     /** currency -> source account with label and dropdown */
     private Map<String, Pair<Label, ComboViewer>> primaryAccounts = new HashMap<>();
-    /** currency -> secondary (target) account with label and dropdown */
-    private Map<String, Pair<Label, ComboViewer>> secondaryAccounts = new HashMap<>();
+    /** currency pair of a transfer -> target account with label and dropdown */
+    private Map<CurrencyPair, Pair<Label, ComboViewer>> secondaryAccounts = new LinkedHashMap<>();
 
     private Button cbConvertToDelivery;
     private Button cbRemoveDividends;
@@ -188,7 +197,21 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     @Override
     public Account getSecondaryAccount(String currency)
     {
-        var pair = secondaryAccounts.get(currency);
+        // the dropdowns exist per currency pair. Without the source currency,
+        // use the first dropdown with a matching target currency.
+        for (var entry : secondaryAccounts.entrySet())
+        {
+            if (entry.getKey().target().equals(currency))
+                return (Account) entry.getValue().getRight().getStructuredSelection().getFirstElement();
+        }
+
+        return null;
+    }
+
+    @Override
+    public Account getSecondaryAccount(String sourceCurrency, String targetCurrency)
+    {
+        var pair = secondaryAccounts.get(new CurrencyPair(sourceCurrency, targetCurrency));
         if (pair == null)
             return null;
 
@@ -224,13 +247,16 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.BEGINNING).applyTo(primaryContainer);
         GridLayoutFactory.fillDefaults().numColumns(2).applyTo(primaryContainer);
 
-        lblTransferTo = new Label(targetContainer, SWT.NONE);
-        lblTransferTo.setText(Messages.LabelTransferTo);
-        lblTransferTo.setVisible(false);
+        // portfolio container: portfolio | dropdown | offset portfolio |
+        // dropdown
+        portfolioContainer = new Composite(targetContainer, SWT.NONE);
+        GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.BEGINNING).applyTo(portfolioContainer);
+        GridLayoutFactory.fillDefaults().numColumns(4).applyTo(portfolioContainer);
 
+        // secondary container: "transfer" label | direction | dropdown
         secondaryContainer = new Composite(targetContainer, SWT.NONE);
         GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.BEGINNING).applyTo(secondaryContainer);
-        GridLayoutFactory.fillDefaults().numColumns(2).applyTo(secondaryContainer);
+        GridLayoutFactory.fillDefaults().numColumns(3).applyTo(secondaryContainer);
 
         // preselect the dropdown even if we do not yet have entries to have a
         // minimum size and avoid flickering in (most) cases where there is only
@@ -276,7 +302,16 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         //
 
         itemsTable = new ExtractedItemsTable(compositeTable, client, allEntries);
+        itemsTable.setContext(this);
         itemsTable.setOnEntriesChanged(() -> checkEntriesAndRefresh(allEntries));
+
+        // show the transactions as they will be imported with the options
+        itemsTable.setImportOptions(this::doConvertToDelivery, this::doRemoveDividends);
+        itemsTable.setOnTypesChanged(this::onTypesChanged);
+        cbConvertToDelivery.addSelectionListener(
+                        SelectionListener.widgetSelectedAdapter(e -> checkEntriesAndRefresh(allEntries)));
+        cbRemoveDividends.addSelectionListener(
+                        SelectionListener.widgetSelectedAdapter(e -> checkEntriesAndRefresh(allEntries)));
 
         TableColumnLayout layout = new TableColumnLayout();
         errorTable.setLayout(layout);
@@ -334,12 +369,22 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
         for (var entry : secondaryAccounts.entrySet())
         {
+            var currencyPair = entry.getKey();
             var combo = entry.getValue().getRight();
             var list = (List<?>) combo.getInput();
 
+            if (list.isEmpty())
+                continue;
+
+            // use the target account of the previous import if still available
+            var uuid = preferences.getString(
+                            IMPORT_TARGET_SECONDARY_ACCOUNT + extractor.getLabel() + currencyPair.getPreferenceKey());
+            var index = IntStream.range(0, list.size()) //
+                            .filter(i -> ((Account) list.get(i)).getUUID().equals(uuid)) //
+                            .findAny().orElse(0);
+
             // do not trigger a selection (do not use #setSelection)
-            if (!list.isEmpty())
-                combo.getCombo().select(0);
+            combo.getCombo().select(index);
         }
 
         List<Portfolio> activePortfolios = client.getActivePortfolios();
@@ -387,6 +432,9 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     {
         setTitle(extractor.getLabel());
 
+        // apply column widths changed on another page of the wizard
+        itemsTable.loadColumnWidths();
+
         // run the extraction job either if we have to run them every time (in
         // the case of CSV) or the first time around because we do not have any
         // entries nor error messages
@@ -402,6 +450,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     {
         allEntries.clear();
         itemsTable.getTableViewer().setInput(allEntries);
+        itemsTable.updateColumnVisibility();
         errorTableViewer.setInput(Collections.emptyList());
 
         if (extractor == null)
@@ -463,6 +512,9 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     @Override
     public void afterPage()
     {
+        // store the column widths before the next page is shown
+        itemsTable.saveColumnWidths();
+
         for (var entry : primaryAccounts.entrySet())
         {
             var currency = entry.getKey();
@@ -470,6 +522,18 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             if (selectedAccount != null)
             {
                 preferences.setValue(IMPORT_TARGET_ACCOUNT + extractor.getLabel() + currency,
+                                ((Account) selectedAccount).getUUID());
+            }
+        }
+
+        for (var entry : secondaryAccounts.entrySet())
+        {
+            var currencyPair = entry.getKey();
+            var selectedAccount = entry.getValue().getRight().getStructuredSelection().getFirstElement();
+            if (selectedAccount != null)
+            {
+                preferences.setValue(
+                                IMPORT_TARGET_SECONDARY_ACCOUNT + extractor.getLabel() + currencyPair.getPreferenceKey(),
                                 ((Account) selectedAccount).getUUID());
             }
         }
@@ -501,6 +565,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         checkEntries(entries);
 
         itemsTable.getTableViewer().setInput(allEntries);
+        itemsTable.updateColumnVisibility();
     }
 
     private void populateAccountSelectionContainer(List<ExtractedEntry> entries)
@@ -512,6 +577,10 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             child.dispose();
 
         children = secondaryContainer.getChildren();
+        for (var child : children)
+            child.dispose();
+
+        children = portfolioContainer.getChildren();
         for (var child : children)
             child.dispose();
 
@@ -565,31 +634,60 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             }
         }
 
-        var lblPrimaryPortfolio = new Label(primaryContainer, SWT.NONE);
+        var lblPrimaryPortfolio = new Label(portfolioContainer, SWT.NONE);
         lblPrimaryPortfolio.setText(Messages.ColumnPortfolio);
-        primaryPortfolio = new ComboViewer(primaryContainer, SWT.READ_ONLY);
+        primaryPortfolio = new ComboViewer(portfolioContainer, SWT.READ_ONLY);
         primaryPortfolio.setContentProvider(ArrayContentProvider.getInstance());
         primaryPortfolio.setInput(portfolios);
         primaryPortfolio.addSelectionChangedListener(e -> checkEntriesAndRefresh(allEntries));
 
-        // third: target container based on used currencies
+        // the offset portfolio is placed right next to the portfolio it
+        // belongs to
 
-        Set<String> secondaryCurrencies = entries.stream().map(e -> {
-            if (e.getItem() instanceof Extractor.AccountTransferItem transfer)
-                return ((AccountTransferEntry) transfer.getSubject()).getTargetTransaction().getCurrencyCode();
-            return null;
-        }).filter(Objects::nonNull).collect(Collectors.toSet());
+        var needsSecondaryPortfolio = entries.stream()
+                        .anyMatch(e -> e.getItem() instanceof Extractor.PortfolioTransferItem);
 
-        for (String currency : secondaryCurrencies)
+        if (needsSecondaryPortfolio)
         {
+            var label = new Label(portfolioContainer, SWT.NONE);
+            label.setText(Messages.ColumnOffsetPortfolio);
+            secondaryPortfolio = new ComboViewer(portfolioContainer, SWT.READ_ONLY);
+            secondaryPortfolio.setContentProvider(ArrayContentProvider.getInstance());
+            secondaryPortfolio.setInput(portfolios);
+            secondaryPortfolio.addSelectionChangedListener(e -> checkEntriesAndRefresh(allEntries));
+        }
+
+        // third: target container with one row per currency pair of the
+        // transfers (sorted by source and target currency)
+
+        var currencyPairs = new TreeSet<CurrencyPair>(
+                        Comparator.comparing(CurrencyPair::source).thenComparing(CurrencyPair::target));
+        for (var e : entries)
+        {
+            if (e.getItem() instanceof Extractor.AccountTransferItem transfer)
+            {
+                var transferEntry = (AccountTransferEntry) transfer.getSubject();
+                currencyPairs.add(new CurrencyPair(transferEntry.getSourceTransaction().getCurrencyCode(),
+                                transferEntry.getTargetTransaction().getCurrencyCode()));
+            }
+        }
+
+        for (var currencyPair : currencyPairs)
+        {
+            var currency = currencyPair.target();
+
+            addTransferToCell();
+
+            // show the direction (e.g. "USD → EUR") because the rows are not
+            // related to the primary accounts displayed on the same line
             var label = new Label(secondaryContainer, SWT.NONE);
-            label.setText(currency);
+            label.setText(currencyPair.source() + " \u2192 " + currency); //$NON-NLS-1$
             List<Account> accountsByCurrency = accounts.stream().filter(a -> a.getCurrencyCode().equals(currency))
                             .sorted(new Account.ByName()).toList();
 
             if (accountsByCurrency.isEmpty())
             {
-                var message = new Label(primaryContainer, SWT.NONE);
+                var message = new Label(secondaryContainer, SWT.NONE);
                 message.setText(MessageFormat.format(Messages.LabelCreateAccountFirst, currency));
             }
             else
@@ -599,38 +697,112 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                 dropdown.setInput(accountsByCurrency);
                 dropdown.addSelectionChangedListener(e -> checkEntriesAndRefresh(allEntries));
 
-                secondaryAccounts.put(currency, new Pair<>(label, dropdown));
+                secondaryAccounts.put(currencyPair, new Pair<>(label, dropdown));
             }
         }
 
-        var needsSecondaryPortfolio = entries.stream()
-                        .anyMatch(e -> e.getItem() instanceof Extractor.PortfolioTransferItem);
-
-        if (needsSecondaryPortfolio)
-        {
-            var label = new Label(secondaryContainer, SWT.NONE);
-            label.setText(Messages.ColumnPortfolio);
-            secondaryPortfolio = new ComboViewer(secondaryContainer, SWT.READ_ONLY);
-            secondaryPortfolio.setContentProvider(ArrayContentProvider.getInstance());
-            secondaryPortfolio.setInput(portfolios);
-            secondaryPortfolio.addSelectionChangedListener(e -> checkEntriesAndRefresh(allEntries));
-        }
-
-        lblTransferTo.setVisible(!secondaryCurrencies.isEmpty() || needsSecondaryPortfolio);
-
         // finally: re-layout
 
+        // The size of the target container often does not change (e.g. the
+        // primary side still shows the same currencies). Then SWT
+        // does not lay out its children again and the secondary container
+        // keeps the size of its initial, empty state, which hides the
+        // dropdowns. Therefore lay out all descendants.
+
         primaryContainer.layout(true);
+        portfolioContainer.layout(true);
         secondaryContainer.layout(true);
-        primaryContainer.getParent().getParent().layout(true);
+        primaryContainer.getParent().getParent().layout(true, true);
 
         preselectDropDowns();
+    }
+
+    /**
+     * Called after the user changed the type of entries (e.g. a deposit into
+     * a transfer). The entries may need other dropdowns (e.g. for the offset
+     * account), therefore the dropdowns are created again while keeping the
+     * current selection.
+     */
+    private void onTypesChanged()
+    {
+        var primarySelection = new HashMap<String, Object>();
+        primaryAccounts.forEach((currency, pair) -> primarySelection.put(currency,
+                        pair.getRight().getStructuredSelection().getFirstElement()));
+
+        var secondarySelection = new HashMap<CurrencyPair, Object>();
+        secondaryAccounts.forEach((currencyPair, pair) -> secondarySelection.put(currencyPair,
+                        pair.getRight().getStructuredSelection().getFirstElement()));
+
+        var portfolioSelection = primaryPortfolio.getStructuredSelection().getFirstElement();
+        var secondaryPortfolioSelection = secondaryPortfolio != null
+                        ? secondaryPortfolio.getStructuredSelection().getFirstElement()
+                        : null;
+
+        populateAccountSelectionContainer(allEntries);
+
+        primaryAccounts.forEach((currency, pair) -> select(pair.getRight(), primarySelection.get(currency)));
+        secondaryAccounts.forEach((currencyPair, pair) -> select(pair.getRight(),
+                        secondarySelection.get(currencyPair)));
+        select(primaryPortfolio, portfolioSelection);
+        if (secondaryPortfolio != null)
+            select(secondaryPortfolio, secondaryPortfolioSelection);
+
+        checkEntriesAndRefresh(allEntries);
+    }
+
+    /**
+     * Selects the element if it is available (without triggering a selection
+     * event, like the preselection of the dropdowns).
+     */
+    private void select(ComboViewer combo, Object element)
+    {
+        if (element == null)
+            return;
+
+        var index = ((List<?>) combo.getInput()).indexOf(element);
+        if (index >= 0)
+            combo.getCombo().select(index);
+    }
+
+    /**
+     * Adds the first cell of a row in the secondary container: the "transfer"
+     * label in the first row, an empty placeholder in all further rows.
+     * This keeps the label on the same line as the first target dropdown.
+     */
+    private void addTransferToCell()
+    {
+        var label = new Label(secondaryContainer, SWT.NONE);
+        if (secondaryContainer.getChildren().length == 1)
+            label.setText(Messages.LabelTransfer);
     }
 
     private void checkEntriesAndRefresh(List<ExtractedEntry> entries)
     {
         checkEntries(entries);
         itemsTable.refresh();
+    }
+
+    /**
+     * The additional fee and tax entries of a changed type cannot be imported
+     * without their transfer. If the transfer has an error, the entries get the
+     * same error so that the reason is visible on each of them. (If the user
+     * excludes the transfer, the entries are not imported either, see
+     * ExtractedEntry#setOwner.)
+     */
+    private void markAdditionalEntriesOfFailedTransfers(List<ExtractedEntry> entries)
+    {
+        if (itemsTable == null)
+            return;
+
+        for (var entry : entries)
+        {
+            var errors = entry.getStatus().filter(s -> s.getCode() == ImportAction.Status.Code.ERROR).toList();
+            if (errors.isEmpty())
+                continue;
+
+            for (var additional : itemsTable.getAdditionalEntries(entry))
+                errors.forEach(additional::addStatus);
+        }
     }
 
     /**
@@ -660,6 +832,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         actions.add(new DetectDuplicatesAction(client));
         actions.add(new CheckCurrenciesAction());
         actions.add(new CheckForexGrossValueAction());
+        actions.add(new CheckTransferSourceAndTargetAction());
+        actions.add(new CheckReferenceAccountCurrencyAction(this::doConvertToDelivery, this::getAccount));
 
         List<Exception> allErrors = new ArrayList<>(extractionErrors);
 
@@ -707,7 +881,20 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             }
         }
 
+        markAdditionalEntriesOfFailedTransfers(entries);
+
         errorTableViewer.setInput(allErrors);
     }
 
+    /**
+     * Currency pair of a transfer from the source to the target currency. The
+     * target account is selected per currency pair.
+     */
+    private record CurrencyPair(String source, String target)
+    {
+        private String getPreferenceKey()
+        {
+            return source + "-" + target; //$NON-NLS-1$
+        }
+    }
 }
