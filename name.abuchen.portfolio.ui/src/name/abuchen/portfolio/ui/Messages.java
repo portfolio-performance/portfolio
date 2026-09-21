@@ -229,6 +229,9 @@ public class Messages extends NLS
     public static String ColumnInterval;
     public static String ColumnIRR;
     public static String ColumnIRR_MenuLabel;
+    public static String ColumnIRRAfterTax;
+    public static String ColumnIRRAfterTax_Description;
+    public static String ColumnIRRAfterTax_MenuLabel;
     public static String ColumnIRRPerformance;
     public static String ColumnIRRPerformanceOption;
     public static String ColumnISIN;
