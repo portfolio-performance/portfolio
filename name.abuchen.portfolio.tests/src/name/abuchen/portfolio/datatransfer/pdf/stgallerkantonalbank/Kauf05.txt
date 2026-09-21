@@ -1,0 +1,42 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.87.1.202608241030
+System: win32 | x86_64 | 21.0.12.1+1-LTS | Eclipse Adoptium
+-----------------------------------------
+VVFsFvT wX
+Vermögensverwaltungskonto CHF
+Depot-Nr. 1234.5678.9012 / SAMPLE PORTFOLIO
+IBAN CH00 0000 0000 0000 0000 0
+St.Galler Kantonalbank AG
+St. Leonhardstrasse 25
+9001 St. Gallen
+www.sgkb.ch
+BIC KBSGCH22
+Ihr Kontakt:
+Anna Muster VVFsFvT wX
+Telefon +41 71 000 00 00 Musterweg 1
+anna.muster@sgkb.ch 9000 St. Gallen
+
+St. Gallen, 8. Juli 2026
+Referenznummer 2222222222
+Abrechnung: Ihr Kauf
+Wir haben für Sie am 23. Juni 2026 gekauft (Details siehe Folgeseite):
+250 N-Akt Compagnie Financiere Richemont SA Valoren-Nr. 21048333
+CHF 1 nom ISIN CH0210483332
+Währung Betrag
+Kurs CHF 178.75 CHF 44'687.50
+Eidg. Stempelsteuer CHF 33.52
+Ausführungsgebühr SSX CHF 4.40
+Total CHF 44'725.42
+Zu Ihren Lasten Valuta 25.06.2026 CHF 44'725.42
+Die Titel wurden in Ihr Depot eingebucht. Wir danken für Ihren Auftrag.
+Freundliche Grüsse
+St.Galler Kantonalbank AG
+PrintPreview 4118862 229614463 BP00000000 Seite 1 von 2
+VVFsFvT wX
+Vermögensverwaltungskonto CHF
+IBAN CH00 0000 0000 0000 0000 0
+Ausführungsdetails
+Die Abrechnung setzt sich wie folgt zusammen:
+Menge Ausführungszeitpunkt Börsenplatz Währung Kurs
+250 23.06.2026 15:29:12 SIX Swiss Exchange, SwissAtMid CHF 178.75
+PrintPreview 4118862 229614463 BP00000000 Seite 2 von 2
