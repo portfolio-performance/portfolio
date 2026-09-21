@@ -33,6 +33,16 @@ import name.abuchen.portfolio.util.Triple;
     /* package */ static void paintTimeGrid(Chart chart, PaintEvent e, LocalDate start, LocalDate end,
                     ToIntFunction<LocalDate> getPixelCoordinate)
     {
+        paintTimeGrid(chart, e, start, end, getPixelCoordinate, null);
+    }
+
+    /**
+     * Paints the time grid. If a format is given, it is used to label the grid
+     * lines instead of the format derived from the length of the interval.
+     */
+    /* package */ static void paintTimeGrid(Chart chart, PaintEvent e, LocalDate start, LocalDate end,
+                    ToIntFunction<LocalDate> getPixelCoordinate, DateTimeFormatter formatOverride)
+    {
         IAxis xAxis = chart.getAxisSet().getXAxis(0);
 
         int days = Dates.daysBetween(start, end) + 1;
@@ -40,7 +50,7 @@ import name.abuchen.portfolio.util.Triple;
         Triple<Period, DateTimeFormatter, LocalDate> data = getPeriodFormatAndCursor(days, start, e.width);
 
         Period period = data.getFirst();
-        DateTimeFormatter format = data.getSecond();
+        var format = formatOverride != null ? formatOverride : data.getSecond();
         LocalDate cursor = data.getThird();
 
         e.gc.setForeground(chart.getTitle().getForeground());

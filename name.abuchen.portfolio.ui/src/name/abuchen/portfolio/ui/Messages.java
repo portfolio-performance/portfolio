@@ -839,6 +839,7 @@ public class Messages extends NLS
     public static String LabelPerformanceChart;
     public static String LabelPerformanceIRR;
     public static String LabelPerformanceMetric;
+    public static String LabelPerformancePerYear;
     public static String LabelPerformanceTTWROR;
     public static String LabelPickFile;
     public static String LabelPickFileFormat;

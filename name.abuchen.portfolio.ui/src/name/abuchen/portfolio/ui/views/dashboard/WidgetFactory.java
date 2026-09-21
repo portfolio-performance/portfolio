@@ -43,6 +43,7 @@ import name.abuchen.portfolio.ui.views.dashboard.heatmap.YearlyPerformanceHeatma
 import name.abuchen.portfolio.ui.views.dashboard.lists.EventListWidget;
 import name.abuchen.portfolio.ui.views.dashboard.lists.FollowUpWidget;
 import name.abuchen.portfolio.ui.views.dashboard.lists.LimitExceededWidget;
+import name.abuchen.portfolio.ui.views.dashboard.performance.PerformancePerYearWidget;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel;
 
@@ -353,6 +354,9 @@ public enum WidgetFactory
 
     HEATMAP_YEARLY(Messages.LabelYearlyHeatmap, Messages.ClientEditorLabelPerformance,
                     YearlyPerformanceHeatmapWidget::new),
+
+    PERFORMANCE_PER_YEAR_CHART(Messages.LabelPerformancePerYear, Messages.ClientEditorLabelPerformance,
+                    Images.VIEW_LINECHART, PerformancePerYearWidget::new),
 
     EARNINGS(Messages.LabelEarningsTransactionList, Messages.LabelEarnings, //
                     config -> config.put(Dashboard.Config.LAYOUT.name(), ExpansionSetting.EXPAND_CURRENT_MONTH.name()),
