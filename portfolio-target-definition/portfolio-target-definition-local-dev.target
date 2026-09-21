@@ -177,7 +177,7 @@
 			<dependency>
 				<groupId>com.google.protobuf</groupId>
 				<artifactId>protobuf-java</artifactId>
-				<version>4.35.1</version>
+				<version>4.36.2</version>
 				<type>jar</type>
 			</dependency>
 		</dependencies>
@@ -193,7 +193,7 @@
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
-				<version>33.6.0-jre</version>
+				<version>33.7.1-jre</version>
 				<type>jar</type>
 			</dependency>
 		</dependencies>
