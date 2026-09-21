@@ -132,6 +132,17 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
                     .with(converter.at(interval.getEnd())));
 
     /**
+     * market value of holdings at the beginning of the period
+     */
+    // as with the market value at the end, first sum up the individual values
+    // and convert only then into the term currency
+    private final LazyValue<Money> openingValue = new LazyValue<>(() -> this.lineItems.stream() //
+                    .filter(data -> data instanceof CalculationLineItem.ValuationAtStart)
+                    .map(CalculationLineItem::getValue) //
+                    .collect(MoneyCollectors.sum(security.getCurrencyCode())) //
+                    .with(converter.at(interval.getStart())));
+
+    /**
      * Latest quote
      */
     private final LazyValue<SecurityPrice> quote = new LazyValue<>(() -> security.getSecurityPrice(interval.getEnd()));
@@ -240,6 +251,16 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
     public Money getMarketValue()
     {
         return marketValue.get();
+    }
+
+    /**
+     * The value of the position held at the start of the interval, the
+     * counterpart to {@link #getMarketValue()}. Zero for a position that was
+     * first acquired during the interval.
+     */
+    public Money getOpeningValue()
+    {
+        return openingValue.get();
     }
 
     public Quote getQuote()

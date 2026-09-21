@@ -88,3 +88,20 @@ jobs:
             --file portfolio-app/pom.xml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Validates the hand-authored OpenAPI document. Complements the JUnit drift
+  # test (which checks the spec against the routing table) with schema-level
+  # linting of the document itself.
+  openapi-lint:
+    name: OpenAPI Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Lint the OpenAPI document
+        run: npx --yes @redocly/cli@2 lint

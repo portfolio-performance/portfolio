@@ -98,4 +98,57 @@ public class SecurityPerformanceSnapshotTest
         assertThat(position.getShares(), is(record.getSharesHeld()));
         assertThat(position.calculateValue(), is(record.getMarketValue()));
     }
+
+    @Test
+    public void testOpeningValueOfPositionHeldBeforeTheInterval()
+    {
+        Client client = new Client();
+
+        Security security = new SecurityBuilder() //
+                        .addPrice("2018-03-01", Values.Quote.factorize(10)) //
+                        .addPrice("2018-04-01", Values.Quote.factorize(12)) //
+                        .addPrice("2018-06-01", Values.Quote.factorize(15)) //
+                        .addTo(client);
+
+        new PortfolioBuilder()
+                        .buy(security, "2018-03-15", Values.Share.factorize(100), Values.Amount.factorize(1000))
+                        .addTo(client);
+
+        Interval interval = Interval.of(LocalDate.parse("2018-04-01"), LocalDate.parse("2018-06-01"));
+        LazySecurityPerformanceSnapshot snapshot = LazySecurityPerformanceSnapshot.create(client,
+                        new TestCurrencyConverter(), interval);
+
+        assertThat(snapshot.getRecords(), hasSize(1));
+
+        LazySecurityPerformanceRecord record = snapshot.getRecords().get(0);
+
+        assertThat(record.getOpeningValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100 * 12d))));
+        assertThat(record.getMarketValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100 * 15d))));
+    }
+
+    @Test
+    public void testOpeningValueIsZeroForPositionAcquiredWithinTheInterval()
+    {
+        Client client = new Client();
+
+        Security security = new SecurityBuilder() //
+                        .addPrice("2018-04-01", Values.Quote.factorize(10)) //
+                        .addPrice("2018-06-01", Values.Quote.factorize(15)) //
+                        .addTo(client);
+
+        new PortfolioBuilder()
+                        .buy(security, "2018-05-01", Values.Share.factorize(100), Values.Amount.factorize(1000))
+                        .addTo(client);
+
+        Interval interval = Interval.of(LocalDate.parse("2018-04-01"), LocalDate.parse("2018-06-01"));
+        LazySecurityPerformanceSnapshot snapshot = LazySecurityPerformanceSnapshot.create(client,
+                        new TestCurrencyConverter(), interval);
+
+        assertThat(snapshot.getRecords(), hasSize(1));
+
+        LazySecurityPerformanceRecord record = snapshot.getRecords().get(0);
+
+        assertThat(record.getOpeningValue(), is(Money.of(CurrencyUnit.EUR, 0)));
+        assertThat(record.getMarketValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100 * 15d))));
+    }
 }
