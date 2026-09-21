@@ -195,7 +195,10 @@ public class ChartWidget extends WidgetDelegate<Object>
 
         addConfig(new ChartConfig(this, useCase));
         if (useCase == DataSeries.UseCase.PERFORMANCE)
+        {
+            addConfig(new PerformanceMetricConfig(this));
             addConfig(new AggregationConfig(this));
+        }
         addConfig(new ReportingPeriodConfig(this));
         addConfig(new ChartHeightConfig(this));
     }
@@ -256,9 +259,6 @@ public class ChartWidget extends WidgetDelegate<Object>
     @Override
     public Supplier<Object> getUpdateTask()
     {
-        // just fill the cache - the chart series builder will look it up and
-        // pass it directly to the chart
-
         DataSeriesCache cache = getDashboardData().getDataSeriesCache();
 
         List<DataSeries> series = new DataSeriesSerializer().fromString(dataSeriesSet,
@@ -334,7 +334,7 @@ public class ChartWidget extends WidgetDelegate<Object>
     private void buildPerformanceSeries(List<DataSeries> series, Interval reportingPeriod)
     {
         PerformanceChartSeriesBuilder b2 = new PerformanceChartSeriesBuilder(chart,
-                        getDashboardData().getDataSeriesCache());
+                        getDashboardData().getDataSeriesCache(), get(PerformanceMetricConfig.class).getMetric());
         series.forEach(s -> b2.build(s, reportingPeriod, get(AggregationConfig.class).getAggregation()));
     }
 }
