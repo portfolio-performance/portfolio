@@ -6,6 +6,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFeed;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFeedProperty;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
@@ -675,29 +676,19 @@ public class SutorBankGmbHPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("US4878361082"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("Kellogg Co."));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("US4878361082"), hasWkn(null), hasTicker(null), //
+                        hasName("Kellogg Co."), //
+                        hasCurrencyCode("EUR"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-15T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(30)));
-        assertThat(transaction.getSource(), is("Dividende01.txt"));
-        assertThat(transaction.getNote(), is("Vierteljährlich"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(12.15))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(14.29))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(2.14))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2021-03-15T00:00"), hasExDate("2021-03-01T00:00"), //
+                        hasShares(30.00), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote("Vierteljährlich"), //
+                        hasAmount("EUR", 12.15), hasGrossValue("EUR", 14.29), //
+                        hasTaxes("EUR", 2.14), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -720,29 +711,19 @@ public class SutorBankGmbHPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("US92936U1097"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("W.P. Carey Inc."));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("US92936U1097"), hasWkn(null), hasTicker(null), //
+                        hasName("W.P. Carey Inc."), //
+                        hasCurrencyCode("EUR"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-15T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(20)));
-        assertThat(transaction.getSource(), is("Dividende02.txt"));
-        assertThat(transaction.getNote(), is("Vierteljährlich"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(13.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(17.46))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(4.46))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2021-04-15T00:00"), hasExDate("2021-03-30T00:00"), //
+                        hasShares(20.00), //
+                        hasSource("Dividende02.txt"), //
+                        hasNote("Vierteljährlich"), //
+                        hasAmount("EUR", 13.00), hasGrossValue("EUR", 17.46), //
+                        hasTaxes("EUR", 4.46), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -765,29 +746,19 @@ public class SutorBankGmbHPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("GB0007188757"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("Rio Tinto PLC"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("GB0007188757"), hasWkn(null), hasTicker(null), //
+                        hasName("Rio Tinto PLC"), //
+                        hasCurrencyCode("EUR"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-09-23T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(30)));
-        assertThat(transaction.getSource(), is("Dividende03.txt"));
-        assertThat(transaction.getNote(), is("Interim"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(141.33))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(141.33))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2021-09-23T00:00"), hasExDate("2021-08-12T00:00"), //
+                        hasShares(30.00), //
+                        hasSource("Dividende03.txt"), //
+                        hasNote("Interim"), //
+                        hasAmount("EUR", 141.33), hasGrossValue("EUR", 141.33), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -810,29 +781,19 @@ public class SutorBankGmbHPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("US6516391066"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("Newmont Corp."));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("US6516391066"), hasWkn(null), hasTicker(null), //
+                        hasName("Newmont Corp."), //
+                        hasCurrencyCode("EUR"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-09-23T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(40)));
-        assertThat(transaction.getSource(), is("Dividende04.txt"));
-        assertThat(transaction.getNote(), is("Vierteljährlich"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(15.90))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(18.71))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(2.81))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2021-09-23T00:00"), hasExDate("2021-09-08T00:00"), //
+                        hasShares(40.00), //
+                        hasSource("Dividende04.txt"), //
+                        hasNote("Vierteljährlich"), //
+                        hasAmount("EUR", 15.90), hasGrossValue("EUR", 18.71), //
+                        hasTaxes("EUR", 2.81), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -855,30 +816,19 @@ public class SutorBankGmbHPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("US00206R1023"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("AT & T Inc."));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("US00206R1023"), hasWkn(null), hasTicker(null), //
+                        hasName("AT & T Inc."), //
+                        hasCurrencyCode("EUR"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-11-01T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(31)));
-        assertThat(transaction.getSource(), is("Dividende05.txt"));
-        assertThat(transaction.getNote(), is("Vierteljährlich"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.34))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(13.88))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(2.08 + 1.39 + 0.07))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2021-11-01T00:00"), hasExDate("2021-10-07T00:00"), //
+                        hasShares(31.00), //
+                        hasSource("Dividende05.txt"), //
+                        hasNote("Vierteljährlich"), //
+                        hasAmount("EUR", 10.34), hasGrossValue("EUR", 13.88), //
+                        hasTaxes("EUR", (2.08 + 1.39 + 0.07)), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -913,6 +863,70 @@ public class SutorBankGmbHPDFExtractorTest
                         hasNote(null), //
                         hasAmount("EUR", 34.25), hasGrossValue("EUR", 34.25), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testVorabpauschale02()
+    {
+        var extractor = new SutorBankGmbHPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE000BI8OT95"), hasWkn(null), hasTicker(null), //
+                        hasName("Amundi MSCI World UCITS ETF acc"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2026-01-02T00:00"), hasShares(22.00), //
+                        hasSource("Vorabpauschale02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 8.65), hasGrossValue("EUR", 8.65), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testSteuerausgleich01()
+    {
+        var extractor = new SutorBankGmbHPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerausgleich01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionAlternativeDocumentRequired, //
+                        taxes( //
+                                        hasDate("2026-01-19T00:00"), hasShares(0.00), //
+                                        hasSource("Steuerausgleich01.txt"), //
+                                        hasNote("Steuerausgleich nach §43a EstG"), //
+                                        hasAmount("EUR", 8.65), hasGrossValue("EUR", 8.65), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -4568,7 +4582,8 @@ public class SutorBankGmbHPDFExtractorTest
 
         // check dividends transactions
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-03-07T00:00"), hasShares(0.00), //
+                        hasDate("2024-03-07T00:00"), hasExDate(null), //
+                        hasShares(0.00), //
                         hasSource("Depotauszug06.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.64), hasGrossValue("EUR", 0.79), //
@@ -4686,7 +4701,8 @@ public class SutorBankGmbHPDFExtractorTest
 
         // check dividends transactions
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-09-27T00:00"), hasShares(0.00), //
+                        hasDate("2023-09-27T00:00"), hasExDate(null), //
+                        hasShares(0.00), //
                         hasSource("Depotauszug07.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.50), hasGrossValue("EUR", 0.50), //
@@ -4893,6 +4909,643 @@ public class SutorBankGmbHPDFExtractorTest
                         hasSource("Depotauszug09.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 70.00), hasGrossValue("EUR", 70.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDepotauszug10()
+    {
+        var extractor = new SutorBankGmbHPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotauszug10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(8L));
+        assertThat(countBuySell(results), is(17L));
+        assertThat(countAccountTransactions(results), is(7L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(32));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BQN1K786"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares Edge MSCI Europe Momentum"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B14X4T88"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares Asia Pacific Dividend ETF"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B1W6CW87"), hasWkn(null), hasTicker(null), //
+                        hasName("Dimensional European Value Fund"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0397221945"), hasWkn(null), hasTicker(null), //
+                        hasName("x-tr. Portf.Total Ret. UCITS ETF"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1829221024"), hasWkn(null), hasTicker(null), //
+                        hasName("Multi Amundi Nasdaq-100 II UCITS"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BYVJRP78"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares Sustainable MSCI EM SRI acc"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BKM4GZ66"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares Core MSCI Emerging Markets"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE0032769055"), hasWkn(null), hasTicker(null), //
+                        hasName("Dimensional Europ.Small Comp. F acc"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transactions
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-06-26T00:00"), hasExDate(null), //
+                        hasShares(0.00), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 353.38), hasGrossValue("EUR", 353.38), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-07-15"), hasAmount("EUR", 200.00), //
+                        hasSource("Depotauszug10.txt"), hasNote("automatischer Lastschrifteinzug"))));
+
+        // assert transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2025-07-15"), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote("Kontoführungs-u.Depotgeb.1.Hj. 2025"), //
+                        hasAmount("EUR", 43.12), hasGrossValue("EUR", 43.12), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-07-15T11:46"), hasShares(3.8356), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 50.99), hasGrossValue("EUR", 50.99), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-07-15T12:44"), hasShares(19.0518), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 408.28), hasGrossValue("EUR", 408.28), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-07-15T00:00"), hasShares(2.2622), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 50.99), hasGrossValue("EUR", 50.99), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-07-16T10:56"), hasShares(0.07), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote("Gebührentilgung"), //
+                        hasAmount("EUR", 21.24), hasGrossValue("EUR", 21.24), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-07-16T11:49"), hasShares(2.2309), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote("Gebührentilgung"), //
+                        hasAmount("EUR", 29.56), hasGrossValue("EUR", 29.56), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-07-16T12:44"), hasShares(0.3221), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote("Gebührentilgung"), //
+                        hasAmount("EUR", 25.66), hasGrossValue("EUR", 25.66), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-07-16T13:17"), hasShares(0.0685), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote("Gebührentilgung"), //
+                        hasAmount("EUR", 0.50), hasGrossValue("EUR", 0.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-07-16T13:19"), hasShares(1.259), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote("Gebührentilgung"), //
+                        hasAmount("EUR", 27.00), hasGrossValue("EUR", 27.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-07-16T13:43"), hasShares(1.0364), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote("Gebührentilgung"), //
+                        hasAmount("EUR", 35.50), hasGrossValue("EUR", 35.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-07-16T00:00"), hasShares(0.7039), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote("Gebührentilgung"), //
+                        hasAmount("EUR", 40.75), hasGrossValue("EUR", 40.75), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-07-17T00:00"), hasShares(1.3326), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote("Gebührentilgung"), //
+                        hasAmount("EUR", 30.21), hasGrossValue("EUR", 30.21), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // assert transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2025-07-23"), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote("Kontoführungs-u.Depotgebühren"), //
+                        hasAmount("EUR", 210.42), hasGrossValue("EUR", 210.42), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-08-15"), hasAmount("EUR", 200.00), //
+                        hasSource("Depotauszug10.txt"), hasNote("automatischer Lastschrifteinzug"))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-08-15T12:00"), hasShares(3.1306), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 70.00), hasGrossValue("EUR", 70.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-08-15T12:38"), hasShares(4.7095), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 65.00), hasGrossValue("EUR", 65.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-08-15T00:00"), hasShares(2.7554), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 65.00), hasGrossValue("EUR", 65.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-09-15"), hasAmount("EUR", 200.00), //
+                        hasSource("Depotauszug10.txt"), hasNote("automatischer Lastschrifteinzug"))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-09-15T11:05"), hasShares(4.6952), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 65.00), hasGrossValue("EUR", 65.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-09-15T11:51"), hasShares(3.0574), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 70.00), hasGrossValue("EUR", 70.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-09-15T00:00"), hasShares(2.7507), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 65.00), hasGrossValue("EUR", 65.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check dividends transactions
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-09-25T00:00"), hasExDate(null), //
+                        hasShares(0.00), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 124.85), hasGrossValue("EUR", 124.85), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDepotauszug11()
+    {
+        var extractor = new SutorBankGmbHPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotauszug11.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(13L));
+        assertThat(countBuySell(results), is(37L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(53));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B7T1D258"), hasWkn(null), hasTicker(null), //
+                        hasName("Dimensional Gl. Sust. Core Eq. Fd €"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B18GC888"), hasWkn(null), hasTicker(null), //
+                        hasName("Vanguard Global Bond Index EUR acc"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0950674332"), hasWkn(null), hasTicker(null), //
+                        hasName("UBS MSCI World Social Resp ETF acc"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0290358224"), hasWkn(null), hasTicker(null), //
+                        hasName("x-tr.II-iBoxx Eur.Infl.-Link.UCI"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0290355717"), hasWkn(null), hasTicker(null), //
+                        hasName("x-trackers II Eurozone Gov. Bond"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BCBJG560"), hasWkn(null), hasTicker(null), //
+                        hasName("SPDR MSCI World Small Cap UCITS ETF"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1829221024"), hasWkn(null), hasTicker(null), //
+                        hasName("M.U.L.-Lyxor Nasdaq-100 UCITS"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B3F81409"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares Core Gl. Aggr Bond EUR"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BYVJRP78"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares Sustainable MSCI EM SRI acc"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BP3QZ825"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares Edge MSCI World Momentum"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BCRY6003"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares $ Short Duration High Yield"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B3F81R35"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares Core Euro Corporate Bond"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B3DKXQ41"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares Euro Aggregate Bond UCITS"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-12-30T00:00"), hasShares(185.541), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 4757.27), hasGrossValue("EUR", 4757.27), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-12-30T00:00"), hasShares(99.5464), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2552.37), hasGrossValue("EUR", 2552.37), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-12-30T00:00"), hasShares(32.6904), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 3015.38), hasGrossValue("EUR", 3015.38), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-12-30T11:32"), hasShares(202.5371), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 4221.88), hasGrossValue("EUR", 4221.88), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-12-30T11:37"), hasShares(19.8396), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 4470.66), hasGrossValue("EUR", 4470.66), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-12-30T11:57"), hasShares(14.4865), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2946.12), hasGrossValue("EUR", 2946.12), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-12-30T12:10"), hasShares(116.1478), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 9344.10), hasGrossValue("EUR", 9344.10), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-12-30T12:11"), hasShares(120.3699), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 9670.52), hasGrossValue("EUR", 9670.52), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-12-30T12:26"), hasShares(45.2757), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1846.57), hasGrossValue("EUR", 1846.57), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-12-30T12:27"), hasShares(76.3133), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 3110.91), hasGrossValue("EUR", 3110.91), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-12-30T12:34"), hasShares(517.5462), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2090.95), hasGrossValue("EUR", 2090.95), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-12-30T12:35"), hasShares(2842.6072), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 18255.21), hasGrossValue("EUR", 18255.21), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-12-30T12:35"), hasShares(1028.385), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 6604.28), hasGrossValue("EUR", 6604.28), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-12-30T12:36"), hasShares(41.9621), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2166.93), hasGrossValue("EUR", 2166.93), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-12-30T12:36"), hasShares(76.5027), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 3949.06), hasGrossValue("EUR", 3949.06), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-12-30T12:45"), hasShares(64.12), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 5029.61), hasGrossValue("EUR", 5029.61), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-12-30T12:46"), hasShares(54.2402), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 4245.55), hasGrossValue("EUR", 4245.55), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-12-30T13:03"), hasShares(12.1896), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1402.78), hasGrossValue("EUR", 1402.78), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-12-30T13:11"), hasShares(19.8285), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2060.55), hasGrossValue("EUR", 2060.55), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-01-16"), hasAmount("EUR", 200.00), //
+                        hasSource("Depotauszug11.txt"), hasNote("automatischer Lastschrifteinzug"))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-01-16T11:16"), hasShares(0.5331), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 45.00), hasGrossValue("EUR", 45.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-01-16T13:41"), hasShares(0.5532), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 44.00), hasGrossValue("EUR", 44.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-01-16T14:18"), hasShares(0.3875), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 20.00), hasGrossValue("EUR", 20.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-01-16T14:19"), hasShares(7.3779), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 50.00), hasGrossValue("EUR", 50.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-01-16T14:27"), hasShares(0.3524), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 15.00), hasGrossValue("EUR", 15.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-01-17T00:00"), hasShares(0.9687), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 26.00), hasGrossValue("EUR", 26.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-02-15"), hasAmount("EUR", 200.00), //
+                        hasSource("Depotauszug11.txt"), hasNote("automatischer Lastschrifteinzug"))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-02-15T10:52"), hasShares(0.515), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 45.00), hasGrossValue("EUR", 45.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-02-15T12:01"), hasShares(0.3206), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 15.00), hasGrossValue("EUR", 15.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-02-15T12:09"), hasShares(7.6266), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 50.00), hasGrossValue("EUR", 50.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-02-15T12:11"), hasShares(0.3853), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 20.00), hasGrossValue("EUR", 20.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-02-15T12:23"), hasShares(0.554), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 44.00), hasGrossValue("EUR", 44.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-02-15T00:00"), hasShares(0.9269), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 26.00), hasGrossValue("EUR", 26.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-03-15"), hasAmount("EUR", 200.00), //
+                        hasSource("Depotauszug11.txt"), hasNote("automatischer Lastschrifteinzug"))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-03-15T11:17"), hasShares(0.3311), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 15.00), hasGrossValue("EUR", 15.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-03-15T11:24"), hasShares(8.1726), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 50.00), hasGrossValue("EUR", 50.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-03-15T11:25"), hasShares(0.4077), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 20.00), hasGrossValue("EUR", 20.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-03-15T11:32"), hasShares(0.5545), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 44.00), hasGrossValue("EUR", 44.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-03-15T11:38"), hasShares(0.5578), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 45.00), hasGrossValue("EUR", 45.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-03-15T00:00"), hasShares(0.9912), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 26.00), hasGrossValue("EUR", 26.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 

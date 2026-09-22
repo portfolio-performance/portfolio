@@ -42,6 +42,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
         addBuySellCryptoTransaction();
         addDividendeTransaction();
         addAdvanceTaxTransaction();
+        addTaxAdjustmentTransaction();
         addAccountStatementTransaction();
         addNonImportableTransaction();
     }
@@ -356,6 +357,13 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
+                        // Ex Datum - Tag 01. März 2021
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Ex Datum \\- Tag (?<exDate>[\\d]{1,2}\\. .* [\\d]{4})$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
+                        // @formatter:off
                         // Ausmachender Betrag EUR 12,15
                         // @formatter:on
                         .section("currency", "amount") //
@@ -394,23 +402,53 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
-                        // @formatter:off
-                        // Name iShares MSCI World (Acc)
-                        // ISIN IE00B4L5Y983
-                        // Monat Anzahl Stücke Vorabpauschale in EUR Vorabpauschale in EUR
-                        // @formatter:on
-                        .section("name", "isin", "currency") //
-                        .match("^Name (?<name>.*)$") //
-                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                        .match("^.*Vorabpauschale in (?<currency>[A-Z]{3})$$") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Name Amundi MSCI World UCITS ETF
+                                        // acc
+                                        // ISIN IE000BI8OT95
+                                        // Monat Anzahl Stücke Vorabpauschale in EUR Vorabpauschale in EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "name1", "isin", "currency") //
+                                                        .match("^Name (?<name>.*)$") //
+                                                        .match("^(?!ISIN )(?<name1>.*)$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^.*Vorabpauschale in (?<currency>[A-Z]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }),
+                                        // @formatter:off
+                                        // Name iShares MSCI World (Acc)
+                                        // ISIN IE00B4L5Y983
+                                        // Monat Anzahl Stücke Vorabpauschale in EUR Vorabpauschale in EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "currency") //
+                                                        .match("^Name (?<name>.*)$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^.*Vorabpauschale in (?<currency>[A-Z]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
-                        // @formatter:off
-                        // Jahresnettobestand 150,0000 1,24 185,55
-                        // @formatter:on
-                        .section("shares") //
-                        .match("^Jahresnettobestand (?<shares>[\\.,\\d]+) .*$") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Jahresnettobestand 150,0000 1,24 185,55
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^Jahresnettobestand (?<shares>[\\.,\\d]+) .*$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
+                                        // Februar 22,0000 2,13 46,89
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^(Januar|Februar|M.rz|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember) " //
+                                                                        + "(?<shares>[\\.,\\d]+) " //
+                                                                        + "[\\.,\\d]+ " //
+                                                                        + "[\\.,\\d]+$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
                         // @formatter:off
                         // Tag des Zuflusses 02 Januar 2024
@@ -427,6 +465,58 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .wrap(TransactionItem::new);
+    }
+
+    private void addTaxAdjustmentTransaction()
+    {
+        final var type = new DocumentType("Steuerausgleich nach .43a EstG");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block("^Steuerausgleich nach .43a EstG$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
+
+                        // @formatter:off
+                        // Steuerausgleich nach §43a EstG
+                        // @formatter:on
+                        .section("note") //
+                        .match("^(?<note>Steuerausgleich nach .43a EstG)$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        // @formatter:off
+                        // Ausmachender Betrag: €8,65
+                        // @formatter:on
+                        .section("currency", "type", "amount") //
+                        .match("^Ausmachender Betrag: (?<currency>\\p{Sc})(?<type>(\\-)?)(?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            // Is type --> "-" change from TAXES to TAX_REFUND
+                            if ("-".equals(v.get("type")))
+                                t.setType(AccountTransaction.Type.TAX_REFUND);
+
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // @formatter:off
+                        // Valutatag Datum: 19.01.2026
+                        // @formatter:on
+                        .section("date") //
+                        .match("^Valutatag Datum: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+
+                            // The tax booking is already processed by the
+                            // corresponding settlement (e.g. Vorabpauschale)
+                            v.markAsFailure(Messages.MsgErrorTransactionAlternativeDocumentRequired);
                         })
 
                         .wrap(TransactionItem::new);
@@ -609,12 +699,15 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // 22.04.2025 15.04.2025 Kauf Kauf Dimensional European Value Fund 3,2387 -65,00
                                         // außerbörslich IE00B1W6CW87 20,0700 EUR
+                                        //
+                                        // 04.01.2023 30.12.2022 Kauf Switch in Dimensional Gl. Sust. Core Eq. Fd € 185,5410 -4.757,27
+                                        // außerbörslich IE00B7T1D258 25,6400 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "amount", "name", "shares", "isin") //
                                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
                                                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
-                                                                        + "(Kauf Kauf|Verkauf Verkauf) " //
+                                                                        + "(Kauf Kauf|Verkauf Verkauf|Kauf Switch|Verkauf Switch)( (in|ex))? " //
                                                                         + "(?<name>.*) " //
                                                                         + "(\\-)?(?<shares>[\\.,\\d]+) " //
                                                                         + "(\\-)?(?<amount>[\\.,\\d]+)$") //
@@ -630,6 +723,90 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
                                                             t.setCurrencyCode(asCurrencyCode(EUR));
                                                             t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        // 17.07.2025 16.07.2025 Verkauf Gebührentilgung iShares Sustainable MSCI EM SRI acc -0,0685 1,1602 0,50
+                                        // 13:17 Tradegate IE00BYVJRP78 8,4729 US$
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "note", "name", "shares", "amount", "time", "isin") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                                                        + "Verkauf (?<note>Geb.hrentilgung) " //
+                                                                        + "(?<name>.*) " //
+                                                                        + "\\-(?<shares>[\\.,\\d]+) " //
+                                                                        + "[\\.,\\d]+ " //
+                                                                        + "(?<amount>[\\.,\\d]+)$") //
+                                                        .match("^(?<time>[\\d]{2}:[\\d]{2}) " //
+                                                                        + ".* " //
+                                                                        + "(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) " //
+                                                                        + "[\\.,\\d]+ " //
+                                                                        + "([\\w]{2}\\p{Sc}|[A-Z]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setSecurity(getOrCreateSecurity(v));
+
+                                                            t.setDate(asDate(v.get("date"), v.get("time")));
+                                                            t.setShares(asShares(v.get("shares")));
+
+                                                            t.setCurrencyCode(asCurrencyCode(EUR));
+                                                            t.setAmount(asAmount(v.get("amount")));
+
+                                                            t.setNote(v.get("note"));
+                                                        }),
+                                        // @formatter:off
+                                        // 17.07.2025 16.07.2025 Verkauf Gebührentilgung x-tr. Portf.Total Ret. UCITS ETF -0,0700 21,24
+                                        // 10:56 Tradegate LU0397221945 303,3501 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "note", "name", "shares", "amount", "time", "isin") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                                                        + "Verkauf (?<note>Geb.hrentilgung) " //
+                                                                        + "(?<name>.*) " //
+                                                                        + "\\-(?<shares>[\\.,\\d]+) " //
+                                                                        + "(?<amount>[\\.,\\d]+)$") //
+                                                        .match("^(?<time>[\\d]{2}:[\\d]{2}) " //
+                                                                        + ".* " //
+                                                                        + "(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) " //
+                                                                        + "[\\.,\\d]+ " //
+                                                                        + "([\\w]{2}\\p{Sc}|[A-Z]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setSecurity(getOrCreateSecurity(v));
+
+                                                            t.setDate(asDate(v.get("date"), v.get("time")));
+                                                            t.setShares(asShares(v.get("shares")));
+
+                                                            t.setCurrencyCode(asCurrencyCode(EUR));
+                                                            t.setAmount(asAmount(v.get("amount")));
+
+                                                            t.setNote(v.get("note"));
+                                                        }),
+                                        // @formatter:off
+                                        // 18.07.2025 16.07.2025 Verkauf Gebührentilgung Dimensional Europ.Small Comp. F acc -0,7039 40,75
+                                        // außerbörslich IE0032769055 57,8900 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "note", "name", "shares", "amount", "isin") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                                                        + "Verkauf (?<note>Geb.hrentilgung) " //
+                                                                        + "(?<name>.*) " //
+                                                                        + "\\-(?<shares>[\\.,\\d]+) " //
+                                                                        + "(?<amount>[\\.,\\d]+)$") //
+                                                        .match("^.* " //
+                                                                        + "(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) " //
+                                                                        + "[\\.,\\d]+ " //
+                                                                        + "([\\w]{2}\\p{Sc}|[A-Z]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setSecurity(getOrCreateSecurity(v));
+
+                                                            t.setDate(asDate(v.get("date")));
+                                                            t.setShares(asShares(v.get("shares")));
+
+                                                            t.setCurrencyCode(asCurrencyCode(EUR));
+                                                            t.setAmount(asAmount(v.get("amount")));
+
+                                                            t.setNote(v.get("note"));
                                                         }),
                                         // @formatter:off
                                         // 05.07.2019 04.07.2019 -8,35 Kauf iShares Core MSCI Emerging Markets 1,1288 28,50 US$ 0,3308
@@ -934,6 +1111,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
         firstRelevantLine = new Block("^.* (Verwaltungsgeb.hr\\/Vertriebskosten" //
                         + "|anteil\\.Verwaltgeb.hr\\/Vertriebskosten" //
                         + "|Kontof.hrungs\\-u\\.Depotgeb.hren" //
+                        + "|Kontof.hrungs\\-u\\.Depotgeb\\.[\\d]\\.[\\s]?Hj\\." //
                         + "|Geb.hr anteilige Depot\\- u. Verwaltgeb.hr" //
                         + "|Geb.hr anteilige Kontof.hrungsgeb.hr" //
                         + "|Geb.hr Servicegeb.hr" //
@@ -982,6 +1160,24 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                                         + "|Kontof.hrungs\\-u.Depotgeb.hren" //
                                                                         + "|Depot\\- u\\. Verwaltgeb.hr" //
                                                                         + "|Kontof.hrungsgeb.hr)).* " //
+                                                                        + "\\- \\-(?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date")));
+
+                                                            t.setCurrencyCode(asCurrencyCode(EUR));
+                                                            t.setAmount(asAmount(v.get("amount")));
+
+                                                            t.setNote(v.get("note"));
+                                                        }),
+                                        // @formatter:off
+                                        // 15.07.2025 15.07.2025 Gebühren anteilige Kontoführungs-u.Depotgeb.1.Hj. 2025 - -43,12
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "note", "amount") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                                                        + "(Geb.hren (anteil\\.|anteilige )?)?" //
+                                                                        + "(?<note>Kontof.hrungs\\-u\\.Depotgeb\\.[\\d]\\.[\\s]?Hj\\. [\\d]{4}) " //
                                                                         + "\\- \\-(?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date")));
