@@ -1,0 +1,165 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+SUTOR BANK • Postfach 11 33 37 • 20433 Hamburg Kunden-Service: Tel.: 040 - 82 22 31 63
+Fax: 040 - 80 80 13 19
+Mail: info@sutorbank.de
+Service-Zeiten: Mo-Do 8.30 - 17.00 Uhr
+Fr 8.30 - 16.00 Uhr
+Frau Marta Mustermann Depotnummer: 1234567890
+Musterstr. 26
+12345 Musterstadt IBAN: DE12 3456 7890 1234 5678 90
+Hamburg, im April 2023
+Depotauszug SUTOR BANK GMBH
+ HERMANNSTRASSE 46
+ 20095 HAMBURG
+Sehr geehrte Frau Mustermann,
+ INFO@SUTORBANK.DE
+Sie erhalten heute von uns in der Anlage die Aufstellung über die Kundenfinanzinstrumente per 31.03.2023 zu WWW.SUTORBANK.DE
+nachfolgendem Vertrag:
+ 
+Raisin Pension Rürup Nr. 1234567890 GESCHÄFTSFÜHRUNG
+ ROBERT FREITAG
+THOMAS MEIER
+Bitte prüfen Sie die Aufstellung der Umsätze sowie die Salden und Bestände. Sie gelten als von Ihnen
+anerkannt, wenn Sie nicht innerhalb von sechs Wochen unsere Revisionsabteilung über etwaige
+Unstimmigkeiten schriftlich benachrichtigen. Die Aufstellung wird von der Bank nicht unterschrieben, sie erfolgt MITGLIED IM EINLAGEN-
+automatisch vorbehaltlich Irrtum. SICHERUNGSFONDS DES
+ BUNDESVERBANDES
+DEUTSCHER BANKEN
+Im Rahmen unserer gesetzlichen Vorgaben weisen wir darauf hin, dass Guthaben als Einlagen nach Maßgabe
+des Einlagensicherungsgesetzes entschädigungsfähig sind. Nähere Informationen entnehmen Sie bitte dem
+beigefügten „Informationsbogen für den Einleger“, der auch auf www.sutorbank.de/agb als PDF hinterlegt ist. UNABHÄNGIG.
+ 
+Überprüfen Sie bitte, ob Ihr oben angegebener Name und Ihre Adresse vollständig, korrekt geschrieben und
+PRODUKTNEUTRAL.
+aktuell sind. Änderungen Ihres Namens sowie Ihrer Wohnsitz- und Postadresse teilen Sie uns bitte kurzfristig mit,
+anderenfalls gehen wir von einer Bestätigung der uns bekannten Daten aus.
+ INHABERGEFÜHRT.
+Wir freuen uns auf eine weiterhin erfolgreiche Zusammenarbeit und bedanken uns für Ihr Vertrauen.
+ 
+FINANZAMT HAMBURG
+Mit freundlichen Grüßen
+STNR. 2227/210/00896
+Ihre SUTOR BANK
+AMTSGERICHT HAMBURG
+HRB 178357
+BANKLEITZAHL 202 308 00
+BIC MHSBDEHBXXX
+Seite 0 von 3
+Dies ist ein notwendiges Übel,
+  aber sonst klappt der Seitenumbruch nicht sauber!
+DIE PRIVATBANK FÜR ALLE.
+Aufstellung über Kundenfinanzinstrumente per 31.03.2023
+1234567890
+"Raisin Pension Rürup" Nr. 1234567890 / IBAN: DE12 3456 7890 1234 5678 90
+Investment ISIN Lagerstelle Verwahrart Anlagequote Bestand  Einheit Kurs Währung Kurswert
+Fonds
+UBS MSCI World Social Resp ETF acc LU0950674332 Deutschland Girosammelverwahrung 0,00 % 0,0000  Anteile 0,0000 US$* 0,00 EUR
+x-tr.II-iBoxx Eur.Infl.-Link.UCI LU0290358224 Irland Wertpapierrechnung 0,00 % 19,8396  Anteile 231,2687 EUR 4.588,28 EUR
+Dimensional Gl. Sust. Core Eq. Fd € IE00B7T1D258 Irland Wertpapierrechnung 13,00 % 198,5139  Anteile 27,0200 EUR 5.363,85 EUR
+x-trackers II Eurozone Gov. Bond LU0290355717 Irland Wertpapierrechnung 0,00 % 0,0000  Anteile 0,0000 EUR 0,00 EUR
+M.U.L.-Lyxor Nasdaq-100 UCITS LU1829221024 Deutschland Girosammelverwahrung 7,50 % 49,1296  Anteile 48,5541 EUR 2.385,44 EUR
+iShares Core Gl. Aggr Bond EUR IE00B3F81409 Irland Wertpapierrechnung 0,00 % 0,0000  Anteile 0,0000 US$* 0,00 EUR
+iShares Sustainable MSCI EM SRI acc IE00BYVJRP78 Irland Wertpapierrechnung 25,00 % 3.622,7899  Anteile 6,8876 US$* 22.944,67 EUR
+iShares Edge MSCI World Momentum IE00BP3QZ825 Irland Wertpapierrechnung 10,00 % 46,5800  Anteile 54,5033 US$* 2.334,50 EUR
+iShares $ Short Duration High Yield IE00BCRY6003 Irland Wertpapierrechnung 22,00 % 71,8754  Anteile 85,6361 US$* 5.659,89 EUR
+iShares Core Euro Corporate Bond IE00B3F81R35 Vereinigtes Königreich Wertpapierrechnung 0,00 % 0,0000  Anteile 0,0000 EUR 0,00 EUR
+iShares Euro Aggregate Bond UCITS IE00B3DKXQ41 Irland Wertpapierrechnung 0,00 % 0,0000  Anteile 0,0000 EUR 0,00 EUR
+Vanguard Global Bond Index EUR acc IE00B18GC888 Irland Wertpapierrechnung 0,00 % 0,0000  Anteile 0,0000 EUR 0,00 EUR
+SPDR MSCI World Small Cap UCITS ETF IE00BCBJG560 Irland Wertpapierrechnung 22,50 % 152,1010  Anteile 89,4090 US$* 12.505,01 EUR
+* Währungskurs: 1,0875 US$
+Kurswert Gesamt 55.781,64 EUR
+Geldsaldo 0,00 EUR
+Erstellt im April 2023 Seite 1 von 3
+Umsätze vom 01.01.2023 bis 31.03.2023 in EUR
+Buchungs- Wertstellung Transaktion Umsatz / Finanz-Instrument Anteile / Gramm W-Kurs Betrag Betrag Kosten KESt KiSt
+datum Handelsplatz ISIN Kurs / Preis Währung (brutto) (netto) SolZ
+04.01.2023 30.12.2022 Kauf Switch in Dimensional Gl. Sust. Core Eq. Fd € 185,5410 -4.757,27
+außerbörslich IE00B7T1D258 25,6400 EUR
+04.01.2023 30.12.2022 Verkauf Switch ex Dimensional Gl. Sust. Core Eq. Fd € -99,5464 2.552,37
+außerbörslich IE00B7T1D258 25,6400 EUR
+04.01.2023 30.12.2022 Verkauf Switch ex Vanguard Global Bond Index EUR acc -32,6904 3.015,38
+außerbörslich IE00B18GC888 92,2410 EUR
+04.01.2023 30.12.2022 Verkauf Switch ex UBS MSCI World Social Resp ETF acc -202,5371 1,0666 4.221,88
+11:32 Tradegate LU0950674332 22,2333 US$
+04.01.2023 30.12.2022 Kauf Switch in x-tr.II-iBoxx Eur.Infl.-Link.UCI 19,8396 -4.470,66
+11:37 Tradegate LU0290358224 225,3399 EUR
+04.01.2023 30.12.2022 Verkauf Switch ex x-trackers II Eurozone Gov. Bond -14,4865 2.946,12
+11:57 Tradegate LU0290355717 203,3701 EUR
+04.01.2023 30.12.2022 Kauf Switch in SPDR MSCI World Small Cap UCITS ETF 116,1478 1,0666 -9.344,10
+12:10 Tradegate IE00BCBJG560 85,8080 US$
+04.01.2023 30.12.2022 Verkauf Switch ex SPDR MSCI World Small Cap UCITS ETF -120,3699 1,0666 9.670,52
+12:11 Tradegate IE00BCBJG560 85,6906 US$
+04.01.2023 30.12.2022 Kauf Switch in M.U.L.-Lyxor Nasdaq-100 UCITS 45,2757 -1.846,57
+12:26 Tradegate LU1829221024 40,7850 EUR
+04.01.2023 30.12.2022 Verkauf Switch ex M.U.L.-Lyxor Nasdaq-100 UCITS -76,3133 3.110,91
+12:27 Tradegate LU1829221024 40,7650 EUR
+04.01.2023 30.12.2022 Verkauf Switch ex iShares Core Gl. Aggr Bond EUR -517,5462 1,0666 2.090,95
+12:34 Tradegate IE00B3F81409 4,3092 US$
+04.01.2023 30.12.2022 Kauf Switch in iShares Sustainable MSCI EM SRI acc 2.842,6072 1,0666 -18.255,21
+12:35 Tradegate IE00BYVJRP78 6,8497 US$
+04.01.2023 30.12.2022 Verkauf Switch ex iShares Sustainable MSCI EM SRI acc -1.028,3850 1,0666 6.604,28
+12:35 Tradegate IE00BYVJRP78 6,8497 US$
+04.01.2023 30.12.2022 Kauf Switch in iShares Edge MSCI World Momentum 41,9621 1,0666 -2.166,93
+12:36 Tradegate IE00BP3QZ825 55,0792 US$
+04.01.2023 30.12.2022 Verkauf Switch ex iShares Edge MSCI World Momentum -76,5027 1,0666 3.949,06
+12:36 Tradegate IE00BP3QZ825 55,0579 US$
+04.01.2023 30.12.2022 Kauf Switch in iShares $ Short Duration High Yield 64,1200 1,0666 -5.029,61
+12:45 Tradegate IE00BCRY6003 83,6646 US$
+04.01.2023 30.12.2022 Verkauf Switch ex iShares $ Short Duration High Yield -54,2402 1,0666 4.245,55
+12:46 Tradegate IE00BCRY6003 83,4860 US$
+04.01.2023 30.12.2022 Verkauf Switch ex iShares Core Euro Corporate Bond -12,1896 1.402,78
+13:03 Tradegate IE00B3F81R35 115,0801 EUR
+04.01.2023 30.12.2022 Verkauf Switch ex iShares Euro Aggregate Bond UCITS -19,8285 2.060,55
+13:11 Tradegate IE00B3DKXQ41 103,9180 EUR
+16.01.2023 16.01.2023 Einzahlung automatischer Lastschrifteinzug - 200,00
+-
+Verwendete Abkürzungen: MK = Mischkurs KESt = Kapitalertragssteuer KiSt = Kirchensteuer Seite 2 von 3
+W-Kurs = Währungskurs SolZ = Solidaritätszuschlag
+Umsätze vom 01.01.2023 bis 31.03.2023 in EUR
+Buchungs- Wertstellung Transaktion Umsatz / Finanz-Instrument Anteile / Gramm W-Kurs Betrag Betrag Kosten KESt KiSt
+datum Handelsplatz ISIN Kurs / Preis Währung (brutto) (netto) SolZ
+17.01.2023 16.01.2023 Kauf Kauf SPDR MSCI World Small Cap UCITS ETF 0,5331 1,0812 -45,00
+11:16 Tradegate IE00BCBJG560 91,2641 US$
+17.01.2023 16.01.2023 Kauf Kauf iShares $ Short Duration High Yield 0,5532 1,0812 -44,00
+13:41 Tradegate IE00BCRY6003 85,9911 US$
+17.01.2023 16.01.2023 Kauf Kauf iShares Edge MSCI World Momentum 0,3875 1,0812 -20,00
+14:18 Tradegate IE00BP3QZ825 55,8007 US$
+17.01.2023 16.01.2023 Kauf Kauf iShares Sustainable MSCI EM SRI acc 7,3779 1,0812 -50,00
+14:19 Tradegate IE00BYVJRP78 7,3273 US$
+17.01.2023 16.01.2023 Kauf Kauf M.U.L.-Lyxor Nasdaq-100 UCITS 0,3524 -15,00
+14:27 Tradegate LU1829221024 42,5700 EUR
+19.01.2023 17.01.2023 Kauf Kauf Dimensional Gl. Sust. Core Eq. Fd € 0,9687 -26,00
+außerbörslich IE00B7T1D258 26,8400 EUR
+15.02.2023 15.02.2023 Einzahlung automatischer Lastschrifteinzug - 200,00
+-
+16.02.2023 15.02.2023 Kauf Kauf SPDR MSCI World Small Cap UCITS ETF 0,5150 1,0700 -45,00
+10:52 Tradegate IE00BCBJG560 93,4966 US$
+16.02.2023 15.02.2023 Kauf Kauf M.U.L.-Lyxor Nasdaq-100 UCITS 0,3206 -15,00
+12:01 Tradegate LU1829221024 46,7900 EUR
+16.02.2023 15.02.2023 Kauf Kauf iShares Sustainable MSCI EM SRI acc 7,6266 1,0700 -50,00
+12:09 Tradegate IE00BYVJRP78 7,0149 US$
+16.02.2023 15.02.2023 Kauf Kauf iShares Edge MSCI World Momentum 0,3853 1,0700 -20,00
+12:11 Tradegate IE00BP3QZ825 55,5437 US$
+16.02.2023 15.02.2023 Kauf Kauf iShares $ Short Duration High Yield 0,5540 1,0700 -44,00
+12:23 Tradegate IE00BCRY6003 84,9762 US$
+20.02.2023 15.02.2023 Kauf Kauf Dimensional Gl. Sust. Core Eq. Fd € 0,9269 -26,00
+außerbörslich IE00B7T1D258 28,0500 EUR
+15.03.2023 15.03.2023 Einzahlung automatischer Lastschrifteinzug - 200,00
+-
+16.03.2023 15.03.2023 Kauf Kauf M.U.L.-Lyxor Nasdaq-100 UCITS 0,3311 -15,00
+11:17 Tradegate LU1829221024 45,3100 EUR
+16.03.2023 15.03.2023 Kauf Kauf iShares Sustainable MSCI EM SRI acc 8,1726 1,0549 -50,00
+11:24 Tradegate IE00BYVJRP78 6,4539 US$
+16.03.2023 15.03.2023 Kauf Kauf iShares Edge MSCI World Momentum 0,4077 1,0549 -20,00
+11:25 Tradegate IE00BP3QZ825 51,7534 US$
+16.03.2023 15.03.2023 Kauf Kauf iShares $ Short Duration High Yield 0,5545 1,0549 -44,00
+11:32 Tradegate IE00BCRY6003 83,7032 US$
+16.03.2023 15.03.2023 Kauf Kauf SPDR MSCI World Small Cap UCITS ETF 0,5578 1,0549 -45,00
+11:38 Tradegate IE00BCBJG560 85,0988 US$
+17.03.2023 15.03.2023 Kauf Kauf Dimensional Gl. Sust. Core Eq. Fd € 0,9912 -26,00
+außerbörslich IE00B7T1D258 26,2300 EUR
+Verwendete Abkürzungen: MK = Mischkurs KESt = Kapitalertragssteuer KiSt = Kirchensteuer Seite 3 von 3
+W-Kurs = Währungskurs SolZ = Solidaritätszuschlag
