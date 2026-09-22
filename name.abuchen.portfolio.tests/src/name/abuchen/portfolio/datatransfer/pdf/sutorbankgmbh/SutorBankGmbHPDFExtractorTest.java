@@ -24,6 +24,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
@@ -913,20 +914,18 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
-        // check failure message
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionAlternativeDocumentRequired, //
-                        taxes( //
-                                        hasDate("2026-01-19T00:00"), hasShares(0.00), //
-                                        hasSource("Steuerausgleich01.txt"), //
-                                        hasNote("Steuerausgleich nach §43a EstG"), //
-                                        hasAmount("EUR", 8.65), hasGrossValue("EUR", 8.65), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2026-01-19T00:00"), hasShares(0.00), //
+                        hasSource("Steuerausgleich01.txt"), //
+                        hasNote("Steuerausgleich nach §43a EstG"), //
+                        hasAmount("EUR", 8.65), hasGrossValue("EUR", 8.65), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test

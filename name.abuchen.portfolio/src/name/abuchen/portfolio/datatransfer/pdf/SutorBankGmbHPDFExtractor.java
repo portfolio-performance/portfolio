@@ -495,13 +495,9 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Ausmachender Betrag: €8,65
                         // @formatter:on
-                        .section("currency", "type", "amount") //
-                        .match("^Ausmachender Betrag: (?<currency>\\p{Sc})(?<type>(\\-)?)(?<amount>[\\.,\\d]+)$") //
+                        .section("currency", "amount") //
+                        .match("^Ausmachender Betrag: (?<currency>\\p{Sc})(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            // Is type --> "-" change from TAXES to TAX_REFUND
-                            if ("-".equals(v.get("type")))
-                                t.setType(AccountTransaction.Type.TAX_REFUND);
-
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
@@ -511,15 +507,39 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Valutatag Datum: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                        .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
-                            // The tax booking is already processed by the
-                            // corresponding settlement (e.g. Vorabpauschale)
-                            v.markAsFailure(Messages.MsgErrorTransactionAlternativeDocumentRequired);
+                        // If a loss pot, the exemption order or the
+                        // withholding tax pot has been reduced (fully or
+                        // partially), the tax adjustment is a tax refund.
+                        // @formatter:off
+                        // Hinweise zur steuerlichen Verrechnung Vorher Aktuell
+                        // Aktienverlusttopf: €0,00 €0,00
+                        // Verlusttopf Sonstige: €32,83 €0,00
+                        // Freistellungsauftrag: €0,00 €0,00
+                        // Quellensteuertopf: €0,00 €0,00
+                        // @formatter:on
+                        .section("before", "after").optional().multipleTimes() //
+                        .match("^(Aktienverlusttopf" //
+                                        + "|Verlusttopf Sonstige" //
+                                        + "|Freistellungsauftrag" //
+                                        + "|Quellensteuertopf): " //
+                                        + "\\p{Sc}(?<before>[\\.,\\d]+) " //
+                                        + "\\p{Sc}(?<after>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            if (asAmount(v.get("before")) > asAmount(v.get("after")))
+                                t.setType(AccountTransaction.Type.TAX_REFUND);
                         })
 
-                        .wrap(TransactionItem::new);
+                        .wrap((t, ctx) -> {
+                            // A tax adjustment without a reduction of a pot
+                            // could be an additional tax charge, which is not
+                            // yet supported
+                            if (t.getType() != AccountTransaction.Type.TAX_REFUND)
+                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                            return new TransactionItem(t);
+                        });
     }
 
     private void addAccountStatementTransaction()
