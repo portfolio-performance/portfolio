@@ -92,6 +92,17 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     private static final String IMPORT_NOTES = "IMPORT_NOTES"; //$NON-NLS-1$
 
     /**
+     * Preference for the import wizard that the columns with taxes and fees
+     * are shown
+     */
+    private static final String IMPORT_SHOW_TAXES_AND_FEES = "IMPORT_SHOW_TAXES_AND_FEES"; //$NON-NLS-1$
+
+    /**
+     * Preference for the import wizard that the column with the note is shown
+     */
+    private static final String IMPORT_SHOW_NOTE = "IMPORT_SHOW_NOTE"; //$NON-NLS-1$
+
+    /**
      * If embedded into the CSV import, the first page can change the parsing
      * result and transactions must be extracted before every page. If embedded
      * into the PDF or XML import wizard, do not extract transactions again.
@@ -129,6 +140,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     private Button cbConvertToDelivery;
     private Button cbRemoveDividends;
     private Button cbImportNotesFromSource;
+    private Button cbShowTaxesAndFees;
+    private Button cbShowNote;
 
     /** the row with the import options; options which are not needed are hidden */
     private Composite optionsRow;
@@ -270,7 +283,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         populateAccountSelectionContainer(Collections.emptyList());
 
         optionsRow = new Composite(container, SWT.NONE);
-        GridLayoutFactory.fillDefaults().numColumns(3).spacing(20, 0).applyTo(optionsRow);
+        GridLayoutFactory.fillDefaults().numColumns(5).spacing(20, 0).applyTo(optionsRow);
 
         cbConvertToDelivery = new Button(optionsRow, SWT.CHECK);
         cbConvertToDelivery.setText(Messages.LabelConvertBuySellIntoDeliveryTransactions);
@@ -288,6 +301,14 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         // because the boolean value defaults to false
         var hasKey = preferences.contains(IMPORT_NOTES + extractor.getLabel());
         cbImportNotesFromSource.setSelection(!hasKey || preferences.getBoolean(IMPORT_NOTES + extractor.getLabel()));
+
+        cbShowTaxesAndFees = new Button(optionsRow, SWT.CHECK);
+        cbShowTaxesAndFees.setText(Messages.LabelShowTaxesAndFees);
+        cbShowTaxesAndFees.setSelection(preferences.getBoolean(IMPORT_SHOW_TAXES_AND_FEES + extractor.getLabel()));
+
+        cbShowNote = new Button(optionsRow, SWT.CHECK);
+        cbShowNote.setText(Messages.LabelShowNote);
+        cbShowNote.setSelection(preferences.getBoolean(IMPORT_SHOW_NOTE + extractor.getLabel()));
 
         Composite compositeTable = new Composite(container, SWT.NONE);
         Composite errorTable = new Composite(container, SWT.NONE);
@@ -314,11 +335,18 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
         // show the transactions as they will be imported with the options
         itemsTable.setImportOptions(this::doConvertToDelivery, this::doRemoveDividends);
+        itemsTable.setOptionalColumns(cbShowTaxesAndFees::getSelection, cbShowNote::getSelection);
         itemsTable.setOnTypesChanged(this::onTypesChanged);
         cbConvertToDelivery.addSelectionListener(
                         SelectionListener.widgetSelectedAdapter(e -> checkEntriesAndRefresh(allEntries)));
         cbRemoveDividends.addSelectionListener(
                         SelectionListener.widgetSelectedAdapter(e -> checkEntriesAndRefresh(allEntries)));
+
+        // the optional columns only change the display
+        cbShowTaxesAndFees.addSelectionListener(
+                        SelectionListener.widgetSelectedAdapter(e -> itemsTable.updateColumnVisibility()));
+        cbShowNote.addSelectionListener(
+                        SelectionListener.widgetSelectedAdapter(e -> itemsTable.updateColumnVisibility()));
 
         TableColumnLayout layout = new TableColumnLayout();
         errorTable.setLayout(layout);
@@ -550,6 +578,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         preferences.setValue(IMPORT_CONVERT_BUYSELL_TO_DELIVERY + extractor.getLabel(), doConvertToDelivery());
         preferences.setValue(IMPORT_REMOVE_DIVIDENDS + extractor.getLabel(), doRemoveDividends());
         preferences.setValue(IMPORT_NOTES + extractor.getLabel(), doImportNotesFromSource());
+        preferences.setValue(IMPORT_SHOW_TAXES_AND_FEES + extractor.getLabel(), cbShowTaxesAndFees.getSelection());
+        preferences.setValue(IMPORT_SHOW_NOTE + extractor.getLabel(), cbShowNote.getSelection());
     }
 
     public void setAccount(Account account)

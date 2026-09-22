@@ -67,6 +67,8 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
@@ -113,6 +115,12 @@ public class ExtractedItemsTable
 
     /** import option: generate an additional removal for dividends */
     private BooleanSupplier removeDividends = () -> false;
+
+    /** display option: show the taxes and fees of a transaction */
+    private BooleanSupplier showTaxesAndFees = () -> false;
+
+    /** display option: show the note of a transaction */
+    private BooleanSupplier showNote = () -> false;
 
     /**
      * called after the user changed the type of entries. If null, the user
@@ -206,6 +214,16 @@ public class ExtractedItemsTable
     }
 
     /**
+     * Sets the display options of the wizard page for the optional columns.
+     * They are shown only if the option is set and an entry has a value.
+     */
+    public void setOptionalColumns(BooleanSupplier showTaxesAndFees, BooleanSupplier showNote)
+    {
+        this.showTaxesAndFees = showTaxesAndFees;
+        this.showNote = showNote;
+    }
+
+    /**
      * Allows the user to change the type of entries via the context menu, e.g.
      * a deposit into an inbound transfer. The callback is run afterwards
      * because entries may have been added or removed.
@@ -253,8 +271,9 @@ public class ExtractedItemsTable
         for (var index = 0; index < table.getColumnCount(); index++)
         {
             var column = table.getColumn(index);
-            var isVisible = entries.isEmpty() ? COLUMNS_OF_EMPTY_TABLE.contains(columnKeys.get(column))
-                            : hasContent(index);
+            var key = columnKeys.get(column);
+            var isVisible = isOptionalColumnEnabled(key)
+                            && (entries.isEmpty() ? COLUMNS_OF_EMPTY_TABLE.contains(key) : hasContent(index));
             var isHidden = hiddenColumns.contains(column);
 
             if (isVisible && isHidden)
@@ -276,6 +295,44 @@ public class ExtractedItemsTable
 
         if (hasChanged)
             table.getParent().layout(true);
+    }
+
+    /**
+     * Returns whether an optional column is switched on by the wizard page.
+     * All other columns are always enabled.
+     */
+    private boolean isOptionalColumnEnabled(String key)
+    {
+        return switch (key)
+        {
+            case "taxes", "fees" -> showTaxesAndFees.getAsBoolean(); //$NON-NLS-1$ //$NON-NLS-2$
+            case "note" -> showNote.getAsBoolean(); //$NON-NLS-1$
+            default -> true;
+        };
+    }
+
+    /**
+     * Returns the taxes or fees of the transaction of the item, or null if
+     * there are none.
+     */
+    private Money getUnitSum(Item item, Unit.Type type)
+    {
+        var subject = item.getSubject();
+
+        var transaction = switch (subject)
+        {
+            case BuySellEntry entry -> entry.getPortfolioTransaction();
+            case AccountTransferEntry entry -> entry.getSourceTransaction();
+            case PortfolioTransferEntry entry -> entry.getSourceTransaction();
+            case Transaction t -> t;
+            default -> null;
+        };
+
+        if (transaction == null)
+            return null;
+
+        var sum = transaction.getUnitSum(type);
+        return sum.isZero() ? null : sum;
     }
 
     /**
@@ -628,6 +685,32 @@ public class ExtractedItemsTable
         setColumnWidth(layout, column, "amount", 80); //$NON-NLS-1$
 
         column = new TableViewerColumn(tableViewer, SWT.RIGHT);
+        column.getColumn().setText(Messages.ColumnTaxes);
+        column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
+        {
+            @Override
+            public String getText(ExtractedEntry entry)
+            {
+                var taxes = getUnitSum(entry.getItem(), Unit.Type.TAX);
+                return taxes != null ? Values.Money.format(taxes) : null;
+            }
+        });
+        setColumnWidth(layout, column, "taxes", 80); //$NON-NLS-1$
+
+        column = new TableViewerColumn(tableViewer, SWT.RIGHT);
+        column.getColumn().setText(Messages.ColumnFees);
+        column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
+        {
+            @Override
+            public String getText(ExtractedEntry entry)
+            {
+                var fees = getUnitSum(entry.getItem(), Unit.Type.FEE);
+                return fees != null ? Values.Money.format(fees) : null;
+            }
+        });
+        setColumnWidth(layout, column, "fees", 80); //$NON-NLS-1$
+
+        column = new TableViewerColumn(tableViewer, SWT.RIGHT);
         column.getColumn().setText(Messages.ColumnConvertedAmount);
         column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
         {
@@ -734,6 +817,18 @@ public class ExtractedItemsTable
                         (entry, portfolio) -> portfolio.getName(),
                         entry -> getEffectivePortfolioSecondary(entry.getItem()),
                         (entry, portfolio) -> applyToEntry(entry.getItem(), portfolio, Item::setPortfolioSecondary));
+
+        column = new TableViewerColumn(tableViewer, SWT.NONE);
+        column.getColumn().setText(Messages.ColumnNote);
+        column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
+        {
+            @Override
+            public String getText(ExtractedEntry entry)
+            {
+                return entry.getItem().getSubject() instanceof Annotated annotated ? annotated.getNote() : null;
+            }
+        });
+        setColumnWidth(layout, column, "note", 200); //$NON-NLS-1$
     }
 
     private void attachContextMenu()
