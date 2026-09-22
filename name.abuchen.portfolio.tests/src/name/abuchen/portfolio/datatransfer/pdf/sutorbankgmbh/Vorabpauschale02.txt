@@ -1,0 +1,39 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+justTRADE
+Ein Service der Sutor Bank GmbH
+JT Technologies GmbH
+Hamburger Allee 14
+Herr 60486 Frankfurt am Main
+Max Mustermann E-Mail: service@justtrade.com
+Musterstr. 1 Web: www.justtrade.com
+12345 Musterstadt
+20 Januar 2026
+Abrechnung Vorabpauschale für Max Mustermann
+Kalenderjahr 2025
+Depotnummer 123456789
+Aufgrund nachstehender Abrechnung buchen wir zu Ihren Lasten €8,65
+Tag des Zuflusses 02 Januar 2026
+Name Amundi MSCI World UCITS ETF
+acc
+ISIN IE000BI8OT95
+Monat Anzahl Stücke Vorabpauschale in EUR Vorabpauschale in EUR
+Bemessungsgrundlage* gemäß §18 InvStg pro gesamt
+Stück
+Februar 22,0000 2,13 46,89
+*Die Anzahl Stücke Jahresnettobestand reflektiert den Jahresanfangsbestand abzüglich unterjähriger
+Veräußerungen. Die Anzahl Stücke Januar bis Dezember reflektiert den unterjährigen Kaufüberhang an
+Fondsanteilen gemäß FiFo-Staffel.
+Vorabpauschale €46,89
+Teilfreistellung (30,00%) ./. €-14,07
+Zu versteuernder Betrag nach Teilfreistellung €32,83
+Kapitalertragssteuer (25,00%) ./. €8,20
+Solidaritätszuschlag (5,50%) ./. €0,45
+1 von 1
+SUTOR BANK GmbH TELEFON 040-8090685-0 GESCHÄFTSFÜHRUNG FINANZAMT HAMBURG AMTSGERICHT HAMBURG
+HERMANNSTRASSE 46 TELEFAX 040-8090685-810 ROBERT FREITAG STNR: 222721000896 HRB 178357
+20095 HAMBURG THOMAS MEIER UST-IDNR: DE155617009
+POSTFACH 11 33 37 INFO@SUTORBANK.DE BANKLEITZAHL 202 308 00
+20433 HAMBURG WWW.SUTORBANK.DE BIC CODE: MHSBDEHBXXX
