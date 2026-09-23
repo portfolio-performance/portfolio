@@ -78,6 +78,71 @@ public final class TaxonomyModel
     public static final Predicate<TaxonomyNode> FILTER_NOT_RETIRED = node -> node.isClassification()
                     || !node.getAssignment().getInvestmentVehicle().isRetired();
 
+    /** key used to persist the sort mode on a classification's data map */
+    private static final String KEY_SORT_MODE = "sort-mode"; //$NON-NLS-1$
+
+    private enum SortCriterion
+    {
+        TYPE, NAME, ACTUAL
+    }
+
+    /**
+     * Sort mode of a classification. If a mode other than {@link #MANUAL} is
+     * active, the children of that classification are kept sorted dynamically,
+     * i.e. new and moved items are automatically placed according to the
+     * criteria. The mode is stored per classification and persisted with the
+     * file.
+     */
+    public enum SortMode
+    {
+        MANUAL, //
+        TYPE_NAME(SortCriterion.TYPE, SortCriterion.NAME), //
+        TYPE_ACTUAL(SortCriterion.TYPE, SortCriterion.ACTUAL), //
+        NAME(SortCriterion.NAME), //
+        ACTUAL(SortCriterion.ACTUAL);
+
+        private final SortCriterion[] criteria;
+
+        SortMode(SortCriterion... criteria)
+        {
+            this.criteria = criteria;
+        }
+
+        SortCriterion[] getCriteria()
+        {
+            return criteria;
+        }
+
+        /**
+         * Whether the order depends on the (actual) value of an item and hence
+         * needs to be re-applied when values change.
+         */
+        boolean isValueBased()
+        {
+            for (SortCriterion criterion : criteria)
+            {
+                if (criterion == SortCriterion.ACTUAL)
+                    return true;
+            }
+            return false;
+        }
+
+        static SortMode of(String value)
+        {
+            if (value == null)
+                return MANUAL;
+
+            try
+            {
+                return valueOf(value);
+            }
+            catch (IllegalArgumentException e)
+            {
+                return MANUAL;
+            }
+        }
+    }
+
     private final Taxonomy taxonomy;
     private final Client client;
     private final ExchangeRateProviderFactory factory;
@@ -182,6 +247,11 @@ public final class TaxonomyModel
 
         // calculate targets
         runRecalculations();
+
+        // re-apply the stored sort mode per classification -> the tree is built
+        // in rank order, but ranks can be stale (e.g. values changed while the
+        // view was closed), so folders with a sort mode are re-sorted
+        applyStoredSort(classificationRootNode, false);
     }
 
     private void addUnassigned(Client client)
@@ -260,6 +330,117 @@ public final class TaxonomyModel
     {
         this.attachedModels.forEach(m -> m.recalculate(this));
         rebalancingSolution = rebalance(amountToInvest);
+    }
+
+    /**
+     * Returns the sort mode stored on the given classification node.
+     */
+    public SortMode getSortMode(TaxonomyNode node)
+    {
+        if (!node.isClassification())
+            return SortMode.MANUAL;
+
+        return SortMode.of((String) node.getClassification().getData(KEY_SORT_MODE));
+    }
+
+    /**
+     * Stores the sort mode on the given classification node.
+     */
+    public void setSortMode(TaxonomyNode node, SortMode mode)
+    {
+        if (!node.isClassification())
+            return;
+
+        // do not store the default -> keeps the file clean
+        node.getClassification().setData(KEY_SORT_MODE, mode == SortMode.MANUAL ? null : mode.name());
+    }
+
+    /**
+     * Sets the sort mode on a classification node and – unless
+     * {@link SortMode#MANUAL} – sorts its children immediately. When
+     * {@code recursive} is set, the mode is applied to all descendant
+     * classifications as well. Does not fire an update notification.
+     */
+    public void setSortMode(TaxonomyNode node, SortMode mode, boolean recursive)
+    {
+        setSortMode(node, mode);
+
+        if (mode != SortMode.MANUAL)
+            sort(node, mode.getCriteria());
+
+        if (recursive)
+        {
+            for (TaxonomyNode child : node.getChildren())
+            {
+                if (child.isClassification())
+                    setSortMode(child, mode, true);
+            }
+        }
+    }
+
+    /**
+     * Re-applies the stored sort mode of every classification to its own
+     * children so that newly added, moved or revalued items are placed
+     * according to each folder's mode. If {@code valueModesOnly} is set, only
+     * value-based modes are re-applied. Does not fire an update notification.
+     */
+    public void applyStoredSort(TaxonomyNode node, boolean valueModesOnly)
+    {
+        if (!node.isClassification())
+            return;
+
+        SortMode mode = getSortMode(node);
+        if (mode != SortMode.MANUAL && (!valueModesOnly || mode.isValueBased()))
+            sort(node, mode.getCriteria());
+
+        for (TaxonomyNode child : node.getChildren())
+            applyStoredSort(child, valueModesOnly);
+    }
+
+    /**
+     * Sorts the children of a node according to the given criteria and updates
+     * the ranks. Does not fire an update notification.
+     */
+    private void sort(TaxonomyNode node, SortCriterion... criteria) // NOSONAR
+    {
+        Collections.sort(node.getChildren(), (node1, node2) -> { // NOSONAR
+            // unassigned category always stays at the end of the list
+            if (node1.isUnassignedCategory())
+                return 1;
+            if (node2.isUnassignedCategory())
+                return -1;
+
+            for (int ii = 0; ii < criteria.length; ii++)
+            {
+                switch (criteria[ii])
+                {
+                    case TYPE:
+                        if (node1.isClassification() && !node2.isClassification())
+                            return -1;
+                        if (!node1.isClassification() && node2.isClassification())
+                            return 1;
+                        break;
+                    case NAME:
+                        int cn = TextUtil.compare(node1.getName(), node2.getName());
+                        if (cn != 0)
+                            return cn;
+                        break;
+                    case ACTUAL:
+                        int ca = node2.getActual().compareTo(node1.getActual());
+                        if (ca != 0)
+                            return ca;
+                        break;
+                    default:
+
+                }
+            }
+
+            return 0;
+        });
+
+        int rank = 0;
+        for (TaxonomyNode child : node.getChildren())
+            child.setRank(rank++);
     }
 
     public boolean isUnassignedCategoryInChartsExcluded()
@@ -447,6 +628,9 @@ public final class TaxonomyModel
         virtualRootNode.setActual(snapshot.getMonetaryAssets());
         visitActuals(snapshot, virtualRootNode);
         runRecalculations();
+
+        // keep value-sorted folders correctly ordered when actuals change
+        applyStoredSort(classificationRootNode, true);
     }
 
     public void visitAll(NodeVisitor visitor)
