@@ -6,7 +6,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -279,7 +278,7 @@ public class PDFViewer extends Composite
         textComposite.setLayout(new GridLayout(1, false));
 
         var searchRow = new Composite(textComposite, SWT.NONE);
-        searchRow.setLayout(new GridLayout(4, false));
+        searchRow.setLayout(new GridLayout(5, false));
         searchRow.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
         searchField = new Text(searchRow, SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
@@ -757,14 +756,20 @@ public class PDFViewer extends Composite
         if (text == null || term == null || term.isEmpty())
             return offsets;
 
-        var haystack = text.toLowerCase(Locale.ROOT);
-        var needle = term.toLowerCase(Locale.ROOT);
-
-        var index = haystack.indexOf(needle);
-        while (index >= 0)
+        // search the original text: lower casing can change the length of
+        // the text and therefore the offsets of the matches
+        var index = 0;
+        while (index + term.length() <= text.length())
         {
-            offsets.add(index);
-            index = haystack.indexOf(needle, index + needle.length());
+            if (text.regionMatches(true, index, term, 0, term.length()))
+            {
+                offsets.add(index);
+                index += term.length();
+            }
+            else
+            {
+                index++;
+            }
         }
 
         return offsets;
@@ -805,8 +810,8 @@ public class PDFViewer extends Composite
     }
 
     /**
-     * Selects the match with the given index (wrapping around), scrolls it into
-     * view and updates the highlighting.
+     * Selects the match with the given index (wrapping around), scrolls it
+     * into view and updates the highlighting.
      */
     private void showMatch(int index)
     {
