@@ -841,7 +841,11 @@ public class PDFViewer extends Composite
                 textWidget.showSelection();
             }
         }
-        else if (textStackLayout.topControl == textWidget)
+        else if (textStackLayout.topControl == highlightWidget)
+        {
+            highlightWidget.setSelection(0, 0);
+        }
+        else
         {
             textWidget.setSelection(0, 0);
         }
