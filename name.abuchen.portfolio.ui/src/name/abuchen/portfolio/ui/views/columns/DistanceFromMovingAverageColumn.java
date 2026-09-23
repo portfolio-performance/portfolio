@@ -2,7 +2,7 @@ package name.abuchen.portfolio.ui.views.columns;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +23,7 @@ import name.abuchen.portfolio.ui.util.ValueColorScheme;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
+import name.abuchen.portfolio.ui.views.MovingAveragePeriod;
 import name.abuchen.portfolio.ui.views.SimpleMovingAverage;
 
 public class DistanceFromMovingAverageColumn extends Column implements Column.CacheInvalidationListener
@@ -65,7 +66,7 @@ public class DistanceFromMovingAverageColumn extends Column implements Column.Ca
         @Override
         public String getMenuLabel(Integer option)
         {
-            return MessageFormat.format(Messages.LabelXDays, option);
+            return MovingAveragePeriod.format(option);
         }
 
         @Override
@@ -77,13 +78,16 @@ public class DistanceFromMovingAverageColumn extends Column implements Column.Ca
         @Override
         public boolean canCreateNewOptions()
         {
-            return false;
+            return true;
         }
 
         @Override
         public Integer createNewOption(Shell shell)
         {
-            return null;
+            Integer option = MovingAveragePeriod.createNew(shell, options);
+            if (option != null)
+                options.add(option);
+            return option;
         }
     }
 
@@ -142,7 +146,7 @@ public class DistanceFromMovingAverageColumn extends Column implements Column.Ca
     {
         super("distance-from-sma", Messages.ColumnDistanceFromMovingAverage, SWT.RIGHT, 85); //$NON-NLS-1$
 
-        List<Integer> smaIntervals = Arrays.asList(5, 20, 30, 38, 50, 90, 100, 200);
+        List<Integer> smaIntervals = new ArrayList<>(MovingAveragePeriod.DEFAULT_PERIODS);
         BiFunction<Object, Integer, Double> valueProvider = (element, option) -> {
 
             var security = Adaptor.adapt(Security.class, element);
