@@ -2634,7 +2634,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .match("^Buchungstag[:\\s]{1,}[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* Betrag[:\\s]{1,}(?<fxGross>[\\.,\\d]+) (?<fxCurrency>[A-Z]{3})$") //
                         .match("^Valutadatum[:\\s]{1,}[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .*Devisenkurs[:\\s]{1,}(?<exchangeRate>[\\.,\\d]+)$") //
                         .match("^.* Geb.hr[:\\s]{1,}[\\-\\+]?(?<fee>[\\.,\\d]+)[\\-\\+]? (?<feeCurrency>[A-Z]{3})$") //
-                        .match("^.*Endbetrag[:\\s]{1,}(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .match("^.*Endbetrag[:\\s]{1,}[\\-\\+]?(?<amount>[\\.,\\d]+)[\\-\\+]? (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             var isSale = "Verkauf".equals(v.get("type"));
 

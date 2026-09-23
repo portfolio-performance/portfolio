@@ -190,7 +190,12 @@ final class EntryTypeConverter
         var additionalEntries = new ArrayList<ExtractedEntry>();
         for (var ii = 1; ii < items.size(); ii++)
         {
-            var additional = entry.copyWith(items.get(ii));
+            // the additional entries follow the main entry, they must not
+            // take over an explicit choice of the user (e.g. an entry which
+            // was excluded before the conversion)
+            var additional = new ExtractedEntry(items.get(ii));
+            additional.setSecurityDependency(entry.getSecurityDependency());
+            additional.setSecurityOverride(entry.getSecurityOverride());
             additional.setOwner(main);
             entries.add(index + ii, additional);
             additionalEntries.add(additional);

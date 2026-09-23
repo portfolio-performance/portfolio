@@ -873,11 +873,20 @@ public class PDFViewer extends Composite
             var range = new int[] { highlightMatches.get(ii), matchLength };
             matchRanges.add(range);
 
-            var style = new StyleRange(range[0], range[1], Colors.BLACK, null);
+            var style = new StyleRange(range[0], range[1], null, null);
             if (ii == currentMatch)
+            {
+                // the current match gets a background, therefore the
+                // foreground must be readable on it
+                style.foreground = Colors.BLACK;
                 style.background = Colors.ICON_ORANGE;
+            }
             else
+            {
+                // keep the foreground of the widget: the theme may use a dark
+                // background
                 style.underline = true;
+            }
 
             ranges.add(style);
         }

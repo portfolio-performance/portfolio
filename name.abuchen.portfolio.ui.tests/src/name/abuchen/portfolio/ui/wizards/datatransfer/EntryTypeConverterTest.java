@@ -271,6 +271,26 @@ public class EntryTypeConverterTest
     }
 
     @Test
+    public void testAdditionalEntriesFollowTheMainEntryAfterExclusion()
+    {
+        var buy = buySell(PortfolioTransaction.Type.BUY, Values.Amount.factorize(10), Values.Amount.factorize(2));
+
+        // the user excludes the entry, converts it and includes it again
+        buy.setImported(false);
+        converter.changeType(buy, TypeOption.PORTFOLIO_TRANSFER);
+
+        var main = entries.get(0);
+        assertThat(main.isImported(), is(false));
+        assertThat(entries.get(1).isImported(), is(false));
+
+        main.setImported(true);
+
+        assertThat(main.isImported(), is(true));
+        assertThat(entries.get(1).isImported(), is(true));
+        assertThat(entries.get(2).isImported(), is(true));
+    }
+
+    @Test
     public void testChangingBackRestoresTheOriginalItem()
     {
         var buy = buySell(PortfolioTransaction.Type.BUY, Values.Amount.factorize(10), 0);
