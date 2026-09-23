@@ -168,6 +168,14 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> t
                                                                         .setDate(asDate(v.get("date"), v.get("time")))),
                                         // @formatter:off
+                                        // Belegnummer 9867409933 / 344685043 Schlusstag/-zeit MEZ 07.04.2026 / 08:00:50
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "time") //
+                                                        .match("^.*Schlusstag\\/\\-zeit ... (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\/ (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$") //
+                                                        .assign((t, v) -> t
+                                                                        .setDate(asDate(v.get("date"), v.get("time")))),
+                                        // @formatter:off
                                         // Den Gegenwert buchen wir mit Valuta 14.01.2020 zu Gunsten des Kontos 012345678
                                         // @formatter:on
                                         section -> section //
@@ -856,12 +864,35 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         .match("^Provision (?<fee>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
-                        // @formatter:off
-                        // Provision EUR 39,95
-                        // @formatter:on
-                        .section("currency", "fee").optional() //
-                        .match("^Provision (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)$") //
-                        .assign((t, v) -> processFeeEntries(t, v, type))
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Provision EUR 0,90
+                                        // Provisions-Rabatt EUR -0,90
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "fee", "discountCurrency", "discount") //
+                                                        .match("^Provision (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)$") //
+                                                        .match("^Provisions\\-Rabatt (?<discountCurrency>[A-Z]{3}) \\-(?<discount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            var fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
+                                                            var discount = Money.of(asCurrencyCode(v.get("discountCurrency")), asAmount(v.get("discount")));
+
+                                                            // @formatter:off
+                                                            // fee = fee - discount
+                                                            // @formatter:on
+                                                            if (fee.subtract(discount).isPositive())
+                                                            {
+                                                                fee = fee.subtract(discount);
+                                                                checkAndSetFee(fee, t, type.getCurrentContext());
+                                                            }
+                                                        }),
+                                        // @formatter:off
+                                        // Provision EUR 39,95
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "fee") //
+                                                        .match("^Provision (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> processFeeEntries(t, v, type)))
 
                         // @formatter:off
                         // XETRA-Kosten EUR 0,60
@@ -896,6 +927,13 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("fee", "currency").optional() //
                         .match("^Fremde Auslagen (?<fee>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Fremde Spesen und Auslagen EUR 3,12
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^Fremde Spesen und Auslagen (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
