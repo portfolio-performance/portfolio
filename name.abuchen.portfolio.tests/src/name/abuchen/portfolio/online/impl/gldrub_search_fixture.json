@@ -1,0 +1,38 @@
+{
+ "securities": {
+  "columns": [
+   "secid",
+   "shortname",
+   "regnumber",
+   "name",
+   "isin",
+   "is_traded",
+   "emitent_id",
+   "emitent_title",
+   "emitent_inn",
+   "emitent_okpo",
+   "type",
+   "group",
+   "primary_boardid",
+   "marketprice_boardid"
+  ],
+  "data": [
+   [
+    "GLDRUB_TOM",
+    "GLDRUB_TOM - GLD/RUB",
+    null,
+    "GLDRUB_TOM - GLD/RUB",
+    null,
+    1,
+    null,
+    null,
+    null,
+    null,
+    "gold_metal",
+    "currency_metal",
+    "CETS",
+    null
+   ]
+  ]
+ }
+}
