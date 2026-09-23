@@ -2859,6 +2859,37 @@ public class TaxonomyModelTest
         assertEquals(Money.of(CURRENCY_UNIT, 5000), rebalancingResult.getMoney(B));
     }
 
+    @Test
+    public void testAmountToInvestFollowsChangedCurrency()
+    {
+        // The amount to invest is denominated in the currency of the model. If
+        // the currency changes, the amount must follow, otherwise the
+        // rebalancing calculation mixes currencies and fails.
+        Client client = new Client();
+        client.addSecurity(A);
+        client.addSecurity(B);
+        Portfolio portfolio = new Portfolio();
+        client.addPortfolio(portfolio);
+        portfolio.addTransaction(new PortfolioTransaction(LocalDateTime.now().minusDays(1), CURRENCY_UNIT,
+                        10000L * Values.Quote.factorToMoney(), A, 100L * Values.Share.factor(), Type.DELIVERY_INBOUND,
+                        0, 0));
+
+        ExchangeRateProviderFactory exchangeRateProviderFactory = new ExchangeRateProviderFactory(client);
+        TaxonomyModel model = new TaxonomyModel(exchangeRateProviderFactory, client, SIMPLE_TAXONOMY);
+        model.setAmountToInvest(Money.of(CURRENCY_UNIT, 10000));
+
+        client.setBaseCurrency(CurrencyUnit.USD);
+        model.updateClientSnapshot(client);
+
+        assertEquals(CurrencyUnit.USD, model.getCurrencyCode());
+        assertEquals(CurrencyUnit.USD, model.getAmountToInvest().getCurrencyCode());
+
+        Rebalancer.RebalancingSolution rebalancingResult = model.getRebalancingSolution();
+        assertEquals(asSet(A, B), rebalancingResult.getInvestmentVehicles());
+        assertEquals(CurrencyUnit.USD, rebalancingResult.getMoney(A).getCurrencyCode());
+        assertEquals(CurrencyUnit.USD, rebalancingResult.getMoney(B).getCurrencyCode());
+    }
+
     @SafeVarargs
     private static <T> Set<T> asSet(T... objects)
     {

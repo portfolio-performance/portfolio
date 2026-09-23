@@ -423,7 +423,14 @@ public final class TaxonomyModel
     public void updateClientSnapshot(Client filteredClient)
     {
         if (!filteredClient.getBaseCurrency().equals(converter.getTermCurrency()))
+        {
             this.converter = new CurrencyConverterImpl(factory, filteredClient.getBaseCurrency());
+
+            // the amount to invest is held in the currency of the model. It
+            // must follow the new currency, otherwise the rebalancing
+            // calculation mixes currencies and fails
+            this.amountToInvest = converter.convert(LocalDate.now(), amountToInvest);
+        }
 
         this.filteredClient = filteredClient;
         this.snapshot = ClientSnapshot.create(filteredClient, converter, LocalDate.now());
@@ -513,6 +520,16 @@ public final class TaxonomyModel
     public Rebalancer.RebalancingSolution getRebalancingSolution()
     {
         return rebalancingSolution;
+    }
+
+    /**
+     * Returns the signed amount to invest (positive) or withdraw (negative)
+     * the current rebalancing solution is based on. Always denominated in the
+     * currency of this model.
+     */
+    public Money getAmountToInvest()
+    {
+        return amountToInvest;
     }
 
     /**
