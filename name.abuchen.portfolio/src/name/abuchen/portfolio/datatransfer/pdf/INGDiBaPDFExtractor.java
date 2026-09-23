@@ -475,6 +475,13 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) .*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
+                        // @formatter:off
+                        // Ex-Tag 29.11.2016
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Ex\\-Tag (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
                         .oneOf( //
                                         // @formatter:off
                                         // Gesamtbetrag zu Ihren Gunsten EUR 44,01
@@ -626,7 +633,14 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                         // @formatter:on
                                                         section -> section //
                                                                         .attributes("currency") //
-                                                                        .match("^Valuta Vorgang (?<currency>.*)$") //
+                                                                        .match("^Valuta Vorgang (?<currency>[\\w]+)$") //
+                                                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))),
+                                                        // @formatter:off
+                                                        // 37225 lYztU Neuer Saldo 695,48 Euro
+                                                        // @formatter:on
+                                                        section -> section //
+                                                                        .attributes("currency") //
+                                                                        .match("^.*Neuer Saldo [\\.,\\d]+ (?<currency>[\\w]+)$") //
                                                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))))
 
                                         .optionalOneOf( //
@@ -675,7 +689,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         // 16.03.2026 Echtzeitüberweisung Peter Pan Bla -1.000,00
         // 06.03.2023 Kontolöschung -1.161,10
         // @formatter:on
-        var removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+        var removalBlock_Format01 = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
                         + "(Ueberweisung" //
                         + "|Dauerauftrag\\/Terminueberw\\." //
                         + "|Lastschrift" //
@@ -683,8 +697,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         + "|Echtzeit.berweisung" //
                         + "|Kontol.schung)" //
                         + ".* \\-[\\.,\\d]+$");
-        type.addBlock(removalBlock);
-        removalBlock.set(new Transaction<AccountTransaction>()
+        type.addBlock(removalBlock_Format01);
+        removalBlock_Format01.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.REMOVAL))
 
@@ -728,7 +742,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         // 13.10.2020 Bezuege Stadt XYZ 40,00
         // 04.06.2024 Lastschrift-Einzug mvezSX fnHyElys 5.300,00
         // @formatter:on
-        var depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+        var depositBlock_Format01 = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
                         + "(Gutschrift-VWL" //
                         + "|Gutschrift\\/Dauerauftrag" //
                         + "|Gehalt\\/Rente" //
@@ -737,8 +751,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         + "|Bezuege"
                         + "|Lastschrift\\-Einzug)" //
                         + ".* [\\.,\\d]+$");
-        type.addBlock(depositBlock);
-        depositBlock.set(new Transaction<AccountTransaction>()
+        type.addBlock(depositBlock_Format01);
+        depositBlock_Format01.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
@@ -753,6 +767,99 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                         + "|Bezuege"
                                         + "|Lastschrift\\-Einzug)" //
                                         + ".*) (?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+
+                            // Formatting some notes
+                            var note = v.get("note");
+                            if (note != null && note.contains("Bezuege"))
+                                note = note.replace("Bezuege", "Bezüge");
+
+                            t.setNote(note);
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // 03.11.10 Lastschrift SB-TANK. 5128, uKava -54,52 445,48
+        // @formatter:on
+        var removalBlock_Format02 = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} " //
+                        + "(Ueberweisung" //
+                        + "|Dauerauftrag\\/Terminueberw\\." //
+                        + "|Lastschrift" //
+                        + "|Abbuchung" //
+                        + "|Echtzeit.berweisung" //
+                        + "|Kontol.schung)" //
+                        + ".* \\-[\\.,\\d]+ (\\-)?[\\.,\\d]+$");
+        type.addBlock(removalBlock_Format02);
+        removalBlock_Format02.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.REMOVAL))
+
+                        .section("date", "note", "amount") //
+                        .documentContext("currency") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) " //
+                                        + "(?<note>(Ueberweisung" //
+                                        + "|Dauerauftrag\\/Terminueberw\\." //
+                                        + "|Lastschrift" //
+                                        + "|Abbuchung" //
+                                        + "|Echtzeit.berweisung" //
+                                        + "|Kontol.schung)" //
+                                        + ".*) \\-(?<amount>[\\.,\\d]+) (\\-)?[\\.,\\d]+$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+
+                            // Formatting some notes
+                            var note = v.get("note");
+                            if (note != null)
+                            {
+                                if (note.contains("Ueberweisung"))
+                                    note = note.replace("Ueberweisung", "Überweisung");
+
+                                if (note.contains("Dauerauftrag/Terminueberw."))
+                                    note = note.replace("Dauerauftrag/Terminueberw.", "Dauerauftrag/Terminüberweisung");
+                            }
+
+                            t.setNote(note);
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // 01.11.10 Gutschrift NPkVomtcG EcftL 500,00 500,00
+        // 16.11.10 Gutschrift-Dauerauftrag dfgfg,dafbfhb mavr gOVG 250,00 695,48
+        // @formatter:on
+        var depositBlock_Format02 = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} " //
+                        + "(Gutschrift\\-VWL" //
+                        + "|Gutschrift\\-Dauerauftrag" //
+                        + "|Gutschrift\\/Dauerauftrag" //
+                        + "|Gehalt\\/Rente" //
+                        + "|Gutschrift" //
+                        + "|Retoure" //
+                        + "|Bezuege" //
+                        + "|Lastschrift\\-Einzug)" //
+                        + ".* [\\.,\\d]+ (\\-)?[\\.,\\d]+$");
+        type.addBlock(depositBlock_Format02);
+        depositBlock_Format02.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
+
+                        .section("date", "note", "amount") //
+                        .documentContext("currency") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) " //
+                                        + "(?<note>(Gutschrift\\-VWL" //
+                                        + "|Gutschrift\\-Dauerauftrag" //
+                                        + "|Gutschrift\\/Dauerauftrag" //
+                                        + "|Gehalt\\/Rente" //
+                                        + "|Gutschrift" //
+                                        + "|Retoure" //
+                                        + "|Bezuege" //
+                                        + "|Lastschrift\\-Einzug)" //
+                                        + ".*) (?<amount>[\\.,\\d]+) (\\-)?[\\.,\\d]+$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -842,14 +949,18 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
     {
         final var type = new DocumentType("(Wertpapierabrechnung zum steuerrelevanten Umtausch" //
                         + "|Umtausch Eingang" //
-                        + "|Umtausch Ausgang)");
+                        + "|Umtausch Ausgang" //
+                        + "|.bertrag Eingang" //
+                        + "|.bertrag Ausgang)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<PortfolioTransaction>();
 
         var firstRelevantLine = new Block("^(Wertpapierabrechnung zum steuerrelevanten Umtausch" //
                         + "|Umtausch Eingang" //
-                        + "|Umtausch Ausgang)$");
+                        + "|Umtausch Ausgang" //
+                        + "|.bertrag Eingang" //
+                        + "|.bertrag Ausgang)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -861,7 +972,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         // Is type --> "Ausgang" change from DELIVERY_INBOUND to DELIVERY_OUTBOUND
                         // @formatter:on
                         .section("type").optional() //
-                        .match("^Umtausch (?<type>(Eingang|Ausgang))$") //
+                        .match("^(Umtausch|.bertrag) (?<type>(Eingang|Ausgang))$") //
                         .assign((t, v) -> {
                             if ("Ausgang".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
@@ -898,6 +1009,10 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                         // 16,0648 Stück Kenvue Inc. 25.08.2023 0021740090
                                         // Registered Shares DL -,001
                                         // ISIN (WKN): US49177J1025 (A3EEHU)
+                                        //
+                                        // 601,00 Stück iShs III-iShs Wl.E.H.In.Ac.ETF 31.08.2026 0028922017
+                                        // Reg.Shs USD Dis. oN
+                                        // ISIN (WKN): IE000KJPDY61 (A40121)
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares", "name", "date", "nameContinued", "isin", "wkn") //
