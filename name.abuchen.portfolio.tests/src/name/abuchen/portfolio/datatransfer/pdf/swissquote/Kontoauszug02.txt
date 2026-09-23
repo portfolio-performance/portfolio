@@ -1,0 +1,50 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.83.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Transaction statement in CHF hpYskC ZESa
+IBAN: xT31 0878 7060 3092 7277 0 (CHF)
+Generated on 14.04.2026
+Filtered by: Period 04.04.2026 - 14.04.2026 Account 2371203
+Transaction type All
+Date Reference Information Fees and Taxes Amount Value date Balance
+08.04.2026 1075394350 Incoming payment +40’000.00 CHF 08.04.2026 40’001.00 CHF
+IBAN: wK5745580671289739160
+BIC/SWIFT: rIyFkpAl73y
+08.04.2026 1075505360 Manual Forex Transfer CHF to USD -11’956.56 CHF 10.04.2026 28’044.44 CHF
+Exchange rate: 1 CHF = 1.266448 USD
+Amount: 15000.00 USD
+This printed document is for information purposes only and must not be used for official purposes. In the event of any discrepancies, your ordinary
+account statement or your statement of assets shall prevail. Swissquote Bank Ltd accepts no liability for inaccuracies resulting from clerical,
+technical or similar errors and reserves the right to correct such inaccuracies.
+E&OE
+Swissquote Bank Ltd, 33 chemin de la Crétaux, CH-1196 Gland - Customer Care : +41 44 825 88 88 1  / 2
+Transaction AueBkrVHq in USD qxIBlC kPZo
+IBAN: fu61 0878 2633 5861 8528 0 (CHF)
+Generated on 14.04.2026
+Filtered by: Period 04.04.2026 - 14.04.2026 Account 3057122
+Transaction type All
+Date Reference Information Fees and Taxes Amount Value date Balance
+08.04.2026 1075505360 Manual Forex Transfer CHF to USD +15’000.00 USD 10.04.2026 15’000.00 USD
+Exchange rate: 1 CHF = 1.266448 USD
+Amount: 11956.56 CHF
+08.04.2026 1075505579 Buy - MICROSOFT ORD 30.85 USD -7’613.40 USD 09.04.2026 7’386.60 USD
+Exchange: NASDAQ Fees
+ISIN: US5945551045 11.36 USD
+Quantity: 20 Tax (Federal stamp
+Unit price: 378.5594 USD duty)
+Amount: 7655.61 USD
+Distribution fees
+Within the framework of its financial product distribution activities and within the context of carrying out asset management mandates in
+connection with ePrivate Banking accounts, Swissquote Bank Ltd («Swissquote») shall periodically receive, and retain, distribution fees or other
+retrocessions from certain promoters or issuers of financial products.
+Please read the information note on distribution fees and other retrocessions, which you will find on our website under
+https://swissquote.com/distribution-fees, which contains detailed information on the subject. This note may be amended at any time to reflect
+changing circumstances and forms an integral part of your contractual relationship with Swissquote.
+In accordance with Article 37 of our General Terms and Conditions, you will be deemed to have waived the right to the refund of distribution fees
+and other types of retrocessions that Swissquote shall receive in future
+This printed document is for information purposes only and must not be used for official purposes. In the event of any discrepancies, your ordinary
+account statement or your statement of assets shall prevail. Swissquote Bank Ltd accepts no liability for inaccuracies resulting from clerical,
+technical or similar errors and reserves the right to correct such inaccuracies.
+E&OE
+Swissquote Bank Ltd, 33 chemin de la Crétaux, CH-1196 Gland - Customer Care : +41 44 825 88 88 2  / 2
