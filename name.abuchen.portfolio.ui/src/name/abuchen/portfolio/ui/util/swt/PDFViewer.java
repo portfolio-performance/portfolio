@@ -3,13 +3,18 @@ package name.abuchen.portfolio.ui.util.swt;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.custom.StackLayout;
+import org.eclipse.swt.custom.StyleRange;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseAdapter;
@@ -23,6 +28,8 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
@@ -31,6 +38,7 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
 
 public class PDFViewer extends Composite
@@ -48,6 +56,30 @@ public class PDFViewer extends Composite
     private Button nextButton;
     private Button zoomInButton;
     private Button zoomOutButton;
+
+    private Text textWidget;
+
+    /** the text with highlighting, shown instead of textWidget on demand */
+    private StyledText highlightWidget;
+    private Composite textStack;
+    private StackLayout textStackLayout;
+    private Button highlightButton;
+
+    /** the highlighted parts of the text as {start, length} */
+    private final List<int[]> highlights = new ArrayList<>();
+    private Text searchField;
+    private Button searchPrevButton;
+    private Button searchNextButton;
+    private Label searchLabel;
+
+    /**
+     * start offsets of the matches of the current search term. They are kept
+     * for both text widgets because the offsets differ: Text returns its
+     * content with the line delimiter of the platform, StyledText does not.
+     */
+    private List<Integer> matches = new ArrayList<>();
+    private List<Integer> highlightMatches = new ArrayList<>();
+    private int currentMatch = -1;
     private Composite pageNavComposite;
     private int currentPageIndex = 0;
     private int totalPages = 0;
@@ -241,18 +273,103 @@ public class PDFViewer extends Composite
         pdfTab.setText(Messages.PDFImportWizardManualEntryPDFView);
         pdfTab.setControl(pdfScrolled);
 
-        // Text view
-        var textScrolled = new ScrolledComposite(tabFolder, SWT.H_SCROLL | SWT.V_SCROLL);
-        textScrolled.setExpandHorizontal(true);
-        textScrolled.setExpandVertical(true);
-        var textWidget = new Text(textScrolled, SWT.READ_ONLY | SWT.MULTI);
+        // Text view with a search field above the text
+        var textComposite = new Composite(tabFolder, SWT.NONE);
+        textComposite.setLayout(new GridLayout(1, false));
+
+        var searchRow = new Composite(textComposite, SWT.NONE);
+        searchRow.setLayout(new GridLayout(5, false));
+        searchRow.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+        searchField = new Text(searchRow, SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
+        searchField.setMessage(Messages.LabelSearch);
+        searchField.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+        searchPrevButton = new Button(searchRow, SWT.PUSH);
+        searchPrevButton.setText("<"); //$NON-NLS-1$
+        searchPrevButton.setEnabled(false);
+        searchPrevButton.addListener(SWT.Selection, e -> showMatch(currentMatch - 1));
+
+        searchNextButton = new Button(searchRow, SWT.PUSH);
+        searchNextButton.setText(">"); //$NON-NLS-1$
+        searchNextButton.setEnabled(false);
+        searchNextButton.addListener(SWT.Selection, e -> showMatch(currentMatch + 1));
+
+        searchLabel = new Label(searchRow, SWT.NONE);
+        searchLabel.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
+
+        highlightButton = new Button(searchRow, SWT.TOGGLE);
+        highlightButton.setText("\u270E"); // pencil //$NON-NLS-1$
+        highlightButton.setToolTipText(Messages.LabelHighlightText);
+
+        // both text widgets show the same text: the plain one with the context
+        // menu of the operating system, the other one with highlighting
+        textStack = new Composite(textComposite, SWT.NONE);
+        textStackLayout = new StackLayout();
+        textStack.setLayout(textStackLayout);
+        textStack.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+        var text = inputFile.getText() != null ? inputFile.getText() : ""; //$NON-NLS-1$
+
+        textWidget = new Text(textStack, SWT.READ_ONLY | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
         textWidget.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.CODE);
-        textWidget.setText(inputFile.getText() != null ? inputFile.getText() : ""); //$NON-NLS-1$
-        textScrolled.setContent(textWidget);
+        textWidget.setText(text);
+
+        highlightWidget = new StyledText(textStack, SWT.READ_ONLY | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+        highlightWidget.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.CODE);
+        highlightWidget.setText(text);
+
+        textStackLayout.topControl = textWidget;
+
+        highlightButton.addListener(SWT.Selection, e -> {
+            textStackLayout.topControl = highlightButton.getSelection() ? highlightWidget : textWidget;
+            textStack.layout();
+            showMatch(currentMatch);
+        });
+
+        // highlight the word which has been double clicked
+        highlightWidget.addListener(SWT.MouseDoubleClick, e -> toggleHighlight());
+
+        var contextMenu = new Menu(highlightWidget);
+
+        var copyItem = new MenuItem(contextMenu, SWT.PUSH);
+        copyItem.setText(Messages.LabelCopyToClipboard);
+        copyItem.addListener(SWT.Selection, e -> {
+            if (highlightWidget.getSelectionCount() == 0)
+                highlightWidget.selectAll();
+
+            highlightWidget.copy();
+        });
+
+        var highlightItem = new MenuItem(contextMenu, SWT.PUSH);
+        highlightItem.setText(Messages.LabelHighlightText);
+        highlightItem.addListener(SWT.Selection, e -> toggleHighlight());
+
+        var removeItem = new MenuItem(contextMenu, SWT.PUSH);
+        removeItem.setText(Messages.LabelRemoveHighlighting);
+        removeItem.addListener(SWT.Selection, e -> {
+            highlights.clear();
+            showMatch(currentMatch);
+        });
+
+        highlightWidget.setMenu(contextMenu);
+
+        searchField.addListener(SWT.Modify, e -> search());
+        searchField.addKeyListener(new KeyAdapter()
+        {
+            @Override
+            public void keyPressed(KeyEvent e)
+            {
+                if (e.character == SWT.ESC)
+                    searchField.setText(""); //$NON-NLS-1$
+                else if (e.character == SWT.CR || e.character == SWT.LF)
+                    showMatch(currentMatch + ((e.stateMask & SWT.SHIFT) != 0 ? -1 : 1));
+            }
+        });
 
         var textTab = new TabItem(tabFolder, SWT.NONE);
         textTab.setText(Messages.PDFImportWizardManualEntryTextView);
-        textTab.setControl(textScrolled);
+        textTab.setControl(textComposite);
 
         // Default to PDF tab
         tabFolder.setSelection(0);
@@ -626,5 +743,208 @@ public class PDFViewer extends Composite
     {
         zoomInButton.setEnabled(currentSwtImage != null && zoomLevel < MAX_ZOOM);
         zoomOutButton.setEnabled(currentSwtImage != null && zoomLevel > 1.0);
+    }
+
+    /**
+     * Returns the start offsets of all matches of the term within the text,
+     * ignoring case. An empty term has no matches.
+     */
+    /* package */ static List<Integer> findMatches(String text, String term)
+    {
+        var offsets = new ArrayList<Integer>();
+
+        if (text == null || term == null || term.isEmpty())
+            return offsets;
+
+        // search the original text: lower casing can change the length of
+        // the text and therefore the offsets of the matches
+        var index = 0;
+        while (index + term.length() <= text.length())
+        {
+            if (text.regionMatches(true, index, term, 0, term.length()))
+            {
+                offsets.add(index);
+                index += term.length();
+            }
+            else
+            {
+                index++;
+            }
+        }
+
+        return offsets;
+    }
+
+    /**
+     * Searches the text for the term of the search field, highlights all
+     * matches and shows the first one.
+     */
+    private void search()
+    {
+        matches = findMatches(textWidget.getText(), searchField.getText());
+        highlightMatches = findMatches(highlightWidget.getText(), searchField.getText());
+        showMatch(0);
+    }
+
+    /**
+     * Adds the current selection to the highlighted parts, or removes the
+     * highlighting if the selection is already highlighted.
+     */
+    private void toggleHighlight()
+    {
+        var selection = highlightWidget.getSelection();
+        if (selection.y <= selection.x)
+            return;
+
+        var range = new int[] { selection.x, selection.y - selection.x };
+
+        var overlapping = highlights.stream().filter(h -> h[0] < range[0] + range[1] && range[0] < h[0] + h[1])
+                        .toList();
+
+        if (overlapping.isEmpty())
+            highlights.add(range);
+        else
+            highlights.removeAll(overlapping);
+
+        showMatch(currentMatch);
+    }
+
+    /**
+     * Selects the match with the given index (wrapping around), scrolls it
+     * into view and updates the highlighting.
+     */
+    private void showMatch(int index)
+    {
+        var length = searchField.getText().length();
+
+        var count = textStackLayout.topControl == highlightWidget ? highlightMatches.size() : matches.size();
+        currentMatch = count == 0 ? -1 : Math.floorMod(index, count);
+
+        if (textStackLayout.topControl == highlightWidget)
+            applyStyles(length);
+
+        if (currentMatch >= 0)
+        {
+            if (textStackLayout.topControl == highlightWidget)
+            {
+                if (currentMatch < highlightMatches.size())
+                {
+                    var offset = highlightMatches.get(currentMatch);
+                    highlightWidget.setSelection(offset, offset + length);
+                    highlightWidget.showSelection();
+                }
+            }
+            else
+            {
+                var offset = matches.get(currentMatch);
+                textWidget.setSelection(offset, offset + length);
+                textWidget.showSelection();
+            }
+        }
+        else if (textStackLayout.topControl == highlightWidget)
+        {
+            highlightWidget.setSelection(0, 0);
+        }
+        else
+        {
+            textWidget.setSelection(0, 0);
+        }
+
+        searchLabel.setText(count == 0 ? "" : (currentMatch + 1) + "/" + count); //$NON-NLS-1$ //$NON-NLS-2$
+        searchLabel.getParent().layout(true);
+
+        searchPrevButton.setEnabled(count > 1);
+        searchNextButton.setEnabled(count > 1);
+    }
+
+    /**
+     * Shows the highlighted parts with a yellow background and the matches of
+     * the search underlined, the current one with an orange background. The
+     * matches win over the highlighting, therefore the highlighted parts are
+     * split where they overlap a match.
+     */
+    private void applyStyles(int matchLength)
+    {
+        var ranges = new ArrayList<StyleRange>();
+
+        var matchRanges = new ArrayList<int[]>();
+        for (var ii = 0; ii < highlightMatches.size(); ii++)
+        {
+            var range = new int[] { highlightMatches.get(ii), matchLength };
+            matchRanges.add(range);
+
+            var style = new StyleRange(range[0], range[1], null, null);
+            if (ii == currentMatch)
+            {
+                // the current match gets a background, therefore the
+                // foreground must be readable on it
+                style.foreground = Colors.BLACK;
+                style.background = Colors.ICON_ORANGE;
+            }
+            else
+            {
+                // keep the foreground of the widget: the theme may use a dark
+                // background
+                style.underline = true;
+            }
+
+            ranges.add(style);
+        }
+
+        for (var part : subtract(highlights, matchRanges))
+            ranges.add(new StyleRange(part[0], part[1], Colors.BLACK, Colors.YELLOW));
+
+        ranges.sort((left, right) -> Integer.compare(left.start, right.start));
+
+        // be defensive: StyledText rejects ranges outside of the text
+        var charCount = highlightWidget.getCharCount();
+        ranges.removeIf(range -> range.start < 0 || range.start + range.length > charCount || range.length <= 0);
+
+        highlightWidget.setStyleRanges(ranges.toArray(new StyleRange[0]));
+    }
+
+    /**
+     * Removes the parts of the ranges which overlap one of the holes. Both are
+     * given as {start, length}.
+     */
+    /* package */ static List<int[]> subtract(List<int[]> ranges, List<int[]> holes)
+    {
+        var result = new ArrayList<int[]>();
+
+        for (var range : ranges)
+        {
+            var parts = new ArrayList<int[]>();
+            parts.add(new int[] { range[0], range[0] + range[1] });
+
+            for (var hole : holes)
+            {
+                var remaining = new ArrayList<int[]>();
+
+                for (var part : parts)
+                {
+                    var holeStart = hole[0];
+                    var holeEnd = hole[0] + hole[1];
+
+                    if (holeEnd <= part[0] || holeStart >= part[1])
+                    {
+                        remaining.add(part);
+                        continue;
+                    }
+
+                    if (part[0] < holeStart)
+                        remaining.add(new int[] { part[0], holeStart });
+
+                    if (holeEnd < part[1])
+                        remaining.add(new int[] { holeEnd, part[1] });
+                }
+
+                parts = remaining;
+            }
+
+            for (var part : parts)
+                result.add(new int[] { part[0], part[1] - part[0] });
+        }
+
+        return result;
     }
 }

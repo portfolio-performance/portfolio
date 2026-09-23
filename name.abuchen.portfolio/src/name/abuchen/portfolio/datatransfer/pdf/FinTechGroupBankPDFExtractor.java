@@ -22,10 +22,13 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.LineSpan;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.SplittingStrategy;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.Transaction.Unit.Type;
+import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -57,6 +60,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         addDeliveryInOutboundTransaction();
         addAdvanceTaxTransaction();
         addDepotServiceFeesTransaction();
+        addCurrencyExchangeTransaction();
         addNonImportableTransaction();
     }
 
@@ -2593,6 +2597,157 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             ctx.markAsFailure(Messages.MsgErrorTransactionMissingExchangeRateIfInForex);
 
                             return item;
+                        });
+    }
+
+    private void addCurrencyExchangeTransaction()
+    {
+        final var type = new DocumentType("Sammelabrechnung \\- Devisengesch.fte", //
+                        documentContext -> documentContext //
+                                        // Cancellations are not supported. There is no sample
+                                        // document yet, so any line starting with "Storno" or
+                                        // "Stornierung" marks the document as a cancellation.
+                                        .section("type").optional() //
+                                        .match("^(?<type>(Storno|Stornierung)) .*$") //
+                                        .assign((ctx, v) -> ctx.putBoolean("isCancellation", true)));
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<AccountTransferEntry>();
+
+        var firstRelevantLine = new Block("^Auftrag Nr\\. [\\d]+ \\- (Kauf|Verkauf) vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(AccountTransferEntry::new)
+
+                        // @formatter:off
+                        // Auftrag Nr. 5122608575 - Verkauf vom 05.03.2021
+                        // Buchungstag     : 05.03.2021              Betrag         :        2.200,00 USD
+                        // Valutadatum     : 09.03.2021             *Devisenkurs    :        1,195540
+                        // Fremdwhrg.konto : 1014905918              Gebühr         :            0,00 EUR
+                        //                                           Endbetrag      :        1.840,17 EUR
+                        // @formatter:on
+                        .section("note", "type", "fxGross", "fxCurrency", "exchangeRate", "fee", "feeCurrency", "amount", "currency") //
+                        .match("^(?<note>Auftrag Nr\\. [\\d]+) \\- (?<type>(Kauf|Verkauf)) vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
+                        .match("^Buchungstag[:\\s]{1,}[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* Betrag[:\\s]{1,}(?<fxGross>[\\.,\\d]+) (?<fxCurrency>[A-Z]{3})$") //
+                        .match("^Valutadatum[:\\s]{1,}[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .*Devisenkurs[:\\s]{1,}(?<exchangeRate>[\\.,\\d]+)$") //
+                        .match("^.* Geb.hr[:\\s]{1,}[\\-\\+]?(?<fee>[\\.,\\d]+)[\\-\\+]? (?<feeCurrency>[A-Z]{3})$") //
+                        .match("^.*Endbetrag[:\\s]{1,}[\\-\\+]?(?<amount>[\\.,\\d]+)[\\-\\+]? (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> {
+                            var isSale = "Verkauf".equals(v.get("type"));
+
+                            var fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                            var amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+                            var fee = Money.of(asCurrencyCode(v.get("feeCurrency")), asAmount(v.get("fee")));
+                            var exchangeRate = asExchangeRate(v.get("exchangeRate"));
+
+                            // The final amount (Endbetrag) includes the fee. The
+                            // transfer only carries the exchanged amounts, the fee
+                            // is booked as a separate transaction.
+                            if (fee.getCurrencyCode().equals(amount.getCurrencyCode()))
+                                amount = isSale ? amount.add(fee) : amount.subtract(fee);
+
+                            // @formatter:off
+                            // Verkauf: source = foreign currency     | target = settlement currency
+                            // Kauf:    source = settlement currency  | target = foreign currency
+                            //
+                            // The gross value unit sits on the source transaction and
+                            // carries the exchange rate as source per target currency.
+                            // The "Devisenkurs" is quoted as foreign per settlement currency.
+                            // @formatter:on
+                            var source = isSale ? fxGross : amount;
+                            var target = isSale ? amount : fxGross;
+                            var rate = isSale ? exchangeRate : ExchangeRate.inverse(exchangeRate);
+
+                            t.getSourceTransaction().setMonetaryAmount(source);
+                            t.getTargetTransaction().setMonetaryAmount(target);
+                            t.getSourceTransaction().addUnit(new Unit(Type.GROSS_VALUE, source, target, rate));
+
+                            t.setNote(trim(v.get("note")));
+                        })
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        //  *Konvertierungszeitpunkt: 05.03.2021 17:07:05
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "time") //
+                                                        .match("^.*Konvertierungszeitpunkt[:\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2})$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
+                                        // @formatter:off
+                                        // Buchungstag     : 05.03.2021              Betrag         :        2.200,00 USD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Buchungstag[:\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))))
+
+                        .wrap((t, ctx) -> {
+                            if (type.getCurrentContext().getBoolean("isCancellation"))
+                                ctx.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported);
+
+                            return new AccountTransferItem(t, true);
+                        });
+
+        addCurrencyExchangeFeeBlock(type);
+    }
+
+    private void addCurrencyExchangeFeeBlock(DocumentType type)
+    {
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block("^Auftrag Nr\\. [\\d]+ \\- (Kauf|Verkauf) vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
+
+                        // @formatter:off
+                        // Auftrag Nr. 5122608575 - Verkauf vom 05.03.2021
+                        // @formatter:on
+                        .section("note") //
+                        .match("^(?<note>Auftrag Nr\\. [\\d]+) \\- (Kauf|Verkauf) vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        //  *Konvertierungszeitpunkt: 05.03.2021 17:07:05
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "time") //
+                                                        .match("^.*Konvertierungszeitpunkt[:\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2})$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"), v.get("time")))),
+                                        // @formatter:off
+                                        // Buchungstag     : 05.03.2021              Betrag         :        2.200,00 USD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Buchungstag[:\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+
+                        // @formatter:off
+                        // Fremdwhrg.konto : 1014905918              Gebühr         :            0,00 EUR
+                        // @formatter:on
+                        .section("fee", "currency") //
+                        .match("^.* Geb.hr[:\\s]{1,}[\\-\\+]?(?<fee>[\\.,\\d]+)[\\-\\+]? (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("fee")));
+                        })
+
+                        .wrap(t -> {
+                            // The cancellation is reported with the transfer,
+                            // therefore no separate fee transaction is created.
+                            if (type.getCurrentContext().getBoolean("isCancellation"))
+                                return null;
+
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
                         });
     }
 
