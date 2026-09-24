@@ -93,7 +93,7 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "wkn", "isin", "currency") //
-                                                        .find("Aufgrund Ihres Bestandes schreiben wir Ihnen gut") //)
+                                                        .find("Aufgrund Ihres Bestandes schreiben wir Ihnen gut") //
                                                         .match("^[\s]*[\\.,'\\d]+ (?<name>.*) Depotstelle.*$") //
                                                         .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                                                         .match("^Brutto zu (?<currency>[A-Z]{3})[\\s]{1,}[\\.'\\d]+[\\s]{1,}[A-Z]{3}[\\s]{1,}[\\.,'\\d]+$") //
@@ -106,7 +106,7 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "wkn", "isin", "currency") //
-                                                        .find("Wir haben am .* f.r Sie (gekauft|verkauft)") //)
+                                                        .find("Wir haben am .* f.r Sie (gekauft|verkauft)") //
                                                         .match("^[\\s]*[\\.,'\\d]+ (?<name>.*) Depotstelle.*$") //
                                                         .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                                                         .match("^Menge[\\s]{1,}[\\.,'\\d]+ Kurs (?<currency>[A-Z]{3})[\\s]{1,}[\\.,'\\d]+[\\s]{1,}[A-Z]{3}[\\s]{1,}[\\.,'\\d]+$") //
@@ -124,7 +124,7 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "wkn", "isin", "currency") //
-                                                        .find("Wir haben am .* f.r Sie (gekauft|verkauft)") //)
+                                                        .find("Wir haben am .* f.r Sie (gekauft|verkauft)") //
                                                         .match("^[\\s]*[\\.,'\\d]+ (?<name>.*) Depotstelle.*$") //
                                                         .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                                                         .match("^Menge[\\s]{1,}[\\.,'\\d]+ Kurs (?<currency>[A-Z]{3})[\\s]{1,}[\\.,'\\d]+[\\s]{1,}[A-Z]{3}[\\s]{1,}[\\.,'\\d]+$") //
@@ -148,7 +148,7 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "wkn", "isin", "currency") //
-                                                        .find("Wir haben am .* f.r Sie (gekauft|verkauft)") //)
+                                                        .find("Wir haben am .* f.r Sie (gekauft|verkauft)") //
                                                         .match("^[\\s]*[\\.,'\\d]+ ([A-Za-z]{3}\\.)?[A-Za-z]{3} (?<name>.*) Depotstelle.*$") //
                                                         .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                                                         .match("^Menge[\\s]{1,}[\\.,'\\d]+ Kurs (?<currency>[A-Z]{3})[\\s]{1,}[\\.,'\\d]+[\\s]{1,}[A-Z]{3}[\\s]{1,}[\\.,'\\d]+$") //
@@ -161,7 +161,7 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "wkn", "isin", "currency") //
-                                                        .find("Wir haben am .* f.r Sie (gekauft|verkauft)") //)
+                                                        .find("Wir haben am .* f.r Sie (gekauft|verkauft)") //
                                                         .match("^[\\s]*[\\.,'\\d]+ (?<name>.*) Depotstelle.*$") //
                                                         .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                                                         .match("^Menge[\\s]{1,}[\\.,'\\d]+ Kurs (?<currency>[A-Z]{3})[\\s]{1,}[\\.,'\\d]+[\\s]{1,}[A-Z]{3}[\\s]{1,}[\\.,'\\d]+$") //
