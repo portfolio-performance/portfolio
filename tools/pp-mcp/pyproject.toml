@@ -1,0 +1,29 @@
+[project]
+name = "pp-mcp"
+version = "0.1.0"
+description = "MCP adapter for the Portfolio Performance REST API"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastmcp>=3.2,<4",
+    "httpx>=0.27",
+]
+
+[project.scripts]
+pp-mcp = "pp_mcp.server:main"
+
+[build-system]
+requires = ["uv_build>=0.8.22,<0.9.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+    "respx>=0.23.1",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
