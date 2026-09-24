@@ -61,6 +61,15 @@ public final class ApiRoutes
                         request -> PairingHandler.poll(pairing, request.pathParam("id"))); //$NON-NLS-1$
 
         router.add("GET", "/v1/files", onUiThread(host, files::list)); //$NON-NLS-1$ //$NON-NLS-2$
+        // literal segment: must precede the {file} routes (Router is first-match).
+        // Runs on the HTTP worker thread: the handler marshals to the UI thread
+        // itself and waits for the file to load outside of it
+        router.add("POST", "/v1/files/open", //$NON-NLS-1$ //$NON-NLS-2$
+                        request -> files.open(FilesHandler.openRequestPath(parseObject(request))));
+        router.add("GET", "/v1/files/{file}", onUiThread(host, //$NON-NLS-1$ //$NON-NLS-2$
+                        request -> Response.json(200, FilesHandler.get(resolver.resolve(request.pathParam("file")))))); //$NON-NLS-1$
+        router.add("POST", "/v1/files/{file}/save", writeResolved(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (resolved, req) -> Response.json(200, FilesHandler.save(resolved))));
 
         router.add("GET", "/v1/files/{file}/instruments", read(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
                         (client, req) -> Response.json(200, SecuritiesHandler.list(client))));
@@ -187,6 +196,13 @@ public final class ApiRoutes
     private static Router.Handler write(FileResolver resolver, HostApplication host,
                     BiFunction<OpenFile, Request, Response> body)
     {
+        return writeResolved(resolver, host, (resolved, request) -> body.apply(resolved.file(), request));
+    }
+
+    /** like {@link #write}, for handlers that also need the file's access record (id, alias) */
+    private static Router.Handler writeResolved(FileResolver resolver, HostApplication host,
+                    BiFunction<FileResolver.ResolvedFile, Request, Response> body)
+    {
         return onUiThread(host, request -> {
             // resolve first: an unknown file is a 404 even while the user edits
             var resolved = resolver.resolve(request.pathParam("file")); //$NON-NLS-1$
@@ -194,7 +210,7 @@ public final class ApiRoutes
             if (host.isUserEditing())
                 throw ApiException.locked();
 
-            return body.apply(resolved.file(), request);
+            return body.apply(resolved, request);
         });
     }
 

@@ -58,22 +58,22 @@ info:
 
     ## Methods
 
-    A path serves only the methods listed for it in this document; the only
-    `POST` endpoint is the pairing request — v1 has **no create endpoints for
-    portfolio data**. Calling any method that a path does not list returns
-    `405 method-not-allowed`.
+    A path serves only the methods listed for it in this document. Calling any
+    method that a path does not list returns `405 method-not-allowed`.
 
-    ## Writes are not saved
+    ## Writes are not saved automatically
 
     A write (`PATCH`, `DELETE`) mutates the **in-memory** file and marks it dirty,
     exactly as if the user had edited it in the UI. The change is visible
-    immediately, but **there is no save endpoint** — only the user saves the file
-    (or discards the change by closing without saving).
+    immediately; every file reports its unsaved state in the `dirty` field of
+    `GET /v1/files` and `GET /v1/files/{file}`. To persist the changes, call
+    `POST /v1/files/{file}/save` — or leave it to the user, who can also discard
+    the changes by closing the file without saving.
 
-    While the user has a modal dialog open or is editing a table cell, writes are
-    rejected with `423 user-interaction` rather than silently clobbered. This is
-    **normal and temporary**: respect the `Retry-After` header and try again. Reads
-    are unaffected.
+    While the user has a modal dialog open or is editing a table cell, writes
+    (including save) are rejected with `423 user-interaction` rather than
+    silently clobbered. This is **normal and temporary**: respect the
+    `Retry-After` header and try again. Reads are unaffected.
 
 servers:
   - url: http://127.0.0.1:{port}
@@ -254,12 +254,193 @@ paths:
                         alias: main
                         label: portfolio.xml
                         path: /Users/me/portfolio.xml
+                        dirty: false
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
         "500":
           $ref: "#/components/responses/InternalError"
+
+  /v1/files/open:
+    post:
+      operationId: openFile
+      tags: [Files]
+      summary: Open an enabled file in the application
+      description: |
+        Opens a portfolio file in the running application, as File → Open does,
+        and returns it once it is loaded. Only a path the user has **enabled**
+        for the API (Preferences → REST API) may be opened; any other path —
+        unknown, not enabled, or no longer on disk — answers `404 not-found`,
+        indistinguishable from each other.
+
+        If the file is already open, it is returned as is (`200`). Otherwise the
+        application opens it and the request waits up to 30 seconds for the file
+        to load (`201`). If loading takes longer, the answer is `503
+        file-loading`: the file keeps loading, retry after `Retry-After` seconds
+        (a retry answers `200` once the file is open).
+
+        The application never shows a dialog on the API's behalf: an encrypted
+        file is refused with `409 password-required` — a human has to open it
+        and enter the password.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [path]
+              properties:
+                path:
+                  type: string
+                  description: |
+                    The absolute path of the file, exactly as the application
+                    reports it in `GET /v1/files` (`path`).
+            examples:
+              default:
+                value:
+                  path: /Users/me/portfolio.xml
+      responses:
+        "200":
+          description: The file was already open
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/File"
+        "201":
+          description: The file was opened and is loaded
+          headers:
+            Location:
+              description: The path of the opened file, `/v1/files/{id}`.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/File"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: |
+            The file cannot be opened without a human: it is encrypted
+            (`password-required`), or loading it failed (`open-failed`, the
+            reason is in `detail`).
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          description: |
+            The file is still loading (`file-loading`). Respect `Retry-After`
+            and repeat the request.
+          headers:
+            Retry-After:
+              description: Seconds to wait before retrying.
+              schema:
+                type: integer
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+
+  /v1/files/{file}:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    get:
+      operationId: getFile
+      tags: [Files]
+      summary: Read a single file
+      description: The same object as one item of `GET /v1/files`, including `dirty`.
+      responses:
+        "200":
+          description: The file
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/File"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/save:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    post:
+      operationId: saveFile
+      tags: [Files]
+      summary: Save the file
+      description: |
+        Persists the file at its current path in its current format (XML,
+        binary, compressed or encrypted — whatever it was opened or last saved
+        as), exactly as the application's Save does, including the backup copy
+        if the user enabled backups. There is no "save as": no body is taken.
+
+        `dirty` in the response is normally `false`. It can still be `true` if a
+        background task (e.g. an online price update) changed the file while it
+        was being saved — the saved copy may not contain that change, so the
+        file stays marked as unsaved.
+      responses:
+        "200":
+          description: The file was saved
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/File"
+                  - type: object
+                    required: [savedAt]
+                    properties:
+                      savedAt:
+                        type: string
+                        format: date-time
+                        description: When the file was saved (UTC).
+              examples:
+                default:
+                  value:
+                    id: 5f3c1e2a-0b7d-4a1e-9c2f-8d6b3a1e0f42
+                    alias: main
+                    label: portfolio.xml
+                    path: /Users/me/portfolio.xml
+                    dirty: false
+                    savedAt: "2026-09-24T10:15:30.123Z"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          description: |
+            Saving failed (`save-failed`; the reason, e.g. an I/O error, is in
+            `detail`), or an unexpected error (`internal-error`). The file stays
+            dirty.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
 
   /v1/files/{file}/instruments:
     parameters:
@@ -1448,7 +1629,7 @@ components:
     File:
       type: object
       description: An open, enabled portfolio file you may address.
-      required: [id, label, path]
+      required: [id, label, path, dirty]
       properties:
         id:
           type: string
@@ -1466,6 +1647,11 @@ components:
           description: |
             The file's path on disk. Identity is keyed by path, so a *different*
             file copied over an enabled path inherits that path's access.
+        dirty:
+          type: boolean
+          description: |
+            `true` if the file has unsaved changes — made through the API or by
+            the user. `POST /v1/files/{file}/save` persists them.
 
     PairingRequestCreated:
       type: object
@@ -2669,10 +2855,12 @@ components:
             below; note especially that a **404 never distinguishes** an unknown
             file from a file that exists but is not enabled, and that the three
             **409** kinds each call for a different response:
-            `file-not-open` (a human must open the file), `ambiguous-alias` (retry
-            with the `id`), `delete-blocked` (give up — the instrument is referenced).
-            `method-not-allowed` (405) is returned for any method a path does not
-            list; v1 has no create endpoints.
+            `file-not-open` (open it with `POST /v1/files/open`, or ask a human),
+            `ambiguous-alias` (retry with the `id`), `delete-blocked` (give up —
+            the instrument is referenced). Opening a file may additionally answer
+            `password-required` or `open-failed` (409) and `file-loading` (503);
+            saving may answer `save-failed` (500). `method-not-allowed` (405) is
+            returned for any method a path does not list.
           enum:
             - https://portfolio-performance.info/rest/problems/invalid-request
             - https://portfolio-performance.info/rest/problems/unauthorized
@@ -2683,6 +2871,10 @@ components:
             - https://portfolio-performance.info/rest/problems/file-not-open
             - https://portfolio-performance.info/rest/problems/ambiguous-alias
             - https://portfolio-performance.info/rest/problems/delete-blocked
+            - https://portfolio-performance.info/rest/problems/password-required
+            - https://portfolio-performance.info/rest/problems/open-failed
+            - https://portfolio-performance.info/rest/problems/file-loading
+            - https://portfolio-performance.info/rest/problems/save-failed
             - https://portfolio-performance.info/rest/problems/validation
             - https://portfolio-performance.info/rest/problems/user-interaction
             - https://portfolio-performance.info/rest/problems/pairing-pending
@@ -2767,7 +2959,7 @@ components:
     Conflict:
       description: |
         The addressed file or entity cannot serve the request in its current state:
-        `file-not-open` (enabled but not open — a human must open it),
+        `file-not-open` (enabled but not open — open it with `POST /v1/files/open`),
         `ambiguous-alias` (the alias matches several records — use the `id`), or, on
         delete, `delete-blocked` (the instrument is referenced by transactions or
         plans).

@@ -79,7 +79,8 @@ be added later without breaking clients.
 
 ```json
 {"items": [
-  {"id": "5f3c…", "alias": "main", "label": "portfolio.xml", "path": "/Users/me/portfolio.xml"}
+  {"id": "5f3c…", "alias": "main", "label": "portfolio.xml", "path": "/Users/me/portfolio.xml",
+   "dirty": false}
 ]}
 ```
 
@@ -87,6 +88,29 @@ Lists only files that are open *and* enabled. Address a file by its `id` or its 
 `{file}` segment below. Check `path` if it matters to your script which file it is writing to: the
 identity is keyed by path, so a *different* file copied over an enabled path inherits that path's
 identity and enablement.
+
+`dirty` is `true` while the file has unsaved changes, made through the API or by the user.
+`GET /v1/files/{file}` returns the same object for one file.
+
+### `POST /v1/files/open` — open an enabled file
+
+```bash
+curl -s -X POST -H "Authorization: Bearer $TOKEN" \
+  -d '{"path": "/Users/me/portfolio.xml"}' http://127.0.0.1:5712/v1/files/open
+```
+
+Opens the file in the application, as File → Open does, and answers with the file object once it
+is loaded: `201` if it was opened, `200` if it was already open. Only a path the user has enabled in
+the preferences can be opened; any other path is a `404`, exactly like an unknown file. The
+application never shows a dialog on the API's behalf, so an encrypted file is refused with `409
+password-required`. If loading takes longer than 30 seconds, the answer is `503 file-loading`;
+retry after `Retry-After`.
+
+### `POST /v1/files/{file}/save` — persist the changes
+
+Saves the file at its current path in its current format, as the application's Save does
+(including the backup copy if enabled). Answers the file object plus `savedAt`. `dirty` can remain
+`true` if a background task, such as a price update, changed the file during the save.
 
 ### `GET /v1/files/{file}/instruments[/{uuid}]`
 
@@ -133,12 +157,11 @@ on a client's behalf. Watchlist and taxonomy membership do not block the delete.
 {"uuid": "d9f0…", "name": "Broker", "referenceCashAccount": "c4b2…", "note": "…"}
 ```
 
-## Writes are not saved
+## Writes are not saved automatically
 
 A write mutates the in-memory file and marks it dirty, exactly as if you had edited it in the UI —
-the change is visible immediately, and the user saves it (or discards it by closing without saving).
-**There is no save endpoint in v1.** If your script needs the change on disk, the user has to press
-save.
+the change is visible immediately. Call `POST /v1/files/{file}/save` to persist it, or leave it to
+the user, who can also discard it by closing the file without saving.
 
 ## Errors
 
@@ -157,13 +180,17 @@ save.
 | 403 | `forbidden-host` | not addressed as loopback |
 | 403 | `browser-origin-forbidden` | request carries an `Origin` header |
 | 404 | `not-found` | unknown file, **file not enabled**, or unknown entity |
-| 409 | `file-not-open` | file is enabled but not currently open — a human has to open it |
+| 409 | `file-not-open` | file is enabled but not currently open — open it with `POST /v1/files/open` |
+| 409 | `password-required` | the file to open is encrypted — a human has to open it |
+| 409 | `open-failed` | the file to open could not be loaded; see `detail` |
 | 409 | `ambiguous-alias` | alias matches several records; use the UUID |
 | 409 | `delete-blocked` | instrument is referenced by transactions or plans |
 | 422 | `validation` | one or more fields rejected; see `errors` |
 | 423 | `user-interaction` | a dialog is open in the app — **retry**, see `Retry-After` |
 | 429 | `pairing-pending` | another pairing request awaits the user — retry after `Retry-After` |
 | 429 | `pairing-cooldown` | a pairing request was declined — retry after `Retry-After` |
+| 500 | `save-failed` | saving the file failed; see `detail` |
+| 503 | `file-loading` | the file to open is still loading — retry after `Retry-After` |
 
 Two of these regularly surprise clients:
 

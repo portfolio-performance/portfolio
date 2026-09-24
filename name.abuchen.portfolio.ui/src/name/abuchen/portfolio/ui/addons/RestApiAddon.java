@@ -1,10 +1,14 @@
 package name.abuchen.portfolio.ui.addons;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
 import jakarta.annotation.PreDestroy;
@@ -18,13 +22,20 @@ import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
+import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.UIEvents;
+import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.osgi.service.event.Event;
 
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.rest.ApiRoutes;
 import name.abuchen.portfolio.rest.FileAccessRegistry;
@@ -35,12 +46,15 @@ import name.abuchen.portfolio.rest.RestApiWorkspace;
 import name.abuchen.portfolio.rest.spi.ApiAccessRequest;
 import name.abuchen.portfolio.rest.spi.HostApplication;
 import name.abuchen.portfolio.rest.spi.OpenFile;
+import name.abuchen.portfolio.rest.spi.PasswordRequiredException;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.ApiAccessApprovalDialog;
 import name.abuchen.portfolio.ui.editor.ClientInput;
 import name.abuchen.portfolio.ui.editor.ClientInputFactory;
+import name.abuchen.portfolio.ui.editor.ClientInputListener;
 import name.abuchen.portfolio.ui.editor.EditorActivationState;
+import name.abuchen.portfolio.ui.handlers.OpenFileHandler;
 
 /**
  * Starts and stops the REST API server with the application and implements
@@ -82,6 +96,18 @@ public class RestApiAddon
             // created eagerly in ClientInput#setClient; listOpenFiles filters
             // inputs without a client, so this is never null here
             return input.getExchangeRateProviderFacory();
+        }
+
+        @Override
+        public boolean isDirty()
+        {
+            return input.isDirty();
+        }
+
+        @Override
+        public void save() throws IOException
+        {
+            input.saveWithoutUI();
         }
     }
 
@@ -138,6 +164,12 @@ public class RestApiAddon
         {
             Display.getDefault().asyncExec(() -> showApprovalWhenIdle(this, request));
         }
+
+        @Override
+        public CompletableFuture<OpenFile> openFile(Path path) throws IOException
+        {
+            return RestApiAddon.this.openFile(path);
+        }
     }
 
     @Inject
@@ -145,6 +177,12 @@ public class RestApiAddon
 
     @Inject
     private ECommandService commandService;
+
+    @Inject
+    private MApplication application;
+
+    @Inject
+    private EModelService modelService;
 
     @Inject
     private EHandlerService handlerService;
@@ -231,6 +269,79 @@ public class RestApiAddon
 
         new ApiAccessApprovalDialog(Display.getDefault().getActiveShell(), request, anyFileEnabled,
                         this::openRestApiPreferences).open();
+    }
+
+    /**
+     * Opens the file like the File/Open command does, minus the file dialog: a portfolio
+     * part is created (or an existing one for the same file activated), which
+     * loads the file in the background. The future completes once the client
+     * is loaded. Encrypted files are refused because the part would prompt the
+     * user for the password.
+     */
+    private CompletableFuture<OpenFile> openFile(Path path) throws IOException
+    {
+        var fileName = path.toString();
+        var file = new File(fileName);
+
+        if (!file.isFile())
+            throw new FileNotFoundException(fileName);
+
+        if (ClientFactory.isEncrypted(file))
+            throw new PasswordRequiredException(fileName);
+
+        var mainStack = (MPartStack) modelService.find(UIConstants.PartStack.MAIN, application);
+        var partService = modelService.getTopLevelWindowFor(mainStack).getContext().get(EPartService.class);
+
+        var existing = modelService.findElements(application, UIConstants.Part.PORTFOLIO, MPart.class, null)
+                        .stream() //
+                        .filter(part -> fileName
+                                        .equals(part.getPersistedState().get(UIConstants.PersistedState.FILENAME)))
+                        .findFirst();
+
+        if (existing.isPresent())
+            partService.showPart(existing.get(), PartState.ACTIVATE);
+        else
+            OpenFileHandler.openPart(fileName, partService.getActivePart(), application, partService, modelService);
+
+        // the part looked up (and started loading) the input when it was
+        // rendered; the factory returns that same cached input
+        var input = clientInputFactory.lookup(file);
+
+        var future = new CompletableFuture<OpenFile>();
+
+        if (input.getClient() != null)
+        {
+            future.complete(new ClientInputOpenFile(input));
+            return future;
+        }
+
+        var listener = new ClientInputListener()
+        {
+            @Override
+            public void onLoaded()
+            {
+                future.complete(new ClientInputOpenFile(input));
+            }
+
+            @Override
+            public void onError(String message)
+            {
+                future.completeExceptionally(new IOException(message));
+            }
+
+            @Override
+            public void onDisposed()
+            {
+                future.completeExceptionally(new IOException(MessageFormat.format("{0} was closed", fileName))); //$NON-NLS-1$
+            }
+        };
+        input.addListener(listener);
+
+        // the listeners are notified while iterating the listener list, hence
+        // remove the listener only after the notification is done
+        future.whenComplete((result, error) -> Display.getDefault().asyncExec(() -> input.removeListener(listener)));
+
+        return future;
     }
 
     private void openRestApiPreferences()

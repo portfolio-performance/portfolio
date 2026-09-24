@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.rest.spi;
 
+import java.io.IOException;
+
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 
@@ -23,4 +25,14 @@ public interface OpenFile
      * per request.
      */
     ExchangeRateProviderFactory getExchangeRateProviderFactory();
+
+    /** true if the file has unsaved changes; must be called on the UI thread */
+    boolean isDirty();
+
+    /**
+     * Persists the file in its current format at its current path, without
+     * any user interaction (no "save as", no dialogs); must be called on the
+     * UI thread.
+     */
+    void save() throws IOException;
 }

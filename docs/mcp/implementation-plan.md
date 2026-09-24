@@ -544,3 +544,7 @@ Goal: exercise every tool against a real PP with a synthetic file and verify the
 - Q2: watchlists and investment plans are addressed by name.
 - Q3: durable `clientRef` for transactions only; in-memory for master data plus adapter-side natural-key checks.
 - Q8: add `POST /v1/files/open {path}`, allowed only for paths already enabled in `FileAccessRegistry`. Implemented through a new `HostApplication#openFile(Path)` SPI method (UI: `ClientInputFactory` + open a `PortfolioPart`, as File > Open does). Added to step 3.
+
+## 8. Implementation deviations
+
+- Step 3 / Q8 (`POST /v1/files/open`): besides the agreed `404` (path not enabled, unknown, or missing on disk) and `409 password-required`, the endpoint answers `409 open-failed` (loading failed, reason in `detail`), `503 file-loading` with `Retry-After: 5` (the file did not finish loading within 30 s; it keeps loading and a retry answers `200`), and `423 user-interaction` (a modal dialog or cell editor is active, as for writes). A `201` carries `Location: /v1/files/{id}`. The SPI method is `CompletableFuture<OpenFile> HostApplication#openFile(Path) throws IOException`, with `spi/PasswordRequiredException` for encrypted files. Opening and saving are logged to the application log (`MsgApiFileOpened`, `MsgApiFileSaved`).

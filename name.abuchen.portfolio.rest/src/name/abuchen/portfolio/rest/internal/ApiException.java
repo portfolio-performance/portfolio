@@ -104,6 +104,31 @@ public class ApiException extends RuntimeException
                         List.of(), Map.of("Retry-After", "5")); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
+    /** persisting a file failed; the detail carries the reason, e.g. an I/O error message */
+    public static ApiException saveFailed(String detail)
+    {
+        return new ApiException(500, "save-failed", "Saving the file failed", detail, List.of(), Map.of()); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    public static ApiException passwordRequired()
+    {
+        return conflict("password-required", //$NON-NLS-1$
+                        "The file is encrypted, a human must open it and enter the password", null, List.of()); //$NON-NLS-1$
+    }
+
+    /** the file exists but could not be loaded; the detail carries the reason */
+    public static ApiException openFailed(String detail)
+    {
+        return conflict("open-failed", "The file could not be opened", detail, List.of()); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    /** opening was started, but the file did not finish loading in time */
+    public static ApiException fileLoading()
+    {
+        return new ApiException(503, "file-loading", "The file is still loading, retry later", null, List.of(), //$NON-NLS-1$ //$NON-NLS-2$
+                        Map.of("Retry-After", "5")); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
     public int getStatus()
     {
         return status;

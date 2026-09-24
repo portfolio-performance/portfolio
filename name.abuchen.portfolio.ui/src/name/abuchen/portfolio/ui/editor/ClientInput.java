@@ -255,29 +255,7 @@ public class ClientInput
         BusyIndicator.showWhile(shell.getDisplay(), () -> {
             try
             {
-                if (preferences.getBoolean(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true))
-                    createBackup(clientFile, "backup"); //$NON-NLS-1$
-
-                ClientFactory.save(client, clientFile);
-                storePreferences(false);
-
-                broker.post(UIConstants.Event.File.SAVED, clientFile.getAbsolutePath());
-
-                // Cancel any pending asyncExec dirty notification. If a background
-                // modification arrived during the save the on-disk file may not reflect
-                // it, so we conservatively remain dirty in that case.
-                boolean hadPendingModification;
-                boolean hadPendingRecalculate;
-                synchronized (pendingLock)
-                {
-                    hadPendingModification = pendingDirty;
-                    hadPendingRecalculate = pendingRecalculate;
-                    pendingDirty = false;
-                    pendingRecalculate = false;
-                }
-                setDirty(hadPendingModification, hadPendingRecalculate);
-
-                listeners.forEach(ClientInputListener::onSaved);
+                saveWithoutUI();
             }
             catch (IOException e)
             {
@@ -285,6 +263,45 @@ public class ClientInput
                                 new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
             }
         });
+    }
+
+    /**
+     * Saves the file at its current location in its current format without
+     * any user interface: no busy indicator, no error dialog, no "save as".
+     * Must be called on the UI thread. Used by the REST API.
+     *
+     * @throws IllegalStateException
+     *             if the file has never been saved and therefore has no
+     *             location
+     */
+    public void saveWithoutUI() throws IOException
+    {
+        if (clientFile == null)
+            throw new IllegalStateException("file has never been saved"); //$NON-NLS-1$
+
+        if (preferences.getBoolean(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true))
+            createBackup(clientFile, "backup"); //$NON-NLS-1$
+
+        ClientFactory.save(client, clientFile);
+        storePreferences(false);
+
+        broker.post(UIConstants.Event.File.SAVED, clientFile.getAbsolutePath());
+
+        // Cancel any pending asyncExec dirty notification. If a background
+        // modification arrived during the save the on-disk file may not reflect
+        // it, so we conservatively remain dirty in that case.
+        boolean hadPendingModification;
+        boolean hadPendingRecalculate;
+        synchronized (pendingLock)
+        {
+            hadPendingModification = pendingDirty;
+            hadPendingRecalculate = pendingRecalculate;
+            pendingDirty = false;
+            pendingRecalculate = false;
+        }
+        setDirty(hadPendingModification, hadPendingRecalculate);
+
+        listeners.forEach(ClientInputListener::onSaved);
     }
 
     public void doSaveAs(Shell shell, String extension, Set<SaveFlag> flags) // NOSONAR

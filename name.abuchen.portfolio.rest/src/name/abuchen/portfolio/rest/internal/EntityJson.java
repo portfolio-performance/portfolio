@@ -158,6 +158,7 @@ public final class EntityJson
         return json;
     }
 
+    /** an open, enabled file; must be called on the UI thread (reads the dirty flag) */
     public static JsonObject toJson(FileAccess access, OpenFile file)
     {
         var json = new JsonObject();
@@ -166,6 +167,7 @@ public final class EntityJson
             json.addProperty("alias", access.alias()); //$NON-NLS-1$
         json.addProperty("label", file.getLabel()); //$NON-NLS-1$
         json.addProperty("path", file.getPath()); //$NON-NLS-1$
+        json.addProperty("dirty", file.isDirty()); //$NON-NLS-1$
         return json;
     }
 
