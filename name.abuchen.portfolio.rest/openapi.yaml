@@ -2064,6 +2064,461 @@ paths:
         "500":
           $ref: "#/components/responses/InternalError"
 
+    post:
+      operationId: createTaxonomy
+      tags: [Taxonomies]
+      summary: Create a taxonomy
+      description: |
+        Creates an empty taxonomy `{name}` with its root, as the application's
+        "new taxonomy" does without a template. Add categories with
+        `POST .../taxonomies/{id}/classifications`.
+
+        **Idempotency.** A repeated create with the same `clientRef` creates
+        nothing and answers the taxonomy created first (`200`,
+        `replayed: true`). The key is kept in memory only, until the
+        application quits.
+
+        With `?dry_run=true` nothing is created; the answer (`200`,
+        `dryRun: true`) is the taxonomy as it would be.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaxonomyCreate"
+            examples:
+              default:
+                value:
+                  name: Regions
+      responses:
+        "200":
+          description: "A dry run (`dryRun: true`) or a replayed create (`replayed: true`); nothing was changed."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaxonomyWriteResult"
+        "201":
+          description: Created
+          headers:
+            Location:
+              description: The path of the created taxonomy.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaxonomyWriteResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/taxonomies/{id}:
+    parameters:
+      - $ref: "#/components/parameters/File"
+      - $ref: "#/components/parameters/TaxonomyId"
+    get:
+      operationId: getTaxonomy
+      tags: [Taxonomies]
+      summary: Read a taxonomy
+      responses:
+        "200":
+          description: The entity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Taxonomy"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    patch:
+      operationId: renameTaxonomy
+      tags: [Taxonomies]
+      summary: Rename a taxonomy
+      description: |
+        A **JSON Merge Patch** (RFC 7386): omitted fields stay untouched, an
+        explicit `null` clears an optional field. Accepted as
+        `application/json` or `application/merge-patch+json`. Unknown fields
+        are rejected (`unknown-field`); all violations are reported at once.
+
+        The only writable field is `name`, as in the application's "rename".
+
+        A patch that changes nothing does not mark the file dirty. With
+        `?dry_run=true` the answer is the taxonomy as it would be
+        (`dryRun: true`), and nothing is changed.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: "#/components/schemas/TaxonomyPatch"
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaxonomyPatch"
+      responses:
+        "200":
+          description: The updated taxonomy, or the preview of a dry run
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaxonomyWriteResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    delete:
+      operationId: deleteTaxonomy
+      tags: [Taxonomies]
+      summary: Delete a taxonomy
+      description: |
+        Deletes the taxonomy with all its categories and assignments, as the
+        application does. Instruments and accounts are not affected.
+
+        With `?dry_run=true` nothing is deleted and the answer (`200`) names
+        the taxonomy that would be removed.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+      responses:
+        "200":
+          description: Dry run, what would be removed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeletePreview"
+        "204":
+          description: Deleted
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/taxonomies/{id}/classifications:
+    parameters:
+      - $ref: "#/components/parameters/File"
+      - $ref: "#/components/parameters/TaxonomyId"
+    post:
+      operationId: createCategory
+      tags: [Taxonomies]
+      summary: Create a category
+      description: |
+        Creates a category below `parent` (a category `id`; absent or `null`:
+        a top-level category). As in the application, `weight` (the target
+        weight for rebalancing, in percent) defaults to what is left of 100 %
+        among the siblings, and `color` to a random color.
+
+        **Idempotency.** A repeated create with the same `clientRef` creates
+        nothing and answers the category created first (`200`,
+        `replayed: true`). The key is kept in memory only, until the
+        application quits.
+
+        With `?dry_run=true` nothing is created; the answer (`200`,
+        `dryRun: true`) is the category as it would be.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CategoryCreate"
+            examples:
+              default:
+                value:
+                  name: Europe
+                  parent: 3f2e1d0c-9b8a-4c7d-8e6f-5a4b3c2d1e0f
+                  color: "#89afee"
+                  weight: "40"
+      responses:
+        "200":
+          description: "A dry run (`dryRun: true`) or a replayed create (`replayed: true`); nothing was changed."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CategoryWriteResult"
+        "201":
+          description: Created
+          headers:
+            Location:
+              description: The path of the created category.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CategoryWriteResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/taxonomies/{id}/classifications/{cid}:
+    parameters:
+      - $ref: "#/components/parameters/File"
+      - $ref: "#/components/parameters/TaxonomyId"
+      - $ref: "#/components/parameters/CategoryId"
+    get:
+      operationId: getCategory
+      tags: [Taxonomies]
+      summary: Read a category and its subtree
+      responses:
+        "200":
+          description: The entity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    patch:
+      operationId: patchCategory
+      tags: [Taxonomies]
+      summary: Update or move a category (JSON Merge Patch)
+      description: |
+        A **JSON Merge Patch** (RFC 7386): omitted fields stay untouched, an
+        explicit `null` clears an optional field. Accepted as
+        `application/json` or `application/merge-patch+json`. Unknown fields
+        are rejected (`unknown-field`); all violations are reported at once.
+
+        `parent` moves the category (`null`: to the top level); it cannot be
+        moved below itself (`invalid-value`). `name`, `color` and `weight`
+        cannot be cleared.
+
+        A patch that changes nothing does not mark the file dirty. With
+        `?dry_run=true` the answer is the category as it would be
+        (`dryRun: true`), and nothing is changed.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: "#/components/schemas/CategoryPatch"
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CategoryPatch"
+      responses:
+        "200":
+          description: The updated category, or the preview of a dry run
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CategoryWriteResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    delete:
+      operationId: deleteCategory
+      tags: [Taxonomies]
+      summary: Delete a category
+      description: |
+        Deletes the category. A category with subcategories or assignments is
+        rejected `409 delete-blocked` unless `cascade=true`: then its whole
+        subtree is deleted and its instruments and accounts become unassigned,
+        as a delete in the application does.
+
+        With `?dry_run=true` nothing is deleted and the answer (`200`) names
+        the category that would be removed.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+        - name: cascade
+          in: query
+          required: false
+          description: "`true` also deletes subcategories and assignments."
+          schema:
+            type: boolean
+            default: false
+      responses:
+        "200":
+          description: Dry run, what would be removed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeletePreview"
+        "204":
+          description: Deleted
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/taxonomies/{id}/classifications/{cid}/assignments/{vehicleUuid}:
+    parameters:
+      - $ref: "#/components/parameters/File"
+      - $ref: "#/components/parameters/TaxonomyId"
+      - $ref: "#/components/parameters/CategoryId"
+      - name: vehicleUuid
+        in: path
+        required: true
+        description: The `uuid` of an instrument or a cash account.
+        schema:
+          type: string
+    put:
+      operationId: putAssignment
+      tags: [Taxonomies]
+      summary: Assign an instrument or cash account to a category
+      description: |
+        Assigns the instrument or cash account with the given weight in
+        percent, or changes the weight of its existing assignment to this
+        category. Without a body (or without `weight`), the weight is what is
+        not yet assigned elsewhere in the taxonomy. As in the application, the
+        weights of one instrument or account across a taxonomy must not
+        exceed 100 % (`weight-exceeds-100`). With `?dry_run=true` nothing is
+        changed.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssignmentPut"
+      responses:
+        "200":
+          description: The assignment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AssignmentWriteResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    delete:
+      operationId: deleteAssignment
+      tags: [Taxonomies]
+      summary: Unassign an instrument or cash account
+      description: |
+        Removes the assignment from the category; `404` if there is none.
+
+        With `?dry_run=true` nothing is deleted and the answer (`200`) names
+        the assignment that would be removed.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+      responses:
+        "200":
+          description: Dry run, what would be removed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeletePreview"
+        "204":
+          description: Deleted
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /v1/files/{file}/transactions:
     parameters:
       - $ref: "#/components/parameters/File"
@@ -3133,6 +3588,20 @@ components:
         application.
       schema:
         type: string
+    TaxonomyId:
+      name: id
+      in: path
+      required: true
+      description: The `id` of a taxonomy.
+      schema:
+        type: string
+    CategoryId:
+      name: cid
+      in: path
+      required: true
+      description: The `id` of a category (classification) within the taxonomy.
+      schema:
+        type: string
     DryRun:
       name: dry_run
       in: query
@@ -3904,18 +4373,132 @@ components:
 
     TaxonomyCategory:
       type: object
-      required: [name]
+      required: [id, name, weight]
       properties:
+        id:
+          type: string
+          description: Addresses the category in `.../taxonomies/{id}/classifications/{cid}`.
         name:
           type: string
         color:
           type: string
           description: The category's display color, as set in the application.
+        weight:
+          type: number
+          description: The target weight for rebalancing, in percent (0 to 100).
+        note:
+          type: string
+          description: Omitted when not set.
         children:
           type: array
           description: Omitted for a leaf, rather than reported as an empty array.
           items:
             $ref: "#/components/schemas/TaxonomyCategory"
+        assignments:
+          type: array
+          description: The instruments and cash accounts assigned here; omitted when none.
+          items:
+            $ref: "#/components/schemas/TaxonomyAssignment"
+
+    TaxonomyAssignment:
+      type: object
+      required: [vehicle, type, name, weight]
+      properties:
+        vehicle:
+          type: string
+          description: The `uuid` of the instrument or cash account.
+        type:
+          type: string
+          enum: [instrument, cash-account]
+        name:
+          type: string
+        weight:
+          type: number
+          description: The share assigned to this category, in percent.
+
+    Category:
+      description: A category addressed on its own, with its subtree.
+      allOf:
+        - $ref: "#/components/schemas/TaxonomyCategory"
+        - type: object
+          required: [taxonomy]
+          properties:
+            taxonomy:
+              type: string
+              description: The `id` of the taxonomy.
+            parent:
+              type: string
+              description: The `id` of the parent category; omitted for a top-level category.
+
+    TaxonomyPatch:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+
+    TaxonomyCreate:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        clientRef:
+          type: string
+          maxLength: 128
+
+    CategoryPatch:
+      type: object
+      properties:
+        parent:
+          type: [string, "null"]
+          description: The `id` of the new parent category; `null` for the top level.
+        name:
+          type: string
+          minLength: 1
+        color:
+          type: string
+          pattern: "^#[0-9a-fA-F]{6}$"
+        weight:
+          $ref: "#/components/schemas/DecimalInput"
+        note:
+          type: [string, "null"]
+
+    CategoryCreate:
+      description: The fields of `CategoryPatch` plus `clientRef`; `name` is required.
+      allOf:
+        - $ref: "#/components/schemas/CategoryPatch"
+        - type: object
+          required: [name]
+          properties:
+            clientRef:
+              type: string
+              maxLength: 128
+
+    AssignmentPut:
+      type: object
+      properties:
+        weight:
+          $ref: "#/components/schemas/DecimalInput"
+
+    TaxonomyWriteResult:
+      description: The taxonomy as created, renamed, previewed or replayed.
+      allOf:
+        - $ref: "#/components/schemas/Taxonomy"
+        - $ref: "#/components/schemas/WriteFlags"
+
+    CategoryWriteResult:
+      description: The category as created, updated, previewed or replayed.
+      allOf:
+        - $ref: "#/components/schemas/Category"
+        - $ref: "#/components/schemas/WriteFlags"
+
+    AssignmentWriteResult:
+      description: The assignment as written or previewed.
+      allOf:
+        - $ref: "#/components/schemas/TaxonomyAssignment"
+        - $ref: "#/components/schemas/WriteFlags"
 
     PriceSeries:
       type: object
@@ -5145,6 +5728,7 @@ components:
             - same-investment-account
             - unknown-feed
             - unknown-calendar
+            - weight-exceeds-100
             - already-exists
         message:
           type: string

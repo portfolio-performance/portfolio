@@ -46,7 +46,7 @@ public class OpenApiSpecDriftTest
      * sufficient; the {@code record FieldError(String field, String code, …)}
      * declaration does not match because its second argument is not a literal.
      */
-    private static final Pattern FIELD_ERROR_CODE = Pattern.compile("FieldError\\(\\s*[^,]+,\\s*\"([a-z-]+)\"");
+    private static final Pattern FIELD_ERROR_CODE = Pattern.compile("FieldError\\(\\s*[^,]+,\\s*\"([a-z0-9-]+)\"");
 
     private IEclipsePreferences node;
 

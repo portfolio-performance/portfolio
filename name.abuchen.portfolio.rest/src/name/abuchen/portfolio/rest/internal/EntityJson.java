@@ -907,9 +907,13 @@ public final class EntityJson
     private static JsonObject toJson(Classification classification)
     {
         var json = new JsonObject();
+        json.addProperty("id", classification.getId()); //$NON-NLS-1$
         json.addProperty("name", classification.getName());
         if (classification.getColor() != null)
             json.addProperty("color", classification.getColor());
+        json.add("weight", decimal(classification.getWeight(), Values.Weight.precision())); //$NON-NLS-1$
+        if (classification.getNote() != null)
+            json.addProperty("note", classification.getNote()); //$NON-NLS-1$
 
         // Only present when the category has children: a leaf's empty array would be
         // noise on every leaf of a deep taxonomy.
@@ -919,6 +923,45 @@ public final class EntityJson
         if (children.size() > 0)
             json.add("children", children);
 
+        // likewise only present when something is assigned
+        var assignments = new JsonArray();
+        for (var assignment : classification.getAssignments())
+            assignments.add(toJson(assignment));
+        if (assignments.size() > 0)
+            json.add("assignments", assignments); //$NON-NLS-1$
+
+        return json;
+    }
+
+    /**
+     * One category with its subtree, as addressed on its own: like an entry
+     * of {@code categories}, plus the {@code taxonomy} it belongs to and its
+     * {@code parent} category (omitted for a top-level category).
+     */
+    public static JsonObject toJson(Taxonomy taxonomy, Classification classification)
+    {
+        var json = new JsonObject();
+        json.addProperty("taxonomy", taxonomy.getId()); //$NON-NLS-1$
+        var parent = classification.getParent();
+        if (parent != null && parent != taxonomy.getRoot())
+            json.addProperty("parent", parent.getId()); //$NON-NLS-1$
+        toJson(classification).entrySet().forEach(e -> json.add(e.getKey(), e.getValue()));
+        return json;
+    }
+
+    /**
+     * An assignment of an instrument or a cash account to a category, with
+     * its weight in percent.
+     */
+    public static JsonObject toJson(Classification.Assignment assignment)
+    {
+        var vehicle = assignment.getInvestmentVehicle();
+
+        var json = new JsonObject();
+        json.addProperty("vehicle", vehicle.getUUID()); //$NON-NLS-1$
+        json.addProperty("type", vehicle instanceof Account ? "cash-account" : "instrument"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        json.addProperty("name", vehicle.getName()); //$NON-NLS-1$
+        json.add("weight", decimal(assignment.getWeight(), Values.Weight.precision())); //$NON-NLS-1$
         return json;
     }
 

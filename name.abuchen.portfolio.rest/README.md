@@ -208,6 +208,22 @@ it) answers `409 ambiguous-name`; rename them in the application.
   `fees`, `taxes`, `autoGenerate`, `note`. The rules are those of the application's plan dialog;
   deleting a plan keeps the transactions it generated.
 
+### Taxonomies
+
+`GET /v1/files/{file}/taxonomies[/{id}]` returns each taxonomy with its category tree; every category
+carries its `id`, `weight` (target weight in percent), `color`, `note`, `children` and `assignments`
+(`{vehicle, type, name, weight}`).
+
+- `POST …/taxonomies` `{name}` creates an empty taxonomy; `PATCH …/taxonomies/{id}` `{name}` renames
+  it; `DELETE` removes it with all categories and assignments.
+- `POST …/taxonomies/{id}/classifications` `{parent, name, color, weight, note}` creates a category
+  (no `parent`: top level; `weight` defaults to what is left of 100 % among the siblings);
+  `PATCH …/classifications/{cid}` updates or moves it; `DELETE` refuses a category with
+  subcategories or assignments unless `?cascade=true`.
+- `PUT …/classifications/{cid}/assignments/{vehicleUuid}` `{weight}` assigns an instrument or cash
+  account (default weight: what is not yet assigned elsewhere in the taxonomy); the weights of one
+  vehicle across a taxonomy cannot exceed 100 % (`weight-exceeds-100`). `DELETE` unassigns it.
+
 ### `POST /v1/files/{file}/transactions` — create a transaction
 
 `type` selects the shape: `buy`, `sell`, `delivery-inbound`, `delivery-outbound`, `dividends`,

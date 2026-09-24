@@ -210,6 +210,42 @@ public final class ApiRoutes
 
         router.add("GET", "/v1/files/{file}/taxonomies", read(resolver, host,
                         (client, req) -> Response.json(200, TaxonomiesHandler.list(client))));
+        router.add("POST", "/v1/files/{file}/taxonomies", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> {
+                            var result = TaxonomiesHandler.create(context, idempotency, parseObject(req));
+                            return created(req, result, "taxonomies", result.entity().get("id").getAsString()); //$NON-NLS-1$ //$NON-NLS-2$
+                        }));
+        router.add("GET", "/v1/files/{file}/taxonomies/{id}", read(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (client, req) -> Response.json(200, TaxonomiesHandler.get(client, req.pathParam("id"))))); //$NON-NLS-1$
+        router.add("PATCH", "/v1/files/{file}/taxonomies/{id}", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> Response.json(200, TaxonomiesHandler
+                                        .rename(context, req.pathParam("id"), parseObject(req)).entity()))); //$NON-NLS-1$
+        router.add("DELETE", "/v1/files/{file}/taxonomies/{id}", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> deleted(TaxonomiesHandler.delete(context, req.pathParam("id"))))); //$NON-NLS-1$
+        router.add("POST", "/v1/files/{file}/taxonomies/{id}/classifications", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> {
+                            var result = TaxonomiesHandler.createClassification(context, idempotency,
+                                            req.pathParam("id"), parseObject(req)); //$NON-NLS-1$
+                            return created(req, result, "taxonomies/" + encodeSegment(req.pathParam("id")) //$NON-NLS-1$ //$NON-NLS-2$
+                                            + "/classifications", result.entity().get("id").getAsString()); //$NON-NLS-1$ //$NON-NLS-2$
+                        }));
+        router.add("GET", "/v1/files/{file}/taxonomies/{id}/classifications/{cid}", read(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (client, req) -> Response.json(200, TaxonomiesHandler.getClassification(client,
+                                        req.pathParam("id"), req.pathParam("cid"))))); //$NON-NLS-1$ //$NON-NLS-2$
+        router.add("PATCH", "/v1/files/{file}/taxonomies/{id}/classifications/{cid}", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> Response.json(200, TaxonomiesHandler.patchClassification(context,
+                                        req.pathParam("id"), req.pathParam("cid"), parseObject(req)).entity()))); //$NON-NLS-1$ //$NON-NLS-2$
+        router.add("DELETE", "/v1/files/{file}/taxonomies/{id}/classifications/{cid}", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> deleted(TaxonomiesHandler.deleteClassification(context, req.pathParam("id"), //$NON-NLS-1$
+                                        req.pathParam("cid"), req.queryParam("cascade"))))); //$NON-NLS-1$ //$NON-NLS-2$
+        router.add("PUT", "/v1/files/{file}/taxonomies/{id}/classifications/{cid}/assignments/{vehicleUuid}", //$NON-NLS-1$ //$NON-NLS-2$
+                        writeWith(resolver, host, (context, req) -> Response.json(200,
+                                        TaxonomiesHandler.putAssignment(context, req.pathParam("id"), //$NON-NLS-1$
+                                                        req.pathParam("cid"), req.pathParam("vehicleUuid"), //$NON-NLS-1$ //$NON-NLS-2$
+                                                        parseOptionalObject(req)).entity())));
+        router.add("DELETE", "/v1/files/{file}/taxonomies/{id}/classifications/{cid}/assignments/{vehicleUuid}", //$NON-NLS-1$ //$NON-NLS-2$
+                        writeWith(resolver, host, (context, req) -> deleted(TaxonomiesHandler.deleteAssignment(context,
+                                        req.pathParam("id"), req.pathParam("cid"), req.pathParam("vehicleUuid"))))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
         router.add("GET", "/v1/files/{file}/transactions", read(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
                         (client, req) -> Response.json(200, TransactionsHandler.list(client,
@@ -387,6 +423,14 @@ public final class ApiRoutes
     /* package */ static String encodeSegment(String value)
     {
         return URLEncoder.encode(value, StandardCharsets.UTF_8).replace("+", "%20"); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    /** like {@link #parseObject}, but an empty body is an empty object */
+    private static JsonObject parseOptionalObject(Request request)
+    {
+        if (request.body() == null || new String(request.body(), StandardCharsets.UTF_8).isBlank())
+            return new JsonObject();
+        return parseObject(request);
     }
 
     private static JsonObject parseObject(Request request)
