@@ -26,6 +26,7 @@ import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientProperties;
 import name.abuchen.portfolio.model.CostMethod;
+import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -38,6 +39,7 @@ import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionPair;
+import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
@@ -228,6 +230,62 @@ public final class EntityJson
             json.addProperty("note", account.getNote()); //$NON-NLS-1$
         addAttributes(json, client, account, Account.class);
         json.add("balance", toJson(balance)); //$NON-NLS-1$
+        return json;
+    }
+
+    /** a watchlist and its instruments, each as {@code {uuid, name}} */
+    public static JsonObject toJson(Watchlist watchlist)
+    {
+        var json = new JsonObject();
+        json.addProperty("name", watchlist.getName()); //$NON-NLS-1$
+
+        var instruments = new JsonArray();
+        for (var security : watchlist.getSecurities())
+        {
+            var item = new JsonObject();
+            item.addProperty("uuid", security.getUUID()); //$NON-NLS-1$
+            item.addProperty("name", security.getName()); //$NON-NLS-1$
+            instruments.add(item);
+        }
+        json.add("instruments", instruments); //$NON-NLS-1$
+        return json;
+    }
+
+    /**
+     * An investment plan. The instrument and the accounts are referenced by
+     * UUID, as in the request body; {@code amount}, {@code fees} and
+     * {@code taxes} are in the plan's currency, the currency of its cash
+     * account (or, for a delivery plan, of the investment account's
+     * reference account).
+     */
+    public static JsonObject toJson(Client client, InvestmentPlan plan)
+    {
+        var json = new JsonObject();
+        json.addProperty("name", plan.getName()); //$NON-NLS-1$
+        json.addProperty("kind", InvestmentPlansHandler.wireKind(plan.getPlanType())); //$NON-NLS-1$
+        if (plan.getSecurity() != null)
+            json.addProperty("instrument", plan.getSecurity().getUUID()); //$NON-NLS-1$
+        if (plan.getPortfolio() != null)
+            json.addProperty("investmentAccount", plan.getPortfolio().getUUID()); //$NON-NLS-1$
+        if (plan.getAccount() != null)
+            json.addProperty("cashAccount", plan.getAccount().getUUID()); //$NON-NLS-1$
+        json.addProperty("start", plan.getStart().toString()); //$NON-NLS-1$
+
+        if (plan.getInterval() > InvestmentPlan.WEEKS_THRESHOLD)
+            json.addProperty("intervalWeeks", plan.getInterval() - InvestmentPlan.WEEKS_THRESHOLD); //$NON-NLS-1$
+        else
+            json.addProperty("intervalMonths", plan.getInterval()); //$NON-NLS-1$
+
+        var currency = InvestmentPlansHandler.currencyOf(client, plan);
+        json.add("amount", toJson(Money.of(currency, plan.getAmount()))); //$NON-NLS-1$
+        json.add("fees", toJson(Money.of(currency, plan.getFees()))); //$NON-NLS-1$
+        json.add("taxes", toJson(Money.of(currency, plan.getTaxes()))); //$NON-NLS-1$
+        json.addProperty("autoGenerate", plan.isAutoGenerate()); //$NON-NLS-1$
+        if (plan.getNote() != null)
+            json.addProperty("note", plan.getNote()); //$NON-NLS-1$
+
+        json.addProperty("transactionCount", plan.getTransactions().size()); //$NON-NLS-1$
+        json.addProperty("nextTransactionDate", plan.getDateOfNextTransactionToBeGenerated().toString()); //$NON-NLS-1$
         return json;
     }
 

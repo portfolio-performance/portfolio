@@ -192,6 +192,22 @@ merge patch over the same fields; a cash account's currency is locked while it h
 plan uses it, and for a cash account also while it is the reference account of an investment
 account.
 
+### Watchlists and investment plans
+
+Neither has an identifier in the application, so the API addresses both by **name**, percent-encoded
+as one path segment (`/watchlists/Tech%2FGrowth`), and keeps names unique: creating or renaming to a
+taken name is `422 already-exists`. A name several entities already share (the application allows
+it) answers `409 ambiguous-name`; rename them in the application.
+
+- `GET`/`POST /v1/files/{file}/watchlists`, `GET`/`PATCH`/`DELETE …/watchlists/{name}`: `{"name":
+  "Tech", "instruments": ["8a1e…"]}`; a patch of `instruments` replaces the members.
+  `PUT`/`DELETE …/watchlists/{name}/instruments/{uuid}` adds or removes one instrument.
+- `GET`/`POST /v1/files/{file}/investment-plans`, `GET`/`PATCH`/`DELETE …/investment-plans/{name}`:
+  `name`, `kind` (`purchase`, `deposit`, `removal`, `interest`; cannot be changed), `instrument`,
+  `investmentAccount`, `cashAccount` (UUIDs), `start`, `intervalMonths` or `intervalWeeks`, `amount`,
+  `fees`, `taxes`, `autoGenerate`, `note`. The rules are those of the application's plan dialog;
+  deleting a plan keeps the transactions it generated.
+
 ### `POST /v1/files/{file}/transactions` — create a transaction
 
 `type` selects the shape: `buy`, `sell`, `delivery-inbound`, `delivery-outbound`, `dividends`,
@@ -251,6 +267,7 @@ the user, who can also discard it by closing the file without saving.
 | 409 | `password-required` | the file to open is encrypted — a human has to open it |
 | 409 | `open-failed` | the file to open could not be loaded; see `detail` |
 | 409 | `ambiguous-alias` | alias matches several records; use the UUID |
+| 409 | `ambiguous-name` | several watchlists or investment plans share the addressed name |
 | 409 | `delete-blocked` | the entity to delete is still referenced, see `errors` |
 | 422 | `validation` | one or more fields rejected; see `errors` |
 | 423 | `user-interaction` | a dialog is open in the app — **retry**, see `Retry-After` |

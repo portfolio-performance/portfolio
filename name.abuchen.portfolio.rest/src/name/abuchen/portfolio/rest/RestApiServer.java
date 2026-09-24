@@ -83,7 +83,8 @@ public class RestApiServer
                 checkOrigin(exchange);
                 checkAuthorization(exchange);
 
-                var match = router.match(exchange.getRequestMethod(), exchange.getRequestURI().getPath());
+                // match the raw path: the router decodes each path parameter itself
+                var match = router.match(exchange.getRequestMethod(), exchange.getRequestURI().getRawPath());
                 var request = new Request(exchange.getRequestMethod(), exchange.getRequestURI().getPath(),
                                 match.pathParams(), Request.parseQuery(exchange.getRequestURI().getRawQuery()),
                                 exchange.getRequestBody().readAllBytes());

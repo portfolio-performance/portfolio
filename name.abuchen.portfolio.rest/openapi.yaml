@@ -1520,6 +1520,496 @@ paths:
         "500":
           $ref: "#/components/responses/InternalError"
 
+  /v1/files/{file}/watchlists:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    get:
+      operationId: listWatchlists
+      tags: [Watchlists]
+      summary: List the watchlists
+      responses:
+        "200":
+          description: The list
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Watchlist"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    post:
+      operationId: createWatchlist
+      tags: [Watchlists]
+      summary: Create a watchlist
+      description: |
+        Creates a watchlist. Watchlists have no identifier; the API addresses a
+        watchlist by its `name`, which must therefore be unique
+        (`already-exists`). `instruments` lists instrument UUIDs.
+
+        **Idempotency.** A repeated create with the same `clientRef` creates
+        nothing and answers the watchlist created first (`200`,
+        `replayed: true`). The key is kept in memory only, until the
+        application quits.
+
+        With `?dry_run=true` nothing is created; the answer (`200`,
+        `dryRun: true`) is the watchlist as it would be.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WatchlistCreate"
+            examples:
+              default:
+                value:
+                  name: Tech
+                  instruments: [8a1e0c4b-2f5d-4e6a-b1c3-7d9f0a2e4c68]
+      responses:
+        "200":
+          description: "A dry run (`dryRun: true`) or a replayed create (`replayed: true`); nothing was changed."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WatchlistWriteResult"
+        "201":
+          description: Created
+          headers:
+            Location:
+              description: The path of the created watchlist.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WatchlistWriteResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/watchlists/{name}:
+    parameters:
+      - $ref: "#/components/parameters/File"
+      - $ref: "#/components/parameters/Name"
+    get:
+      operationId: getWatchlist
+      tags: [Watchlists]
+      summary: Read a watchlist
+      responses:
+        "200":
+          description: The entity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Watchlist"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    patch:
+      operationId: patchWatchlist
+      tags: [Watchlists]
+      summary: Rename a watchlist or replace its instruments
+      description: |
+        A **JSON Merge Patch** (RFC 7386): omitted fields stay untouched, an
+        explicit `null` clears an optional field. Accepted as
+        `application/json` or `application/merge-patch+json`. Unknown fields
+        are rejected (`unknown-field`); all violations are reported at once.
+
+        `name` renames the watchlist (unique, `already-exists`); `instruments`
+        replaces its members.
+
+        A patch that changes nothing does not mark the file dirty. With
+        `?dry_run=true` the answer is the watchlist as it would be
+        (`dryRun: true`), and nothing is changed.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: "#/components/schemas/WatchlistPatch"
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WatchlistPatch"
+      responses:
+        "200":
+          description: The updated watchlist, or the preview of a dry run
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WatchlistWriteResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    delete:
+      operationId: deleteWatchlist
+      tags: [Watchlists]
+      summary: Delete a watchlist
+      description: |
+        Deletes the watchlist; its instruments are not affected.
+
+        With `?dry_run=true` nothing is deleted and the answer (`200`) names
+        the watchlist that would be removed.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+      responses:
+        "200":
+          description: Dry run, what would be removed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeletePreview"
+        "204":
+          description: Deleted
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/watchlists/{name}/instruments/{uuid}:
+    parameters:
+      - $ref: "#/components/parameters/File"
+      - $ref: "#/components/parameters/Name"
+      - $ref: "#/components/parameters/Uuid"
+    put:
+      operationId: addWatchlistInstrument
+      tags: [Watchlists]
+      summary: Add an instrument to a watchlist
+      description: |
+        Adds the instrument (no body). Adding a member again changes nothing.
+        With `?dry_run=true` the answer is the watchlist as it would be.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+      responses:
+        "200":
+          description: The watchlist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WatchlistWriteResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    delete:
+      operationId: removeWatchlistInstrument
+      tags: [Watchlists]
+      summary: Remove an instrument from a watchlist
+      description: |
+        Removes the instrument from the watchlist; `404` if it is not a member.
+        The instrument itself is not deleted. With `?dry_run=true` the answer
+        is the watchlist as it would be.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+      responses:
+        "200":
+          description: The watchlist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WatchlistWriteResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/investment-plans:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    get:
+      operationId: listInvestmentPlans
+      tags: [Investment plans]
+      summary: List the investment plans
+      responses:
+        "200":
+          description: The list
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/InvestmentPlan"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    post:
+      operationId: createInvestmentPlan
+      tags: [Investment plans]
+      summary: Create an investment plan
+      description: |
+        Creates an investment plan, following the rules of the application's
+        plan dialog. Plans have no identifier; the API addresses a plan by its
+        `name`, which must therefore be unique (`already-exists`). `name`,
+        `kind` and `amount` are required; `start` defaults to today and the
+        interval to one month. See `InvestmentPlanCreate` for the fields each
+        kind takes.
+
+        **Idempotency.** A repeated create with the same `clientRef` creates
+        nothing and answers the investment plan created first (`200`,
+        `replayed: true`). The key is kept in memory only, until the
+        application quits.
+
+        With `?dry_run=true` nothing is created; the answer (`200`,
+        `dryRun: true`) is the investment plan as it would be.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InvestmentPlanCreate"
+            examples:
+              default:
+                value:
+                  name: Monthly ETF
+                  kind: purchase
+                  instrument: 8a1e0c4b-2f5d-4e6a-b1c3-7d9f0a2e4c68
+                  investmentAccount: d9f0a1b2-4c3e-4f5a-9b8c-7d6e5f4a3b2c
+                  cashAccount: c4b2a1e0-3f6d-4a2e-8b1c-5d7f9a0e2c46
+                  start: "2026-01-15"
+                  intervalMonths: 1
+                  amount: "250.00"
+                  fees: "1.50"
+      responses:
+        "200":
+          description: "A dry run (`dryRun: true`) or a replayed create (`replayed: true`); nothing was changed."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvestmentPlanWriteResult"
+        "201":
+          description: Created
+          headers:
+            Location:
+              description: The path of the created investment plan.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvestmentPlanWriteResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/investment-plans/{name}:
+    parameters:
+      - $ref: "#/components/parameters/File"
+      - $ref: "#/components/parameters/Name"
+    get:
+      operationId: getInvestmentPlan
+      tags: [Investment plans]
+      summary: Read an investment plan
+      responses:
+        "200":
+          description: The entity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvestmentPlan"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    patch:
+      operationId: patchInvestmentPlan
+      tags: [Investment plans]
+      summary: Update an investment plan (JSON Merge Patch)
+      description: |
+        A **JSON Merge Patch** (RFC 7386): omitted fields stay untouched, an
+        explicit `null` clears an optional field. Accepted as
+        `application/json` or `application/merge-patch+json`. Unknown fields
+        are rejected (`unknown-field`); all violations are reported at once.
+
+        `name` renames the plan. The merged plan is validated as a whole, as
+        on create. The `kind` cannot be changed (`not-allowed-for-type`).
+
+        A patch that changes nothing does not mark the file dirty. With
+        `?dry_run=true` the answer is the investment plan as it would be
+        (`dryRun: true`), and nothing is changed.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: "#/components/schemas/InvestmentPlanPatch"
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InvestmentPlanPatch"
+      responses:
+        "200":
+          description: The updated investment plan, or the preview of a dry run
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvestmentPlanWriteResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    delete:
+      operationId: deleteInvestmentPlan
+      tags: [Investment plans]
+      summary: Delete an investment plan
+      description: |
+        Deletes the plan. As in the application, the transactions it generated
+        are kept.
+
+        With `?dry_run=true` nothing is deleted and the answer (`200`) names
+        the investment plan that would be removed.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+      responses:
+        "200":
+          description: Dry run, what would be removed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeletePreview"
+        "204":
+          description: Deleted
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /v1/files/{file}/taxonomies:
     parameters:
       - $ref: "#/components/parameters/File"
@@ -2632,6 +3122,17 @@ components:
       description: The `uuid` of the entity within the file
       schema:
         type: string
+    Name:
+      name: name
+      in: path
+      required: true
+      description: |
+        The `name` of a watchlist or investment plan, percent-encoded as one
+        path segment (a `/` in the name is `%2F`). A name that several
+        entities share is rejected `409 ambiguous-name`; rename them in the
+        application.
+      schema:
+        type: string
     DryRun:
       name: dry_run
       in: query
@@ -3179,6 +3680,174 @@ components:
       description: The investment account as created, updated, previewed or replayed.
       allOf:
         - $ref: "#/components/schemas/InvestmentAccount"
+        - $ref: "#/components/schemas/WriteFlags"
+
+    Watchlist:
+      type: object
+      required: [name, instruments]
+      properties:
+        name:
+          type: string
+          description: Unique among the file's watchlists; the identifier in the path.
+        instruments:
+          type: array
+          items:
+            type: object
+            required: [uuid, name]
+            properties:
+              uuid:
+                type: string
+              name:
+                type: string
+
+    WatchlistPatch:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+        instruments:
+          type: [array, "null"]
+          description: The instrument UUIDs, each once; replaces the members (`null` empties the list).
+          items:
+            type: string
+
+    WatchlistCreate:
+      description: The fields of `WatchlistPatch` plus `clientRef`; `name` is required.
+      allOf:
+        - $ref: "#/components/schemas/WatchlistPatch"
+        - type: object
+          required: [name]
+          properties:
+            clientRef:
+              type: string
+              maxLength: 128
+
+    WatchlistWriteResult:
+      description: The watchlist as created, updated, previewed or replayed.
+      allOf:
+        - $ref: "#/components/schemas/Watchlist"
+        - $ref: "#/components/schemas/WriteFlags"
+
+    InvestmentPlan:
+      type: object
+      required: [name, kind, start, amount, fees, taxes, autoGenerate, transactionCount, nextTransactionDate]
+      properties:
+        name:
+          type: string
+          description: Unique among the file's plans; the identifier in the path.
+        kind:
+          type: string
+          enum: [purchase, deposit, removal, interest]
+        instrument:
+          type: string
+          description: The instrument's `uuid` (purchase plans).
+        investmentAccount:
+          type: string
+          description: The investment account's `uuid` (purchase plans).
+        cashAccount:
+          type: string
+          description: |
+            The cash account's `uuid`. Omitted for a purchase plan booked as a
+            delivery (no payment).
+        start:
+          type: string
+          format: date
+        intervalMonths:
+          type: integer
+          description: Present for a monthly interval.
+        intervalWeeks:
+          type: integer
+          description: Present for a weekly interval.
+        amount:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: |
+            The total booked per execution: for a purchase the gross value
+            plus fees and taxes, for interest the amount after taxes.
+        fees:
+          $ref: "#/components/schemas/MonetaryValue"
+        taxes:
+          $ref: "#/components/schemas/MonetaryValue"
+        autoGenerate:
+          type: boolean
+          description: Whether the application generates due transactions when the file is opened.
+        note:
+          type: string
+        transactionCount:
+          type: integer
+          description: The number of transactions the plan has generated.
+        nextTransactionDate:
+          type: string
+          format: date
+
+    InvestmentPlanPatch:
+      type: object
+      description: |
+        Amounts are decimals in the plan's currency (that of the cash account,
+        or for a delivery plan of the investment account's reference account)
+        with at most 2 decimals.
+
+        | `kind` | required | optional |
+        | --- | --- | --- |
+        | `purchase` | `instrument`, `investmentAccount`, `amount` > `fees` + `taxes` | `cashAccount` (absent: delivery), `fees`, `taxes` |
+        | `deposit`, `removal` | `cashAccount`, `amount` | – |
+        | `interest` | `cashAccount`, `amount` | `taxes` |
+
+        A field a kind does not take is `not-allowed-for-type`.
+      properties:
+        name:
+          type: string
+          minLength: 1
+        kind:
+          type: string
+          enum: [purchase, deposit, removal, interest]
+        instrument:
+          type: [string, "null"]
+        investmentAccount:
+          type: [string, "null"]
+        cashAccount:
+          type: [string, "null"]
+        start:
+          type: string
+          format: date
+        intervalMonths:
+          type: integer
+          minimum: 1
+          maximum: 99
+          description: Either `intervalMonths` or `intervalWeeks`.
+        intervalWeeks:
+          type: integer
+          minimum: 1
+          maximum: 99
+        amount:
+          $ref: "#/components/schemas/DecimalInput"
+        fees:
+          $ref: "#/components/schemas/NullableDecimalInput"
+        taxes:
+          $ref: "#/components/schemas/NullableDecimalInput"
+        autoGenerate:
+          type: boolean
+        note:
+          type: [string, "null"]
+
+    InvestmentPlanCreate:
+      description: |
+        The fields of `InvestmentPlanPatch` plus `clientRef`; `name`, `kind`
+        and `amount` are required.
+      allOf:
+        - $ref: "#/components/schemas/InvestmentPlanPatch"
+        - type: object
+          required: [name, kind, amount]
+          properties:
+            clientRef:
+              type: string
+              maxLength: 128
+
+    InvestmentPlanWriteResult:
+      description: The investment plan as created, updated, previewed or replayed.
+      allOf:
+        - $ref: "#/components/schemas/InvestmentPlan"
         - $ref: "#/components/schemas/WriteFlags"
 
     MonetaryValue:
@@ -4476,6 +5145,7 @@ components:
             - same-investment-account
             - unknown-feed
             - unknown-calendar
+            - already-exists
         message:
           type: string
           description: Human-readable explanation of this one violation.
@@ -4601,9 +5271,10 @@ components:
       description: |
         The addressed file or entity cannot serve the request in its current state:
         `file-not-open` (enabled but not open — open it with `POST /v1/files/open`),
-        `ambiguous-alias` (the alias matches several records — use the `id`), or, on
-        delete, `delete-blocked` (the instrument is referenced by transactions or
-        plans).
+        `ambiguous-alias` (the alias matches several records — use the `id`),
+        `ambiguous-name` (several watchlists or plans share the addressed name), or,
+        on delete, `delete-blocked` (the entity is still referenced; `errors` names
+        by what).
       content:
         application/problem+json:
           schema:

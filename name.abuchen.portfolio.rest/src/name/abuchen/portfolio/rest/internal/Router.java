@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.rest.internal;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +29,12 @@ public class Router
         routes.add(new Route(method, split(pattern), handler));
     }
 
+    /**
+     * Finds the route for the method and the raw (still percent-encoded)
+     * path. Path parameters are decoded after the path has been split into
+     * segments, so that a parameter may contain an encoded slash - a
+     * watchlist is addressed by its name, which may contain anything.
+     */
     public Match match(String method, String path)
     {
         var segments = split(path);
@@ -69,11 +77,24 @@ public class Router
         {
             var expected = pattern[ii];
             if (expected.startsWith("{") && expected.endsWith("}")) //$NON-NLS-1$ //$NON-NLS-2$
-                params.put(expected.substring(1, expected.length() - 1), actual[ii]);
+                params.put(expected.substring(1, expected.length() - 1), decode(actual[ii]));
             else if (!expected.equals(actual[ii]))
                 return null;
         }
         return params;
+    }
+
+    /** percent-decodes a path segment; unlike a query, a '+' is literal */
+    private static String decode(String segment)
+    {
+        try
+        {
+            return URLDecoder.decode(segment.replace("+", "%2B"), StandardCharsets.UTF_8); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+        catch (IllegalArgumentException e)
+        {
+            throw ApiException.badRequest("malformed percent-encoding in the path"); //$NON-NLS-1$
+        }
     }
 
     private static String[] split(String path)

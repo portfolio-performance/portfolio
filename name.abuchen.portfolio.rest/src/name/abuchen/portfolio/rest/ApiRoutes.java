@@ -18,6 +18,7 @@ import name.abuchen.portfolio.rest.internal.FilesHandler;
 import name.abuchen.portfolio.rest.internal.HoldingsHandler;
 import name.abuchen.portfolio.rest.internal.IdempotencyIndex;
 import name.abuchen.portfolio.rest.internal.InstrumentChangeLog;
+import name.abuchen.portfolio.rest.internal.InvestmentPlansHandler;
 import name.abuchen.portfolio.rest.internal.MasterDataWrites;
 import name.abuchen.portfolio.rest.internal.OpenApiHandler;
 import name.abuchen.portfolio.rest.internal.PairingHandler;
@@ -34,6 +35,7 @@ import name.abuchen.portfolio.rest.internal.SecurityPricesHandler;
 import name.abuchen.portfolio.rest.internal.TaxonomiesHandler;
 import name.abuchen.portfolio.rest.internal.TradesHandler;
 import name.abuchen.portfolio.rest.internal.TransactionsHandler;
+import name.abuchen.portfolio.rest.internal.WatchlistsHandler;
 import name.abuchen.portfolio.rest.internal.WriteContext;
 import name.abuchen.portfolio.rest.spi.HostApplication;
 import name.abuchen.portfolio.rest.spi.OpenFile;
@@ -167,6 +169,44 @@ public final class ApiRoutes
                                         .patch(context, req.pathParam("uuid"), parseObject(req)).entity()))); //$NON-NLS-1$
         router.add("DELETE", "/v1/files/{file}/investment-accounts/{uuid}", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
                         (context, req) -> deleted(PortfoliosHandler.delete(context, req.pathParam("uuid"))))); //$NON-NLS-1$
+
+        // watchlists and investment plans have no identifier: addressed by their (unique) name
+        router.add("GET", "/v1/files/{file}/watchlists", read(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (client, req) -> Response.json(200, WatchlistsHandler.list(client))));
+        router.add("POST", "/v1/files/{file}/watchlists", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> {
+                            var result = WatchlistsHandler.create(context, idempotency, parseObject(req));
+                            return created(req, result, "watchlists", result.entity().get("name").getAsString()); //$NON-NLS-1$ //$NON-NLS-2$
+                        }));
+        router.add("GET", "/v1/files/{file}/watchlists/{name}", read(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (client, req) -> Response.json(200, WatchlistsHandler.get(client, req.pathParam("name"))))); //$NON-NLS-1$
+        router.add("PATCH", "/v1/files/{file}/watchlists/{name}", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> Response.json(200, WatchlistsHandler
+                                        .patch(context, req.pathParam("name"), parseObject(req)).entity()))); //$NON-NLS-1$
+        router.add("DELETE", "/v1/files/{file}/watchlists/{name}", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> deleted(WatchlistsHandler.delete(context, req.pathParam("name"))))); //$NON-NLS-1$
+        router.add("PUT", "/v1/files/{file}/watchlists/{name}/instruments/{uuid}", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> Response.json(200, WatchlistsHandler.addInstrument(context,
+                                        req.pathParam("name"), req.pathParam("uuid")).entity()))); //$NON-NLS-1$ //$NON-NLS-2$
+        router.add("DELETE", "/v1/files/{file}/watchlists/{name}/instruments/{uuid}", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> Response.json(200, WatchlistsHandler.removeInstrument(context,
+                                        req.pathParam("name"), req.pathParam("uuid")).entity()))); //$NON-NLS-1$ //$NON-NLS-2$
+
+        router.add("GET", "/v1/files/{file}/investment-plans", read(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (client, req) -> Response.json(200, InvestmentPlansHandler.list(client))));
+        router.add("POST", "/v1/files/{file}/investment-plans", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> {
+                            var result = InvestmentPlansHandler.create(context, idempotency, parseObject(req));
+                            return created(req, result, "investment-plans", //$NON-NLS-1$
+                                            result.entity().get("name").getAsString()); //$NON-NLS-1$
+                        }));
+        router.add("GET", "/v1/files/{file}/investment-plans/{name}", read(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (client, req) -> Response.json(200, InvestmentPlansHandler.get(client, req.pathParam("name"))))); //$NON-NLS-1$
+        router.add("PATCH", "/v1/files/{file}/investment-plans/{name}", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> Response.json(200, InvestmentPlansHandler
+                                        .patch(context, req.pathParam("name"), parseObject(req)).entity()))); //$NON-NLS-1$
+        router.add("DELETE", "/v1/files/{file}/investment-plans/{name}", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> deleted(InvestmentPlansHandler.delete(context, req.pathParam("name"))))); //$NON-NLS-1$
 
         router.add("GET", "/v1/files/{file}/taxonomies", read(resolver, host,
                         (client, req) -> Response.json(200, TaxonomiesHandler.list(client))));
