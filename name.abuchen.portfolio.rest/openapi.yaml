@@ -699,7 +699,7 @@ paths:
         - name: date
           in: query
           required: false
-          description: The balance date (default: today).
+          description: "The balance date (default: today)."
           schema:
             type: string
             format: date
@@ -739,7 +739,7 @@ paths:
         - name: date
           in: query
           required: false
-          description: The balance date (default: today).
+          description: "The balance date (default: today)."
           schema:
             type: string
             format: date
@@ -786,7 +786,7 @@ paths:
         - name: date
           in: query
           required: false
-          description: The valuation date (default: today).
+          description: "The valuation date (default: today)."
           schema:
             type: string
             format: date
@@ -839,7 +839,7 @@ paths:
         - name: date
           in: query
           required: false
-          description: The valuation date (default: today).
+          description: "The valuation date (default: today)."
           schema:
             type: string
             format: date
@@ -946,11 +946,57 @@ paths:
         sides internally, but appear here only once: a buy/sell as its
         investment-account (portfolio) leg, a transfer as its outbound leg.
 
+        The optional query parameters narrow the list; they combine with AND.
+        The account filters match a transaction if **either** of its legs is
+        booked on the account — a buy shows up for its cash account although it
+        is listed as its investment-account leg.
+
         `value` is the signed net cash flow — negative for a debit (a cash
         account's removal, fee, tax, transfer-out, …) or a liquidation (an
         investment account's sell, transfer-out, delivery-outbound); positive
         otherwise. `grossValue`, `fees` and `taxes` are plain (unsigned)
         magnitudes in the transaction's own currency.
+      parameters:
+        - name: from
+          in: query
+          required: false
+          description: Only transactions on or after this date (YYYY-MM-DD).
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          required: false
+          description: Only transactions on or before this date (YYYY-MM-DD).
+          schema:
+            type: string
+            format: date
+        - name: type
+          in: query
+          required: false
+          description: |
+            Only transactions of these types: one type or a comma-separated
+            list, e.g. `buy,sell`. See `Transaction.type` for the values.
+          schema:
+            type: string
+        - name: instrument
+          in: query
+          required: false
+          description: Only transactions of the instrument with this `uuid`.
+          schema:
+            type: string
+        - name: cashAccount
+          in: query
+          required: false
+          description: Only transactions with a leg on the cash account with this `uuid`.
+          schema:
+            type: string
+        - name: investmentAccount
+          in: query
+          required: false
+          description: Only transactions with a leg on the investment account with this `uuid`.
+          schema:
+            type: string
       responses:
         "200":
           description: Every transaction, newest first
@@ -983,6 +1029,74 @@ paths:
                           uuid: c4b2a1e0-3f6d-4a2e-8b1c-5d7f9a0e2c46
                           name: Broker Cash
                           type: cash-account
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/transactions/{uuid}:
+    parameters:
+      - $ref: "#/components/parameters/File"
+      - $ref: "#/components/parameters/Uuid"
+    get:
+      operationId: getTransaction
+      tags: [Transactions]
+      summary: Read a single transaction in detail
+      description: |
+        The transaction as in the list, plus its units, the ex-date of a
+        dividend, its source and its linked leg. The `uuid` of **either** leg of
+        a buy/sell or transfer resolves; the answer is always the leg the list
+        reports (the investment-account leg of a buy/sell, the outbound leg of
+        a transfer), and `linked` names the other one.
+      responses:
+        "200":
+          description: The transaction
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionDetail"
+              examples:
+                buyInForeignCurrency:
+                  value:
+                    uuid: 2b3c4d5e-6f7a-4b1c-8d2e-3f4a5b6c7d8e
+                    date: "2026-03-02T09:30"
+                    type: buy
+                    value: { value: 1157.32, currency: EUR }
+                    grossValue: { value: 1152.42, currency: EUR }
+                    fees: { value: 4.9, currency: EUR }
+                    taxes: { value: 0, currency: EUR }
+                    shares: 12.5
+                    security:
+                      uuid: 8a1e0c4b-2f5d-4e6a-b1c3-7d9f0a2e4c68
+                      name: Apple Inc.
+                    owner:
+                      uuid: d9f0a1b2-4c3e-4f5a-9b8c-7d6e5f4a3b2c
+                      name: Broker
+                      type: investment-account
+                    units:
+                      - type: gross-value
+                        amount: { value: 1152.42, currency: EUR }
+                        forex: { value: 1265, currency: USD }
+                        exchangeRate: 0.911
+                      - type: fee
+                        amount: { value: 4.9, currency: EUR }
+                    source: "api:broker-2026-000123"
+                    updatedAt: "2026-03-02T09:31:12.345Z"
+                    linked:
+                      uuid: 3c4d5e6f-7a8b-4c1d-8e2f-3a4b5c6d7e8f
+                      type: buy
+                      owner:
+                        uuid: c4b2a1e0-3f6d-4a2e-8b1c-5d7f9a0e2c46
+                        name: Broker Cash
+                        type: cash-account
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -2062,6 +2176,74 @@ components:
         note:
           type: string
           description: Omitted when not set.
+
+    TransactionDetail:
+      description: |
+        A single transaction in detail: everything of `Transaction`, plus the
+        units the amounts are made of, the ex-date, source and last change,
+        and the other leg of a buy/sell or transfer.
+      allOf:
+        - $ref: "#/components/schemas/Transaction"
+        - type: object
+          required: [units]
+          properties:
+            units:
+              type: array
+              description: |
+                The components of the amount. Fees and taxes may occur more than
+                once. `forex` and `exchangeRate` are present when the unit was
+                recorded in a foreign currency: `amount` = `forex` ×
+                `exchangeRate`, rounded.
+              items:
+                type: object
+                required: [type, amount]
+                properties:
+                  type:
+                    type: string
+                    enum: [gross-value, fee, tax]
+                  amount:
+                    $ref: "#/components/schemas/MonetaryValue"
+                  forex:
+                    $ref: "#/components/schemas/MonetaryValue"
+                  exchangeRate:
+                    type: number
+            exDate:
+              type: string
+              format: date-time
+              description: The ex-date of a dividend. Omitted when not set.
+            source:
+              type: string
+              description: |
+                Where the transaction came from, e.g. the imported file. A
+                transaction created through the API with a `clientRef` carries
+                `api:<clientRef>`. Omitted when not set.
+            updatedAt:
+              type: string
+              format: date-time
+              description: When the transaction was last changed.
+            linked:
+              type: object
+              description: |
+                The other leg of a buy/sell (the cash-account side) or of a
+                transfer (the inbound side). Omitted for single-leg transactions.
+              required: [uuid, type, owner]
+              properties:
+                uuid:
+                  type: string
+                type:
+                  type: string
+                  description: The type of the other leg, see `Transaction.type`.
+                owner:
+                  type: object
+                  required: [uuid, name, type]
+                  properties:
+                    uuid:
+                      type: string
+                    name:
+                      type: string
+                    type:
+                      type: string
+                      enum: [cash-account, investment-account]
 
     Holding:
       type: object

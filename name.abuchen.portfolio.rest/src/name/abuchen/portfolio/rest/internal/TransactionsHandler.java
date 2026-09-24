@@ -1,14 +1,36 @@
 package name.abuchen.portfolio.rest.internal;
 
+import java.text.MessageFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import com.google.gson.JsonElement;
 
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.model.TransactionPair;
 
 public final class TransactionsHandler
 {
+    /** the filters of the transaction list; every field is optional (null) */
+    public record Filter(String from, String to, String type, String instrument, String cashAccount,
+                    String investmentAccount)
+    {
+        public static final Filter NONE = new Filter(null, null, null, null, null, null);
+    }
+
     private TransactionsHandler()
     {
     }
@@ -21,8 +43,177 @@ public final class TransactionsHandler
      */
     public static JsonElement list(Client client)
     {
-        var transactions = new ArrayList<>(client.getAllTransactions());
+        return list(client, Filter.NONE);
+    }
+
+    /**
+     * The transaction list, narrowed by the filter. The account filters match
+     * a transaction if either of its legs is booked on the account, so that a
+     * buy shows up for its cash account although the list reports it as its
+     * investment-account leg. All filters combine with AND.
+     */
+    public static JsonElement list(Client client, Filter filter)
+    {
+        var predicate = predicate(filter);
+
+        var transactions = new ArrayList<>(client.getAllTransactions().stream().filter(predicate).toList());
         transactions.sort(TransactionPair.BY_DATE.reversed());
         return EntityJson.envelope(transactions, EntityJson::toJson);
+    }
+
+    /**
+     * One transaction with its units and its linked leg. Either leg of a
+     * buy/sell or a transfer resolves; the answer is always the leg the list
+     * reports: the investment-account leg of a buy/sell and the outbound leg
+     * of a transfer.
+     */
+    public static JsonElement get(Client client, String uuid)
+    {
+        return EntityJson.toJsonDetailed(find(client, uuid));
+    }
+
+    /**
+     * The canonical pair of the transaction with the given UUID of either leg;
+     * 404 if there is none.
+     */
+    public static TransactionPair<?> find(Client client, String uuid)
+    {
+        var found = Stream.concat(
+                        client.getPortfolios().stream().flatMap(p -> p.getTransactions().stream().map(t -> pair(p, t))),
+                        client.getAccounts().stream().flatMap(a -> a.getTransactions().stream().map(t -> pair(a, t))))
+                        .filter(pair -> pair.getTransaction().getUUID().equals(uuid)) //
+                        .findFirst().orElseThrow(ApiException::notFound);
+
+        return canonical(found);
+    }
+
+    /**
+     * The leg {@link Client#getAllTransactions()} reports for this
+     * transaction: the investment-account leg of a buy/sell, the outbound leg
+     * of a transfer, the transaction itself otherwise.
+     */
+    public static TransactionPair<?> canonical(TransactionPair<?> pair)
+    {
+        var transaction = pair.getTransaction();
+        var crossEntry = transaction.getCrossEntry();
+        if (crossEntry == null)
+            return pair;
+
+        var isHiddenLeg = transaction instanceof AccountTransaction t && (t.getType() == AccountTransaction.Type.BUY
+                        || t.getType() == AccountTransaction.Type.SELL
+                        || t.getType() == AccountTransaction.Type.TRANSFER_IN)
+                        || transaction instanceof PortfolioTransaction p
+                                        && p.getType() == PortfolioTransaction.Type.TRANSFER_IN;
+
+        if (!isHiddenLeg)
+            return pair;
+
+        return pair(crossEntry.getCrossOwner(transaction), crossEntry.getCrossTransaction(transaction));
+    }
+
+    /** the other leg of a buy/sell or transfer, or null */
+    public static TransactionPair<?> linked(TransactionPair<?> pair)
+    {
+        var transaction = pair.getTransaction();
+        var crossEntry = transaction.getCrossEntry();
+        if (crossEntry == null)
+            return null;
+        return pair(crossEntry.getCrossOwner(transaction), crossEntry.getCrossTransaction(transaction));
+    }
+
+    @SuppressWarnings("unchecked")
+    private static TransactionPair<?> pair(TransactionOwner<?> owner, Transaction transaction)
+    {
+        return new TransactionPair<>((TransactionOwner<Transaction>) owner, transaction);
+    }
+
+    private static Predicate<TransactionPair<?>> predicate(Filter filter)
+    {
+        var errors = new ArrayList<ApiException.FieldError>();
+
+        var from = parseDate("from", filter.from(), errors); //$NON-NLS-1$
+        var to = parseDate("to", filter.to(), errors); //$NON-NLS-1$
+        var types = parseTypes(filter.type(), errors);
+
+        if (!errors.isEmpty())
+            throw ApiException.badRequest(errors);
+
+        if (from != null && to != null && from.isAfter(to))
+            throw ApiException.badRequest(List.of(new ApiException.FieldError("from", "invalid-range", //$NON-NLS-1$ //$NON-NLS-2$
+                            "from must not be after to"))); //$NON-NLS-1$
+
+        Predicate<TransactionPair<?>> predicate = pair -> true;
+
+        if (from != null)
+            predicate = predicate.and(pair -> !pair.getTransaction().getDateTime().toLocalDate().isBefore(from));
+        if (to != null)
+            predicate = predicate.and(pair -> !pair.getTransaction().getDateTime().toLocalDate().isAfter(to));
+        if (types != null)
+            predicate = predicate.and(pair -> types.contains(EntityJson.wireType(pair.getTransaction())));
+        if (filter.instrument() != null)
+            predicate = predicate.and(pair -> pair.getTransaction().getSecurity() != null
+                            && pair.getTransaction().getSecurity().getUUID().equals(filter.instrument()));
+        if (filter.cashAccount() != null)
+            predicate = predicate.and(pair -> involves(pair, Account.class, filter.cashAccount()));
+        if (filter.investmentAccount() != null)
+            predicate = predicate.and(pair -> involves(pair, Portfolio.class, filter.investmentAccount()));
+
+        return predicate;
+    }
+
+    /** whether either leg of the transaction is booked on the owner with the given UUID */
+    private static boolean involves(TransactionPair<?> pair, Class<?> ownerType, String uuid)
+    {
+        if (isOwner(pair.getOwner(), ownerType, uuid))
+            return true;
+
+        var linked = linked(pair);
+        return linked != null && isOwner(linked.getOwner(), ownerType, uuid);
+    }
+
+    private static boolean isOwner(TransactionOwner<?> owner, Class<?> ownerType, String uuid)
+    {
+        if (!ownerType.isInstance(owner))
+            return false;
+        if (owner instanceof Account account)
+            return account.getUUID().equals(uuid);
+        if (owner instanceof Portfolio portfolio)
+            return portfolio.getUUID().equals(uuid);
+        return false;
+    }
+
+    private static LocalDate parseDate(String name, String value, List<ApiException.FieldError> errors)
+    {
+        if (value == null)
+            return null;
+
+        try
+        {
+            return LocalDate.parse(value);
+        }
+        catch (DateTimeParseException e)
+        {
+            errors.add(new ApiException.FieldError(name, "invalid-value", //$NON-NLS-1$
+                            MessageFormat.format("{0} must be an ISO 8601 date (YYYY-MM-DD)", name))); //$NON-NLS-1$
+            return null;
+        }
+    }
+
+    /** a comma-separated list of wire types, or null for no type filter */
+    private static Set<String> parseTypes(String value, List<ApiException.FieldError> errors)
+    {
+        if (value == null)
+            return null;
+
+        var types = new HashSet<String>();
+        for (var type : Arrays.stream(value.split(",")).map(String::strip).toList()) //$NON-NLS-1$
+        {
+            if (!EntityJson.WIRE_TYPES.contains(type))
+                errors.add(new ApiException.FieldError("type", "invalid-value", //$NON-NLS-1$ //$NON-NLS-2$
+                                MessageFormat.format("{0} is not a transaction type", type))); //$NON-NLS-1$
+            else
+                types.add(type);
+        }
+        return types;
     }
 }

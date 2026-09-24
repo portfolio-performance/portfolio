@@ -114,7 +114,14 @@ public final class ApiRoutes
                         (client, req) -> Response.json(200, TaxonomiesHandler.list(client))));
 
         router.add("GET", "/v1/files/{file}/transactions", read(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
-                        (client, req) -> Response.json(200, TransactionsHandler.list(client))));
+                        (client, req) -> Response.json(200, TransactionsHandler.list(client,
+                                        new TransactionsHandler.Filter(req.queryParam("from"), //$NON-NLS-1$
+                                                        req.queryParam("to"), req.queryParam("type"), //$NON-NLS-1$ //$NON-NLS-2$
+                                                        req.queryParam("instrument"), //$NON-NLS-1$
+                                                        req.queryParam("cashAccount"), //$NON-NLS-1$
+                                                        req.queryParam("investmentAccount")))))); //$NON-NLS-1$
+        router.add("GET", "/v1/files/{file}/transactions/{uuid}", read(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (client, req) -> Response.json(200, TransactionsHandler.get(client, req.pathParam("uuid"))))); //$NON-NLS-1$
 
         router.add("GET", "/v1/files/{file}/holdings", calc(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
                         (context, req) -> Response.json(200, HoldingsHandler.list(context.client(), context.factory(),

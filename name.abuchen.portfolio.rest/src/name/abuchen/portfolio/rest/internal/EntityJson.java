@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -1014,12 +1015,72 @@ public final class EntityJson
         return json;
     }
 
+    /** every value {@link #wireType(Transaction)} can return */
+    /* package */ static final Set<String> WIRE_TYPES = Set.of("deposit", "removal", "interest", "interest-charge",
+                    "dividends", "fees", "fees-refund", "taxes", "tax-refund", "buy", "sell", "transfer-in",
+                    "transfer-out", "delivery-inbound", "delivery-outbound");
+
+    /**
+     * A single transaction in detail: {@link #toJson(TransactionPair)} plus
+     * its units (gross value, fees, taxes - with the foreign currency amount
+     * and exchange rate where applicable), the ex-date of a dividend, the
+     * source, the time of the last change, and the other leg of a buy/sell or
+     * transfer ({@code linked}).
+     */
+    public static JsonObject toJsonDetailed(TransactionPair<?> pair)
+    {
+        var json = toJson(pair);
+        var transaction = pair.getTransaction();
+
+        var units = new JsonArray();
+        transaction.getUnits().forEach(unit -> units.add(toJson(unit)));
+        json.add("units", units);
+
+        if (transaction instanceof AccountTransaction t && t.getExDate() != null)
+            json.addProperty("exDate", t.getExDate().toString());
+
+        if (transaction.getSource() != null)
+            json.addProperty("source", transaction.getSource());
+
+        if (transaction.getUpdatedAt() != null)
+            json.addProperty("updatedAt", transaction.getUpdatedAt().toString());
+
+        var linked = TransactionsHandler.linked(pair);
+        if (linked != null)
+        {
+            var linkedJson = new JsonObject();
+            linkedJson.addProperty("uuid", linked.getTransaction().getUUID());
+            linkedJson.addProperty("type", wireType(linked.getTransaction()));
+            linkedJson.add("owner", toJsonOwner(linked));
+            json.add("linked", linkedJson);
+        }
+
+        return json;
+    }
+
+    private static JsonObject toJson(Transaction.Unit unit)
+    {
+        var json = new JsonObject();
+        json.addProperty("type", switch (unit.getType())
+        {
+            case GROSS_VALUE -> "gross-value";
+            case FEE -> "fee";
+            case TAX -> "tax";
+        });
+        json.add("amount", toJson(unit.getAmount()));
+        if (unit.getForex() != null)
+            json.add("forex", toJson(unit.getForex()));
+        if (unit.getExchangeRate() != null)
+            json.add("exchangeRate", decimal(unit.getExchangeRate()));
+        return json;
+    }
+
     /**
      * A stable, machine-readable transaction type, deliberately independent of
      * {@code Type#toString()} (locale-dependent, see {@code AttributeCodec}'s
      * class comment for the same concern with attribute types).
      */
-    private static String wireType(Transaction transaction)
+    /* package */ static String wireType(Transaction transaction)
     {
         if (transaction instanceof AccountTransaction t)
         {
