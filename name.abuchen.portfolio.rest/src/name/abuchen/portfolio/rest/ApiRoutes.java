@@ -29,6 +29,7 @@ import name.abuchen.portfolio.rest.internal.SecurityPricesHandler;
 import name.abuchen.portfolio.rest.internal.TaxonomiesHandler;
 import name.abuchen.portfolio.rest.internal.TradesHandler;
 import name.abuchen.portfolio.rest.internal.TransactionsHandler;
+import name.abuchen.portfolio.rest.internal.WriteContext;
 import name.abuchen.portfolio.rest.spi.HostApplication;
 import name.abuchen.portfolio.rest.spi.OpenFile;
 
@@ -197,6 +198,24 @@ public final class ApiRoutes
                     BiFunction<OpenFile, Request, Response> body)
     {
         return writeResolved(resolver, host, (resolved, request) -> body.apply(resolved.file(), request));
+    }
+
+    /**
+     * Like {@link #write}, but hands the body a {@link WriteContext}: the file
+     * plus the dry-run flag and the idempotency key of the request. Used by
+     * the handlers that support {@code ?dry_run=true} and {@code clientRef}.
+     */
+    /* package */ static Router.Handler writeWith(FileResolver resolver, HostApplication host,
+                    BiFunction<WriteContext, Request, Response> body)
+    {
+        return writeResolved(resolver, host,
+                        (resolved, request) -> body.apply(WriteContext.of(resolved.file(), request), request));
+    }
+
+    /** true if the request asks for a dry run ({@code ?dry_run=true}); 400 for an invalid value */
+    /* package */ static boolean isDryRun(Request request)
+    {
+        return WriteContext.isDryRun(request);
     }
 
     /** like {@link #write}, for handlers that also need the file's access record (id, alias) */

@@ -1,9 +1,7 @@
 package name.abuchen.portfolio.rest.internal;
 
-import java.text.MessageFormat;
 import java.util.List;
 
-import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.rest.Messages;
 
 /**
@@ -29,37 +27,27 @@ public final class InstrumentChangeLog
 
     public static void record(String fileLabel, String instrumentName, List<Change> changes)
     {
-        if (changes.isEmpty())
-            return;
-
-        PortfolioLog.info(summary(fileLabel, instrumentName),
-                        changes.stream().map(InstrumentChangeLog::detail).toList());
+        ChangeLog.recordChanges(changes.stream().map(c -> new ChangeLog.Change(c.field(), c.from(), c.to())).toList(),
+                        Messages.MsgApiInstrumentChanged, instrumentName, fileLabel);
     }
 
     public static void recordDeletion(String fileLabel, String instrumentName)
     {
-        PortfolioLog.info(deletionSummary(fileLabel, instrumentName), List.of());
+        ChangeLog.recordEvent(Messages.MsgApiInstrumentDeleted, instrumentName, fileLabel);
     }
 
     /* package */ static String summary(String fileLabel, String instrumentName)
     {
-        return MessageFormat.format(Messages.MsgApiInstrumentChanged, instrumentName, fileLabel);
+        return ChangeLog.summary(Messages.MsgApiInstrumentChanged, instrumentName, fileLabel);
     }
 
     /* package */ static String deletionSummary(String fileLabel, String instrumentName)
     {
-        return MessageFormat.format(Messages.MsgApiInstrumentDeleted, instrumentName, fileLabel);
+        return ChangeLog.summary(Messages.MsgApiInstrumentDeleted, instrumentName, fileLabel);
     }
 
     /* package */ static String detail(Change change)
     {
-        var from = change.from() == null ? Messages.MsgApiValueUnset : quote(change.from());
-        var to = change.to() == null ? Messages.MsgApiValueRemoved : quote(change.to());
-        return MessageFormat.format(Messages.MsgApiInstrumentFieldChanged, change.field(), from, to);
-    }
-
-    private static String quote(String value)
-    {
-        return "'" + value + "'"; //$NON-NLS-1$ //$NON-NLS-2$
+        return ChangeLog.detail(new ChangeLog.Change(change.field(), change.from(), change.to()));
     }
 }
