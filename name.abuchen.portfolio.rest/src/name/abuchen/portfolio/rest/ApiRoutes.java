@@ -12,6 +12,7 @@ import com.google.gson.JsonSyntaxException;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.rest.internal.AccountsHandler;
+import name.abuchen.portfolio.rest.internal.ActionsHandler;
 import name.abuchen.portfolio.rest.internal.ApiException;
 import name.abuchen.portfolio.rest.internal.EarningsHandler;
 import name.abuchen.portfolio.rest.internal.FileResolver;
@@ -20,6 +21,7 @@ import name.abuchen.portfolio.rest.internal.HoldingsHandler;
 import name.abuchen.portfolio.rest.internal.IdempotencyIndex;
 import name.abuchen.portfolio.rest.internal.InstrumentChangeLog;
 import name.abuchen.portfolio.rest.internal.InvestmentPlansHandler;
+import name.abuchen.portfolio.rest.internal.JobRegistry;
 import name.abuchen.portfolio.rest.internal.MasterDataWrites;
 import name.abuchen.portfolio.rest.internal.OpenApiHandler;
 import name.abuchen.portfolio.rest.internal.PairingHandler;
@@ -63,6 +65,8 @@ public final class ApiRoutes
         var files = new FilesHandler(registry, host);
         // idempotency keys of master data creates, see IdempotencyIndex
         var idempotency = new IdempotencyIndex();
+        // the background jobs started through the API
+        var jobs = new JobRegistry();
 
         // the API's own description: a static resource, no UI thread, no auth
         router.add("GET", RestApiConstants.OPENAPI_ENDPOINT, request -> OpenApiHandler.serve()); //$NON-NLS-1$
@@ -84,6 +88,18 @@ public final class ApiRoutes
                         request -> Response.json(200, FilesHandler.get(resolver.resolve(request.pathParam("file")))))); //$NON-NLS-1$
         router.add("POST", "/v1/files/{file}/save", writeResolved(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
                         (resolved, req) -> Response.json(200, FilesHandler.save(resolved))));
+
+        // starts the job on the UI thread, then waits (?wait) on the HTTP worker thread
+        router.add("POST", "/v1/files/{file}/actions/update-quotes", request -> { //$NON-NLS-1$
+            var wait = ActionsHandler.waitSeconds(request.queryParam("wait")); //$NON-NLS-1$
+            var started = writeOnUiThread(resolver, host, request,
+                            (context, req) -> ActionsHandler.updateQuotes(context, host, jobs, parseOptionalObject(req)));
+            return ActionsHandler.answer(started, wait, "/v1/files/" + request.pathParam("file") + "/jobs/"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        });
+        router.add("GET", "/v1/files/{file}/jobs/{jobId}", onUiThread(host, //$NON-NLS-1$ //$NON-NLS-2$
+                        request -> Response.json(200, ActionsHandler.job(jobs,
+                                        resolver.resolve(request.pathParam("file")).file(), //$NON-NLS-1$
+                                        request.pathParam("jobId"))))); //$NON-NLS-1$
 
         router.add("GET", "/v1/files/{file}/instruments", read(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
                         (client, req) -> Response.json(200, SecuritiesHandler.list(client))));
@@ -410,6 +426,24 @@ public final class ApiRoutes
     /* package */ static boolean isDryRun(Request request)
     {
         return WriteContext.isDryRun(request);
+    }
+
+    /**
+     * Runs the body like {@link #writeWith} - on the UI thread, refused with
+     * 423 while the user edits - but hands its result back to the calling
+     * worker thread, for actions that continue there (e.g. wait for a job).
+     */
+    private static <T> T writeOnUiThread(FileResolver resolver, HostApplication host, Request request,
+                    BiFunction<WriteContext, Request, T> body) throws Exception
+    {
+        return host.syncExec(() -> {
+            var resolved = resolver.resolve(request.pathParam("file")); //$NON-NLS-1$
+
+            if (host.isUserEditing())
+                throw ApiException.locked();
+
+            return body.apply(WriteContext.of(resolved.file(), request), request);
+        });
     }
 
     /** like {@link #write}, for handlers that also need the file's access record (id, alias) */

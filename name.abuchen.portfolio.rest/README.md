@@ -245,6 +245,16 @@ subcategories), with the target value from the category weights and what no cate
 `unassigned`. `GET …/earnings?from&to&instrument&cashAccount` lists dividends, interest and
 interest charges with their totals per currency.
 
+### `POST /v1/files/{file}/actions/update-quotes` — update prices online
+
+Starts the application's online price update, for all instruments or `{"instruments": [uuid…]}`,
+fetching `{"targets": ["latest", "historic"]}` (default both). The update runs in the background
+and answers a job: `202 {"jobId", "status": "running"}` with a `Location` to poll
+(`GET /v1/files/{file}/jobs/{jobId}`), or, with `?wait=<seconds>` (at most 60), `200` with the
+finished job if it completes in time. A job's `status` is `running`, `done` or `failed`; its
+`summary` counts the instruments that gained a new latest or new historical prices. Jobs are
+kept in memory for an hour after they finish.
+
 ### `POST /v1/files/{file}/transactions` — create a transaction
 
 `type` selects the shape: `buy`, `sell`, `delivery-inbound`, `delivery-outbound`, `dividends`,
@@ -329,7 +339,8 @@ than silently clobbered by whatever the dialog writes back on OK. Reads still wo
 The plugin depends on the model plugin and **must not depend on the UI plugin**. The UI side is
 reached through the SPI interfaces in `rest/spi/` (`HostApplication`, `OpenFile`,
 `ApiAccessRequest`), implemented by `name.abuchen.portfolio.ui/…/ui/addons/RestApiAddon.java`, which
-also starts and stops the server and shows the pairing approval dialog. Tokens live in
+also starts and stops the server, shows the pairing approval dialog, and runs the application's
+price update job for `HostApplication#startPriceUpdate`. Tokens live in
 `ClientStore` (persistent clients as SHA-256 hashes in an owner-only JSON file in the plugin state
 location, session clients in memory only); the pairing state machine is `PairingService`.
 

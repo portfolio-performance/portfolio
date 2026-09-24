@@ -6,10 +6,15 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.time.Instant;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Inject;
@@ -17,6 +22,9 @@ import jakarta.inject.Inject;
 import org.eclipse.core.commands.Parameterization;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
+import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
@@ -36,6 +44,7 @@ import org.osgi.service.event.Event;
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.rest.ApiRoutes;
 import name.abuchen.portfolio.rest.FileAccessRegistry;
@@ -47,6 +56,7 @@ import name.abuchen.portfolio.rest.spi.ApiAccessRequest;
 import name.abuchen.portfolio.rest.spi.HostApplication;
 import name.abuchen.portfolio.rest.spi.OpenFile;
 import name.abuchen.portfolio.rest.spi.PasswordRequiredException;
+import name.abuchen.portfolio.rest.spi.PriceUpdateTarget;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.ApiAccessApprovalDialog;
@@ -55,6 +65,7 @@ import name.abuchen.portfolio.ui.editor.ClientInputFactory;
 import name.abuchen.portfolio.ui.editor.ClientInputListener;
 import name.abuchen.portfolio.ui.editor.EditorActivationState;
 import name.abuchen.portfolio.ui.handlers.OpenFileHandler;
+import name.abuchen.portfolio.ui.jobs.priceupdate.UpdatePricesJob;
 
 /**
  * Starts and stops the REST API server with the application and implements
@@ -169,6 +180,33 @@ public class RestApiAddon
         public CompletableFuture<OpenFile> openFile(Path path) throws IOException
         {
             return RestApiAddon.this.openFile(path);
+        }
+
+        @Override
+        public void startPriceUpdate(OpenFile file, List<Security> securities, Set<PriceUpdateTarget> targets,
+                        Consumer<IStatus> onDone)
+        {
+            var selected = Collections.newSetFromMap(new IdentityHashMap<Security, Boolean>());
+            selected.addAll(securities);
+
+            var jobTargets = EnumSet.noneOf(UpdatePricesJob.Target.class);
+            if (targets.contains(PriceUpdateTarget.LATEST))
+                jobTargets.add(UpdatePricesJob.Target.LATEST);
+            if (targets.contains(PriceUpdateTarget.HISTORIC))
+                jobTargets.add(UpdatePricesJob.Target.HISTORIC);
+
+            var job = new UpdatePricesJob(file.getClient(), selected::contains, jobTargets);
+            // nobody is asked to log in on the API's behalf
+            job.suppressAuthenticationDialog(true);
+            job.addJobChangeListener(new JobChangeAdapter()
+            {
+                @Override
+                public void done(IJobChangeEvent event)
+                {
+                    onDone.accept(event.getResult());
+                }
+            });
+            job.schedule();
         }
     }
 

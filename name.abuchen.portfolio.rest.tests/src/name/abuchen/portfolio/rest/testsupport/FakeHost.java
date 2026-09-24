@@ -11,13 +11,19 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
+
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.rest.spi.ApiAccessRequest;
 import name.abuchen.portfolio.rest.spi.HostApplication;
 import name.abuchen.portfolio.rest.spi.OpenFile;
 import name.abuchen.portfolio.rest.spi.PasswordRequiredException;
+import name.abuchen.portfolio.rest.spi.PriceUpdateTarget;
 
 public class FakeHost implements HostApplication
 {
@@ -127,6 +133,49 @@ public class FakeHost implements HostApplication
     {
     }
 
+    /** a price update the API started; a test completes it with {@link #complete} */
+    public static final class PriceUpdate
+    {
+        private final OpenFile file;
+        private final List<Security> securities;
+        private final Set<PriceUpdateTarget> targets;
+        private final Consumer<IStatus> onDone;
+
+        private PriceUpdate(OpenFile file, List<Security> securities, Set<PriceUpdateTarget> targets,
+                        Consumer<IStatus> onDone)
+        {
+            this.file = file;
+            this.securities = securities;
+            this.targets = targets;
+            this.onDone = onDone;
+        }
+
+        public OpenFile file()
+        {
+            return file;
+        }
+
+        public List<Security> securities()
+        {
+            return securities;
+        }
+
+        public Set<PriceUpdateTarget> targets()
+        {
+            return targets;
+        }
+
+        /** finishes the update with the given outcome, e.g. {@link Status#OK_STATUS} */
+        public void complete(IStatus status)
+        {
+            onDone.accept(status);
+        }
+    }
+
+    private final List<PriceUpdate> priceUpdates = new ArrayList<>();
+    private Consumer<PriceUpdate> priceUpdateBehavior = update -> {
+    };
+
     private final List<OpenFile> openFiles;
     private final Map<String, Openable> openable = new HashMap<>();
     private final Set<String> openedPaths = new HashSet<>();
@@ -223,6 +272,34 @@ public class FakeHost implements HostApplication
     public ApiAccessRequest lastAccessRequest()
     {
         return lastAccessRequest;
+    }
+
+    /** the price updates the API started, oldest first */
+    public List<PriceUpdate> priceUpdates()
+    {
+        return priceUpdates;
+    }
+
+    /**
+     * What happens when the API starts a price update, e.g. change some
+     * prices and complete it right away; by default the update keeps running
+     * until the test completes it.
+     */
+    public void onPriceUpdate(Consumer<PriceUpdate> behavior)
+    {
+        this.priceUpdateBehavior = behavior;
+    }
+
+    @Override
+    public void startPriceUpdate(OpenFile file, List<Security> securities, Set<PriceUpdateTarget> targets,
+                    Consumer<IStatus> onDone)
+    {
+        if (syncExecDepth == 0)
+            accessedOutsideUIThread = true;
+
+        var update = new PriceUpdate(file, securities, targets, onDone);
+        priceUpdates.add(update);
+        priceUpdateBehavior.accept(update);
     }
 
     @Override

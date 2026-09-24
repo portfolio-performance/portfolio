@@ -105,6 +105,8 @@ tags:
     description: The category schemes a file classifies its holdings by.
   - name: Performance
     description: Return and value-change of the file over an interval
+  - name: Actions
+    description: Longer-running operations on a file, such as online price updates and imports
 
 paths:
   /v1/openapi.yaml:
@@ -441,6 +443,117 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+
+  /v1/files/{file}/actions/update-quotes:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    post:
+      operationId: updateQuotes
+      tags: [Actions]
+      summary: Update prices online
+      description: |
+        Starts the application's online price update for the file's instruments
+        (all, or the listed `instruments`), fetching the latest and/or the
+        historical prices (`targets`, default both) from each instrument's
+        configured feeds. The update runs in the background, exactly as the
+        application's "Update quotes" command does, but never asks the user to
+        log in. It marks the file dirty itself when prices changed.
+
+        The answer is a job: `202` with a `Location` to poll
+        (`GET /v1/files/{file}/jobs/{jobId}`) while it runs. With `wait=<seconds>`
+        (at most 60) the request waits that long and answers `200` with the
+        finished job if the update completes in time. A finished job's
+        `summary` tells which instruments gained a new latest price or new
+        historical prices; the feeds do not report per-instrument errors.
+
+        A dry run answers the instruments and targets that would be updated.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+        - name: wait
+          in: query
+          required: false
+          description: Seconds (0-60) to wait for the update to finish; default 0.
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 60
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateQuotesRequest"
+      responses:
+        "200":
+          description: The finished job, or on a dry run what would be updated
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Job"
+                  - $ref: "#/components/schemas/UpdateQuotesDryRun"
+        "202":
+          description: The job was started and is still running
+          headers:
+            Location:
+              description: The job's path, `/v1/files/{file}/jobs/{jobId}`.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Job"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/jobs/{jobId}:
+    parameters:
+      - $ref: "#/components/parameters/File"
+      - name: jobId
+        in: path
+        required: true
+        description: The `jobId` a started action answered.
+        schema:
+          type: string
+    get:
+      operationId: getJob
+      tags: [Actions]
+      summary: The state of a background job
+      description: |
+        A job is `running` until it is `done` or `failed`. Jobs are kept in
+        memory: a finished job can be polled for one hour, and no job survives
+        a restart of the application.
+      responses:
+        "200":
+          description: The job
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Job"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
 
   /v1/files/{file}/instruments:
     parameters:
@@ -6174,6 +6287,92 @@ components:
           type: number
         after:
           type: number
+    UpdateQuotesRequest:
+      type: object
+      properties:
+        instruments:
+          type: array
+          description: The `uuid`s of the instruments to update; omitted means all.
+          minItems: 1
+          items:
+            type: string
+        targets:
+          type: array
+          description: What to fetch; default both.
+          minItems: 1
+          items:
+            type: string
+            enum: [latest, historic]
+    UpdateQuotesDryRun:
+      type: object
+      required: [dryRun, instruments, targets]
+      properties:
+        dryRun:
+          type: boolean
+        instruments:
+          type: array
+          items:
+            type: object
+            properties:
+              uuid: { type: string }
+              name: { type: string }
+        targets:
+          type: array
+          items:
+            type: string
+            enum: [latest, historic]
+    Job:
+      type: object
+      required: [jobId, kind, status, startedAt]
+      properties:
+        jobId:
+          type: string
+        kind:
+          type: string
+          enum: [update-quotes]
+        status:
+          type: string
+          enum: [running, done, failed]
+        startedAt:
+          type: string
+          format: date-time
+        finishedAt:
+          type: string
+          format: date-time
+        error:
+          type: string
+          description: Why a `failed` job failed.
+        summary:
+          $ref: "#/components/schemas/UpdateQuotesSummary"
+    UpdateQuotesSummary:
+      type: object
+      description: What a finished price update changed.
+      properties:
+        instruments:
+          type: integer
+          description: The number of instruments the update covered.
+        latestUpdated:
+          type: integer
+        historicUpdated:
+          type: integer
+        updated:
+          type: array
+          items:
+            type: object
+            properties:
+              uuid: { type: string }
+              name: { type: string }
+              latest:
+                type: boolean
+                description: Whether the latest price changed.
+              latestDate:
+                type: string
+                format: date
+              historicPricesAdded:
+                type: integer
+        dirty:
+          type: boolean
+          description: Whether the file has unsaved changes after the update.
     FieldError:
       type: object
       description: One field-level violation within a `Problem`.

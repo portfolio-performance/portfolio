@@ -3,8 +3,14 @@ package name.abuchen.portfolio.rest.spi;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
+
+import org.eclipse.core.runtime.IStatus;
+
+import name.abuchen.portfolio.model.Security;
 
 /**
  * Services the hosting application provides to the REST plugin. Implemented
@@ -46,4 +52,15 @@ public interface HostApplication
      *             if the file does not exist or cannot be opened
      */
     CompletableFuture<OpenFile> openFile(Path path) throws IOException;
+
+    /**
+     * Starts an online price update of the given instruments of the file, as
+     * the application's "Update quotes" command does, but without asking the
+     * user anything (no authentication dialog). Must be called on the UI
+     * thread and must not block: the update runs in the background and marks
+     * the file dirty itself when prices changed. {@code onDone} is called
+     * exactly once, on any thread, with the outcome of the update.
+     */
+    void startPriceUpdate(OpenFile file, List<Security> securities, Set<PriceUpdateTarget> targets,
+                    Consumer<IStatus> onDone);
 }

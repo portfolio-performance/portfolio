@@ -14,6 +14,7 @@ public class Messages extends NLS
     public static String MsgApiInstrumentDeleted;
     public static String MsgApiInstrumentFieldChanged;
     public static String MsgApiPlanTransactionsGenerated;
+    public static String MsgApiPricesUpdated;
     public static String MsgApiStockSplitApplied;
     public static String MsgApiTransactionCreated;
     public static String MsgApiTransactionDeleted;
