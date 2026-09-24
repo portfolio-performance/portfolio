@@ -27,8 +27,10 @@ mvn -f portfolio-app/pom.xml clean compile -Plocal-dev \
 ### Build Core and UI Modules
 ```bash
 mvn -f portfolio-app/pom.xml clean compile -Plocal-dev \
-  -pl :portfolio-target-definition,:name.abuchen.portfolio.pdfbox1,:name.abuchen.portfolio.pdfbox3,:name.abuchen.portfolio,:name.abuchen.portfolio.bootstrap,:name.abuchen.portfolio.ui -am -amd
+  -pl :portfolio-target-definition,:name.abuchen.portfolio.pdfbox1,:name.abuchen.portfolio.pdfbox3,:name.abuchen.portfolio,:name.abuchen.portfolio.rest,:name.abuchen.portfolio.bootstrap,:name.abuchen.portfolio.ui -am -amd
 ```
+
+The UI bundle requires `name.abuchen.portfolio.rest`, so it must be part of the reactor.
 
 ## Test Commands
 
@@ -45,10 +47,22 @@ mvn -f portfolio-app/pom.xml verify -Plocal-dev -o \
   -Dtest=<fully.qualified.TestClassName>
 ```
 
+### Run REST API Tests
+```bash
+mvn -f portfolio-app/pom.xml verify -Plocal-dev -o   -pl :portfolio-target-definition,:name.abuchen.portfolio.pdfbox1,:name.abuchen.portfolio.pdfbox3,:name.abuchen.portfolio,:name.abuchen.portfolio.junit,:name.abuchen.portfolio.rest,:name.abuchen.portfolio.rest.tests -am -amd
+```
+
+### Run Single REST API Test Class
+```bash
+mvn -f portfolio-app/pom.xml verify -Plocal-dev -o   -pl :portfolio-target-definition,:name.abuchen.portfolio.pdfbox1,:name.abuchen.portfolio.pdfbox3,:name.abuchen.portfolio,:name.abuchen.portfolio.junit,:name.abuchen.portfolio.rest,:name.abuchen.portfolio.rest.tests -am -amd   -Dtest=<fully.qualified.TestClassName> -Dsurefire.failIfNoSpecifiedTests=false
+```
+
+`OpenApiSpecDriftTest` keeps `name.abuchen.portfolio.rest/openapi.yaml` in lockstep with the code: every route registered in `ApiRoutes` must be documented (and vice versa), and every `FieldError` code must be a same-line string literal listed in the spec's `FieldError.code` enum.
+
 ### Run UI Tests
 ```bash
 mvn -f portfolio-app/pom.xml verify -Plocal-dev \
-  -pl :portfolio-target-definition,:name.abuchen.portfolio.pdfbox1,:name.abuchen.portfolio.pdfbox3,:name.abuchen.portfolio,:name.abuchen.portfolio.ui,:name.abuchen.portfolio.bootstrap,:name.abuchen.portfolio.junit,:name.abuchen.portfolio.ui.tests -am -amd
+  -pl :portfolio-target-definition,:name.abuchen.portfolio.pdfbox1,:name.abuchen.portfolio.pdfbox3,:name.abuchen.portfolio,:name.abuchen.portfolio.rest,:name.abuchen.portfolio.ui,:name.abuchen.portfolio.bootstrap,:name.abuchen.portfolio.junit,:name.abuchen.portfolio.ui.tests -am -amd
 ```
 
 ## Code Style
