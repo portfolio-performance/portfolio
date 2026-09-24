@@ -11,6 +11,15 @@ import name.abuchen.portfolio.rest.Messages;
  * application log, so the desktop user can see in the Error Log view what the
  * API changed. Entries are attributed generically to "REST API"; see
  * {@link InstrumentChangeLog} for why the individual client is not named.
+ * <p/>
+ * Every write logs one entry after it changed the model (never for a dry run
+ * or a write that changes nothing): creates and deletes a single line
+ * ({@code MsgApiEntityCreated/Deleted}, {@code MsgApiTransactionCreated/Deleted}),
+ * updates a summary with one detail line per changed field
+ * ({@code MsgApiEntityChanged}, {@code MsgApiInstrumentChanged},
+ * {@code MsgApiTransactionUpdated}, detail {@code MsgApiFieldChanged}), and
+ * the actions a line with their outcome (stock split, investment plan
+ * generation, price update, import, open and save).
  */
 public final class ChangeLog
 {
@@ -53,7 +62,7 @@ public final class ChangeLog
     {
         var from = change.from() == null ? Messages.MsgApiValueUnset : quote(change.from());
         var to = change.to() == null ? Messages.MsgApiValueRemoved : quote(change.to());
-        return MessageFormat.format(Messages.MsgApiInstrumentFieldChanged, change.field(), from, to);
+        return MessageFormat.format(Messages.MsgApiFieldChanged, change.field(), from, to);
     }
 
     private static String quote(String value)

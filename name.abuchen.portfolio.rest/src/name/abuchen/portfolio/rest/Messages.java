@@ -8,6 +8,7 @@ public class Messages extends NLS
     public static String MsgApiEntityChanged;
     public static String MsgApiEntityCreated;
     public static String MsgApiEntityDeleted;
+    public static String MsgApiFieldChanged;
     public static String MsgApiFileOpened;
     public static String MsgApiFileSaved;
     public static String MsgApiImportCommitted;

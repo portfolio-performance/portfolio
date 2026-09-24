@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.rest.internal;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 import name.abuchen.portfolio.rest.Messages;
@@ -48,6 +49,8 @@ public final class InstrumentChangeLog
 
     /* package */ static String detail(Change change)
     {
-        return ChangeLog.detail(new ChangeLog.Change(change.field(), change.from(), change.to()));
+        var from = change.from() == null ? Messages.MsgApiValueUnset : "'" + change.from() + "'"; //$NON-NLS-1$ //$NON-NLS-2$
+        var to = change.to() == null ? Messages.MsgApiValueRemoved : "'" + change.to() + "'"; //$NON-NLS-1$ //$NON-NLS-2$
+        return MessageFormat.format(Messages.MsgApiInstrumentFieldChanged, change.field(), from, to);
     }
 }

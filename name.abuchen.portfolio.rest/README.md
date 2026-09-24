@@ -318,6 +318,11 @@ A write mutates the in-memory file and marks it dirty, exactly as if you had edi
 the change is visible immediately. Call `POST /v1/files/{file}/save` to persist it, or leave it to
 the user, who can also discard it by closing the file without saving.
 
+Every write that changes a file is also recorded in the application log (Help → Error Log, severity
+info), attributed to "REST API": what was created, changed (field by field) or deleted, and the
+outcome of actions such as a stock split, a price update or an import. Dry runs and writes that
+change nothing are not logged.
+
 ## Errors
 
 `application/problem+json` (RFC 9457):
