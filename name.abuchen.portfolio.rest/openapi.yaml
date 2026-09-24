@@ -6659,13 +6659,21 @@ components:
             error: { type: integer }
         errors:
           type: array
-          description: Files (or lines) that could not be read.
+          description: |
+            Files (or CSV lines) that could not be read, one entry per file. For
+            a PDF that no extractor recognized, `message` is "no extractor
+            recognized the document". If an extractor recognized the bank but
+            not the document type, `message` is that extractor's message; if
+            several did, their messages are in `details`.
           items:
             type: object
             properties:
               path: { type: string }
               line: { type: integer }
               message: { type: string }
+              details:
+                type: array
+                items: { type: string }
     ImportItem:
       type: object
       required: [index, kind, status, checks]

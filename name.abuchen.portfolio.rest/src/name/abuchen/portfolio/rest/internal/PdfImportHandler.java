@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -164,26 +165,43 @@ public final class PdfImportHandler
         return items;
     }
 
-    /** the files that could not be read or recognized, as {@code [{path, message}]} */
+    /**
+     * The files that could not be read or recognized, one entry per file:
+     * {@code [{path, message, details?}]}. Every extractor reports every file
+     * it does not recognize (twice, once per PDF library), so the "not a
+     * supported document" messages are dropped; {@code details} keeps the
+     * distinct messages of the extractors that recognized the bank but not
+     * the document, and of read errors.
+     */
     public static JsonArray errors(Map<File, List<Exception>> errors)
     {
         var array = new JsonArray();
         errors.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(entry -> {
+            var file = entry.getKey();
+            // "{1}: File ''{0}'' is not a supported document" without the bank label
+            var notSupported = MessageFormat.format(name.abuchen.portfolio.Messages.PDFMsgFileNotSupported,
+                            file.getName(), ""); //$NON-NLS-1$
+
+            var details = new LinkedHashSet<String>();
             for (var exception : entry.getValue())
             {
-                var json = new JsonObject();
-                json.addProperty("path", entry.getKey().getAbsolutePath()); //$NON-NLS-1$
-                json.addProperty("message", exception.getMessage() != null ? exception.getMessage() //$NON-NLS-1$
-                                : exception.getClass().getSimpleName());
-                array.add(json);
+                var message = exception.getMessage() != null ? exception.getMessage()
+                                : exception.getClass().getSimpleName();
+                if (!message.endsWith(notSupported))
+                    details.add(message);
             }
-            if (entry.getValue().isEmpty())
+
+            var json = new JsonObject();
+            json.addProperty("path", file.getAbsolutePath()); //$NON-NLS-1$
+            json.addProperty("message", details.size() == 1 ? details.iterator().next() //$NON-NLS-1$
+                            : "no extractor recognized the document"); //$NON-NLS-1$
+            if (details.size() > 1)
             {
-                var json = new JsonObject();
-                json.addProperty("path", entry.getKey().getAbsolutePath()); //$NON-NLS-1$
-                json.addProperty("message", "no extractor recognized the document"); //$NON-NLS-1$ //$NON-NLS-2$
-                array.add(json);
+                var list = new JsonArray();
+                details.forEach(list::add);
+                json.add("details", list); //$NON-NLS-1$
             }
+            array.add(json);
         });
         return array;
     }

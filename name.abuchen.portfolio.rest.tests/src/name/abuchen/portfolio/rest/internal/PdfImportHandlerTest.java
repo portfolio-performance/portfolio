@@ -5,11 +5,16 @@ import static name.abuchen.portfolio.rest.internal.TransactionFixture.body;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.MessageFormat;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -17,6 +22,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.google.gson.JsonObject;
+
+import name.abuchen.portfolio.Messages;
 
 /**
  * The extraction step of a PDF import. The test fragment has no real PDF
@@ -171,6 +178,50 @@ public class PdfImportHandlerTest
         var error = json.getAsJsonArray("errors").get(0).getAsJsonObject();
         assertThat(error.get("path").getAsString().endsWith("broken.pdf"), is(true));
         assertThat(error.has("message"), is(true));
+    }
+
+    @Test
+    public void testErrorsAreCondensedToOneEntryPerFile()
+    {
+        var doc = new File("statement.pdf");
+        var other = new File("letter.pdf");
+        var notSupported = (Function<String, Exception>) bank -> new UnsupportedOperationException(
+                        MessageFormat.format(Messages.PDFMsgFileNotSupported, doc.getName(), bank));
+        var unknownType = new UnsupportedOperationException(
+                        MessageFormat.format(Messages.PDFdbMsgCannotDetermineFileType, "Bank A", doc.getName()));
+
+        // every extractor reports the file, and PDFImportAssistant runs twice (PDFBox 3 and 1)
+        var errors = new LinkedHashMap<File, List<Exception>>();
+        errors.put(doc, List.of(notSupported.apply("Bank X"), unknownType, notSupported.apply("Bank Y"),
+                        notSupported.apply("Bank X"), unknownType));
+        errors.put(other, List.of(new UnsupportedOperationException(
+                        MessageFormat.format(Messages.PDFMsgFileNotSupported, other.getName(), "Bank X"))));
+
+        var array = PdfImportHandler.errors(errors);
+
+        assertThat(array.size(), is(2));
+        var letter = array.get(0).getAsJsonObject();
+        assertThat(letter.get("message").getAsString(), is("no extractor recognized the document"));
+        assertThat(letter.has("details"), is(false));
+        var statement = array.get(1).getAsJsonObject();
+        assertThat(statement.get("message").getAsString(), is(unknownType.getMessage()));
+        assertThat(statement.has("details"), is(false));
+    }
+
+    @Test
+    public void testDistinctSpecificErrorsAreListedAsDetails()
+    {
+        var doc = new File("statement.pdf");
+        var errors = Map.<File, List<Exception>>of(doc, List.of(
+                        new UnsupportedOperationException(MessageFormat
+                                        .format(Messages.PDFdbMsgCannotDetermineFileType, "Bank A", doc.getName())),
+                        new UnsupportedOperationException(MessageFormat
+                                        .format(Messages.PDFdbMsgCannotDetermineFileType, "Bank B", doc.getName()))));
+
+        var entry = PdfImportHandler.errors(errors).get(0).getAsJsonObject();
+
+        assertThat(entry.get("message").getAsString(), is("no extractor recognized the document"));
+        assertThat(entry.getAsJsonArray("details").size(), is(2));
     }
 
     /* package */ static JsonObject find(JsonObject preview, String kind)
