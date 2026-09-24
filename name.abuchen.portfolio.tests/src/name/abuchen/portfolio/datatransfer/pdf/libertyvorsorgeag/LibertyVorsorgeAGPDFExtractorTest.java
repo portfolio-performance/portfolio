@@ -4,6 +4,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -174,7 +175,8 @@ public class LibertyVorsorgeAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-06-20T00:00"), hasShares(1.739), //
+                        hasDate("2025-06-20T00:00"), hasExDate("2025-06-17T00:00"), //
+                        hasShares(1.739), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Ref.-Nr.: CA20250624/95977"), //
                         hasAmount("CHF", 1.30), hasGrossValue("CHF", 2.00), //
