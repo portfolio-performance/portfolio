@@ -197,6 +197,13 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
+                        // Ex-Datum 12. Mai 2020
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Ex\\-Datum (?<exDate>[\\d]{1,2}\\. .* [\\d]{4})$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
+                        // @formatter:off
                         // Netto EUR 198.36
                         // @formatter:on
                         .section("currency", "amount") //
