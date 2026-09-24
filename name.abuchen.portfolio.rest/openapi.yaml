@@ -985,6 +985,64 @@ paths:
         "500":
           $ref: "#/components/responses/InternalError"
 
+  /v1/files/{file}/instruments/{uuid}/actions/split:
+    parameters:
+      - $ref: "#/components/parameters/File"
+      - $ref: "#/components/parameters/Uuid"
+    post:
+      operationId: splitInstrument
+      tags: [Instruments]
+      summary: Apply a stock split
+      description: |
+        Applies a stock split as the application's split wizard does: records a
+        `stock-split` event with the ratio `newShares:oldShares`, multiplies the
+        shares of every transaction of the instrument dated **before** `exDate`
+        by `newShares/oldShares` (buys, sells, deliveries, transfers, and the
+        dividends, taxes and fees booked for it), and divides every historical
+        price before `exDate` by the same ratio. The latest price is not
+        touched. `adjustTransactions` and `adjustPrices` (default `true`) turn
+        either adjustment off.
+
+        A dry run answers what would change: the event, every adjusted
+        transaction leg with its shares before and after, and the first and
+        last adjusted price. A `clientRef` guards a retry: a repeated split with
+        the same key is not applied again but answered with
+        `replayed: true` (kept in memory until the application quits).
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StockSplit"
+            examples:
+              twoForOne:
+                value: { exDate: "2026-06-10", newShares: "2", oldShares: "1" }
+      responses:
+        "200":
+          description: The split that was (or, on a dry run, would be) applied
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StockSplitResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /v1/files/{file}/instruments/attribute-types:
     parameters:
       - $ref: "#/components/parameters/File"
@@ -5981,6 +6039,73 @@ components:
               taxes: { type: number }
               fees: { type: number }
               count: { type: integer }
+    StockSplit:
+      type: object
+      required: [exDate, newShares, oldShares]
+      properties:
+        exDate:
+          type: string
+          format: date
+          description: The first day the instrument trades with the new share count.
+        newShares:
+          $ref: "#/components/schemas/DecimalInput"
+        oldShares:
+          $ref: "#/components/schemas/DecimalInput"
+        adjustTransactions:
+          type: boolean
+          default: true
+        adjustPrices:
+          type: boolean
+          default: true
+        clientRef:
+          type: string
+          maxLength: 128
+    StockSplitResult:
+      type: object
+      required: [instrument, event, adjustTransactions, adjustPrices, transactionsAffected, pricesAffected,
+        transactions]
+      properties:
+        instrument:
+          type: string
+        event:
+          $ref: "#/components/schemas/InstrumentEvent"
+        adjustTransactions:
+          type: boolean
+        adjustPrices:
+          type: boolean
+        transactionsAffected:
+          type: integer
+          description: The number of adjusted transaction legs.
+        pricesAffected:
+          type: integer
+        transactions:
+          type: array
+          items:
+            type: object
+            properties:
+              uuid: { type: string }
+              date: { type: string }
+              type: { type: string }
+              sharesBefore: { type: number }
+              sharesAfter: { type: number }
+        firstPrice:
+          $ref: "#/components/schemas/SplitPriceChange"
+        lastPrice:
+          $ref: "#/components/schemas/SplitPriceChange"
+        dryRun:
+          type: boolean
+        replayed:
+          type: boolean
+    SplitPriceChange:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        before:
+          type: number
+        after:
+          type: number
     FieldError:
       type: object
       description: One field-level violation within a `Problem`.

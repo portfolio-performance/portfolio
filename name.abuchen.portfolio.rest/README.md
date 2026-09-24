@@ -171,6 +171,11 @@ all of them) and answers the count.
 transactions or prices. Events have no identifier, so `DELETE …/events?date&type[&details]` removes
 the matching ones.
 
+`POST …/instruments/{uuid}/actions/split` `{"exDate": "2026-06-10", "newShares": "2", "oldShares":
+"1"}` applies a split as the application's split wizard does: it records the event and adjusts the
+shares of the transactions and the prices before the ex-date (`adjustTransactions`/`adjustPrices`,
+both default `true`). A dry run lists every transaction that would change.
+
 ### `GET /v1/files/{file}/cash-accounts[/{uuid}]`
 
 ```json

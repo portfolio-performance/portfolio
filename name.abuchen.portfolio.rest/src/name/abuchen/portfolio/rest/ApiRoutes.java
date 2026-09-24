@@ -34,6 +34,7 @@ import name.abuchen.portfolio.rest.internal.SecuritiesHandler;
 import name.abuchen.portfolio.rest.internal.SecurityEventsHandler;
 import name.abuchen.portfolio.rest.internal.SecurityPerformanceHandler;
 import name.abuchen.portfolio.rest.internal.SecurityPricesHandler;
+import name.abuchen.portfolio.rest.internal.StockSplitAction;
 import name.abuchen.portfolio.rest.internal.TaxonomiesHandler;
 import name.abuchen.portfolio.rest.internal.TaxonomyAllocationHandler;
 import name.abuchen.portfolio.rest.internal.TradesHandler;
@@ -117,6 +118,9 @@ public final class ApiRoutes
                         (context, req) -> Response.json(200, SecurityEventsHandler.delete(context,
                                         req.pathParam("uuid"), req.queryParam("date"), req.queryParam("type"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                                         req.queryParam("details"))))); //$NON-NLS-1$
+        router.add("POST", "/v1/files/{file}/instruments/{uuid}/actions/split", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> Response.json(200, StockSplitAction.apply(context, idempotency,
+                                        req.pathParam("uuid"), parseObject(req))))); //$NON-NLS-1$
         // PATCH accepts application/json as well as application/merge-patch+json:
         // the body is a JSON Merge Patch either way
         router.add("PATCH", "/v1/files/{file}/instruments/{uuid}", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
