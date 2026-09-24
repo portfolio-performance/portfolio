@@ -4,6 +4,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
@@ -135,7 +136,8 @@ public class VZVermoegenszentrumAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-09-13T00:00"), hasShares(38.00), //
+                        hasDate("2023-09-13T00:00"), hasExDate("2023-09-08T00:00"), //
+                        hasShares(38.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Referenz CA20237768/20888"), //
                         hasAmount("CHF", 147.95), hasGrossValue("CHF", 227.60), //
@@ -169,7 +171,8 @@ public class VZVermoegenszentrumAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-04-27T00:00"), hasShares(20.00), //
+                        hasDate("2023-04-27T00:00"), hasExDate("2023-04-25T00:00"), //
+                        hasShares(20.00), //
                         hasSource("Dividende02.txt"), //
                         hasNote("Referenz CA20236723/50692"), //
                         hasAmount("CHF", 7.80), hasGrossValue("CHF", 12.00), //
