@@ -1276,7 +1276,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         + "|DIVIDENDO" //
                         + "|DISTRIBUZIONE" //
                         + "|Distribution" //
-                        + "|KAPITALREDUKTION)", //
+                        + "|KAPITALREDUKTION" //
+                        + "|REKLASSIFI[A-Z]+ US\\-DIVIDENDE)", //
                         "(ABRECHNUNG ZINSEN|AUSSCH.TTUNGSGLEICHER ERTRAG)");
         this.addDocumentTyp(type);
 
@@ -1553,7 +1554,16 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("exDate") //
                                                         .match("^Dividende en esp.ces .* -(?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})\\.$") //
                                                         .assign((t, v) -> t.setExDate(asDate(v.get(
-                                                                        "exDate"))))
+                                                                        "exDate")))),
+
+                                        // @formatter:off
+                                        // Unternehmens widerzuspiegeln. Du siehst dann eine Stornierung und eine neue Gutschrift einer früheren Dividende vom 19.03.2025 (ursprüngliches Ex-
+                                        // Datum). Das sind routinemäßige steuerliche Anpassungen, um sicherzustellen, dass die steuerliche Behandlung und deine Steuerbescheinigung korrekt
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("exDate") //
+                                                        .match("^.* vom (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\(urspr.ngliches Ex\\-(Datum\\))?.*$") //
+                                                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
                         )
 
                         .oneOf( //
@@ -4045,6 +4055,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                             v.markAsFailure(Messages.MsgErrorTransactionTaxCorrectionUnsupported);
                         })
+
+                        // @formatter:off
+                        // KORREKTURDETAILS: Dein Konto wurde mit 1,86 EUR belastet. Das entspricht der obigen Steuerkorrektur.
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^KORREKTURDETAILS: .* (?<note>Steuerkorrektur)\\.$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         .wrap(TransactionItem::new);
     }
