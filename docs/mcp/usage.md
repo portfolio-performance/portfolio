@@ -69,6 +69,10 @@ The server sends its usage rules to the agent when it connects, so no extra prom
 - **Saving waits for quote updates.** PP updates quotes online after opening a file and every 30 minutes. `save_file` waits up to 30 seconds for a running update, so the saved file includes the new prices.
 - **Log.** Every change made through the API is written to PP's log file, `<workspace>/.metadata/.log` (on Windows the workspace is `%LOCALAPPDATA%\PortfolioPerformance\workspace`), with the file, entity and changed fields.
 
+## Large updates
+
+For many bookings at once, such as a reconciliation against bank exports, let the agent write the bookings into a plan file and run `uv run pp-apply-plan plan.json` in `tools/pp-mcp`. Without `--commit` every step is a dry run. Rehearse on a copy of the file first: enable the copy for API access, apply the plan with `--commit`, save, and compare the balances with the bank statements before applying the same plan to the real file. Keep a backup of the real file.
+
 ## Troubleshooting
 
 | Symptom | Cause |

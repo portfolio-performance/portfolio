@@ -30,6 +30,17 @@ Update tools are merge patches: only the given fields change, and `clear` names 
 | `record_documents` | Import broker PDFs: preview, review with the user, commit, save on approval. |
 | `review_portfolio` | Read-only summary of holdings, performance, earnings and allocation. |
 
+## Booking plans
+
+`pp-apply-plan` runs a batch of tool calls from a JSON plan. Use it when many bookings are prepared at once, for example from bank exports, so the batch can be reviewed and dry-run before it changes anything:
+
+```bash
+uv run pp-apply-plan plan.json            # dry run of every step
+uv run pp-apply-plan plan.json --commit   # apply, then call save_file
+```
+
+Plan format, placeholders for account and instrument names (`@acct:`, `@cash:`, `@inv:`, `@isin:`, `@inst:`) and output are described in `src/pp_mcp/plan.py`.
+
 ## Development
 
 ```bash
