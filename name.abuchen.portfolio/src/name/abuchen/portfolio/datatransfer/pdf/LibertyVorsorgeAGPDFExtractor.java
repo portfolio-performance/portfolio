@@ -146,7 +146,7 @@ public class LibertyVorsorgeAGPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .find("Menge\\/Nominal B.rsenplatz Preis") //
-                                                        .match("^(?<shares>[\\.'\\d]+) .*$") //"
+                                                        .match("^(?<shares>[\\.'\\d]+) .*$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
                                         // M enge/Nom ina l Börsenpla tz Preis
@@ -155,7 +155,7 @@ public class LibertyVorsorgeAGPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .find("M[\s]*e[\\s]*n[\\s]*g[\\s]*e[\\s]*\\/[\\s]*N[\\s]*o[\\s]*m[\\s]*i[\\s]*n[\\s]*a[\\s]*l[\\s]*B[\\s]*.[\\s]*r[\\s]*s[\\s]*e[\\s]*n[\\s]*p[\\s]*l[\\s]*a[\\s]*t[\\s]*z[\\s]*P[\\s]*r[\\s]*e[\\s]*i[\\s]*s[\\s]*") //
-                                                        .match("^(?<shares>[\\.'\\d]+) .*$") //"
+                                                        .match("^(?<shares>[\\.'\\d]+) .*$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
                         .oneOf( //
@@ -280,8 +280,15 @@ public class LibertyVorsorgeAGPDFExtractor extends AbstractPDFExtractor
                         // U nsere G u tschrift erfolgt a u f K onto 1.2886.4114-199 per 20.06.2025
                         // @formatter:on
                         .section("date") //
-                        .match("^U[\\s]*n[\\s]*s[\\s]*e[\\s]*r[\\s]*e[\\s]*G[\\s]*u[\\s]*t[\\s]*s[\\s]*c[\\s]*h[\\s]*r[\\s]*i[\\s]*f[\\s]*t.*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //"
+                        .match("^U[\\s]*n[\\s]*s[\\s]*e[\\s]*r[\\s]*e[\\s]*G[\\s]*u[\\s]*t[\\s]*s[\\s]*c[\\s]*h[\\s]*r[\\s]*i[\\s]*f[\\s]*t.*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Anteile -FA CH F- Ex  D a tu m : 17.06.2025
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^.*E[\\s]*x[\\s]*D[\\s]*a[\\s]*t[\\s]*u[\\s]*m[\\s]*:[\\s]*(?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
 
                         // @formatter:off
                         // Netto CH F 1.30
