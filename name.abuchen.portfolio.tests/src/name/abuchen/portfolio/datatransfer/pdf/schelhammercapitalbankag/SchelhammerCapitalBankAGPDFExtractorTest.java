@@ -4,6 +4,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
@@ -170,7 +171,8 @@ public class SchelhammerCapitalBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-12-27T00:00"), hasShares(778.05), //
+                        hasDate("2024-12-27T00:00"), hasExDate("2024-12-12T00:00"), //
+                        hasShares(778.05), //
                         hasSource("Dividende01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 38.59), hasGrossValue("EUR", 42.71), //
@@ -204,7 +206,8 @@ public class SchelhammerCapitalBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-06T00:00"), hasShares(353.63), //
+                        hasDate("2025-03-06T00:00"), hasExDate("2025-02-19T00:00"), //
+                        hasShares(353.63), //
                         hasSource("Dividende02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 73.24), hasGrossValue("EUR", 73.24), //
@@ -238,7 +241,8 @@ public class SchelhammerCapitalBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-12-16T00:00"), hasShares(123.00), //
+                        hasDate("2024-12-16T00:00"), hasExDate("2024-12-16T00:00"), //
+                        hasShares(123.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.00), hasGrossValue("EUR", 234.06), //
