@@ -64,6 +64,19 @@ def apply_clear(patch: dict[str, Any], clear: list[str] | None, mapping: dict[st
     return patch
 
 
+def no_floats(value: Any, field: str) -> Any:
+    """Reject binary floats anywhere in a free-form value (N6); returns the value."""
+    if isinstance(value, float):
+        raise ToolError(f'{field}: pass numbers as decimal strings such as "12.34", not floats')
+    if isinstance(value, dict):
+        for k, v in value.items():
+            no_floats(v, f"{field}.{k}")
+    elif isinstance(value, list):
+        for n, v in enumerate(value):
+            no_floats(v, f"{field}[{n}]")
+    return value
+
+
 def out(value: Any) -> dict[str, Any]:
     """Tool result: Decimals as strings; non-object answers wrapped."""
     value = to_jsonable(value)
