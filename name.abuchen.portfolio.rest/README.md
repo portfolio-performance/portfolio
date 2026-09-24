@@ -255,6 +255,23 @@ finished job if it completes in time. A job's `status` is `running`, `done` or `
 `summary` counts the instruments that gained a new latest or new historical prices. Jobs are
 kept in memory for an hour after they finish.
 
+### Imports — `POST /v1/files/{file}/imports/pdf`, then `…/imports/{importId}/commit`
+
+An import has two steps, like the application's import wizard. `POST …/imports/pdf` with
+`{"paths": ["/abs/path/statement.pdf"]}` runs the application's PDF extractors and answers a
+preview: an `importId` (valid for 15 minutes) and the extracted `items`, each with its `index`,
+`kind`, the `transaction` or `instrument` it would book and the accounts it would book on, and the
+wizard's `checks`; its `status` is the worst of them: `ok`, `warning` (e.g. a probable duplicate) or
+`error` (not importable). Nothing is changed.
+
+`POST …/imports/{importId}/commit` with `{"select": [0, 1], "targets": {...}, "options": {...}}`
+imports the items. `targets` name the accounts (`cashAccount`, `cashAccountsByCurrency`,
+`investmentAccount`, `secondaryCashAccount`, `secondaryInvestmentAccount`); anything not named falls
+back to what the wizard preselects. Without `select`, the `ok` items are imported; `select` may add
+items with a warning, never items with an error. `options` are the wizard's check boxes
+(`convertBuySellToDelivery`, `removeDividends`, `importNotes`). A dry run shows what would be
+imported; a commit consumes the preview.
+
 ### `POST /v1/files/{file}/transactions` — create a transaction
 
 `type` selects the shape: `buy`, `sell`, `delivery-inbound`, `delivery-outbound`, `dividends`,

@@ -1148,8 +1148,43 @@ public final class EntityJson
      */
     public static JsonObject toJson(TransactionPair<?> pair)
     {
-        var transaction = pair.getTransaction();
+        var json = toJsonFields(pair.getTransaction());
+        json.add("owner", toJsonOwner(pair));
 
+        if (pair.getTransaction().getNote() != null)
+            json.addProperty("note", pair.getTransaction().getNote());
+
+        return json;
+    }
+
+    /**
+     * A transaction that is not booked on an owner (yet), e.g. an extracted
+     * import item: the fields of {@link #toJsonDetailed(TransactionPair)}
+     * without {@code owner} and {@code linked}. The instrument may be one
+     * that the file does not contain yet.
+     */
+    /* package */ static JsonObject toJsonUnbooked(Transaction transaction)
+    {
+        var json = toJsonFields(transaction);
+
+        if (transaction.getNote() != null)
+            json.addProperty("note", transaction.getNote()); //$NON-NLS-1$
+
+        var units = new JsonArray();
+        transaction.getUnits().forEach(unit -> units.add(toJson(unit)));
+        json.add("units", units); //$NON-NLS-1$
+
+        if (transaction instanceof AccountTransaction t && t.getExDate() != null)
+            json.addProperty("exDate", t.getExDate().toString()); //$NON-NLS-1$
+
+        if (transaction.getSource() != null)
+            json.addProperty("source", transaction.getSource()); //$NON-NLS-1$
+
+        return json;
+    }
+
+    private static JsonObject toJsonFields(Transaction transaction)
+    {
         var json = new JsonObject();
         json.addProperty("uuid", transaction.getUUID());
         json.addProperty("date", transaction.getDateTime().toString());
@@ -1169,11 +1204,6 @@ public final class EntityJson
             securityJson.addProperty("name", security.getName());
             json.add("security", securityJson);
         }
-
-        json.add("owner", toJsonOwner(pair));
-
-        if (transaction.getNote() != null)
-            json.addProperty("note", transaction.getNote());
 
         return json;
     }

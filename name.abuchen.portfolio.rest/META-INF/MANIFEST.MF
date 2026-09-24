@@ -9,6 +9,8 @@ Require-Bundle: name.abuchen.portfolio;bundle-version="0.87.1",
  com.google.gson,
  org.eclipse.core.runtime,
  org.eclipse.equinox.preferences
+Import-Package: org.json.simple,
+ org.json.simple.parser
 Export-Package: name.abuchen.portfolio.rest,
  name.abuchen.portfolio.rest.spi
 Automatic-Module-Name: name.abuchen.portfolio.rest

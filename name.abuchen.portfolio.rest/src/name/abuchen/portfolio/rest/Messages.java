@@ -10,6 +10,7 @@ public class Messages extends NLS
     public static String MsgApiEntityDeleted;
     public static String MsgApiFileOpened;
     public static String MsgApiFileSaved;
+    public static String MsgApiImportCommitted;
     public static String MsgApiInstrumentChanged;
     public static String MsgApiInstrumentDeleted;
     public static String MsgApiInstrumentFieldChanged;

@@ -1,0 +1,32 @@
+comdirect bank
+
+GESCHÄFTSABRECHNUNG VOM 18.07.2016
+
+*
+Wertpapierkauf
+Geschäftsnummer   : 91 029501
+Ordernummer       : 072324316214-001  Rechnungsnummer   : 395955075438D1F5
+Geschäftstag      : 18.07.2016        Ausführungsplatz  : GETTEX
+Handelszeit       : 17:02 Uhr (MEZ/MESZ)                  (Kommissionsgeschäft)
+
+Wertpapier-Bezeichnung                                               WPKNR/ISIN
+Boeing Co.                                                               850471
+Registered Shares DL 5                                             US0970231058
+
+
+Nennwert                  Zum Kurs von
+St.  160                  EUR  120,647
+                          Kurswert                    : EUR           19.303,52
+
+--------------------------------------------------------------------------------
+Eigene Entgelte
+                          Provision                   : EUR               53,16
+                          Börsenplatzabhäng. Entgelt  : EUR                2,50
+                          Summe Entgelte              : EUR               55,66
+--------------------------------------------------------------------------------
+
+
+IBAN                                  Valuta         Zu Ihren Lasten vor Steuern
+DE00 0000 0000 0000 0000 00   EUR     20.07.2016        EUR           19.359,18
+
+Verwahrungs-Art: GIROSAMMELDEPOT

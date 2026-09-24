@@ -555,6 +555,116 @@ paths:
         "500":
           $ref: "#/components/responses/InternalError"
 
+  /v1/files/{file}/imports/pdf:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    post:
+      operationId: extractPdf
+      tags: [Actions]
+      summary: Extract transactions from PDF documents (import preview)
+      description: |
+        The first step of a PDF import: runs the application's PDF extractors
+        (bank statements, contract notes, …) on the given files, as the PDF
+        import wizard does, and answers the extracted items with the outcome
+        of the wizard's checks. Nothing is changed; the items are kept for
+        15 minutes under the returned `importId` for
+        `POST …/imports/{importId}/commit`.
+
+        `paths` are absolute paths of `.pdf` files readable by the
+        application. A document no extractor recognizes is listed in `errors`.
+
+        Each item has an `index`, a `kind` (`buy-sell`, `transaction`,
+        `cash-transfer`, `security-transfer`, `instrument`,
+        `instrument-update`, `price`, `skipped`), a `status` — the worst of
+        its `checks`: `ok`, `warning` (e.g. a probable duplicate) or `error`
+        (not importable) — and what it would book: the `transaction` with the
+        accounts it would be booked on, or the `instrument`. The checks run
+        with `targets` (optional here; see the commit) or, where none is
+        named, with the defaults the wizard preselects.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PdfImportRequest"
+      responses:
+        "200":
+          description: The extracted items
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImportPreview"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/imports/{importId}/commit:
+    parameters:
+      - $ref: "#/components/parameters/File"
+      - name: importId
+        in: path
+        required: true
+        description: The `importId` of a preview.
+        schema:
+          type: string
+    post:
+      operationId: commitImport
+      tags: [Actions]
+      summary: Import the extracted items
+      description: |
+        Inserts the items of an import preview into the file, as the import
+        wizard's finish does. The checks run again with the `targets` named
+        here. Without `select`, the items whose status is `ok` are imported
+        (as the wizard preselects them); `select` names the items by `index`
+        and may include items with a `warning`, but an item with an `error`
+        is refused (`item-not-importable`). New instruments are created.
+
+        A dry run answers what would be imported and keeps the preview; a
+        commit consumes it (a second commit is `404`). An unknown or expired
+        `importId` is `404`.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ImportCommit"
+      responses:
+        "200":
+          description: What was (or, on a dry run, would be) imported
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImportCommitResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /v1/files/{file}/instruments:
     parameters:
       - $ref: "#/components/parameters/File"
@@ -6373,6 +6483,190 @@ components:
         dirty:
           type: boolean
           description: Whether the file has unsaved changes after the update.
+    PdfImportRequest:
+      type: object
+      required: [paths]
+      properties:
+        paths:
+          type: array
+          minItems: 1
+          maxItems: 100
+          items:
+            type: string
+            description: The absolute path of a `.pdf` file.
+        targets:
+          $ref: "#/components/schemas/ImportTargets"
+    ImportTargets:
+      type: object
+      description: |
+        Where items are booked unless an item names its accounts itself. An
+        item in a currency goes to the cash account named for that currency in
+        `cashAccountsByCurrency`, else to `cashAccount` if it has that
+        currency, else to the first active cash account in the currency (by
+        name). Investment-account items go to `investmentAccount`, else the
+        first active investment account. The receiving side of a transfer
+        goes to `secondaryCashAccount` (or the first cash account in its
+        currency) and `secondaryInvestmentAccount` (no default).
+        `instrument` is the instrument a CSV price import is for.
+      properties:
+        cashAccount: { type: string }
+        cashAccountsByCurrency:
+          type: object
+          additionalProperties:
+            type: string
+        investmentAccount: { type: string }
+        secondaryCashAccount: { type: string }
+        secondaryInvestmentAccount: { type: string }
+        instrument: { type: string }
+    ImportPreview:
+      type: object
+      required: [importId, kind, expiresAt, items, counts, errors]
+      properties:
+        importId:
+          type: string
+        kind:
+          type: string
+          enum: [pdf, csv]
+        expiresAt:
+          type: string
+          format: date-time
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ImportItem"
+        counts:
+          type: object
+          properties:
+            ok: { type: integer }
+            warning: { type: integer }
+            error: { type: integer }
+        errors:
+          type: array
+          description: Files (or lines) that could not be read.
+          items:
+            type: object
+            properties:
+              path: { type: string }
+              line: { type: integer }
+              message: { type: string }
+    ImportItem:
+      type: object
+      required: [index, kind, status, checks]
+      properties:
+        index:
+          type: integer
+        kind:
+          type: string
+          enum: [buy-sell, transaction, cash-transfer, security-transfer, instrument, instrument-update, price,
+            skipped, other]
+        status:
+          type: string
+          enum: [ok, warning, error]
+        checks:
+          type: array
+          items:
+            $ref: "#/components/schemas/ImportCheck"
+        investmentPlanItem:
+          type: boolean
+          description: The item matches a transaction an investment plan generated and updates it.
+        transaction:
+          description: The transaction the item books (not yet in the file).
+          type: object
+        cashAccount: { $ref: "#/components/schemas/ImportAccountReference" }
+        investmentAccount: { $ref: "#/components/schemas/ImportAccountReference" }
+        fromCashAccount: { $ref: "#/components/schemas/ImportAccountReference" }
+        toCashAccount: { $ref: "#/components/schemas/ImportAccountReference" }
+        fromInvestmentAccount: { $ref: "#/components/schemas/ImportAccountReference" }
+        toInvestmentAccount: { $ref: "#/components/schemas/ImportAccountReference" }
+        instrument:
+          type: object
+          properties:
+            uuid: { type: string }
+            name: { type: string }
+            currencyCode: { type: string }
+            isin: { type: string }
+            wkn: { type: string }
+            tickerSymbol: { type: string }
+            new:
+              type: boolean
+              description: The import creates this instrument.
+        price:
+          type: object
+          properties:
+            date: { type: string, format: date }
+            value: { type: number }
+        date:
+          type: string
+        description:
+          type: string
+    ImportCheck:
+      type: object
+      required: [code, status]
+      properties:
+        code:
+          type: string
+          enum: [extraction, skipped, targets, transaction-date, valid-types, security-values, duplicates,
+            currencies, forex-gross-value]
+        status:
+          type: string
+          enum: [ok, warning, error]
+        message:
+          type: string
+    ImportAccountReference:
+      type: object
+      properties:
+        uuid: { type: string }
+        name: { type: string }
+    ImportCommit:
+      type: object
+      properties:
+        select:
+          type: array
+          description: The `index`es of the items to import; default all `ok` items.
+          items:
+            type: integer
+        targets:
+          $ref: "#/components/schemas/ImportTargets"
+        options:
+          type: object
+          properties:
+            convertBuySellToDelivery:
+              type: boolean
+              default: false
+              description: Book purchases and sales as deliveries (no cash account leg).
+            removeDividends:
+              type: boolean
+              default: false
+              description: Book a removal for every dividend (the dividend left the account).
+            importNotes:
+              type: boolean
+              default: true
+              description: Keep the notes the extractor derived from the document.
+    ImportCommitResult:
+      type: object
+      properties:
+        importId: { type: string }
+        count:
+          type: integer
+          description: The number of items imported (or, on a dry run, to be imported).
+        items:
+          type: array
+          description: The imported items (a dry run answers their preview).
+          items:
+            type: object
+        transactions:
+          type: array
+          items:
+            $ref: "#/components/schemas/TransactionDetail"
+        instruments:
+          type: array
+          items:
+            type: object
+            properties:
+              uuid: { type: string }
+              name: { type: string }
+        dryRun:
+          type: boolean
     FieldError:
       type: object
       description: One field-level violation within a `Problem`.
@@ -6413,6 +6707,8 @@ components:
             - unknown-calendar
             - weight-exceeds-100
             - already-exists
+            - file-not-found
+            - item-not-importable
         message:
           type: string
           description: Human-readable explanation of this one violation.

@@ -1,7 +1,10 @@
 package name.abuchen.portfolio.rest;
 
+import java.io.File;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 
@@ -19,12 +22,15 @@ import name.abuchen.portfolio.rest.internal.FileResolver;
 import name.abuchen.portfolio.rest.internal.FilesHandler;
 import name.abuchen.portfolio.rest.internal.HoldingsHandler;
 import name.abuchen.portfolio.rest.internal.IdempotencyIndex;
+import name.abuchen.portfolio.rest.internal.ImportCommitHandler;
+import name.abuchen.portfolio.rest.internal.ImportSessionRegistry;
 import name.abuchen.portfolio.rest.internal.InstrumentChangeLog;
 import name.abuchen.portfolio.rest.internal.InvestmentPlansHandler;
 import name.abuchen.portfolio.rest.internal.JobRegistry;
 import name.abuchen.portfolio.rest.internal.MasterDataWrites;
 import name.abuchen.portfolio.rest.internal.OpenApiHandler;
 import name.abuchen.portfolio.rest.internal.PairingHandler;
+import name.abuchen.portfolio.rest.internal.PdfImportHandler;
 import name.abuchen.portfolio.rest.internal.PerformanceCalendarHandler;
 import name.abuchen.portfolio.rest.internal.PerformanceHandler;
 import name.abuchen.portfolio.rest.internal.PortfoliosHandler;
@@ -67,6 +73,8 @@ public final class ApiRoutes
         var idempotency = new IdempotencyIndex();
         // the background jobs started through the API
         var jobs = new JobRegistry();
+        // the extracted items of imports between preview and commit
+        var imports = new ImportSessionRegistry();
 
         // the API's own description: a static resource, no UI thread, no auth
         router.add("GET", RestApiConstants.OPENAPI_ENDPOINT, request -> OpenApiHandler.serve()); //$NON-NLS-1$
@@ -100,6 +108,25 @@ public final class ApiRoutes
                         request -> Response.json(200, ActionsHandler.job(jobs,
                                         resolver.resolve(request.pathParam("file")).file(), //$NON-NLS-1$
                                         request.pathParam("jobId"))))); //$NON-NLS-1$
+
+        // extraction runs on the HTTP worker thread, the checks on the UI thread
+        router.add("POST", "/v1/files/{file}/imports/pdf", request -> { //$NON-NLS-1$
+            var body = parseObject(request);
+            var client = host.syncExec(() -> {
+                var file = resolver.resolve(request.pathParam("file")).file(); //$NON-NLS-1$
+                ImportCommitHandler.validateTargets(file.getClient(), body.get("targets")); //$NON-NLS-1$
+                return file.getClient();
+            });
+            var documents = PdfImportHandler.files(body);
+            var errors = new HashMap<File, List<Exception>>();
+            var items = PdfImportHandler.extract(client, documents, errors);
+            return Response.json(200, host.syncExec(() -> ImportCommitHandler.preview(
+                            resolver.resolve(request.pathParam("file")).file(), imports, "pdf", items, //$NON-NLS-1$ //$NON-NLS-2$
+                            body.get("targets"), PdfImportHandler.errors(errors)))); //$NON-NLS-1$
+        });
+        router.add("POST", "/v1/files/{file}/imports/{importId}/commit", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> Response.json(200, ImportCommitHandler.commit(context, imports,
+                                        req.pathParam("importId"), parseOptionalObject(req))))); //$NON-NLS-1$
 
         router.add("GET", "/v1/files/{file}/instruments", read(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
                         (client, req) -> Response.json(200, SecuritiesHandler.list(client))));
