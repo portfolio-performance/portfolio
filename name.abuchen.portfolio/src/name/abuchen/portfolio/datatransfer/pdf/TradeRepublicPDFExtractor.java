@@ -1276,7 +1276,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         + "|DIVIDENDO" //
                         + "|DISTRIBUZIONE" //
                         + "|Distribution" //
-                        + "|REKLASSIFI(ERZ|ZIER)UNG US\\-DIVIDENDE" //
                         + "|KAPITALREDUKTION)", //
                         "(ABRECHNUNG ZINSEN|AUSSCH.TTUNGSGLEICHER ERTRAG)");
         this.addDocumentTyp(type);
@@ -1536,15 +1535,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("exDate") //
                                                         .match("^.* (ex-tag|Ex-Tag|Ex-Date|l'ex-tag|Ex-Datum)[\\s]*(?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})\\.$") //
-                                                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate")))),
-
-                                        // @formatter:off
-                                        // Du siehst dann eine Stornierung und eine neue Gutschrift einer früheren Dividende vom 19.03.2025 (ursprüngliches Ex-
-                                        // Datum).
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("exDate") //
-                                                        .match("^.*fr.heren Dividende vom (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\(urspr.ngliches Ex.*$") //
                                                         .assign((t, v) -> t.setExDate(asDate(v.get("exDate")))),
 
                                         // @formatter:off
@@ -1852,8 +1842,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
-                        // The ex-ante cost information only announces the upcoming
-                        // transaction, it does not book anything. The booking itself is
+                        // The ex-ante cost information only announces the
+                        // upcoming
+                        // transaction, it does not book anything. The booking
+                        // itself is
                         // processed with the securities settlement document.
                         .section("type") //
                         .match("^(?<type>EX\\-ANTE KOSTENINFORMATION ZUM WERTPAPIER(KAUF|VERKAUF))$") //
@@ -1887,15 +1879,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .section("shares") //
                         .match("^.* (?<shares>[\\.,\\d]+) Stk\\. [\\.,\\d]+ \\p{Sc}( .*)?$") //
                         .assign((t, v) -> {
-                            // The quantity is either German formatted with
-                            // grouped
-                            // thousands (1.000) or US formatted with a decimal
-                            // point
-                            // (0.851192)
-                            if (v.get("shares").contains(",") || v.get("shares").matches("[\\d]{1,3}(\\.[\\d]{3})+"))
-                                t.setShares(asShares(v.get("shares")));
-                            else
+                            if (!v.get("shares").contains(","))
                                 t.setShares(asShares(v.get("shares"), "en", "US"));
+                            else
+                                t.setShares(asShares(v.get("shares")));
                         })
 
                         .oneOf( //
@@ -1913,7 +1900,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("amount", "currency").optional() //
                         .find("KOSTEN DES WERTPAPIER.* BETRAG") //
-                        .match("^GESAMT (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc})$") //)
+                        .match("^GESAMT (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc})$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -4020,7 +4007,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
     {
         final var type = new DocumentType("Steuerkorrektur f.r Rechnung am [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} angewendet", //
                         documentContext -> documentContext //
-                                        // @formatter:off
+                        // @formatter:off
                                         // Steuerkorrektur für Rechnung am 02.07.2026 angewendet
                                         // @formatter:on
                                         .section("date") //
@@ -4040,8 +4027,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
-                        // The interest and dividend amounts of this document have already
-                        // been settled with the original statement. Only the tax correction
+                        // The interest and dividend amounts of this document
+                        // have already
+                        // been settled with the original statement. Only the
+                        // tax correction
                         // is left over and has to be booked manually.
                         // @formatter:off
                         // KORREKTURDETAILS: Dein Konto wurde mit 1,86 EUR belastet. Das entspricht der obigen Steuerkorrektur.
@@ -4053,7 +4042,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setNote("Steuerkorrektur");
 
                             v.markAsFailure(Messages.MsgErrorTransactionTaxCorrectionUnsupported);
                         })
