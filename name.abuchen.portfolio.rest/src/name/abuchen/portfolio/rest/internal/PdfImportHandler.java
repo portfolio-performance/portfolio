@@ -81,7 +81,7 @@ public final class PdfImportHandler
             var array = element.getAsJsonArray();
             for (var ii = 0; ii < array.size(); ii++)
             {
-                var file = file(json, "paths[" + ii + "]", array.get(ii)); //$NON-NLS-1$ //$NON-NLS-2$
+                var file = file(json, "paths[" + ii + "]", array.get(ii), ".pdf"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 if (file != null)
                     files.add(file);
             }
@@ -91,7 +91,12 @@ public final class PdfImportHandler
         return files;
     }
 
-    private static File file(Json json, String field, JsonElement element)
+    /**
+     * The file a path of the request names: an absolute path of a readable
+     * file, with the given extension unless that is null; null (and an error
+     * in {@code json}) otherwise.
+     */
+    /* package */ static File file(Json json, String field, JsonElement element, String extension)
     {
         if (!element.isJsonPrimitive() || !element.getAsJsonPrimitive().isString())
         {
@@ -119,10 +124,11 @@ public final class PdfImportHandler
             return null;
         }
 
-        if (!path.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".pdf")) //$NON-NLS-1$
+        var name = path.getFileName() == null ? "" : path.getFileName().toString(); //$NON-NLS-1$
+        if (extension != null && !name.toLowerCase(Locale.ROOT).endsWith(extension))
         {
             json.add(new ApiException.FieldError(field, "invalid-value", //$NON-NLS-1$
-                            MessageFormat.format("{0} is not a .pdf file", text))); //$NON-NLS-1$
+                            MessageFormat.format("{0} is not a {1} file", text, extension))); //$NON-NLS-1$
             return null;
         }
 

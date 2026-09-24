@@ -609,6 +609,60 @@ paths:
         "500":
           $ref: "#/components/responses/InternalError"
 
+  /v1/files/{file}/imports/csv:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    post:
+      operationId: extractCsv
+      tags: [Actions]
+      summary: Read a CSV file with a column mapping (import preview)
+      description: |
+        The first step of a CSV import: reads the CSV file at `path` (an
+        absolute path) with the column mapping in `config`, as the CSV import
+        wizard does, and answers the extracted items like
+        `POST …/imports/pdf`. Commit them with `POST …/imports/{importId}/commit`.
+
+        `config` is the JSON of a CSV configuration as the application saves
+        it: `target` (`account-transaction`, `portfolio-transaction`,
+        `investment-vehicle`, `investment-vehicle-price`, `portfolio`),
+        `delimiter` (`,`, `;` or a tab), `encoding` (default UTF-8),
+        `skipLines`, `isFirstLineHeader` and `columns` — one entry per CSV
+        column, in order: `label`, the `field` it maps to (omitted: ignored)
+        and the field's `format` (e.g. `yyyy-MM-dd`, `0,000.00`).
+
+        A line that cannot be read makes the request fail with
+        `422 csv-parse-error`, one error per line (`line[N]`, the line number
+        in the file). A historical price import (`investment-vehicle-price`)
+        yields one `price` item per line; its commit needs
+        `targets.instrument`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CsvImportRequest"
+      responses:
+        "200":
+          description: The extracted items
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImportPreview"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /v1/files/{file}/imports/{importId}/commit:
     parameters:
       - $ref: "#/components/parameters/File"
@@ -6496,6 +6550,46 @@ components:
             description: The absolute path of a `.pdf` file.
         targets:
           $ref: "#/components/schemas/ImportTargets"
+    CsvImportRequest:
+      type: object
+      required: [path, config]
+      properties:
+        path:
+          type: string
+          description: The absolute path of the CSV file.
+        config:
+          type: object
+          required: [target, delimiter, skipLines, isFirstLineHeader, columns]
+          properties:
+            label:
+              type: string
+            target:
+              type: string
+              enum: [account-transaction, portfolio-transaction, investment-vehicle, investment-vehicle-price,
+                portfolio]
+            delimiter:
+              type: string
+              enum: [",", ";", "\t"]
+            encoding:
+              type: string
+              default: UTF-8
+            skipLines:
+              type: integer
+              minimum: 0
+            isFirstLineHeader:
+              type: boolean
+            columns:
+              type: array
+              minItems: 1
+              items:
+                type: object
+                required: [label]
+                properties:
+                  label: { type: string }
+                  field: { type: string }
+                  format: { type: string }
+        targets:
+          $ref: "#/components/schemas/ImportTargets"
     ImportTargets:
       type: object
       description: |
@@ -6709,6 +6803,7 @@ components:
             - already-exists
             - file-not-found
             - item-not-importable
+            - csv-parse-error
         message:
           type: string
           description: Human-readable explanation of this one violation.

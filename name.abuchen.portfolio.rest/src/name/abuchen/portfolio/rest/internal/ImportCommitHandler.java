@@ -91,7 +91,15 @@ public final class ImportCommitHandler
 
         var checked = ImportPreview.check(client, session.items(), targets);
         var selected = select(body.get("select"), checked, json); //$NON-NLS-1$
+
+        // the prices of a CSV price import go to the instrument the commit names
+        var prices = selected.stream().map(i -> checked.get(i).item())
+                        .filter(CsvImportHandler.PriceItem.class::isInstance).toList();
+        if (!prices.isEmpty() && targets.getInstrument() == null)
+            json.add(new ApiException.FieldError("targets.instrument", "required", //$NON-NLS-1$ //$NON-NLS-2$
+                            "targets.instrument names the instrument the prices are imported for")); //$NON-NLS-1$
         json.throwIfErrors();
+        prices.forEach(item -> item.setSecurity(targets.getInstrument()));
 
         if (context.dryRun())
         {

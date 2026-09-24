@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
@@ -17,6 +18,7 @@ import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.rest.internal.AccountsHandler;
 import name.abuchen.portfolio.rest.internal.ActionsHandler;
 import name.abuchen.portfolio.rest.internal.ApiException;
+import name.abuchen.portfolio.rest.internal.CsvImportHandler;
 import name.abuchen.portfolio.rest.internal.EarningsHandler;
 import name.abuchen.portfolio.rest.internal.FileResolver;
 import name.abuchen.portfolio.rest.internal.FilesHandler;
@@ -123,6 +125,18 @@ public final class ApiRoutes
             return Response.json(200, host.syncExec(() -> ImportCommitHandler.preview(
                             resolver.resolve(request.pathParam("file")).file(), imports, "pdf", items, //$NON-NLS-1$ //$NON-NLS-2$
                             body.get("targets"), PdfImportHandler.errors(errors)))); //$NON-NLS-1$
+        });
+        router.add("POST", "/v1/files/{file}/imports/csv", request -> { //$NON-NLS-1$
+            var body = parseObject(request);
+            var client = host.syncExec(() -> {
+                var file = resolver.resolve(request.pathParam("file")).file(); //$NON-NLS-1$
+                ImportCommitHandler.validateTargets(file.getClient(), body.get("targets")); //$NON-NLS-1$
+                return file.getClient();
+            });
+            var items = CsvImportHandler.extract(client, body);
+            return Response.json(200, host.syncExec(() -> ImportCommitHandler.preview(
+                            resolver.resolve(request.pathParam("file")).file(), imports, "csv", items, //$NON-NLS-1$ //$NON-NLS-2$
+                            body.get("targets"), new JsonArray()))); //$NON-NLS-1$
         });
         router.add("POST", "/v1/files/{file}/imports/{importId}/commit", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
                         (context, req) -> Response.json(200, ImportCommitHandler.commit(context, imports,

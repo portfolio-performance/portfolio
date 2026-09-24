@@ -272,6 +272,14 @@ items with a warning, never items with an error. `options` are the wizard's chec
 (`convertBuySellToDelivery`, `removeDividends`, `importNotes`). A dry run shows what would be
 imported; a commit consumes the preview.
 
+`POST …/imports/csv` with `{"path": "/abs/path/export.csv", "config": {...}}` is the same first step
+for a CSV file. `config` is a CSV configuration as the application's CSV import wizard saves it:
+`target` (`account-transaction`, `portfolio-transaction`, `investment-vehicle`,
+`investment-vehicle-price`, `portfolio`), `delimiter`, `encoding` (default UTF-8), `skipLines`,
+`isFirstLineHeader` and one `columns` entry per CSV column (`label`, `field`, `format`). A line that
+cannot be read fails the request with `422 csv-parse-error` naming the line. Historical prices are
+committed to the instrument named by `targets.instrument`.
+
 ### `POST /v1/files/{file}/transactions` — create a transaction
 
 `type` selects the shape: `buy`, `sell`, `delivery-inbound`, `delivery-outbound`, `dividends`,

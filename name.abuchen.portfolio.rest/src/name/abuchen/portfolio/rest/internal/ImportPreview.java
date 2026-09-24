@@ -213,7 +213,7 @@ public final class ImportPreview
             return "instrument"; //$NON-NLS-1$
         if (item instanceof Extractor.SecurityUpdateItem)
             return "instrument-update"; //$NON-NLS-1$
-        if (item instanceof Extractor.SecurityPriceItem)
+        if (item instanceof Extractor.SecurityPriceItem || item instanceof CsvImportHandler.PriceItem)
             return "price"; //$NON-NLS-1$
         return "other"; //$NON-NLS-1$
     }
@@ -297,9 +297,10 @@ public final class ImportPreview
             json.add("transaction", EntityJson.toJsonUnbooked(transaction)); //$NON-NLS-1$
             addReference(json, "investmentAccount", described.owner); //$NON-NLS-1$
         }
-        else if (item.getSecurity() != null)
+        else if (item.getSecurity() != null || described.price != null)
         {
-            json.add("instrument", instrument(client, item.getSecurity())); //$NON-NLS-1$
+            if (item.getSecurity() != null)
+                json.add("instrument", instrument(client, item.getSecurity())); //$NON-NLS-1$
             if (described.price != null)
             {
                 var price = new JsonObject();
