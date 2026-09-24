@@ -5,6 +5,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -257,7 +258,8 @@ public class VDKBankNVPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-01-17T00:00"), hasShares(100.00), //
+                        hasDate("2024-01-17T00:00"), hasExDate("2024-01-15T00:00"), //
+                        hasShares(100.00), //
                         hasSource("Dividend01.txt"), //
                         hasNote("Borderel-Ref.: 2024.000123456789 | Ord.-Ref.: D046336-758"), //
                         hasAmount("EUR", 113.40), hasGrossValue("EUR", 162.00), //
