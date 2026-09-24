@@ -4,7 +4,18 @@ import importlib
 
 from pp_mcp.app import mcp
 
-TOOL_MODULES = ("files", "instruments", "accounts", "transactions", "watchlists", "plans", "taxonomies")
+TOOL_MODULES = (
+    "files",
+    "instruments",
+    "accounts",
+    "transactions",
+    "watchlists",
+    "plans",
+    "taxonomies",
+    "reports",
+    "actions",
+    "imports",
+)
 
 for _module in TOOL_MODULES:
     importlib.import_module(f"pp_mcp.tools.{_module}")
