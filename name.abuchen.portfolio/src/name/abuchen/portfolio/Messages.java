@@ -309,6 +309,7 @@ public class Messages extends NLS
     public static String MsgErrorTransactionOrderCancellationUnsupported;
     public static String MsgErrorTransactionSkipIfDetailsMissing;
     public static String MsgErrorTransactionSplitUnsupported;
+    public static String MsgErrorTransactionTaxCorrectionUnsupported;
     public static String MsgErrorTransactionTypeNotSupportedOrRequired;
     public static String MsgErrorTwelveDataAPIKeyMissing;
     public static String MsgErrorUnitCurrencyMismatch;

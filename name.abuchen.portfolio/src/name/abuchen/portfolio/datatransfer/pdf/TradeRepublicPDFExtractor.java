@@ -46,6 +46,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         addInterestStatementTransaction_Format01();
         addInterestStatementTransaction_Format02();
         addInterestStatementTransaction_Format03();
+        addInterestStatementWithTaxCorrectionTransaction();
         addFeeStatementTransaction();
         addNonImportableTransaction();
     }
@@ -1275,7 +1276,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         + "|DIVIDENDO" //
                         + "|DISTRIBUZIONE" //
                         + "|Distribution" //
-                        + "|KAPITALREDUKTION)", //
+                        + "|KAPITALREDUKTION" //
+                        + "|REKLASSIFI[A-Z]+ US\\-DIVIDENDE)", //
                         "(ABRECHNUNG ZINSEN|AUSSCH.TTUNGSGLEICHER ERTRAG)");
         this.addDocumentTyp(type);
 
@@ -1552,7 +1554,16 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("exDate") //
                                                         .match("^Dividende en esp.ces .* -(?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})\\.$") //
                                                         .assign((t, v) -> t.setExDate(asDate(v.get(
-                                                                        "exDate"))))
+                                                                        "exDate")))),
+
+                                        // @formatter:off
+                                        // Unternehmens widerzuspiegeln. Du siehst dann eine Stornierung und eine neue Gutschrift einer früheren Dividende vom 19.03.2025 (ursprüngliches Ex-
+                                        // Datum). Das sind routinemäßige steuerliche Anpassungen, um sicherzustellen, dass die steuerliche Behandlung und deine Steuerbescheinigung korrekt
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("exDate") //
+                                                        .match("^.* vom (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\(urspr.ngliches Ex\\-(Datum\\))?.*$") //
+                                                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
                         )
 
                         .oneOf( //
@@ -1827,12 +1838,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
     private void addExAnteFeeTransaction()
     {
-        final var type = new DocumentType("EX-ANTE KOSTENINFORMATION ZUM WERTPAPIERKAUF");
+        final var type = new DocumentType("EX\\-ANTE KOSTENINFORMATION ZUM WERTPAPIER(KAUF|VERKAUF)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^TRADE REPUBLIC BANK GMBH.*$", "^Die Gesamtkosten der Wertpapiertransaktion.*$");
+        var firstRelevantLine = new Block("^TRADE REPUBLIC BANK GMBH.*$", //
+                        "^(Die Gesamtkosten der Wertpapiertransaktion|Beim Wertpapierverkauf belaufen sich).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -1840,27 +1852,42 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
+                        // The ex-ante cost information only announces the
+                        // upcoming
+                        // transaction, it does not book anything. The booking
+                        // itself is
+                        // processed with the securities settlement document.
+                        .section("type") //
+                        .match("^(?<type>EX\\-ANTE KOSTENINFORMATION ZUM WERTPAPIER(KAUF|VERKAUF))$") //
+                        .assign((t, v) -> v.markAsFailure(Messages.MsgErrorTransactionAlternativeDocumentRequired))
+
                         .oneOf( //
                                         // @formatter:off
                                         // WERTPAPIER BESTELLUNG / BETRAG WERT
                                         // BYD
                                         // Buy 12 Stk. 464,64 €
                                         // ISIN: CNE100000296
+                                        //
+                                        // WERTPAPIER BESTELLUNG / BETRAG WERT HANDELSPLATZ
+                                        // Meta Platforms (A)
+                                        // Kauf 4 Stk. 2.114,80 € Lang & Schwarz Exchange
+                                        // ISIN: US30303M1027
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin") //
-                                                        .find("WERTPAPIER BESTELLUNG \\/ BETRAG WERT")
+                                                        .find("WERTPAPIER BESTELLUNG \\/ BETRAG WERT( HANDELSPLATZ)?")
                                                         .match("^(?<name>.*)$") //
-                                                        .match(".*[\\.,\\d]+ Stk\\. [\\.,\\d]+ (?<currency>\\p{Sc})$") //
+                                                        .match("^.*[\\.,\\d]+ Stk\\. [\\.,\\d]+ (?<currency>\\p{Sc})( .*)?$") //
                                                         .match("^(ISIN: )?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off
                         // Buy 12 Stk. 464,64 €
                         // Kauf 0.851192 Stk. 124,239984 €
+                        // Verkauf 10 Stk. 1.027,50 € Lang & Schwarz Exchange
                         // @formatter:on
                         .section("shares") //
-                        .match("^.* (?<shares>[\\.,\\d]+) Stk\\. [\\.,\\d]+ \\p{Sc}$") //
+                        .match("^.* (?<shares>[\\.,\\d]+) Stk\\. [\\.,\\d]+ \\p{Sc}( .*)?$") //
                         .assign((t, v) -> {
                             if (!v.get("shares").contains(","))
                                 t.setShares(asShares(v.get("shares"), "en", "US"));
@@ -1883,7 +1910,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("amount", "currency").optional() //
                         .find("KOSTEN DES WERTPAPIER.* BETRAG") //
-                        .match("^GESAMT (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc})$") //)
+                        .match("^GESAMT (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc})$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -3809,6 +3836,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         + "|RESOCONTO INTERESSI MATURATI" //
                         + "|INTEREST INVOICE" //
                         + "|RAPPORT D.INT.R.TS)", //
+                        "Steuerkorrektur f.r Rechnung am [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} angewendet", //
                         documentContext -> documentContext //
                                         .oneOf(
                                                         // @formatter:off
@@ -3983,6 +4011,59 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addInterestStatementWithTaxCorrectionTransaction()
+    {
+        final var type = new DocumentType("Steuerkorrektur f.r Rechnung am [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} angewendet", //
+                        documentContext -> documentContext //
+                        // @formatter:off
+                                        // Steuerkorrektur für Rechnung am 02.07.2026 angewendet
+                                        // @formatter:on
+                                        .section("date") //
+                                        .match("^Steuerkorrektur f.r Rechnung am (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) angewendet$") //
+                                        .assign((ctx, v) -> ctx.put("date", v.get("date"))));
+
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block("^KORREKTURDETAILS: .*$");
+        firstRelevantLine.setMaxSize(1);
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
+
+                        // The interest and dividend amounts of this document
+                        // have already
+                        // been settled with the original statement. Only the
+                        // tax correction
+                        // is left over and has to be booked manually.
+                        // @formatter:off
+                        // KORREKTURDETAILS: Dein Konto wurde mit 1,86 EUR belastet. Das entspricht der obigen Steuerkorrektur.
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .documentContext("date") //
+                        .match("^KORREKTURDETAILS: .* (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}) belastet\\..*$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+
+                            v.markAsFailure(Messages.MsgErrorTransactionTaxCorrectionUnsupported);
+                        })
+
+                        // @formatter:off
+                        // KORREKTURDETAILS: Dein Konto wurde mit 1,86 EUR belastet. Das entspricht der obigen Steuerkorrektur.
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^KORREKTURDETAILS: .* (?<note>Steuerkorrektur)\\.$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        .wrap(TransactionItem::new);
     }
 
     private void addFeeStatementTransaction()
