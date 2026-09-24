@@ -34,6 +34,15 @@ public final class IdempotencyIndex
     }
 
     /**
+     * The idempotency key a transaction was created with, given its
+     * {@code source}; null if it was not created through the API with a key.
+     */
+    public static String clientRef(String source)
+    {
+        return source != null && source.startsWith(SOURCE_PREFIX) ? source.substring(SOURCE_PREFIX.length()) : null;
+    }
+
+    /**
      * The transaction created with the given key, if any; must be called on
      * the UI thread. Either leg of a buy/sell or transfer carries the key, and
      * {@link Client#getAllTransactions()} reports each such pair once.

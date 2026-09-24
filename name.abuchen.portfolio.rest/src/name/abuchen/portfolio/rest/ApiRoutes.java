@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.rest;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.function.BiFunction;
 
 import com.google.gson.JsonObject;
@@ -120,6 +121,18 @@ public final class ApiRoutes
                                                         req.queryParam("instrument"), //$NON-NLS-1$
                                                         req.queryParam("cashAccount"), //$NON-NLS-1$
                                                         req.queryParam("investmentAccount")))))); //$NON-NLS-1$
+        router.add("POST", "/v1/files/{file}/transactions", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> {
+                            var result = TransactionsHandler.create(context, parseObject(req));
+                            if (!result.changed())
+                                return Response.json(200, result.entity());
+
+                            var location = "/v1/files/" + req.pathParam("file") + "/transactions/" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                                            + result.entity().get("uuid").getAsString(); //$NON-NLS-1$
+                            return new Response(201, "application/json", //$NON-NLS-1$
+                                            result.entity().toString().getBytes(StandardCharsets.UTF_8),
+                                            Map.of("Location", location)); //$NON-NLS-1$
+                        }));
         router.add("GET", "/v1/files/{file}/transactions/{uuid}", read(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
                         (client, req) -> Response.json(200, TransactionsHandler.get(client, req.pathParam("uuid"))))); //$NON-NLS-1$
 

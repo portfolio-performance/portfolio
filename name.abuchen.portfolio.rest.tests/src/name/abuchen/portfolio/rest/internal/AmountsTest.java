@@ -71,4 +71,14 @@ public class AmountsTest
         assertThat(Amounts.isConvertedValueWithinRateTolerance(100000L, rate, 119989L), is(false));
         assertThat(Amounts.isConvertedValueWithinRateTolerance(100000L, rate, 120011L), is(false));
     }
+
+    @Test
+    public void testConvertBack()
+    {
+        // 45.00 EUR at 0.9 EUR per USD is 50.00 USD
+        assertThat(Amounts.convertBack(4500L, new BigDecimal("0.9")), is(5000L));
+        // 100.00 / 3 = 33.333... → 33.33, and 0.02 / 3 → 0.01 (half-up)
+        assertThat(Amounts.convertBack(10000L, new BigDecimal("3")), is(3333L));
+        assertThat(Amounts.convertBack(2L, new BigDecimal("3")), is(1L));
+    }
 }

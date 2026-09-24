@@ -12,6 +12,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -21,6 +22,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.model.TransactionPair;
+import name.abuchen.portfolio.rest.Messages;
 
 public final class TransactionsHandler
 {
@@ -73,6 +75,55 @@ public final class TransactionsHandler
     }
 
     /**
+     * The outcome of a create or update: the transaction in detail, and
+     * whether the model was changed. A dry run, a replayed create (same
+     * {@code clientRef}) and an update that changes nothing leave the model
+     * untouched.
+     */
+    public record WriteResult(JsonObject entity, boolean changed)
+    {
+    }
+
+    /**
+     * Creates a transaction of any type, see {@link TransactionPlanner}. With
+     * a {@code clientRef} that an earlier create already used, answers that
+     * transaction ({@code replayed: true}) instead of creating a duplicate.
+     * A dry run answers the fully resolved transaction ({@code dryRun: true})
+     * without adding it. Must be called on the UI thread.
+     */
+    public static WriteResult create(WriteContext context, JsonObject body)
+    {
+        var client = context.client();
+
+        var existing = IdempotencyIndex.findTransaction(client, context.clientRef());
+        if (existing.isPresent())
+        {
+            var json = EntityJson.toJsonDetailed(canonical(existing.get()));
+            json.addProperty("replayed", true); //$NON-NLS-1$
+            if (context.dryRun())
+                json.addProperty("dryRun", true); //$NON-NLS-1$
+            return new WriteResult(json, false);
+        }
+
+        var plan = TransactionPlanner.plan(client, context.file().getExchangeRateProviderFactory(), body);
+
+        if (context.dryRun())
+        {
+            var json = EntityJson.toJsonDetailed(plan.preview(context.clientRef()));
+            json.addProperty("dryRun", true); //$NON-NLS-1$
+            return new WriteResult(json, false);
+        }
+
+        var pair = plan.apply(context.clientRef());
+        client.markDirty();
+
+        ChangeLog.recordEvent(Messages.MsgApiTransactionCreated, TransactionTypes.wireType(pair.getTransaction()),
+                        pair.getTransaction().getUUID(), context.file().getLabel());
+
+        return new WriteResult(EntityJson.toJsonDetailed(pair), true);
+    }
+
+    /**
      * The canonical pair of the transaction with the given UUID of either leg;
      * 404 if there is none.
      */
@@ -122,7 +173,7 @@ public final class TransactionsHandler
     }
 
     @SuppressWarnings("unchecked")
-    private static TransactionPair<?> pair(TransactionOwner<?> owner, Transaction transaction)
+    /* package */ static TransactionPair<?> pair(TransactionOwner<?> owner, Transaction transaction)
     {
         return new TransactionPair<>((TransactionOwner<Transaction>) owner, transaction);
     }
@@ -208,7 +259,7 @@ public final class TransactionsHandler
         var types = new HashSet<String>();
         for (var type : Arrays.stream(value.split(",")).map(String::strip).toList()) //$NON-NLS-1$
         {
-            if (!EntityJson.WIRE_TYPES.contains(type))
+            if (!TransactionTypes.WIRE_TYPES.contains(type))
                 errors.add(new ApiException.FieldError("type", "invalid-value", //$NON-NLS-1$ //$NON-NLS-2$
                                 MessageFormat.format("{0} is not a transaction type", type))); //$NON-NLS-1$
             else

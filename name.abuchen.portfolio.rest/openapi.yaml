@@ -1041,6 +1041,149 @@ paths:
           $ref: "#/components/responses/Conflict"
         "500":
           $ref: "#/components/responses/InternalError"
+    post:
+      operationId: createTransaction
+      tags: [Transactions]
+      summary: Create a transaction of any type
+      description: |
+        Creates a transaction; `type` selects the shape (see
+        `TransactionCreate`). A buy/sell creates the investment-account leg and
+        the cash-account leg, a transfer both legs; the answer names both
+        (`uuid` and `linked.uuid`). Validation and the construction of fees,
+        taxes and foreign-currency units follow the application's transaction
+        dialogs; all violations are reported at once.
+
+        **Idempotency.** With a `clientRef`, the transaction is stored with
+        `source` `api:<clientRef>` on every leg. A repeated create with the same
+        `clientRef` creates nothing and answers the existing transaction with
+        `200` and `replayed: true`, even if the body differs.
+
+        **Dry run.** With `?dry_run=true` nothing is changed; the answer (`200`,
+        `dryRun: true`) is the fully resolved transaction: legs, currencies,
+        exchange rate, units, total. Its UUIDs are not stable: a later real
+        create assigns new ones.
+
+        The change is in memory only until the file is saved
+        (`POST /v1/files/{file}/save`).
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransactionCreate"
+            examples:
+              buyInForeignCurrency:
+                summary: Buy a USD instrument from a EUR cash account
+                value:
+                  type: buy
+                  date: "2026-03-02T09:30"
+                  clientRef: broker-2026-000123
+                  investmentAccount: d9f0a1b2-4c3e-4f5a-9b8c-7d6e5f4a3b2c
+                  cashAccount: c4b2a1e0-3f6d-4a2e-8b1c-5d7f9a0e2c46
+                  instrument: 8a1e0c4b-2f5d-4e6a-b1c3-7d9f0a2e4c68
+                  shares: "12.5"
+                  quote: "101.2"
+                  exchangeRate: "0.911"
+                  fees: "4.90"
+              dividend:
+                summary: A dividend with withheld taxes
+                value:
+                  type: dividends
+                  date: "2026-07-20"
+                  exDate: "2026-07-15"
+                  cashAccount: c4b2a1e0-3f6d-4a2e-8b1c-5d7f9a0e2c46
+                  instrument: 8a1e0c4b-2f5d-4e6a-b1c3-7d9f0a2e4c68
+                  shares: "10"
+                  grossValue: "50.00"
+                  taxes: "7.50"
+              deposit:
+                value:
+                  type: deposit
+                  date: "2026-01-02"
+                  cashAccount: c4b2a1e0-3f6d-4a2e-8b1c-5d7f9a0e2c46
+                  amount: "1000"
+              cashTransfer:
+                summary: A transfer between a EUR and a USD cash account
+                value:
+                  type: cash-transfer
+                  date: "2026-05-01"
+                  fromCashAccount: c4b2a1e0-3f6d-4a2e-8b1c-5d7f9a0e2c46
+                  toCashAccount: e5f6a7b8-1c2d-4e3f-9a0b-1c2d3e4f5a6b
+                  amount: "500.00"
+                  targetAmount: "545.00"
+      responses:
+        "200":
+          description: |
+            A dry run (`dryRun: true`) or a replayed create (`replayed: true`);
+            nothing was changed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionWriteResult"
+        "201":
+          description: Created; `Location` names the new transaction.
+          headers:
+            Location:
+              description: The path of the created transaction.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionWriteResult"
+              examples:
+                buyInForeignCurrency:
+                  value:
+                    uuid: 2b3c4d5e-6f7a-4b1c-8d2e-3f4a5b6c7d8e
+                    date: "2026-03-02T09:30"
+                    type: buy
+                    value: { value: 1157.32, currency: EUR }
+                    grossValue: { value: 1152.42, currency: EUR }
+                    fees: { value: 4.9, currency: EUR }
+                    taxes: { value: 0, currency: EUR }
+                    shares: 12.5
+                    security:
+                      uuid: 8a1e0c4b-2f5d-4e6a-b1c3-7d9f0a2e4c68
+                      name: Apple Inc.
+                    owner:
+                      uuid: d9f0a1b2-4c3e-4f5a-9b8c-7d6e5f4a3b2c
+                      name: Broker
+                      type: investment-account
+                    units:
+                      - type: fee
+                        amount: { value: 4.9, currency: EUR }
+                      - type: gross-value
+                        amount: { value: 1152.42, currency: EUR }
+                        forex: { value: 1265, currency: USD }
+                        exchangeRate: 0.911
+                    source: "api:broker-2026-000123"
+                    clientRef: broker-2026-000123
+                    updatedAt: "2026-03-02T09:31:12.345Z"
+                    linked:
+                      uuid: 3c4d5e6f-7a8b-4c1d-8e2f-3a4b5c6d7e8f
+                      type: buy
+                      owner:
+                        uuid: c4b2a1e0-3f6d-4a2e-8b1c-5d7f9a0e2c46
+                        name: Broker Cash
+                        type: cash-account
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
 
   /v1/files/{file}/transactions/{uuid}:
     parameters:
@@ -1738,6 +1881,17 @@ components:
       description: The `uuid` of the entity within the file
       schema:
         type: string
+    DryRun:
+      name: dry_run
+      in: query
+      required: false
+      description: |
+        `true` validates the request and answers what it would do, without
+        changing anything; `false` or absent performs it. Any other value is
+        `400`.
+      schema:
+        type: boolean
+        default: false
 
   schemas:
     File:
@@ -2217,6 +2371,11 @@ components:
                 Where the transaction came from, e.g. the imported file. A
                 transaction created through the API with a `clientRef` carries
                 `api:<clientRef>`. Omitted when not set.
+            clientRef:
+              type: string
+              description: |
+                The idempotency key the transaction was created with through the
+                API, i.e. `source` without the `api:` prefix. Omitted otherwise.
             updatedAt:
               type: string
               format: date-time
@@ -2244,6 +2403,160 @@ components:
                     type:
                       type: string
                       enum: [cash-account, investment-account]
+
+    TransactionCreate:
+      type: object
+      description: |
+        The body of `POST .../transactions`. `type` selects which fields apply;
+        a field that does not apply to the type is rejected
+        (`not-allowed-for-type`), an unknown one too (`unknown-field`).
+        Decimals are JSON numbers or strings holding a plain decimal literal
+        (`"12.30"`), never in exponent notation; amounts have at most 2
+        decimals, `shares` and `quote` at most 8, `exchangeRate` at most 10.
+        `date` is `YYYY-MM-DD` (time 00:00) or `YYYY-MM-DDTHH:MM`.
+
+        | `type` | required | optional |
+        | --- | --- | --- |
+        | `buy`, `sell` | `investmentAccount`, `cashAccount`, `instrument`, `date`, `shares`, one of `quote` / `grossValue` / `amount` | `exchangeRate`, `fees`, `taxes`, `forexFees`, `forexTaxes`, `amount`, `note` |
+        | `delivery-inbound`, `delivery-outbound` | `investmentAccount`, `instrument`, `date`, `shares`, one of `quote` / `grossValue` / `amount` | `currency`, `exchangeRate`, `fees`, `taxes`, `forexFees`, `forexTaxes`, `amount`, `note` |
+        | `dividends` | `cashAccount`, `instrument`, `date`, one of `grossValue` / `amount` | `exDate`, `shares`, `exchangeRate`, `fees`, `taxes`, `forexFees`, `forexTaxes`, `note` |
+        | `deposit`, `removal`, `interest-charge` | `cashAccount`, `date`, `amount` | `note` |
+        | `interest` | `cashAccount`, `date`, `amount` | `taxes`, `note` |
+        | `fees`, `fees-refund`, `taxes`, `tax-refund` | `cashAccount`, `date`, `amount` | `instrument`, `exchangeRate`, `note` |
+        | `cash-transfer` | `fromCashAccount`, `toCashAccount`, `date`, `amount` | `targetAmount` (required between currencies), `note` |
+        | `security-transfer` | `fromInvestmentAccount`, `toInvestmentAccount`, `instrument`, `date`, `shares`, one of `amount` / `quote` | `note` |
+
+        **Buy, sell, deliveries** (as the application's dialogs): the gross
+        value is `grossValue`, or `shares` × `quote`, in the instrument
+        currency. If the instrument currency differs from the transaction
+        currency (the cash account's, or `currency` of a delivery, by default
+        the reference cash account's), it is converted with `exchangeRate`
+        (transaction currency per unit of instrument currency), which is looked
+        up from the file's exchange rates when omitted
+        (`exchange-rate-required` if there is none). The total is the converted
+        gross value plus (buy, inbound delivery) or minus (sell, outbound
+        delivery) `fees` and `taxes` (transaction currency) and the converted
+        `forexFees` and `forexTaxes` (instrument currency, only between
+        currencies). An explicit `amount` (the total) must match within the
+        dialog's tolerances (gross within shares × (quote ± 0.01), converted
+        gross within gross × (rate ± 0.0001)) and then wins; `amount` alone
+        derives the gross value. A sale with a total of zero is refused
+        (`zero-total-use-delivery`); only an outbound delivery may be zero.
+        Fees, taxes and the foreign-currency gross value are units of the
+        investment-account leg only.
+
+        **Dividends:** `grossValue`, `fees` and `taxes` are in the cash-account
+        currency; the net amount is gross minus fees and taxes (not below 0).
+        `amount` may be given instead of, or to check, `grossValue`. For an
+        instrument in another currency the foreign gross value is derived with
+        `exchangeRate`. `exDate` must not be after `date`; `shares` may be 0.
+
+        **Cash bookings:** `amount` is the booked amount; for `interest`,
+        `taxes` withheld on top of it (the gross interest is `amount` +
+        `taxes`).
+
+        **Transfers:** a `cash-transfer` debits `amount` from
+        `fromCashAccount` and credits `targetAmount` (the same amount if both
+        accounts share a currency) to `toCashAccount`; the exchange rate
+        follows from the two amounts. A `security-transfer` moves `shares` at
+        the book value `amount` (or `shares` × `quote`) in the instrument
+        currency.
+      required: [type]
+      properties:
+        type:
+          type: string
+          enum:
+            - buy
+            - sell
+            - delivery-inbound
+            - delivery-outbound
+            - dividends
+            - deposit
+            - removal
+            - interest
+            - interest-charge
+            - fees
+            - fees-refund
+            - taxes
+            - tax-refund
+            - cash-transfer
+            - security-transfer
+        clientRef:
+          type: string
+          maxLength: 128
+          description: Idempotency key, see the operation's description.
+        date:
+          type: string
+          description: "`YYYY-MM-DD` or `YYYY-MM-DDTHH:MM`"
+        cashAccount:
+          type: string
+          description: The `uuid` of the cash account.
+        investmentAccount:
+          type: string
+          description: The `uuid` of the investment account.
+        instrument:
+          type: string
+          description: The `uuid` of the instrument.
+        shares:
+          $ref: "#/components/schemas/DecimalInput"
+        quote:
+          $ref: "#/components/schemas/DecimalInput"
+        grossValue:
+          $ref: "#/components/schemas/DecimalInput"
+        exchangeRate:
+          $ref: "#/components/schemas/DecimalInput"
+        fees:
+          $ref: "#/components/schemas/DecimalInput"
+        taxes:
+          $ref: "#/components/schemas/DecimalInput"
+        forexFees:
+          $ref: "#/components/schemas/DecimalInput"
+        forexTaxes:
+          $ref: "#/components/schemas/DecimalInput"
+        amount:
+          $ref: "#/components/schemas/DecimalInput"
+        targetAmount:
+          $ref: "#/components/schemas/DecimalInput"
+        exDate:
+          type: string
+          format: date
+        currency:
+          type: string
+          description: The transaction currency of a delivery (ISO 4217).
+        fromCashAccount:
+          type: string
+        toCashAccount:
+          type: string
+        fromInvestmentAccount:
+          type: string
+        toInvestmentAccount:
+          type: string
+        note:
+          type: string
+
+    DecimalInput:
+      description: A decimal as a JSON number or a string holding a plain decimal literal.
+      oneOf:
+        - type: string
+          pattern: "^-?\\d+(\\.\\d+)?$"
+        - type: number
+
+    TransactionWriteResult:
+      description: |
+        The transaction in detail (`TransactionDetail`), as created, updated,
+        previewed or replayed.
+      allOf:
+        - $ref: "#/components/schemas/TransactionDetail"
+        - type: object
+          properties:
+            dryRun:
+              type: boolean
+              description: Present (`true`) on a dry run; nothing was changed.
+            replayed:
+              type: boolean
+              description: |
+                Present (`true`) when a create with an already used `clientRef`
+                answered the existing transaction instead of creating one.
 
     Holding:
       type: object
@@ -3017,6 +3330,17 @@ components:
             - unknown-attribute
             - attribute-not-applicable
             - unsupported-attribute-type
+            - unknown-reference
+            - not-allowed-for-type
+            - must-be-positive
+            - currency-mismatch
+            - exchange-rate-required
+            - gross-mismatch
+            - total-mismatch
+            - zero-total-use-delivery
+            - ex-date-after-date
+            - same-account
+            - same-investment-account
         message:
           type: string
           description: Human-readable explanation of this one violation.

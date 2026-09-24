@@ -157,6 +157,30 @@ on a client's behalf. Watchlist and taxonomy membership do not block the delete.
 {"uuid": "d9f0…", "name": "Broker", "referenceCashAccount": "c4b2…", "note": "…"}
 ```
 
+### `POST /v1/files/{file}/transactions` — create a transaction
+
+`type` selects the shape: `buy`, `sell`, `delivery-inbound`, `delivery-outbound`, `dividends`,
+`deposit`, `removal`, `interest`, `interest-charge`, `fees`, `fees-refund`, `taxes`, `tax-refund`,
+`cash-transfer`, `security-transfer`. Decimals are strings or numbers (`"12.30"`), never binary
+floats. Validation, fees/taxes and foreign-currency units follow the application's transaction
+dialogs; the `TransactionCreate` schema in `openapi.yaml` lists the fields per type.
+
+```bash
+curl -s -X POST -H "Authorization: Bearer $TOKEN" -d '{"type": "buy", "date": "2026-03-02",
+  "investmentAccount": "d9f0…", "cashAccount": "c4b2…", "instrument": "8a1e…",
+  "shares": "12.5", "quote": "101.2", "fees": "4.90", "clientRef": "broker-2026-000123"}' \
+  http://127.0.0.1:5712/v1/files/main/transactions
+```
+
+Answers `201` with the transaction and both leg UUIDs (`uuid`, `linked.uuid`). A repeated create
+with the same `clientRef` creates nothing and answers the first one with `200` and
+`"replayed": true`.
+
+### Dry runs
+
+Every transaction write accepts `?dry_run=true`: it validates and answers `200` with what it would
+do (`"dryRun": true`) — the resolved transaction — without changing anything.
+
 ## Writes are not saved automatically
 
 A write mutates the in-memory file and marks it dirty, exactly as if you had edited it in the UI —

@@ -1015,11 +1015,6 @@ public final class EntityJson
         return json;
     }
 
-    /** every value {@link #wireType(Transaction)} can return */
-    /* package */ static final Set<String> WIRE_TYPES = Set.of("deposit", "removal", "interest", "interest-charge",
-                    "dividends", "fees", "fees-refund", "taxes", "tax-refund", "buy", "sell", "transfer-in",
-                    "transfer-out", "delivery-inbound", "delivery-outbound");
-
     /**
      * A single transaction in detail: {@link #toJson(TransactionPair)} plus
      * its units (gross value, fees, taxes - with the foreign currency amount
@@ -1040,7 +1035,13 @@ public final class EntityJson
             json.addProperty("exDate", t.getExDate().toString());
 
         if (transaction.getSource() != null)
+        {
             json.addProperty("source", transaction.getSource());
+
+            var clientRef = IdempotencyIndex.clientRef(transaction.getSource());
+            if (clientRef != null)
+                json.addProperty("clientRef", clientRef);
+        }
 
         if (transaction.getUpdatedAt() != null)
             json.addProperty("updatedAt", transaction.getUpdatedAt().toString());
@@ -1075,45 +1076,10 @@ public final class EntityJson
         return json;
     }
 
-    /**
-     * A stable, machine-readable transaction type, deliberately independent of
-     * {@code Type#toString()} (locale-dependent, see {@code AttributeCodec}'s
-     * class comment for the same concern with attribute types).
-     */
+    /** the reported transaction type, see {@link TransactionTypes#wireType(Transaction)} */
     /* package */ static String wireType(Transaction transaction)
     {
-        if (transaction instanceof AccountTransaction t)
-        {
-            return switch (t.getType())
-            {
-                case DEPOSIT -> "deposit";
-                case REMOVAL -> "removal";
-                case INTEREST -> "interest";
-                case INTEREST_CHARGE -> "interest-charge";
-                case DIVIDENDS -> "dividends";
-                case FEES -> "fees";
-                case FEES_REFUND -> "fees-refund";
-                case TAXES -> "taxes";
-                case TAX_REFUND -> "tax-refund";
-                case BUY -> "buy";
-                case SELL -> "sell";
-                case TRANSFER_IN -> "transfer-in";
-                case TRANSFER_OUT -> "transfer-out";
-            };
-        }
-        else if (transaction instanceof PortfolioTransaction t)
-        {
-            return switch (t.getType())
-            {
-                case BUY -> "buy";
-                case SELL -> "sell";
-                case TRANSFER_IN -> "transfer-in";
-                case TRANSFER_OUT -> "transfer-out";
-                case DELIVERY_INBOUND -> "delivery-inbound";
-                case DELIVERY_OUTBOUND -> "delivery-outbound";
-            };
-        }
-        throw new IllegalArgumentException("unsupported transaction type: " + transaction.getClass());
+        return TransactionTypes.wireType(transaction);
     }
 
     /** the net cash flow, signed negative for a debit (account) or liquidation (portfolio) transaction */

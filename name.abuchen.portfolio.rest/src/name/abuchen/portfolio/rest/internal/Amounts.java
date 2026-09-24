@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.rest.internal;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 
 import name.abuchen.portfolio.money.Values;
@@ -69,6 +70,16 @@ public final class Amounts
     public static long convert(long amount, BigDecimal exchangeRate)
     {
         return toAmount(amount(amount).multiply(exchangeRate));
+    }
+
+    /**
+     * The inverse of {@link #convert(long, BigDecimal)}: the amount that
+     * converts into {@code convertedAmount} at the exchange rate, rounded
+     * half-up
+     */
+    public static long convertBack(long convertedAmount, BigDecimal exchangeRate)
+    {
+        return toAmount(amount(convertedAmount).divide(exchangeRate, MathContext.DECIMAL128));
     }
 
     /** 1 / rate with the precision the application's dialogs use */
