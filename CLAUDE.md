@@ -59,6 +59,8 @@ mvn -f portfolio-app/pom.xml verify -Plocal-dev -o   -pl :portfolio-target-defin
 
 `OpenApiSpecDriftTest` keeps `name.abuchen.portfolio.rest/openapi.yaml` in lockstep with the code: every route registered in `ApiRoutes` must be documented (and vice versa), and every `FieldError` code must be a same-line string literal listed in the spec's `FieldError.code` enum.
 
+The MCP server for AI agents is a Python adapter over this API in `tools/pp-mcp` (tests: `cd tools/pp-mcp && uv run pytest -q`). User documentation: `docs/mcp/usage.md`.
+
 ### Run UI Tests
 ```bash
 mvn -f portfolio-app/pom.xml verify -Plocal-dev \

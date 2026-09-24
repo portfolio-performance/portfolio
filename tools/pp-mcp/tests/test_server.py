@@ -55,3 +55,17 @@ async def test_numeric_parameters_are_strings(mcp_client):
         schema = props[field]
         types = {s.get("type") for s in schema.get("anyOf", [schema])}
         assert "number" not in types and "string" in types, field
+
+
+async def test_prompts_registered(mcp_client):
+    prompts = {p.name for p in await mcp_client.list_prompts()}
+    assert prompts == {"record_documents", "review_portfolio"}
+
+    result = await mcp_client.get_prompt("record_documents", {"paths": "C:/a.pdf", "file": "main"})
+    text = result.messages[0].content.text
+    assert "C:/a.pdf" in text and "`main`" in text and "dry_run=True" in text
+
+
+async def test_instructions_sent_on_connect(mcp_client):
+    assert "save_file" in mcp_client.initialize_result.instructions
+

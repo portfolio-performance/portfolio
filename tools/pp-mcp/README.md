@@ -2,50 +2,9 @@
 
 An MCP server that gives an AI agent read and write access to the portfolio files open in a running Portfolio Performance (PP) desktop application. It is a thin adapter over PP's local REST API (`name.abuchen.portfolio.rest`). PP's own model, validation and calculations do the work.
 
-## Setup
+Setup, client configuration and usage rules are in [docs/mcp/usage.md](../../docs/mcp/usage.md). The rules the agent receives on connect are `INSTRUCTIONS` in `src/pp_mcp/app.py`.
 
-Requirements: [uv](https://docs.astral.sh/uv/) and a running PP with the REST API enabled.
-
-1. In PP, open Preferences → REST API. Enable the API, enable the files the agent may access (optionally give each an alias), and click "Add client" to create a token.
-2. Install the adapter:
-
-   ```bash
-   cd tools/pp-mcp
-   uv sync
-   ```
-
-3. Run it (stdio transport):
-
-   ```bash
-   PP_API_TOKEN=<token> uv run pp-mcp
-   ```
-
-## Configuration
-
-The adapter reads only these environment variables:
-
-| Variable | Default | Meaning |
-| --- | --- | --- |
-| `PP_API_URL` | `http://127.0.0.1:5712` | Base URL of the PP REST API |
-| `PP_API_TOKEN` | – | Bearer token created in Preferences → REST API |
-
-## Claude Code
-
-```bash
-claude mcp add pp --env PP_API_TOKEN=<token> --env PP_API_URL=http://127.0.0.1:5712 \
-  -- uv --directory <path>/tools/pp-mcp run pp-mcp
-```
-
-## Conventions
-
-- **Nothing is saved until `save_file`.** Every write changes only PP's in-memory file and marks it dirty, like an edit in the UI. Closing the file without saving discards all changes.
-- **`save_file` waits for background updates.** PP updates quotes online when it opens a file and every 30 minutes. `save_file` waits up to `wait_for_updates` seconds (default 30) for such updates to finish, then saves. If one is still running, the answer has `backgroundUpdatesPending: true` and possibly `dirty: true`; save again later.
-- **Dry runs.** Every write tool accepts `dry_run=true`: PP validates the request and returns the fully resolved result without changing anything. `import_pdf` and `import_csv` default to a preview; with `dry_run=false` they import only the items with status `ok` (`include_warnings=true` adds `warning` items such as probable duplicates).
-- **Numbers are decimal strings**, never floats: money 2 decimals, shares 8, quotes 8, exchange rates up to 10, taxonomy weights (percent) 2. Results carry decimals as strings too. Numeric custom attributes are passed as decimal strings as well; the adapter sends them to PP as exact JSON numbers.
-- **Identifiers.** Entities are addressed by PP UUIDs; watchlists and investment plans by name.
-- **`file`** is a file id or alias from `list_files`. It may be omitted when exactly one file is available.
-- **Idempotency.** Every create, `add_instrument_event` and `apply_stock_split` accept `client_ref`; repeating a create with the same key returns the first result. `create_instrument` and the account creates also return an existing entity with the same ISIN or name instead of creating a duplicate, unless `allow_duplicate=true`.
-- **Errors** are PP's problem responses as `type: title — detail`, followed by one `field (code): message` line per field error. While the user has a dialog open or edits a table cell, PP answers `user-interaction`; the adapter retries up to 3 times, honoring `Retry-After` (at most 5 s each).
+The adapter reads only two environment variables: `PP_API_URL` (default `http://127.0.0.1:5712`) and `PP_API_TOKEN`.
 
 ## Tools
 
@@ -63,6 +22,13 @@ claude mcp add pp --env PP_API_TOKEN=<token> --env PP_API_URL=http://127.0.0.1:5
 | Import | `import_pdf`, `import_csv`, `commit_import` |
 
 Update tools are merge patches: only the given fields change, and `clear` names optional fields to remove. The report tools (`get_holdings`, `get_performance`, `get_security_performance`, `get_taxonomy_allocation`) take lists of investment and cash account UUIDs to narrow the file; `list_transactions` takes a list of transaction types.
+
+## Prompts
+
+| Prompt | Purpose |
+| --- | --- |
+| `record_documents` | Import broker PDFs: preview, review with the user, commit, save on approval. |
+| `review_portfolio` | Read-only summary of holdings, performance, earnings and allocation. |
 
 ## Development
 

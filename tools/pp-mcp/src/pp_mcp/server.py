@@ -20,6 +20,8 @@ TOOL_MODULES = (
 for _module in TOOL_MODULES:
     importlib.import_module(f"pp_mcp.tools.{_module}")
 
+importlib.import_module("pp_mcp.prompts")
+
 __all__ = ["main", "mcp"]
 
 
