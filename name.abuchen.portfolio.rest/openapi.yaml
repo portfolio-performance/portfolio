@@ -473,6 +473,77 @@ paths:
         "500":
           $ref: "#/components/responses/InternalError"
 
+    post:
+      operationId: createInstrument
+      tags: [Instruments]
+      summary: Create an instrument
+      description: |
+        Creates an instrument from the fields of `InstrumentCreate`. `name` is
+        required; `currencyCode` defaults to the file's base currency (an
+        explicit `null` creates a currency-less instrument such as an index),
+        `feed` to `MANUAL`. A `targetCurrencyCode` makes the instrument an
+        exchange rate. Validation is the same as for a patch.
+
+        **Idempotency.** A repeated create with the same `clientRef` creates
+        nothing and answers the instrument created first (`200`,
+        `replayed: true`). The key is kept in memory only, until the
+        application quits.
+
+        With `?dry_run=true` nothing is created; the answer (`200`,
+        `dryRun: true`) is the instrument as it would be. Its `uuid` is not
+        stable.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InstrumentCreate"
+            examples:
+              share:
+                value:
+                  name: Apple Inc.
+                  currencyCode: USD
+                  isin: US0378331005
+                  tickerSymbol: AAPL
+                  feed: YAHOO
+                  clientRef: aapl
+      responses:
+        "200":
+          description: "A dry run (`dryRun: true`) or a replayed create (`replayed: true`); nothing was changed."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InstrumentWriteResult"
+        "201":
+          description: Created; `Location` names the new instrument.
+          headers:
+            Location:
+              description: The path of the created instrument.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InstrumentWriteResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /v1/files/{file}/instruments/{uuid}:
     parameters:
       - $ref: "#/components/parameters/File"
@@ -515,11 +586,18 @@ paths:
       description: |
         A **JSON Merge Patch** (RFC 7386), *not* the full target state: fields you
         omit stay untouched, and an explicit `null` clears an optional field.
+        Accepted as `application/json` or `application/merge-patch+json`.
         Returns the updated instrument.
 
         Any field that is unknown or not writable is rejected `422`, never a silent
         no-op — a typo must not look like success. All violations are reported at
         once so they can be fixed in one round-trip.
+
+        A patch that changes nothing does not mark the file dirty. With
+        `?dry_run=true` the answer is the instrument as it would be
+        (`dryRun: true`), and nothing is changed.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
       requestBody:
         required: true
         content:
@@ -532,13 +610,24 @@ paths:
                 value:
                   name: Apple
                   note: null
+              switchQuoteFeed:
+                summary: Load historical prices from a JSON source
+                value:
+                  feed: GENERIC-JSON
+                  feedUrl: https://example.com/prices/{TICKER}.json
+                  feedProperties:
+                    GENERIC-JSON-DATE: $.data[*].date
+                    GENERIC-JSON-CLOSE: $.data[*].close
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InstrumentPatch"
       responses:
         "200":
-          description: The updated instrument
+          description: The updated instrument, or the preview of a dry run
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Instrument"
+                $ref: "#/components/schemas/InstrumentWriteResult"
         "400":
           $ref: "#/components/responses/BadRequest"
         "401":
@@ -563,10 +652,24 @@ paths:
         Deletes the instrument. **Rejected `409 delete-blocked`** if transactions
         or investment plans reference it — deleting it in the application would
         cascade into transaction history, which the API refuses to do on a client's
-        behalf. Watchlist and taxonomy membership do not block the delete.
+        behalf. Watchlist and taxonomy membership do not block the delete; the
+        instrument is removed from watchlists and taxonomies.
+
+        With `?dry_run=true` nothing is deleted and the answer (`200`) names the
+        instrument that would be removed.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
       responses:
+        "200":
+          description: Dry run, the instrument that would be removed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeletePreview"
         "204":
           description: Deleted
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -644,6 +747,241 @@ paths:
           $ref: "#/components/responses/NotFound"
         "409":
           $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+    put:
+      operationId: upsertInstrumentPrices
+      tags: [Instruments]
+      summary: Add or replace historical quotes
+      description: |
+        Adds the given quotes to the instrument's price history. A quote for a
+        date that already has one replaces it, as a manual edit in the
+        application does; all other quotes are kept. Values are in the
+        instrument's currency, with up to 8 decimal places, and must be
+        positive; a date may appear only once per request.
+
+        Answers how many quotes were inserted, updated or already equal. A
+        request that changes nothing does not mark the file dirty. With
+        `?dry_run=true` only the counts are computed.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PriceUpsert"
+            examples:
+              twoDays:
+                value:
+                  items:
+                    - date: "2026-03-02"
+                      value: "101.25"
+                    - date: "2026-03-03"
+                      value: "102.4"
+      responses:
+        "200":
+          description: What was (or, on a dry run, would be) changed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PriceUpsertResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    delete:
+      operationId: deleteInstrumentPrices
+      tags: [Instruments]
+      summary: Delete historical quotes in a date range
+      description: |
+        Removes the historical quotes between `from` and `to` (inclusive). An
+        absent bound is open; without both, **all** historical quotes are
+        removed. The latest quote is not touched. Answers the number of quotes
+        removed; with `?dry_run=true`, the number that would be removed.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+        - name: from
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: The number of quotes removed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PriceDeleteResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/instruments/{uuid}/events:
+    parameters:
+      - $ref: "#/components/parameters/File"
+      - $ref: "#/components/parameters/Uuid"
+    get:
+      operationId: listInstrumentEvents
+      tags: [Instruments]
+      summary: List the events of an instrument
+      description: Stock splits, notes, and the dividend payments reported by a dividend feed.
+      responses:
+        "200":
+          description: The events
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/InstrumentEvent"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    post:
+      operationId: createInstrumentEvent
+      tags: [Instruments]
+      summary: Add a stock split or note event
+      description: |
+        Adds an event. A `stock-split` event only **records** the split (its
+        `details` are the ratio `new:old`, e.g. `2:1`), as the application's
+        event wizard does; it does not adjust transactions or prices.
+
+        A repeated create with the same `clientRef` answers the event created
+        first (`200`, `replayed: true`); the key is kept in memory only. With
+        `?dry_run=true` nothing is added.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InstrumentEventCreate"
+            examples:
+              split:
+                value:
+                  type: stock-split
+                  date: "2026-06-10"
+                  details: "4:1"
+      responses:
+        "200":
+          description: A dry run or a replayed create; nothing was changed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InstrumentEventWriteResult"
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InstrumentEventWriteResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    delete:
+      operationId: deleteInstrumentEvents
+      tags: [Instruments]
+      summary: Delete events
+      description: |
+        Events have no identifier. This removes every event with the given
+        `date` and `type` and, if given, exactly these `details`. `404` if none
+        matches. Answers the removed events; with `?dry_run=true` the events
+        that would be removed.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: type
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [stock-split, note, dividend-payment]
+        - name: details
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The removed events
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeletePreview"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "423":
+          $ref: "#/components/responses/Locked"
         "500":
           $ref: "#/components/responses/InternalError"
 
@@ -2081,6 +2419,11 @@ components:
         tickerSymbol:
           type: string
           description: Omitted when not set.
+        targetCurrencyCode:
+          type: string
+          description: |
+            Only for an exchange rate: the currency the rate is quoted in.
+            Omitted for every other instrument.
         note:
           type: string
           description: Omitted when not set.
@@ -2098,16 +2441,49 @@ components:
               - type: string
               - type: number
               - type: boolean
+        feed:
+          type: string
+          description: |
+            The quote feed for historical prices, e.g. `MANUAL`, `YAHOO`,
+            `GENERIC-JSON`, `GENERIC_HTML_TABLE`. Omitted when not set.
+        feedUrl:
+          type: string
+          description: The URL the historical quote feed reads, if it needs one.
+        latestFeed:
+          type: string
+          description: |
+            The quote feed for the latest price. Omitted when not set, which
+            means the historical feed also provides the latest price.
+        latestFeedUrl:
+          type: string
+        feedProperties:
+          type: object
+          description: |
+            Settings of the quote feeds, keyed by property name (e.g. the JSON
+            paths of the generic JSON feed). Omitted when there are none.
+          additionalProperties:
+            type: string
+        calendar:
+          type: string
+          description: |
+            The trade calendar code (e.g. `TARGET2`, `NYSE`); omitted when
+            the default calendar applies.
+        events:
+          type: array
+          description: The instrument's events; omitted when there are none.
+          items:
+            $ref: "#/components/schemas/InstrumentEvent"
 
     InstrumentPatch:
       type: object
       description: |
         A JSON Merge Patch (RFC 7386) over an instrument. Every field is optional;
         an omitted field is left untouched. Fields typed `["string","null"]` accept
-        an explicit `null` to clear them. Custom attributes are patched through the
-        nested `attributes` object. Everything else — prices, quote feeds, events,
-        the retired flag — is read-only in v1.
-      additionalProperties: false
+        an explicit `null` to clear them. Custom attributes and quote feed
+        properties are patched through the nested `attributes` and
+        `feedProperties` objects. Prices and events have their own endpoints.
+        An unknown field is rejected (`unknown-field`).
+
       properties:
         name:
           type: string
@@ -2129,6 +2505,35 @@ components:
           type: [string, "null"]
         note:
           type: [string, "null"]
+        targetCurrencyCode:
+          type: string
+          description: |
+            Only for an exchange rate (`not-allowed-for-type` otherwise); cannot
+            be cleared (`exchange-rate-requires-currency`).
+        feed:
+          type: [string, "null"]
+          description: A quote feed id the application knows (`unknown-feed` otherwise).
+        feedUrl:
+          type: [string, "null"]
+        latestFeed:
+          type: [string, "null"]
+          description: |
+            A quote feed id the application knows; `null` lets the historical
+            feed provide the latest price.
+        latestFeedUrl:
+          type: [string, "null"]
+        feedProperties:
+          type: object
+          description: |
+            A nested merge patch over the quote feed properties: a string sets
+            a property, `null` removes it.
+          additionalProperties:
+            type: [string, "null"]
+        calendar:
+          type: [string, "null"]
+          description: |
+            A trade calendar code the application knows (`unknown-calendar`
+            otherwise); `null` selects the default calendar.
         attributes:
           type: object
           description: |
@@ -2144,6 +2549,153 @@ components:
               - type: number
               - type: boolean
               - type: "null"
+
+    InstrumentCreate:
+      description: |
+        The fields of a new instrument: those of `InstrumentPatch` plus
+        `clientRef`. `name` is required.
+      allOf:
+        - $ref: "#/components/schemas/InstrumentPatch"
+        - type: object
+          required: [name]
+          properties:
+            clientRef:
+              type: string
+              maxLength: 128
+              description: Idempotency key, see the operation.
+
+    InstrumentWriteResult:
+      description: The instrument as created, updated, previewed or replayed.
+      allOf:
+        - $ref: "#/components/schemas/Instrument"
+        - $ref: "#/components/schemas/WriteFlags"
+
+    WriteFlags:
+      type: object
+      properties:
+        dryRun:
+          type: boolean
+          description: Present (`true`) on a dry run; nothing was changed.
+        replayed:
+          type: boolean
+          description: |
+            Present (`true`) when a create with an already used `clientRef`
+            answered the existing entity instead of creating one.
+
+    DeletePreview:
+      type: object
+      description: What a delete removes (or, on a dry run, would remove).
+      required: [removed]
+      properties:
+        dryRun:
+          type: boolean
+          description: Present (`true`) on a dry run; nothing was changed.
+        removed:
+          type: array
+          description: The removed entities, in the shape their GET returns.
+          items:
+            type: object
+
+    InstrumentEvent:
+      type: object
+      required: [type]
+      properties:
+        date:
+          type: string
+          format: date
+          description: The effective date; for a dividend payment, the ex-date.
+        type:
+          type: string
+          enum: [stock-split, note, dividend-payment]
+        details:
+          type: string
+          description: The ratio `new:old` of a stock split, or the text of a note.
+        paymentDate:
+          type: string
+          format: date
+          description: Dividend payments only.
+        amount:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: Dividend payments only, the amount per share.
+        source:
+          type: string
+          description: Where the event came from, if recorded.
+
+    InstrumentEventCreate:
+      type: object
+      required: [type, date, details]
+      additionalProperties: false
+      properties:
+        type:
+          type: string
+          enum: [stock-split, note]
+        date:
+          type: string
+          format: date
+        details:
+          type: string
+          description: |
+            For a `stock-split` the ratio `new:old` (both positive and
+            different, e.g. `2:1`); for a `note` its text.
+        clientRef:
+          type: string
+          maxLength: 128
+
+    InstrumentEventWriteResult:
+      allOf:
+        - $ref: "#/components/schemas/InstrumentEvent"
+        - $ref: "#/components/schemas/WriteFlags"
+
+    PriceUpsert:
+      type: object
+      required: [items]
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            required: [date, value]
+            additionalProperties: false
+            properties:
+              date:
+                type: string
+                format: date
+              value:
+                $ref: "#/components/schemas/DecimalInput"
+
+    PriceUpsertResult:
+      type: object
+      required: [uuid, inserted, updated, unchanged]
+      properties:
+        uuid:
+          type: string
+        currency:
+          type: string
+        inserted:
+          type: integer
+          description: Quotes on dates that had none.
+        updated:
+          type: integer
+          description: Quotes that replaced a different value.
+        unchanged:
+          type: integer
+          description: Quotes equal to the stored value.
+        dryRun:
+          type: boolean
+
+    PriceDeleteResult:
+      type: object
+      required: [uuid, removed]
+      properties:
+        uuid:
+          type: string
+        removed:
+          type: integer
+          description: The number of quotes removed (or, on a dry run, that would be).
+        dryRun:
+          type: boolean
 
     AttributeDefinition:
       type: object
@@ -3525,6 +4077,8 @@ components:
             - ex-date-after-date
             - same-account
             - same-investment-account
+            - unknown-feed
+            - unknown-calendar
         message:
           type: string
           description: Human-readable explanation of this one violation.

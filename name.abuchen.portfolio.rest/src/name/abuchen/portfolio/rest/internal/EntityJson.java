@@ -29,8 +29,10 @@ import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityEvent;
 import name.abuchen.portfolio.model.SecurityEvent.DividendEvent;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.Transaction;
@@ -82,7 +84,68 @@ public final class EntityJson
         json.addProperty("uuid", security.getUUID()); //$NON-NLS-1$
         json.addProperty("name", security.getName()); //$NON-NLS-1$
         json.addProperty("currencyCode", security.getCurrencyCode()); //$NON-NLS-1$
+        if (security.getTargetCurrencyCode() != null)
+            json.addProperty("targetCurrencyCode", security.getTargetCurrencyCode()); //$NON-NLS-1$
         addSecurityDetails(json, client, security);
+        addQuoteFeed(json, security);
+
+        var events = new JsonArray();
+        for (var event : security.getEvents())
+            events.add(toJson(event));
+        if (events.size() > 0)
+            json.add("events", events); //$NON-NLS-1$
+
+        return json;
+    }
+
+    /**
+     * Where the instrument's prices come from: the historical and the latest
+     * quote feed with their URLs, the feed properties (e.g. the JSON paths of
+     * the generic JSON feed), and the trade calendar. Each is omitted when not
+     * set.
+     */
+    private static void addQuoteFeed(JsonObject json, Security security)
+    {
+        if (security.getFeed() != null)
+            json.addProperty("feed", security.getFeed()); //$NON-NLS-1$
+        if (security.getFeedURL() != null)
+            json.addProperty("feedUrl", security.getFeedURL()); //$NON-NLS-1$
+        if (security.getLatestFeed() != null)
+            json.addProperty("latestFeed", security.getLatestFeed()); //$NON-NLS-1$
+        if (security.getLatestFeedURL() != null)
+            json.addProperty("latestFeedUrl", security.getLatestFeedURL()); //$NON-NLS-1$
+
+        var properties = new JsonObject();
+        security.getProperties().filter(p -> p.getType() == SecurityProperty.Type.FEED)
+                        .forEach(p -> properties.addProperty(p.getName(), p.getValue()));
+        if (properties.size() > 0)
+            json.add("feedProperties", properties); //$NON-NLS-1$
+
+        if (security.getCalendar() != null)
+            json.addProperty("calendar", security.getCalendar()); //$NON-NLS-1$
+    }
+
+    /**
+     * An event of an instrument: a stock split (details {@code new:old}), a
+     * note, or a dividend payment reported by a dividend feed.
+     */
+    public static JsonObject toJson(SecurityEvent event)
+    {
+        var json = new JsonObject();
+        if (event.getDate() != null)
+            json.addProperty("date", event.getDate().toString()); //$NON-NLS-1$
+        json.addProperty("type", SecurityEventsHandler.wireType(event.getType())); //$NON-NLS-1$
+        if (event.getDetails() != null)
+            json.addProperty("details", event.getDetails()); //$NON-NLS-1$
+        if (event instanceof DividendEvent dividend)
+        {
+            if (dividend.getPaymentDate() != null)
+                json.addProperty("paymentDate", dividend.getPaymentDate().toString()); //$NON-NLS-1$
+            if (dividend.getAmount() != null)
+                json.add("amount", toJson(dividend.getAmount())); //$NON-NLS-1$
+        }
+        if (event.getSource() != null)
+            json.addProperty("source", event.getSource()); //$NON-NLS-1$
         return json;
     }
 

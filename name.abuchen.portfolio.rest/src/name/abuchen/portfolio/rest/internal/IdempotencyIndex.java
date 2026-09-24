@@ -26,6 +26,7 @@ public final class IdempotencyIndex
     }
 
     private final Map<Key, String> entities = new ConcurrentHashMap<>();
+    private final Map<Key, Object> objects = new ConcurrentHashMap<>();
 
     /** the {@code source} value that marks a transaction created with the key */
     public static String source(String clientRef)
@@ -72,5 +73,24 @@ public final class IdempotencyIndex
     {
         if (clientRef != null)
             entities.put(new Key(fileId, kind, clientRef), uuid);
+    }
+
+    /**
+     * The model object of the given kind created with the key, if any. For
+     * entities without a stable identifier (watchlists, investment plans,
+     * events), which are addressed by a name the client may change later.
+     */
+    public Optional<Object> findObject(String fileId, String kind, String clientRef)
+    {
+        if (clientRef == null)
+            return Optional.empty();
+        return Optional.ofNullable(objects.get(new Key(fileId, kind, clientRef)));
+    }
+
+    /** remembers that the model object was created with the key */
+    public void rememberObject(String fileId, String kind, String clientRef, Object entity)
+    {
+        if (clientRef != null)
+            objects.put(new Key(fileId, kind, clientRef), entity);
     }
 }

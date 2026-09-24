@@ -5,6 +5,9 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS
 {
     private static final String BUNDLE_NAME = Messages.class.getPackageName() + ".messages"; //$NON-NLS-1$
+    public static String MsgApiEntityChanged;
+    public static String MsgApiEntityCreated;
+    public static String MsgApiEntityDeleted;
     public static String MsgApiFileOpened;
     public static String MsgApiFileSaved;
     public static String MsgApiInstrumentChanged;

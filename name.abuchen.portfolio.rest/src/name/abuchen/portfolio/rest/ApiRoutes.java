@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.rest;
 
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -15,7 +16,9 @@ import name.abuchen.portfolio.rest.internal.ApiException;
 import name.abuchen.portfolio.rest.internal.FileResolver;
 import name.abuchen.portfolio.rest.internal.FilesHandler;
 import name.abuchen.portfolio.rest.internal.HoldingsHandler;
+import name.abuchen.portfolio.rest.internal.IdempotencyIndex;
 import name.abuchen.portfolio.rest.internal.InstrumentChangeLog;
+import name.abuchen.portfolio.rest.internal.MasterDataWrites;
 import name.abuchen.portfolio.rest.internal.OpenApiHandler;
 import name.abuchen.portfolio.rest.internal.PairingHandler;
 import name.abuchen.portfolio.rest.internal.PerformanceCalendarHandler;
@@ -25,6 +28,7 @@ import name.abuchen.portfolio.rest.internal.Request;
 import name.abuchen.portfolio.rest.internal.Response;
 import name.abuchen.portfolio.rest.internal.Router;
 import name.abuchen.portfolio.rest.internal.SecuritiesHandler;
+import name.abuchen.portfolio.rest.internal.SecurityEventsHandler;
 import name.abuchen.portfolio.rest.internal.SecurityPerformanceHandler;
 import name.abuchen.portfolio.rest.internal.SecurityPricesHandler;
 import name.abuchen.portfolio.rest.internal.TaxonomiesHandler;
@@ -51,6 +55,8 @@ public final class ApiRoutes
         var router = new Router();
         var resolver = new FileResolver(registry, host);
         var files = new FilesHandler(registry, host);
+        // idempotency keys of master data creates, see IdempotencyIndex
+        var idempotency = new IdempotencyIndex();
 
         // the API's own description: a static resource, no UI thread, no auth
         router.add("GET", RestApiConstants.OPENAPI_ENDPOINT, request -> OpenApiHandler.serve()); //$NON-NLS-1$
@@ -75,6 +81,11 @@ public final class ApiRoutes
 
         router.add("GET", "/v1/files/{file}/instruments", read(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
                         (client, req) -> Response.json(200, SecuritiesHandler.list(client))));
+        router.add("POST", "/v1/files/{file}/instruments", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> {
+                            var result = SecuritiesHandler.create(context, idempotency, parseObject(req));
+                            return created(req, result, "instruments", result.entity().get("uuid").getAsString()); //$NON-NLS-1$ //$NON-NLS-2$
+                        }));
         // literal sub-collection: must precede the {uuid} route (Router is first-match)
         router.add("GET", "/v1/files/{file}/instruments/attribute-types", read(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
                         (client, req) -> Response.json(200, SecuritiesHandler.attributeTypes(client))));
@@ -83,17 +94,42 @@ public final class ApiRoutes
         router.add("GET", "/v1/files/{file}/instruments/{uuid}/prices", read(resolver, host,
                         (client, req) -> Response.json(200, SecurityPricesHandler.list(client,
                                         req.pathParam("uuid"), req.queryParam("from"), req.queryParam("to")))));
-        router.add("PATCH", "/v1/files/{file}/instruments/{uuid}", write(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
-                        (file, req) -> {
-                            var result = SecuritiesHandler.patch(file.getClient(), req.pathParam("uuid"), //$NON-NLS-1$
+        router.add("PUT", "/v1/files/{file}/instruments/{uuid}/prices", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> Response.json(200,
+                                        SecurityPricesHandler.upsert(context, req.pathParam("uuid"), parseObject(req))))); //$NON-NLS-1$
+        router.add("DELETE", "/v1/files/{file}/instruments/{uuid}/prices", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> Response.json(200, SecurityPricesHandler.delete(context,
+                                        req.pathParam("uuid"), req.queryParam("from"), req.queryParam("to"))))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        router.add("GET", "/v1/files/{file}/instruments/{uuid}/events", read(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (client, req) -> Response.json(200, SecurityEventsHandler.list(client, req.pathParam("uuid"))))); //$NON-NLS-1$
+        router.add("POST", "/v1/files/{file}/instruments/{uuid}/events", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> {
+                            var result = SecurityEventsHandler.create(context, idempotency, req.pathParam("uuid"), //$NON-NLS-1$
                                             parseObject(req));
-                            InstrumentChangeLog.record(file.getLabel(), result.instrumentName(), result.changes());
+                            return Response.json(result.changed() ? 201 : 200, result.entity());
+                        }));
+        router.add("DELETE", "/v1/files/{file}/instruments/{uuid}/events", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> Response.json(200, SecurityEventsHandler.delete(context,
+                                        req.pathParam("uuid"), req.queryParam("date"), req.queryParam("type"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                                        req.queryParam("details"))))); //$NON-NLS-1$
+        // PATCH accepts application/json as well as application/merge-patch+json:
+        // the body is a JSON Merge Patch either way
+        router.add("PATCH", "/v1/files/{file}/instruments/{uuid}", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> {
+                            var result = SecuritiesHandler.patch(context.client(), req.pathParam("uuid"), //$NON-NLS-1$
+                                            parseObject(req), context.dryRun());
+                            if (!context.dryRun())
+                                InstrumentChangeLog.record(context.file().getLabel(), result.instrumentName(),
+                                                result.changes());
                             return Response.json(200, result.entity());
                         }));
-        router.add("DELETE", "/v1/files/{file}/instruments/{uuid}", write(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
-                        (file, req) -> {
-                            var name = SecuritiesHandler.delete(file.getClient(), req.pathParam("uuid")); //$NON-NLS-1$
-                            InstrumentChangeLog.recordDeletion(file.getLabel(), name);
+        router.add("DELETE", "/v1/files/{file}/instruments/{uuid}", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> {
+                            if (context.dryRun())
+                                return Response.json(200,
+                                                SecuritiesHandler.deletePreview(context.client(), req.pathParam("uuid"))); //$NON-NLS-1$
+                            var name = SecuritiesHandler.delete(context.client(), req.pathParam("uuid")); //$NON-NLS-1$
+                            InstrumentChangeLog.recordDeletion(context.file().getLabel(), name);
                             return Response.noContent();
                         }));
 
@@ -261,6 +297,29 @@ public final class ApiRoutes
 
             return body.apply(resolved, request);
         });
+    }
+
+    /**
+     * The answer of a create: {@code 201} with a {@code Location} if the
+     * entity was created, {@code 200} for a dry run or a replayed create.
+     * {@code id} is the new entity's identifier within {@code collection},
+     * percent-encoded as one path segment.
+     */
+    private static Response created(Request request, MasterDataWrites.WriteResult result, String collection,
+                    String id)
+    {
+        if (!result.changed())
+            return Response.json(200, result.entity());
+
+        var location = "/v1/files/" + request.pathParam("file") + "/" + collection + "/" + encodeSegment(id); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        return new Response(201, "application/json", //$NON-NLS-1$
+                        result.entity().toString().getBytes(StandardCharsets.UTF_8), Map.of("Location", location)); //$NON-NLS-1$
+    }
+
+    /** percent-encodes a value as a single path segment (a space is %20, not +) */
+    /* package */ static String encodeSegment(String value)
+    {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8).replace("+", "%20"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     private static JsonObject parseObject(Request request)

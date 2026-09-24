@@ -119,12 +119,23 @@ Saves the file at its current path in its current format, as the application's S
  "isin": "US0378331005", "wkn": "865985", "tickerSymbol": "AAPL", "note": "…"}
 ```
 
-`isin`, `wkn`, `tickerSymbol` and `note` are omitted when not set.
+`isin`, `wkn`, `tickerSymbol` and `note` are omitted when not set, as are the quote feed settings
+(`feed`, `feedUrl`, `latestFeed`, `latestFeedUrl`, `feedProperties`, `calendar`), the
+`targetCurrencyCode` of an exchange rate, and `events`.
+
+### `POST /v1/files/{file}/instruments`
+
+Creates an instrument from the same fields a patch accepts, plus an optional `clientRef`. `name` is
+required, `currencyCode` defaults to the file's base currency and `feed` to `MANUAL`. Answers `201`
+with the instrument and its `Location`. A repeated create with the same `clientRef` answers the first
+instrument with `200` and `"replayed": true`; for instruments (and all other master data) this key is
+kept in memory only, until the application quits.
 
 ### `PATCH /v1/files/{file}/instruments/{uuid}`
 
 A **JSON Merge Patch** (RFC 7386), *not* the full target state: fields you omit stay untouched, and
-an explicit `null` clears an optional field. Returns the updated instrument.
+an explicit `null` clears an optional field. Returns the updated instrument. A patch that changes
+nothing does not mark the file dirty.
 
 ```bash
 curl -s -X PATCH -H "Authorization: Bearer $TOKEN" \
@@ -132,9 +143,11 @@ curl -s -X PATCH -H "Authorization: Bearer $TOKEN" \
   http://127.0.0.1:5712/v1/files/main/instruments/8a1e…
 ```
 
-Writable: `name` (non-empty), `isin`, `wkn`, `tickerSymbol`, `note` (string or `null`), and
+Writable: `name` (non-empty), `isin`, `wkn`, `tickerSymbol`, `note` (string or `null`),
 `currencyCode` (a known currency; **rejected while the instrument has transactions**, matching the
-UI's own rule). Everything else — prices, quote feeds, attributes, events — is read-only in v1.
+UI's own rule), the quote feed settings `feed` and `latestFeed` (a feed id the application knows),
+`feedUrl`, `latestFeedUrl`, `calendar` (a trade calendar code), `targetCurrencyCode` (exchange rates
+only), and the nested objects `attributes` and `feedProperties`, each a merge patch of its own.
 
 Any field that is unknown or not writable is a **422, never a silent no-op**: a typo must not look
 like success. All violations come back at once so you can fix them in one round-trip.
@@ -144,6 +157,18 @@ like success. All violations come back at once so you can fix them in one round-
 `204 No Content` on success. **409** if transactions or investment plans reference the instrument —
 deleting it in the application would cascade into transaction history, which the API refuses to do
 on a client's behalf. Watchlist and taxonomy membership do not block the delete.
+
+### Prices and events of an instrument
+
+`PUT /v1/files/{file}/instruments/{uuid}/prices` with `{"items": [{"date": "2026-03-02", "value":
+"101.25"}]}` adds quotes and replaces a quote on the same date; it answers how many were inserted,
+updated or unchanged. `DELETE …/prices?from&to` removes the quotes in the range (both bounds absent:
+all of them) and answers the count.
+
+`GET`/`POST …/events` lists and adds events: `{"type": "stock-split", "date": "2026-06-10",
+"details": "4:1"}` or a `note`. A split event only records the split, it does not adjust
+transactions or prices. Events have no identifier, so `DELETE …/events?date&type[&details]` removes
+the matching ones.
 
 ### `GET /v1/files/{file}/cash-accounts[/{uuid}]`
 
@@ -185,9 +210,9 @@ legs and answers `204`.
 
 ### Dry runs
 
-Every transaction write accepts `?dry_run=true`: it validates and answers `200` with what it would
-do (`"dryRun": true`) — the resolved transaction, or for `DELETE` the legs it would remove — without
-changing anything.
+Every write accepts `?dry_run=true`: it validates and answers `200` with what it would do
+(`"dryRun": true`) — the resolved entity, or for `DELETE` what it would remove — without changing
+anything.
 
 ## Writes are not saved automatically
 

@@ -66,6 +66,7 @@ public class TransactionFixture
     private IEclipsePreferences node;
     private FakeHost host;
     private String fileId;
+    private Router router;
 
     public TransactionFixture()
     {
@@ -256,12 +257,18 @@ public class TransactionFixture
         return host;
     }
 
-    /** the real routing table, serving this fixture's file */
+    /**
+     * the real routing table, serving this fixture's file; one instance per
+     * fixture, like the server's, so that in-memory state such as the
+     * idempotency keys of master data creates survives between calls
+     */
     public Router router()
     {
         ensureRouter();
-        return ApiRoutes.create(new FileAccessRegistry(node), host,
-                        new PairingService(new ClientStore(Path.of("target", "unused-client-store")), host));
+        if (router == null)
+            router = ApiRoutes.create(new FileAccessRegistry(node), host,
+                            new PairingService(new ClientStore(Path.of("target", "unused-client-store")), host));
+        return router;
     }
 
     /** the id under which the router serves this fixture's file */
