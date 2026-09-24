@@ -4,12 +4,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
@@ -148,6 +150,62 @@ public class FilesHandlerTest
         assertThat(body.get("id").getAsString(), is(fileId));
         assertThat(file.saveCount(), is(1));
         assertThat(file.isDirty(), is(false));
+    }
+
+    private Response save(Map<String, String> query) throws Exception
+    {
+        var router = ApiRoutes.create(registry, host,
+                        new PairingService(new ClientStore(Path.of("target", "unused-client-store")), host));
+        var path = "/v1/files/" + fileId + "/save";
+        var match = router.match("POST", path);
+        return match.handler().handle(new Request("POST", path, match.pathParams(), query, new byte[0]));
+    }
+
+    @Test
+    public void testSaveWaitsForBackgroundUpdatesOffTheUIThread() throws Exception
+    {
+        file.setUIThreadProbe(host::isInSyncExec);
+
+        var body = json(save(Map.of()));
+
+        assertThat(file.awaitedTimeout(), is(Duration.ofSeconds(30)));
+        assertThat(file.awaitedOnUIThread(), is(false));
+        assertThat(body.get("backgroundUpdatesPending").getAsBoolean(), is(false));
+        assertThat(file.saveCount(), is(1));
+    }
+
+    @Test
+    public void testSaveReportsBackgroundUpdateStillRunning() throws Exception
+    {
+        file.setBackgroundUpdateFinishes(false);
+
+        var body = json(save(Map.of("waitForUpdates", "5")));
+
+        assertThat(file.awaitedTimeout(), is(Duration.ofSeconds(5)));
+        assertThat(body.get("backgroundUpdatesPending").getAsBoolean(), is(true));
+        assertThat(file.saveCount(), is(1));
+    }
+
+    @Test
+    public void testSaveWithoutWaiting() throws Exception
+    {
+        file.setBackgroundUpdateFinishes(false);
+
+        var body = json(save(Map.of("waitForUpdates", "0")));
+
+        assertThat(file.awaitedTimeout(), is(nullValue()));
+        assertThat(body.get("backgroundUpdatesPending").getAsBoolean(), is(false));
+    }
+
+    @Test
+    public void testSaveRejectsInvalidWait() throws Exception
+    {
+        for (var value : List.of("-1", "61", "soon"))
+        {
+            var e = expectApiException(() -> save(Map.of("waitForUpdates", value)));
+            assertThat(e.getStatus(), is(400));
+        }
+        assertThat(file.saveCount(), is(0));
     }
 
     @Test

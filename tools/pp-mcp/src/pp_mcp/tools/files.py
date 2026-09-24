@@ -43,15 +43,26 @@ async def open_file(
 
 
 @mcp.tool(annotations=WRITE)
-async def save_file(file: FileParam = None) -> dict[str, Any]:
+async def save_file(
+    file: FileParam = None,
+    wait_for_updates: Annotated[
+        int | None,
+        Field(ge=0, le=60, description="Seconds PP waits for running background price updates before saving "
+                                       "(default 30, 0 saves immediately)"),
+    ] = None,
+) -> dict[str, Any]:
     """Save a file to disk in its current format at its current path.
 
     All other write tools change only PP's in-memory copy (and mark it dirty);
-    this is the only tool that persists changes. Returns the file object with
-    `dirty` and `savedAt`. `dirty` can still be true right after a successful save
-    when a background change (such as a running quote update) arrived during the
-    save; call save_file again once it has finished.
+    this is the only tool that persists changes. PP first waits for background
+    updates that change the file (the online quote update after opening, dividend
+    updates, automatic investment plan transactions), then saves. Returns the file
+    object with `dirty`, `savedAt` and `backgroundUpdatesPending`. If
+    `backgroundUpdatesPending` is true, an update was still running after the wait
+    and `dirty` may stay true; call save_file again later.
     """
+    params = {"waitForUpdates": str(wait_for_updates)} if wait_for_updates is not None else None
+    wait = 30 if wait_for_updates is None else wait_for_updates
     async with api() as pp:
         f = await pp.resolve_file(file)
-        return out(await pp.post(fpath(f, "save")))
+        return out(await pp.post(fpath(f, "save"), params=params, timeout=wait + 30.0))

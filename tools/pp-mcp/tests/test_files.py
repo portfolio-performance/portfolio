@@ -55,3 +55,19 @@ async def test_save_failed_through_mcp(api, mcp_client):
     )
     with pytest.raises(ToolError, match="save-failed: Saving the file failed — disk full"):
         await mcp_client.call_tool("save_file", {"file": "main"})
+
+
+async def test_save_file_passes_wait_for_updates(api):
+    route = api.post("/v1/files/main/save").respond(
+        200, json={"dirty": False, "backgroundUpdatesPending": False}
+    )
+    result = await files.save_file("main", wait_for_updates=0)
+    assert route.calls.last.request.url.params["waitForUpdates"] == "0"
+    assert result["backgroundUpdatesPending"] is False
+
+
+async def test_save_file_default_leaves_wait_to_server(api):
+    route = api.post("/v1/files/main/save").respond(200, json={"dirty": False})
+    await files.save_file("main")
+    assert "waitForUpdates" not in route.calls.last.request.url.params
+

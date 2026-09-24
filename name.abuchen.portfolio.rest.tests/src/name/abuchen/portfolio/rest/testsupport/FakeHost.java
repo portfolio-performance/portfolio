@@ -3,6 +3,7 @@ package name.abuchen.portfolio.rest.testsupport;
 import java.io.IOException;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.function.BooleanSupplier;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
@@ -42,6 +44,11 @@ public class FakeHost implements HostApplication
         private boolean dirty = false;
         private int saveCount = 0;
         private IOException saveFailure;
+
+        private boolean backgroundUpdateFinishes = true;
+        private Duration awaitedTimeout;
+        private BooleanSupplier uiThreadProbe = () -> false;
+        private boolean awaitedOnUIThread = false;
 
         public FakeOpenFile(String path, String label, Client client, ExchangeRateProviderFactory factory)
         {
@@ -101,6 +108,38 @@ public class FakeHost implements HostApplication
 
             saveCount++;
             dirty = false;
+        }
+
+        @Override
+        public boolean awaitBackgroundUpdates(Duration timeout)
+        {
+            awaitedTimeout = timeout;
+            awaitedOnUIThread |= uiThreadProbe.getAsBoolean();
+            return backgroundUpdateFinishes;
+        }
+
+        /** whether a simulated background update finishes within the timeout */
+        public void setBackgroundUpdateFinishes(boolean finishes)
+        {
+            this.backgroundUpdateFinishes = finishes;
+        }
+
+        /** the timeout of the last wait for background updates, null if none */
+        public Duration awaitedTimeout()
+        {
+            return awaitedTimeout;
+        }
+
+        /** lets the file detect a wait on the (simulated) UI thread */
+        public void setUIThreadProbe(BooleanSupplier probe)
+        {
+            this.uiThreadProbe = probe;
+        }
+
+        /** true if the wait for background updates ran on the UI thread */
+        public boolean awaitedOnUIThread()
+        {
+            return awaitedOnUIThread;
         }
 
         /** how often the file was saved */
@@ -219,6 +258,12 @@ public class FakeHost implements HostApplication
     public boolean hasAccessedOutsideUIThread()
     {
         return accessedOutsideUIThread;
+    }
+
+    /** true while a {@link #syncExec(Callable)} callable runs */
+    public boolean isInSyncExec()
+    {
+        return syncExecDepth > 0;
     }
 
     @Override

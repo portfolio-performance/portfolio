@@ -32,6 +32,7 @@ public class FilesHandler
 {
     /** how long opening a file waits for the file to be loaded */
     private static final Duration DEFAULT_OPEN_TIMEOUT = Duration.ofSeconds(30);
+    private static final int DEFAULT_WAIT_FOR_UPDATES_SECONDS = 30;
 
     /**
      * The outcome of the UI-thread part of opening a file: either the finished
@@ -82,6 +83,15 @@ public class FilesHandler
      */
     public static JsonObject save(FileResolver.ResolvedFile resolved)
     {
+        return save(resolved, true);
+    }
+
+    /**
+     * Saves the file; {@code settled} tells whether the background updates
+     * of the file were done before saving. Must be called on the UI thread.
+     */
+    public static JsonObject save(FileResolver.ResolvedFile resolved, boolean settled)
+    {
         var file = resolved.file();
 
         try
@@ -98,7 +108,52 @@ public class FilesHandler
 
         var json = EntityJson.toJson(resolved.access(), file);
         json.addProperty("savedAt", Instant.now().toString()); //$NON-NLS-1$
+        json.addProperty("backgroundUpdatesPending", !settled); //$NON-NLS-1$
         return json;
+    }
+
+    /**
+     * Parses {@code ?waitForUpdates}: seconds to wait for running background
+     * price updates before saving, 0 to 60, default 30.
+     */
+    public static Duration waitForUpdates(String param)
+    {
+        if (param == null || param.isEmpty())
+            return Duration.ofSeconds(DEFAULT_WAIT_FOR_UPDATES_SECONDS);
+        try
+        {
+            var seconds = Integer.parseInt(param);
+            if (seconds >= 0 && seconds <= ActionsHandler.MAX_WAIT_SECONDS)
+                return Duration.ofSeconds(seconds);
+        }
+        catch (NumberFormatException e)
+        {
+            // reported below
+        }
+        throw ApiException.badRequest(List.of(new ApiException.FieldError("waitForUpdates", "invalid-value", //$NON-NLS-1$ //$NON-NLS-2$
+                        MessageFormat.format("waitForUpdates must be a number of seconds from 0 to {0}", //$NON-NLS-1$
+                                        ActionsHandler.MAX_WAIT_SECONDS))));
+    }
+
+    /**
+     * Waits for the background updates of the file; must be called on the
+     * HTTP worker thread, never on the UI thread.
+     *
+     * @return true if no background update is running any more
+     */
+    public static boolean awaitBackgroundUpdates(OpenFile file, Duration timeout)
+    {
+        if (timeout.isZero())
+            return true;
+        try
+        {
+            return file.awaitBackgroundUpdates(timeout);
+        }
+        catch (InterruptedException e)
+        {
+            Thread.currentThread().interrupt();
+            return false;
+        }
     }
 
     /**

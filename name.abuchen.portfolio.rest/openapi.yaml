@@ -396,10 +396,25 @@ paths:
         as), exactly as the application's Save does, including the backup copy
         if the user enabled backups. There is no "save as": no body is taken.
 
-        `dirty` in the response is normally `false`. It can still be `true` if a
-        background task (e.g. an online price update) changed the file while it
-        was being saved — the saved copy may not contain that change, so the
-        file stays marked as unsaved.
+        Before saving, the request waits up to `waitForUpdates` seconds for the
+        background tasks that change the file: the online price update started
+        when the file was opened or by the periodic update, the dividend update,
+        and the automatic investment plan transactions. The wait happens before
+        the file is touched, so the application stays responsive.
+
+        `dirty` in the response is normally `false`. It is `true` if a background
+        task was still running after the wait (`backgroundUpdatesPending`) and
+        changed the file while it was being saved. Save again later.
+      parameters:
+        - name: waitForUpdates
+          in: query
+          required: false
+          description: Seconds to wait for running background updates before saving, 0 to 60. 0 saves immediately.
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 60
+            default: 30
       responses:
         "200":
           description: The file was saved
@@ -415,6 +430,11 @@ paths:
                         type: string
                         format: date-time
                         description: When the file was saved (UTC).
+                      backgroundUpdatesPending:
+                        type: boolean
+                        description: |
+                          true if a background update was still running when the
+                          wait ended; the file was saved anyway.
               examples:
                 default:
                   value:
@@ -424,6 +444,9 @@ paths:
                     path: /Users/me/portfolio.xml
                     dirty: false
                     savedAt: "2026-09-24T10:15:30.123Z"
+                    backgroundUpdatesPending: false
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":

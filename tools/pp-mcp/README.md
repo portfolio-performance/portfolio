@@ -39,7 +39,7 @@ claude mcp add pp --env PP_API_TOKEN=<token> --env PP_API_URL=http://127.0.0.1:5
 ## Conventions
 
 - **Nothing is saved until `save_file`.** Every write changes only PP's in-memory file and marks it dirty, like an edit in the UI. Closing the file without saving discards all changes.
-- **`dirty` after `save_file`.** PP updates quotes online when it opens a file and every 30 minutes. If such an update changes prices while the file is being saved, `save_file` succeeds but reports `dirty: true`. Save again once the update is done.
+- **`save_file` waits for background updates.** PP updates quotes online when it opens a file and every 30 minutes. `save_file` waits up to `wait_for_updates` seconds (default 30) for such updates to finish, then saves. If one is still running, the answer has `backgroundUpdatesPending: true` and possibly `dirty: true`; save again later.
 - **Dry runs.** Every write tool accepts `dry_run=true`: PP validates the request and returns the fully resolved result without changing anything. `import_pdf` and `import_csv` default to a preview; with `dry_run=false` they import only the items with status `ok` (`include_warnings=true` adds `warning` items such as probable duplicates).
 - **Numbers are decimal strings**, never floats: money 2 decimals, shares 8, quotes 8, exchange rates up to 10, taxonomy weights (percent) 2. Results carry decimals as strings too. Numeric custom attributes are passed as decimal strings as well; the adapter sends them to PP as exact JSON numbers.
 - **Identifiers.** Entities are addressed by PP UUIDs; watchlists and investment plans by name.

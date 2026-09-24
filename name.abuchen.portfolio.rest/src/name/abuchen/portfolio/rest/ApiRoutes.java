@@ -96,8 +96,16 @@ public final class ApiRoutes
                         request -> files.open(FilesHandler.openRequestPath(parseObject(request))));
         router.add("GET", "/v1/files/{file}", onUiThread(host, //$NON-NLS-1$ //$NON-NLS-2$
                         request -> Response.json(200, FilesHandler.get(resolver.resolve(request.pathParam("file")))))); //$NON-NLS-1$
-        router.add("POST", "/v1/files/{file}/save", writeResolved(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
-                        (resolved, req) -> Response.json(200, FilesHandler.save(resolved))));
+        // waits (?waitForUpdates) on the HTTP worker thread until the background
+        // price updates of the file are done, then saves on the UI thread
+        router.add("POST", "/v1/files/{file}/save", request -> { //$NON-NLS-1$
+            var timeout = FilesHandler.waitForUpdates(request.queryParam("waitForUpdates")); //$NON-NLS-1$
+            var file = host.syncExec(() -> resolver.resolve(request.pathParam("file")).file()); //$NON-NLS-1$
+            var settled = FilesHandler.awaitBackgroundUpdates(file, timeout);
+            return writeResolved(resolver, host,
+                            (resolved, req) -> Response.json(200, FilesHandler.save(resolved, settled)))
+                                            .handle(request);
+        });
 
         // starts the job on the UI thread, then waits (?wait) on the HTTP worker thread
         router.add("POST", "/v1/files/{file}/actions/update-quotes", request -> { //$NON-NLS-1$

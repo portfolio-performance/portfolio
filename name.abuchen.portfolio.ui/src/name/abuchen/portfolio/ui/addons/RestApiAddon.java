@@ -5,7 +5,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.text.MessageFormat;
+import java.time.Duration;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.IdentityHashMap;
@@ -24,6 +26,7 @@ import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.commands.ECommandService;
@@ -65,6 +68,8 @@ import name.abuchen.portfolio.ui.editor.ClientInputFactory;
 import name.abuchen.portfolio.ui.editor.ClientInputListener;
 import name.abuchen.portfolio.ui.editor.EditorActivationState;
 import name.abuchen.portfolio.ui.handlers.OpenFileHandler;
+import name.abuchen.portfolio.ui.jobs.CreateInvestmentPlanTxJob;
+import name.abuchen.portfolio.ui.jobs.UpdateDividendsJob;
 import name.abuchen.portfolio.ui.jobs.priceupdate.UpdatePricesJob;
 
 /**
@@ -113,6 +118,34 @@ public class RestApiAddon
         public boolean isDirty()
         {
             return input.isDirty();
+        }
+
+        @Override
+        public boolean awaitBackgroundUpdates(Duration timeout) throws InterruptedException
+        {
+            var deadline = System.nanoTime() + timeout.toNanos();
+            while (hasPendingBackgroundUpdate())
+            {
+                if (System.nanoTime() >= deadline)
+                    return false;
+                Thread.sleep(200);
+            }
+            return true;
+        }
+
+        private boolean hasPendingBackgroundUpdate()
+        {
+            var client = input.getClient();
+            if (client == null)
+                return false;
+
+            // sleeping counts: the update after opening a file is scheduled
+            // with a delay. The auto save and consistency check jobs of the
+            // same family do not change the data and are not waited for.
+            return Arrays.stream(Job.getJobManager().find(client))
+                            .filter(job -> job instanceof UpdatePricesJob || job instanceof UpdateDividendsJob
+                                            || job instanceof CreateInvestmentPlanTxJob)
+                            .anyMatch(job -> job.getState() != Job.NONE);
         }
 
         @Override
