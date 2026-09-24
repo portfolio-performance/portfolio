@@ -39,6 +39,7 @@ claude mcp add pp --env PP_API_TOKEN=<token> --env PP_API_URL=http://127.0.0.1:5
 ## Conventions
 
 - **Nothing is saved until `save_file`.** Every write changes only PP's in-memory file and marks it dirty, like an edit in the UI. Closing the file without saving discards all changes.
+- **`dirty` after `save_file`.** PP updates quotes online when it opens a file and every 30 minutes. If such an update changes prices while the file is being saved, `save_file` succeeds but reports `dirty: true`. Save again once the update is done.
 - **Dry runs.** Every write tool accepts `dry_run=true`: PP validates the request and returns the fully resolved result without changing anything. `import_pdf` and `import_csv` default to a preview; with `dry_run=false` they import only the items with status `ok` (`include_warnings=true` adds `warning` items such as probable duplicates).
 - **Numbers are decimal strings**, never floats: money 2 decimals, shares 8, quotes 8, exchange rates up to 10, taxonomy weights (percent) 2. Results carry decimals as strings too. Numeric custom attributes are passed as decimal strings as well; the adapter sends them to PP as exact JSON numbers.
 - **Identifiers.** Entities are addressed by PP UUIDs; watchlists and investment plans by name.
@@ -70,3 +71,33 @@ uv run pytest -q
 ```
 
 The tests mock the REST API with `respx` and call the tools both directly and through FastMCP's in-memory client.
+
+### Live end-to-end test
+
+`tests/e2e/` holds a test that runs every tool against a real PP instance. It is not part of `pytest`.
+
+1. Build the product: `mvn -f portfolio-app/pom.xml verify -DskipTests -Djacoco.skip=true -Dcheckstyle.skip=true` (the `local-dev` profile does not build the product).
+2. Create a workspace with the API enabled for a test file and a known token:
+
+   ```bash
+   uv run python tests/e2e/seed_workspace.py --workspace <ws> --port 5799 --file <abs-path-to-test-file>=e2e
+   ```
+
+   It prints the token.
+3. Start PP with that workspace:
+
+   ```bash
+   portfolio-product/target/products/name.abuchen.portfolio.product/win32/win32/x86_64/portfolio/PortfolioPerformance.exe -data <ws>
+   ```
+
+4. Run the test. `--mode full` creates, changes and deletes entities of every kind, then saves. Use it only on a throwaway file, for example a copy of `name.abuchen.portfolio.tests/src/fileversions/client69.xml`. `--mode copy` reads everything and makes a few small writes. Use it only on a copy of a real file.
+
+   ```bash
+   PP_API_URL=http://127.0.0.1:5799 PP_API_TOKEN=<token> uv run python tests/e2e/run_e2e.py --path <abs-path> --mode full --state state.json
+   ```
+
+5. Restart PP and check that the saved entities are still there:
+
+   ```bash
+   PP_API_URL=http://127.0.0.1:5799 PP_API_TOKEN=<token> uv run python tests/e2e/run_e2e.py --path <abs-path> --verify --state state.json
+   ```
