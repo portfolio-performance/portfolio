@@ -225,6 +225,17 @@ carries its `id`, `weight` (target weight in percent), `color`, `note`, `childre
   account (default weight: what is not yet assigned elsewhere in the taxonomy); the weights of one
   vehicle across a taxonomy cannot exceed 100 % (`weight-exceeds-100`). `DELETE` unassigns it.
 
+### Reports
+
+`GET …/holdings`, `…/performance`, `…/performance/series`, `…/performance/securities` and
+`…/performance/calendar` accept `investmentAccount` and `cashAccount` (one UUID or a comma-separated
+list) to report on part of the file, as the application's reporting filter does.
+
+`GET …/taxonomies/{id}/allocation?date&currency` values every category of a taxonomy (including its
+subcategories), with the target value from the category weights and what no category holds as
+`unassigned`. `GET …/earnings?from&to&instrument&cashAccount` lists dividends, interest and
+interest charges with their totals per currency.
+
 ### `POST /v1/files/{file}/transactions` — create a transaction
 
 `type` selects the shape: `buy`, `sell`, `delivery-inbound`, `delivery-outbound`, `dividends`,

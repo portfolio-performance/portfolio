@@ -49,6 +49,8 @@ import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
+import name.abuchen.portfolio.snapshot.filter.ReadOnlyAccount;
+import name.abuchen.portfolio.snapshot.filter.ReadOnlyClient;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.trades.Trade;
@@ -330,6 +332,9 @@ public final class EntityJson
     {
         var security = position.getSecurity();
         var vehicle = position.getInvestmentVehicle();
+        // a filtered file (see ReportFilter) reports read-only copies of its cash accounts
+        if (vehicle instanceof Account account)
+            vehicle = ReadOnlyAccount.unwrap(account);
 
         var json = new JsonObject();
         json.addProperty("type", security != null ? "instrument" : "cash-account"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -1026,7 +1031,8 @@ public final class EntityJson
         // widget: (money-weighted return - risk-free rate) / volatility. The rate
         // is a property of the file, so it is reported alongside the ratio rather
         // than left for a client to guess.
-        var riskFreeRate = new ClientProperties(client).getRiskFreeRateOfReturn();
+        // a filtered client (see ReportFilter) carries no properties: read them from the file
+        var riskFreeRate = new ClientProperties(ReadOnlyClient.unwrap(client)).getRiskFreeRateOfReturn();
         json.add("riskFreeRate", ratio(riskFreeRate));
 
         var standardDeviation = volatility.getStandardDeviation();

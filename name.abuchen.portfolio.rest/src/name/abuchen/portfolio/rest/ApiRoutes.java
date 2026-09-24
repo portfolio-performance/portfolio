@@ -13,6 +13,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.rest.internal.AccountsHandler;
 import name.abuchen.portfolio.rest.internal.ApiException;
+import name.abuchen.portfolio.rest.internal.EarningsHandler;
 import name.abuchen.portfolio.rest.internal.FileResolver;
 import name.abuchen.portfolio.rest.internal.FilesHandler;
 import name.abuchen.portfolio.rest.internal.HoldingsHandler;
@@ -25,6 +26,7 @@ import name.abuchen.portfolio.rest.internal.PairingHandler;
 import name.abuchen.portfolio.rest.internal.PerformanceCalendarHandler;
 import name.abuchen.portfolio.rest.internal.PerformanceHandler;
 import name.abuchen.portfolio.rest.internal.PortfoliosHandler;
+import name.abuchen.portfolio.rest.internal.ReportFilter;
 import name.abuchen.portfolio.rest.internal.Request;
 import name.abuchen.portfolio.rest.internal.Response;
 import name.abuchen.portfolio.rest.internal.Router;
@@ -33,6 +35,7 @@ import name.abuchen.portfolio.rest.internal.SecurityEventsHandler;
 import name.abuchen.portfolio.rest.internal.SecurityPerformanceHandler;
 import name.abuchen.portfolio.rest.internal.SecurityPricesHandler;
 import name.abuchen.portfolio.rest.internal.TaxonomiesHandler;
+import name.abuchen.portfolio.rest.internal.TaxonomyAllocationHandler;
 import name.abuchen.portfolio.rest.internal.TradesHandler;
 import name.abuchen.portfolio.rest.internal.TransactionsHandler;
 import name.abuchen.portfolio.rest.internal.WatchlistsHandler;
@@ -279,36 +282,49 @@ public final class ApiRoutes
                             return preview != null ? Response.json(200, preview) : Response.noContent();
                         }));
 
+        // reports: investmentAccount/cashAccount narrow the file, see ReportFilter
         router.add("GET", "/v1/files/{file}/holdings", calc(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
-                        (context, req) -> Response.json(200, HoldingsHandler.list(context.client(), context.factory(),
-                                        req.queryParam("date"), req.queryParam("openingDate"), //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> Response.json(200, HoldingsHandler.list(filtered(context, req),
+                                        context.factory(), req.queryParam("date"), req.queryParam("openingDate"), //$NON-NLS-1$ //$NON-NLS-2$
                                         req.queryParam("currency"), req.queryParam("costMethod"))))); //$NON-NLS-1$ //$NON-NLS-2$
 
         router.add("GET", "/v1/files/{file}/performance", calc(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
-                        (context, req) -> Response.json(200, PerformanceHandler.list(context.client(),
+                        (context, req) -> Response.json(200, PerformanceHandler.list(filtered(context, req),
                                         context.factory(), req.queryParam("openingDate"), //$NON-NLS-1$
                                         req.queryParam("closingDate"), req.queryParam("currency"), //$NON-NLS-1$ //$NON-NLS-2$
                                         req.queryParam("costMethod"))))); //$NON-NLS-1$
 
-        router.add("GET", "/v1/files/{file}/performance/series", calc(resolver, host,
-                        (context, req) -> Response.json(200, PerformanceHandler.series(context.client(),
-                                        context.factory(), req.queryParam("openingDate"),
-                                        req.queryParam("closingDate"), req.queryParam("currency")))));
+        router.add("GET", "/v1/files/{file}/performance/series", calc(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> Response.json(200, PerformanceHandler.series(filtered(context, req),
+                                        context.factory(), req.queryParam("openingDate"), //$NON-NLS-1$
+                                        req.queryParam("closingDate"), req.queryParam("currency"))))); //$NON-NLS-1$ //$NON-NLS-2$
 
-        router.add("GET", "/v1/files/{file}/performance/calendar", calc(resolver, host,
-                        (context, req) -> Response.json(200, PerformanceCalendarHandler.list(context.client(),
-                                        context.factory(), req.queryParam("openingDate"),
-                                        req.queryParam("closingDate"), req.queryParam("currency")))));
+        router.add("GET", "/v1/files/{file}/performance/calendar", calc(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> Response.json(200, PerformanceCalendarHandler.list(filtered(context, req),
+                                        context.factory(), req.queryParam("openingDate"), //$NON-NLS-1$
+                                        req.queryParam("closingDate"), req.queryParam("currency"))))); //$NON-NLS-1$ //$NON-NLS-2$
 
         router.add("GET", "/v1/files/{file}/trades", calc(resolver, host,
                         (context, req) -> Response.json(200, TradesHandler.list(context.client(), context.factory(),
                                         req.queryParam("currency"), req.queryParam("onlyClosed")))));
 
-        router.add("GET", "/v1/files/{file}/performance/securities", calc(resolver, host,
-                        (context, req) -> Response.json(200, SecurityPerformanceHandler.list(context.client(),
-                                        context.factory(), req.queryParam("openingDate"),
-                                        req.queryParam("closingDate"), req.queryParam("currency"),
-                                        req.queryParam("costMethod")))));
+        router.add("GET", "/v1/files/{file}/performance/securities", calc(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> Response.json(200, SecurityPerformanceHandler.list(filtered(context, req),
+                                        context.factory(), req.queryParam("openingDate"), //$NON-NLS-1$
+                                        req.queryParam("closingDate"), req.queryParam("currency"), //$NON-NLS-1$ //$NON-NLS-2$
+                                        req.queryParam("costMethod"))))); //$NON-NLS-1$
+
+        router.add("GET", "/v1/files/{file}/taxonomies/{id}/allocation", calc(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> Response.json(200, TaxonomyAllocationHandler.allocation(context.client(),
+                                        filtered(context, req), context.factory(), req.pathParam("id"), //$NON-NLS-1$
+                                        req.queryParam("date"), req.queryParam("currency"))))); //$NON-NLS-1$ //$NON-NLS-2$
+
+        router.add("GET", "/v1/files/{file}/earnings", read(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (client, req) -> Response.json(200, EarningsHandler.list(client,
+                                        new TransactionsHandler.Filter(req.queryParam("from"), req.queryParam("to"), //$NON-NLS-1$ //$NON-NLS-2$
+                                                        null, req.queryParam("instrument"), //$NON-NLS-1$
+                                                        req.queryParam(ReportFilter.CASH_ACCOUNT),
+                                                        req.queryParam(ReportFilter.INVESTMENT_ACCOUNT))))));
 
         return router;
     }
@@ -355,6 +371,13 @@ public final class ApiRoutes
             });
             return body.apply(context, request);
         };
+    }
+
+    /** the file of a report, narrowed by the investmentAccount/cashAccount query parameters */
+    private static Client filtered(CalcContext context, Request request)
+    {
+        return ReportFilter.apply(context.client(), request.queryParam(ReportFilter.INVESTMENT_ACCOUNT),
+                        request.queryParam(ReportFilter.CASH_ACCOUNT));
     }
 
     private static Router.Handler write(FileResolver resolver, HostApplication host,

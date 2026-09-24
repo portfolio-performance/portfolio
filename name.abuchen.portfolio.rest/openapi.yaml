@@ -2519,6 +2519,63 @@ paths:
         "500":
           $ref: "#/components/responses/InternalError"
 
+  /v1/files/{file}/taxonomies/{id}/allocation:
+    parameters:
+      - $ref: "#/components/parameters/File"
+      - $ref: "#/components/parameters/TaxonomyId"
+    get:
+      operationId: getTaxonomyAllocation
+      tags: [Taxonomies]
+      summary: Value per category of a taxonomy at a date
+      description: |
+        The statement of assets at `date`, distributed over the taxonomy's
+        categories as the application's taxonomy view does it: each assignment
+        contributes its instrument's or cash account's valuation times the
+        assignment weight, a category's `value` includes its subcategories, and
+        what no category holds is `unassigned` (listed per holding with the
+        unassigned weight).
+
+        `targetValue` follows the rebalancing view: the classified assets
+        (total less unassigned) split by the category weights, each level
+        taking the parent's target less the parent's direct assignments.
+        `deviation` is `value - targetValue`. `share` is the fraction of the
+        total assets.
+      parameters:
+        - name: date
+          in: query
+          required: false
+          description: The valuation date (default today).
+          schema:
+            type: string
+            format: date
+        - name: currency
+          in: query
+          required: false
+          description: The reporting currency (default the file's base currency).
+          schema:
+            type: string
+        - $ref: "#/components/parameters/InvestmentAccountFilter"
+        - $ref: "#/components/parameters/CashAccountFilter"
+      responses:
+        "200":
+          description: The allocation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaxonomyAllocation"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /v1/files/{file}/transactions:
     parameters:
       - $ref: "#/components/parameters/File"
@@ -2967,6 +3024,8 @@ paths:
         account, not only this instrument's own) — an empty period for a file
         with none yet.
       parameters:
+        - $ref: "#/components/parameters/InvestmentAccountFilter"
+        - $ref: "#/components/parameters/CashAccountFilter"
         - name: date
           in: query
           required: false
@@ -3096,6 +3155,8 @@ paths:
         time-weighted return has no sub-period after the final day to neutralise
         it against.
       parameters:
+        - $ref: "#/components/parameters/InvestmentAccountFilter"
+        - $ref: "#/components/parameters/CashAccountFilter"
         - name: openingDate
           in: query
           required: true
@@ -3206,6 +3267,8 @@ paths:
         There is no `costMethod` parameter: none of these figures depend on how
         gains split into realized and unrealized.
       parameters:
+        - $ref: "#/components/parameters/InvestmentAccountFilter"
+        - $ref: "#/components/parameters/CashAccountFilter"
         - name: openingDate
           in: query
           required: true
@@ -3308,6 +3371,8 @@ paths:
         `unrealizedGains` split the capital gains according to `costMethod` and
         are the two figures that depend on it.
       parameters:
+        - $ref: "#/components/parameters/InvestmentAccountFilter"
+        - $ref: "#/components/parameters/CashAccountFilter"
         - name: openingDate
           in: query
           required: true
@@ -3414,6 +3479,8 @@ paths:
         is why this is an endpoint rather than a client-side sum over
         `.../transactions`: transactions carry their own currencies.
       parameters:
+        - $ref: "#/components/parameters/InvestmentAccountFilter"
+        - $ref: "#/components/parameters/CashAccountFilter"
         - name: openingDate
           in: query
           required: true
@@ -3461,6 +3528,74 @@ paths:
                         taxes: -55
                         netTransfers: 1000
                         trades: { buys: 3, sells: 1, buyVolume: 4500, sellVolume: 900 }
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/earnings:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    get:
+      operationId: listEarnings
+      tags: [Performance]
+      summary: Dividends and interest of a period, with totals
+      description: |
+        The `dividends`, `interest` and `interest-charge` transactions, newest
+        first, in the shape of `GET .../transactions`, plus their totals per
+        currency. Totals are not converted: each transaction counts in its cash
+        account's currency. `value` is the net total (dividends and interest
+        after taxes, less interest charges); `taxes` and `fees` are the
+        withheld amounts. For converted per-month figures see
+        `.../performance/calendar`.
+      parameters:
+        - name: from
+          in: query
+          required: false
+          description: First booking date to include.
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          required: false
+          description: Last booking date to include.
+          schema:
+            type: string
+            format: date
+        - name: instrument
+          in: query
+          required: false
+          description: Only earnings of this instrument (`uuid`).
+          schema:
+            type: string
+        - name: cashAccount
+          in: query
+          required: false
+          description: Only earnings booked on this cash account (`uuid`).
+          schema:
+            type: string
+        - name: investmentAccount
+          in: query
+          required: false
+          description: Only earnings booked on this investment account's legs (`uuid`).
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The earnings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Earnings"
         "400":
           $ref: "#/components/responses/BadRequest"
         "401":
@@ -3600,6 +3735,29 @@ components:
       in: path
       required: true
       description: The `id` of a category (classification) within the taxonomy.
+      schema:
+        type: string
+    InvestmentAccountFilter:
+      name: investmentAccount
+      in: query
+      required: false
+      description: |
+        Report only on these investment accounts: one `uuid` or a
+        comma-separated list. Narrows the file as the application's reporting
+        filter does: an investment account brings the instrument-related
+        bookings of its reference cash account along (a buy counts as an
+        inbound delivery unless that cash account is selected too). Combines
+        with `cashAccount`; an unknown UUID is `400 unknown-reference`.
+      schema:
+        type: string
+    CashAccountFilter:
+      name: cashAccount
+      in: query
+      required: false
+      description: |
+        Report only on these cash accounts: one `uuid` or a comma-separated
+        list. Combines with `investmentAccount`; an unknown UUID is
+        `400 unknown-reference`.
       schema:
         type: string
     DryRun:
@@ -5720,6 +5878,109 @@ components:
             - $ref: "#/components/schemas/MonetaryValue"
           description: The portfolio's value at `closingDate`.
 
+    TaxonomyAllocation:
+      type: object
+      required: [taxonomy, date, currency, totalAssets, categories, unassigned]
+      properties:
+        taxonomy:
+          type: object
+          properties:
+            id: { type: string }
+            name: { type: string }
+        date:
+          type: string
+          format: date
+        currency:
+          type: string
+        totalAssets:
+          $ref: "#/components/schemas/MonetaryValue"
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/AllocationCategory"
+        assignments:
+          type: array
+          description: Holdings assigned to the taxonomy itself rather than a category (rare).
+          items:
+            $ref: "#/components/schemas/AllocationAssignment"
+        unassigned:
+          type: object
+          properties:
+            value:
+              $ref: "#/components/schemas/MonetaryValue"
+            share:
+              type: number
+            assignments:
+              type: array
+              items:
+                $ref: "#/components/schemas/AllocationAssignment"
+    AllocationCategory:
+      type: object
+      required: [id, name, weight, value, share, targetValue, deviation]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        color: { type: string }
+        weight:
+          type: number
+          description: The target weight in percent.
+        value:
+          $ref: "#/components/schemas/MonetaryValue"
+        share:
+          type: number
+          description: Fraction of the total assets.
+        targetValue:
+          $ref: "#/components/schemas/MonetaryValue"
+        deviation:
+          $ref: "#/components/schemas/MonetaryValue"
+        children:
+          type: array
+          items:
+            $ref: "#/components/schemas/AllocationCategory"
+        assignments:
+          type: array
+          items:
+            $ref: "#/components/schemas/AllocationAssignment"
+    AllocationAssignment:
+      type: object
+      required: [vehicle, type, name, weight, value]
+      properties:
+        vehicle:
+          type: string
+          description: The `uuid` of the instrument or cash account.
+        type:
+          type: string
+          enum: [instrument, cash-account]
+        name: { type: string }
+        weight:
+          type: number
+          description: The assigned (or, under `unassigned`, the unassigned) weight in percent.
+        value:
+          $ref: "#/components/schemas/MonetaryValue"
+    Earnings:
+      type: object
+      required: [items, totals]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Transaction"
+        totals:
+          type: array
+          items:
+            type: object
+            required: [currency, value, dividends, interest, interestCharge, taxes, fees, count]
+            properties:
+              currency: { type: string }
+              value:
+                type: number
+                description: Net earnings, dividends + interest - interestCharge.
+              dividends: { type: number }
+              interest: { type: number }
+              interestCharge: { type: number }
+              taxes: { type: number }
+              fees: { type: number }
+              count: { type: integer }
     FieldError:
       type: object
       description: One field-level violation within a `Problem`.

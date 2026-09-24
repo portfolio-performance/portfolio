@@ -20,6 +20,7 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
+import name.abuchen.portfolio.snapshot.filter.ReadOnlyClient;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
 import name.abuchen.portfolio.util.Interval;
@@ -169,7 +170,8 @@ public final class HoldingsHandler
                                                                         LazySecurityPerformanceRecord::getSecurity,
                                                                         r -> r))));
 
+        // a filtered client (see ReportFilter) carries no taxonomies: take them from the file
         return new HoldingsContext(client, date, interval, costMethod, converter, records, localRecordsByCurrency,
-                        client.getTaxonomies());
+                        ReadOnlyClient.unwrap(client).getTaxonomies());
     }
 }

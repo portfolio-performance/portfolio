@@ -57,11 +57,17 @@ public final class TransactionsHandler
      */
     public static JsonElement list(Client client, Filter filter)
     {
+        return EntityJson.envelope(select(client, filter), EntityJson::toJson);
+    }
+
+    /** the transactions the filter selects, newest first; see {@link #list(Client, Filter)} */
+    /* package */ static List<TransactionPair<?>> select(Client client, Filter filter)
+    {
         var predicate = predicate(filter);
 
         var transactions = new ArrayList<>(client.getAllTransactions().stream().filter(predicate).toList());
         transactions.sort(TransactionPair.BY_DATE.reversed());
-        return EntityJson.envelope(transactions, EntityJson::toJson);
+        return transactions;
     }
 
     /**
