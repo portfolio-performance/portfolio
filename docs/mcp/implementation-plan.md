@@ -554,3 +554,9 @@ Goal: exercise every tool against a real PP with a synthetic file and verify the
   - A replayed create answers `200 replayed: true` even on a dry run (with `dryRun: true`). `clientRef` is also reported by `GET /transactions/{uuid}` (derived from `source`). `Location` uses the `{file}` segment as addressed.
   - `TransactionTypes` holds `wireType`/`WIRE_TYPES`; `EntityJson.wireType` delegates to it.
   - Application log: `MsgApiTransactionCreated/Updated/Deleted` name type, UUID and file (English text in every locale file).
+- Step 7 (`PATCH`/`DELETE /transactions/{uuid}`):
+  - A cash-account leg can only move to an account in the same currency (`currency-mismatch`), as `TransactionOwnerListEditingSupport` offers only those. Moving removes the transaction from investment plans (as the UI does).
+  - Type changes are allowed within buy/sell, the two deliveries, and the eight cash kinds as one group; a value the new type has no field for must be cleared with `null` in the same patch (`not-allowed-for-type`), and a `null` for such a field is accepted as clearing.
+  - Amounts/units are recomputed only if the patch contains `type`, `instrument`, `currency` or an amount field; otherwise (date, note, ex-date, owners) they are left as stored. `shares` alone keeps the gross value; `quote` or `amount` alone re-derive it; the stored exchange rate is dropped (looked up again) when the currency pair changes.
+  - No-op detection compares the detailed JSON before/after (without `updatedAt`); a no-op answers `200` without marking dirty.
+  - Dry-run `DELETE` answers `200 {"dryRun": true, "removed": [<Transaction>…]}`.

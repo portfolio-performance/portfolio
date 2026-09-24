@@ -1250,6 +1250,116 @@ paths:
           $ref: "#/components/responses/Conflict"
         "500":
           $ref: "#/components/responses/InternalError"
+    patch:
+      operationId: patchTransaction
+      tags: [Transactions]
+      summary: Update a transaction (JSON Merge Patch)
+      description: |
+        A **JSON Merge Patch** (RFC 7386) in the vocabulary of
+        `TransactionCreate`: fields you omit keep their value, an explicit
+        `null` clears an optional field. Accepted as `application/json` or
+        `application/merge-patch+json`. The `uuid` of either leg addresses a
+        buy/sell or transfer; both legs are kept consistent and keep their
+        UUIDs. Unknown fields, and fields that do not apply to the type, are
+        rejected `422`.
+
+        - **Owner change** (`cashAccount`, `investmentAccount`,
+          `fromCashAccount`, ...) moves the legs; a cash-account leg can only
+          move to an account in the same currency (`currency-mismatch`), as in
+          the application. Moving removes the transaction from investment
+          plans.
+        - **Type change** only within a kind: `buy` and `sell`,
+          `delivery-inbound` and `delivery-outbound`, and among `deposit`,
+          `removal`, `interest`, `interest-charge`, `fees`, `fees-refund`,
+          `taxes`, `tax-refund`; anything else is `not-allowed-for-type`. A
+          value the new type has no field for (e.g. the `taxes` of an interest
+          booking turned deposit) must be cleared with `null` in the same
+          patch.
+        - **Amounts** are recomputed as on create when any amount field,
+          `instrument`, `currency` or `type` is patched. Changing `shares`
+          keeps the gross value (pass `quote` to recompute it); patching
+          `amount` alone derives the gross value from the new total; the
+          exchange rate is looked up again when the currency pair changes. A
+          patch of only the date, the note, the ex-date or the owners leaves
+          amounts and units untouched.
+
+        A patch that changes nothing does not mark the file dirty. With
+        `?dry_run=true` the answer is the transaction as it would be
+        (`dryRun: true`), and nothing is changed.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: "#/components/schemas/TransactionPatch"
+            examples:
+              moveAndAnnotate:
+                summary: Move a buy to another investment account and change the note
+                value:
+                  investmentAccount: e1f2a3b4-5c6d-4e7f-8a9b-0c1d2e3f4a5b
+                  note: moved
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransactionPatch"
+      responses:
+        "200":
+          description: The updated transaction, or the preview of a dry run
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionWriteResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    delete:
+      operationId: deleteTransaction
+      tags: [Transactions]
+      summary: Delete a transaction including its linked leg
+      description: |
+        Deletes the transaction and the other leg of a buy/sell or transfer
+        (either leg's `uuid` addresses it), and removes it from investment
+        plans, as the application does. With `?dry_run=true` nothing is
+        deleted and the answer (`200`) lists the legs that would be removed.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+      responses:
+        "200":
+          description: Dry run, the legs that would be removed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionDeletePreview"
+        "204":
+          description: Deleted
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
 
   /v1/files/{file}/holdings:
     parameters:
@@ -2534,12 +2644,73 @@ components:
         note:
           type: string
 
+    TransactionPatch:
+      type: object
+      description: |
+        A JSON Merge Patch with the fields of `TransactionCreate` (without
+        `clientRef`); `null` clears an optional field. Which fields apply
+        depends on the (possibly new) `type`.
+      properties:
+        type:
+          type: string
+        date:
+          type: string
+        cashAccount:
+          type: string
+        investmentAccount:
+          type: string
+        instrument:
+          type: [string, "null"]
+        shares:
+          $ref: "#/components/schemas/DecimalInput"
+        quote:
+          $ref: "#/components/schemas/DecimalInput"
+        grossValue:
+          $ref: "#/components/schemas/DecimalInput"
+        exchangeRate:
+          $ref: "#/components/schemas/NullableDecimalInput"
+        fees:
+          $ref: "#/components/schemas/NullableDecimalInput"
+        taxes:
+          $ref: "#/components/schemas/NullableDecimalInput"
+        forexFees:
+          $ref: "#/components/schemas/NullableDecimalInput"
+        forexTaxes:
+          $ref: "#/components/schemas/NullableDecimalInput"
+        amount:
+          $ref: "#/components/schemas/DecimalInput"
+        targetAmount:
+          $ref: "#/components/schemas/DecimalInput"
+        exDate:
+          type: [string, "null"]
+          format: date
+        currency:
+          type: [string, "null"]
+        fromCashAccount:
+          type: string
+        toCashAccount:
+          type: string
+        fromInvestmentAccount:
+          type: string
+        toInvestmentAccount:
+          type: string
+        note:
+          type: [string, "null"]
+
     DecimalInput:
       description: A decimal as a JSON number or a string holding a plain decimal literal.
       oneOf:
         - type: string
           pattern: "^-?\\d+(\\.\\d+)?$"
         - type: number
+
+    NullableDecimalInput:
+      description: Like `DecimalInput`; `null` clears the value.
+      oneOf:
+        - type: string
+          pattern: "^-?\\d+(\\.\\d+)?$"
+        - type: number
+        - type: "null"
 
     TransactionWriteResult:
       description: |
@@ -2557,6 +2728,19 @@ components:
               description: |
                 Present (`true`) when a create with an already used `clientRef`
                 answered the existing transaction instead of creating one.
+
+    TransactionDeletePreview:
+      type: object
+      description: What a dry-run delete would remove.
+      required: [dryRun, removed]
+      properties:
+        dryRun:
+          type: boolean
+        removed:
+          type: array
+          description: The transaction and, for a buy/sell or transfer, its other leg.
+          items:
+            $ref: "#/components/schemas/Transaction"
 
     Holding:
       type: object

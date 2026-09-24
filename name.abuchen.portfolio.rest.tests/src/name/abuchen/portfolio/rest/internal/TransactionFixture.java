@@ -166,12 +166,32 @@ public class TransactionFixture
         return TransactionsHandler.create(context(false, null), json(body)).entity();
     }
 
+    public JsonObject patch(String uuid, String body)
+    {
+        return TransactionsHandler.patch(context(false, null), uuid, json(body)).entity();
+    }
+
     /** the 422 of a create, failing if it succeeds */
     public ApiException createFails(String body)
     {
         try
         {
             TransactionsHandler.create(context(false, null), json(body));
+            Assert.fail("expected ApiException for " + body);
+            return null;
+        }
+        catch (ApiException e)
+        {
+            return e;
+        }
+    }
+
+    /** the 422 of a patch, failing if it succeeds */
+    public ApiException patchFails(String uuid, String body)
+    {
+        try
+        {
+            TransactionsHandler.patch(context(false, null), uuid, json(body));
             Assert.fail("expected ApiException for " + body);
             return null;
         }

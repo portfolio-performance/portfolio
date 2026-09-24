@@ -5,8 +5,11 @@ import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import com.google.gson.JsonObject;
 
@@ -49,9 +52,9 @@ import name.abuchen.portfolio.rest.internal.TransactionTypes.Kind;
  * on its outbound leg, with the inverse exchange rate</li>
  * </ul>
  * Planning never touches the model: {@link Plan#preview} builds detached
- * objects that are not added to any account; only {@link Plan#apply} changes
- * the model. Every violation is collected before anything is thrown, as a 422
- * with all field errors at once.
+ * objects that are not added to any account; only {@link Plan#apply} and
+ * {@link UpdatePlan#apply} change the model. Every violation is collected
+ * before anything is thrown, as a 422 with all field errors at once.
  */
 @SuppressWarnings("nls")
 public final class TransactionPlanner
@@ -87,6 +90,10 @@ public final class TransactionPlanner
                     SHARES, QUOTE, GROSS_VALUE, EXCHANGE_RATE, FEES, TAXES, FOREX_FEES, FOREX_TAXES, AMOUNT,
                     TARGET_AMOUNT, EX_DATE, CURRENCY, FROM_CASH_ACCOUNT, TO_CASH_ACCOUNT, FROM_INVESTMENT_ACCOUNT,
                     TO_INVESTMENT_ACCOUNT, NOTE);
+
+    /** fields whose change requires the amounts and units to be recomputed */
+    private static final Set<String> MONETARY = Set.of(TYPE, INSTRUMENT, SHARES, QUOTE, GROSS_VALUE, EXCHANGE_RATE,
+                    FEES, TAXES, FOREX_FEES, FOREX_TAXES, AMOUNT, TARGET_AMOUNT, CURRENCY);
 
     /** a leg as it is written into the model */
     /* package */ record Leg(TransactionOwner<?> owner, Enum<?> type, String currency, long amount, long shares,
@@ -156,6 +163,105 @@ public final class TransactionPlanner
         }
     }
 
+    /** a validated merge patch of an existing transaction */
+    public static final class UpdatePlan
+    {
+        private final Client client;
+        private final TransactionPair<?> existing;
+        private final Spec spec;
+        private final Draft before;
+        private final Draft after;
+        private final Set<String> patched;
+
+        private UpdatePlan(Client client, TransactionPair<?> existing, Spec spec, Draft before, Draft after,
+                        Set<String> patched)
+        {
+            this.client = client;
+            this.existing = existing;
+            this.spec = spec;
+            this.before = before;
+            this.after = after;
+            this.patched = patched;
+        }
+
+        /**
+         * The transaction as it would be after the update, with the UUIDs of
+         * the existing legs; without {@code updatedAt}.
+         */
+        public JsonObject preview()
+        {
+            var pair = build(spec);
+            setSource(pair.getTransaction(), existing.getTransaction().getSource());
+
+            var json = EntityJson.toJsonDetailed(pair);
+            json.remove("updatedAt");
+            json.addProperty("uuid", existing.getTransaction().getUUID());
+
+            var linked = TransactionsHandler.linked(existing);
+            if (linked != null && json.has("linked"))
+                json.getAsJsonObject("linked").addProperty("uuid", linked.getTransaction().getUUID());
+
+            return json;
+        }
+
+        /** true if the update would not change anything */
+        public boolean isNoop()
+        {
+            var current = EntityJson.toJsonDetailed(existing);
+            current.remove("updatedAt");
+            return current.equals(preview());
+        }
+
+        /** the changed fields, for the application log */
+        public List<ChangeLog.Change> changes()
+        {
+            return patched.stream().filter(ALL_FIELDS::contains) //
+                            .map(field -> new ChangeLog.Change(field, before.describe(field), after.describe(field)))
+                            .filter(change -> !Objects.equals(change.from(), change.to())) //
+                            .toList();
+        }
+
+        /**
+         * Writes the update into the existing objects, which keep their UUIDs.
+         * Moving a transaction to another account removes and re-inserts it,
+         * as the application does when the owner is edited in a table. The
+         * caller marks the client dirty.
+         */
+        public TransactionPair<?> apply()
+        {
+            var main = existing.getTransaction();
+            var crossEntry = main.getCrossEntry();
+            var other = crossEntry != null ? crossEntry.getCrossTransaction(main) : null;
+
+            var moved = spec.main().owner() != existing.getOwner()
+                            || (other != null && spec.other().owner() != crossEntry.getCrossOwner(main));
+
+            if (moved)
+            {
+                owner(existing.getOwner()).deleteTransaction(main, client);
+                if (crossEntry != null)
+                {
+                    crossEntry.setOwner(main, spec.main().owner());
+                    crossEntry.setOwner(other, spec.other().owner());
+                }
+            }
+
+            write(main, spec, spec.main());
+            if (other != null)
+                write(other, spec, spec.other());
+
+            if (moved)
+            {
+                if (crossEntry != null)
+                    crossEntry.insert();
+                else
+                    owner(spec.main().owner()).addTransaction(main);
+            }
+
+            return TransactionsHandler.pair(spec.main().owner(), main);
+        }
+    }
+
     private TransactionPlanner()
     {
     }
@@ -191,6 +297,105 @@ public final class TransactionPlanner
         var spec = compute(new Context(client, factory, json), draft, true, null);
         json.throwIfErrors();
         return new Plan(spec);
+    }
+
+    /**
+     * Validates a merge patch of an existing transaction (given as the leg
+     * the transaction list reports) and resolves it into an
+     * {@link UpdatePlan}; throws a 422 with every violation. Fields that are
+     * omitted keep their value, an explicit {@code null} clears a field. The
+     * type can only change within its kind (buy and sell, the two deliveries,
+     * the cash bookings). Must be called on the UI thread.
+     */
+    public static UpdatePlan planUpdate(Client client, ExchangeRateProviderFactory factory,
+                    TransactionPair<?> existing, JsonObject patch)
+    {
+        var json = new Json(patch);
+
+        var kind = TransactionTypes.kindOf(existing.getTransaction());
+        if (kind == null)
+            throw ApiException.validation(List.of(new ApiException.FieldError(TYPE, "not-allowed-for-type", "this transaction cannot be edited through the API")));
+
+        var before = Draft.extract(kind, existing);
+        var after = Draft.extract(kind, existing);
+
+        if (json.has(TYPE))
+        {
+            var type = json.isNull(TYPE) ? null : json.optString(TYPE);
+            if (json.isNull(TYPE))
+                json.add(new ApiException.FieldError(TYPE, "required", "type cannot be removed"));
+            else if (type != null && !type.equals(before.type)
+                            && !type.equals(TransactionTypes.wireType(existing.getTransaction())))
+            {
+                if (kind.types().contains(type))
+                    after.type = type;
+                else if (TransactionTypes.kindOf(type) != null || TransactionTypes.WIRE_TYPES.contains(type))
+                    json.add(new ApiException.FieldError(TYPE, "not-allowed-for-type", MessageFormat.format("a {0} transaction cannot be changed into a {1} transaction, delete it and create a new one", before.type, type)));
+                else
+                    json.add(new ApiException.FieldError(TYPE, "invalid-value", MessageFormat.format("{0} is not a transaction type", type)));
+            }
+        }
+
+        var allowed = allowedFields(after.type);
+        for (var field : allowed)
+            read(client, json, after, field);
+
+        // a field the (new) type has no use for may only be cleared, e.g. the
+        // taxes of an interest booking that becomes a deposit
+        for (var field : ALL_FIELDS)
+        {
+            if (TYPE.equals(field) || allowed.contains(field) || !json.has(field))
+                continue;
+
+            if (json.isNull(field))
+                after.clear(field);
+            else
+                json.add(new ApiException.FieldError(field, "not-allowed-for-type", MessageFormat.format("{0} does not apply to a {1} transaction", field, after.type)));
+        }
+
+        if (patch.has(WriteContext.CLIENT_REF_FIELD))
+        {
+            json.ignore(WriteContext.CLIENT_REF_FIELD);
+            json.add(new ApiException.FieldError(WriteContext.CLIENT_REF_FIELD, "unknown-field", "clientRef cannot be changed"));
+        }
+        json.rejectUnknownFields();
+
+        // a type change must not silently drop values the new type has no
+        // field for (e.g. the taxes of an interest booking turned deposit)
+        if (!after.type.equals(before.type))
+        {
+            for (var field : ALL_FIELDS)
+            {
+                if (!allowed.contains(field) && !TYPE.equals(field) && !EX_DATE.equals(field) && after.isSet(field))
+                    json.add(new ApiException.FieldError(field, "not-allowed-for-type", MessageFormat.format("{0} does not apply to a {1} transaction, set it to null to change the type", field, after.type)));
+            }
+        }
+
+        // as the application's owner editing: a cash-account leg can only move
+        // to an account in the same currency
+        checkSameCurrency(json, CASH_ACCOUNT, before.cashAccount, after.cashAccount);
+        checkSameCurrency(json, FROM_CASH_ACCOUNT, before.fromCashAccount, after.fromCashAccount);
+        checkSameCurrency(json, TO_CASH_ACCOUNT, before.toCashAccount, after.toCashAccount);
+
+        // values derived from what the patch replaces are recomputed
+        if (kind != Kind.CASH_TRANSFER && kind != Kind.SECURITY_TRANSFER)
+        {
+            if (patch.has(QUOTE) && !patch.has(GROSS_VALUE))
+                after.grossValue = null;
+            if (patch.has(AMOUNT) && !patch.has(GROSS_VALUE) && !patch.has(QUOTE))
+                after.grossValue = null;
+        }
+        if (kind == Kind.SECURITY_TRANSFER && patch.has(QUOTE) && !patch.has(AMOUNT))
+            after.amount = null;
+        if (!patch.has(EXCHANGE_RATE) && !Objects.equals(ratePair(kind, before), ratePair(kind, after)))
+            after.exchangeRate = null;
+
+        var monetary = patch.keySet().stream().anyMatch(MONETARY::contains);
+
+        var spec = compute(new Context(client, factory, json), after, monetary, existing);
+        json.throwIfErrors();
+
+        return new UpdatePlan(client, existing, spec, before, after, new LinkedHashSet<>(patch.keySet()));
     }
 
     /** the fields a transaction of the given (valid) create type accepts */
@@ -302,6 +507,26 @@ public final class TransactionPlanner
         if (security.isEmpty())
             json.add(new ApiException.FieldError(field, "unknown-reference", MessageFormat.format("there is no instrument {0}", uuid)));
         return security.orElse(null);
+    }
+
+    private static void checkSameCurrency(Json json, String field, Account before, Account after)
+    {
+        if (before != null && after != null && before != after
+                        && !before.getCurrencyCode().equals(after.getCurrencyCode()))
+            json.add(new ApiException.FieldError(field, "currency-mismatch", MessageFormat.format("{0} must be a cash account in {1}, the currency of the transaction", field, before.getCurrencyCode())));
+    }
+
+    /** the currency pair an exchange rate of the draft converts, or null */
+    private static String ratePair(Kind kind, Draft draft)
+    {
+        var instrument = draft.instrument != null ? draft.instrument.getCurrencyCode() : null;
+        return switch (kind)
+        {
+            case BUY_SELL, DIVIDEND, CASH -> instrument + "/"
+                            + (draft.cashAccount != null ? draft.cashAccount.getCurrencyCode() : null);
+            case DELIVERY -> instrument + "/" + draft.currency;
+            case CASH_TRANSFER, SECURITY_TRANSFER -> null;
+        };
     }
 
     private static Spec compute(Context context, Draft draft, boolean monetary, TransactionPair<?> existing)
@@ -1010,6 +1235,177 @@ public final class TransactionPlanner
                 case EX_DATE -> exDate = null;
                 default -> setAmount(field, null);
             }
+        }
+
+        /** whether the field has a value that matters: not absent, not zero */
+        boolean isSet(String field)
+        {
+            var value = get(field);
+            if (value instanceof Long l)
+                return l != 0;
+            if (value instanceof BigDecimal d)
+                return EXCHANGE_RATE.equals(field) ? d.compareTo(BigDecimal.ONE) != 0 : d.signum() != 0;
+            return value != null;
+        }
+
+        /** a human-readable value for the application log, null if absent */
+        String describe(String field)
+        {
+            var value = get(field);
+            if (value == null)
+                return null;
+            if (value instanceof Account a)
+                return a.getName();
+            if (value instanceof Portfolio p)
+                return p.getName();
+            if (value instanceof Security s)
+                return s.getName();
+            if (value instanceof Long l)
+                return (SHARES.equals(field) ? Amounts.shares(l) : Amounts.amount(l)).stripTrailingZeros()
+                                .toPlainString();
+            if (value instanceof BigDecimal d)
+                return d.toPlainString();
+            return value.toString();
+        }
+
+        /** the draft of an existing transaction, given as the leg the list reports */
+        static Draft extract(Kind kind, TransactionPair<?> pair)
+        {
+            var transaction = pair.getTransaction();
+            var crossEntry = transaction.getCrossEntry();
+
+            var draft = new Draft();
+            draft.date = transaction.getDateTime();
+            draft.note = transaction.getNote();
+
+            switch (kind)
+            {
+                case BUY_SELL -> {
+                    draft.type = TransactionTypes.wireType(transaction);
+                    draft.investmentAccount = (Portfolio) pair.getOwner();
+                    draft.cashAccount = (Account) crossEntry.getCrossOwner(transaction);
+                    draft.instrument = transaction.getSecurity();
+                    draft.shares = transaction.getShares();
+                    draft.extractSecurityUnits((PortfolioTransaction) transaction);
+                }
+                case DELIVERY -> {
+                    draft.type = TransactionTypes.wireType(transaction);
+                    draft.investmentAccount = (Portfolio) pair.getOwner();
+                    draft.instrument = transaction.getSecurity();
+                    draft.shares = transaction.getShares();
+                    draft.currency = transaction.getCurrencyCode();
+                    draft.extractSecurityUnits((PortfolioTransaction) transaction);
+                }
+                case DIVIDEND -> {
+                    var t = (AccountTransaction) transaction;
+                    draft.type = TransactionTypes.wireType(t);
+                    draft.cashAccount = (Account) pair.getOwner();
+                    draft.instrument = t.getSecurity();
+                    draft.shares = t.getShares();
+                    draft.exDate = t.getExDate();
+                    draft.extractDividendUnits(t);
+                }
+                case CASH -> {
+                    var t = (AccountTransaction) transaction;
+                    draft.type = TransactionTypes.wireType(t);
+                    draft.cashAccount = (Account) pair.getOwner();
+                    draft.instrument = t.getSecurity();
+                    draft.exDate = t.getExDate();
+                    draft.amount = t.getAmount();
+                    if (t.getType() == AccountTransaction.Type.INTEREST)
+                        draft.taxes = t.getUnits().filter(u -> u.getType() == Transaction.Unit.Type.TAX)
+                                        .mapToLong(u -> u.getAmount().getAmount()).sum();
+                    t.getUnit(Transaction.Unit.Type.GROSS_VALUE).ifPresent(u -> draft.exchangeRate = u.getExchangeRate());
+                }
+                case CASH_TRANSFER -> {
+                    var target = crossEntry.getCrossTransaction(transaction);
+                    draft.type = TransactionTypes.CASH_TRANSFER;
+                    draft.fromCashAccount = (Account) pair.getOwner();
+                    draft.toCashAccount = (Account) crossEntry.getCrossOwner(transaction);
+                    draft.amount = transaction.getAmount();
+                    if (!transaction.getCurrencyCode().equals(target.getCurrencyCode()))
+                        draft.targetAmount = target.getAmount();
+                }
+                case SECURITY_TRANSFER -> {
+                    var target = crossEntry.getCrossTransaction(transaction);
+                    draft.type = TransactionTypes.SECURITY_TRANSFER;
+                    draft.fromInvestmentAccount = (Portfolio) pair.getOwner();
+                    draft.toInvestmentAccount = (Portfolio) crossEntry.getCrossOwner(transaction);
+                    draft.instrument = transaction.getSecurity();
+                    draft.shares = transaction.getShares();
+                    draft.amount = target.getAmount();
+                }
+            }
+
+            return draft;
+        }
+
+        /** as {@code AbstractSecurityTransactionModel#fillFromTransaction} */
+        private void extractSecurityUnits(PortfolioTransaction transaction)
+        {
+            fees = 0L;
+            taxes = 0L;
+            forexFees = 0L;
+            forexTaxes = 0L;
+
+            transaction.getUnits().forEach(unit -> {
+                switch (unit.getType())
+                {
+                    case GROSS_VALUE -> {
+                        grossValue = unit.getForex().getAmount();
+                        exchangeRate = unit.getExchangeRate();
+                    }
+                    case FEE -> {
+                        if (unit.getForex() != null)
+                            forexFees += unit.getForex().getAmount();
+                        else
+                            fees += unit.getAmount().getAmount();
+                    }
+                    case TAX -> {
+                        if (unit.getForex() != null)
+                            forexTaxes += unit.getForex().getAmount();
+                        else
+                            taxes += unit.getAmount().getAmount();
+                    }
+                }
+            });
+
+            if (grossValue == null)
+                grossValue = transaction.getGrossValueAmount();
+        }
+
+        /** as {@code AccountTransactionModel#presetFromSource} */
+        private void extractDividendUnits(AccountTransaction transaction)
+        {
+            fees = 0L;
+            taxes = 0L;
+            forexFees = 0L;
+            forexTaxes = 0L;
+
+            transaction.getUnits().forEach(unit -> {
+                switch (unit.getType())
+                {
+                    case GROSS_VALUE -> {
+                        grossValue = unit.getAmount().getAmount();
+                        exchangeRate = unit.getExchangeRate();
+                    }
+                    case FEE -> {
+                        if (unit.getForex() != null)
+                            forexFees += unit.getForex().getAmount();
+                        else
+                            fees += unit.getAmount().getAmount();
+                    }
+                    case TAX -> {
+                        if (unit.getForex() != null)
+                            forexTaxes += unit.getForex().getAmount();
+                        else
+                            taxes += unit.getAmount().getAmount();
+                    }
+                }
+            });
+
+            if (grossValue == null)
+                grossValue = transaction.getGrossValueAmount();
         }
     }
 }

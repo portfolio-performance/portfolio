@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -121,6 +122,76 @@ public final class TransactionsHandler
                         pair.getTransaction().getUUID(), context.file().getLabel());
 
         return new WriteResult(EntityJson.toJsonDetailed(pair), true);
+    }
+
+    /**
+     * Updates a transaction with a JSON Merge Patch, see
+     * {@link TransactionPlanner#planUpdate}. Either leg's UUID addresses a
+     * buy/sell or transfer; both legs are kept consistent and keep their
+     * UUIDs. Must be called on the UI thread.
+     */
+    public static WriteResult patch(WriteContext context, String uuid, JsonObject patch)
+    {
+        var client = context.client();
+        var existing = find(client, uuid);
+
+        var plan = TransactionPlanner.planUpdate(client, context.file().getExchangeRateProviderFactory(), existing,
+                        patch);
+
+        if (context.dryRun())
+        {
+            var json = plan.preview();
+            json.addProperty("dryRun", true); //$NON-NLS-1$
+            return new WriteResult(json, false);
+        }
+
+        if (plan.isNoop())
+            return new WriteResult(EntityJson.toJsonDetailed(existing), false);
+
+        var pair = plan.apply();
+        client.markDirty();
+
+        ChangeLog.recordChanges(plan.changes(), Messages.MsgApiTransactionUpdated,
+                        TransactionTypes.wireType(pair.getTransaction()), pair.getTransaction().getUUID(),
+                        context.file().getLabel());
+
+        return new WriteResult(EntityJson.toJsonDetailed(pair), true);
+    }
+
+    /**
+     * Deletes a transaction including the other leg of a buy/sell or transfer
+     * and its links from investment plans, as the application does. A dry run
+     * answers the legs that would be removed and changes nothing; a real
+     * delete answers null. Must be called on the UI thread.
+     */
+    public static JsonObject delete(WriteContext context, String uuid)
+    {
+        var client = context.client();
+        var pair = find(client, uuid);
+
+        if (context.dryRun())
+        {
+            var removed = new JsonArray();
+            removed.add(EntityJson.toJson(pair));
+            var linked = linked(pair);
+            if (linked != null)
+                removed.add(EntityJson.toJson(linked));
+
+            var json = new JsonObject();
+            json.addProperty("dryRun", true); //$NON-NLS-1$
+            json.add("removed", removed); //$NON-NLS-1$
+            return json;
+        }
+
+        @SuppressWarnings("unchecked")
+        var owner = (TransactionOwner<Transaction>) pair.getOwner();
+        owner.deleteTransaction(pair.getTransaction(), client);
+        client.markDirty();
+
+        ChangeLog.recordEvent(Messages.MsgApiTransactionDeleted, TransactionTypes.wireType(pair.getTransaction()),
+                        pair.getTransaction().getUUID(), context.file().getLabel());
+
+        return null;
     }
 
     /**

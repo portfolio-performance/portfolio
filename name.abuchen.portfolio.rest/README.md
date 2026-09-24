@@ -176,10 +176,18 @@ Answers `201` with the transaction and both leg UUIDs (`uuid`, `linked.uuid`). A
 with the same `clientRef` creates nothing and answers the first one with `200` and
 `"replayed": true`.
 
+### `PATCH` / `DELETE /v1/files/{file}/transactions/{uuid}`
+
+`PATCH` is a JSON Merge Patch with the create fields (`application/json` or
+`application/merge-patch+json`); either leg's UUID addresses a buy/sell or transfer, both legs stay
+consistent and keep their UUIDs, including when moving to another account. `DELETE` removes both
+legs and answers `204`.
+
 ### Dry runs
 
 Every transaction write accepts `?dry_run=true`: it validates and answers `200` with what it would
-do (`"dryRun": true`) — the resolved transaction — without changing anything.
+do (`"dryRun": true`) — the resolved transaction, or for `DELETE` the legs it would remove — without
+changing anything.
 
 ## Writes are not saved automatically
 

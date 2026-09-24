@@ -135,6 +135,16 @@ public final class ApiRoutes
                         }));
         router.add("GET", "/v1/files/{file}/transactions/{uuid}", read(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
                         (client, req) -> Response.json(200, TransactionsHandler.get(client, req.pathParam("uuid"))))); //$NON-NLS-1$
+        // PATCH accepts application/json as well as application/merge-patch+json:
+        // the body is a JSON Merge Patch either way
+        router.add("PATCH", "/v1/files/{file}/transactions/{uuid}", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> Response.json(200, TransactionsHandler
+                                        .patch(context, req.pathParam("uuid"), parseObject(req)).entity()))); //$NON-NLS-1$
+        router.add("DELETE", "/v1/files/{file}/transactions/{uuid}", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> {
+                            var preview = TransactionsHandler.delete(context, req.pathParam("uuid")); //$NON-NLS-1$
+                            return preview != null ? Response.json(200, preview) : Response.noContent();
+                        }));
 
         router.add("GET", "/v1/files/{file}/holdings", calc(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
                         (context, req) -> Response.json(200, HoldingsHandler.list(context.client(), context.factory(),
