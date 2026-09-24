@@ -2068,6 +2068,49 @@ paths:
         "500":
           $ref: "#/components/responses/InternalError"
 
+  /v1/files/{file}/investment-plans/{name}/actions/generate:
+    parameters:
+      - $ref: "#/components/parameters/File"
+      - $ref: "#/components/parameters/Name"
+    post:
+      operationId: generateInvestmentPlanTransactions
+      tags: [Investment plans]
+      summary: Generate the plan's due transactions
+      description: |
+        Generates one transaction per due date of the plan, from the next date
+        to be generated up to and including today, as the application's
+        "Generate transactions" command does (dates on trade-calendar holidays
+        move to the next trading day). Nothing is due: `count` is `0` and the
+        file is not changed.
+
+        A dry run answers the due `dates` without generating anything. A
+        purchase plan needs a price of the instrument on or before every due
+        date; otherwise the request is refused with `409 missing-price` before
+        anything is generated.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+      responses:
+        "200":
+          description: The generated transactions, or on a dry run the due dates
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvestmentPlanGenerateResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /v1/files/{file}/taxonomies:
     parameters:
       - $ref: "#/components/parameters/File"
@@ -4565,6 +4608,31 @@ components:
         - $ref: "#/components/schemas/InvestmentPlan"
         - $ref: "#/components/schemas/WriteFlags"
 
+    InvestmentPlanGenerateResult:
+      type: object
+      required: [name, count]
+      properties:
+        name:
+          type: string
+        count:
+          type: integer
+          description: The number of transactions generated (or, on a dry run, due).
+        dates:
+          type: array
+          description: Dry run only, the due dates.
+          items:
+            type: string
+            format: date
+        transactions:
+          type: array
+          description: Real run only, the generated transactions.
+          items:
+            $ref: "#/components/schemas/TransactionDetail"
+        nextTransactionDate:
+          type: string
+          format: date
+        dryRun:
+          type: boolean
     MonetaryValue:
       type: object
       description: |
@@ -6182,6 +6250,7 @@ components:
             - https://portfolio-performance.info/rest/problems/file-not-open
             - https://portfolio-performance.info/rest/problems/ambiguous-alias
             - https://portfolio-performance.info/rest/problems/delete-blocked
+            - https://portfolio-performance.info/rest/problems/missing-price
             - https://portfolio-performance.info/rest/problems/password-required
             - https://portfolio-performance.info/rest/problems/open-failed
             - https://portfolio-performance.info/rest/problems/file-loading
@@ -6274,7 +6343,8 @@ components:
         `ambiguous-alias` (the alias matches several records — use the `id`),
         `ambiguous-name` (several watchlists or plans share the addressed name), or,
         on delete, `delete-blocked` (the entity is still referenced; `errors` names
-        by what).
+        by what). Generating investment plan transactions may answer
+        `missing-price` (an instrument has no price for a due date).
       content:
         application/problem+json:
           schema:

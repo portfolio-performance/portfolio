@@ -215,6 +215,10 @@ public final class ApiRoutes
         router.add("DELETE", "/v1/files/{file}/investment-plans/{name}", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
                         (context, req) -> deleted(InvestmentPlansHandler.delete(context, req.pathParam("name"))))); //$NON-NLS-1$
 
+        router.add("POST", "/v1/files/{file}/investment-plans/{name}/actions/generate", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> Response.json(200,
+                                        InvestmentPlansHandler.generate(context, req.pathParam("name"))))); //$NON-NLS-1$
+
         router.add("GET", "/v1/files/{file}/taxonomies", read(resolver, host,
                         (client, req) -> Response.json(200, TaxonomiesHandler.list(client))));
         router.add("POST", "/v1/files/{file}/taxonomies", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$

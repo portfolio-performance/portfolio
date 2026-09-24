@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.rest.internal;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.time.LocalDate;
@@ -10,11 +11,14 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.ObjLongConsumer;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentPlan;
+import name.abuchen.portfolio.model.TransactionPair;
+import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.rest.Messages;
 
@@ -400,6 +404,76 @@ public final class InvestmentPlansHandler
 
         ChangeLog.recordEvent(Messages.MsgApiEntityDeleted, KIND, plan.getName(), context.file().getLabel());
         return null;
+    }
+
+    /**
+     * Generates the plan's due transactions, as the application's "Generate
+     * transactions" command does: one per due date up to and including today
+     * (see {@link InvestmentPlan#getDatesOfTransactionsToBeGenerated()}). A
+     * dry run answers the due dates without generating anything. A purchase
+     * without a price of the instrument on or before a due date is refused
+     * with 409 {@code missing-price} before anything is generated. Must be
+     * called on the UI thread.
+     */
+    public static JsonObject generate(WriteContext context, String name)
+    {
+        var client = context.client();
+        var plan = find(client, name);
+        var dates = plan.getDatesOfTransactionsToBeGenerated();
+
+        if (plan.getPlanType() == InvestmentPlan.Type.PURCHASE_OR_DELIVERY && plan.getSecurity() != null)
+        {
+            var security = plan.getSecurity();
+            var missing = dates.stream().filter(date -> security.getSecurityPrice(date).getValue() == 0).findFirst();
+            if (missing.isPresent())
+                throw missingPrice(MessageFormat.format("{0} has no price on or before {1}", //$NON-NLS-1$
+                                security.getName(), missing.get()));
+        }
+
+        var json = new JsonObject();
+        json.addProperty("name", plan.getName()); //$NON-NLS-1$
+
+        if (context.dryRun())
+        {
+            var array = new JsonArray();
+            dates.forEach(date -> array.add(date.toString()));
+            json.addProperty("dryRun", true); //$NON-NLS-1$
+            json.add("dates", array); //$NON-NLS-1$
+            json.addProperty("count", dates.size()); //$NON-NLS-1$
+            return json;
+        }
+
+        List<TransactionPair<?>> generated;
+        try
+        {
+            var converter = new CurrencyConverterImpl(context.file().getExchangeRateProviderFactory(),
+                            client.getBaseCurrency());
+            generated = plan.generateTransactions(converter);
+        }
+        catch (IOException e)
+        {
+            throw missingPrice(e.getMessage());
+        }
+
+        var transactions = new JsonArray();
+        generated.forEach(pair -> transactions.add(EntityJson.toJsonDetailed(TransactionsHandler.canonical(pair))));
+        json.add("transactions", transactions); //$NON-NLS-1$
+        json.addProperty("count", generated.size()); //$NON-NLS-1$
+        json.addProperty("nextTransactionDate", plan.getDateOfNextTransactionToBeGenerated().toString()); //$NON-NLS-1$
+
+        if (!generated.isEmpty())
+        {
+            client.markDirty();
+            ChangeLog.recordEvent(Messages.MsgApiPlanTransactionsGenerated, generated.size(), plan.getName(),
+                            context.file().getLabel());
+        }
+
+        return json;
+    }
+
+    private static ApiException missingPrice(String detail)
+    {
+        return ApiException.conflict("missing-price", "An instrument price is missing", detail, List.of()); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**

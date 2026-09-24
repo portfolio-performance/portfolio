@@ -213,6 +213,10 @@ it) answers `409 ambiguous-name`; rename them in the application.
   `investmentAccount`, `cashAccount` (UUIDs), `start`, `intervalMonths` or `intervalWeeks`, `amount`,
   `fees`, `taxes`, `autoGenerate`, `note`. The rules are those of the application's plan dialog;
   deleting a plan keeps the transactions it generated.
+- `POST …/investment-plans/{name}/actions/generate` generates the plan's due transactions up to
+  today, as the application's "Generate transactions" does; a dry run lists the due dates. A purchase
+  without an instrument price for a due date is refused with `409 missing-price` before anything is
+  generated.
 
 ### Taxonomies
 
@@ -302,6 +306,7 @@ the user, who can also discard it by closing the file without saving.
 | 409 | `ambiguous-alias` | alias matches several records; use the UUID |
 | 409 | `ambiguous-name` | several watchlists or investment plans share the addressed name |
 | 409 | `delete-blocked` | the entity to delete is still referenced, see `errors` |
+| 409 | `missing-price` | an investment plan cannot generate a purchase: the instrument has no price |
 | 422 | `validation` | one or more fields rejected; see `errors` |
 | 423 | `user-interaction` | a dialog is open in the app — **retry**, see `Retry-After` |
 | 429 | `pairing-pending` | another pairing request awaits the user — retry after `Retry-After` |
