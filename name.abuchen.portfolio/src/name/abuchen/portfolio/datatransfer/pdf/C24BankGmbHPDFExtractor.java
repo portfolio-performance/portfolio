@@ -179,7 +179,7 @@ public class C24BankGmbHPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "note", "type", "amount", "currency") //
                         .documentContext("year") //
-                        .documentContextOptionally("taxDate", "tax", "taxCurrency") //)
+                        .documentContextOptionally("taxDate", "tax", "taxCurrency") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. " //
                                         + "(?<note>Zinsen) " //
                                         + "(?<type>[\\-|\\+])[\\s]?" //
