@@ -77,6 +77,13 @@ public class ClientInput
 
     private boolean isDirty = false;
     private List<Job> regularJobs = new ArrayList<>();
+
+    /**
+     * false if the file was opened on behalf of the REST API: the jobs
+     * scheduled after opening must not show modal dialogs because they block
+     * all API writes until somebody dismisses them.
+     */
+    private boolean interactive = true;
     private List<Runnable> disposeJobs = new ArrayList<>();
     private List<ClientInputListener> listeners = new ArrayList<>();
 
@@ -131,6 +138,15 @@ public class ClientInput
     public boolean isDirty()
     {
         return isDirty;
+    }
+
+    /**
+     * Marks the input as opened without a user in front of it. Must be called
+     * before the file is loaded.
+     */
+    public void setInteractive(boolean interactive)
+    {
+        this.interactive = interactive;
     }
 
     /**
@@ -658,11 +674,13 @@ public class ClientInput
             var converter = new CurrencyConverterImpl(getExchangeRateProviderFacory(), client.getBaseCurrency());
             var predicate = config.getPredicate(converter, client);
 
-            Job initialQuoteUpdate = new UpdatePricesJob(client, predicate,
+            var initialQuoteUpdate = new UpdatePricesJob(client, predicate,
                             EnumSet.of(UpdatePricesJob.Target.LATEST, UpdatePricesJob.Target.HISTORIC));
+            initialQuoteUpdate.suppressAuthenticationDialog(!interactive);
             initialQuoteUpdate.schedule(1000);
 
             var checkInvestmentPlans = new CreateInvestmentPlanTxJob(client, exchangeRateProviderFacory);
+            checkInvestmentPlans.suppressInformationDialog(!interactive);
             checkInvestmentPlans.startAfter(initialQuoteUpdate);
             checkInvestmentPlans.schedule(1100);
 

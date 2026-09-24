@@ -28,6 +28,8 @@ public final class CreateInvestmentPlanTxJob extends AbstractClientJob
 
     private ExchangeRateProviderFactory factory;
 
+    private boolean suppressInformationDialog = false;
+
     public CreateInvestmentPlanTxJob(Client client, ExchangeRateProviderFactory factory)
     {
         super(client, Messages.InvestmentPlanAutoCreationJob);
@@ -37,6 +39,15 @@ public final class CreateInvestmentPlanTxJob extends AbstractClientJob
     public void startAfter(Job otherJob)
     {
         this.startAfterOtherJob = otherJob;
+    }
+
+    /**
+     * Logs the created transactions instead of showing a (modal) information
+     * dialog, e.g. when the file was opened on behalf of the REST API.
+     */
+    public void suppressInformationDialog(boolean suppressInformationDialog)
+    {
+        this.suppressInformationDialog = suppressInformationDialog;
     }
 
     @Override
@@ -63,7 +74,12 @@ public final class CreateInvestmentPlanTxJob extends AbstractClientJob
                 }
             });
 
-            if (!tx.isEmpty())
+            if (!tx.isEmpty() && suppressInformationDialog)
+            {
+                int count = tx.values().stream().mapToInt(List::size).sum();
+                PortfolioPlugin.info(MessageFormat.format(Messages.InvestmentPlanTxForMultiplePlansCreated, count));
+            }
+            else if (!tx.isEmpty())
             {
                 Display.getDefault().asyncExec(() -> {
 

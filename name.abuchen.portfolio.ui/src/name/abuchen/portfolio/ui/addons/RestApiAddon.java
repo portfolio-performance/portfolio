@@ -337,9 +337,19 @@ public class RestApiAddon
                         .findFirst();
 
         if (existing.isPresent())
+        {
             partService.showPart(existing.get(), PartState.ACTIVATE);
+        }
         else
+        {
+            // create the input before the part does, so that the jobs
+            // scheduled after loading do not show modal dialogs
+            var input = clientInputFactory.lookup(file);
+            if (input.getClient() == null)
+                input.setInteractive(false);
+
             OpenFileHandler.openPart(fileName, partService.getActivePart(), application, partService, modelService);
+        }
 
         // the part looked up (and started loading) the input when it was
         // rendered; the factory returns that same cached input
