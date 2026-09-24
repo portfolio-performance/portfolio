@@ -1,5 +1,7 @@
 """Shared parameter types and helpers of the tool modules."""
 
+import re
+from decimal import Decimal
 from typing import Annotated, Any
 
 from fastmcp.exceptions import ToolError
@@ -28,6 +30,17 @@ Clear = Annotated[
     list[str] | None,
     Field(description="Names of optional fields (tool parameter names) to clear, i.e. set to null."),
 ]
+InvestmentAccountFilter = Annotated[
+    list[str] | None, Field(description="Restrict to these investment accounts (UUIDs)")
+]
+CashAccountFilter = Annotated[list[str] | None, Field(description="Restrict to these cash accounts (UUIDs)")]
+
+
+def uuid_list(values: list[str] | None) -> str | None:
+    """A report filter query value: the UUIDs as a comma-separated list, None when empty."""
+    if not values:
+        return None
+    return ",".join(values)
 
 
 def api() -> PPClient:
@@ -75,6 +88,32 @@ def no_floats(value: Any, field: str) -> Any:
         for n, v in enumerate(value):
             no_floats(v, f"{field}[{n}]")
     return value
+
+
+NUMERIC_ATTRIBUTE_TYPES = {"amount", "quote", "shares", "percent", "number"}
+_PLAIN_DECIMAL = re.compile(r"^[+-]?\d+(?:\.\d+)?$")
+
+
+def typed_attributes(attributes: dict[str, Any] | None, numeric_ids: set[str] | None) -> dict[str, Any] | None:
+    """Custom attribute values as the API expects them: numeric attributes as JSON numbers.
+
+    Numeric values are passed to the tools as decimal strings (N6) and sent as exact JSON
+    numbers. `numeric_ids` are the ids of the numeric attributes; None means unknown, and
+    then every plain decimal string is treated as a number.
+    """
+    if attributes is None:
+        return None
+    no_floats(attributes, "attributes")
+    typed: dict[str, Any] = {}
+    for key, value in attributes.items():
+        numeric = key in numeric_ids if numeric_ids is not None else isinstance(value, str)
+        if numeric and isinstance(value, str) and _PLAIN_DECIMAL.match(value.strip()):
+            typed[key] = Decimal(value.strip())
+        elif numeric and isinstance(value, int) and not isinstance(value, bool):
+            typed[key] = Decimal(value)
+        else:
+            typed[key] = value
+    return typed
 
 
 def out(value: Any) -> dict[str, Any]:

@@ -1,6 +1,6 @@
 """Cash accounts (PP "accounts") and investment accounts (PP "portfolios")."""
 
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 
 from fastmcp.exceptions import ToolError
 from pydantic import Field
@@ -18,14 +18,17 @@ from pp_mcp.tools._common import (
     deleted,
     dry,
     fpath,
-    no_floats,
     out,
+    typed_attributes,
 )
 
 Uuid = Annotated[str, Field(description="Account UUID")]
 Attributes = Annotated[
     dict[str, Any] | None,
-    Field(description="Custom attributes keyed by attribute id; numbers as decimal strings; null clears one on update"),
+    Field(
+        description="Custom attributes keyed by attribute id; numeric values as decimal strings (sent as JSON "
+        "numbers); null clears one on update"
+    ),
 ]
 AllowDuplicate = Annotated[
     bool, Field(description="Create even if an account with the same name (and currency) already exists")
@@ -80,12 +83,34 @@ async def list_accounts(
     return out({"cashAccounts": cash.get("items", []), "investmentAccounts": invest.get("items", [])})
 
 
+@mcp.tool(annotations=READ_ONLY)
+async def get_account(
+    uuid: Uuid,
+    kind: Annotated[Literal["cash", "investment"], Field(description="cash account or investment account")],
+    file: FileParam = None,
+    date: Annotated[str | None, Field(description="Valuation date YYYY-MM-DD (default today)")] = None,
+    currency: Annotated[
+        str | None, Field(description="Reporting currency of an investment account's value")
+    ] = None,
+) -> dict[str, Any]:
+    """Read one cash account (with `balance` in its currency) or investment account
+    (with `value` of its positions at `date` in `currency`, default base currency)."""
+    date_str(date, "date")
+    async with api() as pp:
+        f = await pp.resolve_file(file)
+        if kind == "cash":
+            return out(await pp.get(fpath(f, "cash-accounts", uuid), params={"date": date}))
+        params = {"date": date, "currency": currency}
+        return out(await pp.get(fpath(f, "investment-accounts", uuid), params=params))
+
+
 @mcp.tool(annotations=WRITE)
 async def create_cash_account(
     name: str,
     currency: Annotated[str, Field(description="ISO 4217 currency code")],
     file: FileParam = None,
     note: str | None = None,
+    retired: Annotated[bool | None, Field(description="Create it retired (deactivated)")] = None,
     attributes: Attributes = None,
     allow_duplicate: AllowDuplicate = False,
     client_ref: ClientRef = None,
@@ -102,7 +127,8 @@ async def create_cash_account(
             name=name,
             currencyCode=currency,
             note=note,
-            attributes=no_floats(attributes, "attributes"),
+            retired=retired,
+            attributes=typed_attributes(attributes, None),
             clientRef=client_ref,
         )
         return _created(await pp.post(fpath(f, "cash-accounts"), params=dry(dry_run), body=body), dry_run)
@@ -123,7 +149,7 @@ async def update_cash_account(
     """Update a cash account (merge patch; `clear` accepts `note`).
     The change is in memory only until save_file."""
     patch = compact(
-        name=name, currencyCode=currency, note=note, retired=retired, attributes=no_floats(attributes, "attributes")
+        name=name, currencyCode=currency, note=note, retired=retired, attributes=typed_attributes(attributes, None)
     )
     apply_clear(patch, clear, {"note": "note"})
     if not patch:
@@ -149,6 +175,7 @@ async def create_investment_account(
     reference_cash_account: Annotated[str, Field(description="UUID of the cash account that settles its trades")],
     file: FileParam = None,
     note: str | None = None,
+    retired: Annotated[bool | None, Field(description="Create it retired (deactivated)")] = None,
     attributes: Attributes = None,
     allow_duplicate: AllowDuplicate = False,
     client_ref: ClientRef = None,
@@ -166,7 +193,8 @@ async def create_investment_account(
             name=name,
             referenceCashAccount=reference_cash_account,
             note=note,
-            attributes=no_floats(attributes, "attributes"),
+            retired=retired,
+            attributes=typed_attributes(attributes, None),
             clientRef=client_ref,
         )
         return _created(await pp.post(fpath(f, "investment-accounts"), params=dry(dry_run), body=body), dry_run)
@@ -191,7 +219,7 @@ async def update_investment_account(
         referenceCashAccount=reference_cash_account,
         note=note,
         retired=retired,
-        attributes=no_floats(attributes, "attributes"),
+        attributes=typed_attributes(attributes, None),
     )
     apply_clear(patch, clear, {"note": "note"})
     if not patch:

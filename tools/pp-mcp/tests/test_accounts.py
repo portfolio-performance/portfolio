@@ -63,6 +63,28 @@ async def test_create_investment_account_duplicate(api):
     assert result["created"] is False and result["account"]["uuid"] == "p1"
 
 
+async def test_get_account(api):
+    cash = api.get("/v1/files/main/cash-accounts/c1").respond(200, json=CASH)
+    assert await accounts.get_account("c1", "cash", "main", date="2026-01-31") == CASH
+    assert sent_query(cash) == {"date": "2026-01-31"}
+    depot = api.get("/v1/files/main/investment-accounts/p1").respond(200, json=DEPOT)
+    await accounts.get_account("p1", "investment", "main", currency="USD")
+    assert sent_query(depot) == {"currency": "USD"}
+
+
+async def test_account_attributes_numbers_and_retired(api):
+    route = api.post("/v1/files/main/cash-accounts").respond(201, json={"uuid": "c2"})
+    await accounts.create_cash_account(
+        "Savings", "EUR", "main", retired=False, attributes={"rate": "0.0125", "bank": "ING", "on": True},
+        allow_duplicate=True,
+    )
+    content = route.calls.last.request.content
+    assert b'"rate": 0.0125' in content and b'"bank": "ING"' in content
+    assert sent_json(route)["retired"] is False
+    with pytest.raises(ToolError, match="attributes.rate"):
+        await accounts.update_cash_account("c1", "main", attributes={"rate": 0.5})
+
+
 async def test_update_and_delete_investment_account(api):
     patch = api.patch("/v1/files/main/investment-accounts/p1").respond(200, json=DEPOT)
     await accounts.update_investment_account("p1", "main", name="Depot", reference_cash_account="c2", dry_run=True)

@@ -6,14 +6,14 @@ from pydantic import Field
 
 from pp_mcp.app import READ_ONLY, mcp
 from pp_mcp.money import date_str
-from pp_mcp.tools._common import FileParam, api, fpath, out
+from pp_mcp.tools._common import CashAccountFilter, FileParam, InvestmentAccountFilter, api, fpath, out, uuid_list
 
 CostMethod = Annotated[
     Literal["fifo", "moving-average"] | None, Field(description="Cost basis method (default fifo)")
 ]
 Currency = Annotated[str | None, Field(description="Reporting currency, ISO 4217 (default: the file's base currency)")]
-InvestmentAccount = Annotated[str | None, Field(description="Restrict to this investment account (UUID)")]
-CashAccount = Annotated[str | None, Field(description="Restrict to this cash account (UUID)")]
+InvestmentAccount = InvestmentAccountFilter
+CashAccount = CashAccountFilter
 OpeningDate = Annotated[
     str, Field(description="Opening valuation date YYYY-MM-DD; activity on this day belongs to the opening balance")
 ]
@@ -36,14 +36,16 @@ async def get_holdings(
     reporting currency, plus per-position cost basis, gains, returns and dividends
     over (opening_date, date]. Money values are `{value, currency}` with decimal
     strings (2 decimals); shares up to 8 decimals; returns are fractions
-    (0.05 = 5 %)."""
+    (0.05 = 5 %). An investment-account filter brings its reference cash account's
+    security transactions along (a buy is then an inbound delivery unless the cash
+    account is selected as well)."""
     params = {
         "date": date_str(date, "date"),
         "openingDate": date_str(opening_date, "opening_date"),
         "currency": currency,
         "costMethod": cost_method,
-        "investmentAccount": investment_account,
-        "cashAccount": cash_account,
+        "investmentAccount": uuid_list(investment_account),
+        "cashAccount": uuid_list(cash_account),
     }
     async with api() as pp:
         f = await pp.resolve_file(file)
@@ -70,8 +72,8 @@ async def get_performance(
         "openingDate": date_str(from_date, "from_date"),
         "closingDate": date_str(to_date, "to_date"),
         "currency": currency,
-        "investmentAccount": investment_account,
-        "cashAccount": cash_account,
+        "investmentAccount": uuid_list(investment_account),
+        "cashAccount": uuid_list(cash_account),
     }
     async with api() as pp:
         f = await pp.resolve_file(file)
@@ -91,6 +93,7 @@ async def get_security_performance(
     currency: Currency = None,
     cost_method: CostMethod = None,
     investment_account: InvestmentAccount = None,
+    cash_account: CashAccount = None,
 ) -> dict[str, Any]:
     """Per-instrument performance between two valuation dates (returns as fractions,
     money as decimal strings with 2 decimals)."""
@@ -99,7 +102,8 @@ async def get_security_performance(
         "closingDate": date_str(to_date, "to_date"),
         "currency": currency,
         "costMethod": cost_method,
-        "investmentAccount": investment_account,
+        "investmentAccount": uuid_list(investment_account),
+        "cashAccount": uuid_list(cash_account),
     }
     async with api() as pp:
         f = await pp.resolve_file(file)
@@ -113,7 +117,8 @@ async def get_trades(
     only_closed: Annotated[bool, Field(description="Only completed round trips")] = False,
 ) -> dict[str, Any]:
     """Buy/sell round trips with entry/exit value, profit/loss, holding period and IRR.
-    Open trades are valued at today's price."""
+    Open trades are valued at today's price. The trade list cannot be filtered by
+    account."""
     params = {"currency": currency, "onlyClosed": True if only_closed else None}
     async with api() as pp:
         f = await pp.resolve_file(file)
@@ -126,10 +131,22 @@ async def get_earnings(
     from_date: Annotated[str | None, Field(description="First date YYYY-MM-DD, inclusive")] = None,
     to_date: Annotated[str | None, Field(description="Last date YYYY-MM-DD, inclusive")] = None,
     instrument: Annotated[str | None, Field(description="Instrument UUID")] = None,
+    cash_account: Annotated[str | None, Field(description="Only bookings on this cash account (UUID)")] = None,
+    investment_account: Annotated[
+        str | None, Field(description="Only earnings of this investment account's instruments (UUID)")
+    ] = None,
 ) -> dict[str, Any]:
-    """Dividends, interest and interest charges in [from_date, to_date] with a total per
-    currency (decimal strings, 2 decimals)."""
-    params = {"from": date_str(from_date, "from_date"), "to": date_str(to_date, "to_date"), "instrument": instrument}
+    """Dividends, interest and interest charges in [from_date, to_date]:
+    `{items: [transactions], totals: [{currency, value, dividends, interest,
+    interestCharge, taxes, fees, count}]}`. Totals are per booking currency, not
+    converted; `value` = dividends + interest − interestCharge (decimal strings)."""
+    params = {
+        "from": date_str(from_date, "from_date"),
+        "to": date_str(to_date, "to_date"),
+        "instrument": instrument,
+        "cashAccount": cash_account,
+        "investmentAccount": investment_account,
+    }
     async with api() as pp:
         f = await pp.resolve_file(file)
         return out(await pp.get(fpath(f, "earnings"), params=params))

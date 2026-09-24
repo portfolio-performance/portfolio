@@ -25,6 +25,10 @@ Uuid = Annotated[str, Field(description="Transaction UUID (either leg of a buy/s
 TxDate = Annotated[str, Field(description="Booking date YYYY-MM-DD or date and time YYYY-MM-DDTHH:MM")]
 Note = Annotated[str | None, Field(description="Free-text note")]
 Money = Annotated[str | None, Field(description="Amount, decimal string with at most 2 decimals")]
+Total = Annotated[
+    str | None,
+    Field(description="Total cash amount incl. fees and taxes in the transaction currency, 2 decimals"),
+]
 Shares = Annotated[str, Field(description="Number of shares, decimal string with at most 8 decimals")]
 Quote = Annotated[
     str | None, Field(description="Price per share in the instrument currency, decimal string, max 8 decimals")
@@ -70,10 +74,15 @@ def _money(value: str | None, field: str) -> str | None:
     return decimal_str(value, MONEY, field)
 
 
-def _one_of_quote_gross(quote: str | None, gross_value: str | None) -> dict[str, str]:
-    if (quote is None) == (gross_value is None):
-        raise ToolError("pass exactly one of quote or gross_value")
-    return compact(quote=decimal_str(quote, QUOTE, "quote"), grossValue=_money(gross_value, "gross_value"))
+def _price(quote: str | None, gross_value: str | None, total: str | None) -> dict[str, str]:
+    """`quote`, `grossValue` and the total `amount` of a buy, sell or delivery; at least one is required."""
+    if quote is None and gross_value is None and total is None:
+        raise ToolError("pass at least one of quote, gross_value or total")
+    return compact(
+        quote=decimal_str(quote, QUOTE, "quote"),
+        grossValue=_money(gross_value, "gross_value"),
+        amount=_money(total, "total"),
+    )
 
 
 async def _create(file: str | None, body: dict[str, Any], dry_run: bool) -> dict[str, Any]:
@@ -88,7 +97,8 @@ async def list_transactions(
     from_date: Annotated[str | None, Field(description="First date YYYY-MM-DD, inclusive")] = None,
     to_date: Annotated[str | None, Field(description="Last date YYYY-MM-DD, inclusive")] = None,
     type: Annotated[
-        str | None, Field(description="Transaction type, e.g. buy, sell, dividends, deposit, transfer-out")
+        list[str] | None,
+        Field(description="Transaction types (any of), e.g. ['buy', 'sell'], ['dividends'], ['transfer-out']"),
     ] = None,
     instrument: Annotated[str | None, Field(description="Instrument UUID")] = None,
     cash_account: Annotated[str | None, Field(description="Cash account UUID")] = None,
@@ -96,18 +106,19 @@ async def list_transactions(
     limit: Annotated[int | None, Field(description="Return at most this many (newest first)", ge=1)] = None,
 ) -> dict[str, Any]:
     """List transactions, newest first. A buy/sell appears once (investment-account
-    leg), a transfer once (outbound leg). `value` is the signed net cash flow;
-    `grossValue`, `fees`, `taxes` are unsigned, all `{value, currency}` with decimal
-    strings (2 decimals); `shares` has up to 8 decimals. With `limit`, `total` tells
-    how many matched."""
+    leg), a transfer once (outbound leg); the account filters match either leg.
+    `value` is the signed net cash flow; `grossValue`, `fees`, `taxes` are unsigned,
+    all `{value, currency}` with decimal strings (2 decimals); `shares` has up to 8
+    decimals. With `limit`, `total` tells how many matched."""
     date_str(from_date, "from_date")
     date_str(to_date, "to_date")
-    if type is not None and type not in TRANSACTION_TYPES:
-        raise ToolError(f"type: {type!r} is not one of {', '.join(TRANSACTION_TYPES)}")
+    for wanted in type or []:
+        if wanted not in TRANSACTION_TYPES:
+            raise ToolError(f"type: {wanted!r} is not one of {', '.join(TRANSACTION_TYPES)}")
     params = {
         "from": from_date,
         "to": to_date,
-        "type": type,
+        "type": ",".join(type) if type else None,
         "instrument": instrument,
         "cashAccount": cash_account,
         "investmentAccount": investment_account,
@@ -124,8 +135,9 @@ async def list_transactions(
 @mcp.tool(annotations=READ_ONLY)
 async def get_transaction(uuid: Uuid, file: FileParam = None) -> dict[str, Any]:
     """Read one transaction with its `units` (gross value, fees, taxes incl. forex
-    amounts and exchange rate), `exDate`, `source` and the `linked` other leg
-    (uuid and owner) of a buy/sell or transfer."""
+    amounts and exchange rate), `exDate`, `source`, `clientRef` and the `linked`
+    other leg (uuid, type and owner) of a buy/sell or transfer. Either leg's UUID
+    resolves; the answer is the leg the list reports."""
     async with api() as pp:
         f = await pp.resolve_file(file)
         return out(await pp.get(fpath(f, "transactions", uuid)))
@@ -140,7 +152,7 @@ async def _buy_sell(kind: str, file, investment_account, cash_account, instrumen
         "cashAccount": cash_account,
         "instrument": instrument,
         "shares": decimal_str(shares, SHARES, "shares"),
-        **_one_of_quote_gross(quote, gross_value),
+        **_price(quote, gross_value, total),
     }
     body |= compact(
         exchangeRate=decimal_str(exchange_rate, RATE, "exchange_rate"),
@@ -148,7 +160,6 @@ async def _buy_sell(kind: str, file, investment_account, cash_account, instrumen
         taxes=_money(taxes, "taxes"),
         forexFees=_money(forex_fees, "forex_fees"),
         forexTaxes=_money(forex_taxes, "forex_taxes"),
-        amount=_money(total, "total"),
         note=note,
         clientRef=client_ref,
     )
@@ -158,12 +169,15 @@ async def _buy_sell(kind: str, file, investment_account, cash_account, instrumen
 _BUY_SELL_DOC = """{verb} shares of an instrument: creates the investment-account leg and the
 cash-account leg together.
 
-Units: `shares` up to 8 decimals; `quote` (price per share, up to 8 decimals) or
-`gross_value` (shares × price, 2 decimals) in the instrument currency — pass exactly
-one. `fees`/`taxes` are in the cash-account (transaction) currency, `forex_fees`/
-`forex_taxes` in the instrument currency, all with 2 decimals. `exchange_rate` is
-needed only when instrument and cash-account currencies differ and PP has no rate.
-`total` is optional; when given it is checked against the computed total.
+Units: `shares` up to 8 decimals; `quote` (price per share, up to 8 decimals) and/or
+`gross_value` (shares × price, 2 decimals) in the instrument currency, and/or `total`
+(the cash amount incl. fees and taxes, cash-account currency, 2 decimals) — pass at
+least one. With `total` alone PP derives the gross value as when typing the total in
+its dialog; together with quote/gross_value a plausible total wins and an implausible
+one is `total-mismatch`. `fees`/`taxes` are in the cash-account (transaction)
+currency, `forex_fees`/`forex_taxes` in the instrument currency (only when the
+currencies differ), all with 2 decimals. `exchange_rate` is needed only when
+instrument and cash-account currencies differ and PP has no rate.
 Returns both legs' UUIDs (`uuid` and `linked.uuid`). `client_ref` makes the call
 idempotent. The change is in memory only until save_file."""
 
@@ -183,7 +197,7 @@ async def create_buy(
     forex_fees: Money = None,
     forex_taxes: Money = None,
     exchange_rate: Rate = None,
-    total: Money = None,
+    total: Total = None,
     note: Note = None,
     client_ref: ClientRef = None,
     dry_run: DryRun = False,
@@ -208,7 +222,7 @@ async def create_sell(
     forex_fees: Money = None,
     forex_taxes: Money = None,
     exchange_rate: Rate = None,
-    total: Money = None,
+    total: Total = None,
     note: Note = None,
     client_ref: ClientRef = None,
     dry_run: DryRun = False,
@@ -228,12 +242,15 @@ async def create_delivery(
     file: FileParam = None,
     quote: Quote = None,
     gross_value: Money = None,
+    total: Total = None,
     currency: Annotated[
         str | None, Field(description="Transaction currency (default: the reference cash account's currency)")
     ] = None,
     exchange_rate: Rate = None,
     fees: Money = None,
     taxes: Money = None,
+    forex_fees: Money = None,
+    forex_taxes: Money = None,
     note: Note = None,
     client_ref: ClientRef = None,
     dry_run: DryRun = False,
@@ -241,22 +258,26 @@ async def create_delivery(
     """Deliver shares into or out of an investment account without a cash leg
     (e.g. a transfer from another broker, a spin-off, a gift).
 
-    Units: `shares` up to 8 decimals; `quote` (per share, 8 decimals) or `gross_value`
-    (2 decimals) in the instrument currency, exactly one; `fees`/`taxes` in the
-    transaction currency, 2 decimals. The change is in memory only until save_file."""
+    Units: `shares` up to 8 decimals; `quote` (per share, 8 decimals) and/or
+    `gross_value` (2 decimals) in the instrument currency, and/or `total` (value incl.
+    fees and taxes, transaction currency) — at least one; `fees`/`taxes` in the
+    transaction currency, `forex_fees`/`forex_taxes` in the instrument currency (only
+    when it differs), 2 decimals. The change is in memory only until save_file."""
     body = {
         "type": f"delivery-{direction}",
         "date": date_str(date, "date", allow_time=True),
         "investmentAccount": investment_account,
         "instrument": instrument,
         "shares": decimal_str(shares, SHARES, "shares"),
-        **_one_of_quote_gross(quote, gross_value),
+        **_price(quote, gross_value, total),
     }
     body |= compact(
         currency=currency,
         exchangeRate=decimal_str(exchange_rate, RATE, "exchange_rate"),
         fees=_money(fees, "fees"),
         taxes=_money(taxes, "taxes"),
+        forexFees=_money(forex_fees, "forex_fees"),
+        forexTaxes=_money(forex_taxes, "forex_taxes"),
         note=note,
         clientRef=client_ref,
     )
@@ -268,34 +289,48 @@ async def create_dividend(
     cash_account: Annotated[str, Field(description="Cash account UUID that receives the dividend")],
     instrument: Annotated[str, Field(description="Instrument UUID")],
     date: TxDate,
-    gross_value: Annotated[str, Field(description="Gross dividend before taxes and fees, 2 decimals")],
     file: FileParam = None,
+    gross_value: Annotated[
+        str | None, Field(description="Gross dividend before taxes and fees, cash-account currency, 2 decimals")
+    ] = None,
+    total: Annotated[
+        str | None, Field(description="Net amount credited (gross − taxes − fees), cash-account currency, 2 decimals")
+    ] = None,
     ex_date: Annotated[str | None, Field(description="Ex-dividend date YYYY-MM-DD, not after `date`")] = None,
     shares: Annotated[str | None, Field(description="Shares entitled, max 8 decimals (0 allowed)")] = None,
     exchange_rate: Rate = None,
     taxes: Money = None,
     fees: Money = None,
+    forex_taxes: Money = None,
+    forex_fees: Money = None,
     note: Note = None,
     client_ref: ClientRef = None,
     dry_run: DryRun = False,
 ) -> dict[str, Any]:
-    """Book a dividend on a cash account. `gross_value`, `taxes` and `fees` are in the
-    cash-account currency with 2 decimals (when the instrument currency differs, pass
-    `exchange_rate` unless PP knows the rate); the net amount is gross − taxes − fees.
+    """Book a dividend on a cash account. `gross_value`, `total`, `taxes` and `fees` are
+    in the cash-account currency with 2 decimals; pass `gross_value` and/or `total`
+    (the net amount = gross − taxes − fees; both given are checked against each other).
+    When the instrument currency differs, pass `exchange_rate` unless PP knows the rate;
+    `forex_taxes`/`forex_fees` are then amounts in the instrument currency.
     The change is in memory only until save_file."""
+    if gross_value is None and total is None:
+        raise ToolError("pass gross_value and/or total")
     body = {
         "type": "dividends",
         "date": date_str(date, "date", allow_time=True),
         "cashAccount": cash_account,
         "instrument": instrument,
-        "grossValue": _money(gross_value, "gross_value"),
     }
     body |= compact(
+        grossValue=_money(gross_value, "gross_value"),
+        amount=_money(total, "total"),
         exDate=date_str(ex_date, "ex_date"),
         shares=decimal_str(shares, SHARES, "shares"),
         exchangeRate=decimal_str(exchange_rate, RATE, "exchange_rate"),
         taxes=_money(taxes, "taxes"),
         fees=_money(fees, "fees"),
+        forexTaxes=_money(forex_taxes, "forex_taxes"),
+        forexFees=_money(forex_fees, "forex_fees"),
         note=note,
         clientRef=client_ref,
     )
@@ -310,18 +345,26 @@ async def create_cash_transaction(
         Field(description="Kind of cash booking"),
     ],
     date: TxDate,
-    amount: Annotated[str, Field(description="Positive amount in the account currency, 2 decimals")],
+    amount: Annotated[str, Field(description="Positive booked (net) amount in the account currency, 2 decimals")],
     file: FileParam = None,
     instrument: Annotated[
         str | None, Field(description="Optional instrument UUID; only for fees, fees_refund, taxes, tax_refund")
     ] = None,
     taxes: Annotated[str | None, Field(description="Withheld taxes, only for interest; 2 decimals")] = None,
+    exchange_rate: Annotated[
+        str | None,
+        Field(
+            description="Only for fees, fees_refund, taxes, tax_refund with an instrument in another currency: "
+            "account currency per 1 unit of instrument currency, max 10 decimals (default: PP's rate)"
+        ),
+    ] = None,
     note: Note = None,
     client_ref: ClientRef = None,
     dry_run: DryRun = False,
 ) -> dict[str, Any]:
     """Book a deposit, removal, interest, interest charge, fee, fee refund, tax or tax
-    refund on a cash account. `amount` is positive; PP applies the sign by kind.
+    refund on a cash account. `amount` is the positive booked (net) amount; PP applies
+    the sign by kind. For interest, `taxes` come on top (gross = amount + taxes).
     The change is in memory only until save_file."""
     body = {
         "type": CASH_KINDS[kind],
@@ -329,7 +372,13 @@ async def create_cash_transaction(
         "cashAccount": cash_account,
         "amount": _money(amount, "amount"),
     }
-    body |= compact(instrument=instrument, taxes=_money(taxes, "taxes"), note=note, clientRef=client_ref)
+    body |= compact(
+        instrument=instrument,
+        taxes=_money(taxes, "taxes"),
+        exchangeRate=decimal_str(exchange_rate, RATE, "exchange_rate"),
+        note=note,
+        clientRef=client_ref,
+    )
     return await _create(file, body, dry_run)
 
 
@@ -349,7 +398,8 @@ async def create_transfer(
     dry_run: DryRun = False,
 ) -> dict[str, Any]:
     """Transfer cash between two cash accounts (both legs are created and returned).
-    The change is in memory only until save_file."""
+    Between currencies the rate follows from `amount` and `target_amount`; there is no
+    separate exchange rate. The change is in memory only until save_file."""
     body = {
         "type": "cash-transfer",
         "date": date_str(date, "date", allow_time=True),
@@ -368,14 +418,18 @@ async def create_security_transfer(
     instrument: Annotated[str, Field(description="Instrument UUID")],
     date: TxDate,
     shares: Shares,
-    amount: Annotated[str, Field(description="Book value in the instrument currency, 2 decimals")],
     file: FileParam = None,
+    amount: Annotated[str | None, Field(description="Book value in the instrument currency, 2 decimals")] = None,
+    quote: Quote = None,
     note: Note = None,
     client_ref: ClientRef = None,
     dry_run: DryRun = False,
 ) -> dict[str, Any]:
     """Move shares between two investment accounts (both legs are created and returned).
-    The change is in memory only until save_file."""
+    Pass `amount` and/or `quote` (amount = shares × quote); both legs are booked in the
+    instrument currency. The change is in memory only until save_file."""
+    if amount is None and quote is None:
+        raise ToolError("pass amount and/or quote")
     body = {
         "type": "security-transfer",
         "date": date_str(date, "date", allow_time=True),
@@ -383,9 +437,13 @@ async def create_security_transfer(
         "toInvestmentAccount": to_investment_account,
         "instrument": instrument,
         "shares": decimal_str(shares, SHARES, "shares"),
-        "amount": _money(amount, "amount"),
     }
-    body |= compact(note=note, clientRef=client_ref)
+    body |= compact(
+        amount=_money(amount, "amount"),
+        quote=decimal_str(quote, QUOTE, "quote"),
+        note=note,
+        clientRef=client_ref,
+    )
     return await _create(file, body, dry_run)
 
 
@@ -422,9 +480,14 @@ async def update_transaction(
 ) -> dict[str, Any]:
     """Update a transaction (merge patch): only the given fields change; the linked leg
     of a buy/sell or transfer is kept consistent and UUIDs are preserved, also when
-    moving it to another account. Units and precision as in the create tools.
-    `clear` accepts `note`, `ex_date`, `fees`, `taxes`, `forex_fees`, `forex_taxes`,
-    `instrument`. The change is in memory only until save_file."""
+    moving it to another account (a cash leg only to an account in the same currency).
+    Units and precision as in the create tools. Amounts are recomputed only when the
+    patch has `type`, `instrument`, `currency` or an amount field. A type change stays
+    within buy/sell, the two deliveries, or the cash kinds; values the new type has no
+    field for must be cleared in the same call. `clear` accepts `note`, `ex_date`,
+    `shares`, `quote`, `gross_value`, `fees`, `taxes`, `forex_fees`, `forex_taxes`,
+    `exchange_rate`, `target_amount`, `currency`, `instrument`. The change is in memory
+    only until save_file."""
     patch = compact(
         type=type,
         date=date_str(date, "date", allow_time=True),
@@ -455,10 +518,16 @@ async def update_transaction(
         {
             "note": "note",
             "ex_date": "exDate",
+            "shares": "shares",
+            "quote": "quote",
+            "gross_value": "grossValue",
             "fees": "fees",
             "taxes": "taxes",
             "forex_fees": "forexFees",
             "forex_taxes": "forexTaxes",
+            "exchange_rate": "exchangeRate",
+            "target_amount": "targetAmount",
+            "currency": "currency",
             "instrument": "instrument",
         },
     )
@@ -472,8 +541,8 @@ async def update_transaction(
 @mcp.tool(annotations=DESTRUCTIVE)
 async def delete_transaction(uuid: Uuid, file: FileParam = None, dry_run: DryRun = False) -> dict[str, Any]:
     """Delete a transaction including its linked leg (buy/sell, transfer). A dry run
-    reports the legs that would be removed. The change is in memory only until
-    save_file."""
+    answers `{dryRun: true, removed: [transaction, linked leg]}`. The change is in
+    memory only until save_file."""
     async with api() as pp:
         f = await pp.resolve_file(file)
         return deleted(await pp.delete(fpath(f, "transactions", uuid), params=dry(dry_run)), uuid=uuid)

@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 from pp_mcp.app import DESTRUCTIVE, READ_ONLY, WRITE, mcp
 from pp_mcp.money import QUOTE, date_str, decimal_str
 from pp_mcp.tools._common import (
+    NUMERIC_ATTRIBUTE_TYPES,
     Clear,
     ClientRef,
     DryRun,
@@ -20,16 +21,20 @@ from pp_mcp.tools._common import (
     fpath,
     no_floats,
     out,
+    typed_attributes,
 )
 
 Uuid = Annotated[str, Field(description="Instrument UUID")]
 Attributes = Annotated[
     dict[str, Any] | None,
     Field(
-        description="Custom attributes keyed by attribute id (see GET attribute types); values typed per "
-        "attribute: string, boolean, ISO date string, or a decimal string for numeric types. "
-        "On update, a null value clears that attribute."
+        description="Custom attributes keyed by attribute id (see list_attribute_types); values typed per "
+        "attribute: string, boolean, ISO date string, or a decimal string for the numeric types (amount, "
+        "quote, shares, percent as a fraction, number). On update, a null value clears that attribute."
     ),
+]
+FeedProperties = Annotated[
+    dict[str, str | None] | None, Field(description="Quote feed properties; on update a null removes one")
 ]
 
 _CLEARABLE = {
@@ -42,7 +47,6 @@ _CLEARABLE = {
     "feed_url": "feedUrl",
     "latest_feed": "latestFeed",
     "latest_feed_url": "latestFeedUrl",
-    "target_currency": "targetCurrencyCode",
     "calendar": "calendar",
 }
 
@@ -69,16 +73,27 @@ def _find_duplicate(items: list[dict[str, Any]], name: str, currency: str | None
         (
             i
             for i in items
-            if (i.get("name") or "").strip().casefold() == wanted_name and i.get("currencyCode") == currency
+            if (i.get("name") or "").strip().casefold() == wanted_name
+            and (currency is None or i.get("currencyCode") == currency)
         ),
         None,
     )
 
 
+async def _attributes(pp, f: str, attributes: dict[str, Any] | None) -> dict[str, Any] | None:
+    """The attributes with numeric values as JSON numbers, typed by the file's attribute definitions."""
+    if not attributes:
+        return typed_attributes(attributes, set())
+    no_floats(attributes, "attributes")
+    types = await pp.get(fpath(f, "instruments", "attribute-types"))
+    numeric = {t["id"] for t in (types or {}).get("items", []) if t.get("type") in NUMERIC_ATTRIBUTE_TYPES}
+    return typed_attributes(attributes, numeric)
+
+
 @mcp.tool(annotations=READ_ONLY)
 async def list_instruments(file: FileParam = None) -> dict[str, Any]:
     """List all instruments (securities) of a file: uuid, name, currencyCode, isin, wkn,
-    tickerSymbol, note, attributes, feed settings and `retired`."""
+    tickerSymbol, note, attributes, feed settings, events and `retired`."""
     async with api() as pp:
         f = await pp.resolve_file(file)
         return out(await pp.get(fpath(f, "instruments")))
@@ -92,9 +107,10 @@ async def get_instrument(
     from_date: Annotated[str | None, Field(description="First price date (YYYY-MM-DD), inclusive")] = None,
     to_date: Annotated[str | None, Field(description="Last price date (YYYY-MM-DD), inclusive")] = None,
 ) -> dict[str, Any]:
-    """Read one instrument. With `include_prices` the result has a `prices` object:
-    `{uuid, currency, from, to, items: [{date, value}]}`, quotes per share in the
-    instrument currency as decimal strings (up to 8 decimals), oldest first."""
+    """Read one instrument incl. its `events`. With `include_prices` the result has a
+    `prices` object: `{uuid, currency, from, to, items: [{date, value}]}`, quotes per
+    share in the instrument currency as decimal strings (up to 8 decimals), oldest
+    first."""
     date_str(from_date, "from_date")
     date_str(to_date, "to_date")
     async with api() as pp:
@@ -122,19 +138,41 @@ async def find_instrument(
     return out({"items": [i for i in listed.get("items", []) if _matches(i, needle)]})
 
 
+@mcp.tool(annotations=READ_ONLY)
+async def list_attribute_types(file: FileParam = None) -> dict[str, Any]:
+    """List the custom attribute definitions of instruments: `{items: [{id, name,
+    columnLabel?, type, supported}]}`. `id` is the key in an instrument's `attributes`;
+    `type` is string, boolean, date, amount, quote, shares, percent (a fraction),
+    number, or a compound type with `supported: false` that cannot be written."""
+    async with api() as pp:
+        f = await pp.resolve_file(file)
+        return out(await pp.get(fpath(f, "instruments", "attribute-types")))
+
+
 @mcp.tool(annotations=WRITE)
 async def create_instrument(
     name: Annotated[str, Field(description="Display name")],
-    currency: Annotated[str | None, Field(description="ISO 4217 code; omit only for an index without currency")],
     file: FileParam = None,
+    currency: Annotated[
+        str | None, Field(description="ISO 4217 code; omitted: the file's base currency")
+    ] = None,
+    without_currency: Annotated[
+        bool, Field(description="Create an index without currency (ignores `currency`)")
+    ] = False,
     isin: str | None = None,
     wkn: str | None = None,
     ticker: Annotated[str | None, Field(description="Ticker symbol, e.g. AAPL or SAP.DE")] = None,
     note: str | None = None,
-    feed: Annotated[str | None, Field(description="Historical quote feed id, e.g. MANUAL, YAHOO")] = None,
+    feed: Annotated[str | None, Field(description="Historical quote feed id, e.g. MANUAL (default), YAHOO")] = None,
     feed_url: str | None = None,
     latest_feed: Annotated[str | None, Field(description="Latest quote feed id")] = None,
     latest_feed_url: str | None = None,
+    feed_properties: FeedProperties = None,
+    target_currency: Annotated[
+        str | None, Field(description="Makes the instrument an exchange rate from `currency` to this currency")
+    ] = None,
+    calendar: Annotated[str | None, Field(description="Trading calendar code")] = None,
+    retired: Annotated[bool | None, Field(description="Create it retired (deactivated)")] = None,
     attributes: Attributes = None,
     allow_duplicate: Annotated[
         bool, Field(description="Create even if an instrument with the same ISIN (or name+currency) exists")
@@ -145,18 +183,19 @@ async def create_instrument(
     """Create an instrument (security).
 
     First checks for an existing instrument with the same ISIN, or with the same name
-    and currency when no ISIN is given; if one exists it is returned with
+    (and currency, if given) when no ISIN is given; if one exists it is returned with
     `created: false` and a note instead of creating a duplicate (unless
-    `allow_duplicate`). Result: `{created, instrument, note?}`.
+    `allow_duplicate`). Result: `{created, instrument, note?}`. PP does not fetch
+    quotes for the new instrument; use update_quotes.
     The change is in memory only until save_file.
     """
     async with api() as pp:
         f = await pp.resolve_file(file)
         if not allow_duplicate:
             listed = await pp.get(fpath(f, "instruments"))
-            existing = _find_duplicate(listed.get("items", []), name, currency, isin)
+            existing = _find_duplicate(listed.get("items", []), name, None if without_currency else currency, isin)
             if existing is not None:
-                key = f"ISIN {isin}" if isin else f"name {name!r} and currency {currency}"
+                key = f"ISIN {isin}" if isin else f"name {name!r}" + (f" and currency {currency}" if currency else "")
                 return out(
                     {
                         "created": False,
@@ -176,9 +215,15 @@ async def create_instrument(
             feedUrl=feed_url,
             latestFeed=latest_feed,
             latestFeedUrl=latest_feed_url,
-            attributes=no_floats(attributes, "attributes"),
+            feedProperties=feed_properties,
+            targetCurrencyCode=target_currency,
+            calendar=calendar,
+            retired=retired,
+            attributes=await _attributes(pp, f, attributes),
             clientRef=client_ref,
         )
+        if without_currency:
+            body["currencyCode"] = None
         created = await pp.post(fpath(f, "instruments"), params=dry(dry_run), body=body)
         replayed = isinstance(created, dict) and bool(created.get("replayed"))
         return out({"created": not dry_run and not replayed, "instrument": created})
@@ -198,17 +243,20 @@ async def update_instrument(
     feed_url: str | None = None,
     latest_feed: str | None = None,
     latest_feed_url: str | None = None,
-    feed_properties: Annotated[dict[str, str | None] | None, Field(description="Feed properties; null clears one")] = None,
-    target_currency: Annotated[str | None, Field(description="Target currency of an exchange-rate instrument")] = None,
-    calendar: Annotated[str | None, Field(description="Trading calendar id")] = None,
+    feed_properties: FeedProperties = None,
+    target_currency: Annotated[
+        str | None, Field(description="Target currency of an exchange-rate instrument (cannot be cleared)")
+    ] = None,
+    calendar: Annotated[str | None, Field(description="Trading calendar code")] = None,
     retired: Annotated[bool | None, Field(description="Retire (true) or reactivate (false) the instrument")] = None,
     attributes: Attributes = None,
     clear: Clear = None,
     dry_run: DryRun = False,
 ) -> dict[str, Any]:
     """Update an instrument (JSON merge patch): only the given fields change; fields
-    named in `clear` are removed. Returns the updated instrument.
-    The change is in memory only until save_file."""
+    named in `clear` are removed (`currency` makes it an index, `latest_feed` lets the
+    historical feed provide the latest price, `calendar` selects the default). Returns
+    the updated instrument. The change is in memory only until save_file."""
     patch = compact(
         name=name,
         currencyCode=currency,
@@ -224,20 +272,24 @@ async def update_instrument(
         targetCurrencyCode=target_currency,
         calendar=calendar,
         retired=retired,
-        attributes=no_floats(attributes, "attributes"),
     )
+    if attributes is not None:
+        patch["attributes"] = no_floats(attributes, "attributes")
     apply_clear(patch, clear, _CLEARABLE)
     if not patch:
         raise ToolError("nothing to update: pass at least one field")
     async with api() as pp:
         f = await pp.resolve_file(file)
+        if attributes is not None:
+            patch["attributes"] = await _attributes(pp, f, attributes)
         return out(await pp.patch(fpath(f, "instruments", uuid), params=dry(dry_run), body=patch))
 
 
 @mcp.tool(annotations=DESTRUCTIVE)
 async def delete_instrument(uuid: Uuid, file: FileParam = None, dry_run: DryRun = False) -> dict[str, Any]:
     """Delete an instrument. Refused (`delete-blocked`) while transactions or investment
-    plans reference it; retire it with update_instrument(retired=true) instead.
+    plans reference it; retire it with update_instrument(retired=true) instead. A dry
+    run answers `{dryRun: true, removed: [instrument]}`.
     The change is in memory only until save_file."""
     async with api() as pp:
         f = await pp.resolve_file(file)
@@ -251,8 +303,9 @@ async def set_prices(
     file: FileParam = None,
     dry_run: DryRun = False,
 ) -> dict[str, Any]:
-    """Add or replace historical quotes of an instrument. `value` is the price per share
-    in the instrument currency, a decimal string with at most 8 decimals.
+    """Add or replace historical quotes of an instrument. `value` is the positive price
+    per share in the instrument currency, a decimal string with at most 8 decimals;
+    each date at most once. Returns `{uuid, currency, inserted, updated, unchanged}`.
     The change is in memory only until save_file."""
     if not prices:
         raise ToolError("prices: pass at least one price")
@@ -278,7 +331,8 @@ async def delete_prices(
     dry_run: DryRun = False,
 ) -> dict[str, Any]:
     """Delete the historical quotes of an instrument within [from_date, to_date].
-    Without any bound all prices are deleted, which requires `delete_all=true`.
+    Without any bound all prices are deleted, which requires `delete_all=true`. The
+    latest quote is not touched. Returns `{uuid, removed: <count>}`.
     The change is in memory only until save_file."""
     date_str(from_date, "from_date")
     date_str(to_date, "to_date")
@@ -292,19 +346,30 @@ async def delete_prices(
         return deleted(result, uuid=uuid)
 
 
+@mcp.tool(annotations=READ_ONLY)
+async def list_instrument_events(uuid: Uuid, file: FileParam = None) -> dict[str, Any]:
+    """List an instrument's events: `{items: [{date, type: stock-split|note|dividend-payment,
+    details?, paymentDate?, amount?, source?}]}` (a dividend payment's `date` is its
+    ex-date, `amount` per share)."""
+    async with api() as pp:
+        f = await pp.resolve_file(file)
+        return out(await pp.get(fpath(f, "instruments", uuid, "events")))
+
+
 @mcp.tool(annotations=WRITE)
 async def add_instrument_event(
     uuid: Uuid,
     type: Annotated[Literal["stock-split", "note"], Field(description="Event type")],
     date: Annotated[str, Field(description="YYYY-MM-DD")],
-    details: Annotated[str, Field(description="Free text; for a split the ratio such as '2:1'")],
+    details: Annotated[str, Field(description="For a note its text; for a split the ratio new:old such as '2:1'")],
     file: FileParam = None,
+    client_ref: ClientRef = None,
     dry_run: DryRun = False,
 ) -> dict[str, Any]:
     """Add an event to an instrument's chart/history. This records the event only; to
     adjust shares and prices for a split use apply_stock_split.
     The change is in memory only until save_file."""
-    body = {"type": type, "date": date_str(date, "date"), "details": details}
+    body = compact(type=type, date=date_str(date, "date"), details=details, clientRef=client_ref)
     async with api() as pp:
         f = await pp.resolve_file(file)
         return out(await pp.post(fpath(f, "instruments", uuid, "events"), params=dry(dry_run), body=body))
@@ -313,13 +378,14 @@ async def add_instrument_event(
 @mcp.tool(annotations=DESTRUCTIVE)
 async def delete_instrument_event(
     uuid: Uuid,
-    type: Annotated[Literal["stock-split", "note"], Field(description="Event type")],
+    type: Annotated[Literal["stock-split", "note", "dividend-payment"], Field(description="Event type")],
     date: Annotated[str, Field(description="YYYY-MM-DD")],
     file: FileParam = None,
     details: Annotated[str | None, Field(description="Only delete events with exactly this text")] = None,
     dry_run: DryRun = False,
 ) -> dict[str, Any]:
-    """Delete the instrument events matching type and date (and details, if given).
+    """Delete the instrument events matching type and date (and details, if given);
+    `not-found` if none matches. Returns `{removed: [events]}`.
     The change is in memory only until save_file."""
     params = dry(dry_run, date=date_str(date, "date"), type=type, details=details)
     async with api() as pp:

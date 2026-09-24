@@ -49,6 +49,14 @@ async def test_body_is_json_and_query_bools(api):
     assert sent_json(route) == {"amount": "1.10"}
 
 
+async def test_decimal_body_values_are_exact_json_numbers(api):
+    route = api.post(f"{F}/x").respond(201, json={})
+    async with PPClient() as pp:
+        await pp.post(f"{F}/x", body={"a": {"ter": Decimal("0.0020"), "big": Decimal("-12345678901234.5")},
+                                      "s": "0.5"})
+    assert route.calls.last.request.content == b'{"a": {"ter": 0.0020, "big": -12345678901234.5}, "s": "0.5"}'
+
+
 async def test_patch_uses_merge_patch_content_type(api):
     route = api.patch(f"{F}/x").respond(200, json={})
     async with PPClient() as pp:

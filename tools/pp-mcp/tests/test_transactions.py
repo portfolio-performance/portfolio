@@ -9,11 +9,22 @@ from conftest import F, problem, raw_json, sent_json, sent_query
 T = "/v1/files/main/transactions"
 
 
+# the 201 answer of the buyInForeignCurrency example in openapi.yaml (trimmed)
+BUY_CREATED = (
+    '{"uuid":"2b3c4d5e-6f7a-4b1c-8d2e-3f4a5b6c7d8e","date":"2026-03-02T09:30","type":"buy",'
+    '"value":{"value":1157.32,"currency":"EUR"},"grossValue":{"value":1152.42,"currency":"EUR"},'
+    '"fees":{"value":4.9,"currency":"EUR"},"taxes":{"value":0,"currency":"EUR"},"shares":12.5,'
+    '"units":[{"type":"fee","amount":{"value":4.9,"currency":"EUR"}},'
+    '{"type":"gross-value","amount":{"value":1152.42,"currency":"EUR"},"forex":{"value":1265,"currency":"USD"},'
+    '"exchangeRate":0.911}],"source":"api:broker-2026-000123","clientRef":"broker-2026-000123",'
+    '"linked":{"uuid":"3c4d5e6f-7a8b-4c1d-8e2f-3a4b5c6d7e8f","type":"buy",'
+    '"owner":{"uuid":"c4b2a1e0-3f6d-4a2e-8b1c-5d7f9a0e2c46","name":"Broker Cash","type":"cash-account"}}}'
+)
+
+
 @pytest.fixture
 def created(api):
-    return api.post(T).mock(
-        return_value=raw_json('{"uuid":"t1","linked":{"uuid":"t2"},"value":{"value":1377.60,"currency":"EUR"}}', 201)
-    )
+    return api.post(T).mock(return_value=raw_json(BUY_CREATED, 201))
 
 
 async def test_list_transactions_filters_and_limit(api, one_file):
@@ -21,7 +32,7 @@ async def test_list_transactions_filters_and_limit(api, one_file):
     result = await tx.list_transactions(
         from_date="2026-01-01",
         to_date="2026-06-30",
-        type="buy",
+        type=["buy", "sell"],
         instrument="i1",
         cash_account="c1",
         investment_account="p1",
@@ -30,7 +41,7 @@ async def test_list_transactions_filters_and_limit(api, one_file):
     assert sent_query(route) == {
         "from": "2026-01-01",
         "to": "2026-06-30",
-        "type": "buy",
+        "type": "buy,sell",
         "instrument": "i1",
         "cashAccount": "c1",
         "investmentAccount": "p1",
@@ -40,7 +51,7 @@ async def test_list_transactions_filters_and_limit(api, one_file):
 
 async def test_list_transactions_rejects_unknown_type():
     with pytest.raises(ToolError, match="type: 'purchase'"):
-        await tx.list_transactions("main", type="purchase")
+        await tx.list_transactions("main", type=["buy", "purchase"])
 
 
 async def test_get_transaction_through_mcp(api, mcp_client):
@@ -64,8 +75,8 @@ async def test_create_buy_body_and_decimal_strings_through_mcp(created, mcp_clie
             "taxes": "0",
             "forex_fees": "1.00",
             "forex_taxes": "0.50",
-            "exchange_rate": "1.0850",
-            "total": "1377.60",
+            "exchange_rate": "0.911",
+            "total": "1157.32",
             "note": "n",
             "client_ref": "broker-2026-000123",
         },
@@ -78,19 +89,20 @@ async def test_create_buy_body_and_decimal_strings_through_mcp(created, mcp_clie
         "instrument": "i1",
         "shares": "12.5",
         "quote": "101.2",
-        "exchangeRate": "1.0850",
+        "amount": "1157.32",
+        "exchangeRate": "0.911",
         "fees": "4.90",
         "taxes": "0",
         "forexFees": "1.00",
         "forexTaxes": "0.50",
-        "amount": "1377.60",
         "note": "n",
         "clientRef": "broker-2026-000123",
     }
     assert b'"shares": "12.5"' in created.calls.last.request.content
     assert sent_query(created) == {}
-    assert result.data["value"]["value"] == "1377.60"
-    assert result.data["linked"]["uuid"] == "t2"
+    assert result.data["value"]["value"] == "1157.32"
+    assert result.data["units"][1]["exchangeRate"] == "0.911"
+    assert result.data["linked"]["uuid"] == "3c4d5e6f-7a8b-4c1d-8e2f-3a4b5c6d7e8f"
 
 
 async def test_create_sell_with_gross_value_dry_run(created):
@@ -107,11 +119,28 @@ async def test_create_sell_with_gross_value_dry_run(created):
     assert sent_query(created) == {"dry_run": "true"}
 
 
-async def test_buy_needs_exactly_one_of_quote_and_gross():
-    with pytest.raises(ToolError, match="exactly one of quote or gross_value"):
+async def test_buy_needs_a_price_or_total():
+    with pytest.raises(ToolError, match="at least one of quote, gross_value or total"):
         await tx.create_buy("p1", "c1", "i1", "2026-03-02", "5", "main")
-    with pytest.raises(ToolError, match="exactly one of quote or gross_value"):
-        await tx.create_buy("p1", "c1", "i1", "2026-03-02", "5", "main", quote="1", gross_value="5.00")
+
+
+async def test_buy_with_total_only(created):
+    await tx.create_buy("p1", "c1", "i1", "2026-03-02", "5", "main", total="505.00", fees="5.00")
+    assert sent_json(created) == {
+        "type": "buy",
+        "date": "2026-03-02",
+        "investmentAccount": "p1",
+        "cashAccount": "c1",
+        "instrument": "i1",
+        "shares": "5",
+        "amount": "505.00",
+        "fees": "5.00",
+    }
+
+
+async def test_buy_with_quote_and_gross_value(created):
+    await tx.create_buy("p1", "c1", "i1", "2026-03-02", "5", "main", quote="1", gross_value="5.00")
+    assert sent_json(created)["quote"] == "1" and sent_json(created)["grossValue"] == "5.00"
 
 
 @pytest.mark.parametrize(
@@ -180,8 +209,9 @@ async def test_create_retries_423(api, sleeps):
 
 async def test_create_delivery(created):
     await tx.create_delivery(
-        "p1", "i1", "outbound", "2026-01-05", "3", "main", quote="10.5", currency="USD", exchange_rate="0.9",
-        fees="1.00", taxes="2.00", note="gift", client_ref="d1",
+        "p1", "i1", "outbound", "2026-01-05", "3", "main", quote="10.5", total="28.50", currency="USD",
+        exchange_rate="0.9", fees="1.00", taxes="2.00", forex_fees="0.50", forex_taxes="0.25", note="gift",
+        client_ref="d1",
     )
     assert sent_json(created) == {
         "type": "delivery-outbound",
@@ -190,10 +220,13 @@ async def test_create_delivery(created):
         "instrument": "i1",
         "shares": "3",
         "quote": "10.5",
+        "amount": "28.50",
         "currency": "USD",
         "exchangeRate": "0.9",
         "fees": "1.00",
         "taxes": "2.00",
+        "forexFees": "0.50",
+        "forexTaxes": "0.25",
         "note": "gift",
         "clientRef": "d1",
     }
@@ -201,23 +234,43 @@ async def test_create_delivery(created):
 
 async def test_create_dividend(created):
     await tx.create_dividend(
-        "c1", "i1", "2026-07-20", "50.00", "main", ex_date="2026-07-15", shares="10", taxes="7.50", fees="0",
-        exchange_rate="0.92", client_ref="div-1", dry_run=True,
+        "c1", "i1", "2026-07-20", "main", gross_value="50.00", ex_date="2026-07-15", shares="10", taxes="7.50",
+        client_ref="div-1", dry_run=True,
+    )
+    # the "dividend" request example of openapi.yaml, plus clientRef
+    assert sent_json(created) == {
+        "type": "dividends",
+        "date": "2026-07-20",
+        "exDate": "2026-07-15",
+        "cashAccount": "c1",
+        "instrument": "i1",
+        "shares": "10",
+        "grossValue": "50.00",
+        "taxes": "7.50",
+        "clientRef": "div-1",
+    }
+    assert sent_query(created) == {"dry_run": "true"}
+
+
+async def test_create_dividend_net_amount_and_forex(created):
+    await tx.create_dividend(
+        "c1", "i1", "2026-07-20", "main", total="42.50", exchange_rate="0.92", forex_taxes="1.00", forex_fees="0.20"
     )
     assert sent_json(created) == {
         "type": "dividends",
         "date": "2026-07-20",
         "cashAccount": "c1",
         "instrument": "i1",
-        "grossValue": "50.00",
-        "exDate": "2026-07-15",
-        "shares": "10",
+        "amount": "42.50",
         "exchangeRate": "0.92",
-        "taxes": "7.50",
-        "fees": "0",
-        "clientRef": "div-1",
+        "forexTaxes": "1.00",
+        "forexFees": "0.20",
     }
-    assert sent_query(created) == {"dry_run": "true"}
+
+
+async def test_create_dividend_needs_gross_or_total():
+    with pytest.raises(ToolError, match="gross_value and/or total"):
+        await tx.create_dividend("c1", "i1", "2026-07-20", "main")
 
 
 @pytest.mark.parametrize(
@@ -237,21 +290,37 @@ async def test_interest_with_taxes(created):
     assert sent_json(created)["taxes"] == "2.64"
 
 
+async def test_deposit_matches_openapi_example(created):
+    await tx.create_cash_transaction("c4b2a1e0-3f6d-4a2e-8b1c-5d7f9a0e2c46", "deposit", "2026-01-02", "1000", "main")
+    assert sent_json(created) == {
+        "type": "deposit",
+        "date": "2026-01-02",
+        "cashAccount": "c4b2a1e0-3f6d-4a2e-8b1c-5d7f9a0e2c46",
+        "amount": "1000",
+    }
+
+
+async def test_fee_with_foreign_instrument_exchange_rate(created):
+    await tx.create_cash_transaction("c1", "fees", "2026-01-01", "3.00", "main", instrument="i1", exchange_rate="0.9")
+    assert sent_json(created)["exchangeRate"] == "0.9"
+
+
 async def test_create_transfer(created):
-    await tx.create_transfer("c1", "c2", "2026-02-01", "1000.00", "main", target_amount="1085.00", client_ref="tr")
+    await tx.create_transfer("c1", "c2", "2026-05-01", "500.00", "main", target_amount="545.00", client_ref="tr")
+    # the "cashTransfer" request example of openapi.yaml: no exchange rate, it follows from the amounts
     assert sent_json(created) == {
         "type": "cash-transfer",
-        "date": "2026-02-01",
+        "date": "2026-05-01",
         "fromCashAccount": "c1",
         "toCashAccount": "c2",
-        "amount": "1000.00",
-        "targetAmount": "1085.00",
+        "amount": "500.00",
+        "targetAmount": "545.00",
         "clientRef": "tr",
     }
 
 
 async def test_create_security_transfer(created):
-    await tx.create_security_transfer("p1", "p2", "i1", "2026-02-01", "10", "1500.00", "main", note="move")
+    await tx.create_security_transfer("p1", "p2", "i1", "2026-02-01", "10", "main", amount="1500.00", note="move")
     assert sent_json(created) == {
         "type": "security-transfer",
         "date": "2026-02-01",
@@ -264,11 +333,26 @@ async def test_create_security_transfer(created):
     }
 
 
+async def test_create_security_transfer_with_quote(created):
+    await tx.create_security_transfer("p1", "p2", "i1", "2026-02-01", "10", "main", quote="150.5")
+    assert sent_json(created) == {
+        "type": "security-transfer",
+        "date": "2026-02-01",
+        "fromInvestmentAccount": "p1",
+        "toInvestmentAccount": "p2",
+        "instrument": "i1",
+        "shares": "10",
+        "quote": "150.5",
+    }
+    with pytest.raises(ToolError, match="amount and/or quote"):
+        await tx.create_security_transfer("p1", "p2", "i1", "2026-02-01", "10", "main")
+
+
 async def test_update_transaction(api):
     route = api.patch(f"{T}/t1").respond(200, json={"uuid": "t1"})
     await tx.update_transaction(
-        "t1", "main", date="2026-03-03", shares="13", fees="5.00", cash_account="c2", clear=["note", "ex_date"],
-        dry_run=True,
+        "t1", "main", date="2026-03-03", shares="13", fees="5.00", cash_account="c2",
+        clear=["note", "ex_date", "exchange_rate"], dry_run=True,
     )
     assert route.calls.last.request.headers["Content-Type"] == "application/merge-patch+json"
     assert sent_json(route) == {
@@ -278,6 +362,7 @@ async def test_update_transaction(api):
         "cashAccount": "c2",
         "note": None,
         "exDate": None,
+        "exchangeRate": None,
     }
     assert sent_query(route) == {"dry_run": "true"}
 
@@ -288,7 +373,10 @@ async def test_update_transaction_needs_a_field():
 
 
 async def test_delete_transaction(api):
-    route = api.delete(f"{T}/t1").respond(200, json={"dryRun": True, "removed": ["t1", "t2"]})
+    preview = {"dryRun": True, "removed": [{"uuid": "t1", "type": "buy"}, {"uuid": "t2", "type": "buy"}]}
+    route = api.delete(f"{T}/t1").respond(200, json=preview)
     result = await tx.delete_transaction("t1", "main", dry_run=True)
-    assert result == {"dryRun": True, "removed": ["t1", "t2"]}
+    assert result == preview
     assert sent_query(route) == {"dry_run": "true"}
+    api.delete(f"{T}/t1").respond(204)
+    assert await tx.delete_transaction("t1", "main") == {"deleted": True, "uuid": "t1"}

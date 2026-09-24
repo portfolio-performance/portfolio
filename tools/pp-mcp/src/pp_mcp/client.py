@@ -2,6 +2,7 @@
 
 import asyncio
 import json
+import re
 from decimal import Decimal
 from typing import Any
 from urllib.parse import quote
@@ -30,6 +31,21 @@ def _retry_after(response: httpx.Response) -> float:
 
 def _parse_json(text: str) -> Any:
     return json.loads(text, parse_float=Decimal)
+
+
+_NUMBER_MARK = "\x00pp-number:"
+_NUMBER_TOKEN = re.compile(r'"\\u0000pp-number:([-+0-9.]+)"')
+
+
+def _dump_json(body: Any) -> str:
+    """JSON text of a request body; a `Decimal` becomes an exact JSON number (never a float)."""
+
+    def default(value: Any) -> Any:
+        if isinstance(value, Decimal):
+            return _NUMBER_MARK + format(value, "f")
+        raise TypeError(f"{type(value).__name__} is not JSON serializable")
+
+    return _NUMBER_TOKEN.sub(r"\1", json.dumps(body, default=default))
 
 
 def _encode_query(params: dict[str, Any] | None) -> dict[str, str] | None:
@@ -83,7 +99,7 @@ class PPClient:
         headers = {}
         content = None
         if body is not None:
-            content = json.dumps(body).encode("utf-8")
+            content = _dump_json(body).encode("utf-8")
             headers["Content-Type"] = content_type
         query = _encode_query(params)
         attempt = 0
