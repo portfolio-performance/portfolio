@@ -5,6 +5,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -273,7 +274,8 @@ public class VanguardGroupEuropePDFExtractorTest
 
         // check dividende transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-06-28T00:00"), hasShares(102.185154), //
+                        hasDate("2023-06-28T00:00"), hasExDate("2023-06-15T00:00"), //
+                        hasShares(102.185154), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Ordentliche Dividende"), //
                         hasAmount("EUR", 26.91), hasGrossValue("EUR", 33.00), //
@@ -307,7 +309,8 @@ public class VanguardGroupEuropePDFExtractorTest
 
         // check dividende transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-09-27T00:00"), hasShares(2.535612), //
+                        hasDate("2023-09-27T00:00"), hasExDate("2023-09-14T00:00"), //
+                        hasShares(2.535612), //
                         hasSource("Dividende02.txt"), //
                         hasNote("Ordentliche Dividende"), //
                         hasAmount("EUR", 0.53), hasGrossValue("EUR", 0.64), //
@@ -342,7 +345,8 @@ public class VanguardGroupEuropePDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-09-27T00:00"), hasShares(2.535612), //
+                        hasDate("2023-09-27T00:00"), hasExDate("2023-09-14T00:00"), //
+                        hasShares(2.535612), //
                         hasSource("Dividende02.txt"), //
                         hasNote("Ordentliche Dividende"), //
                         hasAmount("EUR", 0.53), hasGrossValue("EUR", 0.64), //
