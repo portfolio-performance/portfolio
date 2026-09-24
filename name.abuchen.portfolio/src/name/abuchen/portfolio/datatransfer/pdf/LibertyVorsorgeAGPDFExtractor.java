@@ -92,7 +92,7 @@ public class LibertyVorsorgeAGPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Valor: (?<wkn>[A-Z0-9]{5,9})$") //
                                                         .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .find("Menge\\/Nominal B.rsenplatz Preis") //
-                                                        .match("^Total Kurswert (?<currency>[A-Z]{3}) .*$") //)
+                                                        .match("^Total Kurswert (?<currency>[A-Z]{3}) .*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // W ir ha ben für Sie a m  06.03.2025 v erk a u ft
