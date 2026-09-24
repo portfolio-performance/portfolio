@@ -1065,6 +1065,70 @@ paths:
         "500":
           $ref: "#/components/responses/InternalError"
 
+    post:
+      operationId: createCashAccount
+      tags: [Cash accounts]
+      summary: Create a cash account
+      description: |
+        Creates a cash account. `name` is required; `currencyCode` defaults to
+        the file's base currency, as in the application.
+
+        **Idempotency.** A repeated create with the same `clientRef` creates
+        nothing and answers the cash account created first (`200`,
+        `replayed: true`). The key is kept in memory only, until the
+        application quits.
+
+        With `?dry_run=true` nothing is created; the answer (`200`,
+        `dryRun: true`) is the cash account as it would be.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CashAccountCreate"
+            examples:
+              default:
+                value:
+                  name: Broker Cash
+                  currencyCode: EUR
+                  clientRef: cash-1
+      responses:
+        "200":
+          description: "A dry run (`dryRun: true`) or a replayed create (`replayed: true`); nothing was changed."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CashAccountWriteResult"
+        "201":
+          description: Created
+          headers:
+            Location:
+              description: The path of the created cash account.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CashAccountWriteResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /v1/files/{file}/cash-accounts/{uuid}:
     parameters:
       - $ref: "#/components/parameters/File"
@@ -1106,6 +1170,95 @@ paths:
           $ref: "#/components/responses/NotFound"
         "409":
           $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+    patch:
+      operationId: patchCashAccount
+      tags: [Cash accounts]
+      summary: Update a cash account (JSON Merge Patch)
+      description: |
+        A **JSON Merge Patch** (RFC 7386): omitted fields stay untouched, an
+        explicit `null` clears an optional field. Accepted as
+        `application/json` or `application/merge-patch+json`. Unknown fields
+        are rejected (`unknown-field`); all violations are reported at once.
+
+        The currency cannot be changed while the account has transactions
+        (`locked-by-transactions`), as in the application's account list.
+
+        A patch that changes nothing does not mark the file dirty. With
+        `?dry_run=true` the answer is the cash account as it would be
+        (`dryRun: true`), and nothing is changed.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: "#/components/schemas/CashAccountPatch"
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CashAccountPatch"
+      responses:
+        "200":
+          description: The updated cash account, or the preview of a dry run
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CashAccountWriteResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    delete:
+      operationId: deleteCashAccount
+      tags: [Cash accounts]
+      summary: Delete a cash account
+      description: |
+        Deletes the cash account. **Rejected `409 delete-blocked`** while it has
+        transactions (the application offers the delete only for an account
+        without transactions), while an investment plan uses it, or while it
+        is the reference account of an investment account (`errors` names
+        which). Taxonomy assignments do not block the delete; they are removed.
+
+        With `?dry_run=true` nothing is deleted and the answer (`200`) names
+        the cash account that would be removed.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+      responses:
+        "200":
+          description: Dry run, what would be removed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeletePreview"
+        "204":
+          description: Deleted
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "423":
+          $ref: "#/components/responses/Locked"
         "500":
           $ref: "#/components/responses/InternalError"
 
@@ -1162,6 +1315,69 @@ paths:
         "500":
           $ref: "#/components/responses/InternalError"
 
+    post:
+      operationId: createInvestmentAccount
+      tags: [Investment accounts]
+      summary: Create an investment account
+      description: |
+        Creates an investment account. `name` and `referenceCashAccount` (an
+        existing cash account that is not retired) are required.
+
+        **Idempotency.** A repeated create with the same `clientRef` creates
+        nothing and answers the investment account created first (`200`,
+        `replayed: true`). The key is kept in memory only, until the
+        application quits.
+
+        With `?dry_run=true` nothing is created; the answer (`200`,
+        `dryRun: true`) is the investment account as it would be.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InvestmentAccountCreate"
+            examples:
+              default:
+                value:
+                  name: Broker
+                  referenceCashAccount: c4b2a1e0-3f6d-4a2e-8b1c-5d7f9a0e2c46
+      responses:
+        "200":
+          description: "A dry run (`dryRun: true`) or a replayed create (`replayed: true`); nothing was changed."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvestmentAccountWriteResult"
+        "201":
+          description: Created
+          headers:
+            Location:
+              description: The path of the created investment account.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvestmentAccountWriteResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /v1/files/{file}/investment-accounts/{uuid}:
     parameters:
       - $ref: "#/components/parameters/File"
@@ -1214,6 +1430,93 @@ paths:
           $ref: "#/components/responses/NotFound"
         "409":
           $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+    patch:
+      operationId: patchInvestmentAccount
+      tags: [Investment accounts]
+      summary: Update an investment account (JSON Merge Patch)
+      description: |
+        A **JSON Merge Patch** (RFC 7386): omitted fields stay untouched, an
+        explicit `null` clears an optional field. Accepted as
+        `application/json` or `application/merge-patch+json`. Unknown fields
+        are rejected (`unknown-field`); all violations are reported at once.
+
+        A new `referenceCashAccount` must exist (`unknown-reference`) and must
+        not be retired (`invalid-value`).
+
+        A patch that changes nothing does not mark the file dirty. With
+        `?dry_run=true` the answer is the investment account as it would be
+        (`dryRun: true`), and nothing is changed.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: "#/components/schemas/InvestmentAccountPatch"
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InvestmentAccountPatch"
+      responses:
+        "200":
+          description: The updated investment account, or the preview of a dry run
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvestmentAccountWriteResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    delete:
+      operationId: deleteInvestmentAccount
+      tags: [Investment accounts]
+      summary: Delete an investment account
+      description: |
+        Deletes the investment account. **Rejected `409 delete-blocked`** while
+        it has transactions (the application offers the delete only for an
+        account without transactions) or while an investment plan uses it.
+
+        With `?dry_run=true` nothing is deleted and the answer (`200`) names
+        the investment account that would be removed.
+      parameters:
+        - $ref: "#/components/parameters/DryRun"
+      responses:
+        "200":
+          description: Dry run, what would be removed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeletePreview"
+        "204":
+          description: Deleted
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "423":
+          $ref: "#/components/responses/Locked"
         "500":
           $ref: "#/components/responses/InternalError"
 
@@ -2751,6 +3054,8 @@ components:
         note:
           type: string
           description: Omitted when not set.
+        attributes:
+          $ref: "#/components/schemas/AttributeValues"
         balance:
           allOf:
             - $ref: "#/components/schemas/MonetaryValue"
@@ -2777,12 +3082,104 @@ components:
         note:
           type: string
           description: Omitted when not set.
+        attributes:
+          $ref: "#/components/schemas/AttributeValues"
         value:
           allOf:
             - $ref: "#/components/schemas/MonetaryValue"
           description: |
             The total value of every security position this account holds at
             the request's `date`, converted into the request's `currency`.
+            In the answer of a write: today, in the file's base currency.
+
+    AttributeValues:
+      type: object
+      description: |
+        The entity's set custom attributes, keyed by attribute id, as typed
+        JSON; omitted when none is set. See `Instrument.attributes`.
+      additionalProperties:
+        oneOf:
+          - type: string
+          - type: number
+          - type: boolean
+
+    AttributePatch:
+      type: object
+      description: |
+        A nested merge patch over the custom attributes, keyed by attribute
+        id: a value sets the attribute, `null` clears it. Unknown ids,
+        attributes that do not apply to the entity, unsupported types and
+        values of the wrong type are rejected `422`.
+      additionalProperties:
+        oneOf:
+          - type: string
+          - type: number
+          - type: boolean
+          - type: "null"
+
+    CashAccountPatch:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+        currencyCode:
+          type: string
+          description: A known currency; locked while the account has transactions.
+        note:
+          type: [string, "null"]
+        attributes:
+          $ref: "#/components/schemas/AttributePatch"
+
+    CashAccountCreate:
+      description: The fields of `CashAccountPatch` plus `clientRef`; `name` is required.
+      allOf:
+        - $ref: "#/components/schemas/CashAccountPatch"
+        - type: object
+          required: [name]
+          properties:
+            clientRef:
+              type: string
+              maxLength: 128
+
+    InvestmentAccountPatch:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+        referenceCashAccount:
+          type: string
+          description: The `uuid` of a cash account that is not retired.
+        note:
+          type: [string, "null"]
+        attributes:
+          $ref: "#/components/schemas/AttributePatch"
+
+    InvestmentAccountCreate:
+      description: |
+        The fields of `InvestmentAccountPatch` plus `clientRef`; `name` and
+        `referenceCashAccount` are required.
+      allOf:
+        - $ref: "#/components/schemas/InvestmentAccountPatch"
+        - type: object
+          required: [name, referenceCashAccount]
+          properties:
+            clientRef:
+              type: string
+              maxLength: 128
+
+    CashAccountWriteResult:
+      description: The cash account as created, updated, previewed or replayed; `balance` as of today.
+      allOf:
+        - $ref: "#/components/schemas/CashAccount"
+        - $ref: "#/components/schemas/WriteFlags"
+
+    InvestmentAccountWriteResult:
+      description: The investment account as created, updated, previewed or replayed.
+      allOf:
+        - $ref: "#/components/schemas/InvestmentAccount"
+        - $ref: "#/components/schemas/WriteFlags"
 
     MonetaryValue:
       type: object

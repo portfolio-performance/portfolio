@@ -20,6 +20,7 @@ import name.abuchen.portfolio.math.AllTimeHigh;
 import name.abuchen.portfolio.math.Risk;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Attributable;
 import name.abuchen.portfolio.model.AttributeFieldType;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
@@ -166,24 +167,31 @@ public final class EntityJson
         if (security.getNote() != null)
             json.addProperty("note", security.getNote()); //$NON-NLS-1$
 
-        var attributes = attributesJson(client, security);
+        addAttributes(json, client, security, Security.class);
+    }
+
+    /** adds the entity's custom attributes as {@code attributes}, unless it has none */
+    private static void addAttributes(JsonObject json, Client client, Attributable entity,
+                    Class<? extends Attributable> target)
+    {
+        var attributes = attributesJson(client, entity, target);
         if (attributes.size() > 0)
             json.add("attributes", attributes); //$NON-NLS-1$
     }
 
     /**
-     * The security's custom attributes, only those that are set and of a
+     * The entity's custom attributes, only those that are set and of a
      * supported scalar type, keyed by attribute id. Iterating the type
      * definitions (rather than the stored map) gives a stable order and skips
      * orphaned or unsupported entries.
      */
-    private static JsonObject attributesJson(Client client, Security security)
+    private static JsonObject attributesJson(Client client, Attributable entity, Class<? extends Attributable> target)
     {
         var result = new JsonObject();
-        var stored = security.getAttributes().getMap();
+        var stored = entity.getAttributes().getMap();
 
         client.getSettings().getAttributeTypes() //
-                        .filter(type -> type.supports(Security.class)) //
+                        .filter(type -> type.supports(target)) //
                         .forEach(type -> {
                             var value = stored.get(type.getId());
                             if (value == null)
@@ -210,7 +218,7 @@ public final class EntityJson
         return result;
     }
 
-    public static JsonObject toJson(Account account, Money balance)
+    public static JsonObject toJson(Client client, Account account, Money balance)
     {
         var json = new JsonObject();
         json.addProperty("uuid", account.getUUID()); //$NON-NLS-1$
@@ -218,6 +226,7 @@ public final class EntityJson
         json.addProperty("currencyCode", account.getCurrencyCode()); //$NON-NLS-1$
         if (account.getNote() != null)
             json.addProperty("note", account.getNote()); //$NON-NLS-1$
+        addAttributes(json, client, account, Account.class);
         json.add("balance", toJson(balance)); //$NON-NLS-1$
         return json;
     }
@@ -1005,7 +1014,7 @@ public final class EntityJson
         return JsonParser.parseString(plain);
     }
 
-    public static JsonObject toJson(Portfolio portfolio, Money value)
+    public static JsonObject toJson(Client client, Portfolio portfolio, Money value)
     {
         var json = new JsonObject();
         json.addProperty("uuid", portfolio.getUUID()); //$NON-NLS-1$
@@ -1014,6 +1023,7 @@ public final class EntityJson
             json.addProperty("note", portfolio.getNote()); //$NON-NLS-1$
         if (portfolio.getReferenceAccount() != null)
             json.addProperty("referenceCashAccount", portfolio.getReferenceAccount().getUUID()); //$NON-NLS-1$
+        addAttributes(json, client, portfolio, Portfolio.class);
         json.add("value", toJson(value)); //$NON-NLS-1$
         return json;
     }

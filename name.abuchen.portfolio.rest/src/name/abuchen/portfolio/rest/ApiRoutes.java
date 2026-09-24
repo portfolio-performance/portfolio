@@ -136,16 +136,37 @@ public final class ApiRoutes
         router.add("GET", "/v1/files/{file}/cash-accounts", calc(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
                         (context, req) -> Response.json(200,
                                         AccountsHandler.list(context.client(), context.factory(), req.queryParam("date"))))); //$NON-NLS-1$
+        router.add("POST", "/v1/files/{file}/cash-accounts", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> {
+                            var result = AccountsHandler.create(context, idempotency, parseObject(req));
+                            return created(req, result, "cash-accounts", result.entity().get("uuid").getAsString()); //$NON-NLS-1$ //$NON-NLS-2$
+                        }));
         router.add("GET", "/v1/files/{file}/cash-accounts/{uuid}", calc(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
                         (context, req) -> Response.json(200, AccountsHandler.get(context.client(), context.factory(),
                                         req.pathParam("uuid"), req.queryParam("date"))))); //$NON-NLS-1$ //$NON-NLS-2$
+        router.add("PATCH", "/v1/files/{file}/cash-accounts/{uuid}", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> Response.json(200, AccountsHandler
+                                        .patch(context, req.pathParam("uuid"), parseObject(req)).entity()))); //$NON-NLS-1$
+        router.add("DELETE", "/v1/files/{file}/cash-accounts/{uuid}", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> deleted(AccountsHandler.delete(context, req.pathParam("uuid"))))); //$NON-NLS-1$
 
         router.add("GET", "/v1/files/{file}/investment-accounts", calc(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
                         (context, req) -> Response.json(200, PortfoliosHandler.list(context.client(), context.factory(),
                                         req.queryParam("date"), req.queryParam("currency"))))); //$NON-NLS-1$ //$NON-NLS-2$
+        router.add("POST", "/v1/files/{file}/investment-accounts", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> {
+                            var result = PortfoliosHandler.create(context, idempotency, parseObject(req));
+                            return created(req, result, "investment-accounts", //$NON-NLS-1$
+                                            result.entity().get("uuid").getAsString()); //$NON-NLS-1$
+                        }));
         router.add("GET", "/v1/files/{file}/investment-accounts/{uuid}", calc(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
                         (context, req) -> Response.json(200, PortfoliosHandler.get(context.client(), context.factory(),
                                         req.pathParam("uuid"), req.queryParam("date"), req.queryParam("currency"))))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        router.add("PATCH", "/v1/files/{file}/investment-accounts/{uuid}", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> Response.json(200, PortfoliosHandler
+                                        .patch(context, req.pathParam("uuid"), parseObject(req)).entity()))); //$NON-NLS-1$
+        router.add("DELETE", "/v1/files/{file}/investment-accounts/{uuid}", writeWith(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> deleted(PortfoliosHandler.delete(context, req.pathParam("uuid"))))); //$NON-NLS-1$
 
         router.add("GET", "/v1/files/{file}/taxonomies", read(resolver, host,
                         (client, req) -> Response.json(200, TaxonomiesHandler.list(client))));
@@ -314,6 +335,12 @@ public final class ApiRoutes
         var location = "/v1/files/" + request.pathParam("file") + "/" + collection + "/" + encodeSegment(id); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         return new Response(201, "application/json", //$NON-NLS-1$
                         result.entity().toString().getBytes(StandardCharsets.UTF_8), Map.of("Location", location)); //$NON-NLS-1$
+    }
+
+    /** the answer of a delete: the preview of a dry run ({@code 200}), else {@code 204} */
+    private static Response deleted(JsonObject preview)
+    {
+        return preview != null ? Response.json(200, preview) : Response.noContent();
     }
 
     /** percent-encodes a value as a single path segment (a space is %20, not +) */

@@ -182,6 +182,16 @@ the matching ones.
 {"uuid": "d9f0…", "name": "Broker", "referenceCashAccount": "c4b2…", "note": "…"}
 ```
 
+### Writing cash and investment accounts
+
+`POST /v1/files/{file}/cash-accounts` takes `name` (required), `currencyCode` (default: the file's
+base currency), `note`, `attributes` and `clientRef`; `POST …/investment-accounts` takes `name` and
+`referenceCashAccount` (both required), `note`, `attributes` and `clientRef`. `PATCH …/{uuid}` is a
+merge patch over the same fields; a cash account's currency is locked while it has transactions.
+`DELETE …/{uuid}` answers `409 delete-blocked` while the account has transactions or an investment
+plan uses it, and for a cash account also while it is the reference account of an investment
+account.
+
 ### `POST /v1/files/{file}/transactions` — create a transaction
 
 `type` selects the shape: `buy`, `sell`, `delivery-inbound`, `delivery-outbound`, `dividends`,
@@ -241,7 +251,7 @@ the user, who can also discard it by closing the file without saving.
 | 409 | `password-required` | the file to open is encrypted — a human has to open it |
 | 409 | `open-failed` | the file to open could not be loaded; see `detail` |
 | 409 | `ambiguous-alias` | alias matches several records; use the UUID |
-| 409 | `delete-blocked` | instrument is referenced by transactions or plans |
+| 409 | `delete-blocked` | the entity to delete is still referenced, see `errors` |
 | 422 | `validation` | one or more fields rejected; see `errors` |
 | 423 | `user-interaction` | a dialog is open in the app — **retry**, see `Retry-After` |
 | 429 | `pairing-pending` | another pairing request awaits the user — retry after `Retry-After` |
