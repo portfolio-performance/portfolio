@@ -120,8 +120,9 @@ public class SecurityDeliveryModel extends AbstractSecurityTransactionModel
     @Override
     public void setPortfolio(Portfolio portfolio)
     {
-        if (portfolio.getReferenceAccount() != null)
-            setTransactionCurrency(CurrencyUnit.getInstance(portfolio.getReferenceAccount().getCurrencyCode()));
+        if (source == null)
+            setTransactionCurrency(CurrencyUnit.getInstance(portfolio.getReferenceAccount() != null
+                            ? portfolio.getReferenceAccount().getCurrencyCode() : client.getBaseCurrency()));
         super.setPortfolio(portfolio);
     }
 

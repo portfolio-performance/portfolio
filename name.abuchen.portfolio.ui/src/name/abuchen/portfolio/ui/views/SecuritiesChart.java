@@ -685,7 +685,12 @@ public class SecuritiesChart
                                     if (t instanceof AccountTransaction at)
                                         addDividendTooltip(composite, at);
                                     else if (t instanceof PortfolioTransaction pt)
-                                        addInvestmentTooltip(composite, pt);
+                                    {
+                                        if (pt.getType() == PortfolioTransaction.Type.DIVIDENDS)
+                                            addPortfolioDividendTooltip(composite, pt);
+                                        else
+                                            addInvestmentTooltip(composite, pt);
+                                    }
                                 });
             }
         });
@@ -762,6 +767,16 @@ public class SecuritiesChart
                                             * Values.Quote.factorToMoney() / t.getShares()))));
 
         }
+    }
+
+    private void addPortfolioDividendTooltip(Composite composite, PortfolioTransaction t)
+    {
+        Label label = new Label(composite, SWT.NONE);
+        label.setText(MessageFormat.format(Messages.LabelToolTipTransactionSummary, t.getType().toString(),
+                        dateTimeFormatter.format(t.getDateTime().toLocalDate()), t.getMonetaryAmount().toString()));
+
+        label = new Label(composite, SWT.NONE);
+        label.setText(Values.Share.format(t.getShares()));
     }
 
     private void configureSeriesPainter(ILineSeries<Integer> series, LocalDate[] dates, double[] values, Color color,

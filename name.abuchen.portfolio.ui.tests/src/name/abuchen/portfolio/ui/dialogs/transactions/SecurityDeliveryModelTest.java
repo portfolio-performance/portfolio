@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import org.junit.Test;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -38,5 +39,22 @@ public class SecurityDeliveryModelTest
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.0243)));
         assertThat(transaction.getAmount(), is(2_43L));
         assertThat(client.getAccounts().isEmpty(), is(true));
+    }
+
+    @Test
+    public void testCurrencyResetsWhenSwitchingToPortfolioWithoutReferenceAccount()
+    {
+        Client client = new Client();
+        Portfolio withAccount = new Portfolio();
+        Account account = new Account();
+        account.setCurrencyCode("USD"); //$NON-NLS-1$
+        withAccount.setReferenceAccount(account);
+
+        var model = new SecurityDeliveryModel(client, PortfolioTransaction.Type.DIVIDENDS);
+        model.setPortfolio(withAccount);
+        assertThat(model.getTransactionCurrencyCode(), is("USD")); //$NON-NLS-1$
+
+        model.setPortfolio(new Portfolio());
+        assertThat(model.getTransactionCurrencyCode(), is(client.getBaseCurrency()));
     }
 }

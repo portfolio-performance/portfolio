@@ -57,6 +57,47 @@ public class DividendCalculationTest
     }
 
     @Test
+    public void portfolioDividendYieldUsesReceivingPortfolioCost()
+    {
+        Portfolio first = new Portfolio();
+        Portfolio second = new Portfolio();
+        LocalDateTime purchaseDate = LocalDateTime.of(2020, 1, 1, 12, 0);
+        LocalDateTime paymentDate = purchaseDate.plusMonths(1);
+
+        PortfolioTransaction firstBuy = new PortfolioTransaction();
+        firstBuy.setType(Type.BUY);
+        firstBuy.setSecurity(security);
+        firstBuy.setCurrencyCode("EUR"); //$NON-NLS-1$
+        firstBuy.setDateTime(purchaseDate);
+        firstBuy.setShares(Values.Share.factorize(10));
+        firstBuy.setAmount(10_000L);
+
+        PortfolioTransaction secondBuy = new PortfolioTransaction();
+        secondBuy.setType(Type.BUY);
+        secondBuy.setSecurity(security);
+        secondBuy.setCurrencyCode("EUR"); //$NON-NLS-1$
+        secondBuy.setDateTime(purchaseDate);
+        secondBuy.setShares(Values.Share.factorize(10));
+        secondBuy.setAmount(20_000L);
+
+        PortfolioTransaction dividend = new PortfolioTransaction();
+        dividend.setType(Type.DIVIDENDS);
+        dividend.setSecurity(security);
+        dividend.setCurrencyCode("EUR"); //$NON-NLS-1$
+        dividend.setDateTime(paymentDate);
+        dividend.setShares(Values.Share.factorize(1));
+        dividend.setAmount(1_000L);
+
+        var payment = (CalculationLineItem.DividendPayment) CalculationLineItem.dividend(first, dividend);
+        Calculation.perform(CostCalculation.class, converter, security, List.of( //
+                        CalculationLineItem.of(first, firstBuy), //
+                        CalculationLineItem.of(second, secondBuy), payment));
+
+        assertEquals(0.1d, payment.getPersonalDividendYield(), 0.0d);
+        assertEquals(1_000L / 15_000d, payment.getPersonalDividendYieldMovingAverage(), 0.0001d);
+    }
+
+    @Test
     public void noTransactionTest()
     {
         List<CalculationLineItem> transactions = new ArrayList<>();

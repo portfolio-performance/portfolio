@@ -250,13 +250,29 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
     @Override
     public void visit(CurrencyConverter converter, CalculationLineItem.DividendPayment t)
     {
-        if (!(t.getTransaction().orElseThrow(IllegalArgumentException::new) instanceof PortfolioTransaction))
+        boolean portfolioDividend = t.getTransaction().orElseThrow(
+                        IllegalArgumentException::new) instanceof PortfolioTransaction;
+        if (!portfolioDividend)
             taxes += t.getTransaction().orElseThrow(IllegalArgumentException::new).getUnitSum(Unit.Type.TAX, converter)
                             .getAmount();
 
-        t.setFifoCost(getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED));
-        t.setMovingAverageCost(getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED));
+        if (portfolioDividend)
+        {
+            long portfolioShares = fifo.stream().filter(entry -> entry.owner.equals(t.getOwner()))
+                            .mapToLong(entry -> entry.shares).sum();
+            long portfolioFifoCost = fifo.stream().filter(entry -> entry.owner.equals(t.getOwner()))
+                            .mapToLong(entry -> entry.grossAmount).sum();
+            t.setFifoCost(Money.of(getTermCurrency(), portfolioFifoCost));
+            t.setMovingAverageCost(Money.of(getTermCurrency(), getSharesHeld() == 0 ? 0
+                            : Math.round(movingRelativeCost * portfolioShares / (double) getSharesHeld())));
+        }
+        else
+        {
+            t.setFifoCost(getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED));
+            t.setMovingAverageCost(getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED));
+        }
         t.setTotalShares(getSharesHeld());
+        t.setConvertedGrossValue(converter.convert(t.getDateTime(), t.getGrossValue()));
     }
 
     public CostCalculationResult getResult()

@@ -39,7 +39,9 @@ import name.abuchen.portfolio.money.Values;
                         .getAmount();
         long amount = t.getValue().with(converter.at(t.getDateTime())).getAmount();
 
-        values.add((amount + (t.getTransaction().orElseThrow() instanceof PortfolioTransaction ? 0 : taxes))
+        values.add((t.getTransaction().orElseThrow() instanceof PortfolioTransaction portfolioTransaction
+                        ? portfolioTransaction.getGrossValue(converter).getAmount()
+                        : amount + taxes)
                         / Values.Amount.divider());
     }
 
