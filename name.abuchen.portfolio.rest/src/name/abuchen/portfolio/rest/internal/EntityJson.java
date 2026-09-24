@@ -89,6 +89,7 @@ public final class EntityJson
         json.addProperty("currencyCode", security.getCurrencyCode()); //$NON-NLS-1$
         if (security.getTargetCurrencyCode() != null)
             json.addProperty("targetCurrencyCode", security.getTargetCurrencyCode()); //$NON-NLS-1$
+        json.addProperty("retired", security.isRetired()); //$NON-NLS-1$
         addSecurityDetails(json, client, security);
         addQuoteFeed(json, security);
 
@@ -226,6 +227,7 @@ public final class EntityJson
         json.addProperty("uuid", account.getUUID()); //$NON-NLS-1$
         json.addProperty("name", account.getName()); //$NON-NLS-1$
         json.addProperty("currencyCode", account.getCurrencyCode()); //$NON-NLS-1$
+        json.addProperty("retired", account.isRetired()); //$NON-NLS-1$
         if (account.getNote() != null)
             json.addProperty("note", account.getNote()); //$NON-NLS-1$
         addAttributes(json, client, account, Account.class);
@@ -1120,6 +1122,7 @@ public final class EntityJson
         var json = new JsonObject();
         json.addProperty("uuid", portfolio.getUUID()); //$NON-NLS-1$
         json.addProperty("name", portfolio.getName()); //$NON-NLS-1$
+        json.addProperty("retired", portfolio.isRetired()); //$NON-NLS-1$
         if (portfolio.getNote() != null)
             json.addProperty("note", portfolio.getNote()); //$NON-NLS-1$
         if (portfolio.getReferenceAccount() != null)

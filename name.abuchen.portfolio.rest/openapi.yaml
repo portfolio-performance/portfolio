@@ -3671,7 +3671,7 @@ components:
     Instrument:
       type: object
       description: A security — stock, fund, bond, crypto, …
-      required: [uuid, name, currencyCode]
+      required: [uuid, name, currencyCode, retired]
       properties:
         uuid:
           type: string
@@ -3697,6 +3697,11 @@ components:
           description: |
             Only for an exchange rate: the currency the rate is quoted in.
             Omitted for every other instrument.
+        retired:
+          type: boolean
+          description: |
+            Whether the entity is retired (the application says "deactivated");
+            a retired entity is hidden from the application's lists and pickers.
         note:
           type: string
           description: Omitted when not set.
@@ -3783,6 +3788,11 @@ components:
           description: |
             Only for an exchange rate (`not-allowed-for-type` otherwise); cannot
             be cleared (`exchange-rate-requires-currency`).
+        retired:
+          type: boolean
+          description: |
+            Whether the entity is retired (the application says "deactivated");
+            a retired entity is hidden from the application's lists and pickers.
         feed:
           type: [string, "null"]
           description: A quote feed id the application knows (`unknown-feed` otherwise).
@@ -4012,7 +4022,7 @@ components:
     CashAccount:
       type: object
       description: An account holding cash in a single currency.
-      required: [uuid, name, currencyCode, balance]
+      required: [uuid, name, currencyCode, retired, balance]
       properties:
         uuid:
           type: string
@@ -4021,6 +4031,11 @@ components:
         currencyCode:
           type: string
           description: ISO 4217 currency code.
+        retired:
+          type: boolean
+          description: |
+            Whether the entity is retired (the application says "deactivated");
+            a retired entity is hidden from the application's lists and pickers.
         note:
           type: string
           description: Omitted when not set.
@@ -4038,12 +4053,17 @@ components:
       description: |
         An account holding instrument positions. Its cash side is a separate cash
         account, named by `referenceCashAccount`.
-      required: [uuid, name, value]
+      required: [uuid, name, retired, value]
       properties:
         uuid:
           type: string
         name:
           type: string
+        retired:
+          type: boolean
+          description: |
+            Whether the entity is retired (the application says "deactivated");
+            a retired entity is hidden from the application's lists and pickers.
         referenceCashAccount:
           type: string
           description: |
@@ -4096,6 +4116,11 @@ components:
         currencyCode:
           type: string
           description: A known currency; locked while the account has transactions.
+        retired:
+          type: boolean
+          description: |
+            Whether the entity is retired (the application says "deactivated");
+            a retired entity is hidden from the application's lists and pickers.
         note:
           type: [string, "null"]
         attributes:
@@ -4121,6 +4146,11 @@ components:
         referenceCashAccount:
           type: string
           description: The `uuid` of a cash account that is not retired.
+        retired:
+          type: boolean
+          description: |
+            Whether the entity is retired (the application says "deactivated");
+            a retired entity is hidden from the application's lists and pickers.
         note:
           type: [string, "null"]
         attributes:

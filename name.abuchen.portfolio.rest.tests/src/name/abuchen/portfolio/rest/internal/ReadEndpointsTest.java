@@ -35,31 +35,51 @@ public class ReadEndpointsTest
     }
 
     /**
-     * The retired flag is not part of the API until the naming ("retired" in the
-     * model, "deactivated" in the UI) is settled.
+     * The retired flag is exposed and writable under the model's name,
+     * {@code retired} (the UI says "deactivated").
      */
     @Test
-    public void testRetiredFlagIsNotExposed()
+    public void testRetiredFlagIsExposedAndWritable()
     {
         var client = new Client();
         var security = new SecurityBuilder().addTo(client);
         security.setRetired(true);
 
         var single = SecuritiesHandler.get(client, security.getUUID()).getAsJsonObject();
+        assertThat(single.get("retired").getAsBoolean(), is(true));
         assertThat(single.has("isRetired"), is(false));
+
+        SecuritiesHandler.patch(client, security.getUUID(), JsonParser.parseString("{\"retired\":false}") //
+                        .getAsJsonObject());
+        assertThat(security.isRetired(), is(false));
 
         try
         {
-            SecuritiesHandler.patch(client, security.getUUID(), JsonParser.parseString("{\"isRetired\":false}") //
+            SecuritiesHandler.patch(client, security.getUUID(), JsonParser.parseString("{\"retired\":\"yes\"}") //
                             .getAsJsonObject());
             Assert.fail("expected ApiException");
         }
         catch (ApiException e)
         {
             assertThat(e.getStatus(), is(422));
-            assertThat(e.getErrors().get(0).code(), is("unknown-field"));
-            assertThat(security.isRetired(), is(true)); // nothing applied
+            assertThat(e.getErrors().get(0).code(), is("invalid-type"));
+            assertThat(security.isRetired(), is(false)); // nothing applied
         }
+    }
+
+    @Test
+    public void testRetiredFlagOfAccounts()
+    {
+        var client = new Client();
+        var account = new AccountBuilder().addTo(client);
+        var portfolio = new PortfolioBuilder(account).addTo(client);
+        account.setRetired(true);
+        var factory = new ExchangeRateProviderFactory(client);
+
+        assertThat(AccountsHandler.get(client, factory, account.getUUID(), null).getAsJsonObject().get("retired")
+                        .getAsBoolean(), is(true));
+        assertThat(PortfoliosHandler.get(client, factory, portfolio.getUUID(), null, null).getAsJsonObject()
+                        .get("retired").getAsBoolean(), is(false));
     }
 
     @Test

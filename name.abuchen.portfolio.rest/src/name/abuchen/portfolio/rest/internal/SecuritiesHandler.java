@@ -64,10 +64,8 @@ public final class SecuritiesHandler
      * listed here is not writable. Custom attributes and the quote feed
      * properties are nested objects, patched separately.
      * <p/>
-     * The retired flag is deliberately absent: the model calls it "retired"
-     * while the UI speaks of activating and deactivating an instrument. The
-     * vocabulary must be settled before it becomes part of the API contract - a
-     * published field name is hard to take back.
+     * {@code retired} uses the model's word; the UI speaks of activating and
+     * deactivating an instrument.
      */
     private static final Map<String, WritableField> WRITABLE_FIELDS = Map.ofEntries( //
                     Map.entry("name", new WritableField(SecuritiesHandler::requireText, //$NON-NLS-1$
@@ -100,7 +98,10 @@ public final class SecuritiesHandler
                                     Security::getLatestFeedURL)), //
                     Map.entry("calendar", new WritableField(SecuritiesHandler::allowCalendarOrNull, //$NON-NLS-1$
                                     (security, value) -> security.setCalendar(stringOrNull(value)),
-                                    Security::getCalendar)));
+                                    Security::getCalendar)), //
+                    Map.entry("retired", new WritableField(SecuritiesHandler::requireBoolean, //$NON-NLS-1$
+                                    (security, value) -> security.setRetired(value.getAsBoolean()),
+                                    security -> String.valueOf(security.isRetired()))));
 
     private SecuritiesHandler()
     {
@@ -363,6 +364,14 @@ public final class SecuritiesHandler
     {
         if (value.isJsonNull() || !isString(value) || value.getAsString().isBlank())
             return new ApiException.FieldError(field, "required", field + " must be a non-empty string"); //$NON-NLS-1$ //$NON-NLS-2$
+        return null;
+    }
+
+    private static ApiException.FieldError requireBoolean(Client client, Security security, String field,
+                    JsonElement value)
+    {
+        if (!value.isJsonPrimitive() || !value.getAsJsonPrimitive().isBoolean())
+            return new ApiException.FieldError(field, "invalid-type", field + " must be true or false"); //$NON-NLS-1$ //$NON-NLS-2$
         return null;
     }
 

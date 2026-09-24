@@ -115,7 +115,7 @@ Saves the file at its current path in its current format, as the application's S
 ### `GET /v1/files/{file}/instruments[/{uuid}]`
 
 ```json
-{"uuid": "8a1e…", "name": "Apple Inc.", "currencyCode": "USD",
+{"uuid": "8a1e…", "name": "Apple Inc.", "currencyCode": "USD", "retired": false,
  "isin": "US0378331005", "wkn": "865985", "tickerSymbol": "AAPL", "note": "…"}
 ```
 
@@ -147,7 +147,8 @@ Writable: `name` (non-empty), `isin`, `wkn`, `tickerSymbol`, `note` (string or `
 `currencyCode` (a known currency; **rejected while the instrument has transactions**, matching the
 UI's own rule), the quote feed settings `feed` and `latestFeed` (a feed id the application knows),
 `feedUrl`, `latestFeedUrl`, `calendar` (a trade calendar code), `targetCurrencyCode` (exchange rates
-only), and the nested objects `attributes` and `feedProperties`, each a merge patch of its own.
+only), `retired` (the application's "deactivated"), and the nested objects `attributes` and
+`feedProperties`, each a merge patch of its own.
 
 Any field that is unknown or not writable is a **422, never a silent no-op**: a typo must not look
 like success. All violations come back at once so you can fix them in one round-trip.
@@ -173,20 +174,20 @@ the matching ones.
 ### `GET /v1/files/{file}/cash-accounts[/{uuid}]`
 
 ```json
-{"uuid": "c4b2…", "name": "Cash Account", "currencyCode": "EUR", "note": "…"}
+{"uuid": "c4b2…", "name": "Cash Account", "currencyCode": "EUR", "retired": false, "note": "…"}
 ```
 
 ### `GET /v1/files/{file}/investment-accounts[/{uuid}]`
 
 ```json
-{"uuid": "d9f0…", "name": "Broker", "referenceCashAccount": "c4b2…", "note": "…"}
+{"uuid": "d9f0…", "name": "Broker", "retired": false, "referenceCashAccount": "c4b2…", "note": "…"}
 ```
 
 ### Writing cash and investment accounts
 
 `POST /v1/files/{file}/cash-accounts` takes `name` (required), `currencyCode` (default: the file's
-base currency), `note`, `attributes` and `clientRef`; `POST …/investment-accounts` takes `name` and
-`referenceCashAccount` (both required), `note`, `attributes` and `clientRef`. `PATCH …/{uuid}` is a
+base currency), `retired`, `note`, `attributes` and `clientRef`; `POST …/investment-accounts` takes
+`name` and `referenceCashAccount` (both required), `retired`, `note`, `attributes` and `clientRef`. `PATCH …/{uuid}` is a
 merge patch over the same fields; a cash account's currency is locked while it has transactions.
 `DELETE …/{uuid}` answers `409 delete-blocked` while the account has transactions or an investment
 plan uses it, and for a cash account also while it is the reference account of an investment

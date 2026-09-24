@@ -166,6 +166,15 @@ public final class AccountsHandler
             setters.add(a -> a.setNote(note));
         }
 
+        if (json.has("retired")) //$NON-NLS-1$
+        {
+            var retired = json.bool("retired"); //$NON-NLS-1$
+            if (retired == null && json.isNull("retired")) //$NON-NLS-1$
+                json.add(new ApiException.FieldError("retired", "invalid-type", "retired must be true or false")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            else if (retired != null)
+                setters.add(a -> a.setRetired(retired));
+        }
+
         if (json.has("attributes")) //$NON-NLS-1$
         {
             var errors = new ArrayList<ApiException.FieldError>();
