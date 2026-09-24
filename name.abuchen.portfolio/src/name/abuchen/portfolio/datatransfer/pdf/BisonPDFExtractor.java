@@ -28,7 +28,7 @@ public class BisonPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("BISON");
 
         addBuyCryptoTransaction();
-        addDeliveryInboundTransaction();
+        addDeliveryOrRewardTransaction();
         addDepositRemovalTransaction();
         addAdvanceTaxTransaction();
     }
@@ -88,7 +88,7 @@ public class BisonPDFExtractor extends AbstractPDFExtractor
                         .wrap(BuySellEntryItem::new);
     }
 
-    private void addDeliveryInboundTransaction()
+    private void addDeliveryOrRewardTransaction()
     {
         final var type = new DocumentType("Info-Report");
         this.addDocumentTyp(type);
@@ -114,6 +114,9 @@ public class BisonPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<note>(Gutschein|Staking Reward)) (?<tickerSymbol>[A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})?) (?<shares>[\\.,\\d]+)$") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc})$") //
                         .assign((t, v) -> {
+                            if ("Staking Reward".equals(v.get("note"))) //$NON-NLS-1$ //$NON-NLS-2$
+                                t.setType(PortfolioTransaction.Type.DIVIDENDS);
+
                             t.setSecurity(getOrCreateCryptoCurrency(v));
 
                             t.setShares(asShares(v.get("shares")));

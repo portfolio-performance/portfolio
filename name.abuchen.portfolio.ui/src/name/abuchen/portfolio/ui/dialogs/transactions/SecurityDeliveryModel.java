@@ -30,6 +30,7 @@ public class SecurityDeliveryModel extends AbstractSecurityTransactionModel
     public boolean accepts(Type type)
     {
         return type == PortfolioTransaction.Type.DELIVERY_INBOUND
+                        || type == PortfolioTransaction.Type.DIVIDENDS
                         || type == PortfolioTransaction.Type.DELIVERY_OUTBOUND;
     }
 
@@ -65,7 +66,7 @@ public class SecurityDeliveryModel extends AbstractSecurityTransactionModel
     {
         if (security == null)
             throw new UnsupportedOperationException(Messages.MsgMissingSecurity);
-        if (portfolio.getReferenceAccount() == null)
+        if (type != PortfolioTransaction.Type.DIVIDENDS && portfolio.getReferenceAccount() == null)
             throw new UnsupportedOperationException(Messages.MsgMissingReferenceAccount);
 
         TransactionPair<PortfolioTransaction> entry;
@@ -119,7 +120,8 @@ public class SecurityDeliveryModel extends AbstractSecurityTransactionModel
     @Override
     public void setPortfolio(Portfolio portfolio)
     {
-        setTransactionCurrency(CurrencyUnit.getInstance(portfolio.getReferenceAccount().getCurrencyCode()));
+        if (portfolio.getReferenceAccount() != null)
+            setTransactionCurrency(CurrencyUnit.getInstance(portfolio.getReferenceAccount().getCurrencyCode()));
         super.setPortfolio(portfolio);
     }
 

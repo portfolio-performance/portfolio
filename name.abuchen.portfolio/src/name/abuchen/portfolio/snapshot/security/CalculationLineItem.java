@@ -92,6 +92,8 @@ public interface CalculationLineItem
 
         public long getDividendPerShare()
         {
+            if (tx() instanceof PortfolioTransaction)
+                return 0;
             return amountFractionPerShare(getGrossValueAmount(), tx().getShares());
         }
 
@@ -139,7 +141,7 @@ public interface CalculationLineItem
 
             double cost = fifoCost.getAmount();
 
-            if (tx().getShares() > 0)
+            if (tx() instanceof AccountTransaction && tx().getShares() > 0)
                 cost = fifoCost.getAmount() * (tx().getShares() / (double) totalShares);
 
             return getGrossValueAmount() / cost;
@@ -152,7 +154,7 @@ public interface CalculationLineItem
 
             double cost = movingAverageCost.getAmount();
 
-            if (tx().getShares() > 0)
+            if (tx() instanceof AccountTransaction && tx().getShares() > 0)
                 cost = movingAverageCost.getAmount() * (tx().getShares() / (double) totalShares);
 
             return getGrossValueAmount() / cost;
@@ -173,6 +175,10 @@ public interface CalculationLineItem
 
         public long getGrossValueAmount()
         {
+            // The transaction amount includes charges withheld from the share reward.
+            if (tx() instanceof PortfolioTransaction portfolioTransaction)
+                return portfolioTransaction.getAmount();
+
             long taxes = tx().getUnits().filter(u -> u.getType() == Unit.Type.TAX)
                             .collect(MoneyCollectors.sum(tx().getCurrencyCode(), Unit::getAmount)).getAmount();
 
@@ -284,6 +290,11 @@ public interface CalculationLineItem
     public static CalculationLineItem of(Portfolio portfolio, PortfolioTransaction transaction)
     {
         return of(new TransactionPair<>(portfolio, transaction));
+    }
+
+    public static CalculationLineItem dividend(Portfolio portfolio, PortfolioTransaction transaction)
+    {
+        return new DividendPayment(new TransactionPair<>(portfolio, transaction));
     }
 
     public static CalculationLineItem of(Account account, AccountTransaction transaction)

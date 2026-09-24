@@ -393,7 +393,8 @@ public class PaymentsViewModel
             }
         }
 
-        EnumSet<Mode> processPorfolioTx = EnumSet.of(Mode.SAVING, Mode.TAXES, Mode.FEES, Mode.ALL);
+        EnumSet<Mode> processPorfolioTx = EnumSet.of(Mode.SAVING, Mode.DIVIDENDS, Mode.EARNINGS, Mode.TAXES,
+                        Mode.FEES, Mode.ALL);
         if (processPorfolioTx.contains(mode))
         {
             for (Portfolio portfolio : filteredClient.getPortfolios())
@@ -409,6 +410,12 @@ public class PaymentsViewModel
                                         .getAmount();
                     if (mode == Mode.FEES || mode == Mode.ALL)
                         value -= transaction.getUnitSum(Unit.Type.FEE).with(converter.at(transaction.getDateTime()))
+                                        .getAmount();
+                    if (transaction.getType() == PortfolioTransaction.Type.DIVIDENDS
+                                    && (mode == Mode.DIVIDENDS || mode == Mode.EARNINGS || mode == Mode.ALL))
+                        // ALL already subtracts charges above; otherwise honor the gross/net setting.
+                        value += (mode == Mode.ALL || useGrossValue ? transaction.getMonetaryAmount()
+                                        : transaction.getGrossValue()).with(converter.at(transaction.getDateTime()))
                                         .getAmount();
                     if (mode == Mode.SAVING)
                     {

@@ -94,7 +94,9 @@ public class Trade implements Adaptable
         // rate of that day
         this.entryValue = transactions.stream() //
                         .filter(t -> t.getTransaction().getType().isPurchase() == isLong)
-                        .map(t -> t.getTransaction().getMonetaryAmount(converter))
+                        .map(t -> t.getTransaction().getType() == PortfolioTransaction.Type.DIVIDENDS
+                                        ? t.getTransaction().getGrossValue(converter)
+                                        : t.getTransaction().getMonetaryAmount(converter))
                         .collect(MoneyCollectors.sum(converter.getTermCurrency()));
 
         // for purchases, getGrossValue() returns the value without taxes and
@@ -174,7 +176,9 @@ public class Trade implements Adaptable
         transactions.stream().forEach(t -> {
             dates.add(t.getTransaction().getDateTime().toLocalDate());
 
-            double amount = t.getTransaction().getMonetaryAmount(converter).getAmount() / Values.Amount.divider();
+            double amount = (t.getTransaction().getType() == PortfolioTransaction.Type.DIVIDENDS
+                            ? t.getTransaction().getGrossValue(converter)
+                            : t.getTransaction().getMonetaryAmount(converter)).getAmount() / Values.Amount.divider();
 
             if (t.getTransaction().getType().isPurchase() == isLong())
             {

@@ -197,6 +197,9 @@ import name.abuchen.portfolio.util.Interval;
                                     case DELIVERY_OUTBOUND:
                                         addValue(outboundTransferals, t.getCurrencyCode(), t.getAmount(), interval, d);
                                         break;
+                                    case DIVIDENDS:
+                                        addValue(dividends, t.getCurrencyCode(), t.getAmount(), interval, d);
+                                        break;
                                     case BUY:
                                         addValue(buys, t.getCurrencyCode(), t.getAmount(), interval, d);
                                         break;

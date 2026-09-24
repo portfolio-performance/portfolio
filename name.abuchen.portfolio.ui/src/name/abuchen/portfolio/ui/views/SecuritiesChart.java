@@ -13,6 +13,7 @@ import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -1557,9 +1558,12 @@ public class SecuritiesChart
     private void addDividendMarkerLines(ChartInterval chartInterval, Security security,
                     EnumSet<ChartDetails> chartConfig)
     {
-        List<AccountTransaction> dividends = client.getAccounts().stream().flatMap(a -> a.getTransactions().stream()) //
+        List<Transaction> dividends = Stream.concat(
+                        client.getAccounts().stream().flatMap(a -> a.getTransactions().stream())
+                                        .filter(t -> t.getType() == AccountTransaction.Type.DIVIDENDS),
+                        client.getPortfolios().stream().flatMap(p -> p.getTransactions().stream())
+                                        .filter(t -> t.getType() == PortfolioTransaction.Type.DIVIDENDS)) //
                         .filter(t -> t.getSecurity() == security) //
-                        .filter(t -> t.getType() == AccountTransaction.Type.DIVIDENDS) //
                         .filter(t -> chartInterval.contains(t.getDateTime())) //
                         .sorted(Transaction.BY_DATE) //
                         .toList(); //
@@ -1577,7 +1581,7 @@ public class SecuritiesChart
         }
         else
         {
-            LocalDate[] dates = dividends.stream().map(AccountTransaction::getDateTime).map(d -> d.toLocalDate())
+            LocalDate[] dates = dividends.stream().map(Transaction::getDateTime).map(d -> d.toLocalDate())
                             .toArray(size -> new LocalDate[size]);
 
             IAxis yAxis1st = chart.getAxisSet().getYAxis(0);
@@ -1664,6 +1668,14 @@ public class SecuritiesChart
                 });
             }
         }
+    }
+
+    private String getDividendLabel(Transaction t)
+    {
+        if (t instanceof PortfolioTransaction)
+            return "+ " + Values.Share.format(t.getShares()); //$NON-NLS-1$
+
+        return getDividendLabel((AccountTransaction) t);
     }
 
     private String getDividendLabel(AccountTransaction t)

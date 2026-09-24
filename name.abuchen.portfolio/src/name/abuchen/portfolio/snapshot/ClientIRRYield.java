@@ -71,6 +71,7 @@ public class ClientIRRYield
                                         break;
                                     case BUY:
                                     case SELL:
+                                    case DIVIDENDS:
                                         break;
                                     default:
                                         throw new UnsupportedOperationException();

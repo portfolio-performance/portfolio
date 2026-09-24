@@ -18,6 +18,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.security.BaseSecurityPerformanceRecord.Periodicity;
 
@@ -65,6 +66,20 @@ public class DividendCalculationTest
         assertEquals(0, dc.getNumOfEvents());
         assertEquals(Periodicity.NONE, dc.getPeriodicity());
         assertEquals(0.0, dc.getRateOfReturnPerYear(), 0.0);
+    }
+
+    @Test
+    public void dividendInSharesTest()
+    {
+        Portfolio portfolio = new Portfolio();
+        PortfolioTransaction reward = new PortfolioTransaction(LocalDateTime.of(2019, 1, 15, 12, 0), "EUR", 243,
+                        security, Values.Share.factorize(0.0243), Type.DIVIDENDS, 0, 0);
+
+        DividendCalculation dividends = Calculation.perform(DividendCalculation.class, converter, security,
+                        List.of(CalculationLineItem.dividend(portfolio, reward), CalculationLineItem.of(portfolio, reward)));
+
+        assertEquals(1, dividends.getNumOfEvents());
+        assertEquals(Money.of("EUR", 243), dividends.getSum());
     }
 
     @Test

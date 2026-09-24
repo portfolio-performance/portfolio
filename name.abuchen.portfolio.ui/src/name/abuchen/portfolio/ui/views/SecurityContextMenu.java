@@ -90,6 +90,13 @@ public class SecurityContextMenu
                         .with(portfolio) //
                         .addTo(manager);
 
+        new OpenDialogAction(owner, PortfolioTransaction.Type.DIVIDENDS.toString() + "...") //$NON-NLS-1$
+                        .type(SecurityTransactionDialog.class) //
+                        .parameters(PortfolioTransaction.Type.DIVIDENDS) //
+                        .with(portfolio) //
+                        .with(security) //
+                        .addTo(manager);
+
         new OpenDialogAction(owner, AccountTransaction.Type.TAXES + "...") //$NON-NLS-1$
                         .type(AccountTransactionDialog.class) //
                         .parameters(AccountTransaction.Type.TAXES) //

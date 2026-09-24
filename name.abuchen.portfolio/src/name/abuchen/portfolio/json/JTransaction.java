@@ -18,7 +18,7 @@ public class JTransaction
 {
     public enum Type
     {
-        PURCHASE, SALE, INBOUND_DELIVERY, OUTBOUND_DELIVERY, SECURITY_TRANSFER, CASH_TRANSFER, DEPOSIT, REMOVAL, DIVIDEND, INTEREST, INTEREST_CHARGE, TAX, TAX_REFUND, FEE, FEE_REFUND
+        PURCHASE, SALE, INBOUND_DELIVERY, OUTBOUND_DELIVERY, SECURITY_TRANSFER, CASH_TRANSFER, DEPOSIT, REMOVAL, DIVIDEND, SECURITY_DIVIDEND, INTEREST, INTEREST_CHARGE, TAX, TAX_REFUND, FEE, FEE_REFUND
     }
 
     private Type type;
@@ -308,6 +308,9 @@ public class JTransaction
                 break;
             case DELIVERY_OUTBOUND:
                 jtx.type = JTransaction.Type.OUTBOUND_DELIVERY;
+                break;
+            case DIVIDENDS:
+                jtx.type = JTransaction.Type.SECURITY_DIVIDEND;
                 break;
             default:
                 throw new IllegalArgumentException(

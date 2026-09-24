@@ -984,6 +984,12 @@ public final class SecuritiesTable implements ModificationListener
                         .with(security) //
                         .addTo(manager);
 
+        new OpenDialogAction(view, PortfolioTransaction.Type.DIVIDENDS.toString() + "...") //$NON-NLS-1$
+                        .type(SecurityTransactionDialog.class) //
+                        .parameters(PortfolioTransaction.Type.DIVIDENDS) //
+                        .with(security) //
+                        .addTo(manager);
+
         new OpenDialogAction(view, AccountTransaction.Type.TAX_REFUND + "...") //$NON-NLS-1$
                         .type(AccountTransactionDialog.class) //
                         .parameters(AccountTransaction.Type.TAX_REFUND) //

@@ -35,6 +35,39 @@ import name.abuchen.portfolio.money.Money;
 public class TradeTest
 {
     @Test
+    public void testShareDividendSoldAtUnchangedPrice() throws TradeCollectorException
+    {
+        assertShareDividendTrade(243, 0);
+    }
+
+    @Test
+    public void testShareDividendSoldAtHigherPrice() throws TradeCollectorException
+    {
+        assertShareDividendTrade(486, 1);
+    }
+
+    private void assertShareDividendTrade(long proceeds, double expectedIRR) throws TradeCollectorException
+    {
+        var client = new Client();
+        var portfolio = new Portfolio();
+        client.addPortfolio(portfolio);
+        var security = new Security("Reward", CurrencyUnit.EUR);
+        client.addSecurity(security);
+        portfolio.addTransaction(new PortfolioTransaction(LocalDateTime.of(2024, 1, 1, 0, 0), CurrencyUnit.EUR,
+                        393, security, sharesOf(0.0243), Type.DIVIDENDS, 50, 100));
+        portfolio.addTransaction(new PortfolioTransaction(LocalDateTime.of(2024, 12, 31, 0, 0), CurrencyUnit.EUR,
+                        proceeds, security, sharesOf(0.0243), Type.SELL, 0, 0));
+
+        var trades = new TradeCollector(client, new TestCurrencyConverter()).collect(security);
+
+        assertThat(trades.size(), is(1));
+        var trade = trades.get(0);
+        assertThat(trade.getEntryValue(), is(Money.of(CurrencyUnit.EUR, 243)));
+        assertThat(trade.getProfitLoss(), is(Money.of(CurrencyUnit.EUR, proceeds - 243)));
+        assertEquals(expectedIRR, trade.getIRR(), 0.0001);
+    }
+
+    @Test
     public void testLong() throws TradeCollectorException
     {
         Client client = new Client();
