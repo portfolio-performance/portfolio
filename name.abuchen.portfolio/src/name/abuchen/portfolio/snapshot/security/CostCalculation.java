@@ -264,7 +264,7 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                             .mapToLong(entry -> entry.grossAmount).sum();
             t.setFifoCost(Money.of(getTermCurrency(), portfolioFifoCost));
             t.setMovingAverageCost(Money.of(getTermCurrency(), getSharesHeld() == 0 ? 0
-                            : Math.round(movingRelativeCost * portfolioShares / (double) getSharesHeld())));
+                            : Math.round(movingRelativeCost * (portfolioShares / (double) getSharesHeld()))));
         }
         else
         {
