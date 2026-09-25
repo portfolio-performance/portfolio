@@ -38,6 +38,7 @@ public class PDFImportAssistant
         extractors.add(new AudiBankPDFExtractor(client));
         extractors.add(new AustrianAnadiBankPDFExtractor(client));
         extractors.add(new AlpacCapitalPDFExtractor(client));
+        extractors.add(new AlpianPDFExtractor(client));
         extractors.add(new ApoBankPDFExtractor(client));
         extractors.add(new AvivaPLCPDFExtractor(client));
         extractors.add(new AyvensBankPDFExtractor(client));

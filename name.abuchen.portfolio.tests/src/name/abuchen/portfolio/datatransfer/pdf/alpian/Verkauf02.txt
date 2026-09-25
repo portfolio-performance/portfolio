@@ -1,0 +1,38 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.87.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Alpian SA
+Quai du Seujet 18
+1201 Geneva
+Switzerland
+www.alpian.com
+Geneva, 04 August 2026
+Yoc
+WwRbU
+rvnGqmnBdkAQ
+tBhPsHjQ
+4855
+ad
+Contract Note Sell - SCTRSC26216LBS6Y
+Dear xLa zGTai,
+This is to inform you that based on your sell order of 04.08.2026, we have carried out the following transaction:
+Security name: iShares USD Corp Bond
+ISIN: IE00BK7Y2Q41
+Currency: CHF
+TRANSACTION DETAILS
+Trade date: 04.08.2026
+Value date: 06.08.2026
+Quantity: 88
+Unit gross price: CHF 4.344400000
+Stamp tax duty: CHF 0.57
+Net amount: CHF 381.74
+Total net amount credited: CHF 381.74
+Place of execution: EBS
+Time of execution: 2026-08-04-10:48:55
+We remain at your disposal for any additional information.
+Kind regards,
+Alpian SA
+Advice without signature
+Disclaimer: This contract note shall be considered to be approved if no complaint is received by Alpian SA within 30 days.
+04.08.2026 19:01:42.442 ada2b818-586e-49b7-ba76-c0ab2da87a56 Page 1 of 1

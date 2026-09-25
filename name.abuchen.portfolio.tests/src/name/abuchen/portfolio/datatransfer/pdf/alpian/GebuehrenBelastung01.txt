@@ -1,0 +1,28 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.79.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Alpian SA
+Chemin des Crêts 17
+Petit-Saconnex - 1209 Geneva
+Switzerland
+www.alpian.com
+Geneva, 01 April 2025
+Sxd
+bTnJM
+fAlzlcjATxKG
+yzUGLdYq
+6498
+Managed by Alpian fee advice CH
+Dear rbe bTnJM,
+We would like to inform you that your account has been debited on 01.04.2025 .
+PAYMENT DETAILS
+Amount: CHF 76.37
+Period: JAN 2025 - MAR 2025
+This amount has been debited on your CHF account.
+We remain at your disposal for any additional information.
+Kind regards,
+Alpian SA
+Advice without signature
+Disclaimer: This statement shall be considered to be approved if no complaint is received by Alpian SA within 30 days.
+01.04.2025 17:24:25.530 aa24fce5-800a-4d7d-8c95-3e52743d919b Page 1 of 1
