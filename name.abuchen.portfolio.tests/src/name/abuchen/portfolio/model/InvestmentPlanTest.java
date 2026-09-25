@@ -275,6 +275,37 @@ public class InvestmentPlanTest
         assertThat(firstNewDate, is(resumeDate));
     }
 
+    @Test
+    public void testDatesOfTransactionsToBeGeneratedMatchTheGeneratedTransactions() throws IOException
+    {
+        investmentPlan.setType(InvestmentPlan.Type.PURCHASE_OR_DELIVERY);
+
+        investmentPlan.setAccount(account);
+        investmentPlan.setPortfolio(portfolio);
+        investmentPlan.setSecurity(security);
+        investmentPlan.setStart(LocalDateTime.parse("2016-01-31T00:00:00"));
+
+        var dates = investmentPlan.getDatesOfTransactionsToBeGenerated();
+
+        // computing the dates generates nothing
+        assertThat(investmentPlan.getTransactions(), hasSize(0));
+        assertThat(portfolio.getTransactions(), hasSize(0));
+
+        // 31 January 2016 is a Sunday, 30 April 2016 a Saturday
+        assertThat(dates.get(0), is(LocalDate.parse("2016-02-01")));
+        assertThat(dates.get(1), is(LocalDate.parse("2016-02-29")));
+        assertThat(dates.get(3), is(LocalDate.parse("2016-05-02")));
+        assertThat(dates.get(dates.size() - 1).isAfter(LocalDate.now()), is(false));
+
+        investmentPlan.generateTransactions(new TestCurrencyConverter());
+
+        assertThat(investmentPlan.getTransactions().stream().map(t -> t.getDateTime().toLocalDate()).toList(),
+                        is(dates));
+
+        // nothing is due any more
+        assertThat(investmentPlan.getDatesOfTransactionsToBeGenerated(), hasSize(0));
+    }
+
     @Test(expected = IOException.class)
     public void testErrorMessageWhenNoQuotesExist() throws IOException
     {

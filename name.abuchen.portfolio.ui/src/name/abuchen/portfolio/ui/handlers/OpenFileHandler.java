@@ -54,19 +54,31 @@ public class OpenFileHandler
         {
             preferences.put(UIConstants.Preferences.DEFAULT_OPEN_PATH, dialog.getFilterPath());
 
-            MPart part = partService.createPart(UIConstants.Part.PORTFOLIO);
-            part.setLabel(new File(fileSelected).getName());
-            part.setTooltip(fileSelected);
-            part.getPersistedState().put(UIConstants.PersistedState.FILENAME, fileSelected);
-
-            if (activePart != null)
-                activePart.getParent().getChildren().add(part);
-            else
-                ((MPartStack) modelService.find(UIConstants.PartStack.MAIN, app)).getChildren().add(part);
-
-            part.setVisible(true);
-            part.getParent().setVisible(true);
-            partService.showPart(part, PartState.ACTIVATE);
+            openPart(fileSelected, activePart, app, partService, modelService);
         }
+    }
+
+    /**
+     * Creates and activates a portfolio part for the given file, next to the
+     * active part or else in the main part stack. The part loads the file
+     * itself. Also used by the REST API to open a file without a dialog.
+     */
+    public static MPart openPart(String fileName, MPart activePart, MApplication app, EPartService partService,
+                    EModelService modelService)
+    {
+        MPart part = partService.createPart(UIConstants.Part.PORTFOLIO);
+        part.setLabel(new File(fileName).getName());
+        part.setTooltip(fileName);
+        part.getPersistedState().put(UIConstants.PersistedState.FILENAME, fileName);
+
+        if (activePart != null)
+            activePart.getParent().getChildren().add(part);
+        else
+            ((MPartStack) modelService.find(UIConstants.PartStack.MAIN, app)).getChildren().add(part);
+
+        part.setVisible(true);
+        part.getParent().setVisible(true);
+        partService.showPart(part, PartState.ACTIVATE);
+        return part;
     }
 }
