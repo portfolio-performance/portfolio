@@ -125,6 +125,12 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     private Account account;
     private Portfolio portfolio;
 
+    /**
+     * If true, the extracted items are also checked for duplicates among each
+     * other (only between items from different source files)
+     */
+    private boolean detectDuplicatesWithinImport = false;
+
     private List<ExtractedEntry> allEntries = new ArrayList<>();
 
     private List<Exception> extractionErrors = new ArrayList<>();
@@ -491,6 +497,11 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         this.portfolio = portfolio;
     }
 
+    public void setDetectDuplicatesWithinImport(boolean detectDuplicatesWithinImport)
+    {
+        this.detectDuplicatesWithinImport = detectDuplicatesWithinImport;
+    }
+
     private void setResults(List<ExtractedEntry> entries, List<Exception> errors)
     {
         allEntries.addAll(entries);
@@ -657,7 +668,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         actions.add(new CheckTransactionDateAction());
         actions.add(new CheckValidTypesAction());
         actions.add(new CheckSecurityRelatedValuesAction());
-        actions.add(new DetectDuplicatesAction(client));
+        actions.add(new DetectDuplicatesAction(client, detectDuplicatesWithinImport,
+                        DetectDuplicatesAction.sourceKeysOf(entries.stream().map(ExtractedEntry::getItem).toList())));
         actions.add(new CheckCurrenciesAction());
         actions.add(new CheckForexGrossValueAction());
 
