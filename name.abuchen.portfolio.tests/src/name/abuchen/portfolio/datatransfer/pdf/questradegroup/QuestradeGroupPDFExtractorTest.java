@@ -16,6 +16,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
@@ -263,6 +264,74 @@ public class QuestradeGroupPDFExtractorTest
         assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(0));
         new AssertImportActions().check(results, "CAD");
+    }
+
+    @Test
+    public void testSecurityBuy08()
+    {
+        var extractor = new QuestradeGroupPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy08.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "USD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("IVLU"), //
+                        hasName("ISHARES TRUST, ISHARES MSCI INTL VALUE FACTOR, ETF"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-07-15T00:00"), hasShares(96.00), //
+                        hasSource("Buy08.txt"), //
+                        hasNote("Trade #: 30F9C7"), //
+                        hasAmount("USD", 3140.14), hasGrossValue("USD", 3140.14), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+    }
+
+    @Test
+    public void testSecuritySell01()
+    {
+        var extractor = new QuestradeGroupPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sell01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CAD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("CASH"), //
+                        hasName("GLOBAL X HIGH INT SVGS ETF, CL A UNIT, AVG PRICE - ASK US FOR DETAILS"), //
+                        hasCurrencyCode("CAD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-05-06T00:00"), hasShares(160.00), //
+                        hasSource("Sell01.txt"), //
+                        hasNote("Trade #: A3DB70"), //
+                        hasAmount("CAD", 8003.20), hasGrossValue("CAD", 8003.20), //
+                        hasTaxes("CAD", 0.00), hasFees("CAD", 0.00))));
     }
 
     @Test
