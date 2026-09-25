@@ -116,6 +116,13 @@ public class ApiException extends RuntimeException
                         "The file is encrypted, a human must open it and enter the password", null, List.of()); //$NON-NLS-1$
     }
 
+    public static ApiException migrationRequired()
+    {
+        return conflict("migration-required", //$NON-NLS-1$
+                        "The file uses a format from before currency support, a human must open it once and choose the base currency", //$NON-NLS-1$
+                        null, List.of());
+    }
+
     /** the file exists but could not be loaded; the detail carries the reason */
     public static ApiException openFailed(String detail)
     {

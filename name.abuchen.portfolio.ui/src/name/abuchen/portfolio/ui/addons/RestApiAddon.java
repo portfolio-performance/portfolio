@@ -57,6 +57,7 @@ import name.abuchen.portfolio.rest.RestApiServer;
 import name.abuchen.portfolio.rest.RestApiWorkspace;
 import name.abuchen.portfolio.rest.spi.ApiAccessRequest;
 import name.abuchen.portfolio.rest.spi.HostApplication;
+import name.abuchen.portfolio.rest.spi.MigrationRequiredException;
 import name.abuchen.portfolio.rest.spi.OpenFile;
 import name.abuchen.portfolio.rest.spi.PasswordRequiredException;
 import name.abuchen.portfolio.rest.spi.PriceUpdateTarget;
@@ -162,6 +163,7 @@ public class RestApiAddon
         {
             return clientInputFactory.listOpenClients().stream() //
                             .filter(input -> input.getFile() != null && input.getClient() != null) //
+                            .filter(input -> !input.isMigrationPending()) //
                             .<OpenFile>map(ClientInputOpenFile::new) //
                             .toList();
         }
@@ -392,7 +394,7 @@ public class RestApiAddon
 
         if (input.getClient() != null)
         {
-            future.complete(new ClientInputOpenFile(input));
+            completeOpening(future, input, fileName);
             return future;
         }
 
@@ -401,7 +403,7 @@ public class RestApiAddon
             @Override
             public void onLoaded()
             {
-                future.complete(new ClientInputOpenFile(input));
+                completeOpening(future, input, fileName);
             }
 
             @Override
@@ -423,6 +425,14 @@ public class RestApiAddon
         future.whenComplete((result, error) -> Display.getDefault().asyncExec(() -> input.removeListener(listener)));
 
         return future;
+    }
+
+    private static void completeOpening(CompletableFuture<OpenFile> future, ClientInput input, String fileName)
+    {
+        if (input.isMigrationPending())
+            future.completeExceptionally(new MigrationRequiredException(fileName));
+        else
+            future.complete(new ClientInputOpenFile(input));
     }
 
     private void openRestApiPreferences()

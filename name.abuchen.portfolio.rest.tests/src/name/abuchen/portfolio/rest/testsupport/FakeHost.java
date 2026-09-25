@@ -24,6 +24,7 @@ import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.rest.spi.ApiAccessRequest;
 import name.abuchen.portfolio.rest.spi.HostApplication;
 import name.abuchen.portfolio.rest.spi.OpenFile;
+import name.abuchen.portfolio.rest.spi.MigrationRequiredException;
 import name.abuchen.portfolio.rest.spi.PasswordRequiredException;
 import name.abuchen.portfolio.rest.spi.PriceUpdateTarget;
 
@@ -165,7 +166,9 @@ public class FakeHost implements HostApplication
         /** loading fails */
         FAILS,
         /** the file is encrypted and needs a password */
-        ENCRYPTED
+        ENCRYPTED,
+        /** the file loads but needs the base currency migration first */
+        MIGRATION_REQUIRED
     }
 
     private record Openable(Client client, OpenBehavior behavior)
@@ -370,6 +373,7 @@ public class FakeHost implements HostApplication
             case PENDING -> new CompletableFuture<>();
             case FAILS -> CompletableFuture.failedFuture(new IOException("corrupt file")); //$NON-NLS-1$
             case ENCRYPTED -> throw new PasswordRequiredException(key);
+            case MIGRATION_REQUIRED -> CompletableFuture.failedFuture(new MigrationRequiredException(key));
         };
     }
 }

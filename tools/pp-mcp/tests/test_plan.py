@@ -72,7 +72,15 @@ def test_commit_applies_write_tools(tool):
 @pytest.mark.parametrize("tool", ["save_file", "open_file"])
 def test_dry_run_skips_tools_without_dry_run(tool):
     assert prepare_args(tool, {}, "f", commit=False) is None
-    assert prepare_args(tool, {}, "f", commit=True) == {"file": "f"}
+
+
+def test_commit_saves_the_plan_file():
+    assert prepare_args("save_file", {}, "f", commit=True) == {"file": "f"}
+
+
+def test_open_file_gets_only_its_own_arguments():
+    assert prepare_args("open_file", {"path": "/p.xml"}, "f", commit=True) == {"path": "/p.xml"}
+    assert prepare_args("list_files", {}, "f", commit=False) == {}
 
 
 def test_read_tools_get_no_dry_run():

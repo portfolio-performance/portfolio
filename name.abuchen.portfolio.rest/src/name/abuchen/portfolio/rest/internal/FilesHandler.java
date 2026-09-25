@@ -26,6 +26,7 @@ import name.abuchen.portfolio.rest.FileAccessRegistry.FileAccess;
 import name.abuchen.portfolio.rest.Messages;
 import name.abuchen.portfolio.rest.spi.HostApplication;
 import name.abuchen.portfolio.rest.spi.OpenFile;
+import name.abuchen.portfolio.rest.spi.MigrationRequiredException;
 import name.abuchen.portfolio.rest.spi.PasswordRequiredException;
 
 public class FilesHandler
@@ -182,6 +183,8 @@ public class FilesHandler
         {
             if (e.getCause() instanceof PasswordRequiredException)
                 throw ApiException.passwordRequired();
+            if (e.getCause() instanceof MigrationRequiredException)
+                throw ApiException.migrationRequired();
             var message = e.getCause() != null ? e.getCause().getMessage() : e.getMessage();
             throw ApiException.openFailed(message);
         }
@@ -214,6 +217,10 @@ public class FilesHandler
         catch (PasswordRequiredException e)
         {
             throw ApiException.passwordRequired();
+        }
+        catch (MigrationRequiredException e)
+        {
+            throw ApiException.migrationRequired();
         }
         catch (NoSuchFileException | FileNotFoundException e)
         {

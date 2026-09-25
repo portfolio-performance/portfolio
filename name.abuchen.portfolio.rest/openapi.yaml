@@ -284,7 +284,9 @@ paths:
 
         The application never shows a dialog on the API's behalf: an encrypted
         file is refused with `409 password-required` — a human has to open it
-        and enter the password.
+        and enter the password. A file in a format from before currency support
+        is refused with `409 migration-required` and stays invisible to the API
+        until a human has opened it once and chosen the base currency.
       requestBody:
         required: true
         content:
@@ -331,7 +333,8 @@ paths:
         "409":
           description: |
             The file cannot be opened without a human: it is encrypted
-            (`password-required`), or loading it failed (`open-failed`, the
+            (`password-required`), it needs the base currency migration
+            (`migration-required`), or loading it failed (`open-failed`, the
             reason is in `detail`).
           content:
             application/problem+json:
@@ -6858,7 +6861,8 @@ components:
             `file-not-open` (open it with `POST /v1/files/open`, or ask a human),
             `ambiguous-alias` (retry with the `id`), `delete-blocked` (give up —
             the instrument is referenced). Opening a file may additionally answer
-            `password-required` or `open-failed` (409) and `file-loading` (503);
+            `password-required`, `migration-required` or `open-failed` (409) and
+            `file-loading` (503);
             saving may answer `save-failed` (500). `method-not-allowed` (405) is
             returned for any method a path does not list.
           enum:
@@ -6873,6 +6877,7 @@ components:
             - https://portfolio-performance.info/rest/problems/delete-blocked
             - https://portfolio-performance.info/rest/problems/missing-price
             - https://portfolio-performance.info/rest/problems/password-required
+            - https://portfolio-performance.info/rest/problems/migration-required
             - https://portfolio-performance.info/rest/problems/open-failed
             - https://portfolio-performance.info/rest/problems/file-loading
             - https://portfolio-performance.info/rest/problems/save-failed

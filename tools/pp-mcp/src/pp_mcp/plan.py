@@ -48,6 +48,8 @@ WRITE_PREFIXES = ("create_", "update_", "delete_", "set_", "add_", "remove_", "a
                   "generate_", "rename_", "commit_", "import_")
 # write tools without a dry run; a dry run skips them
 NO_DRY_RUN = {"save_file", "open_file"}
+# tools that do not address a file and take no `file` argument
+NO_FILE = {"open_file", "list_files"}
 
 
 class Missing(Exception):
@@ -122,7 +124,8 @@ def prepare_args(tool: str, args: dict[str, Any], file: str, commit: bool) -> di
     """The arguments a step's tool is called with, or None if a dry run must skip the step."""
     if not commit and tool in NO_DRY_RUN:
         return None
-    args = {"file": file, **args}
+    if tool not in NO_FILE:
+        args = {"file": file, **args}
     if tool.startswith(WRITE_PREFIXES):
         args["dry_run"] = not commit
     return args

@@ -328,6 +328,18 @@ public class FilesHandlerTest
     }
 
     @Test
+    public void testOpenFileNeedingMigrationIs409MigrationRequired() throws Exception
+    {
+        registry.setEnabled(OTHER, true);
+        host.addOpenableFile(OTHER, new Client(), OpenBehavior.MIGRATION_REQUIRED);
+
+        var e = expectApiException(() -> call("POST", "/v1/files/open", "{\"path\":" + quote(OTHER) + "}"));
+
+        assertThat(e.getStatus(), is(409));
+        assertThat(e.getType(), is("migration-required"));
+    }
+
+    @Test
     public void testOpenFailingFileIs409OpenFailed() throws Exception
     {
         registry.setEnabled(OTHER, true);

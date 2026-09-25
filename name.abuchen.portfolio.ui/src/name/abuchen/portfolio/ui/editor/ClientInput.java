@@ -84,6 +84,13 @@ public class ClientInput
      * all API writes until somebody dismisses them.
      */
     private boolean interactive = true;
+
+    /**
+     * true if a file opened on behalf of the REST API still needs the base
+     * currency migration; the API does not see the file until a human has
+     * opened it and chosen the currency.
+     */
+    private boolean migrationPending;
     private List<Runnable> disposeJobs = new ArrayList<>();
     private List<ClientInputListener> listeners = new ArrayList<>();
 
@@ -144,6 +151,11 @@ public class ClientInput
      * Marks the input as opened without a user in front of it. Must be called
      * before the file is loaded.
      */
+    public boolean isMigrationPending()
+    {
+        return migrationPending;
+    }
+
     public void setInteractive(boolean interactive)
     {
         this.interactive = interactive;
@@ -486,7 +498,7 @@ public class ClientInput
     public void createBackupAfterOpen()
     {
         if (clientFile != null && preferences.getBoolean(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true))
-            createBackup(clientFile, "backup-after-open", true); //$NON-NLS-1$
+            createBackup(clientFile, "backup-after-open", interactive); //$NON-NLS-1$
     }
 
     private void createBackup(File file, String suffix, boolean showError)
@@ -772,7 +784,12 @@ public class ClientInput
 
         this.listeners.forEach(ClientInputListener::onLoaded);
 
-        if (client.getFileVersionAfterRead() < Client.VERSION_WITH_CURRENCY_SUPPORT)
+        if (client.getFileVersionAfterRead() < Client.VERSION_WITH_CURRENCY_SUPPORT && !interactive)
+        {
+            // the migration needs the user's choice of the base currency
+            migrationPending = true;
+        }
+        else if (client.getFileVersionAfterRead() < Client.VERSION_WITH_CURRENCY_SUPPORT)
         {
             Display.getDefault().asyncExec(() -> {
                 Dialog dialog = new ClientMigrationDialog(Display.getDefault().getActiveShell(), client);
