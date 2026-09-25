@@ -39,7 +39,10 @@ import name.abuchen.portfolio.money.Values;
                         .getAmount();
         long amount = t.getValue().with(converter.at(t.getDateTime())).getAmount();
 
-        values.add((amount + taxes) / Values.Amount.divider());
+        values.add((t.getTransaction().orElseThrow() instanceof PortfolioTransaction portfolioTransaction
+                        ? portfolioTransaction.getGrossValue(converter).getAmount()
+                        : amount + taxes)
+                        / Values.Amount.divider());
     }
 
     @Override
@@ -83,6 +86,9 @@ import name.abuchen.portfolio.money.Values;
             case DELIVERY_OUTBOUND:
             case TRANSFER_OUT:
                 values.add((amount + taxes) / Values.Amount.divider());
+                break;
+            case DIVIDENDS:
+                values.add(-t.getGrossValue(converter).getAmount() / Values.Amount.divider());
                 break;
             default:
                 throw new UnsupportedOperationException();

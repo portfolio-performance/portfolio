@@ -59,10 +59,11 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
         // the basis: the gross value leaves out the taxes and fees embedded in
         // the trade, the monetary amount takes them in - on both legs, as a
         // sale's gross value is the proceeds before the charges are deducted
-        var forexBasis = taxesAndFees.isIncluded()
+        var forexBasis = taxesAndFees.isIncluded() && t.getType() != PortfolioTransaction.Type.DIVIDENDS
                         ? t.getMonetaryAmount(converter.with(securityCurrency)).getAmount()
                         : t.getGrossValue(converter.with(securityCurrency)).getAmount();
-        var termBasis = taxesAndFees.isIncluded() ? t.getMonetaryAmount(converter).getAmount()
+        var termBasis = taxesAndFees.isIncluded() && t.getType() != PortfolioTransaction.Type.DIVIDENDS
+                        ? t.getMonetaryAmount(converter).getAmount()
                         : t.getGrossValue(converter).getAmount();
 
         switch (t.getType())
@@ -132,6 +133,11 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
                     movingAverageCostForex -= averageCostsForex;
                     heldShares = remaining;
                 }
+                break;
+            case DIVIDENDS:
+                movingAverageCost += termBasis;
+                movingAverageCostForex += forexBasis;
+                heldShares += t.getShares();
                 break;
             case TRANSFER_IN, TRANSFER_OUT:
                 // ignore --> not relevant for moving average

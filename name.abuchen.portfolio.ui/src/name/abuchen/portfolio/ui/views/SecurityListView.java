@@ -260,6 +260,8 @@ public class SecurityListView extends AbstractFinanceView
                                     case SELL:
                                     case DELIVERY_OUTBOUND:
                                         return -t.getShares();
+                                    case DIVIDENDS:
+                                        return t.getShares();
                                     default:
                                         return 0L;
                                 }

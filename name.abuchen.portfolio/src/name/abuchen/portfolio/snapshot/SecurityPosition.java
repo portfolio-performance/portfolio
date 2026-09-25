@@ -67,6 +67,8 @@ public class SecurityPosition
                 case TRANSFER_OUT:
                 case DELIVERY_OUTBOUND:
                     return -t.getShares();
+                case DIVIDENDS:
+                    return t.getShares();
                 default:
                     throw new UnsupportedOperationException();
             }

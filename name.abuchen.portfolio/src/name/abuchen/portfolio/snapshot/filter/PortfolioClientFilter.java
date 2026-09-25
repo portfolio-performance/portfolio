@@ -271,7 +271,7 @@ public class PortfolioClientFilter implements ClientFilter
                         pseudoPortfolio.internalAddTransaction(
                                         convertTo(t, PortfolioTransaction.Type.DELIVERY_OUTBOUND, portfolioWeight));
                     break;
-                case DELIVERY_INBOUND, DELIVERY_OUTBOUND:
+                case DELIVERY_INBOUND, DELIVERY_OUTBOUND, DIVIDENDS:
                     pseudoPortfolio.internalAddTransaction(scaled(t, portfolioWeight));
                     break;
                 default:

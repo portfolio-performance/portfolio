@@ -37,7 +37,10 @@ import name.abuchen.portfolio.money.MutableMoney;
     @Override
     public void visit(CurrencyConverter converter, CalculationLineItem.DividendPayment t)
     {
-        delta.add(t.getValue().with(converter.at(t.getDateTime())));
+        // Share rewards reinvest only the income remaining after withheld charges.
+        Money amount = t.getTransaction().orElseThrow() instanceof PortfolioTransaction transaction
+                        ? transaction.getGrossValue() : t.getValue();
+        delta.add(amount.with(converter.at(t.getDateTime())));
     }
 
     @Override
@@ -75,6 +78,11 @@ import name.abuchen.portfolio.money.MutableMoney;
             case SELL:
             case DELIVERY_OUTBOUND:
                 delta.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
+                break;
+            case DIVIDENDS:
+                Money dividendAmount = t.getGrossValue().with(converter.at(t.getDateTime()));
+                delta.subtract(dividendAmount);
+                cost.add(dividendAmount);
                 break;
             case TRANSFER_IN:
             case TRANSFER_OUT:

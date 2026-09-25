@@ -149,6 +149,7 @@ public class TradeCollector
             {
                 case BUY, DELIVERY_INBOUND:
                 case SELL, DELIVERY_OUTBOUND:
+                case DIVIDENDS:
                     // If fifo is empty or contains the same type of transactions
                     // as incoming one, add it to the fifo. Otherwise, we create
                     // a new trade. (Note: it's an invariant that fifo contains

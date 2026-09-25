@@ -84,6 +84,7 @@ public interface CalculationLineItem
         private long totalShares;
         private Money fifoCost;
         private Money movingAverageCost;
+        private Money convertedGrossValue;
 
         private DividendPayment(TransactionPair<?> transaction)
         {
@@ -92,14 +93,15 @@ public interface CalculationLineItem
 
         public long getDividendPerShare()
         {
+            if (tx() instanceof PortfolioTransaction)
+                return 0;
             return amountFractionPerShare(getGrossValueAmount(), tx().getShares());
         }
 
         /**
-         * Returns the FIFO costs. It is the cost of the total position of the
-         * given security. However, a dividend payment may only be about partial
-         * holdings, for example if the security is held in multiple securities
-         * accounts.
+         * Returns the FIFO costs. For account dividends, this is the cost of
+         * the total position of the security. For portfolio dividends, it is
+         * the cost of the receiving portfolio's position.
          */
         /* package */ Money getFifoCost()
         {
@@ -112,10 +114,9 @@ public interface CalculationLineItem
         }
 
         /**
-         * Returns the costs based on moving average. It is the cost of the
-         * total position of the given security. However, a dividend payment may
-         * only be about partial holdings, for example if the security is held
-         * in multiple securities accounts.
+         * Returns the moving average costs. For account dividends, this is the
+         * cost of the total position of the security. For portfolio dividends,
+         * it is the cost of the receiving portfolio's position.
          */
         /* package */ Money getMovingAverageCost()
         {
@@ -132,6 +133,11 @@ public interface CalculationLineItem
             this.totalShares = totalShares;
         }
 
+        /* package */ void setConvertedGrossValue(Money convertedGrossValue)
+        {
+            this.convertedGrossValue = convertedGrossValue;
+        }
+
         public double getPersonalDividendYield()
         {
             if ((fifoCost == null) || (fifoCost.getAmount() <= 0))
@@ -139,10 +145,10 @@ public interface CalculationLineItem
 
             double cost = fifoCost.getAmount();
 
-            if (tx().getShares() > 0)
+            if (tx() instanceof AccountTransaction && tx().getShares() > 0)
                 cost = fifoCost.getAmount() * (tx().getShares() / (double) totalShares);
 
-            return getGrossValueAmount() / cost;
+            return (convertedGrossValue != null ? convertedGrossValue.getAmount() : getGrossValueAmount()) / cost;
         }
 
         public double getPersonalDividendYieldMovingAverage()
@@ -152,10 +158,10 @@ public interface CalculationLineItem
 
             double cost = movingAverageCost.getAmount();
 
-            if (tx().getShares() > 0)
+            if (tx() instanceof AccountTransaction && tx().getShares() > 0)
                 cost = movingAverageCost.getAmount() * (tx().getShares() / (double) totalShares);
 
-            return getGrossValueAmount() / cost;
+            return (convertedGrossValue != null ? convertedGrossValue.getAmount() : getGrossValueAmount()) / cost;
         }
 
         static long amountFractionPerShare(long amount, long shares)
@@ -173,6 +179,10 @@ public interface CalculationLineItem
 
         public long getGrossValueAmount()
         {
+            // The transaction amount includes charges withheld from the share reward.
+            if (tx() instanceof PortfolioTransaction portfolioTransaction)
+                return portfolioTransaction.getAmount();
+
             long taxes = tx().getUnits().filter(u -> u.getType() == Unit.Type.TAX)
                             .collect(MoneyCollectors.sum(tx().getCurrencyCode(), Unit::getAmount)).getAmount();
 
@@ -284,6 +294,11 @@ public interface CalculationLineItem
     public static CalculationLineItem of(Portfolio portfolio, PortfolioTransaction transaction)
     {
         return of(new TransactionPair<>(portfolio, transaction));
+    }
+
+    public static CalculationLineItem dividend(Portfolio portfolio, PortfolioTransaction transaction)
+    {
+        return new DividendPayment(new TransactionPair<>(portfolio, transaction));
     }
 
     public static CalculationLineItem of(Account account, AccountTransaction transaction)

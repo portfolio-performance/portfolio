@@ -107,7 +107,7 @@ import name.abuchen.portfolio.ui.selection.SelectionService;
 
         List<Element> elements = new ArrayList<>();
 
-        for (final AccountTransaction.Type type : EnumSet.of( //
+        for (final AccountTransaction.Type type : List.of( //
                         AccountTransaction.Type.DEPOSIT, //
                         AccountTransaction.Type.REMOVAL, //
                         AccountTransaction.Type.TAXES, //
@@ -121,7 +121,10 @@ import name.abuchen.portfolio.ui.selection.SelectionService;
             elements.add(new AccountTransactionElement(AccountTransactionDialog.class, type, selection));
         }
 
-        for (final PortfolioTransaction.Type type : EnumSet.of( //
+        elements.add(new AccountTransactionElement(SecurityTransactionDialog.class,
+                        PortfolioTransaction.Type.DIVIDENDS, selection));
+
+        for (final PortfolioTransaction.Type type : List.of( //
                         PortfolioTransaction.Type.BUY, //
                         PortfolioTransaction.Type.SELL, //
                         PortfolioTransaction.Type.DELIVERY_INBOUND, //

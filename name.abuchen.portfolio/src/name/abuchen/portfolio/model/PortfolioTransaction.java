@@ -27,7 +27,9 @@ public class PortfolioTransaction extends Transaction
         /** Records the transfer of assets into the portfolio. */
         DELIVERY_INBOUND(true),
         /** Records the transfer of assets out of a portfolio. */
-        DELIVERY_OUTBOUND(false);
+        DELIVERY_OUTBOUND(false),
+        /** Records income paid as additional units of a security, without a cash-account transaction. */
+        DIVIDENDS(true);
 
         private static final ResourceBundle RESOURCES = ResourceBundle.getBundle("name.abuchen.portfolio.model.labels"); //$NON-NLS-1$
 

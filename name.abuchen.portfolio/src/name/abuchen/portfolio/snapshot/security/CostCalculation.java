@@ -93,22 +93,6 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 
         switch (t.getType())
         {
-            case BUY:
-            case DELIVERY_INBOUND:
-                long grossAmount = t.getMonetaryAmount(converter).getAmount();
-                long netAmount = t.getGrossValue(converter).getAmount();
-
-                TrailRecord trail = TrailRecord.ofTransaction(t);
-                if (!getTermCurrency().equals(t.getCurrencyCode()))
-                    trail = trail.convert(Money.of(getTermCurrency(), grossAmount),
-                                    converter.getRate(t.getDateTime(), t.getCurrencyCode()));
-
-                fifo.add(new LineItem(item.getOwner(), t.getShares(), grossAmount, netAmount, trail));
-                movingRelativeCost += grossAmount;
-                movingRelativeNetCost += netAmount;
-                heldShares += t.getShares();
-                break;
-
             case SELL:
             case DELIVERY_OUTBOUND:
                 long sold = t.getShares();
@@ -155,6 +139,24 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                                     Values.DateTime.format(t.getDateTime())));
                 }
 
+                break;
+
+            case BUY:
+            case DELIVERY_INBOUND:
+            case DIVIDENDS:
+                long grossAmount = (t.getType() == PortfolioTransaction.Type.DIVIDENDS ? t.getGrossValue(converter)
+                                : t.getMonetaryAmount(converter)).getAmount();
+                long netAmount = t.getGrossValue(converter).getAmount();
+
+                TrailRecord trail = TrailRecord.ofTransaction(t);
+                if (!getTermCurrency().equals(t.getCurrencyCode()))
+                    trail = trail.convert(Money.of(getTermCurrency(), grossAmount),
+                                    converter.getRate(t.getDateTime(), t.getCurrencyCode()));
+
+                fifo.add(new LineItem(item.getOwner(), t.getShares(), grossAmount, netAmount, trail));
+                movingRelativeCost += grossAmount;
+                movingRelativeNetCost += netAmount;
+                heldShares += t.getShares();
                 break;
 
             case TRANSFER_IN:
@@ -248,12 +250,29 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
     @Override
     public void visit(CurrencyConverter converter, CalculationLineItem.DividendPayment t)
     {
-        taxes += t.getTransaction().orElseThrow(IllegalArgumentException::new).getUnitSum(Unit.Type.TAX, converter)
-                        .getAmount();
+        boolean portfolioDividend = t.getTransaction().orElseThrow(
+                        IllegalArgumentException::new) instanceof PortfolioTransaction;
+        if (!portfolioDividend)
+            taxes += t.getTransaction().orElseThrow(IllegalArgumentException::new).getUnitSum(Unit.Type.TAX, converter)
+                            .getAmount();
 
-        t.setFifoCost(getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED));
-        t.setMovingAverageCost(getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED));
+        if (portfolioDividend)
+        {
+            long portfolioShares = fifo.stream().filter(entry -> entry.owner.equals(t.getOwner()))
+                            .mapToLong(entry -> entry.shares).sum();
+            long portfolioFifoCost = fifo.stream().filter(entry -> entry.owner.equals(t.getOwner()))
+                            .mapToLong(entry -> entry.grossAmount).sum();
+            t.setFifoCost(Money.of(getTermCurrency(), portfolioFifoCost));
+            t.setMovingAverageCost(Money.of(getTermCurrency(), getSharesHeld() == 0 ? 0
+                            : Math.round(movingRelativeCost * (portfolioShares / (double) getSharesHeld()))));
+        }
+        else
+        {
+            t.setFifoCost(getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED));
+            t.setMovingAverageCost(getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED));
+        }
         t.setTotalShares(getSharesHeld());
+        t.setConvertedGrossValue(converter.convert(t.getDateTime(), t.getGrossValue()));
     }
 
     public CostCalculationResult getResult()

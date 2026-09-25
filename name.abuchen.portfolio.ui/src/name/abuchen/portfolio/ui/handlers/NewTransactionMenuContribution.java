@@ -51,6 +51,7 @@ public class NewTransactionMenuContribution
         items.add(MMenuFactory.INSTANCE.createMenuSeparator());
 
         items.add(create(portfolioPart, AccountTransactionDialog.class, AccountTransaction.Type.DIVIDENDS));
+        items.add(create(portfolioPart, SecurityTransactionDialog.class, PortfolioTransaction.Type.DIVIDENDS));
 
         items.add(MMenuFactory.INSTANCE.createMenuSeparator());
 

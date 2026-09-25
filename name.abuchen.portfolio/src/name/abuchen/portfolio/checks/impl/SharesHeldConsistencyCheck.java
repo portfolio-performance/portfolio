@@ -96,6 +96,9 @@ public class SharesHeldConsistencyCheck implements Check
                     case DELIVERY_OUTBOUND:
                         shares[index] -= t.getShares();
                         break;
+                    case DIVIDENDS:
+                        shares[index] += t.getShares();
+                        break;
                     default:
                         throw new UnsupportedOperationException();
                 }
