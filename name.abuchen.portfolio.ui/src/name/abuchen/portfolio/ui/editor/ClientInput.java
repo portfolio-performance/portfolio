@@ -782,8 +782,8 @@ public class ClientInput
 
         scheduleAutoSaveJob();
 
-        this.listeners.forEach(ClientInputListener::onLoaded);
-
+        // before notifying the listeners: the REST API's listener checks
+        // isMigrationPending() in onLoaded
         if (client.getFileVersionAfterRead() < Client.VERSION_WITH_CURRENCY_SUPPORT && !interactive)
         {
             // the migration needs the user's choice of the base currency
@@ -796,6 +796,8 @@ public class ClientInput
                 dialog.open();
             });
         }
+
+        this.listeners.forEach(ClientInputListener::onLoaded);
     }
 
     private static void upgradePreferences(PreferenceStore preferenceStore, Client client)
