@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Map;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -33,13 +34,32 @@ import name.abuchen.portfolio.money.Values;
  *           the direction of a booking is never derived from it:
  *           - stamp duty and withholding tax are always a tax,
  *           - buy/sell and dividend amounts follow the document type,
- *           - the fee advice follows the wording "debited" / "credited".
+ *           - the fee advice follows the wording "debited" / "credited",
+ *           - the account statement follows the booking text.
+ *
+ *           Newer documents (portfolio statement) use the Swiss thousands
+ *           separator ’ (U+2019) or ' instead of the comma: 51’068.47
+ *
+ *           The portfolio statement of the managed portfolio does not contain
+ *           any booking that is not also provided by a separate document
+ *           (contract note, dividend advice, fee advice). All bookings are
+ *           therefore marked as failure with a reference to the other document.
  * @formatter:on
  */
 
 @SuppressWarnings("nls")
 public class AlpianPDFExtractor extends AbstractPDFExtractor
 {
+    // @formatter:off
+    // CASH - 4/2.56-iShares Swiss Dom Govt Bd 2026-07-24 2026-07-23 0.90 0.00
+    // Booking date: 2026-07-24 | Value date (= pay date): 2026-07-23
+    // @formatter:on
+    private static final String CASH_LINE = "^CASH \\- (?<shares>[\\.,'’\\d]+)\\/[\\.,'’\\d]+\\-(?<name>.*) [\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) (\\-[\\s]*)?(?<debit>[\\.,'’\\d]+) (\\-[\\s]*)?(?<credit>[\\.,'’\\d]+)$";
+
+    // Continuation of a security name on the next line, e.g. "3-7" or "Bond",
+    // but neither the next booking nor the page footer.
+    private static final String NAME_CONTINUATION = "^(?!(Securities (Purchase|Sale)|Corporate Action|Tax Amount Due|Management Fees|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} ))(?<nameContinued>.+)$";
+
     public AlpianPDFExtractor(Client client)
     {
         super(client);
@@ -49,6 +69,8 @@ public class AlpianPDFExtractor extends AbstractPDFExtractor
         addBuySellTransaction();
         addDividendTransaction();
         addFeesTransaction();
+        addAccountStatementTransaction();
+        addPortfolioStatementTransaction();
     }
 
     @Override
@@ -95,7 +117,7 @@ public class AlpianPDFExtractor extends AbstractPDFExtractor
                         // Quantity: 20
                         // @formatter:on
                         .section("shares") //
-                        .match("^Quantity: (?<shares>[\\.,\\d]+)$") //
+                        .match("^Quantity: (?<shares>[\\.,'’\\d]+)$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .oneOf( //
@@ -121,7 +143,7 @@ public class AlpianPDFExtractor extends AbstractPDFExtractor
                         // Total net amount credited: CHF 1,253.18
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Total net amount (debited|credited): (?<currency>[A-Z]{3}) (\\-[\\s]*)?(?<amount>[\\.,\\d]+)$") //
+                        .match("^Total net amount (debited|credited): (?<currency>[A-Z]{3}) (\\-[\\s]*)?(?<amount>[\\.,'’\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -144,9 +166,9 @@ public class AlpianPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("taxCurrency", "tax", "termCurrency", "fxAmount", "baseCurrency", "amount") //
-                                                        .match("^Stamp tax duty: (?<taxCurrency>[A-Z]{3}) (\\-[\\s]*)?(?<tax>[\\.,\\d]+)$") //
-                                                        .match("^(Total net amount paid|Net amount): (?<termCurrency>[A-Z]{3}) (\\-[\\s]*)?(?<fxAmount>[\\.,\\d]+)$") //
-                                                        .match("^Total net amount (debited|credited): (?<baseCurrency>[A-Z]{3}) (\\-[\\s]*)?(?<amount>[\\.,\\d]+)$") //
+                                                        .match("^Stamp tax duty: (?<taxCurrency>[A-Z]{3}) (\\-[\\s]*)?(?<tax>[\\.,'’\\d]+)$") //
+                                                        .match("^(Total net amount paid|Net amount): (?<termCurrency>[A-Z]{3}) (\\-[\\s]*)?(?<fxAmount>[\\.,'’\\d]+)$") //
+                                                        .match("^Total net amount (debited|credited): (?<baseCurrency>[A-Z]{3}) (\\-[\\s]*)?(?<amount>[\\.,'’\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             var fxGross = Money.of(asCurrencyCode(v.get("termCurrency")), asAmount(v.get("fxAmount")));
                                                             var tax = Money.of(asCurrencyCode(v.get("taxCurrency")), asAmount(v.get("tax")));
@@ -170,8 +192,8 @@ public class AlpianPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("termCurrency", "fxAmount", "baseCurrency", "amount") //
-                                                        .match("^(Total net amount paid|Net amount): (?<termCurrency>[A-Z]{3}) (\\-[\\s]*)?(?<fxAmount>[\\.,\\d]+)$") //
-                                                        .match("^Total net amount (debited|credited): (?<baseCurrency>[A-Z]{3}) (\\-[\\s]*)?(?<amount>[\\.,\\d]+)$") //
+                                                        .match("^(Total net amount paid|Net amount): (?<termCurrency>[A-Z]{3}) (\\-[\\s]*)?(?<fxAmount>[\\.,'’\\d]+)$") //
+                                                        .match("^Total net amount (debited|credited): (?<baseCurrency>[A-Z]{3}) (\\-[\\s]*)?(?<amount>[\\.,'’\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             var fxGross = Money.of(asCurrencyCode(v.get("termCurrency")), asAmount(v.get("fxAmount")));
 
@@ -220,7 +242,7 @@ public class AlpianPDFExtractor extends AbstractPDFExtractor
                         // Qualifying nominal: 3
                         // @formatter:on
                         .section("shares") //
-                        .match("^Qualifying nominal: (?<shares>[\\.,\\d]+)$") //
+                        .match("^Qualifying nominal: (?<shares>[\\.,'’\\d]+)$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
@@ -241,7 +263,7 @@ public class AlpianPDFExtractor extends AbstractPDFExtractor
                         // Net amount: CHF 1.13
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Net amount: (?<currency>[A-Z]{3}) (\\-[\\s]*)?(?<amount>[\\.,\\d]+)$") //
+                        .match("^Net amount: (?<currency>[A-Z]{3}) (\\-[\\s]*)?(?<amount>[\\.,'’\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -288,7 +310,7 @@ public class AlpianPDFExtractor extends AbstractPDFExtractor
                         // Amount: CHF 76.37
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Amount: (?<currency>[A-Z]{3}) (\\-[\\s]*)?(?<amount>[\\.,\\d]+)$") //
+                        .match("^Amount: (?<currency>[A-Z]{3}) (\\-[\\s]*)?(?<amount>[\\.,'’\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -302,6 +324,239 @@ public class AlpianPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         .wrap(TransactionItem::new);
+    }
+
+    private void addAccountStatementTransaction()
+    {
+        final var type = new DocumentType("Account statement", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // Account statement - May 2023 09.05.2023 - 31.05.2023
+                                        // @formatter:on
+                                        .section("year") //
+                                        .match("^Account statement \\- .* [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}) \\- [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
+                                        .assign((ctx, v) -> ctx.put("year", v.get("year"))));
+
+        this.addDocumentTyp(type);
+
+        // @formatter:off
+        // The columns "Debit" and "Credit" are lost in the text conversion.
+        // The direction is therefore taken from the booking text:
+        // Domestic Clearing       --> DEPOSIT
+        // Debit Internal Transfer --> REMOVAL
+        // @formatter:on
+
+        // @formatter:off
+        // Domestic Clearing (DD) 15 May 15 May CHF 1.00
+        // Domestic Clearing (DD) 23 May 23 May CHF 29,999.00
+        // @formatter:on
+        var depositBlock = new Block("^Domestic Clearing.* [\\d]{1,2} [\\p{L}]{3,4} [\\d]{1,2} [\\p{L}]{3,4} [A-Z]{3} (\\-[\\s]*)?[\\.,'’\\d]+$");
+        type.addBlock(depositBlock);
+        depositBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
+
+                        .section("note", "date", "currency", "amount") //
+                        .documentContext("year") //
+                        .match("^(?<note>Domestic Clearing.*) [\\d]{1,2} [\\p{L}]{3,4} (?<date>[\\d]{1,2} [\\p{L}]{3,4}) (?<currency>[A-Z]{3}) (\\-[\\s]*)?(?<amount>[\\.,'’\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(trim(v.get("note")));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // Debit Internal Transfer 23 May 23 May CHF 30,000.00
+        // @formatter:on
+        var removalBlock = new Block("^Debit Internal Transfer.* [\\d]{1,2} [\\p{L}]{3,4} [\\d]{1,2} [\\p{L}]{3,4} [A-Z]{3} (\\-[\\s]*)?[\\.,'’\\d]+$");
+        type.addBlock(removalBlock);
+        removalBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.REMOVAL))
+
+                        .section("note", "date", "currency", "amount") //
+                        .documentContext("year") //
+                        .match("^(?<note>Debit Internal Transfer) [\\d]{1,2} [\\p{L}]{3,4} (?<date>[\\d]{1,2} [\\p{L}]{3,4}) (?<currency>[A-Z]{3}) (\\-[\\s]*)?(?<amount>[\\.,'’\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(trim(v.get("note")));
+                        })
+
+                        .wrap(TransactionItem::new));
+    }
+
+    private void addPortfolioStatementTransaction()
+    {
+        final var type = new DocumentType("Portfolio statement", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // Name ISIN Currency Quantity Market Value Weight
+                                        // (CHF)
+                                        // @formatter:on
+                                        .section("currency") //
+                                        .match("^Name ISIN Currency Quantity Market Value Weight$") //
+                                        .match("^\\((?<currency>[A-Z]{3})\\)$") //
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
+
+        this.addDocumentTyp(type);
+
+        // @formatter:off
+        // All bookings of the portfolio statement are also provided by a
+        // separate document (contract note, dividend advice, fee advice).
+        // They are marked as failure so that they are not imported twice.
+        //
+        // The columns are: Booking date | Value date | Debit | Credit
+        // @formatter:on
+
+        // @formatter:off
+        // Securities Purchase
+        // 31 - 21Shares Crypto Basket Index-ETP 2026-08-04 2026-08-06 293.16 0.00
+        // Securities Sale
+        // 88 - iShares USD Corp Bond 2026-08-04 2026-08-06 0.00 381.74
+        // @formatter:on
+        var buySellBlock = new Block("^Securities (Purchase|Sale)$");
+        type.addBlock(buySellBlock);
+        buySellBlock.setMaxSize(3);
+        buySellBlock.set(new Transaction<BuySellEntry>()
+
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
+
+                        // Is type --> "Sale" change from BUY to SELL
+                        .section("type").optional() //
+                        .match("^Securities (?<type>(Purchase|Sale))$") //
+                        .assign((t, v) -> {
+                            if ("Sale".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.SELL);
+                        })
+
+                        .section("shares", "name", "date", "debit", "credit") //
+                        .documentContext("currency") //
+                        .match("^(?<shares>[\\.,'’\\d]+) \\- (?<name>.*) (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) [\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (\\-[\\s]*)?(?<debit>[\\.,'’\\d]+) (\\-[\\s]*)?(?<credit>[\\.,'’\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setDate(asDate(v.get("date")));
+                            t.setShares(asShares(v.get("shares")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asDebitOrCreditAmount(v));
+                            t.setNote(trim(v.get("name")));
+
+                            v.markAsFailure(Messages.MsgErrorTransactionAlternativeDocumentRequired);
+                        })
+
+                        // The name of the security may continue on the next line
+                        .section("name", "nameContinued").optional() //
+                        .match("^[\\.,'’\\d]+ \\- (?<name>.*) [\\d]{4}\\-[\\d]{2}\\-[\\d]{2} [\\d]{4}\\-[\\d]{2}\\-[\\d]{2} .*$") //
+                        .match(NAME_CONTINUATION) //
+                        .assign((t, v) -> t.setNote(trim(v.get("name")) + " " + trim(v.get("nameContinued"))))
+
+                        .wrap(BuySellEntryItem::new));
+
+        // @formatter:off
+        // Corporate Action Cr
+        // CASH - 4/2.56-iShares Swiss Dom Govt Bd 2026-07-24 2026-07-23 0.00 2.56
+        // 3-7
+        // @formatter:on
+        var dividendBlock = new Block("^Corporate Action (Cr|Dr)$");
+        type.addBlock(dividendBlock);
+        dividendBlock.setMaxSize(3);
+        dividendBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
+
+                        .section("shares", "name", "date", "debit", "credit") //
+                        .documentContext("currency") //
+                        .match(CASH_LINE) //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setShares(asShares(v.get("shares")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asDebitOrCreditAmount(v));
+                            t.setNote(trim(v.get("name")));
+
+                            v.markAsFailure(Messages.MsgErrorTransactionAlternativeDocumentRequired);
+                        })
+
+                        .section("name", "nameContinued").optional() //
+                        .match(CASH_LINE) //
+                        .match(NAME_CONTINUATION) //
+                        .assign((t, v) -> t.setNote(trim(v.get("name")) + " " + trim(v.get("nameContinued"))))
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // Tax Amount Due
+        // CASH - 4/2.56-iShares Swiss Dom Govt Bd 2026-07-24 2026-07-23 0.90 0.00
+        // 3-7
+        // @formatter:on
+        var taxesBlock = new Block("^Tax Amount Due$");
+        type.addBlock(taxesBlock);
+        taxesBlock.setMaxSize(3);
+        taxesBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
+
+                        .section("shares", "name", "date", "debit", "credit") //
+                        .documentContext("currency") //
+                        .match(CASH_LINE) //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setShares(asShares(v.get("shares")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asDebitOrCreditAmount(v));
+                            t.setNote(trim(v.get("name")));
+
+                            v.markAsFailure(Messages.MsgErrorTransactionAlternativeDocumentRequired);
+                        })
+
+                        .section("name", "nameContinued").optional() //
+                        .match(CASH_LINE) //
+                        .match(NAME_CONTINUATION) //
+                        .assign((t, v) -> t.setNote(trim(v.get("name")) + " " + trim(v.get("nameContinued"))))
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // Management Fees Dr
+        // Fees posted from 202604 to 202606 2026-07-01 2026-07-01 91.72 0.00
+        // @formatter:on
+        var feesBlock = new Block("^Management Fees (Dr|Cr)$");
+        type.addBlock(feesBlock);
+        feesBlock.setMaxSize(2);
+        feesBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
+
+                        .section("note", "date", "debit", "credit") //
+                        .documentContext("currency") //
+                        .match("^(?<note>Fees posted from [\\d]{6} to [\\d]{6}) [\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) (\\-[\\s]*)?(?<debit>[\\.,'’\\d]+) (\\-[\\s]*)?(?<credit>[\\.,'’\\d]+)$") //
+                        .assign((t, v) -> {
+                            // Is credit --> change from FEES to FEES_REFUND
+                            if (asAmount(v.get("debit")) == 0 && asAmount(v.get("credit")) != 0)
+                                t.setType(AccountTransaction.Type.FEES_REFUND);
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asDebitOrCreditAmount(v));
+                            t.setNote(trim(v.get("note")));
+
+                            v.markAsFailure(Messages.MsgErrorTransactionAlternativeDocumentRequired);
+                        })
+
+                        .wrap(TransactionItem::new));
+    }
+
+    /**
+     * Returns the amount of the column "Debit" or, if it is zero, of the
+     * column "Credit" of the portfolio statement.
+     */
+    private long asDebitOrCreditAmount(Map<String, String> v)
+    {
+        var debit = asAmount(v.get("debit"));
+        return debit != 0 ? debit : asAmount(v.get("credit"));
     }
 
     /**
@@ -340,32 +595,43 @@ public class AlpianPDFExtractor extends AbstractPDFExtractor
                         // Stamp tax duty: EUR 0.11
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Stamp tax duty: (?<currency>[A-Z]{3}) (\\-[\\s]*)?(?<tax>[\\.,\\d]+)$") //
+                        .match("^Stamp tax duty: (?<currency>[A-Z]{3}) (\\-[\\s]*)?(?<tax>[\\.,'’\\d]+)$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Witholding tax: CHF 0.61
                         // @formatter:on
                         .section("currency", "withHoldingTax").optional() //
-                        .match("^Withh?olding tax: (?<currency>[A-Z]{3}) (\\-[\\s]*)?(?<withHoldingTax>[\\.,\\d]+)$") //
+                        .match("^Withh?olding tax: (?<currency>[A-Z]{3}) (\\-[\\s]*)?(?<withHoldingTax>[\\.,'’\\d]+)$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type));
     }
 
     @Override
     protected long asAmount(String value)
     {
-        return ExtractorUtils.convertToNumberLong(value, Values.Amount, "en", "US");
+        return ExtractorUtils.convertToNumberLong(removeSwissGroupingSeparator(value), Values.Amount, "en", "US");
     }
 
     @Override
     protected long asShares(String value)
     {
-        return ExtractorUtils.convertToNumberLong(value, Values.Share, "en", "US");
+        return ExtractorUtils.convertToNumberLong(removeSwissGroupingSeparator(value), Values.Share, "en", "US");
     }
 
     @Override
     protected BigDecimal asExchangeRate(String value)
     {
-        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "en", "US");
+        return ExtractorUtils.convertToNumberBigDecimal(removeSwissGroupingSeparator(value), Values.Share, "en", "US");
+    }
+
+    /**
+     * The portfolio statement uses the Swiss thousands separator ’ (U+2019)
+     * or ', e.g. 51’068.47. With the number format en_US, DecimalFormat stops
+     * parsing at this character and would silently return 51.00 instead of
+     * 51,068.47. The separator is therefore removed before parsing.
+     */
+    private static String removeSwissGroupingSeparator(String value)
+    {
+        return value.replace("’", "").replace("'", "");
     }
 }
