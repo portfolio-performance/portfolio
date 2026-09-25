@@ -23,6 +23,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.ImportAction;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.datatransfer.actions.InsertAction;
+import name.abuchen.portfolio.datatransfer.pdf.AbstractPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
@@ -173,30 +174,37 @@ public final class ImportExtractedItemsWizard extends Wizard
 
         result.entrySet().stream() //
                         .sorted((r, l) -> r.getKey().getLabel().compareTo(l.getKey().getLabel())) //
-                        .map(entry -> new Extractor()
-                        {
-                            @Override
-                            public String getLabel()
+                        .forEach(entry -> {
+                            var extractor = new Extractor()
                             {
-                                return entry.getKey().getLabel();
-                            }
+                                @Override
+                                public String getLabel()
+                                {
+                                    return entry.getKey().getLabel();
+                                }
 
-                            @Override
-                            public List<Item> extract(SecurityCache securityCache, InputFile file,
-                                            List<Exception> errors)
-                            {
-                                return entry.getValue();
-                            }
+                                @Override
+                                public List<Item> extract(SecurityCache securityCache, InputFile file,
+                                                List<Exception> errors)
+                                {
+                                    return entry.getValue();
+                                }
 
-                            @Override
-                            public List<Item> extract(List<InputFile> file, List<Exception> errors)
-                            {
-                                return entry.getValue();
-                            }
-                        }) //
-                        .forEach(extractor -> {
+                                @Override
+                                public List<Item> extract(List<InputFile> file, List<Exception> errors)
+                                {
+                                    return entry.getValue();
+                                }
+                            };
+
                             ReviewExtractedItemsPage page = new ReviewExtractedItemsPage(client, extractor, preferences,
                                             Collections.emptyList());
+
+                            // the same PDF document may be imported twice
+                            // (e.g. with different file names), therefore check
+                            // PDF imports for duplicates between the files
+                            page.setDetectDuplicatesWithinImport(entry.getKey() instanceof AbstractPDFExtractor);
+
                             if (account != null)
                                 page.setAccount(account);
                             if (portfolio != null)
