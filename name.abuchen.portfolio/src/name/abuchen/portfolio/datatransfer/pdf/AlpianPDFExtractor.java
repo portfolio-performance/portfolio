@@ -5,6 +5,8 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
 
 import name.abuchen.portfolio.Messages;
@@ -333,9 +335,12 @@ public class AlpianPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // Account statement - May 2023 09.05.2023 - 31.05.2023
                                         // @formatter:on
-                                        .section("year") //
-                                        .match("^Account statement \\- .* [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}) \\- [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
-                                        .assign((ctx, v) -> ctx.put("year", v.get("year"))));
+                                        .section("periodStart", "periodEnd") //
+                                        .match("^Account statement \\- .* (?<periodStart>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\- (?<periodEnd>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                                        .assign((ctx, v) -> {
+                                            ctx.put("periodStart", v.get("periodStart"));
+                                            ctx.put("periodEnd", v.get("periodEnd"));
+                                        }));
 
         this.addDocumentTyp(type);
 
@@ -357,10 +362,10 @@ public class AlpianPDFExtractor extends AbstractPDFExtractor
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("note", "date", "currency", "amount") //
-                        .documentContext("year") //
+                        .documentContext("periodStart", "periodEnd") //
                         .match("^(?<note>Domestic Clearing.*) [\\d]{1,2} [\\p{L}]{3,4} (?<date>[\\d]{1,2} [\\p{L}]{3,4}) (?<currency>[A-Z]{3}) (\\-[\\s]*)?(?<amount>[\\.,'’\\d]+)$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                            t.setDateTime(asDateWithinPeriod(v));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(trim(v.get("note")));
@@ -378,10 +383,10 @@ public class AlpianPDFExtractor extends AbstractPDFExtractor
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.REMOVAL))
 
                         .section("note", "date", "currency", "amount") //
-                        .documentContext("year") //
+                        .documentContext("periodStart", "periodEnd") //
                         .match("^(?<note>Debit Internal Transfer) [\\d]{1,2} [\\p{L}]{3,4} (?<date>[\\d]{1,2} [\\p{L}]{3,4}) (?<currency>[A-Z]{3}) (\\-[\\s]*)?(?<amount>[\\.,'’\\d]+)$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                            t.setDateTime(asDateWithinPeriod(v));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(trim(v.get("note")));
@@ -547,6 +552,47 @@ public class AlpianPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
+    }
+
+    /**
+     * The dates of the account statement have no year (15 May). The year is
+     * taken from the statement period. If the period spans a year end (e.g.
+     * 01.12.2023 - 31.01.2024), the date is built with the start year and the
+     * end year and the one closer to the period is used. This also covers
+     * value dates shortly before the start of the period.
+     *
+     * @formatter:off
+     * 15 Jan --> 15.01.2023 (11 months before) or 15.01.2024 (within) --> 15.01.2024
+     * 30 Nov --> 30.11.2023 (1 day before) or 30.11.2024 (10 months after) --> 30.11.2023
+     * @formatter:on
+     */
+    private LocalDateTime asDateWithinPeriod(Map<String, String> v)
+    {
+        var periodStart = asDate(v.get("periodStart"));
+        var periodEnd = asDate(v.get("periodEnd"));
+
+        var dateInStartYear = asDate(v.get("date") + " " + periodStart.getYear());
+
+        if (periodStart.getYear() == periodEnd.getYear())
+            return dateInStartYear;
+
+        var dateInEndYear = asDate(v.get("date") + " " + periodEnd.getYear());
+
+        if (distanceToPeriod(dateInEndYear, periodStart, periodEnd) < distanceToPeriod(dateInStartYear, periodStart, periodEnd))
+            return dateInEndYear;
+
+        return dateInStartYear;
+    }
+
+    private static long distanceToPeriod(LocalDateTime date, LocalDateTime periodStart, LocalDateTime periodEnd)
+    {
+        if (date.isBefore(periodStart))
+            return ChronoUnit.DAYS.between(date, periodStart);
+
+        if (date.isAfter(periodEnd))
+            return ChronoUnit.DAYS.between(periodEnd, date);
+
+        return 0;
     }
 
     /**
