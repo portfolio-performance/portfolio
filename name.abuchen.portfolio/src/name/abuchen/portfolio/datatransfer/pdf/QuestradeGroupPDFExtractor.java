@@ -21,6 +21,9 @@ import name.abuchen.portfolio.money.Values;
  *
  *           However, the broker reflects the exchange rate.
  *           Current month FX rate: $1.00 USD = $1.4539 CAD Previous month FX rate: $1.00 USD = $1.4383 CAD Account #: 62639842 Current month: January 31, 2025
+ *
+ *           Trade confirmation reports use the date format DD-MM-YY and
+ *           the currency of the respective account (CAD or USD).
  * @formatter:on
  */
 
@@ -34,6 +37,7 @@ public class QuestradeGroupPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("Questrade, Inc.");
 
         addBuyTransaction();
+        addBuySellTransaction();
         addDividendTransaction();
         addAccountStatementTransaction();
     }
@@ -129,6 +133,98 @@ public class QuestradeGroupPDFExtractor extends AbstractPDFExtractor
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }))
+
+                        .wrap(BuySellEntryItem::new);
+
+        addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addBuySellTransaction()
+    {
+        var sectionRange = new Block("^TRADE CONFIRMATION REPORT$", "^Report generated on .*$") //
+                        .asRange(section -> section //
+                                        // @formatter:off
+                                        // date (USD) Comm (USD) (USD) amount Net amount (USD)
+                                        // date (CAD) amount Net amount (CAD)
+                                        // @formatter:on
+                                        .attributes("currency") //
+                                        .optional() //
+                                        .match("^.*Net amount \\((?<currency>[A-Z]{3})\\).*$"));
+
+        final var type = new DocumentType("TRADE CONFIRMATION REPORT", sectionRange);
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<BuySellEntry>();
+
+        var firstRelevantLine = new Block("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{2} [\\d]{2}\\-[\\d]{2}\\-[\\d]{2} [A-Z0-9]+ (Buy|Sell) .*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
+
+                        // Is type --> "Sell" change from BUY to SELL
+                        // @formatter:off
+                        // 15-07-25 16-07-25 30F9C7 Buy 96 IVLU A NY 32.71 (3,140.14) 0.00 0.00 0.00 (3,140.14)
+                        // 06-05-26 07-05-26 A3DB70 Sell 160 .CASH  A T 50.02 8,003.20 0.00 0.00 0.00 8,003.20
+                        // @formatter:on
+                        .section("type") //
+                        .match("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{2} [\\d]{2}\\-[\\d]{2}\\-[\\d]{2} [A-Z0-9]+ (?<type>(Buy|Sell)) .*$") //
+                        .assign((t, v) -> {
+                            if ("Sell".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.SELL);
+                        })
+
+                        // @formatter:off
+                        // 15-07-25 16-07-25 30F9C7 Buy 96 IVLU A NY 32.71 (3,140.14) 0.00 0.00 0.00 (3,140.14)
+                        // Description ISHARES TRUST, ISHARES MSCI INTL VALUE FACTOR, ETF
+                        //
+                        // 06-05-26 07-05-26 A3DB70 Sell 160 .CASH  A T 50.02 8,003.20 0.00 0.00 0.00 8,003.20
+                        // Description GLOBAL X HIGH INT SVGS ETF, CL A UNIT, AVG PRICE - ASK US FOR DETAILS
+                        // @formatter:on
+                        .section("tickerSymbol", "name") //
+                        .documentRange("currency") //
+                        .match("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{2} [\\d]{2}\\-[\\d]{2}\\-[\\d]{2} [A-Z0-9]+ (Buy|Sell) [\\.,\\d]+[\\s]+(\\.)?(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)[\\s]+.*$") //
+                        .match("^Description (?<name>.*?)[\\s]*$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        // @formatter:off
+                        // Formatting: DD-MM-YY
+                        // 15-07-25 16-07-25 30F9C7 Buy 96 IVLU A NY 32.71 (3,140.14) 0.00 0.00 0.00 (3,140.14)
+                        // 06-05-26 07-05-26 A3DB70 Sell 160 .CASH  A T 50.02 8,003.20 0.00 0.00 0.00 8,003.20
+                        // @formatter:on
+                        .section("day", "month", "year") //
+                        .match("^(?<day>[\\d]{2})\\-(?<month>[\\d]{2})\\-(?<year>[\\d]{2}) [\\d]{2}\\-[\\d]{2}\\-[\\d]{2} [A-Z0-9]+ (Buy|Sell) .*$") //
+                        .assign((t, v) -> t.setDate(asDate(v.get("day") + "." + v.get("month") + "." + v.get("year"))))
+
+                        // @formatter:off
+                        // 15-07-25 16-07-25 30F9C7 Buy 96 IVLU A NY 32.71 (3,140.14) 0.00 0.00 0.00 (3,140.14)
+                        // 06-05-26 07-05-26 A3DB70 Sell 160 .CASH  A T 50.02 8,003.20 0.00 0.00 0.00 8,003.20
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{2} [\\d]{2}\\-[\\d]{2}\\-[\\d]{2} [A-Z0-9]+ (Buy|Sell) (?<shares>[\\.,\\d]+) .*$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // 15-07-25 16-07-25 30F9C7 Buy 96 IVLU A NY 32.71 (3,140.14) 0.00 0.00 0.00 (3,140.14)
+                        // 06-05-26 07-05-26 A3DB70 Sell 160 .CASH  A T 50.02 8,003.20 0.00 0.00 0.00 8,003.20
+                        // @formatter:on
+                        .section("amount") //
+                        .documentRange("currency") //
+                        .match("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{2} [\\d]{2}\\-[\\d]{2}\\-[\\d]{2} [A-Z0-9]+ (Buy|Sell) .* \\(?(?<amount>[\\.,\\d]+)\\)?[\\s]*$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // @formatter:off
+                        // 15-07-25 16-07-25 30F9C7 Buy 96 IVLU A NY 32.71 (3,140.14) 0.00 0.00 0.00 (3,140.14)
+                        // 06-05-26 07-05-26 A3DB70 Sell 160 .CASH  A T 50.02 8,003.20 0.00 0.00 0.00 8,003.20
+                        // @formatter:on
+                        .section("note") //
+                        .match("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{2} [\\d]{2}\\-[\\d]{2}\\-[\\d]{2} (?<note>[A-Z0-9]+) (Buy|Sell) .*$") //
+                        .assign((t, v) -> t.setNote("Trade #: " + v.get("note")))
 
                         .wrap(BuySellEntryItem::new);
 
@@ -253,7 +349,37 @@ public class QuestradeGroupPDFExtractor extends AbstractPDFExtractor
                         .section("fee").optional() //
                         .documentRange("currency") //
                         .match("^.*WE ACTED AS AGENT [\\.,\\d]+ [\\.,\\d]+ \\([\\.,\\d]+\\) \\((?<fee>[\\.,\\d]+)\\).*$") //
-                        .assign((t, v) -> processFeeEntries(t, v, type));
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // Commission
+                        // @formatter:off
+                        // Formatting:
+                        // Trade date | Settlement date | Trade # | Action | Quantity | Symbol | TB | EX | Price | Gross amount | Comm | SEC fees | Interest amount | Net amount
+                        // -------------------------------------
+                        // 15-07-25 16-07-25 30F9C7 Buy 96 IVLU A NY 32.71 (3,140.14) 0.00 0.00 0.00 (3,140.14)
+                        // @formatter:on
+                        .section("fee").optional() //
+                        .documentRange("currency") //
+                        .match("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{2} [\\d]{2}\\-[\\d]{2}\\-[\\d]{2} [A-Z0-9]+ (Buy|Sell) .* \\(?(?<fee>[\\.,\\d]+)\\)? \\(?[\\.,\\d]+\\)? \\(?[\\.,\\d]+\\)? \\(?[\\.,\\d]+\\)?[\\s]*$") //
+                        .assign((t, v) -> {
+                            if (asAmount(v.get("fee")) != 0)
+                                processFeeEntries(t, v, type);
+                        })
+
+                        // SEC fees
+                        // @formatter:off
+                        // Formatting:
+                        // Trade date | Settlement date | Trade # | Action | Quantity | Symbol | TB | EX | Price | Gross amount | Comm | SEC fees | Interest amount | Net amount
+                        // -------------------------------------
+                        // 15-07-25 16-07-25 30F9C7 Buy 96 IVLU A NY 32.71 (3,140.14) 0.00 0.00 0.00 (3,140.14)
+                        // @formatter:on
+                        .section("fee").optional() //
+                        .documentRange("currency") //
+                        .match("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{2} [\\d]{2}\\-[\\d]{2}\\-[\\d]{2} [A-Z0-9]+ (Buy|Sell) .* \\(?(?<fee>[\\.,\\d]+)\\)? \\(?[\\.,\\d]+\\)? \\(?[\\.,\\d]+\\)?[\\s]*$") //
+                        .assign((t, v) -> {
+                            if (asAmount(v.get("fee")) != 0)
+                                processFeeEntries(t, v, type);
+                        });
     }
 
     @Override
