@@ -18,9 +18,15 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.datatransfer.Extractor;
+import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
+import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
+import name.abuchen.portfolio.datatransfer.ImportAction;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status.Code;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AccountTransferEntry;
+import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -127,6 +133,382 @@ public class DetectDuplicatesActionTest
         status = action.process(transferOut, account(withdrawl));
 
         assertThat(status.getCode(), is(Code.WARNING));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testNoDuplicateDetectionWithinImportByDefault()
+    {
+        var account = new Account();
+        var action = new DetectDuplicatesAction(new Client());
+
+        assertThat(action.process(getTestEntry(AccountTransaction.Type.DIVIDENDS, "Dividende01.pdf"), account)
+                        .getCode(), is(Code.OK));
+        assertThat(action.process(getTestEntry(AccountTransaction.Type.DIVIDENDS, "Dividende01 (Kopie).pdf"),
+                        account).getCode(), is(Code.OK));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testDuplicateWithinImport4AccountTransactionFromDifferentSources()
+    {
+        var account = new Account();
+        var action = new DetectDuplicatesAction(new Client(), true);
+
+        assertThat(action.process(getTestEntry(AccountTransaction.Type.DIVIDENDS, "Dividende01.pdf"), account)
+                        .getCode(), is(Code.OK));
+        assertThat(action.process(getTestEntry(AccountTransaction.Type.DIVIDENDS, "Dividende01 (Kopie).pdf"),
+                        account).getCode(), is(Code.WARNING));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testDuplicateWithinImport4DepositAndTransferInFromDifferentSources()
+    {
+        var account = new Account();
+        var action = new DetectDuplicatesAction(new Client(), true);
+
+        assertThat(action.process(getTestEntry(AccountTransaction.Type.DEPOSIT, "Kontoauszug01.pdf"), account)
+                        .getCode(), is(Code.OK));
+        assertThat(action.process(getTestEntry(AccountTransaction.Type.TRANSFER_IN, "Kontoauszug02.pdf"), account)
+                        .getCode(), is(Code.WARNING));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testNoDuplicateWithinImportFromSameSource()
+    {
+        // a single document can contain identical transactions (e.g. two
+        // identical fees on the same day)
+        var account = new Account();
+        var action = new DetectDuplicatesAction(new Client(), true);
+
+        assertThat(action.process(getTestEntry(AccountTransaction.Type.FEES, "Kontoauszug01.pdf"), account)
+                        .getCode(), is(Code.OK));
+        assertThat(action.process(getTestEntry(AccountTransaction.Type.FEES, "Kontoauszug01.pdf"), account)
+                        .getCode(), is(Code.OK));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testNoDuplicateWithinImportWithoutSource()
+    {
+        var account = new Account();
+        var action = new DetectDuplicatesAction(new Client(), true);
+
+        assertThat(action.process(getTestEntry(AccountTransaction.Type.FEES, null), account).getCode(),
+                        is(Code.OK));
+        assertThat(action.process(getTestEntry(AccountTransaction.Type.FEES, "Kontoauszug01.pdf"), account)
+                        .getCode(), is(Code.OK));
+        assertThat(action.process(getTestEntry(AccountTransaction.Type.FEES, null), account).getCode(),
+                        is(Code.OK));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testNoDuplicateWithinImportWithDifferentValues()
+    {
+        var account = new Account();
+        var action = new DetectDuplicatesAction(new Client(), true);
+
+        assertThat(action.process(getTestEntry(AccountTransaction.Type.DIVIDENDS, "Dividende01.pdf"), account)
+                        .getCode(), is(Code.OK));
+
+        var otherAmount = getTestEntry(AccountTransaction.Type.DIVIDENDS, "Dividende02.pdf");
+        otherAmount.setAmount(1001);
+        assertThat(action.process(otherAmount, account).getCode(), is(Code.OK));
+
+        var otherDate = getTestEntry(AccountTransaction.Type.DIVIDENDS, "Dividende03.pdf");
+        otherDate.setDateTime(LocalDateTime.of(2025, 12, 16, 0, 0));
+        assertThat(action.process(otherDate, account).getCode(), is(Code.OK));
+
+        var otherType = getTestEntry(AccountTransaction.Type.INTEREST, "Zinsen01.pdf");
+        assertThat(action.process(otherType, account).getCode(), is(Code.OK));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testNoDuplicateWithinImportForDifferentAccounts()
+    {
+        var action = new DetectDuplicatesAction(new Client(), true);
+
+        assertThat(action.process(getTestEntry(AccountTransaction.Type.DIVIDENDS, "Dividende01.pdf"), new Account())
+                        .getCode(), is(Code.OK));
+        assertThat(action.process(getTestEntry(AccountTransaction.Type.DIVIDENDS, "Dividende01 (Kopie).pdf"),
+                        new Account()).getCode(), is(Code.OK));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testDuplicateWithExistingTransactionIsStillDetectedWithinImport()
+    {
+        var action = new DetectDuplicatesAction(new Client(), true);
+
+        var existing = getTestEntry(AccountTransaction.Type.DIVIDENDS, null);
+        var status = action.process(getTestEntry(AccountTransaction.Type.DIVIDENDS, "Dividende01.pdf"),
+                        account(existing));
+
+        assertThat(status.getCode(), is(Code.WARNING));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testDuplicateWithinImport4PortfolioTransactionFromDifferentSources()
+    {
+        var security = new Security();
+        var portfolio = new Portfolio();
+        var action = new DetectDuplicatesAction(new Client(), true);
+
+        assertThat(action.process(getTestEntry(PortfolioTransaction.Type.DELIVERY_INBOUND, security, "Eingang01.pdf"),
+                        portfolio).getCode(), is(Code.OK));
+        assertThat(action.process(getTestEntry(PortfolioTransaction.Type.DELIVERY_INBOUND, security, "Eingang02.pdf"),
+                        portfolio).getCode(), is(Code.WARNING));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testNoDuplicateWithinImport4PortfolioTransactionWithDifferentSecurities()
+    {
+        var portfolio = new Portfolio();
+        var action = new DetectDuplicatesAction(new Client(), true);
+
+        assertThat(action.process(getTestEntry(PortfolioTransaction.Type.DELIVERY_INBOUND, new Security(),
+                        "Eingang01.pdf"), portfolio).getCode(), is(Code.OK));
+        assertThat(action.process(getTestEntry(PortfolioTransaction.Type.DELIVERY_INBOUND, new Security(),
+                        "Eingang02.pdf"), portfolio).getCode(), is(Code.OK));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testDuplicateWithinImport4BuySellEntryFromDifferentSources()
+    {
+        var security = new Security();
+        var account = new Account();
+        var portfolio = new Portfolio();
+        var action = new DetectDuplicatesAction(new Client(), true);
+
+        assertThat(action.process(getTestEntry(PortfolioTransaction.Type.BUY, security, 100L, "Kauf01.pdf"), account,
+                        portfolio).getCode(), is(Code.OK));
+        assertThat(action.process(getTestEntry(PortfolioTransaction.Type.BUY, security, 100L, "Kauf01 (1).pdf"),
+                        account, portfolio).getCode(), is(Code.WARNING));
+
+        // same security and shares, but different amount
+        var otherAmount = getTestEntry(PortfolioTransaction.Type.BUY, security, 100L, "Kauf02.pdf");
+        otherAmount.setAmount(2000);
+        assertThat(action.process(otherAmount, account, portfolio).getCode(), is(Code.OK));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testDuplicateWithinImport4PurchaseAndDelivery()
+    {
+        var security = new Security();
+        var portfolio = new Portfolio();
+        var action = new DetectDuplicatesAction(new Client(), true);
+
+        assertThat(action.process(getTestEntry(PortfolioTransaction.Type.BUY, security, 100L, "Kauf01.pdf"),
+                        new Account(), portfolio).getCode(), is(Code.OK));
+
+        var delivery = getTestEntry(PortfolioTransaction.Type.DELIVERY_INBOUND, security, "Eingang01.pdf");
+        delivery.setShares(100L);
+        assertThat(action.process(delivery, portfolio).getCode(), is(Code.WARNING));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testDuplicateWithinImport4AccountTransferEntryFromDifferentSources()
+    {
+        var source = new Account();
+        var target = new Account();
+        var action = new DetectDuplicatesAction(new Client(), true);
+
+        assertThat(action.process(getTestTransfer(source, target, "Umbuchung01.pdf"), source, target).getCode(),
+                        is(Code.OK));
+        assertThat(action.process(getTestTransfer(source, target, "Umbuchung02.pdf"), source, target).getCode(),
+                        is(Code.WARNING));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testDuplicateWithinImportViaExtractedItems()
+    {
+        // simulates the same document imported twice with different file names
+        // plus a document with two identical transactions
+        var security = new Security();
+        var account = new Account();
+        account.setCurrencyCode("EUR");
+        var portfolio = new Portfolio();
+        var context = context(account, portfolio);
+
+        var action = new DetectDuplicatesAction(new Client(), true);
+
+        List<Extractor.Item> items = new ArrayList<>();
+        items.add(new BuySellEntryItem(getTestEntry(PortfolioTransaction.Type.BUY, security, 100L, "Kauf01.pdf")));
+        items.add(new TransactionItem(getTestEntry(AccountTransaction.Type.FEES, "Kauf01.pdf")));
+        items.add(new TransactionItem(getTestEntry(AccountTransaction.Type.FEES, "Kauf01.pdf")));
+        items.add(new BuySellEntryItem(getTestEntry(PortfolioTransaction.Type.BUY, security, 100L, "Kauf01_2.pdf")));
+        items.add(new TransactionItem(getTestEntry(AccountTransaction.Type.FEES, "Kauf01_2.pdf")));
+        items.add(new TransactionItem(getTestEntry(AccountTransaction.Type.FEES, "Kauf01_2.pdf")));
+
+        var codes = items.stream().map(item -> item.apply(action, context).getCode()).toList();
+
+        assertThat(codes, is(List.of(Code.OK, Code.OK, Code.OK, Code.WARNING, Code.WARNING, Code.WARNING)));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testDuplicateWithinImportFromFilesWithSameNameInDifferentFolders()
+    {
+        // e.g. a ZIP archive containing Ordner1/Kauf01.pdf and
+        // Ordner2/Kauf01.pdf: the source (file name) is identical, the input
+        // files are not
+        var security = new Security();
+        var account = new Account();
+        account.setCurrencyCode("EUR");
+        var portfolio = new Portfolio();
+        var context = context(account, portfolio);
+
+        List<Extractor.Item> items = new ArrayList<>();
+        items.add(withSourceKey(new BuySellEntryItem(getTestEntry(PortfolioTransaction.Type.BUY, security, 100L,
+                        "Kauf01.pdf")), "/tmp/import/Ordner1/Kauf01.pdf"));
+        items.add(withSourceKey(new TransactionItem(getTestEntry(AccountTransaction.Type.DIVIDENDS, "Dividende01.pdf")),
+                        "/tmp/import/Ordner1/Dividende01.pdf"));
+        items.add(withSourceKey(new BuySellEntryItem(getTestEntry(PortfolioTransaction.Type.BUY, security, 100L,
+                        "Kauf01.pdf")), "/tmp/import/Ordner2/Kauf01.pdf"));
+        items.add(withSourceKey(new TransactionItem(getTestEntry(AccountTransaction.Type.DIVIDENDS, "Dividende01.pdf")),
+                        "/tmp/import/Ordner2/Dividende01.pdf"));
+
+        var action = new DetectDuplicatesAction(new Client(), true, DetectDuplicatesAction.sourceKeysOf(items));
+
+        var codes = items.stream().map(item -> item.apply(action, context).getCode()).toList();
+
+        assertThat(codes, is(List.of(Code.OK, Code.OK, Code.WARNING, Code.WARNING)));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testNoDuplicateWithinImportFromSameInputFile()
+    {
+        // identical transactions of the same input file are no duplicates,
+        // even if the input file is identified by its path
+        var account = new Account();
+        account.setCurrencyCode("EUR");
+        var context = context(account, new Portfolio());
+
+        List<Extractor.Item> items = new ArrayList<>();
+        items.add(withSourceKey(new TransactionItem(getTestEntry(AccountTransaction.Type.FEES, "Kontoauszug01.pdf")),
+                        "/tmp/import/Ordner1/Kontoauszug01.pdf"));
+        items.add(withSourceKey(new TransactionItem(getTestEntry(AccountTransaction.Type.FEES, "Kontoauszug01.pdf")),
+                        "/tmp/import/Ordner1/Kontoauszug01.pdf"));
+
+        var action = new DetectDuplicatesAction(new Client(), true, DetectDuplicatesAction.sourceKeysOf(items));
+
+        var codes = items.stream().map(item -> item.apply(action, context).getCode()).toList();
+
+        assertThat(codes, is(List.of(Code.OK, Code.OK)));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testSourceKeysOfUsesSourceKeyOfItem()
+    {
+        var security = new Security();
+        var buySell = getTestEntry(PortfolioTransaction.Type.BUY, security, 100L, "Kauf01.pdf");
+        var transfer = getTestTransfer(new Account(), new Account(), "Umbuchung01.pdf");
+        var dividend = getTestEntry(AccountTransaction.Type.DIVIDENDS, "Dividende01.pdf");
+
+        List<Extractor.Item> items = new ArrayList<>();
+        items.add(withSourceKey(new BuySellEntryItem(buySell), "/tmp/import/Ordner1/Kauf01.pdf"));
+        items.add(withSourceKey(new Extractor.AccountTransferItem(transfer, true), "/tmp/import/Umbuchung01.pdf"));
+        items.add(new TransactionItem(dividend));
+
+        var sourceKeyOf = DetectDuplicatesAction.sourceKeysOf(items);
+
+        assertThat(sourceKeyOf.apply(buySell.getPortfolioTransaction()), is("/tmp/import/Ordner1/Kauf01.pdf"));
+        assertThat(sourceKeyOf.apply(buySell.getAccountTransaction()), is("/tmp/import/Ordner1/Kauf01.pdf"));
+        assertThat(sourceKeyOf.apply(transfer.getSourceTransaction()), is("/tmp/import/Umbuchung01.pdf"));
+        assertThat(sourceKeyOf.apply(transfer.getTargetTransaction()), is("/tmp/import/Umbuchung01.pdf"));
+
+        // no source key --> fall back to the source (file name)
+        assertThat(sourceKeyOf.apply(dividend), is("Dividende01.pdf"));
+    }
+
+    private Extractor.Item withSourceKey(Extractor.Item item, String sourceKey)
+    {
+        item.setData(DetectDuplicatesAction.SOURCE_KEY, sourceKey);
+        return item;
+    }
+
+    private AccountTransaction getTestEntry(AccountTransaction.Type type, String source)
+    {
+        var transaction = getTestEntry(type);
+        transaction.setSource(source);
+        return transaction;
+    }
+
+    private PortfolioTransaction getTestEntry(PortfolioTransaction.Type type, Security security, String source)
+    {
+        var transaction = new PortfolioTransaction();
+        transaction.setType(type);
+        transaction.setSecurity(security);
+        transaction.setAmount(1000);
+        transaction.setShares(1000L);
+        transaction.setCurrencyCode("EUR"); //$NON-NLS-1$
+        transaction.setDateTime(LocalDateTime.of(2025, 12, 15, 0, 0));
+        transaction.setSource(source);
+        return transaction;
+    }
+
+    private BuySellEntry getTestEntry(PortfolioTransaction.Type type, Security security, long shares, String source)
+    {
+        var entry = new BuySellEntry(type);
+        entry.setSecurity(security);
+        entry.setShares(shares);
+        entry.setAmount(1000);
+        entry.setCurrencyCode("EUR"); //$NON-NLS-1$
+        entry.setDate(LocalDateTime.of(2025, 12, 15, 0, 0));
+        entry.setSource(source);
+        return entry;
+    }
+
+    private AccountTransferEntry getTestTransfer(Account source, Account target, String filename)
+    {
+        var entry = new AccountTransferEntry(source, target);
+        entry.setAmount(1000);
+        entry.setCurrencyCode("EUR"); //$NON-NLS-1$
+        entry.setDate(LocalDateTime.of(2025, 12, 15, 0, 0));
+        entry.setSource(filename);
+        return entry;
+    }
+
+    private ImportAction.Context context(Account account, Portfolio portfolio)
+    {
+        return new ImportAction.Context()
+        {
+            @Override
+            public Account getAccount(String currencyCode)
+            {
+                return account;
+            }
+
+            @Override
+            public Portfolio getPortfolio()
+            {
+                return portfolio;
+            }
+
+            @Override
+            public Account getSecondaryAccount(String currencyCode)
+            {
+                return null;
+            }
+
+            @Override
+            public Portfolio getSecondaryPortfolio()
+            {
+                return null;
+            }
+        };
     }
 
     private AccountTransaction getTestEntry(AccountTransaction.Type type)
