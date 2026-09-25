@@ -36,7 +36,7 @@ Update tools are merge patches: only the given fields change, and `clear` names 
 
 ```bash
 uv run pp-apply-plan plan.json            # dry run of every step
-uv run pp-apply-plan plan.json --commit   # apply, then call save_file
+uv run pp-apply-plan plan.json --commit   # apply (in memory only); call save_file afterwards
 ```
 
 Plan format, placeholders for account and instrument names (`@acct:`, `@cash:`, `@inv:`, `@isin:`, `@inst:`) and output are described in `src/pp_mcp/plan.py`.

@@ -271,7 +271,7 @@ public class ClientInput
         BusyIndicator.showWhile(shell.getDisplay(), () -> {
             try
             {
-                saveWithoutUI();
+                save(true);
             }
             catch (IOException e)
             {
@@ -283,8 +283,9 @@ public class ClientInput
 
     /**
      * Saves the file at its current location in its current format without
-     * any user interface: no busy indicator, no error dialog, no "save as".
-     * Must be called on the UI thread. Used by the REST API.
+     * any user interface: no busy indicator, no error dialog (a failed backup
+     * is only logged), no "save as". Must be called on the UI thread. Used by
+     * the REST API.
      *
      * @throws IllegalStateException
      *             if the file has never been saved and therefore has no
@@ -292,11 +293,16 @@ public class ClientInput
      */
     public void saveWithoutUI() throws IOException
     {
+        save(false);
+    }
+
+    private void save(boolean showBackupError) throws IOException
+    {
         if (clientFile == null)
             throw new IllegalStateException("file has never been saved"); //$NON-NLS-1$
 
         if (preferences.getBoolean(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true))
-            createBackup(clientFile, "backup"); //$NON-NLS-1$
+            createBackup(clientFile, "backup", showBackupError); //$NON-NLS-1$
 
         ClientFactory.save(client, clientFile);
         storePreferences(false);
@@ -480,10 +486,10 @@ public class ClientInput
     public void createBackupAfterOpen()
     {
         if (clientFile != null && preferences.getBoolean(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true))
-            createBackup(clientFile, "backup-after-open"); //$NON-NLS-1$
+            createBackup(clientFile, "backup-after-open", true); //$NON-NLS-1$
     }
 
-    private void createBackup(File file, String suffix)
+    private void createBackup(File file, String suffix, boolean showError)
     {
         try
         {
@@ -498,8 +504,9 @@ public class ClientInput
         catch (IOException e)
         {
             PortfolioPlugin.log(e);
-            Display.getDefault().asyncExec(() -> MessageDialog.openError(Display.getDefault().getActiveShell(),
-                            Messages.LabelError, e.getMessage()));
+            if (showError)
+                Display.getDefault().asyncExec(() -> MessageDialog.openError(Display.getDefault().getActiveShell(),
+                                Messages.LabelError, e.getMessage()));
         }
     }
 

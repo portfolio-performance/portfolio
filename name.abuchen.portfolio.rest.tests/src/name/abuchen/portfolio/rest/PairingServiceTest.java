@@ -206,7 +206,7 @@ public class PairingServiceTest
     @Test
     public void testControlCharactersAreStrippedFromTheDisplayedName()
     {
-        service.create("Claude Code\r\n");
+        service.create("Claude\u0007 \u001bCode\r\n");
 
         assertThat(host.lastAccessRequest().getClientName(), is("Claude Code"));
     }

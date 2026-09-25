@@ -3,6 +3,7 @@ package name.abuchen.portfolio.rest.internal;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.fail;
 
 import java.util.Map;
 
@@ -39,6 +40,23 @@ public class RequestTest
         var params = Request.parseQuery("flag&date=2026-01-01");
         assertThat(params.get("flag"), is(""));
         assertThat(params.get("date"), is("2026-01-01"));
+    }
+
+    @Test
+    public void testParseQueryRejectsMalformedPercentEncoding()
+    {
+        for (var query : new String[] { "from=%zz", "from=%2", "%zz=1" })
+        {
+            try
+            {
+                Request.parseQuery(query);
+                fail("expected 400 for " + query);
+            }
+            catch (ApiException e)
+            {
+                assertThat(e.getStatus(), is(400));
+            }
+        }
     }
 
     @Test

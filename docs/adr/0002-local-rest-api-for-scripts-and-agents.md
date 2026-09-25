@@ -42,9 +42,15 @@ becomes a later thin adapter over the same service layer. The individual decisio
   also be a literal loopback authority (403 `forbidden-host`). No OS-level verification of the
   requesting process is attempted: the threat model is same-user local processes, which could
   already read files or key-log; the prompt therefore frames the name as *self-declared*.
-- **Writes are in-memory only; there is no save endpoint.** API mutations behave exactly like UI
-  edits: mutate the `Client`, mark it dirty, let the UI refresh live. Only the user saves. An agent's
-  changes can be reviewed and discarded by closing without saving.
+- **Writes are in-memory until an explicit save.** API mutations behave exactly like UI edits:
+  mutate the `Client`, mark it dirty, let the UI refresh live. Nothing is persisted implicitly; an
+  agent's changes can be reviewed and discarded by closing without saving. `POST
+  /v1/files/{file}/save` persists the file through the UI's own save path (`OpenFile#save` →
+  `ClientInput#saveWithoutUI`: same path, same format, backup copy if enabled, no "save as"). It is a
+  write like any other, so it is rejected (423) while a modal dialog is open, and it first waits
+  (`?waitForUpdates`, default 30 s) for running background price updates so that it does not persist
+  a half-updated file. `POST /v1/files/open` opens a file in the application, but only a path the
+  user has already enabled for API access; the API cannot enable a path itself.
 - **Reads and writes that directly inspect or mutate model entities are marshalled to the UI thread**
   (`Display.syncExec`): one mutator thread, the same guarantee UI code relies on, rather than
   retrofitting locking onto the model. Calculation endpoints are the deliberate exception: they
@@ -92,7 +98,6 @@ becomes a later thin adapter over the same service layer. The individual decisio
   the whole point of the narrow write surface is that no request may introduce inconsistent data.
 - *MCP as the transport*: deferred, not rejected. Scripts want plain HTTP, and the service layer seam
   lets MCP plug in later without a second model-access path.
-- *A save endpoint*: deferred as too dangerous for v1. May follow.
 - *A single global token, copied by hand from the preferences* (the original decision): superseded.
   All-or-nothing revocation and no possibility of session-scoped grants; the manual copy step was
   also the worst part of the agent onboarding. Replaced by pairing before first release, so no

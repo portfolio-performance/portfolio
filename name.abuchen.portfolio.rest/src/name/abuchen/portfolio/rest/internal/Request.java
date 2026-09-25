@@ -27,7 +27,8 @@ public record Request(String method, String path, Map<String, String> pathParams
     /**
      * Parses a raw (still percent-encoded) query string as handed out by
      * {@code URI#getRawQuery}; a null or empty query yields an empty map, a
-     * key without {@code =} an empty value.
+     * key without {@code =} an empty value. Malformed percent-encoding is
+     * rejected with 400.
      */
     public static Map<String, String> parseQuery(String rawQuery)
     {
@@ -42,9 +43,21 @@ public record Request(String method, String path, Map<String, String> pathParams
             int idx = pair.indexOf('=');
             var name = idx < 0 ? pair : pair.substring(0, idx);
             var value = idx < 0 ? "" : pair.substring(idx + 1); //$NON-NLS-1$
-            params.put(URLDecoder.decode(name, StandardCharsets.UTF_8),
-                            URLDecoder.decode(value, StandardCharsets.UTF_8));
+            params.put(decode(name), decode(value));
         }
         return Map.copyOf(params);
+    }
+
+    /** malformed percent-encoding is a client error (400), not a 500 */
+    private static String decode(String component)
+    {
+        try
+        {
+            return URLDecoder.decode(component, StandardCharsets.UTF_8);
+        }
+        catch (IllegalArgumentException e)
+        {
+            throw ApiException.badRequest("Malformed percent-encoding in query string"); //$NON-NLS-1$
+        }
     }
 }

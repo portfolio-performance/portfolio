@@ -52,7 +52,10 @@ public class RestApiServer
     {
         server = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), port), 0);
         server.createContext("/", this::dispatch); //$NON-NLS-1$
-        executor = Executors.newFixedThreadPool(2);
+        // one virtual thread per request: handlers may block for a long time
+        // (save waiting for price updates, open waiting for the file to load)
+        // and must not starve the other requests of a small fixed pool
+        executor = Executors.newVirtualThreadPerTaskExecutor();
         server.setExecutor(executor);
         server.start();
     }

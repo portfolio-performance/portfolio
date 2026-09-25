@@ -419,6 +419,39 @@ public class HoldingsTest
     }
 
     /**
+     * Dividend calendar events from quote feeds may lack an ex-date, a payment
+     * date or an amount; such events are skipped instead of failing the
+     * holdings computation.
+     */
+    @Test
+    public void testDividendEventsWithMissingData()
+    {
+        var client = new Client();
+
+        var security = new SecurityBuilder() //
+                        .addPrice("2026-07-01", Values.Quote.factorize(110)) //
+                        .addTo(client);
+        security.setName("ACME");
+
+        new PortfolioBuilder() //
+                        .inbound_delivery(security, "2026-01-15", Values.Share.factorize(10),
+                                        Values.Amount.factorize(1000)) //
+                        .addTo(client);
+
+        var future = LocalDate.now().plusMonths(1);
+        security.addEvent(new DividendEvent(future, null, null, "test"));
+        security.addEvent(new DividendEvent(null, future.plusDays(5), null, "test"));
+
+        var holdings = list(client, "2026-07-20", null).getAsJsonObject();
+        var instrument = findByUuid(holdings, security.getUUID());
+
+        var dividends = instrument.get("dividends").getAsJsonObject();
+        assertThat(dividends.get("nextExDate").getAsString(), is(future.toString()));
+        assertThat(dividends.get("nextPaymentDate").getAsString(), is(future.plusDays(5).toString()));
+        assertThat(dividends.has("nextPaymentAmount"), is(false));
+    }
+
+    /**
      * A taxonomy classifies an instrument or a cash account alike (e.g. an
      * asset-allocation taxonomy commonly classifies cash accounts too); the
      * root node itself never appears in {@code path}.

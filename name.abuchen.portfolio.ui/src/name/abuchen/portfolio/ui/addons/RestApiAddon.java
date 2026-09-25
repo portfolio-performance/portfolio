@@ -300,7 +300,7 @@ public class RestApiAddon
             server = new RestApiServer(port, token -> clientStore.authenticate(token).isPresent(),
                             ApiRoutes.create(registry, host, new PairingService(clientStore, host)));
             server.start();
-            PortfolioLog.info(MessageFormat.format(Messages.MsgRestApiServerStarted, server.getPort()));
+            PortfolioLog.info(MessageFormat.format(Messages.MsgRestApiServerStarted, String.valueOf(server.getPort())));
         }
         catch (IOException e)
         {

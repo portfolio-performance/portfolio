@@ -219,7 +219,9 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
             @Override
             public String getText(Object element)
             {
-                return AttributeFieldTypeLabels.label(AttributeFieldType.of((AttributeType) element));
+                var fieldType = AttributeFieldType.of((AttributeType) element);
+                // attribute types with an unknown converter have no field type
+                return fieldType != null ? AttributeFieldTypeLabels.label(fieldType) : ""; //$NON-NLS-1$
             }
         });
         support.addColumn(column);

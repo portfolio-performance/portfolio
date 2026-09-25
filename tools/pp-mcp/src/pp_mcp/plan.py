@@ -23,6 +23,10 @@ Usage (PP_API_URL and PP_API_TOKEN as for the MCP server):
     pp-apply-plan plan.json --commit       # apply; does not save, call save_file afterwards
     pp-apply-plan plan.json --file other   # override the plan's file
 
+A dry run changes nothing: every write tool is called with dry_run=true, overriding a step's own
+dry_run, and tools that cannot dry-run (save_file, open_file) are skipped and reported as SKIP. With
+--commit, every write tool is called with dry_run=false (import_pdf/import_csv then import directly).
+
 In a dry run, steps that reference an account or instrument created by an earlier step of the same
 plan cannot be validated and are reported as DEPENDS. The exit code is 1 if any step failed.
 """
@@ -41,7 +45,9 @@ from pp_mcp.server import mcp
 CREATES = {"create_cash_account", "create_investment_account", "create_instrument"}
 PLACEHOLDER = re.compile(r"^@([a-z]+):(.+)$")
 WRITE_PREFIXES = ("create_", "update_", "delete_", "set_", "add_", "remove_", "assign_", "unassign_", "apply_",
-                  "generate_", "rename_")
+                  "generate_", "rename_", "commit_", "import_")
+# write tools without a dry run; a dry run skips them
+NO_DRY_RUN = {"save_file", "open_file"}
 
 
 class Missing(Exception):
@@ -112,6 +118,16 @@ def resolve(value: Any, lookups: Lookups, key: str = "", tool: str = "") -> Any:
     return table[name]
 
 
+def prepare_args(tool: str, args: dict[str, Any], file: str, commit: bool) -> dict[str, Any] | None:
+    """The arguments a step's tool is called with, or None if a dry run must skip the step."""
+    if not commit and tool in NO_DRY_RUN:
+        return None
+    args = {"file": file, **args}
+    if tool.startswith(WRITE_PREFIXES):
+        args["dry_run"] = not commit
+    return args
+
+
 def _brief(result: Any) -> str:
     if not isinstance(result, dict):
         return str(result)[:200]
@@ -127,7 +143,7 @@ def _brief(result: Any) -> str:
 
 async def run(plan: dict, file: str, commit: bool) -> int:
     created: set[str] = set()
-    ok = depends = errors = 0
+    ok = depends = skipped = errors = 0
     async with Client(mcp) as client:
         lookups = await load_lookups(client, file)
         for step in plan["steps"]:
@@ -147,9 +163,11 @@ async def run(plan: dict, file: str, commit: bool) -> int:
                 print(f"ERR {sid} {tool}: {invalid}")
                 continue
 
-            args = {"file": file, **args}
-            if tool.startswith(WRITE_PREFIXES):
-                args["dry_run"] = not commit
+            args = prepare_args(tool, args, file, commit)
+            if args is None:
+                skipped += 1
+                print(f"SKIP {sid} {tool}: not run in a dry run")
+                continue
             try:
                 result = _data(await client.call_tool(tool, args))
             except Exception as e:  # noqa: BLE001 - report every failing step and continue
@@ -164,7 +182,8 @@ async def run(plan: dict, file: str, commit: bool) -> int:
                 if commit:
                     lookups = await load_lookups(client, file)
 
-    print(f"\n{ok} ok, {depends} depend on new entities, {errors} errors ({'COMMIT' if commit else 'dry run'})")
+    print(f"\n{ok} ok, {depends} depend on new entities, {skipped} skipped, "
+          f"{errors} errors ({'COMMIT' if commit else 'dry run'})")
     return 1 if errors else 0
 
 

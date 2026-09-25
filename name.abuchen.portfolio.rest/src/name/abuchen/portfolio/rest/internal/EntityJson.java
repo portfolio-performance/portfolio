@@ -483,18 +483,20 @@ public final class EntityJson
                         .map(DividendEvent.class::cast) //
                         .toList();
 
+        // calendar events come from quote feeds and may lack a date or amount
         events.stream() //
                         .map(DividendEvent::getDate) //
-                        .filter(d -> !now.isAfter(d)) //
+                        .filter(d -> d != null && !now.isAfter(d)) //
                         .min(Comparator.naturalOrder()) //
                         .ifPresent(d -> dividends.addProperty("nextExDate", d.toString())); //$NON-NLS-1$
 
         events.stream() //
-                        .filter(e -> !now.isAfter(e.getPaymentDate())) //
+                        .filter(e -> e.getPaymentDate() != null && !now.isAfter(e.getPaymentDate())) //
                         .min(Comparator.comparing(DividendEvent::getPaymentDate)) //
                         .ifPresent(e -> {
                             dividends.addProperty("nextPaymentDate", e.getPaymentDate().toString()); //$NON-NLS-1$
-                            dividends.add("nextPaymentAmount", toJson(e.getAmount())); //$NON-NLS-1$
+                            if (e.getAmount() != null)
+                                dividends.add("nextPaymentAmount", toJson(e.getAmount())); //$NON-NLS-1$
                         });
 
         if (dividends.size() > 0)
