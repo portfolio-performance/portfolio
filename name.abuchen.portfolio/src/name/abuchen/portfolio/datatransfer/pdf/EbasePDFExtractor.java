@@ -87,6 +87,13 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
+                        // Ex-Tag 24.06.2021 Art der Dividende Schlussdividende
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Ex\\-Tag (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
+                        // @formatter:off
                         // Ausmachender Betrag 84,05+ EUR
                         // @formatter:on
                         .section("amount", "currency") //
@@ -457,13 +464,14 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
                             if (type.getCurrentContext().containsKey(SKIP_TRANSACTION))
                             {
-                                // @formatter:off
+                                var skipped = new SkippedItem(item, type.getCurrentContext().get(SKIP_TRANSACTION));
+
                                 // If we have multiple entries in the document,
-                                // then the "skipTransaction" flag must be removed.
-                                // @formatter:on
+                                // then the SKIP_TRANSACTION flag must be
+                                // removed.
                                 type.getCurrentContext().remove(SKIP_TRANSACTION);
 
-                                return new SkippedItem(item, type.getCurrentContext().get(SKIP_TRANSACTION));
+                                return skipped;
                             }
 
                             return item;
