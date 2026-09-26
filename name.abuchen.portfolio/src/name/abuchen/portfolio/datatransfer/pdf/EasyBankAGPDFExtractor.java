@@ -25,6 +25,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
 
         addBankIdentifier("easybank Service Center");
         addBankIdentifier("Ihre easybank AG");
+        addBankIdentifier("BAWAG, Bereich Treasury Service");
 
         addBuySellTransaction();
         addDividendTransaction();
@@ -386,6 +387,13 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("date") //
                                                         .match("^Zu Lasten .* Valuta (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}).*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+
+                        // @formatter:off
+                        // Extag: 5.5.2022
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Extag: (?<exDate>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
 
                         .oneOf( //
                                         // @formatter:off
