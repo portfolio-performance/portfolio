@@ -1,0 +1,89 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.73.0
+System: linux | x86_64 | 21.0.5+2 | Flathub
+-----------------------------------------
+Kärntner Sparkasse Neuer Platz 14 T 0043/5 0100 Firmensitz: Klagenfurt am Wörthersee
+Aktiengesellschaft 9020 Klagenfurt am Wörthersee F 050100-930000 Landesgericht Klagenfurt
+www.kspk.at  UID: ATU25332002, FN 94938 s
+Seite 1/2   BIC: KSPKAT2KXXX
+WERTPAPIER WERTPAPIERDEPOT
+Kauf Marktplatz 03688-000490
+ 
+lautend auf MPfd.-jwT. LP. vRtnQa lhKaOL
+oAMItwqpJasK. 9s/1/11, 6252 sBUV
+Vermögens-Depot
+Herr 409/0034/34D/A
+ibdJ.-KRg. BW. lBLxpO NunTkP
+XHJDrhqZPxJu. 2t/9/04
+4423 QDLN
+WERTPAPIER
+Kauf Marktplatz
+Ihr Auftrag vom 11.04.2023, 13:43 Uhr Auftragsnummer 35082457
+AT0000828637 CORE DYNAMIC T
+MITEIGENTUMSANTEILE - THESAURIEREND
+Nominale/Stück Kurs  Kurswert
+ 
+Marktplatz: WP-LISTE KAG Ausführungszeit: 13:43:45 Schlusstag: 13.04.2023
+12,00 STK 172,99 EUR  2.075,88 EUR
+ Einmalige Kosten 72,66 EUR
+ 
+Zu Lasten 03781-004967 17.04.2023 2.148,54 EUR
+Verrechnungskonto Valuta Endbetrag gesamt
+Globale Sammelverwahrung
+KGSt - Anschaffungskurs berechnet
+Kosten im Detail
+Die angegebenen Kosten und Gebühren wurden anhand des Abrechnungskurses berechnet.
+Die %-Werte beziehen sich auf den errechneten Kurswert von 2.075,88 Euro.
+ 
+Aufgrund der Rundungsregeln sind geringfügige Abweichungen zwischen absoluten Beträgen und
+Prozentwerten möglich.
+ 
+Kärntner Sparkasse Neuer Platz 14 T 0043/5 0100 Firmensitz: Klagenfurt am Wörthersee
+Aktiengesellschaft 9020 Klagenfurt am Wörthersee F 050100-930000 Landesgericht Klagenfurt
+www.kspk.at  UID: ATU25332002, FN 94938 s
+Seite 2/2   BIC: KSPKAT2KXXX
+WERTPAPIER WERTPAPIERDEPOT
+Kauf Marktplatz 07796-000490
+ 
+CcBbKdr kSI LsQL.-YiB. wS. mGVDGV CnpCXj
+StNpHVHOEraj. 0S/8/34, 2336 ABxC
+Vermögens-Depot
+Ihr Auftrag vom 11.04.2023, 13:43 Uhr Auftragsnummer 15799671
+(1) Dienstleistungskosten
+ 
+Einmalig, bei Kauf
+   
+Eigene Kosten
+Transaktionsgebühr EUR 72,66  
+ 
+Summe der Dienstleistungskosten EUR 72,66 3,50 %
+ 
+Zuwendungen
+ 
+Unser Institut erhielt für diese Transaktion keine einmaligen Zuwendungen für dieses Wertpapier.
+ 
+(2) Produktkosten
+ 
+Es fielen für die Transaktion keine produktbezogenen Kosten der EmittentIn an.
+ 
+(3) Gesamtkosten
+ 
+Summe aller Kosten EUR 72,66 3,50 %
+ 
+ 
+Begriffserklärung
+ 
+(1) Dienstleistungskosten können beispielsweise bei Kauf, Verkauf oder Lagerung eines Wertpapiers anfallen.
+Der Begriff eigene Kosten umfasst alle Kosten, die bei Ihrer Bank anfallen, z. B. für die Ausführung der Order
+oder die Umrechnung von einer Fremdwährung in Euro.
+Mit fremden Kosten sind alle Kosten gemeint, die außerhalb Ihrer Bank anfallen, also z. B. Handelsgebühren an
+der Börse.
+Zuwendungen sind Zahlungen Dritter an Ihre Bank (wie z. B. Bestandsprovisionen). Die Sparkassen Gruppe
+verwendet diese für qualitätsverbessernde Maßnahmen im Wertpapierbereich.
+ 
+(2) Produktkosten sind die Kosten einer EmittentIn, die z. B. für die Entwicklung oder Vermarktung eines
+Wertpapieres bereits in den Kaufpreis eingerechnet wurden. Diese Kosten fallen beim Kauf oder Verkauf eines
+Wertpapieres nicht extra an, sind aber zur Transparenz am Kostenausweis angeführt.
+ 
+Klagenfurt am Wörthersee, am 13.04.2023
+Wir danken für Ihren Auftrag
