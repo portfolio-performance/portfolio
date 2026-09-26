@@ -1,0 +1,79 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.87.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Portfolio statement
+Geneva, 2026-09-01
+Alpian Bank
+Quai du Seujet 18
+1201 Geneva
+Switzerland
+www.alpian.com
+DWp camJr
+OUoPQnlkFxtV 79
+6713 THrgEZHh
+Managed Premium - August 2026
+Dear XRK camJr,
+Please  find  below  the  portfolio  statement  for  8946200544-1  from  2026-08-01  to  2026-08-31.  This
+summary  includes  your  portfolio  overview,  positions  and  all  transactions  for  the  period.
+Best regards,
+The Alpian Team
+Overview
+Portfolio value at start Portfolio value at end Difference
+49’936.74 51’266.84 1’330.10
+2026-09-01 6334287509-1 1 / 4
+Positions
+Name ISIN Currency Quantity Market Value Weight
+(CHF)
+UBS MSCI USA HCHF IE00BD4TYL27 CHF 228.00 12’120.48 23.64%
+iShares Core MSCI Europe ETF
+EUR Acc IE00B4K48X80 CHF 91.00 9’021.39 17.60%
+Vanguard FTSE Dev AsiaPacexJpn IE00BK5BQZ41 CHF 109.00 5’209.67 10.16%
+iShares MSCI Japan CHF Hedged IE00B8J37J31 CHF 33.00 4’594.26 8.96%
+UBS FS MSCI Swtzl LU0977261329 CHF 125.00 4’222.50 8.24%
+iShares MSCI EMU CHF Hedged IE00BWK1SP74 CHF 216.00 2’223.94 4.34%
+Xtrackers MSCI Emerging Markets
+ETF 1C IE00BTJRMP35 CHF 29.00 2’187.47 4.27%
+Xtrackers S&P 500 ETF 3C CHF H IE00B8KMSQ34 CHF 31.00 2’109.86 4.12%
+SPDR MSCI EM Asia IE00B466KX20 CHF 19.00 1’993.81 3.89%
+iShares JP Morgan $ EM Bond ETF IE00BGQ0J979 CHF 209.00 1’000.67 1.95%
+iShares Core CHF Corporate Bond CH0226976816 CHF 8.00 771.82 1.51%
+iShares $ Development Bank Bds IE00BKRWN659 CHF 155.00 686.18 1.34%
+Lyxor Green Bond (DR) ETF C CHF
+Mnh Hdg LU1563455713 CHF 85.00 664.50 1.30%
+Amundi S&P 500 VIX Futs EnhRoll
+ETF C EUR LU0832435464 CHF 1’090.00 643.38 1.25%
+CHF CHF 563.39 563.39 1.10%
+iShares USD Corp Bond IE00BK7Y2Q41 CHF 130.00 563.20 1.10%
+UBS(Lux)FS Blmbg TIPS 1-10 HCHF
+Aacc LU1459802168 CHF 42.00 489.70 0.96%
+21Shares Crypto Basket Index ETP CH0445689208 CHF 31.00 367.23 0.72%
+iShares Core EUR Corp Bond IE00BK6NC407 CHF 73.00 333.30 0.65%
+iShares Global Corp Bond IE00BK0TB144 CHF 72.00 331.14 0.65%
+iShares Swiss Dom Govt Bd 0-3
+ETF (CH) CH0102530786 CHF 5.00 309.99 0.60%
+iShares Swiss Dom Govt Bd 3-7
+ETF (CH) CH0016999846 CHF 4.00 293.48 0.57%
+2026-09-01 5791329610-1 2 / 4
+Name ISIN Currency Quantity Market Value Weight
+(CHF)
+Xtrackers Global Govt Bd LU0641006613 CHF 2.00 287.98 0.56%
+iShares Global HY Corp Bond IE00BKBF4J08 CHF 50.00 277.51 0.54%
+Transactions
+Type Booking date Value date Debit Credit
+Securities Purchase
+31 - 21Shares Crypto Basket Index-ETP 2026-08-04 2026-08-06 293.16 0.00
+Securities Sale
+5 - Xtrackers Glb Infl-Lnkd Bd 2026-08-04 2026-08-06 0.00 433.95
+Securities Purchase
+5 - iShares Core CHF Corporate-Bond 2026-08-04 2026-08-06 483.68 0.00
+Securities Sale
+88 - iShares USD Corp Bond 2026-08-04 2026-08-06 0.00 381.74
+Securities Sale
+12 - Xtrackers MSCI Emerging-Markets 2026-08-27 2026-08-31 0.00 909.43
+Securities Purchase
+18 - Vanguard FTSE Dev-AsiaPacexJpn 2026-08-27 2026-09-01 853.88 0.00
+2026-09-01 6691478976-1 3 / 4
+Disclaimers
+This statement shall be considered to be approved if no complaint is received by Alpian SA within 30 days.
+2026-09-01 3983183321-1 4 / 4

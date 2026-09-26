@@ -1,0 +1,38 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.79.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Alpian SA
+Chemin des Crêts 17
+Petit-Saconnex - 1209 Geneva
+Switzerland
+www.alpian.com
+Geneva, 12 December 2023
+Ejp
+VcSER
+EzHaMWYOdTrS
+sYPJVubc
+6568
+CH
+Contract Note Buy - SCTRSC23346K8NG6
+Dear sKk VcSER,
+This is to inform you that based on your buy order of 12.12.2023, we have carried out the following transaction:
+Security name: iShares Core MSCI Europe E
+ISIN: IE00B4K48X80
+Currency: EUR
+TRANSACTION DETAILS
+Trade date: 12.12.2023
+Value date: 14.12.2023
+Quantity: 1
+Unit gross price: EUR 71.370000000
+Stamp tax duty: EUR 0.11
+Total net amount paid: EUR 71.48
+Total net amount debited: CHF 67.82
+Place of execution: IBIS2
+Time of execution: 2023-12-12-10:19:19
+We remain at your disposal for any additional information.
+Kind regards,
+Alpian SA
+Advice without signature
+Disclaimer: This contract note shall be considered to be approved if no complaint is received by Alpian SA within 30 days.
+12.12.2023 11:28:07.502 Page 1 of 1
