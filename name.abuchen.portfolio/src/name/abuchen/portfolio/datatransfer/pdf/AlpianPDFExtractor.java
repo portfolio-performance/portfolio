@@ -67,6 +67,7 @@ public class AlpianPDFExtractor extends AbstractPDFExtractor
         super(client);
 
         addBankIdentifier("Alpian SA");
+        addBankIdentifier("Alpian Bank");
 
         addBuySellTransaction();
         addDividendTransaction();
