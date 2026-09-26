@@ -3371,6 +3371,77 @@ public class EasyBankAGPDFExtractorTest
     }
 
     @Test
+    public void testDividende25()
+    {
+        var extractor = new EasyBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende25.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US02079K3059"), hasWkn(null), hasTicker(null), //
+                        hasName("Alphabet Inc. Reg. Shs Cap.Stk Cl. A DL-,001"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-03-18T00:00"), hasExDate("2026-03-09T00:00"), //
+                        hasShares(700.00), //
+                        hasSource("Dividende25.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 92.00), hasGrossValue("EUR", 127.34), //
+                        hasForexGrossValue("USD", 147.00), //
+                        hasTaxes("EUR", (15.92 + 19.10)), hasFees("EUR", 0.32))));
+    }
+
+    @Test
+    public void testDividende25WithSecurityInEUR()
+    {
+        var security = new Security("Alphabet Inc. Reg. Shs Cap.Stk Cl. A DL-,001", "EUR");
+        security.setIsin("US02079K3059");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new EasyBankAGPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende25.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-03-18T00:00"), hasExDate("2026-03-09T00:00"), //
+                        hasShares(700.00), //
+                        hasSource("Dividende25.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 92.00), hasGrossValue("EUR", 127.34), //
+                        hasTaxes("EUR", (15.92 + 19.10)), hasFees("EUR", 0.32))));
+    }
+
+    @Test
     public void testDividendeStorno01()
     {
         var extractor = new EasyBankAGPDFExtractor(new Client());

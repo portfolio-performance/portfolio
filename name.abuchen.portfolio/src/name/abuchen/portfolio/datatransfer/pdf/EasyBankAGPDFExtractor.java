@@ -25,6 +25,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
 
         addBankIdentifier("easybank Service Center");
         addBankIdentifier("Ihre easybank AG");
+        addBankIdentifier("BAWAG, Bereich Treasury Service");
 
         addBuySellTransaction();
         addDividendTransaction();
