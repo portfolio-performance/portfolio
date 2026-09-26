@@ -39,6 +39,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("Sparkasse Bank AG");
         addBankIdentifier("www.sparkasse.at");
         addBankIdentifier("www.erstebank.at");
+        addBankIdentifier("www.kspk.at");
 
         addBuySellTransaction_DocFormat01();
         addBuySellTransaction_DocFormat02();
@@ -772,7 +773,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^([\\s]+ )?(Aussch.ttung|Quartalsdividende|Dividende|Kapitalr.ckzahlung)( [\\s]+)?$");
+        Block firstRelevantLine = new Block("^([\\s]+)?(Aussch.ttung|Quartalsdividende|Dividende|Kapitalr.ckzahlung)([\\s]+)?$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -824,13 +825,24 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .match("^Menge\\/W.hrung:[\\s]{1,}(?<shares>[\\.,\\d]+) STK.*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        // @formatter:off
-                        // Wir haben oben genannten Betrag auf Ihrem Konto 123-123-123/12 mit Valuta 16.06.2016
-                        // Wir haben oben genannten Betrag auf Ihrem Konto 0000-XXXXXXX mit Valuta 01.08.2022 gutgeschrieben.
-                        // @formatter:on
-                        .section("date") //
-                        .match("^.* mit Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Wir haben oben genannten Betrag auf Ihrem Konto 123-123-123/12 mit Valuta 16.06.2016
+                                        // Wir haben oben genannten Betrag auf Ihrem Konto 0000-XXXXXXX mit Valuta 01.08.2022 gutgeschrieben.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^.* mit Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // If there is no value date (e.g. credit of 0,00), we use the date of the document.
+                                        //
+                                        // Klagenfurt am Wörthersee, am 15.07.2021
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^.*, am (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})([\\s]+)?$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
                         // @formatter:off
                         // Extag                         15.06.2016
@@ -840,37 +852,79 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .match("^Extag(:)?[\\s]{1,}(?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
 
-                        // @formatter:off
-                        //                                                       Beträge in FW        Beträge in EUR
-                        // Gutschrift                                                                          52,19
-                        //
-                        //  Beträge in EUR
-                        // Gutschrift 52,53
-                        // @formatter:on
-                        .section("currency", "amount") //
-                        .match("^.* Betr.ge in (?<currency>[\\w]{3}).*$") //
-                        .match("^Gutschrift[\\s]{1,}(?<amount>[\\.,\\d]+).*$") //
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        //                                                       Beträge in FW        Beträge in EUR
+                                        // Gutschrift                                                                          52,19
+                                        //
+                                        //  Beträge in EUR
+                                        // Gutschrift 52,53
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^.* Betr.ge in (?<currency>[\\w]{3}).*$") //
+                                                        .match("^Gutschrift[\\s]{1,}(?<amount>[\\.,\\d]+).*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        //  Beträge in EUR
+                                        // Lastschrift -16,38
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^.* Betr.ge in (?<currency>[\\w]{3}).*$") //
+                                                        .match("^Lastschrift[\\s]{1,}(\\-)?(?<amount>[\\.,\\d]+).*$") //
+                                                        .assign((t, v) -> {
+                                                            // If the taxes exceed the gross amount, the account
+                                                            // is debited, then it is taxes.
+                                                            t.setType(AccountTransaction.Type.TAXES);
+                                                            type.getCurrentContext().putBoolean("noTax", true);
 
-                        // @formatter:off
-                        // Brutto USD                                                     0,70                  0,63
-                        // Devisenkurs USD/EUR vom 16.03.2016 1,1129
-                        // @formatter:on
-                        .section("fxGross", "gross", "termCurrency", "baseCurrency", "exchangeRate").optional() //
-                        .match("^Brutto [\\w]{3}[\\s]{1,}(?<fxGross>[\\.,\\d]+)[\\s]{1,}(?<gross>[\\.,\\d]+).*$") //
-                        .match("^Devisenkurs (?<termCurrency>[\\w]{3})\\/(?<baseCurrency>[\\w]{3}) .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<exchangeRate>[\\.,\\d]+).*$") //
-                        .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
-                            type.getCurrentContext().putType(rate);
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }))
 
-                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
-                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Brutto USD                                                     0,70                  0,63
+                                        // Devisenkurs USD/EUR vom 16.03.2016 1,1129
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("fxGross", "gross", "termCurrency", "baseCurrency", "exchangeRate") //
+                                                        .match("^Brutto [\\w]{3}[\\s]{1,}(?<fxGross>[\\.,\\d]+)[\\s]{1,}(?<gross>[\\.,\\d]+).*$") //
+                                                        .match("^Devisenkurs (?<termCurrency>[\\w]{3})\\/(?<baseCurrency>[\\w]{3}) .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .assign((t, v) -> {
+                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
 
-                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                        })
+                                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }),
+                                        // @formatter:off
+                                        // Brutto USD 140,00 130,69
+                                        // Devisenkurs Kunde USD / EUR vom 17.06.2024 1,0766
+                                        // Mitte   1,0712
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("fxGross", "gross", "termCurrency", "baseCurrency", "exchangeRate") //
+                                                        .match("^Brutto [\\w]{3}[\\s]{1,}(?<fxGross>[\\.,\\d]+)[\\s]{1,}(?<gross>[\\.,\\d]+).*$") //
+                                                        .match("^Devisenkurs Kunde (?<termCurrency>[\\w]{3}) \\/ (?<baseCurrency>[\\w]{3}) .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+.*$") //
+                                                        .match("^Mitte[\\s]{1,}(?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .assign((t, v) -> {
+                                                            // The amounts in EUR are calculated with the middle rate,
+                                                            // the difference to the customer rate is shown as fee.
+                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }))
 
                         // @formatter:off
                         //  Ausschüttung
@@ -880,7 +934,13 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .match("^.* (?<note>(Aussch.ttung|Quartalsdividende)).*$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                        .wrap(TransactionItem::new);
+                        .wrap(t -> {
+                            // If we have multiple entries in the document, then
+                            // the "noTax" flag must be removed.
+                            type.getCurrentContext().remove("noTax");
+
+                            return new TransactionItem(t);
+                        });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -1019,7 +1079,10 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("currency", "tax").optional() //
                         .match("^.* Fremde Steuer : (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$") //
-                        .assign((t, v) -> processTaxEntries(t, v, type))
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
 
                         // @formatter:off
                         // Steuer : KESt1
@@ -1031,7 +1094,10 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "tax").multipleTimes().optional() //
                         .match("^Steuer : KESt[\\d]$") //
                         .match("^Steuern : (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$") //
-                        .assign((t, v) -> processTaxEntries(t, v, type))
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
 
                         // @formatter:off
                         //    KESt auf Kursgewinne                    67,42- EUR
@@ -1039,7 +1105,10 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("tax", "currency").optional() //
                         .match("^.* KESt auf Kursgewinne[\\s]{1,}(\\-)?(?<tax>[\\.,\\d]+)(\\-)? (?<currency>[\\w]{3}).*$") //
-                        .assign((t, v) -> processTaxEntries(t, v, type))
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
 
                         // @formatter:off
                         // Dividende : EUR 5,750000 KESt : EUR 20,13
@@ -1050,7 +1119,10 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("currency", "tax").multipleTimes().optional() //
                         .match("^.*KESt( [A-Z]{1,3})? : (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$") //
-                        .assign((t, v) -> processTaxEntries(t, v, type))
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
 
                         // @formatter:off
                         // KESt I pro Stück 0,0776  EUR                                                        -4,81
@@ -1060,7 +1132,10 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("currency", "tax").multipleTimes().optional() //
                         .match("^KESt [A-Z]{1,3} pro St.ck [\\.,\\d]+ .*(?<currency>[\\w]{3}) .*\\-(?<tax>[\\.,\\d]+).*$") //
-                        .assign((t, v) -> processTaxEntries(t, v, type))
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
 
                         // @formatter:off
                         // KESt I 12,5 %                                                                      -54,75
@@ -1072,7 +1147,10 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "tax").multipleTimes().optional() //
                         .match("^.* Betr.ge in (?<currency>[\\w]{3}).*$") //
                         .match("^KESt [A-Z]{1,3} [\\.,\\d]+ % .*\\-(?<tax>[\\.,\\d]+).*$") //
-                        .assign((t, v) -> processTaxEntries(t, v, type))
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
 
                         // @formatter:off
                         //  Beträge in EUR
@@ -1081,7 +1159,10 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "tax").multipleTimes().optional() //
                         .match("^.* Betr.ge in (?<currency>[\\w]{3}).*$") //
                         .match("^KESt [A-Z]{1,3} pro St.ck [\\.,\\d]+ % .*\\-(?<tax>[\\.,\\d]+).*$") //
-                        .assign((t, v) -> processTaxEntries(t, v, type))
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
 
                         // @formatter:off
                         // Steuer : Quellensteuer
@@ -1090,7 +1171,10 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "withHoldingTax").optional() //
                         .match("^Steuer : Quellensteuer$") //
                         .match("^Steuern : (?<currency>[\\w]{3}) (?<withHoldingTax>[\\.,\\d]+)$") //
-                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noTax"))
+                                processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
+                        })
 
                         // @formatter:off
                         //  Beträge in EUR
@@ -1100,7 +1184,10 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .section("withHoldingTax").optional() //
                         .match("^.* Betr.ge in (?<currency>[\\w]{3}).*$") //
                         .match("^QESt [\\.,\\d]+ % .*\\-(?<withHoldingTax>[\\.,\\d]+).*$") //
-                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type));
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noTax"))
+                                processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
+                        });
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
