@@ -16,6 +16,7 @@ public class N26BankAGPDFExtractor extends AbstractPDFExtractor
 
         addBankIdentifier("N26 Bank AG");
         addBankIdentifier("N26 Bank SE");
+        addBankIdentifier("NTSBDEB1XXX");
 
         addAccountStatementDepositRemovalTransaction();
         addAccountStatementInterestTransaction();
@@ -29,7 +30,7 @@ public class N26BankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementDepositRemovalTransaction()
     {
-        final var type = new DocumentType("Kontoauszug");
+        final var type = new DocumentType("(Kontoauszug|Kontoaktivit.t)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -45,6 +46,7 @@ public class N26BankAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Max Mustermann 19.06.2024 +5.000,00€
                         // An Hauptkonto 02.07.2024 -100,00€
+                        // ZEwXCk bZcrf dE erY fRJEH 18.04.2026 -7,00€
                         // @formatter:on
                         .section("date", "type", "amount", "currency") //
                         .match("^(?!(Zinsertrag|Abgeltungssteuer|Solidarit.tszuschlag)).* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<type>[\\-|\\+])(?<amount>[\\.,\\d]+)(?<currency>\\p{Sc})$") //
