@@ -119,4 +119,38 @@ public class UpvestPDFExtractorTest
                         hasTaxes("EUR", 0.01 + 0.00 + 0.00), //
                         hasFees("EUR", 0.00))));
     }
+
+    @Test
+    public void testVerkauf02()
+    {
+        var extractor = new UpvestPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US92343V1044"), hasWkn(null), hasTicker(null), //
+                        hasName("VERIZON COMM. INC. DL-,10"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-05-07T09:02:34"), hasShares(30.00), //
+                        hasSource("Verkauf02.txt"), //
+                        hasNote("Abr.-Nr.: 210fba8e-917f-401e-918f-b3dda7887a2e"), //
+                        hasAmount("EUR", 1205.11), hasGrossValue("EUR", 1209.15), //
+                        hasTaxes("EUR", 3.83 + 0.21 + 0.00), hasFees("EUR", 0.00))));
+    }
 }
