@@ -27,6 +27,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.skippedItem;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
@@ -2874,6 +2875,105 @@ public class RaiffeisenbankgruppePDFExtractorTest
 
         assertThat(results, hasItem(interestCharge(hasDate("2024-04-30"), hasAmount("EUR", 0.11), //
                         hasSource("Kontoauszug08.txt"), hasNote(null))));
+    }
+
+    @Test
+    public void testKontoauszug09()
+    {
+        var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(13L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(13));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2017-05-02"), hasAmount("EUR", 50.00), //
+                        hasSource("Kontoauszug09.txt"), hasNote("Dauerauftrag"))));
+
+        assertThat(results, hasItem(removal(hasDate("2017-05-03"), hasAmount("EUR", 3.49), //
+                        hasSource("Kontoauszug09.txt"), hasNote("Basislastschrift"))));
+
+        assertThat(results, hasItem(removal(hasDate("2017-05-10"), hasAmount("EUR", 5.99), //
+                        hasSource("Kontoauszug09.txt"), hasNote("Basislastschrift"))));
+
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2017-05-16"), //
+                        hasSource("Kontoauszug09.txt"), //
+                        hasNote("Steuerausgleich"), //
+                        hasAmount("EUR", 0.27), hasGrossValue("EUR", 0.27), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2017-05-16"), //
+                        hasSource("Kontoauszug09.txt"), //
+                        hasNote("Steuerausgleich"), //
+                        hasAmount("EUR", 0.44), hasGrossValue("EUR", 0.44), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2017-05-16"), //
+                        hasSource("Kontoauszug09.txt"), //
+                        hasNote("Steuerausgleich"), //
+                        hasAmount("EUR", 4.93), hasGrossValue("EUR", 4.93), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(removal(hasDate("2017-05-16"), hasAmount("EUR", 5.00), //
+                        hasSource("Kontoauszug09.txt"), hasNote("Basislastschrift"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2017-05-23"), hasAmount("EUR", 500.00), //
+                        hasSource("Kontoauszug09.txt"), hasNote("Überweisungsgutschrift"))));
+
+        assertThat(results, hasItem(removal(hasDate("2017-05-26"), hasAmount("EUR", 100.00), //
+                        hasSource("Kontoauszug09.txt"), hasNote("Auszahlung"))));
+
+        assertThat(results, hasItem(removal(hasDate("2017-05-29"), hasAmount("EUR", 5.00), //
+                        hasSource("Kontoauszug09.txt"), hasNote("Basislastschrift"))));
+
+        assertThat(results, hasItem(removal(hasDate("2017-05-29"), hasAmount("EUR", 8.99), //
+                        hasSource("Kontoauszug09.txt"), hasNote("Basislastschrift"))));
+
+        assertThat(results, hasItem(removal(hasDate("2017-05-29"), hasAmount("EUR", 37.74), //
+                        hasSource("Kontoauszug09.txt"), hasNote("Basislastschrift"))));
+
+        assertThat(results, hasItem(removal(hasDate("2017-05-30"), hasAmount("EUR", 13.58), //
+                        hasSource("Kontoauszug09.txt"), hasNote("Basislastschrift"))));
+    }
+
+    @Test
+    public void testKontoauszug10()
+    {
+        var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2017-05-22"), hasAmount("EUR", 36072.06), //
+                        hasSource("Kontoauszug10.txt"), hasNote("Überweisungsgutschrift"))));
+
+        assertThat(results, hasItem(removal(hasDate("2017-05-23"), hasAmount("EUR", 500.00), //
+                        hasSource("Kontoauszug10.txt"), hasNote("SEPA-Überweisung"))));
     }
 
     @Test

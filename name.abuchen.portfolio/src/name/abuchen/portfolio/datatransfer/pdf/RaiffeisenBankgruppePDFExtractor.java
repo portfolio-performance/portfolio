@@ -544,6 +544,22 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         // @formatter:off
+                        // Zu Gunsten IBAN AT28 3840 2000 0006 8643 12,34 EUR
+                        // Belastung KESt bei ausschüttungsgleichen Erträgen ausländischer Investmentfonds
+                        // @formatter:on
+                        .section().optional() //
+                        .match("^Zu Gunsten IBAN .*$") //
+                        .match("^Belastung KESt bei aussch.ttungsgleichen Ertr.gen .*$") //
+                        .assign((t, v) -> {
+                            // A tax charge on accumulated income can only be
+                            // a debit, so a credit is treated as cancellation
+                            t.setType(AccountTransaction.Type.TAXES);
+                            t.setExDate(null);
+
+                            v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported);
+                        })
+
+                        // @formatter:off
                         // Belastung KESt bei ausschüttungsgleichen Erträgen ausländischer Investmentfonds
                         // @formatter:on
                         .section().optional() //
@@ -799,7 +815,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransactions()
     {
-        final var type = new DocumentType("(Kontokorrent|Privatkonto|Tagesgeld Plus)", //
+        final var type = new DocumentType("(Kontokorrent|Privatkonto|Tagesgeld Plus|Ausbildungskonto|VR\\-Flex\\-Konto)", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // EUR-Konto Kontonummer 12364567
@@ -835,6 +851,8 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                         // 30.08. 30.08. LOHN/GEHALT PN:931                                                          1.200,00 H
                         // 27.08. 27.08. Auszahlung girocard PN:931                                           20,00 S
                         // 08.06. 08.06. Überweisung SEPA                                                      4,00 S
+                        // 23.05. 23.05. Überweisungsgutschr. PN:932                                                   500,00 H
+                        // 23.05. 23.05. SEPA-Überweisung PN:932                                             500,00 S
                         // @formatter:on
                         .section("day", "month", "note", "amount", "type").optional() //
                         .documentContext("currency", "nr", "year") //
@@ -848,6 +866,8 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                         + "|Auszahlung" //
                                         + "|LOHN\\/GEHALT" //
                                         + "|.berweisung SEPA" //
+                                        + "|.berweisungsgutschr\\." //
+                                        + "|SEPA\\-.berweisung" //
                                         + "|UEBERWEISUNG" //
                                         + "|RETOUREN" //
                                         + "|UEBERTRAG) " //
@@ -893,6 +913,9 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                             if ("UEBERTRAG".equals(v.get("note")))
                                 v.put("note", "Übertrag");
 
+                            if (v.get("note").matches("(?i).berweisungsgutschr\\."))
+                                v.put("note", "Überweisungsgutschrift");
+
                             t.setNote(v.get("note"));
                         })
 
@@ -935,6 +958,33 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                 return new TransactionItem(t);
                             return null;
                         }));
+
+        var taxRefundBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. Steuererstattung .* H$");
+        taxRefundBlock.setMaxSize(2);
+        type.addBlock(taxRefundBlock);
+        taxRefundBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
+
+                        // @formatter:off
+                        // 16.05. 16.05. Steuererstattung durch PN:967                                                   0,27 H
+                        //               Steuerausgleich            Kundennummer    1234567
+                        // @formatter:on
+                        .section("day", "month", "amount") //
+                        .documentContext("currency", "nr", "year") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2})\\.(?<month>[\\d]{2})\\. Steuererstattung .* (?<amount>[\\.,\\d]+) H$") //
+                        .assign((t, v) -> {
+                            dateTranactionHelper(t, v);
+
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .section("note").optional() //
+                        .match("^[\\s]+(?<note>Steuerausgleich) .*$") //
+                        .assign((t, v) -> t.setNote(v.get("note")))
+
+                        .wrap(TransactionItem::new));
 
         var interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. Abschluss.* [S|H]$");
         type.addBlock(interestBlock);
@@ -1178,7 +1228,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
         transaction //
 
                         .section("n").optional() //
-                        .match("^Zu (?<n>Lasten) .* \\-[\\.,\\d]+ [A-Z]{3}.*$") //
+                        .match("^Zu (?<n>Lasten|Gunsten) .* (\\-)?[\\.,\\d]+ [A-Z]{3}.*$") //
                         .match("^Belastung KESt bei aussch.ttungsgleichen Ertr.gen .*$") //
                         .assign((t, v) -> type.getCurrentContext().putBoolean("noTax", true));
 
