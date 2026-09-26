@@ -1,0 +1,77 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.83.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Securities settlement 
+Sell order 
+Statement number 
+Max Mustermann 210fba8e-917f-401e-918f-b3dda7887a2e 
+Mustermann Str. 24 
+80125 Berlin 
+Germany Securities account 
+Securities account holder 
+number - account 
+Max Mustermann 
+689234444-1 
+We have sold for you Berlin, 07.05.2026 
+Security ISIN 
+VERIZON COMM. INC. DL-,10 US92343V1044 
+Nominal value / Quantity Price Market value 
+30.00000 unit(s) 40.31 EUR 1,209.15 EUR 
+Trade 
+Trading date, time: 07.05.2026 09:02:34 
+Trading venue: Tradegate 
+Order type: Market order 
+Tax calculation 
+Realised gain: 15.30 EUR 
+Partial exemption for investment funds (0%): 0.00 EUR 
+Taxable gross amount: 15.30 EUR 
+Settlement 
+Market value: 1,209.15 EUR 
+Capital gains tax: 3.83 EUR 
+Solidarity surcharge: 0.21 EUR 
+Church tax: 0.00 EUR 
+Value date Amount credited 
+11.05.2026 1,205.11 EUR 
+Within the scope of this transaction: 
+1. 0.00 EUR of the available loss offset balance - general was used. The remaining amount is therefore 0.00 EUR. 
+2. 0.00 EUR of the available saver lump sum allowance was used. The remaining amount is therefore 0.00 EUR. 
+Document ID: 553ee504-d31b-46df-af6d-c5d6668eede9
+Upvest Securities GmbH, Prenzlauer Allee 242-247, 10405 Berlin; Managing Directors: Martin Kassing, Tobias Auferoth; Company's Head Office: Berlin; Charlottenburg
+District Court: HRB 232445 B, VAT-ID: DE346524922; Supervisory Authority: Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin) [German Federal Financial
+Supervisory Authority].
+Wertpapierabrechnung 
+Verkauf 
+Abrechnungsnummer 
+Max Mustermann 210fba8e-917f-401e-918f-b3dda7887a2e 
+Mustermann Str. 24 
+70327 Berlin 
+Deutschland Depotinhaber Depotnummer - Konto 
+Max Mustermann 689234444-1 
+Wir haben für Sie verkauft Berlin, 07.05.2026 
+Wertpapier ISIN 
+VERIZON COMM. INC. DL-,10 US92343V1044 
+Nominal/Anzahl Kurs Kurswert 
+30,00000 Stück 40,31 EUR 1.209,15 EUR 
+Handel 
+Handelsdatum, Uhrzeit: 07.05.2026 09:02:34 
+Handelsplatz: Tradegate 
+Ordertyp: Market Order 
+Steuererrechnung 
+Realisierter Gewinn: 15,30 EUR 
+Teilfreistellung Investmentfonds (0%): 0,00 EUR 
+Steuerlicher Bruttoertrag: 15,30 EUR 
+Abrechnung 
+Kurswert: 1.209,15 EUR 
+Kapitalertragssteuer: 3,83 EUR 
+Solidaritätszuschlag: 0,21 EUR 
+Kirchensteuer: 0,00 EUR 
+Valuta Betrag zu Ihren Gunsten 
+11.05.2026 1.205,11 EUR 
+Im Rahmen dieses Geschäfts wurden: 
+1. 0,00 EUR des vorhandenen Verlustverrechnungstopf - Allgemein verbraucht. Der verbleibende Betrag beläuft sich damit 
+auf 0,00 EUR. 
+2. 0,00 EUR des vorhandenen Sparer-Pauschbetrags verbraucht. Der verbleibende Betrag beläuft sich damit auf 0,00 EUR. 
+Dokument ID: 553ee504-d31b-46df-af6d-c5d6668eede9
+Upvest Securities GmbH, Prenzlauer Allee 242-247, 10405 Berlin, Geschäftsführer: Martin Kassing, Tobias Auferoth, Sitz der Gesellschaft: Berlin; Amtsgericht
+Charlottenburg: HRB 232445 B, USt-ID: DE346524922 Aufsichtsbehörde: Bundesanstalt für Finanzdienstleistungsaufsicht, BaFin
