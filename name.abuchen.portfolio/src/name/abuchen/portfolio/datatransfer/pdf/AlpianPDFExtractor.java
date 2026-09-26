@@ -556,15 +556,16 @@ public class AlpianPDFExtractor extends AbstractPDFExtractor
     }
 
     /**
-     * The dates of the account statement have no year (15 May). The year is
-     * taken from the statement period. If the period spans a year end (e.g.
-     * 01.12.2023 - 31.01.2024), the date is built with the start year and the
-     * end year and the one closer to the period is used. This also covers
-     * value dates shortly before the start of the period.
+     * The dates of the account statement have no year (15 May). The date is
+     * built with every year from the start year - 1 to the end year + 1 of the
+     * statement period, and the candidate closest to the period is used. This
+     * covers periods spanning a year end as well as value dates shortly before
+     * or after the period.
      *
      * @formatter:off
-     * 15 Jan --> 15.01.2023 (11 months before) or 15.01.2024 (within) --> 15.01.2024
-     * 30 Nov --> 30.11.2023 (1 day before) or 30.11.2024 (10 months after) --> 30.11.2023
+     * 01.12.2023 - 31.01.2024: 15 Jan --> 15.01.2024 | 30 Nov --> 30.11.2023
+     * 01.01.2024 - 31.01.2024: 31 Dec --> 31.12.2023 (1 day before)
+     * 01.12.2023 - 31.12.2023: 02 Jan --> 02.01.2024 (2 days after)
      * @formatter:on
      */
     private LocalDateTime asDateWithinPeriod(Map<String, String> v)
@@ -572,17 +573,22 @@ public class AlpianPDFExtractor extends AbstractPDFExtractor
         var periodStart = asDate(v.get("periodStart"));
         var periodEnd = asDate(v.get("periodEnd"));
 
-        var dateInStartYear = asDate(v.get("date") + " " + periodStart.getYear());
+        LocalDateTime bestDate = null;
+        var bestDistance = Long.MAX_VALUE;
 
-        if (periodStart.getYear() == periodEnd.getYear())
-            return dateInStartYear;
+        for (var year = periodStart.getYear() - 1; year <= periodEnd.getYear() + 1; year++)
+        {
+            var candidate = asDate(v.get("date") + " " + year);
+            var distance = distanceToPeriod(candidate, periodStart, periodEnd);
 
-        var dateInEndYear = asDate(v.get("date") + " " + periodEnd.getYear());
+            if (distance < bestDistance)
+            {
+                bestDate = candidate;
+                bestDistance = distance;
+            }
+        }
 
-        if (distanceToPeriod(dateInEndYear, periodStart, periodEnd) < distanceToPeriod(dateInStartYear, periodStart, periodEnd))
-            return dateInEndYear;
-
-        return dateInStartYear;
+        return bestDate;
     }
 
     private static long distanceToPeriod(LocalDateTime date, LocalDateTime periodStart, LocalDateTime periodEnd)
