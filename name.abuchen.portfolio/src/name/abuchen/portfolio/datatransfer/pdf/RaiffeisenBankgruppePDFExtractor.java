@@ -262,7 +262,16 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        final var type = new DocumentType("(Ertrag|Dividendengutschrift|Kapitaltransaktion|Ertragsgutschrift nach .*)");
+        final var type = new DocumentType("(Ertrag|Dividendengutschrift|Kapitaltransaktion|Ertragsgutschrift nach .*)", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // Abrechnung Ereignis a
+                                        // 84111000 - 13.01.2026 a
+                                        // @formatter:on
+                                        .section("referenceNumber").optional() //
+                                        .find("Abrechnung Ereignis.*") //
+                                        .match("^(?<referenceNumber>[\\d]+) \\- [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*$") //
+                                        .assign((ctx, v) -> ctx.put("referenceNumber", v.get("referenceNumber"))));
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -438,6 +447,10 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                                             // @formatter:on
                                                             t.setType(AccountTransaction.Type.TAXES);
 
+                                                            // A tax charge on accumulated income
+                                                            // (ausschüttungsgleicher Ertrag) has no ex-date
+                                                            t.setExDate(null);
+
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
@@ -489,6 +502,23 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                                             var gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }),
+                                        // @formatter:off
+                                        // -632,29 USD
+                                        // Devisenkurs: 1,1705 (09.01.2026)  -540,18 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("fxGross", "termCurrency", "exchangeRate", "gross", "baseCurrency") //
+                                                        .match("^\\-(?<fxGross>[\\.,\\d]+) (?<termCurrency>[A-Z]{3})[\\s]*$") //
+                                                        .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}\\)[\\s]+\\-(?<gross>[\\.,\\d]+) (?<baseCurrency>[A-Z]{3}).*$") //
+                                                        .assign((t, v) -> {
+                                                            var rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }))
 
                         .optionalOneOf( //
@@ -512,6 +542,19 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                         .section("note").optional() //
                         .match("^.* Art der Dividende (?<note>.*)$") //
                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
+
+                        // @formatter:off
+                        // Belastung KESt bei ausschüttungsgleichen Erträgen ausländischer Investmentfonds
+                        // @formatter:on
+                        .section().optional() //
+                        .documentContextOptionally("referenceNumber") //
+                        .match("^Belastung KESt bei aussch.ttungsgleichen Ertr.gen .*$") //
+                        .assign((t, v) -> {
+                            if (v.get("referenceNumber") != null)
+                                t.setNote(concatenate(t.getNote(), "Ref.-Nr.: " + v.get("referenceNumber"), " | "));
+
+                            t.setNote(concatenate(t.getNote(), "Ausschüttungsgleicher Ertrag", " | "));
+                        })
 
                         .wrap((t, ctx) -> {
                             // @formatter:off
