@@ -4,20 +4,25 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSecurity;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
@@ -36,6 +41,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
@@ -3064,5 +3070,514 @@ public class DZBankGruppePDFExtractorTest
                         hasNote(null), //
                         hasAmount("EUR", 200.00), hasGrossValue("EUR", 200.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testUmsatzuebersicht14()
+    {
+        var extractor = new DZBankGruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umsatzuebersicht14.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000A1C81G1"), hasWkn(null), hasTicker(null), //
+                        hasName("UniGlobal Vorsorge"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-11-07T00:00"), hasShares(0.085), //
+                        hasSource("Umsatzuebersicht14.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 25.00), hasGrossValue("EUR", 23.81), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.19))));
+    }
+
+    @Test
+    public void testUmsatzuebersicht15()
+    {
+        var extractor = new DZBankGruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umsatzuebersicht15.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000A1C81G1"), hasWkn(null), hasTicker(null), //
+                        hasName("UniGlobal Vorsorge"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-05-16T00:00"), hasShares(0.087), //
+                        hasSource("Umsatzuebersicht15.txt"), //
+                        hasNote("Kauf aus Zulage"), //
+                        hasAmount("EUR", 26.79), hasGrossValue("EUR", 25.51), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.28))));
+    }
+
+    @Test
+    public void testUmsatzuebersicht16()
+    {
+        var extractor = new DZBankGruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umsatzuebersicht16.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(22L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(24));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0008491051"), hasWkn(null), hasTicker(null), //
+                        hasName("UniGlobal"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-01-20T00:00"), hasShares(0.457), //
+                        hasSource("Umsatzuebersicht16.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 162.00), hasGrossValue("EUR", 157.66), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 4.34))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-01-31T00:00"), hasShares(0.075), //
+                        hasSource("Umsatzuebersicht16.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 26.59), hasGrossValue("EUR", 25.88), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.71))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-02-21T00:00"), hasShares(0.472), //
+                        hasSource("Umsatzuebersicht16.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 162.00), hasGrossValue("EUR", 157.66), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 4.34))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-02-28T00:00"), hasShares(0.077), //
+                        hasSource("Umsatzuebersicht16.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 26.59), hasGrossValue("EUR", 25.88), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.71))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-03-21T00:00"), hasShares(0.455), //
+                        hasSource("Umsatzuebersicht16.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 162.00), hasGrossValue("EUR", 157.66), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 4.34))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-03-31T00:00"), hasShares(0.074), //
+                        hasSource("Umsatzuebersicht16.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 26.59), hasGrossValue("EUR", 25.88), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.71))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-04-20T00:00"), hasShares(0.457), //
+                        hasSource("Umsatzuebersicht16.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 162.00), hasGrossValue("EUR", 157.66), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 4.34))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-04-29T00:00"), hasShares(0.078), //
+                        hasSource("Umsatzuebersicht16.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 26.59), hasGrossValue("EUR", 25.88), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.71))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-05-16T00:00"), hasShares(0.522), //
+                        hasSource("Umsatzuebersicht16.txt"), //
+                        hasNote("Kauf aus Zulage"), //
+                        hasAmount("EUR", 175.00), hasGrossValue("EUR", 170.32), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 4.68))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-05-20T00:00"), hasShares(0.499), //
+                        hasSource("Umsatzuebersicht16.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 162.00), hasGrossValue("EUR", 157.66), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 4.34))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-05-31T00:00"), hasShares(0.079), //
+                        hasSource("Umsatzuebersicht16.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 26.59), hasGrossValue("EUR", 25.88), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.71))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-06-20T00:00"), hasShares(0.528), //
+                        hasSource("Umsatzuebersicht16.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 162.00), hasGrossValue("EUR", 157.66), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 4.34))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-06-30T00:00"), hasShares(0.085), //
+                        hasSource("Umsatzuebersicht16.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 26.59), hasGrossValue("EUR", 25.88), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.71))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-07-20T00:00"), hasShares(0.489), //
+                        hasSource("Umsatzuebersicht16.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 162.00), hasGrossValue("EUR", 157.66), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 4.34))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-07-29T00:00"), hasShares(0.077), //
+                        hasSource("Umsatzuebersicht16.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 26.59), hasGrossValue("EUR", 25.88), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.71))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-08-22T00:00"), hasShares(0.460), //
+                        hasSource("Umsatzuebersicht16.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 162.00), hasGrossValue("EUR", 157.66), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 4.34))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-08-31T00:00"), hasShares(0.079), //
+                        hasSource("Umsatzuebersicht16.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 26.59), hasGrossValue("EUR", 25.88), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.71))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-09-20T00:00"), hasShares(0.492), //
+                        hasSource("Umsatzuebersicht16.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 162.00), hasGrossValue("EUR", 157.66), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 4.34))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-09-30T00:00"), hasShares(0.085), //
+                        hasSource("Umsatzuebersicht16.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 26.59), hasGrossValue("EUR", 25.88), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.71))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-10-20T00:00"), hasShares(0.509), //
+                        hasSource("Umsatzuebersicht16.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 162.00), hasGrossValue("EUR", 157.66), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 4.34))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-10-28T00:00"), hasShares(0.080), //
+                        hasSource("Umsatzuebersicht16.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 26.59), hasGrossValue("EUR", 25.88), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.71))));
+
+        // check reinvestment transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-11-10T00:00"), hasShares(1.942), //
+                        hasSource("Umsatzuebersicht16.txt"), //
+                        hasNote("Wiederanlage"), //
+                        hasAmount("EUR", 630.18), hasGrossValue("EUR", 630.18), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2022-11-10T00:00"), hasExDate(null), hasShares(1.942), //
+                        hasSource("Umsatzuebersicht16.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 630.18), hasGrossValue("EUR", 630.18), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testUmsatzuebersicht17()
+    {
+        var extractor = new DZBankGruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umsatzuebersicht17.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(4L));
+        assertThat(countBuySell(results), is(4L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(9));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0008491044"), hasWkn(null), hasTicker(null), //
+                        hasName("UniRak"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000A2QFXS3"), hasWkn(null), hasTicker(null), //
+                        hasName("UniZukunft Klima -net- A"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0101442050"), hasWkn(null), hasTicker(null), //
+                        hasName("UniSector: BasicIndustries A"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0262776809"), hasWkn(null), hasTicker(null), //
+                        hasName("UniOpti4"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check sale transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-10-09T00:00"), hasShares(341.919), //
+                        hasSource("Umsatzuebersicht17.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 50000.00), hasGrossValue("EUR", 52176.82), //
+                        hasTaxes("EUR", 2176.82), hasFees("EUR", 0.00))));
+
+        // check sale transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-10-09T00:00"), hasShares(602.304), //
+                        hasSource("Umsatzuebersicht17.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 30217.59), hasGrossValue("EUR", 30217.59), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check sale transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-10-09T00:00"), hasShares(104.034), //
+                        hasSource("Umsatzuebersicht17.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 20000.00), hasGrossValue("EUR", 20524.93), //
+                        hasTaxes("EUR", 524.93), hasFees("EUR", 0.00))));
+
+        // check sale transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-10-09T00:00"), hasShares(200.999), //
+                        hasSource("Umsatzuebersicht17.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 20000.00), hasGrossValue("EUR", 20075.81), //
+                        hasTaxes("EUR", 75.81), hasFees("EUR", 0.00))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2025-10-10T00:00"), hasShares(602.304), //
+                        hasSecurity(hasIsin("DE000A2QFXS3")), //
+                        hasSource("Umsatzuebersicht17.txt"), //
+                        hasNote("Abrechnung Nr. 447"), //
+                        hasAmount("EUR", 126.14), hasGrossValue("EUR", 126.14), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testUmschichtung01()
+    {
+        var extractor = new DZBankGruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umschichtung01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(3L));
+        assertThat(countBuySell(results), is(9L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(12));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0732152185"), hasWkn(null), hasTicker(null), //
+                        hasName("UniVorsorge 3 ASP"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0186860408"), hasWkn(null), hasTicker(null), //
+                        hasName("UniDividendenAss A"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0732152268"), hasWkn(null), hasTicker(null), //
+                        hasName("UniVorsorge 4 ASP"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-02-19T00:00"), hasShares(19.468), //
+                        hasSource("Umschichtung01.txt"), //
+                        hasNote("Umschichtung durch Produktkonzept"), //
+                        hasAmount("EUR", 893.19), hasGrossValue("EUR", 893.19), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-02-19T00:00"), hasShares(6.973), //
+                        hasSource("Umschichtung01.txt"), //
+                        hasNote("Umschichtung durch Produktkonzept"), //
+                        hasAmount("EUR", 435.32), hasGrossValue("EUR", 435.32), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check sale transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-02-19T00:00"), hasShares(27.291), //
+                        hasSource("Umschichtung01.txt"), //
+                        hasNote("Umschichtung durch Produktkonzept"), //
+                        hasAmount("EUR", 1328.53), hasGrossValue("EUR", 1328.53), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-03-08T00:00"), hasShares(2.145), //
+                        hasSource("Umschichtung01.txt"), //
+                        hasNote("Umschichtung durch Produktkonzept"), //
+                        hasAmount("EUR", 98.84), hasGrossValue("EUR", 98.84), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-03-08T00:00"), hasShares(7.649), //
+                        hasSource("Umschichtung01.txt"), //
+                        hasNote("Umschichtung durch Produktkonzept"), //
+                        hasAmount("EUR", 486.17), hasGrossValue("EUR", 486.17), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check sale transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-03-08T00:00"), hasShares(11.893), //
+                        hasSource("Umschichtung01.txt"), //
+                        hasNote("Umschichtung durch Produktkonzept"), //
+                        hasAmount("EUR", 585.02), hasGrossValue("EUR", 585.02), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-04-30T00:00"), hasShares(12.637), //
+                        hasSource("Umschichtung01.txt"), //
+                        hasNote("Umschichtung durch Produktkonzept"), //
+                        hasAmount("EUR", 578.52), hasGrossValue("EUR", 578.52), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-04-30T00:00"), hasShares(8.222), //
+                        hasSource("Umschichtung01.txt"), //
+                        hasNote("Umschichtung durch Produktkonzept"), //
+                        hasAmount("EUR", 537.39), hasGrossValue("EUR", 537.39), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check sale transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-04-30T00:00"), hasShares(22.993), //
+                        hasSource("Umschichtung01.txt"), //
+                        hasNote("Umschichtung durch Produktkonzept"), //
+                        hasAmount("EUR", 1115.85), hasGrossValue("EUR", 1115.85), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testAktiensplit01()
+    {
+        var extractor = new DZBankGruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Aktiensplit01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US0231351067"), hasWkn("906866"), hasTicker(null), //
+                        hasName("AMAZON.COM INC. REGISTERED SHARES DL -,01"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionSplitUnsupported, //
+                        inboundDelivery( //
+                                        hasDate("2022-06-06T00:00"), hasShares(5.00), //
+                                        hasSource("Aktiensplit01.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 }
