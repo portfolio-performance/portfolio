@@ -59,7 +59,7 @@ public class XTBCSVExtractorTest
     private void assertCashOperations(List<Item> items)
     {
         assertThat(countBuySell(items), is(4L));
-        assertThat(countAccountTransactions(items), is(7L));
+        assertThat(countAccountTransactions(items), is(8L));
         assertThat(items, hasItem(deposit(hasAmount("EUR", 100.00))));
         assertThat(items, hasItem(purchase(hasShares(2.00), hasAmount("EUR", 50.25))));
         assertThat(items, hasItem(purchase(hasShares(0.02), hasAmount("EUR", 0.56))));
@@ -70,6 +70,7 @@ public class XTBCSVExtractorTest
         assertThat(items, hasItem(taxes(hasAmount("EUR", 0.05))));
         assertThat(items, hasItem(taxes(hasAmount("EUR", 0.12))));
         assertThat(items, hasItem(interestCharge(hasAmount("EUR", 0.04))));
+        assertThat(items, hasItem(interest(hasAmount("EUR", 0.03))));
         assertThat(items, hasItem(interest(hasAmount("EUR", 0.06), hasGrossValue("EUR", 0.07),
                         hasTaxes("EUR", 0.01))));
         new AssertImportActions().check(items, "EUR");
@@ -86,7 +87,8 @@ public class XTBCSVExtractorTest
 
         var imported = items.stream().filter(item -> item instanceof TransactionItem)
                         .map(item -> (AccountTransaction) item.getSubject())
-                        .filter(transaction -> transaction.getType() == AccountTransaction.Type.INTEREST).findFirst()
+                        .filter(transaction -> transaction.getType() == AccountTransaction.Type.INTEREST
+                                        && transaction.getUnitSum(Unit.Type.TAX).getAmount() > 0).findFirst()
                         .orElseThrow();
 
         var existing = new AccountTransaction();
@@ -175,6 +177,6 @@ public class XTBCSVExtractorTest
         }, errors);
 
         assertThat(errors, empty());
-        assertThat(items.size(), is(11));
+        assertThat(items.size(), is(12));
     }
 }

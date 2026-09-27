@@ -233,7 +233,8 @@ public class XTBCSVExtractor implements Extractor
     {
         var type = value(record, 0);
         var date = LocalDateTime.parse(value(record, columns.time()), DATE_FORMAT);
-        var amount = Math.abs(parseDecimal(value(record, columns.amount()).replace(',', '.'), Values.Amount.factor()));
+        var signedAmount = parseDecimal(value(record, columns.amount()).replace(',', '.'), Values.Amount.factor());
+        var amount = Math.abs(signedAmount);
         var comment = value(record, columns.comment());
         var note = comment + " (XTB ID: " + value(record, columns.id()) + ")";
 
@@ -265,7 +266,8 @@ public class XTBCSVExtractor implements Extractor
                     case "Withdrawal" -> AccountTransaction.Type.REMOVAL;
                     case "Dividend" -> AccountTransaction.Type.DIVIDENDS;
                     case "Free funds interest" -> AccountTransaction.Type.INTEREST;
-                    case "Swap" -> AccountTransaction.Type.INTEREST_CHARGE;
+                    case "Swap" -> signedAmount > 0 ? AccountTransaction.Type.INTEREST
+                                    : AccountTransaction.Type.INTEREST_CHARGE;
                     default -> AccountTransaction.Type.TAXES;
                 });
                 if ("Dividend".equals(type) || "Withholding tax".equals(type) || "Tax IFTT".equals(type))
