@@ -6662,8 +6662,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2019-04-29T16:11"), hasShares(3.00), //
                         hasSource("Transaktionsuebersicht22.txt"), //
                         hasNote(null), //
-                        hasAmount("EUR", 645.18), hasGrossValue("EUR", 646.34), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", (0.65 + 0.51)), //
+                        hasAmount("EUR", 645.18), hasGrossValue("EUR", 645.69), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.51), //
                         hasForexGrossValue("USD", 720.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -6679,8 +6679,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2019-04-26T20:23"), hasShares(1.00), //
                         hasSource("Transaktionsuebersicht22.txt"), //
                         hasNote(null), //
-                        hasAmount("EUR", 210.21), hasGrossValue("EUR", 209.50), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", (0.21 + 0.50)), //
+                        hasAmount("EUR", 210.21), hasGrossValue("EUR", 209.71), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.50), //
                         hasForexGrossValue("USD", 234.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -6688,8 +6688,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2019-04-26T17:52"), hasShares(2.00), //
                         hasSource("Transaktionsuebersicht22.txt"), //
                         hasNote(null), //
-                        hasAmount("EUR", 430.77), hasGrossValue("EUR", 429.83), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", (0.43 + 0.51)), //
+                        hasAmount("EUR", 430.77), hasGrossValue("EUR", 430.26), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.51), //
                         hasForexGrossValue("USD", 480.00))));
 
         assertThat(results, hasItem(sale( //
@@ -9928,8 +9928,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-12-05T15:22"), hasShares(1.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 894.15), hasGrossValue("CHF", 901.00), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.25 + 4.60)), //
+                        hasAmount("CHF", 894.15), hasGrossValue("CHF", 898.75), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.60), //
                         hasForexGrossValue("EUR", 960.40))));
 
         assertThat(results, hasItem(sale( //
@@ -9937,8 +9937,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-12-03T19:06"), hasShares(10.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 621.51), hasGrossValue("CHF", 624.94), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.56 + 1.87)), //
+                        hasAmount("CHF", 621.51), hasGrossValue("CHF", 623.38), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.87), //
                         hasForexGrossValue("USD", 780.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -9946,8 +9946,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-12-02T17:11"), hasShares(10.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 644.23), hasGrossValue("CHF", 640.75), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.61 + 1.87)), //
+                        hasAmount("CHF", 644.23), hasGrossValue("CHF", 642.36), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.87), //
                         hasForexGrossValue("USD", 798.49))));
 
         assertThat(results, hasItem(purchase( //
@@ -9955,8 +9955,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-12-02T17:00"), hasShares(100.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 283.39), hasGrossValue("CHF", 280.82), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.70 + 1.87)), //
+                        hasAmount("CHF", 283.39), hasGrossValue("CHF", 281.52), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.87), //
                         hasForexGrossValue("USD", 350.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -9964,8 +9964,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-12-02T16:57"), hasShares(20.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 412.15), hasGrossValue("CHF", 409.25), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.03 + 1.87)), //
+                        hasAmount("CHF", 412.15), hasGrossValue("CHF", 410.28), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.87), //
                         hasForexGrossValue("USD", 510.00))));
 
         assertThat(results, hasItem(sale( //
@@ -9973,8 +9973,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-12-02T15:30"), hasShares(1.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 872.91), hasGrossValue("CHF", 879.69), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.19 + 4.59)), //
+                        hasAmount("CHF", 872.91), hasGrossValue("CHF", 877.50), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.59), //
                         hasForexGrossValue("EUR", 939.00))));
 
         assertThat(results, hasItem(sale( //
@@ -9982,8 +9982,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-12-01T19:04"), hasShares(100.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 1431.30), hasGrossValue("CHF", 1438.54), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (3.59 + 3.65)), //
+                        hasAmount("CHF", 1431.30), hasGrossValue("CHF", 1434.95), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 3.65), //
                         hasForexGrossValue("EUR", 1536.50))));
 
         assertThat(results, hasItem(purchase( //
@@ -9991,8 +9991,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-11-17T15:30"), hasShares(3.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 500.62), hasGrossValue("CHF", 497.52), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.25 + 1.85)), //
+                        hasAmount("CHF", 500.62), hasGrossValue("CHF", 498.77), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.85), //
                         hasForexGrossValue("USD", 627.00))));
 
         assertThat(results, hasItem(sale( //
@@ -10000,8 +10000,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-11-13T17:29"), hasShares(50.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 625.40), hasGrossValue("CHF", 631.50), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.57 + 4.53)), //
+                        hasAmount("CHF", 625.40), hasGrossValue("CHF", 629.93), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.53), //
                         hasForexGrossValue("EUR", 683.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10009,8 +10009,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-11-04T09:33"), hasShares(20.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 786.61), hasGrossValue("CHF", 780.08), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.96 + 4.57)), //
+                        hasAmount("CHF", 786.61), hasGrossValue("CHF", 782.04), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.57), //
                         hasForexGrossValue("EUR", 840.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10018,8 +10018,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-11-04T09:04"), hasShares(50.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 510.14), hasGrossValue("CHF", 506.07), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.27 + 2.80)), //
+                        hasAmount("CHF", 510.14), hasGrossValue("CHF", 507.34), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 2.80), //
                         hasForexGrossValue("EUR", 545.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10027,8 +10027,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-11-03T17:17"), hasShares(50.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 470.02), hasGrossValue("CHF", 464.29), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.16 + 4.57)), //
+                        hasAmount("CHF", 470.02), hasGrossValue("CHF", 465.45), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.57), //
                         hasForexGrossValue("EUR", 500.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10036,8 +10036,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-10-20T19:41"), hasShares(100.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 433.69), hasGrossValue("CHF", 430.76), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.08 + 1.85)), //
+                        hasAmount("CHF", 433.69), hasGrossValue("CHF", 431.84), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.85), //
                         hasForexGrossValue("USD", 545.00))));
 
         assertThat(results, hasItem(sale( //
@@ -10045,8 +10045,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-10-20T16:45"), hasShares(40.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 954.88), hasGrossValue("CHF", 961.81), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.40 + 4.53)), //
+                        hasAmount("CHF", 954.88), hasGrossValue("CHF", 959.41), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.53), //
                         hasForexGrossValue("EUR", 1040.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10054,8 +10054,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-10-17T09:15"), hasShares(50.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 544.10), hasGrossValue("CHF", 539.97), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.35 + 2.78)), //
+                        hasAmount("CHF", 544.10), hasGrossValue("CHF", 541.32), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 2.78), //
                         hasForexGrossValue("EUR", 586.60))));
 
         assertThat(results, hasItem(sale( //
@@ -10063,8 +10063,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-10-15T09:13"), hasShares(1.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 555.53), hasGrossValue("CHF", 561.50), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.40 + 4.57)), //
+                        hasAmount("CHF", 555.53), hasGrossValue("CHF", 560.10), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.57), //
                         hasForexGrossValue("EUR", 602.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10072,8 +10072,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-10-14T15:38"), hasShares(100.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 479.61), hasGrossValue("CHF", 476.56), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.19 + 1.86)), //
+                        hasAmount("CHF", 479.61), hasGrossValue("CHF", 477.75), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.86), //
                         hasForexGrossValue("USD", 595.00))));
 
         assertThat(results, hasItem(sale( //
@@ -10081,8 +10081,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-10-07T13:52"), hasShares(6.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 483.24), hasGrossValue("CHF", 487.26), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.22 + 2.80)), //
+                        hasAmount("CHF", 483.24), hasGrossValue("CHF", 486.04), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 2.80), //
                         hasForexGrossValue("EUR", 522.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10090,8 +10090,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-10-03T19:50"), hasShares(20.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 574.66), hasGrossValue("CHF", 571.36), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.43 + 1.87)), //
+                        hasAmount("CHF", 574.66), hasGrossValue("CHF", 572.79), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.87), //
                         hasForexGrossValue("USD", 720.00))));
 
         assertThat(results, hasItem(sale( //
@@ -10099,8 +10099,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-10-03T15:57"), hasShares(1.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 754.83), hasGrossValue("CHF", 758.59), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.89 + 1.87)), //
+                        hasAmount("CHF", 754.83), hasGrossValue("CHF", 756.70), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.87), //
                         hasForexGrossValue("USD", 950.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10108,8 +10108,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-10-03T15:52"), hasShares(50.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 649.61), hasGrossValue("CHF", 643.41), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.61 + 4.59)), //
+                        hasAmount("CHF", 649.61), hasGrossValue("CHF", 645.02), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.59), //
                         hasForexGrossValue("EUR", 690.00))));
 
         assertThat(results, hasItem(sale( //
@@ -10117,8 +10117,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-10-01T15:55"), hasShares(1.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 772.37), hasGrossValue("CHF", 778.91), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.94 + 4.60)), //
+                        hasAmount("CHF", 772.37), hasGrossValue("CHF", 776.97), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.60), //
                         hasForexGrossValue("EUR", 830.00))));
 
         assertThat(results, hasItem(sale( //
@@ -10126,8 +10126,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-10-01T15:44"), hasShares(40.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 304.39), hasGrossValue("CHF", 307.98), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.77 + 2.82)), //
+                        hasAmount("CHF", 304.39), hasGrossValue("CHF", 307.21), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 2.82), //
                         hasForexGrossValue("EUR", 328.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10135,8 +10135,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-09-24T20:54"), hasShares(1.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 373.28), hasGrossValue("CHF", 370.48), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.93 + 1.87)), //
+                        hasAmount("CHF", 373.28), hasGrossValue("CHF", 371.41), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.87), //
                         hasForexGrossValue("USD", 466.90))));
 
         assertThat(results, hasItem(purchase( //
@@ -10144,8 +10144,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-09-24T10:34"), hasShares(2.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 696.05), hasGrossValue("CHF", 689.73), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.73 + 4.59)), //
+                        hasAmount("CHF", 696.05), hasGrossValue("CHF", 691.46), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.59), //
                         hasForexGrossValue("EUR", 740.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10153,8 +10153,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-09-24T10:34"), hasShares(2.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 696.05), hasGrossValue("CHF", 689.73), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.73 + 4.59)), //
+                        hasAmount("CHF", 696.05), hasGrossValue("CHF", 691.46), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.59), //
                         hasForexGrossValue("EUR", 740.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10162,8 +10162,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-09-23T18:57"), hasShares(1.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 393.81), hasGrossValue("CHF", 390.96), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.98 + 1.87)), //
+                        hasAmount("CHF", 393.81), hasGrossValue("CHF", 391.94), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.87), //
                         hasForexGrossValue("USD", 495.00))));
 
         assertThat(results, hasItem(sale( //
@@ -10171,8 +10171,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-09-23T15:07"), hasShares(20.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 385.09), hasGrossValue("CHF", 388.87), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.97 + 2.81)), //
+                        hasAmount("CHF", 385.09), hasGrossValue("CHF", 387.90), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 2.81), //
                         hasForexGrossValue("EUR", 415.00))));
 
         assertThat(results, hasItem(sale( //
@@ -10180,8 +10180,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-09-22T09:03"), hasShares(15.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 264.14), hasGrossValue("CHF", 268.46), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.67 + 3.65)), //
+                        hasAmount("CHF", 264.14), hasGrossValue("CHF", 267.79), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 3.65), //
                         hasForexGrossValue("EUR", 286.50))));
 
         assertThat(results, hasItem(purchase( //
@@ -10189,8 +10189,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-08-13T14:00"), hasShares(10.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 409.30), hasGrossValue("CHF", 403.67), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.01 + 4.62)), //
+                        hasAmount("CHF", 409.30), hasGrossValue("CHF", 404.68), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.62), //
                         hasForexGrossValue("EUR", 430.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10198,8 +10198,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-07-30T14:30"), hasShares(30.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 1249.05), hasGrossValue("CHF", 1241.37), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (3.11 + 4.57)), //
+                        hasAmount("CHF", 1249.05), hasGrossValue("CHF", 1244.48), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.57), //
                         hasForexGrossValue("EUR", 1338.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10207,8 +10207,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-07-17T18:16"), hasShares(25.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 928.90), hasGrossValue("CHF", 924.71), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.32 + 1.87)), //
+                        hasAmount("CHF", 928.90), hasGrossValue("CHF", 927.03), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.87), //
                         hasForexGrossValue("USD", 1152.50))));
 
         assertThat(results, hasItem(sale( //
@@ -10216,8 +10216,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-07-17T15:30"), hasShares(10.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 875.37), hasGrossValue("CHF", 879.43), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.19 + 1.87)), //
+                        hasAmount("CHF", 875.37), hasGrossValue("CHF", 877.24), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.87), //
                         hasForexGrossValue("USD", 1090.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10225,8 +10225,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-06-27T15:30"), hasShares(10.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 553.87), hasGrossValue("CHF", 547.90), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.37 + 4.60)), //
+                        hasAmount("CHF", 553.87), hasGrossValue("CHF", 549.27), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.60), //
                         hasForexGrossValue("EUR", 586.70))));
 
         assertThat(results, hasItem(sale( //
@@ -10234,8 +10234,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-06-26T17:38"), hasShares(46.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 1107.25), hasGrossValue("CHF", 1114.63), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.78 + 4.60)), //
+                        hasAmount("CHF", 1107.25), hasGrossValue("CHF", 1111.85), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.60), //
                         hasForexGrossValue("EUR", 1187.49))));
 
         assertThat(results, hasItem(purchase( //
@@ -10243,8 +10243,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-06-13T20:03"), hasShares(25.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 995.76), hasGrossValue("CHF", 991.40), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.48 + 1.88)), //
+                        hasAmount("CHF", 995.76), hasGrossValue("CHF", 993.88), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.88), //
                         hasForexGrossValue("USD", 1225.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10252,8 +10252,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-06-06T13:57"), hasShares(2.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 889.81), hasGrossValue("CHF", 882.99), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.21 + 4.61)), //
+                        hasAmount("CHF", 889.81), hasGrossValue("CHF", 885.20), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.61), //
                         hasForexGrossValue("EUR", 943.10))));
 
         assertThat(results, hasItem(purchase( //
@@ -10261,8 +10261,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-05-13T17:19"), hasShares(10.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 554.69), hasGrossValue("CHF", 548.69), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.38 + 4.62)), //
+                        hasAmount("CHF", 554.69), hasGrossValue("CHF", 550.07), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.62), //
                         hasForexGrossValue("EUR", 585.30))));
 
         assertThat(results, hasItem(purchase( //
@@ -10270,8 +10270,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-04-30T15:14"), hasShares(2.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 1081.58), hasGrossValue("CHF", 1074.29), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.69 + 4.60)), //
+                        hasAmount("CHF", 1081.58), hasGrossValue("CHF", 1076.98), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.60), //
                         hasForexGrossValue("EUR", 1150.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10279,8 +10279,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-04-22T16:30"), hasShares(5.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 235.25), hasGrossValue("CHF", 231.86), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.58 + 2.81)), //
+                        hasAmount("CHF", 235.25), hasGrossValue("CHF", 232.44), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 2.81), //
                         hasForexGrossValue("EUR", 248.92))));
 
         assertThat(results, hasItem(sale( //
@@ -10288,8 +10288,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-04-22T14:39"), hasShares(20.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 304.28), hasGrossValue("CHF", 305.04), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.76), //
+                        hasAmount("CHF", 304.28), hasGrossValue("CHF", 304.28), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
                         hasForexGrossValue("EUR", 326.48))));
 
         assertThat(results, hasItem(sale( //
@@ -10297,8 +10297,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-04-22T14:39"), hasShares(20.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 301.67), hasGrossValue("CHF", 305.23), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.76 + 2.80)), //
+                        hasAmount("CHF", 301.67), hasGrossValue("CHF", 304.47), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 2.80), //
                         hasForexGrossValue("EUR", 326.68))));
 
         assertThat(results, hasItem(purchase( //
@@ -10306,8 +10306,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-04-16T11:47"), hasShares(15.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 790.58), hasGrossValue("CHF", 784.05), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.97 + 4.56)), //
+                        hasAmount("CHF", 790.58), hasGrossValue("CHF", 786.02), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.56), //
                         hasForexGrossValue("EUR", 846.45))));
 
         assertThat(results, hasItem(purchase( //
@@ -10315,8 +10315,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-04-07T16:30"), hasShares(36.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 580.64), hasGrossValue("CHF", 574.58), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.44 + 4.62)), //
+                        hasAmount("CHF", 580.64), hasGrossValue("CHF", 576.02), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.62), //
                         hasForexGrossValue("EUR", 612.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10324,8 +10324,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-04-01T16:21"), hasShares(9.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 552.81), hasGrossValue("CHF", 546.76), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.37 + 4.68)), //
+                        hasAmount("CHF", 552.81), hasGrossValue("CHF", 548.13), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.68), //
                         hasForexGrossValue("EUR", 575.10))));
 
         assertThat(results, hasItem(purchase( //
@@ -10333,8 +10333,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-03-13T16:36"), hasShares(6.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 417.79), hasGrossValue("CHF", 413.86), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.04 + 2.89)), //
+                        hasAmount("CHF", 417.79), hasGrossValue("CHF", 414.90), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 2.89), //
                         hasForexGrossValue("EUR", 432.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10342,8 +10342,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-03-13T11:38"), hasShares(8.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 553.49), hasGrossValue("CHF", 547.41), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.37 + 4.71)), //
+                        hasAmount("CHF", 553.49), hasGrossValue("CHF", 548.78), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.71), //
                         hasForexGrossValue("EUR", 572.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10351,8 +10351,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-02-28T15:16"), hasShares(1.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 642.54), hasGrossValue("CHF", 636.33), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.59 + 4.62)), //
+                        hasAmount("CHF", 642.54), hasGrossValue("CHF", 637.92), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.62), //
                         hasForexGrossValue("EUR", 679.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10360,8 +10360,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-02-26T20:16"), hasShares(10.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 858.83), hasGrossValue("CHF", 854.81), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.14 + 1.88)), //
+                        hasAmount("CHF", 858.83), hasGrossValue("CHF", 856.95), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.88), //
                         hasForexGrossValue("USD", 958.80))));
 
         assertThat(results, hasItem(sale( //
@@ -10369,8 +10369,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-02-13T09:01"), hasShares(40.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 977.16), hasGrossValue("CHF", 984.27), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.45 + 4.66)), //
+                        hasAmount("CHF", 977.16), hasGrossValue("CHF", 981.82), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.66), //
                         hasForexGrossValue("EUR", 1036.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10378,8 +10378,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-02-06T18:11"), hasShares(1.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 590.30), hasGrossValue("CHF", 586.95), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.47 + 1.88)), //
+                        hasAmount("CHF", 590.30), hasGrossValue("CHF", 588.42), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.88), //
                         hasForexGrossValue("USD", 650.00))));
 
         assertThat(results, hasItem(sale( //
@@ -10387,8 +10387,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-01-31T15:30"), hasShares(50.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 152.84), hasGrossValue("CHF", 155.12), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.39 + 1.89)), //
+                        hasAmount("CHF", 152.84), hasGrossValue("CHF", 154.73), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.89), //
                         hasForexGrossValue("USD", 170.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10396,8 +10396,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-01-17T16:31"), hasShares(2.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 150.64), hasGrossValue("CHF", 145.65), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.37 + 4.62)), //
+                        hasAmount("CHF", 150.64), hasGrossValue("CHF", 146.02), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.62), //
                         hasForexGrossValue("EUR", 155.26))));
 
         assertThat(results, hasItem(purchase( //
@@ -10405,8 +10405,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-01-17T10:32"), hasShares(50.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 411.66), hasGrossValue("CHF", 409.69), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.03 + 0.94)), //
+                        hasAmount("CHF", 411.66), hasGrossValue("CHF", 410.72), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.94), //
                         hasForexGrossValue("EUR", 438.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10414,8 +10414,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2025-01-17T09:01"), hasShares(2.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 450.07), hasGrossValue("CHF", 444.35), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.11 + 4.61)), //
+                        hasAmount("CHF", 450.07), hasGrossValue("CHF", 445.46), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.61), //
                         hasForexGrossValue("EUR", 475.00))));
 
         assertThat(results, hasItem(sale( //
@@ -10431,8 +10431,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-12-23T14:22"), hasShares(2.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 134.81), hasGrossValue("CHF", 130.83), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.33 + 3.65)), //
+                        hasAmount("CHF", 134.81), hasGrossValue("CHF", 131.16), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 3.65), //
                         hasForexGrossValue("EUR", 140.52))));
 
         assertThat(results, hasItem(purchase( //
@@ -10440,8 +10440,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-12-09T15:31"), hasShares(5.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 395.71), hasGrossValue("CHF", 391.10), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.98 + 3.63)), //
+                        hasAmount("CHF", 395.71), hasGrossValue("CHF", 392.08), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 3.63), //
                         hasForexGrossValue("EUR", 422.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10449,8 +10449,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-12-09T15:30"), hasShares(10.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 493.73), hasGrossValue("CHF", 490.64), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.23 + 1.86)), //
+                        hasAmount("CHF", 493.73), hasGrossValue("CHF", 491.87), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.86), //
                         hasForexGrossValue("USD", 560.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10458,8 +10458,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-11-27T09:02"), hasShares(5.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 400.99), hasGrossValue("CHF", 396.37), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.99 + 3.63)), //
+                        hasAmount("CHF", 400.99), hasGrossValue("CHF", 397.36), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 3.63), //
                         hasForexGrossValue("EUR", 428.10))));
 
         assertThat(results, hasItem(sale( //
@@ -10467,8 +10467,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-11-26T11:30"), hasShares(6.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 570.92), hasGrossValue("CHF", 576.93), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.44 + 4.57)), //
+                        hasAmount("CHF", 570.92), hasGrossValue("CHF", 575.49), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.57), //
                         hasForexGrossValue("EUR", 618.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10476,8 +10476,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-11-25T13:02"), hasShares(3.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 928.45), hasGrossValue("CHF", 921.56), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.31 + 4.58)), //
+                        hasAmount("CHF", 928.45), hasGrossValue("CHF", 923.87), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.58), //
                         hasForexGrossValue("EUR", 990.00))));
 
         assertThat(results, hasItem(sale( //
@@ -10485,8 +10485,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-11-07T15:12"), hasShares(20.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 683.84), hasGrossValue("CHF", 690.19), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.72 + 4.63)), //
+                        hasAmount("CHF", 683.84), hasGrossValue("CHF", 688.47), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.63), //
                         hasForexGrossValue("EUR", 730.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10494,8 +10494,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-11-07T14:30"), hasShares(4.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 381.00), hasGrossValue("CHF", 375.43), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.94 + 4.63)), //
+                        hasAmount("CHF", 381.00), hasGrossValue("CHF", 376.37), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.63), //
                         hasForexGrossValue("EUR", 399.20))));
 
         assertThat(results, hasItem(purchase( //
@@ -10503,8 +10503,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-11-01T14:56"), hasShares(1.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 220.73), hasGrossValue("CHF", 215.55), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.54 + 4.64)), //
+                        hasAmount("CHF", 220.73), hasGrossValue("CHF", 216.09), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.64), //
                         hasForexGrossValue("EUR", 229.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10512,8 +10512,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-10-30T09:32"), hasShares(2.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 660.32), hasGrossValue("CHF", 654.07), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.64 + 4.61)), //
+                        hasAmount("CHF", 660.32), hasGrossValue("CHF", 655.71), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.61), //
                         hasForexGrossValue("EUR", 698.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10521,8 +10521,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-10-29T13:45"), hasShares(5.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 420.63), hasGrossValue("CHF", 415.93), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.04 + 3.66)), //
+                        hasAmount("CHF", 420.63), hasGrossValue("CHF", 416.97), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 3.66), //
                         hasForexGrossValue("EUR", 445.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10530,8 +10530,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-10-21T16:23"), hasShares(40.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 414.76), hasGrossValue("CHF", 410.06), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.03 + 3.67)), //
+                        hasAmount("CHF", 414.76), hasGrossValue("CHF", 411.09), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 3.67), //
                         hasForexGrossValue("EUR", 438.40))));
 
         assertThat(results, hasItem(purchase( //
@@ -10539,8 +10539,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-10-16T10:19"), hasShares(1.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 600.56), hasGrossValue("CHF", 594.46), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.49 + 4.61)), //
+                        hasAmount("CHF", 600.56), hasGrossValue("CHF", 595.95), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.61), //
                         hasForexGrossValue("EUR", 635.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10548,8 +10548,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-10-16T09:04"), hasShares(2.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 654.22), hasGrossValue("CHF", 647.99), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.62 + 4.61)), //
+                        hasAmount("CHF", 654.22), hasGrossValue("CHF", 649.61), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.61), //
                         hasForexGrossValue("EUR", 692.40))));
 
         assertThat(results, hasItem(purchase( //
@@ -10557,8 +10557,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-10-16T09:00"), hasShares(2.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 1108.11), hasGrossValue("CHF", 1100.74), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.76 + 4.61)), //
+                        hasAmount("CHF", 1108.11), hasGrossValue("CHF", 1103.50), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.61), //
                         hasForexGrossValue("EUR", 1175.80))));
 
         assertThat(results, hasItem(purchase( //
@@ -10566,8 +10566,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-10-15T17:13"), hasShares(1.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 652.88), hasGrossValue("CHF", 646.64), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.62 + 4.62)), //
+                        hasAmount("CHF", 652.88), hasGrossValue("CHF", 648.26), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.62), //
                         hasForexGrossValue("EUR", 690.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10575,8 +10575,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-10-15T09:14"), hasShares(40.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 624.22), hasGrossValue("CHF", 619.85), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.55 + 2.82)), //
+                        hasAmount("CHF", 624.22), hasGrossValue("CHF", 621.40), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 2.82), //
                         hasForexGrossValue("EUR", 661.76))));
 
         assertThat(results, hasItem(sale( //
@@ -10584,8 +10584,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-10-01T16:16"), hasShares(10.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 609.78), hasGrossValue("CHF", 613.19), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.53 + 1.88)), //
+                        hasAmount("CHF", 609.78), hasGrossValue("CHF", 611.66), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.88), //
                         hasForexGrossValue("USD", 725.00))));
 
         assertThat(results, hasItem(sale( //
@@ -10593,8 +10593,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-10-01T15:32"), hasShares(2.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 284.44), hasGrossValue("CHF", 287.04), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.72 + 1.88)), //
+                        hasAmount("CHF", 284.44), hasGrossValue("CHF", 286.32), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.88), //
                         hasForexGrossValue("USD", 338.00))));
 
         assertThat(results, hasItem(sale( //
@@ -10602,8 +10602,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-09-27T17:12"), hasShares(60.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 301.52), hasGrossValue("CHF", 305.96), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.76 + 3.68)), //
+                        hasAmount("CHF", 301.52), hasGrossValue("CHF", 305.20), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 3.68), //
                         hasForexGrossValue("EUR", 324.30))));
 
         assertThat(results, hasItem(sale( //
@@ -10611,8 +10611,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-09-26T09:04"), hasShares(15.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 413.72), hasGrossValue("CHF", 415.71), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.04 + 0.95)), //
+                        hasAmount("CHF", 413.72), hasGrossValue("CHF", 414.67), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.95), //
                         hasForexGrossValue("EUR", 436.95))));
 
         assertThat(results, hasItem(sale( //
@@ -10620,8 +10620,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-09-24T15:38"), hasShares(2.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 430.54), hasGrossValue("CHF", 433.51), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.08 + 1.89)), //
+                        hasAmount("CHF", 430.54), hasGrossValue("CHF", 432.43), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.89), //
                         hasForexGrossValue("USD", 510.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10629,8 +10629,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-09-20T17:01"), hasShares(30.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 710.24), hasGrossValue("CHF", 703.83), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.76 + 4.65)), //
+                        hasAmount("CHF", 710.24), hasGrossValue("CHF", 705.59), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.65), //
                         hasForexGrossValue("EUR", 744.60))));
 
         assertThat(results, hasItem(purchase( //
@@ -10638,8 +10638,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-09-18T15:47"), hasShares(1.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 567.44), hasGrossValue("CHF", 561.41), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.41 + 4.62)), //
+                        hasAmount("CHF", 567.44), hasGrossValue("CHF", 562.82), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.62), //
                         hasForexGrossValue("EUR", 599.00))));
 
         assertThat(results, hasItem(sale( //
@@ -10647,8 +10647,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-09-16T15:32"), hasShares(5.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 386.44), hasGrossValue("CHF", 389.29), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.97 + 1.88)), //
+                        hasAmount("CHF", 386.44), hasGrossValue("CHF", 388.32), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.88), //
                         hasForexGrossValue("USD", 460.00))));
 
         assertThat(results, hasItem(sale( //
@@ -10656,8 +10656,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-09-11T21:54"), hasShares(2.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 717.41), hasGrossValue("CHF", 721.09), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.80 + 1.88)), //
+                        hasAmount("CHF", 717.41), hasGrossValue("CHF", 719.29), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.88), //
                         hasForexGrossValue("USD", 844.00))));
 
         assertThat(results, hasItem(sale( //
@@ -10665,8 +10665,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-09-10T19:45"), hasShares(2.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 302.92), hasGrossValue("CHF", 305.55), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.76 + 1.87)), //
+                        hasAmount("CHF", 302.92), hasGrossValue("CHF", 304.79), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.87), //
                         hasForexGrossValue("USD", 360.00))));
 
         assertThat(results, hasItem(sale( //
@@ -10674,8 +10674,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-09-05T15:33"), hasShares(3.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 569.23), hasGrossValue("CHF", 572.54), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.43 + 1.88)), //
+                        hasAmount("CHF", 569.23), hasGrossValue("CHF", 571.11), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.88), //
                         hasForexGrossValue("USD", 675.00))));
 
         assertThat(results, hasItem(sale( //
@@ -10683,8 +10683,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-08-21T10:46"), hasShares(15.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 339.54), hasGrossValue("CHF", 345.07), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.86 + 4.67)), //
+                        hasAmount("CHF", 339.54), hasGrossValue("CHF", 344.21), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.67), //
                         hasForexGrossValue("EUR", 362.10))));
 
         assertThat(results, hasItem(sale( //
@@ -10692,8 +10692,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-08-20T16:03"), hasShares(5.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 689.27), hasGrossValue("CHF", 692.91), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.73 + 1.91)), //
+                        hasAmount("CHF", 689.27), hasGrossValue("CHF", 691.18), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.91), //
                         hasForexGrossValue("USD", 805.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10701,8 +10701,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-08-13T10:52"), hasShares(20.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 512.57), hasGrossValue("CHF", 506.65), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.27 + 4.65)), //
+                        hasAmount("CHF", 512.57), hasGrossValue("CHF", 507.92), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.65), //
                         hasForexGrossValue("EUR", 536.00))));
 
         assertThat(results, hasItem(sale( //
@@ -10710,8 +10710,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-08-13T10:47"), hasShares(2.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 7.56), hasGrossValue("CHF", 7.58), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.02), //
+                        hasAmount("CHF", 7.56), hasGrossValue("CHF", 7.56), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
                         hasForexGrossValue("EUR", 7.98))));
 
         assertThat(results, hasItem(sale( //
@@ -10719,8 +10719,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-08-13T10:47"), hasShares(23.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 82.31), hasGrossValue("CHF", 87.18), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.22 + 4.65)), //
+                        hasAmount("CHF", 82.31), hasGrossValue("CHF", 86.96), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.65), //
                         hasForexGrossValue("EUR", 91.77))));
 
         assertThat(results, hasItem(sale( //
@@ -10728,8 +10728,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-07-30T15:40"), hasShares(3.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 170.74), hasGrossValue("CHF", 173.09), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.43 + 1.92)), //
+                        hasAmount("CHF", 170.74), hasGrossValue("CHF", 172.66), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.92), //
                         hasForexGrossValue("USD", 195.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10737,8 +10737,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-07-29T16:33"), hasShares(15.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 456.12), hasGrossValue("CHF", 450.28), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.13 + 4.71)), //
+                        hasAmount("CHF", 456.12), hasGrossValue("CHF", 451.41), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.71), //
                         hasForexGrossValue("EUR", 471.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10746,8 +10746,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-07-19T15:49"), hasShares(3.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 358.87), hasGrossValue("CHF", 353.22), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.89 + 4.76)), //
+                        hasAmount("CHF", 358.87), hasGrossValue("CHF", 354.11), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.76), //
                         hasForexGrossValue("EUR", 365.70))));
 
         assertThat(results, hasItem(sale( //
@@ -10755,8 +10755,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-07-19T10:51"), hasShares(5.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 155.29), hasGrossValue("CHF", 160.44), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.40 + 4.75)), //
+                        hasAmount("CHF", 155.29), hasGrossValue("CHF", 160.04), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.75), //
                         hasForexGrossValue("EUR", 165.50))));
 
         assertThat(results, hasItem(purchase( //
@@ -10764,8 +10764,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-07-17T21:55"), hasShares(5.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 708.75), hasGrossValue("CHF", 705.04), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.77 + 1.94)), //
+                        hasAmount("CHF", 708.75), hasGrossValue("CHF", 706.81), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.94), //
                         hasForexGrossValue("USD", 800.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10773,8 +10773,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-07-17T16:12"), hasShares(15.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 425.64), hasGrossValue("CHF", 423.61), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.06 + 0.97)), //
+                        hasAmount("CHF", 425.64), hasGrossValue("CHF", 424.67), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.97), //
                         hasForexGrossValue("EUR", 438.75))));
 
         assertThat(results, hasItem(purchase( //
@@ -10782,8 +10782,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-07-02T13:56"), hasShares(5.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 649.35), hasGrossValue("CHF", 642.98), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.61 + 4.76)), //
+                        hasAmount("CHF", 649.35), hasGrossValue("CHF", 644.59), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.76), //
                         hasForexGrossValue("EUR", 665.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10791,8 +10791,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-06-20T15:36"), hasShares(40.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 308.96), hasGrossValue("CHF", 305.31), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.77 + 2.88)), //
+                        hasAmount("CHF", 308.96), hasGrossValue("CHF", 306.08), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 2.88), //
                         hasForexGrossValue("EUR", 320.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10800,8 +10800,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-06-20T15:24"), hasShares(10.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 200.86), hasGrossValue("CHF", 197.49), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.49 + 2.88)), //
+                        hasAmount("CHF", 200.86), hasGrossValue("CHF", 197.98), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 2.88), //
                         hasForexGrossValue("EUR", 207.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10809,8 +10809,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-06-17T09:00"), hasShares(15.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 389.46), hasGrossValue("CHF", 383.82), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.96 + 4.68)), //
+                        hasAmount("CHF", 389.46), hasGrossValue("CHF", 384.78), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.68), //
                         hasForexGrossValue("EUR", 403.80))));
 
         assertThat(results, hasItem(purchase( //
@@ -10818,8 +10818,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-06-11T15:30"), hasShares(1.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 229.10), hasGrossValue("CHF", 226.60), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.57 + 1.93)), //
+                        hasAmount("CHF", 229.10), hasGrossValue("CHF", 227.17), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.93), //
                         hasForexGrossValue("USD", 253.01))));
 
         assertThat(results, hasItem(sale( //
@@ -10827,8 +10827,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-06-06T22:00"), hasShares(3.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 492.00), hasGrossValue("CHF", 495.17), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.23 + 1.94)), //
+                        hasAmount("CHF", 492.00), hasGrossValue("CHF", 493.94), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.94), //
                         hasForexGrossValue("USD", 555.00))));
 
         assertThat(results, hasItem(sale( //
@@ -10836,8 +10836,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-06-05T15:30"), hasShares(3.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 466.84), hasGrossValue("CHF", 469.96), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.17 + 1.95)), //
+                        hasAmount("CHF", 466.84), hasGrossValue("CHF", 468.79), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.95), //
                         hasForexGrossValue("USD", 525.45))));
 
         assertThat(results, hasItem(purchase( //
@@ -10845,8 +10845,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-06-05T10:42"), hasShares(40.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 334.28), hasGrossValue("CHF", 332.48), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.83 + 0.97)), //
+                        hasAmount("CHF", 334.28), hasGrossValue("CHF", 333.31), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.97), //
                         hasForexGrossValue("EUR", 343.40))));
 
         assertThat(results, hasItem(sale( //
@@ -10854,8 +10854,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-06-05T10:29"), hasShares(60.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 56.93), hasGrossValue("CHF", 61.85), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.15 + 4.77)), //
+                        hasAmount("CHF", 56.93), hasGrossValue("CHF", 61.70), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.77), //
                         hasForexGrossValue("EUR", 63.60))));
 
         assertThat(results, hasItem(purchase( //
@@ -10863,8 +10863,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-04-30T15:46"), hasShares(2.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 731.79), hasGrossValue("CHF", 728.01), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.82 + 1.96)), //
+                        hasAmount("CHF", 731.79), hasGrossValue("CHF", 729.83), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.96), //
                         hasForexGrossValue("USD", 798.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10872,8 +10872,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-04-24T15:33"), hasShares(30.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 325.84), hasGrossValue("CHF", 321.21), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.81 + 3.82)), //
+                        hasAmount("CHF", 325.84), hasGrossValue("CHF", 322.02), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 3.82), //
                         hasForexGrossValue("EUR", 330.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10881,8 +10881,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-04-24T09:29"), hasShares(15.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 579.04), hasGrossValue("CHF", 572.80), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.44 + 4.80)), //
+                        hasAmount("CHF", 579.04), hasGrossValue("CHF", 574.24), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.80), //
                         hasForexGrossValue("EUR", 588.00))));
 
         assertThat(results, hasItem(sale( //
@@ -10890,8 +10890,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-04-23T11:46"), hasShares(12.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 16.57), hasGrossValue("CHF", 21.39), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.05 + 4.77)), //
+                        hasAmount("CHF", 16.57), hasGrossValue("CHF", 21.34), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.77), //
                         hasForexGrossValue("EUR", 21.96))));
 
         assertThat(results, hasItem(purchase( //
@@ -10899,8 +10899,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-04-12T17:32"), hasShares(10.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 535.26), hasGrossValue("CHF", 531.99), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.33 + 1.94)), //
+                        hasAmount("CHF", 535.26), hasGrossValue("CHF", 533.32), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.94), //
                         hasForexGrossValue("USD", 585.00))));
 
         assertThat(results, hasItem(sale( //
@@ -10908,8 +10908,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-04-05T14:17"), hasShares(3.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 407.80), hasGrossValue("CHF", 413.64), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.03 + 4.81)), //
+                        hasAmount("CHF", 407.80), hasGrossValue("CHF", 412.61), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.81), //
                         hasForexGrossValue("EUR", 421.50))));
 
         assertThat(results, hasItem(purchase( //
@@ -10917,8 +10917,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-04-04T21:59"), hasShares(1.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 245.30), hasGrossValue("CHF", 242.73), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.61 + 1.96)), //
+                        hasAmount("CHF", 245.30), hasGrossValue("CHF", 243.34), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.96), //
                         hasForexGrossValue("USD", 270.00))));
 
         assertThat(results, hasItem(sale( //
@@ -10926,8 +10926,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-04-04T09:00"), hasShares(5.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 146.82), hasGrossValue("CHF", 152.03), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.38 + 4.83)), //
+                        hasAmount("CHF", 146.82), hasGrossValue("CHF", 151.65), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.83), //
                         hasForexGrossValue("EUR", 154.30))));
 
         assertThat(results, hasItem(purchase( //
@@ -10935,8 +10935,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-03-21T10:26"), hasShares(1.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 365.46), hasGrossValue("CHF", 359.77), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.90 + 4.79)), //
+                        hasAmount("CHF", 365.46), hasGrossValue("CHF", 360.67), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.79), //
                         hasForexGrossValue("EUR", 369.80))));
 
         assertThat(results, hasItem(purchase( //
@@ -10944,8 +10944,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-03-20T15:23"), hasShares(19.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 248.20), hasGrossValue("CHF", 244.69), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.61 + 2.90)), //
+                        hasAmount("CHF", 248.20), hasGrossValue("CHF", 245.30), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 2.90), //
                         hasForexGrossValue("EUR", 253.95))));
 
         assertThat(results, hasItem(purchase( //
@@ -10953,8 +10953,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-03-20T10:46"), hasShares(1.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 15.76), hasGrossValue("CHF", 12.82), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.03 + 2.91)), //
+                        hasAmount("CHF", 15.76), hasGrossValue("CHF", 12.85), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 2.91), //
                         hasForexGrossValue("EUR", 13.30))));
 
         assertThat(results, hasItem(sale( //
@@ -10962,8 +10962,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-03-14T14:30"), hasShares(1.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 439.29), hasGrossValue("CHF", 442.32), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.10 + 1.93)), //
+                        hasAmount("CHF", 439.29), hasGrossValue("CHF", 441.22), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.93), //
                         hasForexGrossValue("USD", 501.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10971,8 +10971,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-03-13T15:48"), hasShares(10.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 466.77), hasGrossValue("CHF", 463.69), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.16 + 1.92)), //
+                        hasAmount("CHF", 466.77), hasGrossValue("CHF", 464.85), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.92), //
                         hasForexGrossValue("USD", 530.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -10980,8 +10980,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-03-13T13:48"), hasShares(10.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 233.22), hasGrossValue("CHF", 229.75), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.58 + 2.89)), //
+                        hasAmount("CHF", 233.22), hasGrossValue("CHF", 230.33), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 2.89), //
                         hasForexGrossValue("EUR", 240.00))));
 
         assertThat(results, hasItem(sale( //
@@ -10989,8 +10989,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-03-12T16:34"), hasShares(3.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 384.26), hasGrossValue("CHF", 387.15), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.97 + 1.92)), //
+                        hasAmount("CHF", 384.26), hasGrossValue("CHF", 386.18), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.92), //
                         hasForexGrossValue("USD", 439.50))));
 
         assertThat(results, hasItem(sale( //
@@ -10998,8 +10998,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-03-12T14:31"), hasShares(4.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 351.09), hasGrossValue("CHF", 353.89), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.88 + 1.92)), //
+                        hasAmount("CHF", 351.09), hasGrossValue("CHF", 353.01), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.92), //
                         hasForexGrossValue("USD", 402.00))));
 
         assertThat(results, hasItem(sale( //
@@ -11007,8 +11007,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-03-12T10:49"), hasShares(10.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 227.02), hasGrossValue("CHF", 232.30), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.58 + 4.70)), //
+                        hasAmount("CHF", 227.02), hasGrossValue("CHF", 231.72), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.70), //
                         hasForexGrossValue("EUR", 242.00))));
 
         assertThat(results, hasItem(sale( //
@@ -11024,8 +11024,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-03-11T20:42"), hasShares(6.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 161.32), hasGrossValue("CHF", 163.65), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.41 + 1.92)), //
+                        hasAmount("CHF", 161.32), hasGrossValue("CHF", 163.24), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.92), //
                         hasForexGrossValue("USD", 186.00))));
 
         assertThat(results, hasItem(sale( //
@@ -11033,8 +11033,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-03-07T09:14"), hasShares(50.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 95.62), hasGrossValue("CHF", 100.59), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.25 + 4.72)), //
+                        hasAmount("CHF", 95.62), hasGrossValue("CHF", 100.34), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.72), //
                         hasForexGrossValue("EUR", 104.50))));
 
         assertThat(results, hasItem(sale( //
@@ -11042,8 +11042,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-02-27T16:00"), hasShares(6.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 441.17), hasGrossValue("CHF", 444.19), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.11 + 1.91)), //
+                        hasAmount("CHF", 441.17), hasGrossValue("CHF", 443.08), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.91), //
                         hasForexGrossValue("USD", 504.00))));
 
         assertThat(results, hasItem(sale( //
@@ -11051,8 +11051,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2024-02-20T15:33"), hasShares(1.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 415.50), hasGrossValue("CHF", 418.45), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.04 + 1.91)), //
+                        hasAmount("CHF", 415.50), hasGrossValue("CHF", 417.41), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.91), //
                         hasForexGrossValue("USD", 475.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -11068,8 +11068,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-10-18T11:59"), hasShares(19.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 86.39), hasGrossValue("CHF", 86.17), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.22), //
+                        hasAmount("CHF", 86.39), hasGrossValue("CHF", 86.39), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
                         hasForexGrossValue("EUR", 91.01))));
 
         assertThat(results, hasItem(purchase( //
@@ -11077,8 +11077,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-10-18T11:58"), hasShares(6.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 31.95), hasGrossValue("CHF", 27.22), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.07 + 4.66)), //
+                        hasAmount("CHF", 31.95), hasGrossValue("CHF", 27.29), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.66), //
                         hasForexGrossValue("EUR", 28.74))));
 
         assertThat(results, hasItem(purchase( //
@@ -11086,8 +11086,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-10-16T21:34"), hasShares(1.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 226.40), hasGrossValue("CHF", 223.94), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.56 + 1.90)), //
+                        hasAmount("CHF", 226.40), hasGrossValue("CHF", 224.50), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.90), //
                         hasForexGrossValue("USD", 249.50))));
 
         assertThat(results, hasItem(sale( //
@@ -11095,8 +11095,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-10-16T20:37"), hasShares(20.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 354.37), hasGrossValue("CHF", 357.16), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.89 + 1.90)), //
+                        hasAmount("CHF", 354.37), hasGrossValue("CHF", 356.27), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.90), //
                         hasForexGrossValue("USD", 396.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -11104,8 +11104,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-10-12T15:32"), hasShares(15.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 319.84), hasGrossValue("CHF", 314.36), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.79 + 4.69)), //
+                        hasAmount("CHF", 319.84), hasGrossValue("CHF", 315.15), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.69), //
                         hasForexGrossValue("EUR", 330.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -11113,8 +11113,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-09-27T16:56"), hasShares(1.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 679.93), hasGrossValue("CHF", 673.49), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.69 + 4.75)), //
+                        hasAmount("CHF", 679.93), hasGrossValue("CHF", 675.18), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.75), //
                         hasForexGrossValue("EUR", 698.80))));
 
         assertThat(results, hasItem(purchase( //
@@ -11122,8 +11122,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-08-07T14:10"), hasShares(40.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 300.00), hasGrossValue("CHF", 294.53), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.74 + 4.73)), //
+                        hasAmount("CHF", 300.00), hasGrossValue("CHF", 295.27), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.73), //
                         hasForexGrossValue("EUR", 306.80))));
 
         assertThat(results, hasItem(purchase( //
@@ -11131,8 +11131,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-07-14T14:54"), hasShares(30.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 199.85), hasGrossValue("CHF", 198.38), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.50 + 0.97)), //
+                        hasAmount("CHF", 199.85), hasGrossValue("CHF", 198.88), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.97), //
                         hasForexGrossValue("EUR", 205.86))));
 
         assertThat(results, hasItem(sale( //
@@ -11140,8 +11140,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-07-13T15:30"), hasShares(1.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 268.50), hasGrossValue("CHF", 271.11), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.68 + 1.93)), //
+                        hasAmount("CHF", 268.50), hasGrossValue("CHF", 270.43), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.93), //
                         hasForexGrossValue("USD", 313.70))));
 
         assertThat(results, hasItem(purchase( //
@@ -11149,8 +11149,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-06-27T14:52"), hasShares(15.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 228.56), hasGrossValue("CHF", 224.17), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.56 + 3.83)), //
+                        hasAmount("CHF", 228.56), hasGrossValue("CHF", 224.73), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 3.83), //
                         hasForexGrossValue("EUR", 229.50))));
 
         assertThat(results, hasItem(purchase( //
@@ -11158,8 +11158,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-06-23T09:00"), hasShares(3.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 269.54), hasGrossValue("CHF", 264.06), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.66 + 4.82)), //
+                        hasAmount("CHF", 269.54), hasGrossValue("CHF", 264.72), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.82), //
                         hasForexGrossValue("EUR", 269.85))));
 
         assertThat(results, hasItem(purchase( //
@@ -11167,8 +11167,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-06-22T09:05"), hasShares(60.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 292.19), hasGrossValue("CHF", 287.64), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.72 + 3.83)), //
+                        hasAmount("CHF", 292.19), hasGrossValue("CHF", 288.36), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 3.83), //
                         hasForexGrossValue("EUR", 294.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -11176,8 +11176,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-06-13T15:56"), hasShares(10.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 248.27), hasGrossValue("CHF", 242.86), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.61 + 4.80)), //
+                        hasAmount("CHF", 248.27), hasGrossValue("CHF", 243.47), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.80), //
                         hasForexGrossValue("EUR", 249.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -11203,8 +11203,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-06-08T18:31"), hasShares(16.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 48.09), hasGrossValue("CHF", 47.97), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.12), //
+                        hasAmount("CHF", 48.09), hasGrossValue("CHF", 48.09), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
                         hasForexGrossValue("USD", 53.44))));
 
         assertThat(results, hasItem(purchase( //
@@ -11212,8 +11212,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-06-08T18:31"), hasShares(23.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 69.13), hasGrossValue("CHF", 68.96), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.17), //
+                        hasAmount("CHF", 69.13), hasGrossValue("CHF", 69.13), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
                         hasForexGrossValue("USD", 76.82))));
 
         assertThat(results, hasItem(purchase( //
@@ -11221,8 +11221,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-06-08T18:31"), hasShares(10.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 30.06), hasGrossValue("CHF", 29.98), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.08), //
+                        hasAmount("CHF", 30.06), hasGrossValue("CHF", 30.06), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
                         hasForexGrossValue("USD", 33.40))));
 
         assertThat(results, hasItem(purchase( //
@@ -11230,8 +11230,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-06-08T18:31"), hasShares(1.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 4.96), hasGrossValue("CHF", 3.00), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.01 + 1.95)), //
+                        hasAmount("CHF", 4.96), hasGrossValue("CHF", 3.01), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.95), //
                         hasForexGrossValue("USD", 3.34))));
 
         assertThat(results, hasItem(sale( //
@@ -11239,8 +11239,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-05-30T15:30"), hasShares(3.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 539.98), hasGrossValue("CHF", 543.27), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.35 + 1.94)), //
+                        hasAmount("CHF", 539.98), hasGrossValue("CHF", 541.92), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.94), //
                         hasForexGrossValue("USD", 600.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -11248,8 +11248,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-05-22T16:37"), hasShares(3.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 170.82), hasGrossValue("CHF", 168.45), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.42 + 1.95)), //
+                        hasAmount("CHF", 170.82), hasGrossValue("CHF", 168.87), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.95), //
                         hasForexGrossValue("USD", 188.04))));
 
         assertThat(results, hasItem(sale( //
@@ -11257,8 +11257,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-05-22T15:42"), hasShares(1.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 222.33), hasGrossValue("CHF", 224.84), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.56 + 1.95)), //
+                        hasAmount("CHF", 222.33), hasGrossValue("CHF", 224.28), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.95), //
                         hasForexGrossValue("USD", 250.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -11266,8 +11266,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-05-02T10:34"), hasShares(30.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 299.32), hasGrossValue("CHF", 294.73), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.74 + 3.85)), //
+                        hasAmount("CHF", 299.32), hasGrossValue("CHF", 295.47), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 3.85), //
                         hasForexGrossValue("EUR", 300.00))));
 
         assertThat(results, hasItem(sale( //
@@ -11310,8 +11310,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-03-15T17:23"), hasShares(100.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 176.69), hasGrossValue("CHF", 175.27), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.44 + 0.98)), //
+                        hasAmount("CHF", 176.69), hasGrossValue("CHF", 175.71), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.98), //
                         hasForexGrossValue("USD", 190.00))));
 
         assertThat(results, hasItem(sale( //
@@ -11319,8 +11319,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-03-15T17:19"), hasShares(1.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 179.01), hasGrossValue("CHF", 180.44), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.45 + 0.98)), //
+                        hasAmount("CHF", 179.01), hasGrossValue("CHF", 179.99), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.98), //
                         hasForexGrossValue("USD", 194.62))));
 
         assertThat(results, hasItem(withFailureMessage( //
@@ -11338,8 +11338,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-03-02T15:30"), hasShares(4.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 414.43), hasGrossValue("CHF", 412.40), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.03 + 1.00)), //
+                        hasAmount("CHF", 414.43), hasGrossValue("CHF", 413.43), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.00), //
                         hasForexGrossValue("USD", 438.68))));
 
         assertThat(results, hasItem(purchase( //
@@ -11347,8 +11347,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-02-17T15:54"), hasShares(5.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 232.67), hasGrossValue("CHF", 232.09), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.58), //
+                        hasAmount("CHF", 232.67), hasGrossValue("CHF", 232.67), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
                         hasForexGrossValue("EUR", 235.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -11356,8 +11356,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-02-17T15:54"), hasShares(15.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 391.00), hasGrossValue("CHF", 385.17), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.97 + 4.86)), //
+                        hasAmount("CHF", 391.00), hasGrossValue("CHF", 386.14), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.86), //
                         hasForexGrossValue("EUR", 390.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -11365,8 +11365,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-02-17T14:41"), hasShares(10.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 419.24), hasGrossValue("CHF", 413.34), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.04 + 4.86)), //
+                        hasAmount("CHF", 419.24), hasGrossValue("CHF", 414.38), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.86), //
                         hasForexGrossValue("EUR", 419.20))));
 
         assertThat(results, hasItem(purchase( //
@@ -11374,8 +11374,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-01-26T19:45"), hasShares(6.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 450.24), hasGrossValue("CHF", 448.12), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.12 + 1.00)), //
+                        hasAmount("CHF", 450.24), hasGrossValue("CHF", 449.24), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.00), //
                         hasForexGrossValue("USD", 488.16))));
 
         assertThat(results, hasItem(purchase( //
@@ -11391,8 +11391,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-01-16T10:31"), hasShares(20.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 556.43), hasGrossValue("CHF", 562.75), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.40 + 4.92)), //
+                        hasAmount("CHF", 556.43), hasGrossValue("CHF", 561.35), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.92), //
                         hasForexGrossValue("EUR", 560.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -11400,8 +11400,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-01-13T14:55"), hasShares(20.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 496.24), hasGrossValue("CHF", 490.07), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.23 + 4.94)), //
+                        hasAmount("CHF", 496.24), hasGrossValue("CHF", 491.30), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.94), //
                         hasForexGrossValue("EUR", 489.00))));
 
         assertThat(results, hasItem(sale( //
@@ -11409,8 +11409,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-01-12T16:19"), hasShares(30.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 445.20), hasGrossValue("CHF", 447.33), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.12 + 1.01)), //
+                        hasAmount("CHF", 445.20), hasGrossValue("CHF", 446.21), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.01), //
                         hasForexGrossValue("USD", 480.00))));
 
         assertThat(results, hasItem(sale( //
@@ -11418,8 +11418,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-01-12T10:19"), hasShares(30.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 386.28), hasGrossValue("CHF", 392.19), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.98 + 4.93)), //
+                        hasAmount("CHF", 386.28), hasGrossValue("CHF", 391.21), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.93), //
                         hasForexGrossValue("EUR", 390.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -11427,8 +11427,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-01-06T15:38"), hasShares(3.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 288.03), hasGrossValue("CHF", 286.32), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.72 + 0.99)), //
+                        hasAmount("CHF", 288.03), hasGrossValue("CHF", 287.04), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.99), //
                         hasForexGrossValue("USD", 306.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -11436,8 +11436,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-01-04T16:36"), hasShares(30.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 199.80), hasGrossValue("CHF", 199.30), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.50), //
+                        hasAmount("CHF", 199.80), hasGrossValue("CHF", 199.80), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
                         hasForexGrossValue("EUR", 202.80))));
 
         assertThat(results, hasItem(purchase( //
@@ -11445,8 +11445,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2023-01-04T16:31"), hasShares(3.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 209.64), hasGrossValue("CHF", 208.13), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.52 + 0.99)), //
+                        hasAmount("CHF", 209.64), hasGrossValue("CHF", 208.65), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.99), //
                         hasForexGrossValue("USD", 224.25))));
 
         assertThat(results, hasItem(purchase( //
@@ -11454,8 +11454,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-12-16T16:45"), hasShares(5.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 417.47), hasGrossValue("CHF", 415.44), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.04 + 0.99)), //
+                        hasAmount("CHF", 417.47), hasGrossValue("CHF", 416.48), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.99), //
                         hasForexGrossValue("USD", 447.50))));
 
         assertThat(results, hasItem(purchase( //
@@ -11463,8 +11463,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-12-14T15:30"), hasShares(50.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 150.76), hasGrossValue("CHF", 149.40), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.37 + 0.99)), //
+                        hasAmount("CHF", 150.76), hasGrossValue("CHF", 149.77), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.99), //
                         hasForexGrossValue("USD", 161.50))));
 
         assertThat(results, hasItem(purchase( //
@@ -11472,8 +11472,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-12-13T16:29"), hasShares(2.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 304.77), hasGrossValue("CHF", 303.02), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.76 + 0.99)), //
+                        hasAmount("CHF", 304.77), hasGrossValue("CHF", 303.78), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.99), //
                         hasForexGrossValue("USD", 327.96))));
 
         assertThat(results, hasItem(purchase( //
@@ -11481,8 +11481,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-12-06T15:35"), hasShares(3.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 507.69), hasGrossValue("CHF", 505.43), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.27 + 0.99)), //
+                        hasAmount("CHF", 507.69), hasGrossValue("CHF", 506.70), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.99), //
                         hasForexGrossValue("USD", 540.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -11490,8 +11490,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-12-02T12:39"), hasShares(20.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 298.74), hasGrossValue("CHF", 295.04), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.74 + 2.96)), //
+                        hasAmount("CHF", 298.74), hasGrossValue("CHF", 295.78), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 2.96), //
                         hasForexGrossValue("EUR", 300.68))));
 
         assertThat(results, hasItem(sale( //
@@ -11499,8 +11499,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-11-22T09:08"), hasShares(20.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 486.42), hasGrossValue("CHF", 492.48), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.23 + 4.83)), //
+                        hasAmount("CHF", 486.42), hasGrossValue("CHF", 491.25), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.83), //
                         hasForexGrossValue("EUR", 500.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -11508,8 +11508,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-11-18T16:16"), hasShares(50.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 204.30), hasGrossValue("CHF", 198.96), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.50 + 4.84)), //
+                        hasAmount("CHF", 204.30), hasGrossValue("CHF", 199.46), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.84), //
                         hasForexGrossValue("EUR", 202.25))));
 
         assertThat(results, hasItem(sale( //
@@ -11517,8 +11517,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-11-10T15:30"), hasShares(25.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 344.39), hasGrossValue("CHF", 346.24), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.86 + 0.99)), //
+                        hasAmount("CHF", 344.39), hasGrossValue("CHF", 345.38), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.99), //
                         hasForexGrossValue("USD", 355.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -11526,8 +11526,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-11-09T18:12"), hasShares(5.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 437.44), hasGrossValue("CHF", 435.36), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.09 + 0.99)), //
+                        hasAmount("CHF", 437.44), hasGrossValue("CHF", 436.45), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.99), //
                         hasForexGrossValue("USD", 443.70))));
 
         assertThat(results, hasItem(sale( //
@@ -11535,8 +11535,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-11-04T17:00"), hasShares(20.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 492.02), hasGrossValue("CHF", 498.11), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.24 + 4.85)), //
+                        hasAmount("CHF", 492.02), hasGrossValue("CHF", 496.87), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.85), //
                         hasForexGrossValue("EUR", 503.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -11544,8 +11544,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-11-04T16:58"), hasShares(5.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 446.34), hasGrossValue("CHF", 444.24), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.11 + 0.99)), //
+                        hasAmount("CHF", 446.34), hasGrossValue("CHF", 445.35), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.99), //
                         hasForexGrossValue("USD", 446.20))));
 
         assertThat(results, hasItem(sale( //
@@ -11553,8 +11553,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-11-04T15:22"), hasShares(25.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 335.35), hasGrossValue("CHF", 337.18), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.84 + 0.99)), //
+                        hasAmount("CHF", 335.35), hasGrossValue("CHF", 336.34), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.99), //
                         hasForexGrossValue("USD", 337.50))));
 
         assertThat(results, hasItem(sale( //
@@ -11562,8 +11562,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-11-04T14:54"), hasShares(5.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 646.06), hasGrossValue("CHF", 652.53), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.63 + 4.84)), //
+                        hasAmount("CHF", 646.06), hasGrossValue("CHF", 650.90), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.84), //
                         hasForexGrossValue("EUR", 660.00))));
 
         assertThat(results, hasItem(sale( //
@@ -11571,8 +11571,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-11-04T14:53"), hasShares(20.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 452.76), hasGrossValue("CHF", 458.74), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.14 + 4.84)), //
+                        hasAmount("CHF", 452.76), hasGrossValue("CHF", 457.60), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.84), //
                         hasForexGrossValue("EUR", 464.00))));
 
         assertThat(results, hasItem(sale( //
@@ -11580,8 +11580,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-11-02T09:03"), hasShares(30.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 273.51), hasGrossValue("CHF", 279.06), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.70 + 4.85)), //
+                        hasAmount("CHF", 273.51), hasGrossValue("CHF", 278.36), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.85), //
                         hasForexGrossValue("EUR", 282.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -11589,8 +11589,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-10-28T16:35"), hasShares(5.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 498.33), hasGrossValue("CHF", 496.10), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.24 + 0.99)), //
+                        hasAmount("CHF", 498.33), hasGrossValue("CHF", 497.34), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.99), //
                         hasForexGrossValue("USD", 499.04))));
 
         assertThat(results, hasItem(sale( //
@@ -11598,8 +11598,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-10-28T16:13"), hasShares(20.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 396.57), hasGrossValue("CHF", 402.44), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.00 + 4.87)), //
+                        hasAmount("CHF", 396.57), hasGrossValue("CHF", 401.44), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.87), //
                         hasForexGrossValue("EUR", 405.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -11607,8 +11607,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-10-28T16:11"), hasShares(50.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 484.56), hasGrossValue("CHF", 478.49), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.20 + 4.87)), //
+                        hasAmount("CHF", 484.56), hasGrossValue("CHF", 479.69), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.87), //
                         hasForexGrossValue("EUR", 483.90))));
 
         assertThat(results, hasItem(sale( //
@@ -11616,8 +11616,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-10-26T10:52"), hasShares(10.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 242.73), hasGrossValue("CHF", 248.22), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.62 + 4.87)), //
+                        hasAmount("CHF", 242.73), hasGrossValue("CHF", 247.60), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.87), //
                         hasForexGrossValue("EUR", 250.00))));
 
         assertThat(results, hasItem(sale( //
@@ -11625,8 +11625,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-10-26T09:28"), hasShares(5.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 651.61), hasGrossValue("CHF", 658.12), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.64 + 4.87)), //
+                        hasAmount("CHF", 651.61), hasGrossValue("CHF", 656.48), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.87), //
                         hasForexGrossValue("EUR", 662.50))));
 
         assertThat(results, hasItem(purchase( //
@@ -11634,8 +11634,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-09-20T12:41"), hasShares(14.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 296.83), hasGrossValue("CHF", 291.36), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.73 + 4.74)), //
+                        hasAmount("CHF", 296.83), hasGrossValue("CHF", 292.09), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.74), //
                         hasForexGrossValue("EUR", 302.40))));
 
         assertThat(results, hasItem(purchase( //
@@ -11643,8 +11643,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-09-19T15:29"), hasShares(20.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 413.11), hasGrossValue("CHF", 407.35), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.02 + 4.74)), //
+                        hasAmount("CHF", 413.11), hasGrossValue("CHF", 408.37), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.74), //
                         hasForexGrossValue("EUR", 423.00))));
 
         assertThat(results, hasItem(sale( //
@@ -11652,8 +11652,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-09-19T09:22"), hasShares(25.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 454.07), hasGrossValue("CHF", 459.96), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.15 + 4.74)), //
+                        hasAmount("CHF", 454.07), hasGrossValue("CHF", 458.81), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.74), //
                         hasForexGrossValue("EUR", 475.00))));
 
         assertThat(results, hasItem(sale( //
@@ -11661,8 +11661,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-08-08T13:50"), hasShares(30.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 285.48), hasGrossValue("CHF", 290.50), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.72 + 4.30)), //
+                        hasAmount("CHF", 285.48), hasGrossValue("CHF", 289.78), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.30), //
                         hasForexGrossValue("EUR", 297.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -11670,8 +11670,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-07-12T16:55"), hasShares(16.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 412.91), hasGrossValue("CHF", 407.54), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.02 + 4.35)), //
+                        hasAmount("CHF", 412.91), hasGrossValue("CHF", 408.56), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.35), //
                         hasForexGrossValue("EUR", 414.40))));
 
         assertThat(results, hasItem(purchase( //
@@ -11679,8 +11679,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-07-05T10:06"), hasShares(5.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 566.75), hasGrossValue("CHF", 560.95), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.41 + 4.39)), //
+                        hasAmount("CHF", 566.75), hasGrossValue("CHF", 562.36), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.39), //
                         hasForexGrossValue("EUR", 564.50))));
 
         assertThat(results, hasItem(purchase( //
@@ -11688,8 +11688,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-06-29T15:40"), hasShares(7.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 176.37), hasGrossValue("CHF", 175.93), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.44), //
+                        hasAmount("CHF", 176.37), hasGrossValue("CHF", 176.37), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
                         hasForexGrossValue("EUR", 176.40))));
 
         assertThat(results, hasItem(purchase( //
@@ -11697,8 +11697,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-06-29T15:40"), hasShares(12.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 302.34), hasGrossValue("CHF", 301.58), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.76), //
+                        hasAmount("CHF", 302.34), hasGrossValue("CHF", 302.34), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
                         hasForexGrossValue("EUR", 302.40))));
 
         assertThat(results, hasItem(purchase( //
@@ -11706,8 +11706,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-06-29T15:40"), hasShares(1.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 29.61), hasGrossValue("CHF", 25.14), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.06 + 4.41)), //
+                        hasAmount("CHF", 29.61), hasGrossValue("CHF", 25.20), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.41), //
                         hasForexGrossValue("EUR", 25.20))));
 
         assertThat(results, hasItem(purchase( //
@@ -11715,8 +11715,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-06-29T15:15"), hasShares(15.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 299.28), hasGrossValue("CHF", 294.12), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.74 + 4.42)), //
+                        hasAmount("CHF", 299.28), hasGrossValue("CHF", 294.86), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.42), //
                         hasForexGrossValue("EUR", 294.30))));
 
         assertThat(results, hasItem(purchase( //
@@ -11724,8 +11724,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-05-06T09:55"), hasShares(60.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 626.71), hasGrossValue("CHF", 620.57), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.56 + 4.58)), //
+                        hasAmount("CHF", 626.71), hasGrossValue("CHF", 622.13), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.58), //
                         hasForexGrossValue("EUR", 599.70))));
 
         assertThat(results, hasItem(purchase( //
@@ -11733,8 +11733,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-03-25T10:22"), hasShares(15.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 354.98), hasGrossValue("CHF", 349.60), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (0.88 + 4.50)), //
+                        hasAmount("CHF", 354.98), hasGrossValue("CHF", 350.48), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.50), //
                         hasForexGrossValue("EUR", 343.50))));
 
         assertThat(results, hasItem(purchase( //
@@ -11742,8 +11742,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-03-25T09:04"), hasShares(20.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 576.83), hasGrossValue("CHF", 570.89), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.43 + 4.51)), //
+                        hasAmount("CHF", 576.83), hasGrossValue("CHF", 572.32), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.51), //
                         hasForexGrossValue("EUR", 560.00))));
 
         assertThat(results, hasItem(sale( //
@@ -11751,8 +11751,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-03-24T20:57"), hasShares(6.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 970.89), hasGrossValue("CHF", 973.83), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.43 + 0.51)), //
+                        hasAmount("CHF", 970.89), hasGrossValue("CHF", 971.40), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.51), //
                         hasForexGrossValue("USD", 1044.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -11760,8 +11760,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-03-11T11:41"), hasShares(25.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 511.43), hasGrossValue("CHF", 505.65), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.27 + 4.51)), //
+                        hasAmount("CHF", 511.43), hasGrossValue("CHF", 506.92), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.51), //
                         hasForexGrossValue("EUR", 496.25))));
 
         assertThat(results, hasItem(purchase( //
@@ -11769,8 +11769,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-03-08T16:38"), hasShares(50.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 646.07), hasGrossValue("CHF", 643.95), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.61 + 0.51)), //
+                        hasAmount("CHF", 646.07), hasGrossValue("CHF", 645.56), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.51), //
                         hasForexGrossValue("USD", 695.00))));
 
         assertThat(results, hasItem(sale( //
@@ -11786,8 +11786,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-02-01T10:57"), hasShares(5.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 792.37), hasGrossValue("CHF", 785.82), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.97 + 4.58)), //
+                        hasAmount("CHF", 792.37), hasGrossValue("CHF", 787.79), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.58), //
                         hasForexGrossValue("EUR", 758.00))));
 
         assertThat(results, hasItem(sale( //
@@ -11795,8 +11795,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-01-28T13:29"), hasShares(30.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 976.71), hasGrossValue("CHF", 983.74), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.45 + 4.58)), //
+                        hasAmount("CHF", 976.71), hasGrossValue("CHF", 981.29), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.58), //
                         hasForexGrossValue("EUR", 945.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -11812,8 +11812,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-01-19T20:46"), hasShares(6.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 922.91), hasGrossValue("CHF", 920.08), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.31 + 0.52)), //
+                        hasAmount("CHF", 922.91), hasGrossValue("CHF", 922.39), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.52), //
                         hasForexGrossValue("USD", 1007.40))));
 
         assertThat(results, hasItem(sale( //
@@ -11821,8 +11821,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-01-19T17:21"), hasShares(5.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 769.15), hasGrossValue("CHF", 771.59), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (1.92 + 0.52)), //
+                        hasAmount("CHF", 769.15), hasGrossValue("CHF", 769.67), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.52), //
                         hasForexGrossValue("USD", 840.00))));
 
         assertThat(results, hasItem(purchase( //
@@ -11830,8 +11830,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-01-13T14:25"), hasShares(30.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 1014.91), hasGrossValue("CHF", 1007.77), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.53 + 4.61)), //
+                        hasAmount("CHF", 1014.91), hasGrossValue("CHF", 1010.30), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.61), //
                         hasForexGrossValue("EUR", 966.60))));
 
         assertThat(results, hasItem(purchase( //
@@ -11839,8 +11839,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2022-01-05T18:24"), hasShares(50.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 960.46), hasGrossValue("CHF", 957.54), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", (2.40 + 0.52)), //
+                        hasAmount("CHF", 960.46), hasGrossValue("CHF", 959.94), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.52), //
                         hasForexGrossValue("USD", 1048.50))));
 
         assertThat(results, hasItem(purchase( //
@@ -11848,8 +11848,8 @@ public class DegiroPDFExtractorTest
                         hasDate("2021-12-16T15:54"), hasShares(5.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 817.42), hasGrossValue("CHF", 816.60), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.82), //
+                        hasAmount("CHF", 817.42), hasGrossValue("CHF", 817.42), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
                         hasForexGrossValue("USD", 887.30))));
     }
 

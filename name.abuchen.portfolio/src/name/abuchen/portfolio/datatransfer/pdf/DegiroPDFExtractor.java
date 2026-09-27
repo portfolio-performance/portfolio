@@ -1873,9 +1873,21 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         t.setShares(asShares(v.get("shares"), Locale.GERMANY));
                                     }
 
-                                    var fxFeeAmount = Money.of(v.get("currencyAccount"), asAmount(v.get("fxFee")));
+                                    // @formatter:off
+                                    // Depending on the layout, the total amount includes the AutoFX fee or not.
+                                    // The fee is only added if the total amount includes it.
+                                    //
+                                    // 16-01-2026 21:59 LIGHTWAVE LOGIC INC US5322751042 NDQ XNAS 130 4,6000 USD -598,00 USD -515,52 1,1600 -1,29 -2,00 -518,81
+                                    // 05-12-2025 15:22 ASML HOLDING NV NL0010273215 XET XETR -1 960,4000 EUR 960,40 EUR 898,75 1,0686 -2,25 -4,60 894,15
+                                    // @formatter:on
+                                    if (isAutoFxFeeIncludedInTotal(t.getPortfolioTransaction().getType(), asAmount(v.get("gross")),
+                                                    asAmount(v.get("fxFee")), asAmount(v.get("fee")), asAmount(v.get("amount"))))
+                                    {
+                                        var fxFeeAmount = Money.of(v.get("currencyAccount"), asAmount(v.get("fxFee")));
+                                        t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, fxFeeAmount));
+                                    }
+
                                     var feeAmount = Money.of(v.get("currencyAccount"), asAmount(v.get("fee")));
-                                    t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, fxFeeAmount));
                                     t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, feeAmount));
 
                                     var currencyFx = asCurrencyCode(v.get("currency"));
@@ -1935,8 +1947,19 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         t.setShares(asShares(v.get("shares"), Locale.GERMANY));
                                     }
 
-                                    var fxFeeAmount = Money.of(v.get("currencyAccount"), asAmount(v.get("fxFee")));
-                                    t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, fxFeeAmount));
+                                    // @formatter:off
+                                    // Depending on the layout, the total amount includes the AutoFX fee or not.
+                                    // The fee is only added if the total amount includes it.
+                                    //
+                                    // 07-01-2026 21:26 EURO SUN MINING INC CA29872L2066 TOR XTSE 1.500 0,3850 CAD -577,50 CAD -357,01 1,6176 -0,89 -357,91
+                                    // 22-04-2025 14:39 AMUNDI MSCI CHINA UCITS LU1841731745 XET XETA -20 16,3240 EUR 326,48 EUR 304,28 1,0730 -0,76 304,28
+                                    // @formatter:on
+                                    if (isAutoFxFeeIncludedInTotal(t.getPortfolioTransaction().getType(), asAmount(v.get("gross")),
+                                                    asAmount(v.get("fxFee")), 0L, asAmount(v.get("amount"))))
+                                    {
+                                        var fxFeeAmount = Money.of(v.get("currencyAccount"), asAmount(v.get("fxFee")));
+                                        t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, fxFeeAmount));
+                                    }
 
                                     var currencyFx = asCurrencyCode(v.get("currency"));
 
@@ -2884,6 +2907,22 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         .ifPresent(nameContinued -> values.put("nameContinued", nameContinued));
 
         transaction.setSecurity(getOrCreateSecurity(values));
+    }
+
+    /**
+     * Checks whether the total amount of the transaction report includes the
+     * AutoFX fee. Some layouts list the AutoFX fee without deducting it from
+     * the total amount. The variant closer to the total amount wins, which
+     * tolerates a rounding difference of one cent.
+     */
+    private boolean isAutoFxFeeIncludedInTotal(PortfolioTransaction.Type type, long gross, long fxFee, long fee,
+                    long amount)
+    {
+        var sign = type == PortfolioTransaction.Type.BUY ? 1 : -1;
+        var deltaIncluded = Math.abs(amount - (gross + sign * (fxFee + fee)));
+        var deltaExcluded = Math.abs(amount - (gross + sign * fee));
+
+        return deltaIncluded < deltaExcluded;
     }
 
     private static class TransactionReportNameContinuationHelper
