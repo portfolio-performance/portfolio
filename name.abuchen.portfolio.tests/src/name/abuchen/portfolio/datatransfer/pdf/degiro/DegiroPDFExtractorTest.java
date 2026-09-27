@@ -19,11 +19,12 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interestCharge;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.skippedItem;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
@@ -4157,8 +4158,8 @@ public class DegiroPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(17L));
-        assertThat(countBuySell(results), is(32L));
-        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countBuySell(results), is(28L));
+        assertThat(countAccountTransactions(results), is(4L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
@@ -4213,7 +4214,7 @@ public class DegiroPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.70))));
 
         // check xx buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(27).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(23).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
@@ -4231,7 +4232,7 @@ public class DegiroPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.90))));
 
         // check xx buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(29).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(25).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
@@ -4249,7 +4250,7 @@ public class DegiroPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.80))));
 
         // check xx buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(30).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(26).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
@@ -4266,6 +4267,14 @@ public class DegiroPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.90))));
 
+        // check outbound delivery (option expired worthless)
+        assertThat(results, hasItem(outboundDelivery( //
+                        hasSecurity(hasIsin("DE000C25KFE8")), //
+                        hasDate("2019-02-08T13:27"), hasShares(3.00), //
+                        hasSource("Transaktionsuebersicht01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4819,10 +4828,10 @@ public class DegiroPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(11L));
-        assertThat(countBuySell(results), is(21L));
-        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countBuySell(results), is(17L));
+        assertThat(countAccountTransactions(results), is(4L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(2L));
         assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(32));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
@@ -5508,8 +5517,8 @@ public class DegiroPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(186L));
-        assertThat(countBuySell(results), is(471L));
-        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countBuySell(results), is(451L));
+        assertThat(countAccountTransactions(results), is(20L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
@@ -5568,7 +5577,7 @@ public class DegiroPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.09))));
 
         // check 455th buy/sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(455).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(435).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -6479,10 +6488,10 @@ public class DegiroPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(4L));
         assertThat(countBuySell(results), is(10L));
-        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(countSkippedItems(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(15));
         new AssertImportActions().check(results, "EUR");
 
@@ -6564,15 +6573,13 @@ public class DegiroPDFExtractorTest
                         hasAmount("EUR", 222.07), hasGrossValue("EUR", 220.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 2.07))));
 
-        assertThat(results, hasItem(skippedItem( //
-                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
-                        sale( //
-                                        hasSecurity(hasIsin("DE000C5F3ZF0")), //
-                                        hasDate("2020-06-05T13:30"), hasShares(1.00), //
-                                        hasSource("Transaktionsuebersicht21.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+        assertThat(results, hasItem(outboundDelivery( //
+                        hasSecurity(hasIsin("DE000C5F3ZF0")), //
+                        hasDate("2020-06-05T13:30"), hasShares(1.00), //
+                        hasSource("Transaktionsuebersicht21.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         assertThat(results, hasItem(sale( //
                         hasSecurity(hasIsin("DE000C5F3ZG8")), //
@@ -6611,10 +6618,10 @@ public class DegiroPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(6L));
         assertThat(countBuySell(results), is(11L));
-        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(countSkippedItems(results), is(2L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(19));
         new AssertImportActions().check(results, "EUR");
 
@@ -6693,25 +6700,21 @@ public class DegiroPDFExtractorTest
                         hasAmount("EUR", 89.00), hasGrossValue("EUR", 89.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        assertThat(results, hasItem(skippedItem( //
-                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
-                        sale( //
-                                        hasSecurity(hasIsin("DE000C3311K0")), //
-                                        hasDate("2019-04-26T13:39"), hasShares(1.00), //
-                                        hasSource("Transaktionsuebersicht22.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+        assertThat(results, hasItem(outboundDelivery( //
+                        hasSecurity(hasIsin("DE000C3311K0")), //
+                        hasDate("2019-04-26T13:39"), hasShares(1.00), //
+                        hasSource("Transaktionsuebersicht22.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        assertThat(results, hasItem(skippedItem( //
-                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
-                        sale( //
-                                        hasSecurity(hasIsin("DE000C3311P9")), //
-                                        hasDate("2019-04-26T13:39"), hasShares(4.00), //
-                                        hasSource("Transaktionsuebersicht22.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+        assertThat(results, hasItem(outboundDelivery( //
+                        hasSecurity(hasIsin("DE000C3311P9")), //
+                        hasDate("2019-04-26T13:39"), hasShares(4.00), //
+                        hasSource("Transaktionsuebersicht22.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         assertThat(results, hasItem(purchase( //
                         hasSecurity(hasIsin("DE000C34JCK6")), //
@@ -7480,10 +7483,10 @@ public class DegiroPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(39L));
         assertThat(countBuySell(results), is(72L));
-        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransactions(results), is(5L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(countSkippedItems(results), is(5L));
+        assertThat(countItemsWithFailureMessage(results), is(2L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(116));
         new AssertImportActions().check(results, "EUR");
 
@@ -8116,15 +8119,13 @@ public class DegiroPDFExtractorTest
                         hasAmount("EUR", 57.89), hasGrossValue("EUR", 57.89), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        assertThat(results, hasItem(skippedItem( //
-                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
-                        sale( //
-                                        hasSecurity(hasIsin("FR0014008D33")), //
-                                        hasDate("2022-03-25T00:00"), hasShares(1412.00), //
-                                        hasSource("Transactions_english02.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+        assertThat(results, hasItem(outboundDelivery( //
+                        hasSecurity(hasIsin("FR0014008D33")), //
+                        hasDate("2022-03-25T00:00"), hasShares(1412.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         assertThat(results, hasItem(purchase( //
                         hasSecurity(hasIsin("FR0014008D33")), //
@@ -8134,9 +8135,9 @@ public class DegiroPDFExtractorTest
                         hasAmount("EUR", 57.89), hasGrossValue("EUR", 57.89), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        assertThat(results, hasItem(skippedItem( //
-                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
-                        purchase( //
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionInboundDeliveryWithoutValue, //
+                        inboundDelivery( //
                                         hasSecurity(hasIsin("FR0014008D33")), //
                                         hasDate("2022-03-11T00:00"), hasShares(1412.00), //
                                         hasSource("Transactions_english02.txt"), //
@@ -8192,15 +8193,13 @@ public class DegiroPDFExtractorTest
                         hasAmount("EUR", 1004.20), hasGrossValue("EUR", 999.70), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 4.50))));
 
-        assertThat(results, hasItem(skippedItem( //
-                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
-                        sale( //
-                                        hasSecurity(hasIsin("NL00150001Y3")), //
-                                        hasDate("2020-12-29T17:21"), hasShares(8.00), //
-                                        hasSource("Transactions_english02.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+        assertThat(results, hasItem(outboundDelivery( //
+                        hasSecurity(hasIsin("NL00150001Y3")), //
+                        hasDate("2020-12-29T17:21"), hasShares(8.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         assertThat(results, hasItem(purchase( //
                         hasSecurity(hasIsin("NL00150004A7")), //
@@ -8234,15 +8233,13 @@ public class DegiroPDFExtractorTest
                         hasAmount("EUR", 583.00), hasGrossValue("EUR", 583.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        assertThat(results, hasItem(skippedItem( //
-                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
-                        sale( //
-                                        hasSecurity(hasIsin("NL00150001Y3")), //
-                                        hasDate("2020-12-08T00:00"), hasShares(325.00), //
-                                        hasSource("Transactions_english02.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+        assertThat(results, hasItem(outboundDelivery( //
+                        hasSecurity(hasIsin("NL00150001Y3")), //
+                        hasDate("2020-12-08T00:00"), hasShares(325.00), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         assertThat(results, hasItem(purchase( //
                         hasSecurity(hasIsin("NL0000352565")), //
@@ -8252,9 +8249,9 @@ public class DegiroPDFExtractorTest
                         hasAmount("EUR", 583.00), hasGrossValue("EUR", 583.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        assertThat(results, hasItem(skippedItem( //
-                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
-                        purchase( //
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionInboundDeliveryWithoutValue, //
+                        inboundDelivery( //
                                         hasSecurity(hasIsin("NL00150001Y3")), //
                                         hasDate("2020-12-02T00:00"), hasShares(333.00), //
                                         hasSource("Transactions_english02.txt"), //
@@ -8436,10 +8433,10 @@ public class DegiroPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(95L));
-        assertThat(countBuySell(results), is(723L));
-        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countBuySell(results), is(715L));
+        assertThat(countAccountTransactions(results), is(8L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(4L));
         assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(818));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
@@ -8493,7 +8490,7 @@ public class DegiroPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.86))));
 
         // check 280th buy/sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(281).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(276).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -8515,7 +8512,7 @@ public class DegiroPDFExtractorTest
         assertThat(grossValueUnit2.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(14950.40))));
 
         // check 412th buy/sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(412).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(404).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -8537,7 +8534,7 @@ public class DegiroPDFExtractorTest
         assertThat(grossValueUnit3.getForex(), is(Money.of("HKD", Values.Amount.factorize(46240.00))));
 
         // check 505th buy/sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(506).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(498).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -8570,10 +8567,10 @@ public class DegiroPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(108L));
-        assertThat(countBuySell(results), is(1126L));
-        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countBuySell(results), is(1116L));
+        assertThat(countAccountTransactions(results), is(10L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(6L));
         assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1234));
 
@@ -8604,7 +8601,7 @@ public class DegiroPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.18))));
 
         // check 233th buy/sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(234).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(233).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -8623,7 +8620,7 @@ public class DegiroPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.67))));
 
         // check 645th buy/sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(646).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(645).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -8642,7 +8639,7 @@ public class DegiroPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 850th buy/sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(851).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(850).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -8659,6 +8656,17 @@ public class DegiroPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check inbound delivery (spin-off)
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionInboundDeliveryWithoutValue, //
+                        inboundDelivery( //
+                                        hasSecurity(hasIsin("US92556V1061")), //
+                                        hasDate("2020-11-17T00:00"), hasShares(15.00), //
+                                        hasSource("Transakcje03.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("USD", 0.00), hasGrossValue("USD", 0.00), //
+                                        hasTaxes("USD", 0.00), hasFees("USD", 0.00)))));
     }
 
     @Test
@@ -9586,10 +9594,10 @@ public class DegiroPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(64L));
         assertThat(countBuySell(results), is(213L));
-        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(countSkippedItems(results), is(2L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(279));
         new AssertImportActions().check(results, "CHF");
 
@@ -11289,15 +11297,13 @@ public class DegiroPDFExtractorTest
                         hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
                         hasForexGrossValue("EUR", 24.84))));
 
-        assertThat(results, hasItem(skippedItem( //
-                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
-                        sale( //
-                                        hasSecurity(hasIsin("FR001400GG91")), //
-                                        hasDate("2023-03-23T00:00"), hasShares(50.00), //
-                                        hasSource("Transactions_french03.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("CHF", 0.00), hasGrossValue("CHF", 0.00), //
-                                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00)))));
+        assertThat(results, hasItem(outboundDelivery( //
+                        hasSecurity(hasIsin("FR001400GG91")), //
+                        hasDate("2023-03-23T00:00"), hasShares(50.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         assertThat(results, hasItem(purchase( //
                         hasSecurity(hasIsin("US2254011081")), //
@@ -11317,15 +11323,15 @@ public class DegiroPDFExtractorTest
                         hasTaxes("CHF", 0.00), hasFees("CHF", (0.45 + 0.98)), //
                         hasForexGrossValue("USD", 194.62))));
 
-        assertThat(results, hasItem(skippedItem( //
-                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
-                        purchase( //
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionInboundDeliveryWithoutValue, //
+                        inboundDelivery( //
                                         hasSecurity(hasIsin("FR001400GG91")), //
                                         hasDate("2023-03-08T00:00"), hasShares(50.00), //
                                         hasSource("Transactions_french03.txt"), //
                                         hasNote(null), //
-                                        hasAmount("CHF", 0.00), hasGrossValue("CHF", 0.00), //
-                                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00)))));
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         assertThat(results, hasItem(purchase( //
                         hasSecurity(hasIsin("US88579Y1010")), //
@@ -11858,10 +11864,10 @@ public class DegiroPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(55L));
-        assertThat(countBuySell(results), is(90L));
-        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countBuySell(results), is(85L));
+        assertThat(countAccountTransactions(results), is(5L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(4L));
         assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(145));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
@@ -11903,7 +11909,7 @@ public class DegiroPDFExtractorTest
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(237.12))));
 
         // check 2nd buy/sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(55).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(51).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
