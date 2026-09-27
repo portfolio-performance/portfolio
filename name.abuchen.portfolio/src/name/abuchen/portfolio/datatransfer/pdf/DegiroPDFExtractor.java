@@ -2667,15 +2667,41 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         )
 
                         .wrap(t -> {
-                            // Account statements that carry the account currency in the
-                            // document context (the layout with the AutoFX column) also list
-                            // corporate actions such as rights or non-tradeable positions with
-                            // a total amount of zero. These are no transactions and are
-                            // skipped. Older layouts keep their previous behavior.
-                            if (type.getCurrentContext().containsKey("currencyAccount")
-                                            && t.getPortfolioTransaction().getCurrencyCode() != null
-                                            && t.getPortfolioTransaction().getAmount() == 0)
-                                return new SkippedItem(new BuySellEntryItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                            // @formatter:off
+                            // A buy or sell with a total amount of zero has no booking on the cash
+                            // account, e.g. an option that expires worthless or subscription rights
+                            // that are booked in and out. It is imported as delivery. Without an
+                            // amount there is nothing to convert, therefore the delivery is booked
+                            // in the currency of the security.
+                            //
+                            // 05-06-2020 13:30 ODX1 C12700.00 05JUN20 DE000C5F3ZF0 ERX -1 0,0000 EUR 0,00 EUR 0,00 0,00 0,00
+                            // @formatter:on
+                            var tx = t.getPortfolioTransaction();
+
+                            if (tx.getCurrencyCode() != null && tx.getAmount() == 0)
+                            {
+                                var delivery = new PortfolioTransaction();
+                                delivery.setType(tx.getType() == PortfolioTransaction.Type.SELL
+                                                ? PortfolioTransaction.Type.DELIVERY_OUTBOUND
+                                                : PortfolioTransaction.Type.DELIVERY_INBOUND);
+                                delivery.setDateTime(tx.getDateTime());
+                                delivery.setSecurity(tx.getSecurity());
+                                delivery.setShares(tx.getShares());
+                                delivery.setCurrencyCode(tx.getSecurity().getCurrencyCode() != null
+                                                ? tx.getSecurity().getCurrencyCode()
+                                                : tx.getCurrencyCode());
+                                delivery.setAmount(0);
+                                delivery.setNote(tx.getNote());
+
+                                var item = new TransactionItem(delivery);
+
+                                // An inbound delivery requires a value. The document does not
+                                // carry one, therefore the user has to enter the value manually.
+                                if (delivery.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND)
+                                    item.setFailureMessage(Messages.MsgErrorTransactionInboundDeliveryWithoutValue);
+
+                                return item;
+                            }
 
                             return new BuySellEntryItem(t);
                         }));
