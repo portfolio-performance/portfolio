@@ -1593,13 +1593,17 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         + "|Transa..es)", (context, lines) -> {
                             // @formatter:off
                             // The account currency is not part of the transaction line. It is
-                            // taken from the table header of the report.
+                            // taken from the table header of the report, where it is followed by
+                            // the next column title. Transaction lines are never taken into account.
                             //
                             // exchange Venue Quantity Price Local value Value EUR Exchange AutoFX and/or third
                             // d'exécution locale CHF change conversion
                             // Lokalwährung Wert EUR Wec
                             // @formatter:on
-                            Pattern pCurrencyAccount = Pattern.compile("^.*(Local value Value|locale|Lokalw.hrung Wert) (?<currency>[A-Z]{3}) .*$");
+                            Pattern pCurrencyAccount = Pattern.compile("^(?![\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )"
+                                            + ".*(Local value Value|locale|Lokalw.hrung Wert) "
+                                            + "(?<currency>[A-Z]{3}) "
+                                            + "(Exchange|change|Wec).*$");
 
                             // @formatter:off
                             // The name of the security can be spread over several lines.
