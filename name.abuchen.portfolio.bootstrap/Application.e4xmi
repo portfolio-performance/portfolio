@@ -62,6 +62,9 @@
         <children xsi:type="menu:Menu" xmi:id="_mF9JAEYQEeSRXYVe298mXg" elementId="name.abuchen.portfolio.ui.menu.file.import" label="%command.import.name" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/import_file.png">
           <children xsi:type="menu:HandledMenuItem" xmi:id="_tHcwMI50Eeei6L14_E-zxg" elementId="name.abuchen.portfolio.ui.menu.file.import.PDFassistant" label="%command.import.pdf.import-pdf" tooltip="" mnemonics="" command="_pgC00EYREeSRXYVe298mXg"/>
           <children xsi:type="menu:HandledMenuItem" xmi:id="_C1cmoLptEeSHOs-ah25CLg" elementId="name.abuchen.portfolio.ui.menu.file.import.create-text" label="%command.import.pdf.create-text" tooltip="%command.import.pdf.create-text.tooltip" command="_Jw7yELptEeSHOs-ah25CLg"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_ImportPDFTextMenuItem" elementId="name.abuchen.portfolio.ui.menu.file.import.import-text" label="Debug: Import text from PDF..." command="_ImportPDFTextCommand">
+            <visibleWhen xsi:type="ui:ImperativeExpression" xmi:id="_ImportPDFTextMenuItemVisibleWhen" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ImportPDFTextEnabledExpression"/>
+          </children>
           <children xsi:type="menu:HandledMenuItem" xmi:id="_wc3M8M8uEe-ZgKOG6pCmYQ" elementId="name.abuchen.portfolio.ui.menu.file.import.create-text" label="%command.import.pdf.create-diff" tooltip="" command="_0BsloM8uEe-ZgKOG6pCmYQ"/>
           <children xsi:type="menu:MenuSeparator" xmi:id="_C24kEBREEemo-IqrE7irYg" elementId="name.abuchen.portfolio.bootstrap.menuseparator.0"/>
           <children xsi:type="menu:HandledMenuItem" xmi:id="_PouM4BfWEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.menu.file.import.csv" label="%command.csv" tooltip="" command="_GgTyQBhXEeOR1rNFCzC82A"/>
@@ -184,6 +187,7 @@
   <handlers xmi:id="_DRzO4BhXEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.handler.import" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ImportCSVHandler" command="_GgTyQBhXEeOR1rNFCzC82A"/>
   <handlers xmi:id="_ftWRYLYaEeeT6Pb7tGT2uw" elementId="name.abuchen.portfolio.ui.handler.import.pdf" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ImportPDFHandler" command="_pgC00EYREeSRXYVe298mXg"/>
   <handlers xmi:id="_SL7BYLptEeSHOs-ah25CLg" elementId="name.abuchen.portfolio.ui.handler.import.pdf.create-text" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.CreateTextFromPDFHandler" command="_Jw7yELptEeSHOs-ah25CLg"/>
+  <handlers xmi:id="_ImportPDFTextHandler" elementId="name.abuchen.portfolio.ui.handler.import.pdf.import-text" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ImportPDFTextHandler" command="_ImportPDFTextCommand"/>
   <handlers xmi:id="_LyQvULCxEeefXq-wtldCQQ" elementId="name.abuchen.portfolio.ui.handler.import.ib" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ImportIBHandler" command="_QQsCcLCxEeefXq-wtldCQQ"/>
   <handlers xmi:id="_TRCSVImportHandler" elementId="name.abuchen.portfolio.ui.handler.import.traderepublic" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ImportTradeRepublicHandler" command="_TRCSVImportCommand"/>
   <handlers xmi:id="_Gig3QBiPEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.handler.consistencychecks" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.tools.RunConsistencyChecksHandler" command="_D9tYMBiPEeOR1rNFCzC82A"/>
@@ -279,6 +283,7 @@
   </commands>
   <commands xmi:id="_pgC00EYREeSRXYVe298mXg" elementId="name.abuchen.portfolio.ui.command.import.pdf" commandName="%command.import.pdf.import-pdf"/>
   <commands xmi:id="_Jw7yELptEeSHOs-ah25CLg" elementId="name.abuchen.portfolio.ui.command.import.pdf.create-text" commandName="importCommand.pdf.create-text"/>
+  <commands xmi:id="_ImportPDFTextCommand" elementId="name.abuchen.portfolio.ui.command.import.pdf.import-text" commandName="Debug: Import text from PDF"/>
   <commands xmi:id="_QQsCcLCxEeefXq-wtldCQQ" elementId="name.abuchen.portfolio.ui.command.import.ib" commandName="importCommand.ib"/>
   <commands xmi:id="_TRCSVImportCommand" elementId="name.abuchen.portfolio.ui.command.import.traderepublic" commandName="importCommand.traderepublic"/>
   <commands xmi:id="_tukxoBiQEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.command.updatequotes" commandName="%command.updateQuotes.label">
