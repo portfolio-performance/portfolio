@@ -1701,16 +1701,17 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                     t.setCurrencyCode(v.get("currencyAccount"));
                                     t.setAmount(asAmount(v.get("amount")));
 
-                                    // This layout always uses the comma as decimal separator,
-                                    // e.g. 1.500 are 1500 shares and not 1.5 shares.
+                                    // The shares are printed in the number format of the
+                                    // amounts, e.g. 1.500 are 1500 shares if the total
+                                    // amount uses the comma as decimal separator.
                                     if (v.get("shares").startsWith("-"))
                                     {
                                         t.setType(PortfolioTransaction.Type.SELL);
-                                        t.setShares(asShares(v.get("shares").replaceFirst("-", ""), Locale.GERMANY));
+                                        t.setShares(asTransactionReportShares(v.get("shares").replaceFirst("-", ""), v.get("amount")));
                                     }
                                     else
                                     {
-                                        t.setShares(asShares(v.get("shares"), Locale.GERMANY));
+                                        t.setShares(asTransactionReportShares(v.get("shares"), v.get("amount")));
                                     }
 
                                     t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
@@ -1748,16 +1749,17 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                     t.setCurrencyCode(v.get("currencyAccount"));
                                     t.setAmount(asAmount(v.get("amount")));
 
-                                    // This layout always uses the comma as decimal separator,
-                                    // e.g. 1.500 are 1500 shares and not 1.5 shares.
+                                    // The shares are printed in the number format of the
+                                    // amounts, e.g. 1.500 are 1500 shares if the total
+                                    // amount uses the comma as decimal separator.
                                     if (v.get("shares").startsWith("-"))
                                     {
                                         t.setType(PortfolioTransaction.Type.SELL);
-                                        t.setShares(asShares(v.get("shares").replaceFirst("-", ""), Locale.GERMANY));
+                                        t.setShares(asTransactionReportShares(v.get("shares").replaceFirst("-", ""), v.get("amount")));
                                     }
                                     else
                                     {
-                                        t.setShares(asShares(v.get("shares"), Locale.GERMANY));
+                                        t.setShares(asTransactionReportShares(v.get("shares"), v.get("amount")));
                                     }
 
                                     t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
@@ -1794,16 +1796,17 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                     t.setCurrencyCode(v.get("currencyAccount"));
                                     t.setAmount(asAmount(v.get("amount")));
 
-                                    // This layout always uses the comma as decimal separator,
-                                    // e.g. 1.500 are 1500 shares and not 1.5 shares.
+                                    // The shares are printed in the number format of the
+                                    // amounts, e.g. 1.500 are 1500 shares if the total
+                                    // amount uses the comma as decimal separator.
                                     if (v.get("shares").startsWith("-"))
                                     {
                                         t.setType(PortfolioTransaction.Type.SELL);
-                                        t.setShares(asShares(v.get("shares").replaceFirst("-", ""), Locale.GERMANY));
+                                        t.setShares(asTransactionReportShares(v.get("shares").replaceFirst("-", ""), v.get("amount")));
                                     }
                                     else
                                     {
-                                        t.setShares(asShares(v.get("shares"), Locale.GERMANY));
+                                        t.setShares(asTransactionReportShares(v.get("shares"), v.get("amount")));
                                     }
                                 }),
 
@@ -1838,16 +1841,17 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                     t.setCurrencyCode(v.get("currencyAccount"));
                                     t.setAmount(asAmount(v.get("amount")));
 
-                                    // This layout always uses the comma as decimal separator,
-                                    // e.g. 1.500 are 1500 shares and not 1.5 shares.
+                                    // The shares are printed in the number format of the
+                                    // amounts, e.g. 1.500 are 1500 shares if the total
+                                    // amount uses the comma as decimal separator.
                                     if (v.get("shares").startsWith("-"))
                                     {
                                         t.setType(PortfolioTransaction.Type.SELL);
-                                        t.setShares(asShares(v.get("shares").replaceFirst("-", ""), Locale.GERMANY));
+                                        t.setShares(asTransactionReportShares(v.get("shares").replaceFirst("-", ""), v.get("amount")));
                                     }
                                     else
                                     {
-                                        t.setShares(asShares(v.get("shares"), Locale.GERMANY));
+                                        t.setShares(asTransactionReportShares(v.get("shares"), v.get("amount")));
                                     }
                                 }),
 
@@ -1886,16 +1890,17 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                     t.setCurrencyCode(v.get("currencyAccount"));
                                     t.setAmount(asAmount(v.get("amount")));
 
-                                    // This layout always uses the comma as decimal separator,
-                                    // e.g. 1.500 are 1500 shares and not 1.5 shares.
+                                    // The shares are printed in the number format of the
+                                    // amounts, e.g. 1.500 are 1500 shares if the total
+                                    // amount uses the comma as decimal separator.
                                     if (v.get("shares").startsWith("-"))
                                     {
                                         t.setType(PortfolioTransaction.Type.SELL);
-                                        t.setShares(asShares(v.get("shares").replaceFirst("-", ""), Locale.GERMANY));
+                                        t.setShares(asTransactionReportShares(v.get("shares").replaceFirst("-", ""), v.get("amount")));
                                     }
                                     else
                                     {
-                                        t.setShares(asShares(v.get("shares"), Locale.GERMANY));
+                                        t.setShares(asTransactionReportShares(v.get("shares"), v.get("amount")));
                                     }
 
                                     // @formatter:off
@@ -1960,16 +1965,17 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                     t.setCurrencyCode(v.get("currencyAccount"));
                                     t.setAmount(asAmount(v.get("amount")));
 
-                                    // This layout always uses the comma as decimal separator,
-                                    // e.g. 1.500 are 1500 shares and not 1.5 shares.
+                                    // The shares are printed in the number format of the
+                                    // amounts, e.g. 1.500 are 1500 shares if the total
+                                    // amount uses the comma as decimal separator.
                                     if (v.get("shares").startsWith("-"))
                                     {
                                         t.setType(PortfolioTransaction.Type.SELL);
-                                        t.setShares(asShares(v.get("shares").replaceFirst("-", ""), Locale.GERMANY));
+                                        t.setShares(asTransactionReportShares(v.get("shares").replaceFirst("-", ""), v.get("amount")));
                                     }
                                     else
                                     {
-                                        t.setShares(asShares(v.get("shares"), Locale.GERMANY));
+                                        t.setShares(asTransactionReportShares(v.get("shares"), v.get("amount")));
                                     }
 
                                     // @formatter:off
@@ -2030,16 +2036,17 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                     t.setCurrencyCode(v.get("currencyAccount"));
                                     t.setAmount(asAmount(v.get("amount")));
 
-                                    // This layout always uses the comma as decimal separator,
-                                    // e.g. 1.500 are 1500 shares and not 1.5 shares.
+                                    // The shares are printed in the number format of the
+                                    // amounts, e.g. 1.500 are 1500 shares if the total
+                                    // amount uses the comma as decimal separator.
                                     if (v.get("shares").startsWith("-"))
                                     {
                                         t.setType(PortfolioTransaction.Type.SELL);
-                                        t.setShares(asShares(v.get("shares").replaceFirst("-", ""), Locale.GERMANY));
+                                        t.setShares(asTransactionReportShares(v.get("shares").replaceFirst("-", ""), v.get("amount")));
                                     }
                                     else
                                     {
-                                        t.setShares(asShares(v.get("shares"), Locale.GERMANY));
+                                        t.setShares(asTransactionReportShares(v.get("shares"), v.get("amount")));
                                     }
 
                                     var currencyFx = asCurrencyCode(v.get("currency"));
@@ -3061,6 +3068,25 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
     {
         return ExtractorUtils.convertToNumberBigDecimal(normalizeGroupSeparator(value), Values.Share,
                         ExtractorUtils.guessNumberLocale(normalizeGroupSeparator(value), Locale.GERMANY));
+    }
+
+    /**
+     * @formatter:off
+     * The transaction report prints the shares in the number format of the
+     * amounts. A number of shares alone does not reveal the decimal separator,
+     * e.g. 1.500 are 1500 shares next to 0,3850 but 1.5 shares next to 34.7700.
+     * Therefore the number format is guessed from the total amount, which always
+     * carries two decimals.
+     *
+     * 07-01-2026 21:26 EURO SUN MINING INC CA29872L2066 TOR XTSE 1.500 0,3850 CAD -577,50 CAD -357,01 1,6176 -0,89 -357,91
+     * 17-08-2026 09:41 XTRACKERS S&P 500 SWAP II IE000HY30YW6 SWX XSWX 725 34.7700 CHF -25’208.25 CHF -25’208.25 0.00 -2.82 -25’211.07
+     * @formatter:on
+     */
+    private long asTransactionReportShares(String shares, String amount)
+    {
+        var locale = ExtractorUtils.guessNumberLocale(amount, Locale.GERMANY);
+
+        return asShares(shares.replaceAll("['’]", ""), locale);
     }
 
     /**
