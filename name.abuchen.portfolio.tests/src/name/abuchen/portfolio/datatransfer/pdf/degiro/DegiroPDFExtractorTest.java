@@ -1129,11 +1129,11 @@ public class DegiroPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(11L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(23L));
+        assertThat(countAccountTransactions(results), is(24L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(3L));
+        assertThat(countItemsWithFailureMessage(results), is(4L));
         assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(34));
+        assertThat(results.size(), is(35));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
@@ -1199,6 +1199,17 @@ public class DegiroPDFExtractorTest
         Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.23))));
         assertThat(grossValueUnit.getExchangeRate().doubleValue(), IsCloseTo.closeTo(1 / 1.2212, 0.000001));
+
+        // check tax refund of a corrected dividend
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionOrderCancellationUnsupported, //
+                        taxRefund( //
+                                        hasDate("2020-10-15T11:35"), hasShares(0.00), //
+                                        hasSource("Kontoauszug11.txt"), //
+                                        hasNote("Dividendensteuer: US7181721090"), //
+                                        hasAmount("EUR", 0.30), hasGrossValue("EUR", 0.30), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                                        hasForexGrossValue("USD", 0.35)))));
     }
 
     @Test
@@ -4057,6 +4068,41 @@ public class DegiroPDFExtractorTest
                         hasNote("Giro Exchange Connection Fee 2022"), //
                         hasAmount("EUR", 2.50), hasGrossValue("EUR", 2.50), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testAccountStatement03()
+    {
+        // @formatter:off
+        // Synthetic test case derived from AccountStatement02.txt: the dividend tax is
+        // booked one minute before its dividend and printed above it. The tax must be
+        // added to the dividend and must not be imported a second time.
+        // @formatter:on
+        var extractor = new DegiroPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement03_synthetic.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividende transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-06-28T04:43"), hasExDate(null), //
+                        hasShares(0.00), //
+                        hasSource("AccountStatement03_synthetic.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1.87), hasGrossValue("EUR", 2.31), //
+                        hasTaxes("EUR", 0.44), hasFees("EUR", 0.00), //
+                        hasForexGrossValue("PLN", 10.00))));
     }
 
     @Test
