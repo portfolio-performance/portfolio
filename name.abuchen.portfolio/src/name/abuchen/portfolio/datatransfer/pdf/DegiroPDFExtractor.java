@@ -813,7 +813,6 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "|Dividendbelasting"
                                         + "|Ritenuta sul dividendo"
                                         + "|Imp.ts sur dividende"
-                            + "|Imp.ts sur dividende"
                                         + "|Retenci.n del dividendo) "
                                         + "(?<currencyTax>[\\w]{3}) "
                                         + "\\-(?<tax>[\\.,'’\\d\\s]+) "
@@ -1008,6 +1007,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         + "|Dividend Tax"
                         + "|Dividendbelasting"
                         + "|Ritenuta sul dividendo"
+                        + "|Imp.ts sur dividende"
                         + "|Retenci.n del dividendo) "
                         + ".*$");
         type.addBlock(blockDividendTax);
@@ -1034,7 +1034,6 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "|Dividendbelasting"
                                         + "|Ritenuta sul dividendo"
                                         + "|Imp.ts sur dividende"
-                            + "|Imp.ts sur dividende"
                                         + "|Retenci.n del dividendo) "
                                         + "(?<currency>[\\w]{3})"
                                         + "(?<type>\\s(\\-)?)"

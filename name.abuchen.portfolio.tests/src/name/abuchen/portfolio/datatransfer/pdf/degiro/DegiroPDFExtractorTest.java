@@ -26,6 +26,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
@@ -4188,6 +4189,38 @@ public class DegiroPDFExtractorTest
                         hasSource("AccountStatement_french01.txt"), //
                         hasNote("Remboursement offre promotionnelle"), //
                         hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testAccountStatement_french02()
+    {
+        // @formatter:off
+        // Synthetic test case derived from AccountStatement_french01.txt: the dividend
+        // tax is booked without a dividend. The tax must be imported on its own.
+        // @formatter:on
+        var extractor = new DegiroPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement_french02_synthetic.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2026-03-24T07:04"), hasShares(0.00), //
+                        hasSource("AccountStatement_french02_synthetic.txt"), //
+                        hasNote("Impôts sur dividende: FI0009003727"), //
+                        hasAmount("EUR", 8.57), hasGrossValue("EUR", 8.57), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
