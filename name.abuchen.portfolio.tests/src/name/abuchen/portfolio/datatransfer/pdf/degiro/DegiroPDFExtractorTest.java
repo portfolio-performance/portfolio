@@ -2591,6 +2591,160 @@ public class DegiroPDFExtractorTest
     }
 
     @Test
+    public void testKontoauszug17()
+    {
+        var extractor = new DegiroPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug17.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(5L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(14L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(2L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(19));
+        new AssertImportActions().check(results, "CHF", "EUR", "USD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000A13SUL5"), hasTicker(null), //
+                        hasName("DEFAMA DEUTSCHE FACHMARKT AG"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US6541061031"), hasTicker(null), //
+                        hasName("NIKE INC 'B'"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US1912161007"), hasTicker(null), //
+                        hasName("COCA-COLA"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US7134481081"), hasTicker(null), //
+                        hasName("PEPSICO INC"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0000120321"), hasTicker(null), //
+                        hasName("L'ORÉAL"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check transactions
+        assertThat(results, hasItem(deposit(hasDate("2024-07-01T08:43"), hasAmount("CHF", 1500.00), //
+                        hasSource("Kontoauszug17.txt"), hasNote("Einzahlung"))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-07-11T07:21"), hasExDate(null), //
+                        hasShares(0.00), //
+                        hasSource("Kontoauszug17.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 16.79), hasGrossValue("EUR", 22.80), //
+                        hasTaxes("EUR", 6.01), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-07-02T07:35"), hasExDate(null), //
+                        hasShares(0.00), //
+                        hasSource("Kontoauszug17.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 6.51), hasGrossValue("CHF", 7.66), //
+                        hasTaxes("CHF", 1.15), hasFees("CHF", 0.00), //
+                        hasForexGrossValue("USD", 8.51))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-07-02T07:07"), hasExDate(null), //
+                        hasShares(0.00), //
+                        hasSource("Kontoauszug17.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 23.02), hasGrossValue("CHF", 27.08), //
+                        hasTaxes("CHF", 4.06), hasFees("CHF", 0.00), //
+                        hasForexGrossValue("USD", 30.07))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-07-01T07:29"), hasExDate(null), //
+                        hasShares(0.00), //
+                        hasSource("Kontoauszug17.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 8.29), hasGrossValue("CHF", 9.76), //
+                        hasTaxes("CHF", 1.47), hasFees("CHF", 0.00), //
+                        hasForexGrossValue("USD", 10.84))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-06-21T10:59"), hasExDate(null), //
+                        hasShares(0.00), //
+                        hasSource("Kontoauszug17.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 10.13), hasGrossValue("EUR", 13.20), //
+                        hasTaxes("EUR", 3.07), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionOrderCancellationUnsupported, //
+                        dividend( //
+                                        hasDate("2024-06-21T10:57"), hasExDate(null), //
+                                        hasShares(0.00), //
+                                        hasSource("Kontoauszug17.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 13.20), hasGrossValue("EUR", 13.20), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionOrderCancellationUnsupported, //
+                        taxRefund( //
+                                        hasDate("2024-06-21T10:57"), hasShares(0.00), //
+                                        hasSource("Kontoauszug17.txt"), //
+                                        hasNote("Dividendensteuer: FR0000120321"), //
+                                        hasAmount("EUR", 3.30), hasGrossValue("EUR", 3.30), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+
+        assertThat(results, hasItem(fee( //
+                        hasDate("2024-07-11T07:21"), //
+                        hasSource("Kontoauszug17.txt"), //
+                        hasNote("Gebühr für Kapitalmaßnahme"), //
+                        hasAmount("EUR", 1.50), hasGrossValue("EUR", 1.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(fee( //
+                        hasDate("2024-07-02T07:36"), //
+                        hasSource("Kontoauszug17.txt"), //
+                        hasNote("Gebühr für Kapitalmaßnahme"), //
+                        hasAmount("USD", 0.72), hasGrossValue("USD", 0.72), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+
+        assertThat(results, hasItem(fee( //
+                        hasDate("2024-07-02T07:08"), //
+                        hasSource("Kontoauszug17.txt"), //
+                        hasNote("Gebühr für Kapitalmaßnahme"), //
+                        hasAmount("USD", 1.84), hasGrossValue("USD", 1.84), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+
+        assertThat(results, hasItem(fee( //
+                        hasDate("2024-07-01T07:30"), //
+                        hasSource("Kontoauszug17.txt"), //
+                        hasNote("Gebühr für Kapitalmaßnahme"), //
+                        hasAmount("USD", 0.92), hasGrossValue("USD", 0.92), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+
+        assertThat(results, hasItem(fee( //
+                        hasDate("2024-06-21T10:59"), //
+                        hasSource("Kontoauszug17.txt"), //
+                        hasNote("Gebühr für Kapitalmaßnahme"), //
+                        hasAmount("EUR", 1.01), hasGrossValue("EUR", 1.01), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2024-06-21T10:57"), //
+                        hasSource("Kontoauszug17.txt"), //
+                        hasNote("Gebühr für Kapitalmaßnahme"), //
+                        hasAmount("EUR", 0.99), hasGrossValue("EUR", 0.99), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testRekeningoverzicht01()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
@@ -6842,6 +6996,314 @@ public class DegiroPDFExtractorTest
                         hasNote(null), //
                         hasAmount("EUR", 50.90), hasGrossValue("EUR", 50.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.90))));
+    }
+
+    @Test
+    public void testTransaktionsuebersicht23()
+    {
+        var extractor = new DegiroPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Transaktionsuebersicht23.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(7L));
+        assertThat(countBuySell(results), is(9L));
+        assertThat(countAccountTransactions(results), is(5L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(2L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(21));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US0213691035"), hasTicker(null), //
+                        hasName("ALTAIR ENGINEERING INC"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0008232125"), hasTicker(null), //
+                        hasName("DEUTSCHE LUFTHANSA AG"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0002635307"), hasTicker(null), //
+                        hasName("ISHARES STOXX EUROPE 600 UCITS ETF (DE)"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000A0S9GB0"), hasTicker(null), //
+                        hasName("DEUTSCHE BOERSE COMMODITIES GMBH"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000TUAG1E4"), hasTicker(null), //
+                        hasName("TUI AG - NON TRADEABLE"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000TUAG505"), hasTicker(null), //
+                        hasName("TUI AG"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000TUAG000"), hasTicker(null), //
+                        hasName("TUI AG"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check transactions
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US0213691035")), //
+                        hasDate("2023-08-04T17:28"), hasShares(9.00), //
+                        hasSource("Transaktionsuebersicht23.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 523.55), hasGrossValue("EUR", 525.55), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 2.00), //
+                        hasForexGrossValue("USD", 580.05))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("DE0008232125")), //
+                        hasDate("2023-07-12T09:30"), hasShares(80.00), //
+                        hasSource("Transaktionsuebersicht23.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 692.78), hasGrossValue("EUR", 697.68), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 4.90))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("DE0002635307")), //
+                        hasDate("2023-06-22T09:04"), hasShares(35.00), //
+                        hasSource("Transaktionsuebersicht23.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1571.20), hasGrossValue("EUR", 1572.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("DE000A0S9GB0")), //
+                        hasDate("2023-06-20T15:37"), hasShares(58.00), //
+                        hasSource("Transaktionsuebersicht23.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 3303.00), hasGrossValue("EUR", 3306.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("DE000TUAG1E4")), //
+                        hasDate("2023-04-26T09:25"), hasShares(104.00), //
+                        hasSource("Transaktionsuebersicht23.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 577.20), hasGrossValue("EUR", 577.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("DE000TUAG505")), //
+                        hasDate("2023-04-26T09:25"), hasShares(104.00), //
+                        hasSource("Transaktionsuebersicht23.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 577.20), hasGrossValue("EUR", 577.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(outboundDelivery( //
+                        hasSecurity(hasIsin("DE000TUAG1E4")), //
+                        hasDate("2023-04-20T11:33"), hasShares(1.00), //
+                        hasSource("Transaktionsuebersicht23.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(outboundDelivery( //
+                        hasSecurity(hasIsin("DE000TUAG1E4")), //
+                        hasDate("2023-04-13T00:00"), hasShares(39.00), //
+                        hasSource("Transaktionsuebersicht23.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("DE000TUAG1E4")), //
+                        hasDate("2023-04-13T00:00"), hasShares(104.00), //
+                        hasSource("Transaktionsuebersicht23.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 577.20), hasGrossValue("EUR", 577.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(outboundDelivery( //
+                        hasSecurity(hasIsin("DE000TUAG1E4")), //
+                        hasDate("2023-03-28T08:53"), hasShares(40.00), //
+                        hasSource("Transaktionsuebersicht23.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionInboundDeliveryWithoutValue, //
+                        inboundDelivery( //
+                                        hasSecurity(hasIsin("DE000TUAG1E4")), //
+                                        hasDate("2023-03-28T08:53"), hasShares(40.00), //
+                                        hasSource("Transaktionsuebersicht23.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionInboundDeliveryWithoutValue, //
+                        inboundDelivery( //
+                                        hasSecurity(hasIsin("DE000TUAG1E4")), //
+                                        hasDate("2023-03-28T00:00"), hasShares(40.00), //
+                                        hasSource("Transaktionsuebersicht23.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("DE000TUAG000")), //
+                        hasDate("2023-02-24T00:00"), hasShares(400.00), //
+                        hasSource("Transaktionsuebersicht23.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 743.20), hasGrossValue("EUR", 743.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("DE000TUAG505")), //
+                        hasDate("2023-02-24T00:00"), hasShares(40.00), //
+                        hasSource("Transaktionsuebersicht23.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 743.20), hasGrossValue("EUR", 743.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testTransaktionsuebersicht24()
+    {
+        var extractor = new DegiroPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Transaktionsuebersicht24.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE000HY30YW6"), hasTicker(null), //
+                        hasName("XTRACKERS S&P 500 SWAP II UCITS 1C ETF"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check transactions
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("IE000HY30YW6")), //
+                        hasDate("2026-08-17T09:41"), hasShares(725.00), //
+                        hasSource("Transaktionsuebersicht24.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 25211.07), hasGrossValue("CHF", 25208.25), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 2.82))));
+    }
+
+    @Test
+    public void testTransaktionsuebersicht25()
+    {
+        var extractor = new DegiroPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Transaktionsuebersicht25.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(5L));
+        assertThat(countBuySell(results), is(6L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(11));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BK5BQT80"), hasTicker(null), //
+                        hasName("VANGUARD FTSE ALL- WORLD UCITS ETF - (USD) ACCUMULATING"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("GB00B8W67662"), hasTicker(null), //
+                        hasName("LIBERTY GLOBAL PLC - C"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0244767585"), hasTicker(null), //
+                        hasName("UBS GROUP AG"), //
+                        hasCurrencyCode("CHF"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0012138530"), hasTicker(null), //
+                        hasName("CREDIT SUISSE GROUP"), //
+                        hasCurrencyCode("CHF"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("SE0000806994"), hasTicker(null), //
+                        hasName("JM AB"), //
+                        hasCurrencyCode("SEK"))));
+
+        // check transactions
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("IE00BK5BQT80")), //
+                        hasDate("2023-08-17T09:50"), hasShares(5.00), //
+                        hasSource("Transaktionsuebersicht25.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 479.51), hasGrossValue("CHF", 478.55), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.96), //
+                        hasForexGrossValue("EUR", 500.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("IE00BK5BQT80")), //
+                        hasDate("2023-07-20T09:04"), hasShares(3.00), //
+                        hasSource("Transaktionsuebersicht25.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 291.80), hasGrossValue("CHF", 290.84), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.96), //
+                        hasForexGrossValue("EUR", 302.70))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("GB00B8W67662")), //
+                        hasDate("2023-06-28T16:45"), hasShares(12.00), //
+                        hasSource("Transaktionsuebersicht25.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 183.45), hasGrossValue("CHF", 181.49), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.96), //
+                        hasForexGrossValue("USD", 202.26))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("CH0244767585")), //
+                        hasDate("2023-06-13T00:00"), hasShares(2.00), //
+                        hasSource("Transaktionsuebersicht25.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 36.73), hasGrossValue("CHF", 36.73), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("CH0012138530")), //
+                        hasDate("2023-06-13T00:00"), hasShares(50.00), //
+                        hasSource("Transaktionsuebersicht25.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 40.85), hasGrossValue("CHF", 40.85), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("SE0000806994")), //
+                        hasDate("2023-06-09T13:03"), hasShares(8.00), //
+                        hasSource("Transaktionsuebersicht25.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 100.57), hasGrossValue("CHF", 95.80), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 4.77), //
+                        hasForexGrossValue("SEK", 1152.00))));
     }
 
     @Test
