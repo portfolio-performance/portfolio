@@ -10,10 +10,12 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,6 +44,14 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                     .compile("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}:[\\d]{2} .* [A-Z]{2}[A-Z0-9]{9}[0-9] .*$");
     private static final Pattern TRANSACTION_REPORT_NAME_CONTINUATION = Pattern
                     .compile("^[A-Z0-9\\(][A-Z0-9 .,&'’()/+\\-]*$");
+    private static final Pattern DIVIDEND_BLOCK_START = Pattern
+                    .compile("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}:[\\d]{2} ([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?.*"
+                                    + "(Dividende"
+                                    + "|Dividend(?! Tax)"
+                                    + "|Fondsaussch.ttung"
+                                    + "|Dividendo"
+                                    + "|Dividenda) "
+                                    + ".*$");
 
     public DegiroPDFExtractor(Client client)
     {
@@ -320,47 +330,70 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
 
             // @formatter:off
             // The block of a dividend reaches from the line of the dividend down to the
-            // next dividend and adds the first tax it finds within that range. Every other
-            // tax cannot be reached and is collected here.
+            // start of the next dividend block. It adds the first tax it finds within that
+            // range, if the tax belongs to the same security.
+            //
+            // 01-08-2019 09:10 01-08-2019 AT&T INC. US00206R1023 Dividende USD 4,59 USD 7,80
+            // 01-08-2019 09:10 01-08-2019 AT&T INC. US00206R1023 Dividendensteuer USD -0,69 USD 3,20
+            //
+            // The line numbers of all taxes that are added to a dividend are collected
+            // here, so that the block of the dividend tax does not import them again.
             // @formatter:on
-            LocalDate openDividendDate = null;
-            String openDividendIsin = null;
-            boolean isTaxAddedToDividendBlock = false;
+            List<Integer> dividendLines = new ArrayList<>();
 
             for (int i = 0; i < lines.length; i++)
             {
-                Matcher d = pDividendeTransactions.matcher(lines[i]);
-                if (d.matches())
-                {
-                    openDividendDate = asDate(d.group("date"), d.group("time")).toLocalDate();
-                    openDividendIsin = d.group("isin");
-                    isTaxAddedToDividendBlock = false;
+                if (DIVIDEND_BLOCK_START.matcher(lines[i]).matches())
+                    dividendLines.add(i);
+            }
+
+            for (int k = 0; k < dividendLines.size(); k++)
+            {
+                int start = dividendLines.get(k);
+                int end = k + 1 < dividendLines.size() ? dividendLines.get(k + 1) : lines.length;
+
+                Matcher d = pDividendeTransactions.matcher(lines[start]);
+                if (!d.matches())
                     continue;
-                }
 
-                Matcher m = pDividendeTaxTransactions.matcher(lines[i]);
-                if (m.matches())
+                for (int i = start + 1; i < end; i++)
                 {
-                    // @formatter:off
-                    // The block of the open dividend only adds a tax of the same security,
-                    // therefore a tax of another security is collected here as well.
-                    // @formatter:on
-                    if (!isTaxAddedToDividendBlock && openDividendIsin != null
-                                    && openDividendIsin.equals(m.group("isin"))
-                                    && openDividendDate.equals(asDate(m.group("date"), m.group("time")).toLocalDate()))
+                    Matcher m = pDividendeTaxTransactions.matcher(lines[i]);
+                    if (m.matches())
                     {
-                        isTaxAddedToDividendBlock = true;
-                        continue;
+                        if (d.group("isin").equals(m.group("isin")))
+                            dividendeTaxHelper.addedLines.add(i);
+                        break;
                     }
+                }
+            }
 
+            // @formatter:off
+            // A tax that is printed directly above its dividend is not covered by the
+            // block of the dividend. It is added to the dividend below, if both belong
+            // to the same security and date and no dividend above has added it already.
+            // @formatter:on
+            for (int start : dividendLines)
+            {
+                int above = start - 1;
+                if (above < 0 || dividendeTaxHelper.addedLines.contains(above))
+                    continue;
+
+                Matcher d = pDividendeTransactions.matcher(lines[start]);
+                Matcher m = pDividendeTaxTransactions.matcher(lines[above]);
+
+                if (d.matches() && m.matches() && d.group("isin").equals(m.group("isin"))
+                                && d.group("date").equals(m.group("date")))
+                {
                     DividendeTaxItem item = new DividendeTaxItem();
-                    item.lineNo = i;
+                    item.lineNo = above;
                     item.date = asDate(m.group("date"), m.group("time")).toLocalDate();
                     item.isin = m.group("isin");
                     item.currency = m.group("currency");
                     item.amount = m.group("amount");
 
                     dividendeTaxHelper.items.add(item);
+                    dividendeTaxHelper.addedLines.add(above);
                 }
             }
 
@@ -573,13 +606,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         // ExchangeRage: 0,8851124093 --> 0,89
         // Gross amount in EUR: (1,74 * 0,89) + (0,52 * 0,89) + (0,08 * 0,89) = 2,0826 EUR
         // @formatter:on
-        Block blockDividends = new Block("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}:[\\d]{2} ([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?.*"
-                        + "(Dividende"
-                        + "|Dividend(?! Tax)"
-                        + "|Fondsaussch.ttung"
-                        + "|Dividendo"
-                        + "|Dividenda) "
-                        + ".*$");
+        Block blockDividends = new Block(DIVIDEND_BLOCK_START.pattern());
         type.addBlock(blockDividends);
         blockDividends.set(new Transaction<AccountTransaction>()
 
@@ -854,8 +881,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             DividendTaxHelper dividendTaxHelper = context.getType(DividendTaxHelper.class)
                                             .orElseGet(DividendTaxHelper::new);
 
-                            Optional<DividendeTaxItem> taxTransaction = dividendTaxHelper.findItemAbove(
-                                            t.getDateTime().toLocalDate(), v.get("isin"), v.getStartLineNumber());
+                            Optional<DividendeTaxItem> taxTransaction = dividendTaxHelper
+                                            .findItemAbove(v.getStartLineNumber());
 
                             if (!taxTransaction.isPresent())
                                 return;
@@ -1026,16 +1053,15 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // @formatter:off
                             // Sometimes the dividend tax is settled without a dividend transaction.
                             //
-                            // To capture this, we note all these dividend transactions and look for whether
-                            // this tax belongs to a dividend transaction or not.
-                            //
-                            // If there is no dividend transaction, then we record this tax.
+                            // To capture this, the line numbers of all taxes that are added to a
+                            // dividend transaction are noted in advance. If this tax has not been
+                            // added to a dividend transaction, then we record this tax.
                             // @formatter:on
 
                             DividendTransactionHelper dividendTransactionHelper = context.getType(DividendTransactionHelper.class).orElseGet(DividendTransactionHelper::new);
-                            Optional<DividendeTransactionsItem> dividendTransaction = dividendTransactionHelper.findItem(t.getDateTime(), t.getSecurity().getIsin());
+                            DividendTaxHelper dividendTaxHelper = context.getType(DividendTaxHelper.class).orElseGet(DividendTaxHelper::new);
 
-                            if (!dividendTransaction.isPresent())
+                            if (!dividendTaxHelper.isAddedToDividend(v.getStartLineNumber()))
                             {
                                 Money money = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
 
@@ -2964,24 +2990,26 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
     private static class DividendTaxHelper
     {
         private List<DividendeTaxItem> items = new ArrayList<>();
+        private Set<Integer> addedLines = new HashSet<>();
 
-        public Optional<DividendeTaxItem> findItemAbove(LocalDate date, String isin, int lineNo)
+        public Optional<DividendeTaxItem> findItemAbove(int lineNo)
         {
-            // @formatter:off
-            // Search a dividend tax that is printed directly above its dividend and is
-            // therefore not covered by the block of the dividend. Only the line directly
-            // above is taken into account, otherwise a later correction of the tax would
-            // be added to an earlier dividend. The booking time of dividend and tax may
-            // differ, therefore only the date is compared.
-            // @formatter:on
+            // Search a dividend tax that is printed directly above the dividend
+            // at the given line. Security and date have already been compared
+            // when the items were collected.
 
             for (DividendeTaxItem item : items)
             {
-                if (item.lineNo == lineNo - 1 && item.date.equals(date) && item.isin.equals(isin))
+                if (item.lineNo == lineNo - 1)
                     return Optional.of(item);
             }
 
             return Optional.empty();
+        }
+
+        public boolean isAddedToDividend(int lineNo)
+        {
+            return addedLines.contains(lineNo);
         }
     }
 
