@@ -6845,6 +6845,45 @@ public class DegiroPDFExtractorTest
     }
 
     @Test
+    public void testTransaktionsuebersicht26()
+    {
+        // @formatter:off
+        // Synthetic test case derived from Transaktionsuebersicht24.txt: the Swiss
+        // document uses the apostrophe as group separator for the shares as well.
+        // @formatter:on
+        var extractor = new DegiroPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Transaktionsuebersicht26_synthetic.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE000HY30YW6"), hasTicker(null), //
+                        hasName("XTRACKERS S&P 500 SWAP II UCITS 1C ETF"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("IE000HY30YW6")), //
+                        hasDate("2026-08-17T09:41"), hasShares(1450.00), //
+                        hasSource("Transaktionsuebersicht26_synthetic.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 50419.32), hasGrossValue("CHF", 50416.50), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 2.82))));
+    }
+
+    @Test
     public void testTransacties01()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
