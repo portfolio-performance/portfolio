@@ -383,7 +383,7 @@ public class SaxoBankPDFExtractorTest
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin("DE0005933956"), hasWkn(null), hasTicker("DJSXE"), //
-                        hasName(null), //
+                        hasName("iShares Core Euro STOXX 50 (DE) UCITS ETF"), //
                         hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
@@ -522,7 +522,7 @@ public class SaxoBankPDFExtractorTest
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin("CH0016999846"), hasWkn(null), hasTicker("CSBGC7"), //
-                        hasName(null), //
+                        hasName("iShares Swiss Domestic Government Bnd 3-7 (CH) ETF"), //
                         hasCurrencyCode("CHF"))));
 
         // check buy sell transaction
@@ -532,6 +532,40 @@ public class SaxoBankPDFExtractorTest
                         hasNote("Order-ID 5330170993 | Trade-ID 6428724964"), //
                         hasAmount("CHF", 376.70), hasGrossValue("CHF", 376.42), //
                         hasTaxes("CHF", 0.28), hasFees("CHF", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierKauf09()
+    {
+        var extractor = new SaxoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B8GKDB10"), hasWkn(null), hasTicker("VHYL"), //
+                        hasName("Vanguard FTSE All-World High Dvd Yield UCITS ETF"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-03-10T14:26:26"), hasShares(8.00), //
+                        hasSource("Kauf09.txt"), //
+                        hasNote("Order-ID 5381305526 | Trade-ID 6624692645"), //
+                        hasAmount("CHF", 539.64), hasGrossValue("CHF", 535.84), //
+                        hasTaxes("CHF", 0.80), hasFees("CHF", 3.00))));
     }
 
     @Test
@@ -556,7 +590,7 @@ public class SaxoBankPDFExtractorTest
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin("CH0016999846"), hasWkn(null), hasTicker("CSBGC7"), //
-                        hasName(null), //
+                        hasName("iShares Swiss Domestic Government Bnd 3-7 (CH) ETF"), //
                         hasCurrencyCode("CHF"))));
 
         // check buy sell transaction
@@ -726,7 +760,7 @@ public class SaxoBankPDFExtractorTest
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin("CH0016999846"), hasWkn(null), hasTicker("CSBGC7"), //
-                        hasName(null), //
+                        hasName("iShares Swiss Domestic Government Bnd 3-7 (CH) ETF"), //
                         hasCurrencyCode("CHF"))));
 
         // check buy sell transaction
@@ -759,7 +793,7 @@ public class SaxoBankPDFExtractorTest
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin("IE00B4K48X80"), hasWkn(null), hasTicker("IMAE"), //
-                        hasName(null), //
+                        hasName("iShares Core MSCI Europe EUR (Acc) UCITS ETF"), //
                         hasCurrencyCode("EUR"))));
 
         assertThat(results, hasItem(purchase( //
@@ -792,7 +826,7 @@ public class SaxoBankPDFExtractorTest
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin("CH0016999846"), hasWkn(null), hasTicker("CSBGC7"), //
-                        hasName(null), //
+                        hasName("iShares Swiss Domestic Government Bnd 3-7 (CH) ETF"), //
                         hasCurrencyCode("CHF"))));
 
         assertThat(results, hasItem(purchase( //
