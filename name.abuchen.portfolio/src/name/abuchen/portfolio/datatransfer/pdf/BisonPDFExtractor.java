@@ -95,7 +95,7 @@ public class BisonPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<PortfolioTransaction>();
 
-        var firstRelevantLine = new Block("^(Gutschein|Staking Reward) [A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})? [\\.,\\d]+$");
+        var firstRelevantLine = new Block("^(Gutschein|Staking Reward|Staking\\-Belohnung) [A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})? [\\.,\\d]+$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -109,9 +109,12 @@ public class BisonPDFExtractor extends AbstractPDFExtractor
                         //
                         // Staking Reward ETH 0,00000541
                         // 03.02.2025 08:48 3.011,63 €/ETH + 0,02 €
+                        //
+                        // Staking-Belohnung ETH 0,00087820
+                        // 12.01.2026 08:00 2.705,45 €/ETH + 2,38 €
                         // @formatter:on
                         .section("note", "tickerSymbol", "shares", "date", "time", "amount", "currency") //
-                        .match("^(?<note>(Gutschein|Staking Reward)) (?<tickerSymbol>[A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})?) (?<shares>[\\.,\\d]+)$") //
+                        .match("^(?<note>(Gutschein|Staking Reward|Staking\\-Belohnung)) (?<tickerSymbol>[A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})?) (?<shares>[\\.,\\d]+)$") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc})$") //
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateCryptoCurrency(v));
