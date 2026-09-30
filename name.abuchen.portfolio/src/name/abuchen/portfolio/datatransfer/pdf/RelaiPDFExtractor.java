@@ -58,7 +58,7 @@ public class RelaiPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<BuySellEntry>();
 
-        var firstRelevantLine = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\:[\\d]{2}\\:[\\d]{2} Buy [\\.\\d]+ .*$");
+        var firstRelevantLine = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\:[\\d]{2}\\:[\\d]{2} Buy [\\d]{1,3}(?: [\\d]{3})*(?:\\.[\\d]+)? .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.setMaxSize(1);
         firstRelevantLine.set(pdfTransaction);
@@ -72,7 +72,7 @@ public class RelaiPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date", "time", "shares", "amount", "currency", "fee", "feeCurrency") //
                         .documentContext("tickerSymbol") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}) Buy (?<shares>[\\.\\d]+) [\\.\\d\\s]+ [A-Z]{3} (?<amount>[\\.\\d\\s]+) (?<currency>[A-Z]{3}) (\\-)?(?<fee>[\\.\\d\\s]+) (?<feeCurrency>[A-Z]{3}).*$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}) Buy (?<shares>[\\d]{1,3}(?: [\\d]{3})*(?:\\.[\\d]+)?) [\\d]{1,3}(?: [\\d]{3})*(?:\\.[\\d]+)? [A-Z]{3} (?<amount>[\\d]{1,3}(?: [\\d]{3})*(?:\\.[\\d]+)?) (?<currency>[A-Z]{3}) (\\-)?(?<fee>[\\d]{1,3}(?: [\\d]{3})*(?:\\.[\\d]+)?) (?<feeCurrency>[A-Z]{3}).*$") //
                         .assign((t, v) -> {
                             var fee = Money.of(asCurrencyCode(v.get("feeCurrency")), asAmount(v.get("fee")));
                             var amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
@@ -98,7 +98,7 @@ public class RelaiPDFExtractor extends AbstractPDFExtractor
                         // 17.10.2025 20:09:05 Buy 0.00116054 85 374.42 CHF 99.10 CHF 0.90 CHF Relai Switzerland
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\:[\\d]{2}\\:[\\d]{2} Buy [\\.\\d]+ [\\.\\d\\s]+ [A-Z]{3} [\\.\\d\\s]+ [A-Z]{3} (\\-)?(?<fee>[\\.\\d\\s]+) (?<currency>[A-Z]{3}).*$") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\:[\\d]{2}\\:[\\d]{2} Buy [\\d]{1,3}(?: [\\d]{3})*(?:\\.[\\d]+)? [\\d]{1,3}(?: [\\d]{3})*(?:\\.[\\d]+)? [A-Z]{3} [\\d]{1,3}(?: [\\d]{3})*(?:\\.[\\d]+)? [A-Z]{3} (\\-)?(?<fee>[\\d]{1,3}(?: [\\d]{3})*(?:\\.[\\d]+)?) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
