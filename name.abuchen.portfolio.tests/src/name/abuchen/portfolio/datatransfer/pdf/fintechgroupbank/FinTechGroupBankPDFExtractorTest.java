@@ -8630,6 +8630,156 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testFlatExDeGiroSammelabrechnung12()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroSammelabrechnung12.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(3L));
+        assertThat(countBuySell(results), is(4L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(10));
+        new AssertImportActions().check(results, "EUR");
+
+        // check securities
+        assertThat(results, hasItem(security( //
+                        hasIsin("US0152711091"), hasWkn("907179"), hasTicker(null), //
+                        hasName("ALEXANDRIA REAL EST. EQU."), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US0389231087"), hasWkn("A0CAPU"), hasTicker(null), //
+                        hasName("ARBOR REALTY TRUST INC."), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US92936U1097"), hasWkn("A1J5SB"), hasTicker(null), //
+                        hasName("W.P. CAREY INC."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-09-29T15:53"), hasShares(40.00), //
+                        hasSource("FlatExDegiroSammelabrechnung12.txt"), //
+                        hasNote("Transaktion-Nr.: 5244678367"), //
+                        hasAmount("EUR", 1937.30 - 230.20), hasGrossValue("EUR", 1715.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-09-29T15:58"), hasShares(272.00), //
+                        hasSource("FlatExDegiroSammelabrechnung12.txt"), //
+                        hasNote("Transaktion-Nr.: 5244689219"), //
+                        hasAmount("EUR", 1545.15 - 605.20), hasGrossValue("EUR", 945.87), //
+                        hasForexGrossValue("USD", 1077.12), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 0.02))));
+
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-09-29T15:58"), hasShares(28.00), //
+                        hasSource("FlatExDegiroSammelabrechnung12.txt"), //
+                        hasNote("Transaktion-Nr.: 5244689238"), //
+                        hasAmount("EUR", 161.59 - 64.22), hasGrossValue("EUR", 97.37), //
+                        hasForexGrossValue("USD", 110.88), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-09-29T18:42"), hasShares(20.00), //
+                        hasSource("FlatExDegiroSammelabrechnung12.txt"), //
+                        hasNote("Transaktion-Nr.: 5244967808"), //
+                        hasAmount("EUR", 1167.90), hasGrossValue("EUR", 1160.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.00))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2026-09-29T15:53"), hasShares(40.00), //
+                        hasSource("FlatExDegiroSammelabrechnung12.txt"), //
+                        hasNote("Transaktion-Nr.: 5244678367"), //
+                        hasAmount("EUR", 230.20), hasGrossValue("EUR", 230.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2026-09-29T15:58"), hasShares(272.00), //
+                        hasSource("FlatExDegiroSammelabrechnung12.txt"), //
+                        hasNote("Transaktion-Nr.: 5244689219"), //
+                        hasAmount("EUR", 605.20), hasGrossValue("EUR", 605.20), //
+                        hasForexGrossValue("USD", 689.18), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2026-09-29T15:58"), hasShares(28.00), //
+                        hasSource("FlatExDegiroSammelabrechnung12.txt"), //
+                        hasNote("Transaktion-Nr.: 5244689238"), //
+                        hasAmount("EUR", 64.22), hasGrossValue("EUR", 64.22), //
+                        hasForexGrossValue("USD", 73.13), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testFlatExDeGiroSammelabrechnung12WithSecurityInEUR()
+    {
+        var security = new Security("ARBOR REALTY TRUST INC.", "EUR");
+        security.setIsin("US0389231087");
+        security.setWkn("A0CAPU");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new FinTechGroupBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroSammelabrechnung12.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(2L));
+        assertThat(countBuySell(results), is(4L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(9));
+        new AssertImportActions().check(results, "EUR");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-09-29T15:58"), hasShares(272.00), //
+                        hasSource("FlatExDegiroSammelabrechnung12.txt"), //
+                        hasNote("Transaktion-Nr.: 5244689219"), //
+                        hasAmount("EUR", 1545.15 - 605.20), hasGrossValue("EUR", 945.87), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 0.02))));
+
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-09-29T15:58"), hasShares(28.00), //
+                        hasSource("FlatExDegiroSammelabrechnung12.txt"), //
+                        hasNote("Transaktion-Nr.: 5244689238"), //
+                        hasAmount("EUR", 161.59 - 64.22), hasGrossValue("EUR", 97.37), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2026-09-29T15:58"), hasShares(272.00), //
+                        hasSource("FlatExDegiroSammelabrechnung12.txt"), //
+                        hasNote("Transaktion-Nr.: 5244689219"), //
+                        hasAmount("EUR", 605.20), hasGrossValue("EUR", 605.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2026-09-29T15:58"), hasShares(28.00), //
+                        hasSource("FlatExDegiroSammelabrechnung12.txt"), //
+                        hasNote("Transaktion-Nr.: 5244689238"), //
+                        hasAmount("EUR", 64.22), hasGrossValue("EUR", 64.22), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testFlatExDeGiroDepotServiceGebuehr01()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
