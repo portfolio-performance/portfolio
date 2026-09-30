@@ -274,7 +274,7 @@ public class PDFImportAssistant
      * files with the same name from different folders or ZIP archives are
      * imported. The path is used to detect duplicates between the files.
      */
-    private static void markSourceKey(List<Item> items, PDFInputFile inputFile)
+    /* testing */ static void markSourceKey(List<Item> items, PDFInputFile inputFile)
     {
         var sourceKey = inputFile.getFile().getAbsolutePath();
         items.forEach(item -> item.setData(DetectDuplicatesAction.SOURCE_KEY, sourceKey));

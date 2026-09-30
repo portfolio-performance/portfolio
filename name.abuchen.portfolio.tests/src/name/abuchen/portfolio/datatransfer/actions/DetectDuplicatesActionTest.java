@@ -30,6 +30,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 
@@ -433,6 +434,70 @@ public class DetectDuplicatesActionTest
         assertThat(sourceKeyOf.apply(dividend), is("Dividende01.pdf"));
     }
 
+    @SuppressWarnings("nls")
+    @Test
+    public void testDuplicateWithinImport4PortfolioTransferEntryFromDifferentSources()
+    {
+        var security = new Security();
+        var source = new Portfolio();
+        var target = new Portfolio();
+
+        List<Extractor.Item> items = new ArrayList<>();
+        items.add(withSourceKey(new Extractor.PortfolioTransferItem(
+                        getTestTransfer(source, target, security, "Depotuebertrag01.pdf")),
+                        "/tmp/import/Ordner1/Depotuebertrag01.pdf"));
+        items.add(withSourceKey(new Extractor.PortfolioTransferItem(
+                        getTestTransfer(source, target, security, "Depotuebertrag01.pdf")),
+                        "/tmp/import/Ordner2/Depotuebertrag01.pdf"));
+
+        var action = new DetectDuplicatesAction(new Client(), true, DetectDuplicatesAction.sourceKeysOf(items));
+
+        assertThat(action.process((PortfolioTransferEntry) items.get(0).getSubject(), source, target).getCode(),
+                        is(Code.OK));
+        assertThat(action.process((PortfolioTransferEntry) items.get(1).getSubject(), source, target).getCode(),
+                        is(Code.WARNING));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testNoDuplicateWithinImport4PortfolioTransferEntryFromSameSource()
+    {
+        var security = new Security();
+        var source = new Portfolio();
+        var target = new Portfolio();
+
+        List<Extractor.Item> items = new ArrayList<>();
+        items.add(withSourceKey(new Extractor.PortfolioTransferItem(
+                        getTestTransfer(source, target, security, "Depotuebertrag01.pdf")),
+                        "/tmp/import/Ordner1/Depotuebertrag01.pdf"));
+        items.add(withSourceKey(new Extractor.PortfolioTransferItem(
+                        getTestTransfer(source, target, security, "Depotuebertrag01.pdf")),
+                        "/tmp/import/Ordner1/Depotuebertrag01.pdf"));
+
+        var action = new DetectDuplicatesAction(new Client(), true, DetectDuplicatesAction.sourceKeysOf(items));
+
+        assertThat(action.process((PortfolioTransferEntry) items.get(0).getSubject(), source, target).getCode(),
+                        is(Code.OK));
+        assertThat(action.process((PortfolioTransferEntry) items.get(1).getSubject(), source, target).getCode(),
+                        is(Code.OK));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testSourceKeysOfUsesSourceKeyOfPortfolioTransferItem()
+    {
+        var transfer = getTestTransfer(new Portfolio(), new Portfolio(), new Security(), "Depotuebertrag01.pdf");
+
+        List<Extractor.Item> items = new ArrayList<>();
+        items.add(withSourceKey(new Extractor.PortfolioTransferItem(transfer),
+                        "/tmp/import/Ordner1/Depotuebertrag01.pdf"));
+
+        var sourceKeyOf = DetectDuplicatesAction.sourceKeysOf(items);
+
+        assertThat(sourceKeyOf.apply(transfer.getSourceTransaction()), is("/tmp/import/Ordner1/Depotuebertrag01.pdf"));
+        assertThat(sourceKeyOf.apply(transfer.getTargetTransaction()), is("/tmp/import/Ordner1/Depotuebertrag01.pdf"));
+    }
+
     private Extractor.Item withSourceKey(Extractor.Item item, String sourceKey)
     {
         item.setData(DetectDuplicatesAction.SOURCE_KEY, sourceKey);
@@ -474,6 +539,19 @@ public class DetectDuplicatesActionTest
     private AccountTransferEntry getTestTransfer(Account source, Account target, String filename)
     {
         var entry = new AccountTransferEntry(source, target);
+        entry.setAmount(1000);
+        entry.setCurrencyCode("EUR"); //$NON-NLS-1$
+        entry.setDate(LocalDateTime.of(2025, 12, 15, 0, 0));
+        entry.setSource(filename);
+        return entry;
+    }
+
+    private PortfolioTransferEntry getTestTransfer(Portfolio source, Portfolio target, Security security,
+                    String filename)
+    {
+        var entry = new PortfolioTransferEntry(source, target);
+        entry.setSecurity(security);
+        entry.setShares(1000L);
         entry.setAmount(1000);
         entry.setCurrencyCode("EUR"); //$NON-NLS-1$
         entry.setDate(LocalDateTime.of(2025, 12, 15, 0, 0));
