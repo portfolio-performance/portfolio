@@ -424,8 +424,8 @@ public class DeutscheBankPDFExtractorTest
                         hasShares(170.00), //
                         hasSource("Dividende08.txt"), //
                         hasNote(null), //
-                        hasAmount("USD", 58.22), hasGrossValue("USD", 78.21), //
-                        hasTaxes("USD", 11.74 + 7.82 + 0.43), hasFees("USD", 0.00))));
+                        hasAmount("USD", 58.22), hasGrossValue("USD", 78.20), //
+                        hasTaxes("USD", 11.73 + 7.82 + 0.43), hasFees("USD", 0.00))));
     }
 
     @Test
@@ -572,6 +572,41 @@ public class DeutscheBankPDFExtractorTest
                         hasSource("Dividende11.txt"), hasNote(null), hasAmount("USD", 18.62), //
                         hasGrossValue("USD", 25.00), hasTaxes("USD", 3.75 + 2.50 + 0.13), //
                         hasFees("USD", 0.00))));
+    }
+
+    @Test
+    public void testDividende12()
+    {
+        var extractor = new DeutscheBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende12.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("GG00BQZCBZ44"), hasWkn("A3D8TJ"), hasTicker(null), //
+                        hasName("SHURGARD SELF STORAGE LTD.RG.SH. O.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-05-27T00:00"), hasExDate(null), //
+                        hasShares(170.00), //
+                        hasSource("Dividende12.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 14.87), hasGrossValue("EUR", 21.40), //
+                        hasTaxes("EUR", 4.28 + 2.14 + 0.11), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1082,7 +1117,109 @@ public class DeutscheBankPDFExtractorTest
                         hasSource("Kauf12.txt"), //
                         hasNote("Belegnummer 1595497338 / 718623085"), //
                         hasAmount("EUR", 32.60), hasGrossValue("EUR", 32.60), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.0))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierKauf13()
+    {
+        var extractor = new DeutscheBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf13.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("GB0002869419"), hasWkn("539971"), hasTicker(null), //
+                        hasName("BIG YELLOW GROUP PLC RG.SH. LS 0,10"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-03-20T12:53:58"), hasShares(400.00), //
+                        hasSource("Kauf13.txt"), //
+                        hasNote("Belegnummer 6555923701 / 601948906"), //
+                        hasAmount("EUR", 4258.22), hasGrossValue("EUR", 4240.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 10.60 + 4.50 + 3.12))));
+    }
+
+    @Test
+    public void testWertpapierKauf14()
+    {
+        var extractor = new DeutscheBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf14.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BJ0KDQ92"), hasWkn("A1XB5U"), hasTicker(null), //
+                        hasName("X(IE)-MSCI WORLD 1C FUNDS"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-03-20T08:09:01"), hasShares(2.0796), //
+                        hasSource("Kauf14.txt"), //
+                        hasNote("Belegnummer 1595487602 / 223917324"), //
+                        hasAmount("EUR", 250.00), hasGrossValue("EUR", 250.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.13 - 3.13))));
+    }
+
+    @Test
+    public void testWertpapierKauf15()
+    {
+        var extractor = new DeutscheBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf15.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0321464652"), hasWkn("DBX0A1"), hasTicker(null), //
+                        hasName("XTRACKERS II GBP OVER.RATE SW.INH.ANT.1D ON"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-03-10T19:26:45"), hasShares(6.00), //
+                        hasSource("Kauf15.txt"), //
+                        hasNote("Belegnummer 8406935960 / 650331086"), //
+                        hasAmount("EUR", 1255.44), hasGrossValue("EUR", 1250.54), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 8.90 - 4.00))));
     }
 
     @Test
@@ -1301,6 +1438,40 @@ public class DeutscheBankPDFExtractorTest
                         hasNote("Belegnummer 6978580640 / 890153444"), //
                         hasAmount("EUR", 7185.60), hasGrossValue("EUR", 8200.00), //
                         hasTaxes("EUR", 933.16 + 51.32), hasFees("EUR", 20.50 + 4.50 + 4.92))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf06()
+    {
+        var extractor = new DeutscheBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0274211480"), hasWkn("DBX1DA"), hasTicker(null), //
+                        hasName("XTRACKERS DAX INHABER-ANTEILE 1C O.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-02-02T14:58"), hasShares(2.2450), //
+                        hasSource("Verkauf06.txt"), //
+                        hasNote("Belegnummer 1588255927 / 9998"), //
+                        hasAmount("EUR", 520.39), hasGrossValue("EUR", 520.39), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -2962,6 +3133,11 @@ public class DeutscheBankPDFExtractorTest
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug07.txt"), errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(4L));
         assertThat(results.size(), is(4));
     }
@@ -2976,6 +3152,11 @@ public class DeutscheBankPDFExtractorTest
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug08.txt"), errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(1L));
         assertThat(results.size(), is(1));
     }
@@ -3120,6 +3301,42 @@ public class DeutscheBankPDFExtractorTest
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, taxes( //
                                         hasDate("2026-01-15"), hasShares(120), //
                                         hasSource("Vorabpauschale02.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
+    public void testVorabpauschale03()
+    {
+        var extractor = new DeutscheBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0274211480"), hasWkn("DBX1DA"), hasTicker(null), //
+                        hasName("XTRACKERS DAX INHABER-ANTEILE 1C O.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        taxes( //
+                                        hasDate("2026-01-19T00:00"), hasShares(44.0454), //
+                                        hasSource("Vorabpauschale03.txt"), //
                                         hasNote(null), //
                                         hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
                                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
