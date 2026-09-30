@@ -4,9 +4,15 @@ import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetTax;
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Arrays;
+import java.util.regex.Pattern;
+
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.ParsedData;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -25,6 +31,12 @@ import name.abuchen.portfolio.money.Values;
 public class NatixisInterepargnePDFExtractor extends AbstractPDFExtractor
 {
     private static final String EUR = "EUR";
+
+    /**
+     * Valid French amount with space as group separator, e.g. "236,35" or
+     * "1 181,76"
+     */
+    private static final Pattern FRENCH_AMOUNT = Pattern.compile("^[\\d]{1,3}(\\s[\\d]{3})*,[\\d]{2}$");
 
     public NatixisInterepargnePDFExtractor(Client client)
     {
@@ -73,7 +85,7 @@ public class NatixisInterepargnePDFExtractor extends AbstractPDFExtractor
         // SELECTION DNCA MIXTE ISR (I) 236,35 104,08 20/03/2025 21,60729 15,2883 01/06/2030
         // Prélèvements sociaux à déduire - 10,09
         // @formatter:on
-        var firstRelevantLine = new Block("^.* [\\d\\s]+,[\\d]{2} [\\d\\s]+,[\\d]{2} [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\d\\s]+,[\\d]+ [\\d\\s]+,[\\d]+ [\\d]{2}\\/[\\d]{2}\\/[\\d]{4}$");
+        var firstRelevantLine = new Block("^.* [\\d]{1,3}(\\s[\\d]{3})*,[\\d]{2} [\\d]{1,3}(\\s[\\d]{3})*,[\\d]{2} [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\d\\s]+,[\\d]+ [\\d\\s]+,[\\d]+ [\\d]{2}\\/[\\d]{2}\\/[\\d]{4}$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.setMaxSize(2);
         firstRelevantLine.set(pdfTransaction);
@@ -82,41 +94,23 @@ public class NatixisInterepargnePDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
-                        // @formatter:off
-                        // SELECTION DNCA MIXTE ISR (I) 236,35 104,08 20/03/2025 21,60729 15,2883 01/06/2030
-                        // @formatter:on
-                        .section("name") //
-                        .match("^(?<name>.*?) [\\d\\s]+,[\\d]{2} [\\d\\s]+,[\\d]{2} [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\d\\s]+,[\\d]+ [\\d\\s]+,[\\d]+ [\\d]{2}\\/[\\d]{2}\\/[\\d]{4}$") //
-                        .assign((t, v) -> {
-                            v.put("currency", asCurrencyCode(EUR));
-                            t.setSecurity(getOrCreateSecurity(v));
-                        })
-
-                        // @formatter:off
-                        // SELECTION DNCA MIXTE ISR (I) 236,35 104,08 20/03/2025 21,60729 15,2883 01/06/2030
-                        // @formatter:on
-                        .section("shares") //
-                        .match("^.*? [\\d\\s]+,[\\d]{2} [\\d\\s]+,[\\d]{2} [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\d\\s]+,[\\d]+ (?<shares>[\\d\\s]+,[\\d]+) [\\d]{2}\\/[\\d]{2}\\/[\\d]{4}$") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-
-                        // @formatter:off
-                        // SELECTION DNCA MIXTE ISR (I) 236,35 104,08 20/03/2025 21,60729 15,2883 01/06/2030
-                        // @formatter:on
-                        .section("date") //
-                        .match("^.*? [\\d\\s]+,[\\d]{2} [\\d\\s]+,[\\d]{2} (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) [\\d\\s]+,[\\d]+ [\\d\\s]+,[\\d]+ [\\d]{2}\\/[\\d]{2}\\/[\\d]{4}$") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
-
-                        // The amount is the sum of the employee payment and the
-                        // employer contribution (abondement).
-                        // @formatter:off
-                        // SELECTION DNCA MIXTE ISR (I) 236,35 104,08 20/03/2025 21,60729 15,2883 01/06/2030
-                        // @formatter:on
-                        .section("payment", "contribution") //
-                        .match("^.*? (?<payment>[\\d\\s]+,[\\d]{2}) (?<contribution>[\\d\\s]+,[\\d]{2}) [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\d\\s]+,[\\d]+ [\\d\\s]+,[\\d]+ [\\d]{2}\\/[\\d]{2}\\/[\\d]{4}$") //
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(EUR));
-                            t.setAmount(asAmount(v.get("payment")) + asAmount(v.get("contribution")));
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // SELECTION DNCA MIXTE ISR (I) 236,35 104,08 20/03/2025 21,60729 15,2883 01/06/2030
+                                        // Prélèvements sociaux à déduire - 10,09
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("nameAndAmounts", "date", "price", "shares", "tax") //
+                                                        .match("^(?<nameAndAmounts>.*) (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<price>[\\d\\s]+,[\\d]+) (?<shares>[\\d\\s]+,[\\d]+) [\\d]{2}\\/[\\d]{2}\\/[\\d]{4}$") //
+                                                        .match("^Pr.l.vements sociaux . d.duire \\- (?<tax>[\\d]{1,3}(\\s[\\d]{3})*,[\\d]{2})$") //
+                                                        .assign((t, v) -> assignProfitSharing(t, v, type)),
+                                        // @formatter:off
+                                        // SELECTION DNCA MIXTE ISR (I) 236,35 104,08 20/03/2025 21,60729 15,2883 01/06/2030
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("nameAndAmounts", "date", "price", "shares") //
+                                                        .match("^(?<nameAndAmounts>.*) (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<price>[\\d\\s]+,[\\d]+) (?<shares>[\\d\\s]+,[\\d]+) [\\d]{2}\\/[\\d]{2}\\/[\\d]{4}$") //
+                                                        .assign((t, v) -> assignProfitSharing(t, v, type)))
 
                         // @formatter:off
                         // PEE - Plan d'Epargne Entreprise
@@ -125,24 +119,78 @@ public class NatixisInterepargnePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("availability").optional() //
                         .documentRange("plan", "year") //
-                        .match("^.*? [\\d\\s]+,[\\d]{2} [\\d\\s]+,[\\d]{2} [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\d\\s]+,[\\d]+ [\\d\\s]+,[\\d]+ (?<availability>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4})$") //
+                        .match("^.* [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\d\\s]+,[\\d]+ [\\d\\s]+,[\\d]+ (?<availability>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4})$") //
                         .assign((t, v) -> {
                             var note = concatenate("Intéressement " + trim(v.get("year")), trim(v.get("plan")), " | ");
                             note = concatenate(note, "Disponibilité " + trim(v.get("availability")), " | ");
                             t.setNote(note);
                         })
 
-                        // @formatter:off
-                        // Prélèvements sociaux à déduire - 10,09
-                        // @formatter:on
-                        .section("tax").optional() //
-                        .match("^Pr.l.vements sociaux . d.duire \\- (?<tax>[\\d\\s]+,[\\d]{2})$") //
-                        .assign((t, v) -> {
-                            var tax = Money.of(asCurrencyCode(EUR), asAmount(v.get("tax")));
-                            checkAndSetTax(tax, t, type.getCurrentContext());
-                        })
-
                         .wrap(BuySellEntryItem::new);
+    }
+
+    /**
+     * The fund line starts with the fund name, followed by the employee
+     * payment and the employer contribution (abondement). As the fund name can
+     * end with a number (e.g. "AVENIR RETRAITE 2030" or "S&P 500"), the
+     * boundary between name and amounts is ambiguous. Therefore all splits
+     * with valid French amounts are evaluated and the one is chosen whose
+     * invested amount (payment + contribution - social charges) is closest to
+     * the value of the shares (shares x price).
+     */
+    private void assignProfitSharing(BuySellEntry t, ParsedData v, DocumentType type)
+    {
+        var shares = asShares(v.get("shares"));
+        var price = ExtractorUtils.convertToNumberBigDecimal(v.get("price"), Values.Share, "fr", "FR");
+        var tax = v.get("tax") != null ? asAmount(v.get("tax")) : 0L;
+
+        var sharesValue = price.multiply(BigDecimal.valueOf(shares)) //
+                        .divide(Values.Share.getBigDecimalFactor()) //
+                        .multiply(Values.Amount.getBigDecimalFactor()) //
+                        .setScale(0, RoundingMode.HALF_UP).longValue();
+
+        var tokens = v.get("nameAndAmounts").split(" ", -1);
+
+        String name = null;
+        var amount = 0L;
+        var deviation = Long.MAX_VALUE;
+
+        for (var nameEnd = 1; nameEnd < tokens.length - 1; nameEnd++)
+        {
+            for (var paymentEnd = nameEnd + 1; paymentEnd < tokens.length; paymentEnd++)
+            {
+                var payment = String.join(" ", Arrays.copyOfRange(tokens, nameEnd, paymentEnd));
+                var contribution = String.join(" ", Arrays.copyOfRange(tokens, paymentEnd, tokens.length));
+
+                if (!FRENCH_AMOUNT.matcher(payment).matches() || !FRENCH_AMOUNT.matcher(contribution).matches())
+                    continue;
+
+                var candidateAmount = asAmount(payment) + asAmount(contribution);
+                var candidateDeviation = Math.abs(candidateAmount - tax - sharesValue);
+
+                if (candidateDeviation < deviation)
+                {
+                    name = String.join(" ", Arrays.copyOfRange(tokens, 0, nameEnd));
+                    amount = candidateAmount;
+                    deviation = candidateDeviation;
+                }
+            }
+        }
+
+        if (name == null)
+            throw new IllegalArgumentException("Unable to separate fund name and amounts: " + v.get("nameAndAmounts"));
+
+        v.put("name", trim(name));
+        v.put("currency", asCurrencyCode(EUR));
+
+        t.setSecurity(getOrCreateSecurity(v));
+        t.setDate(asDate(v.get("date")));
+        t.setShares(shares);
+        t.setCurrencyCode(asCurrencyCode(EUR));
+        t.setAmount(amount);
+
+        if (tax != 0L)
+            checkAndSetTax(Money.of(asCurrencyCode(EUR), tax), t, type.getCurrentContext());
     }
 
     private void addArbitrageTransaction()

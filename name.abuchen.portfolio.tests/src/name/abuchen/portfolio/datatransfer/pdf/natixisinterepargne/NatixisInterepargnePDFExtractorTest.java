@@ -117,6 +117,62 @@ public class NatixisInterepargnePDFExtractorTest
     }
 
     @Test
+    public void testInteressement01WithFundNamesEndingWithNumber()
+    {
+        // Regression test: a fund name ending with a number must not be merged
+        // with the employee payment. The test is based on Interessement01.txt
+        // with two fund names replaced, therefore no additional document is
+        // required.
+        var text = PDFInputFile.loadSingleTestCase(getClass(), "Interessement01.txt").getText() //
+                        .replace("SELECTION DNCA MIXTE ISR (I) 236,35", "AVENIR RETRAITE 2030 236,35") //
+                        .replace("AVENIR RENDEMENT (PART I) 472,70", "FONDS S&P 500 472,70");
+
+        var extractor = new NatixisInterepargnePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.createTestCase("Interessement01.txt", text), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(4L));
+        assertThat(countBuySell(results), is(4L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(8));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security with year at the end of the name
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker(null), //
+                        hasName("AVENIR RETRAITE 2030"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security with three-digit number at the end of the name
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker(null), //
+                        hasName("FONDS S&P 500"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check purchase transaction of fund name with year
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-03-20T00:00"), hasShares(15.2883), //
+                        hasSource("Interessement01.txt"), //
+                        hasNote("Intéressement 2024 | PEE | Disponibilité 01/06/2030"), //
+                        hasAmount("EUR", 340.43), hasGrossValue("EUR", 330.34), //
+                        hasTaxes("EUR", 10.09), hasFees("EUR", 0.00))));
+
+        // check purchase transaction of fund name with three-digit number
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-03-20T00:00"), hasShares(15.4030), //
+                        hasSource("Interessement01.txt"), //
+                        hasNote("Intéressement 2024 | PEE | Disponibilité 01/06/2030"), //
+                        hasAmount("EUR", 680.87), hasGrossValue("EUR", 660.68), //
+                        hasTaxes("EUR", 20.19), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testArbitrage01()
     {
         var extractor = new NatixisInterepargnePDFExtractor(new Client());
