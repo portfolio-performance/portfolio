@@ -43,6 +43,7 @@ import name.abuchen.portfolio.datatransfer.ImportAction;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status.Code;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.actions.CheckForexGrossValueAction;
+import name.abuchen.portfolio.datatransfer.actions.CheckSecurityIdentifierAction;
 import name.abuchen.portfolio.datatransfer.actions.CheckSecurityRelatedValuesAction;
 import name.abuchen.portfolio.datatransfer.actions.CheckTransactionDateAction;
 import name.abuchen.portfolio.datatransfer.actions.CheckValidTypesAction;
@@ -657,6 +658,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         actions.add(new CheckTransactionDateAction());
         actions.add(new CheckValidTypesAction());
         actions.add(new CheckSecurityRelatedValuesAction());
+        actions.add(new CheckSecurityIdentifierAction());
         actions.add(new DetectDuplicatesAction(client));
         actions.add(new CheckCurrenciesAction());
         actions.add(new CheckForexGrossValueAction());
@@ -678,6 +680,16 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             }
             else
             {
+                // if the user has chosen an existing security instead of
+                // creating a new one, run the checks against the existing
+                // security (e.g. to detect duplicates). The override is only
+                // applied permanently upon import.
+                var securityOverride = entry.getSecurityOverride();
+                var originalSecurity = entry.getItem().getSecurity();
+
+                if (securityOverride != null)
+                    entry.getItem().setSecurity(securityOverride);
+
                 for (ImportAction action : actions)
                 {
                     try
@@ -699,6 +711,9 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                         PortfolioPlugin.log(e);
                     }
                 }
+
+                if (securityOverride != null)
+                    entry.getItem().setSecurity(originalSecurity);
 
                 entry.getStatus().filter(s -> s.getCode() == ImportAction.Status.Code.ERROR)
                                 .forEach(status -> allErrors
