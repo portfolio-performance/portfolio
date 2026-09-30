@@ -1,0 +1,47 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.5
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Deutsche Bank AG
+Zentrale Frankfurt 
+60262 Frankfurt
+MyIB ymxfc 
+QaCLbynJLZFfq pfGKrdJ RsrCWv-IWTgtl 
+ 2 
+47317 riJkcL Telefon 030 34075639
+24/7-Kundenservice (069) 910-10000
+10. März 2026
+Abrechnung: Kauf von Wertpapieren 
+Depotinhaber: pUNe VwGxV
+Filialnummer Depotnummer Wertpapierbezeichnung Seite
+788 4729526 29 XTRACKERS II GBP OVER.RATE SW.INH.ANT.1D ON 1/2
+WKN DBX0A1 Nominal ST 6
+ISIN LU0321464652 Kurs EUR 208,424
+Verwahrart Girosammel / Zwischenverwahrung Euroclear
+Geschäft Kommissionsgeschäft außerbörslich vs. Lang & Schwarz Wertpapierhandelsbank AG
+Belegnummer 8406935960 / 650331086 Schlusstag/-zeit MEZ 10.03.2026 / 19:26:45
+Auftragsart sonstiger Auftrag
+Überschreitung Ihrer persönlichen Risikoklasse/Produktgruppen-Risikoklasse. Produkt ist unangemessen, da Sie die 
+Risiken des Finanzinstruments nicht beurteilen können.
+Abrechnung Währung Betrag
+Kurswert EUR 1.250,54
+Provision EUR 8,90
+Ausgekehrte Zuwendungen, die die Bank von DWS Xtrackers erhält EUR -4,00
+Belastung
+Buchung auf Kontonummer 3776717 89 mit Wertstellung 12.03.2026 EUR 1.255,44
+Summe der in der Abrechnung enthaltenen Provisionen und Auslagen EUR 8,90
+Zu dem abgerechneten Geschäft haben wir keine Empfehlung gegeben. Daher liegt keine entsprechende 
+Beratungsdokumentation vor.
+Vorsitzender des Aufsichtsrats: Alexander R. Wynaendts
+Vorstand: Christian Sewing (Vorsitzender), James von Moltke, Raja Akram, Fabrizio Campelli, Marcus Chromik, Bernd Leukert, Alexander von zur Mühlen, Laura Padovani, 
+Claudio de Sanctis, Rebecca Short
+Deutsche Bank Aktiengesellschaft mit Sitz in Frankfurt am Main; Amtsgericht Frankfurt am Main, HRB Nr. 30 000; Umsatzsteuer-Id.-Nr. DE114103379; www.db.com/de
+EZ47284448 83578167 852_875_
+  
+Die Wertpapiere haben wir entsprechend der Abrechnung gebucht. Unser Geschäftsverkehr mit Ihnen wird durch unsere Allgemeinen Geschäftsbedingungen 
+und die Sonderbedingungen für Wertpapiergeschäfte geregelt. Bitte überprüfen Sie diese Abrechnung schnellstmöglich und richten Sie etwaige Einwendungen 
+in den Geschäftsräumen der Bank oder schriftlich an Deutsche Bank AG, QM - Support, 04082 Leipzig. Andernfalls gilt diese Abrechnung als genehmigt. 
+Die unter § 4 Nr. 8 UStG im Inland fallenden Bank- und Finanzdienstleistungen sind von der Umsatzsteuer befreit, sofern Umsatzsteuer nicht gesondert 
+ausgewiesen ist. Soweit der Leistungsempfänger umsatzsteuerlicher Unternehmer ist und seinen Sitz in einem anderen EU-Mitgliedstaat hat und die Bank 
+und Finanzdienstleistungen nach dortigem Recht umsatzsteuerpflichtig sind, gilt die Steuerschuldnerschaft des Leistungsempfängers. Umsatzsteuer ID Nr.: 
+Deutsche Bank AG, 60262 Frankfurt DE114103379
