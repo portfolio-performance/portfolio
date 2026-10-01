@@ -33,13 +33,14 @@ import name.abuchen.portfolio.util.Pair;
  *
  *           Dividend reinvestment confirmations contain the dividend and the purchase of the net dividend.
  *           Both transactions are created from the same document.
- *           The dividend is booked on the settlement date, the purchase on the trade date.
+ *           The dividend and the purchase are both booked on the trade date.
  *           The number of shares of the dividend is the share balance before the reinvestment.
  *
  *           Release detail reports (restricted stock units) create three transactions:
  *           - delivery inbound of the released quantity at the fair market value (FMV) at vest,
  *           - sale of the quantity withheld to pay the taxes (sell-to-cover, withhold to cover),
- *           - removal of the tax amount.
+ *           - removal of the tax amount. The tax is income tax on the compensation, not a tax on the
+ *             investment, so it is booked as removal and not as taxes, which would reduce the performance.
  *           This keeps the cost basis at FMV and the net holding at the net quantity.
  *           A residual balance (sale proceeds minus taxes) remains on the account.
  *
@@ -50,7 +51,7 @@ import name.abuchen.portfolio.util.Pair;
  *           - disbursement of the proceeds (removal),
  *           - correction of the withholding tax of a previous dividend (Withholding Tax without dividend credit
  *             on the same date) as taxes or tax refund depending on the sign,
- *           - cancellation of a withholding tax (Cancel Withholding Tax), marked as unsupported cancellation.
+ *           - cancellation of a withholding tax (Cancel Withholding Tax) as tax refund or taxes depending on the sign.
  *           A dividend is reinvested if a reinvestment with the same gross amount follows within 10 days.
  *           Reinvested dividends and their reinvestment are imported from the dividend reinvestment
  *           confirmation and skipped in the statement. Releases are imported from the release detail report.
@@ -128,10 +129,10 @@ public class MorganStanleyPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
-                        // Settlement Date: 15-Jun-2022
+                        // You Bought 0.267 shares at $136.1234 on Trade Date 13-Jun-2022
                         // @formatter:on
                         .section("date") //
-                        .match("^Settlement Date: (?<date>[\\d]{2}\\-[\\w]{3}\\-[\\d]{4})$") //
+                        .match("^You Bought [\\.,\\d]+ shares at \\p{Sc}[\\.,\\d]+ on Trade Date (?<date>[\\d]{2}\\-[\\w]{3}\\-[\\d]{4})$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"), Locale.US)))
 
                         // @formatter:off
@@ -507,7 +508,7 @@ public class MorganStanleyPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionAlternativeDocumentRequired);
 
                             return new TransactionItem(t);
                         }));
@@ -567,7 +568,7 @@ public class MorganStanleyPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionIncludedInOtherTransaction);
 
                             return new TransactionItem(t);
                         }));
@@ -593,8 +594,6 @@ public class MorganStanleyPDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asStatementDate(v.get("date")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
-
-                            v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported);
                         })
 
                         .wrap(TransactionItem::new));
