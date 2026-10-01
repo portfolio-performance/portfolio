@@ -1012,6 +1012,226 @@ public class QuirinPrivatbankAGPDFExtractorTest
     }
 
     @Test
+    public void testQuartalsbericht01()
+    {
+        var extractor = new QuirinBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Quartalsbericht01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(8L));
+        assertThat(countBuySell(results), is(19L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(27));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1931974692"), hasWkn(null), hasTicker(null), //
+                        hasName("Amundi Index Solu.-A.PRIME GL. Nam.-Ant.UCI.ETF DR USD Dis.oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BFY0GT14"), hasWkn(null), hasTicker(null), //
+                        hasName("SPDR MSCI World UCITS ETF Reg.Shares USD Unhgd Acc. o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BL25JM42"), hasWkn(null), hasTicker(null), //
+                        hasName("Xtr.(IE) - MSCI World Value Registered Shares 1C USD o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BF4RFH31"), hasWkn(null), hasTicker(null), //
+                        hasName("iShsIII-MSCI Wld Sm.Ca.UCI.ETF Registered Shares USD(Acc)o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BKM4GZ66"), hasWkn(null), hasTicker(null), //
+                        hasName("iShs Core MSCI EM IMI U.ETF Registered Shares o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BG0SKF03"), hasWkn(null), hasTicker(null), //
+                        hasName("iShsIV-Edge MSCI EM Value F. Registered Shares USD (Acc.)oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B48X4842"), hasWkn(null), hasTicker(null), //
+                        hasName("SPDR MSCI Emer.Mkts Sm.Cap ETF Registered Shares o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE000QIF5N15"), hasWkn(null), hasTicker(null), //
+                        hasName("Amu.ETF ICAV-PRIME Glbl ETF Bear.Shs USD Dis. oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-11-14T00:00"), hasShares(0.1789), //
+                        hasSource("Quartalsbericht01.txt"), //
+                        hasNote("Ref.-Nr.: 535338205"), //
+                        hasAmount("EUR", 6.46), hasGrossValue("EUR", 6.46), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-11-14T00:00"), hasShares(0.157), //
+                        hasSource("Quartalsbericht01.txt"), //
+                        hasNote("Ref.-Nr.: 535338209"), //
+                        hasAmount("EUR", 5.94), hasGrossValue("EUR", 5.94), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-11-14T00:00"), hasShares(0.1218), //
+                        hasSource("Quartalsbericht01.txt"), //
+                        hasNote("Ref.-Nr.: 535338214"), //
+                        hasAmount("EUR", 5.20), hasGrossValue("EUR", 5.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-11-14T00:00"), hasShares(0.6272), //
+                        hasSource("Quartalsbericht01.txt"), //
+                        hasNote("Ref.-Nr.: 535338219"), //
+                        hasAmount("EUR", 4.65), hasGrossValue("EUR", 4.65), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-11-14T00:00"), hasShares(0.0556), //
+                        hasSource("Quartalsbericht01.txt"), //
+                        hasNote("Ref.-Nr.: 535338225"), //
+                        hasAmount("EUR", 1.81), hasGrossValue("EUR", 1.81), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-11-14T00:00"), hasShares(0.0274), //
+                        hasSource("Quartalsbericht01.txt"), //
+                        hasNote("Ref.-Nr.: 535338232"), //
+                        hasAmount("EUR", 1.29), hasGrossValue("EUR", 1.29), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-11-14T00:00"), hasShares(0.0047), //
+                        hasSource("Quartalsbericht01.txt"), //
+                        hasNote("Ref.-Nr.: 535338238"), //
+                        hasAmount("EUR", 0.51), hasGrossValue("EUR", 0.51), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-12-05T00:00"), hasShares(0.1526), //
+                        hasSource("Quartalsbericht01.txt"), //
+                        hasNote("Ref.-Nr.: 541851657"), //
+                        hasAmount("EUR", 5.89), hasGrossValue("EUR", 5.89), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-12-05T00:00"), hasShares(0.1189), //
+                        hasSource("Quartalsbericht01.txt"), //
+                        hasNote("Ref.-Nr.: 541851660"), //
+                        hasAmount("EUR", 5.14), hasGrossValue("EUR", 5.14), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-12-05T00:00"), hasShares(0.6004), //
+                        hasSource("Quartalsbericht01.txt"), //
+                        hasNote("Ref.-Nr.: 541851664"), //
+                        hasAmount("EUR", 4.56), hasGrossValue("EUR", 4.56), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-12-05T00:00"), hasShares(0.0544), //
+                        hasSource("Quartalsbericht01.txt"), //
+                        hasNote("Ref.-Nr.: 541851669"), //
+                        hasAmount("EUR", 1.81), hasGrossValue("EUR", 1.81), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-12-05T00:00"), hasShares(0.0273), //
+                        hasSource("Quartalsbericht01.txt"), //
+                        hasNote("Ref.-Nr.: 541851672"), //
+                        hasAmount("EUR", 1.30), hasGrossValue("EUR", 1.30), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-12-05T00:00"), hasShares(0.0045), //
+                        hasSource("Quartalsbericht01.txt"), //
+                        hasNote("Ref.-Nr.: 541851675"), //
+                        hasAmount("EUR", 0.51), hasGrossValue("EUR", 0.51), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-12-06T00:00"), hasShares(0.0071), //
+                        hasSource("Quartalsbericht01.txt"), //
+                        hasNote("Ref.-Nr.: 542126306"), //
+                        hasAmount("EUR", 0.05), hasGrossValue("EUR", 0.05), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-12-06T00:00"), hasShares(0.0012), //
+                        hasSource("Quartalsbericht01.txt"), //
+                        hasNote("Ref.-Nr.: 542126309"), //
+                        hasAmount("EUR", 0.05), hasGrossValue("EUR", 0.05), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-12-13T00:00"), hasShares(0.0009), //
+                        hasSource("Quartalsbericht01.txt"), //
+                        hasNote("Ref.-Nr.: 545602004"), //
+                        hasAmount("EUR", 0.03), hasGrossValue("EUR", 0.03), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-12-13T00:00"), hasShares(0.1744), //
+                        hasSource("Quartalsbericht01.txt"), //
+                        hasNote("Ref.-Nr.: 545602008"), //
+                        hasAmount("EUR", 6.46), hasGrossValue("EUR", 6.46), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-12-13T00:00"), hasShares(0.0138), //
+                        hasSource("Quartalsbericht01.txt"), //
+                        hasNote("Ref.-Nr.: 545602011"), //
+                        hasAmount("EUR", 0.10), hasGrossValue("EUR", 0.10), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-12-13T00:00"), hasShares(0.002), //
+                        hasSource("Quartalsbericht01.txt"), //
+                        hasNote("Ref.-Nr.: 545602013"), //
+                        hasAmount("EUR", 0.09), hasGrossValue("EUR", 0.09), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testDepotauszug01()
     {
         var extractor = new QuirinBankAGPDFExtractor(new Client());

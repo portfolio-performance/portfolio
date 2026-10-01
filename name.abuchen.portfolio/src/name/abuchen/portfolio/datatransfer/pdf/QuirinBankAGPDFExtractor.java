@@ -33,6 +33,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
         addDividendeTransaction_Format01();
         addDividendeTransaction_Format02();
         addAdvanceTaxTransaction();
+        addQuarterlyReportBuySellTransaction();
         addDepotStatementTransaction();
     }
 
@@ -584,6 +585,73 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setNote("Ref.-Nr.: " + trim(v.get("note"))))
 
                         .wrap(TransactionItem::new);
+    }
+
+    private void addQuarterlyReportBuySellTransaction()
+    {
+        final var type = new DocumentType("Wertpapierums.tze");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<BuySellEntry>();
+
+        var firstRelevantLine = new Block("^[A-Z]{2}[A-Z0-9]{9}[0-9] .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Kauf|Verkauf) .*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.setMaxSize(2);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
+
+                        // Is type --> "Verkauf" change from BUY to SELL
+                        .section("type").optional() //
+                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<type>(Kauf|Verkauf)) .*$") //
+                        .assign((t, v) -> {
+                            if ("Verkauf".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.SELL);
+                        })
+
+                        // @formatter:off
+                        // LU1931974692 Amundi Index Solu.-A.PRIME GL. 14.11.2024 Kauf 0,17890 ST 36,1050 EUR -6,46 EUR 0,00 EUR -6,46 EUR
+                        // EUR Nam.-Ant.UCI.ETF DR USD Dis.oN 18.11.2024 535338205 Berlin - Tradegate Exchange
+                        // @formatter:on
+                        .section("isin", "name", "currency", "name1") //
+                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Kauf|Verkauf) .*$") //
+                        .match("^(?<currency>[A-Z]{3}) (?<name1>.*) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ .*$") //
+                        .assign((t, v) -> {
+                            v.put("name", concatenate(v.get("name"), v.get("name1"), " "));
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
+
+                        // @formatter:off
+                        // IE00BKM4GZ66 iShs Core MSCI EM IMI U.ETF 13.12.2024 Verkauf -0,00090 ST 33,556467 EUR 0,03 EUR 0,00 EUR 0,03 EUR
+                        // @formatter:on
+                        .section("date", "shares", "amount", "currency") //
+                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] .* " //
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                        + "(Kauf|Verkauf) " //
+                                        + "(\\-)?(?<shares>[\\.,\\d]+) ST " //
+                                        + "[\\.,\\d]+ [A-Z]{3} " //
+                                        + "(\\-)?[\\.,\\d]+ [A-Z]{3} " //
+                                        + "(\\-)?[\\.,\\d]+ [A-Z]{3} " //
+                                        + "(\\-)?(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> {
+                            // The column "Gebühren/Steuern" is not booked,
+                            // because the sign logic is still unclear.
+                            t.setDate(asDate(v.get("date")));
+                            t.setShares(asShares(v.get("shares")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // @formatter:off
+                        // EUR Nam.-Ant.UCI.ETF DR USD Dis.oN 18.11.2024 535338205 Berlin - Tradegate Exchange
+                        // @formatter:on
+                        .section("note") //
+                        .match("^[A-Z]{3} .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>[\\d]+) .*$") //
+                        .assign((t, v) -> t.setNote("Ref.-Nr.: " + trim(v.get("note"))))
+
+                        .wrap(BuySellEntryItem::new);
     }
 
     private void addDepotStatementTransaction()
