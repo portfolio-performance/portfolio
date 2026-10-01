@@ -330,6 +330,76 @@ public class FondsdepotBankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf05()
+    {
+        var extractor = new FondsdepotBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BFNM3J75"), hasWkn("A2N6TD"), hasTicker(null), //
+                        hasName("iSharesIV MSCIWoScr UCETFUa"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-07-16"), hasShares(2.590), //
+                        hasSource("Kauf05.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 25.00), hasGrossValue("EUR", 24.85), //
+                        hasForexGrossValue("USD", 28.76), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.15 + 0.00))));
+    }
+
+    @Test
+    public void testWertpapierKauf05WithSecurityInEUR()
+    {
+        var security = new Security("iSharesIV MSCIWoScr UCETFUa", "EUR");
+        security.setIsin("IE00BFNM3J75");
+        security.setWkn("A2N6TD");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new FondsdepotBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-07-16"), hasShares(2.590), //
+                        hasSource("Kauf05.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 25.00), hasGrossValue("EUR", 24.85), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.15 + 0.00))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         var extractor = new FondsdepotBankPDFExtractor(new Client());

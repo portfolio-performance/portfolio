@@ -104,12 +104,16 @@ public class FondsdepotBankPDFExtractor extends AbstractPDFExtractor
                                         // Kauf 4.995,00 EUR 02.09.2025 277,5990 USD +20,803
                                         // aus Tausch -5,00 EUR 5.774,83 USD 237,80 EUR 0,000
                                         // 5.000,00 EUR 1,156122 USD 20,803
+                                        //
+                                        // Kauf 24,86 EUR 16.07.2025 11,1035 USD +2,590
+                                        // -0,15 EUR 28,76 USD 0,00 EUR 10,933
+                                        // 25,00 EUR 1,157098 USD 100 % 13,523
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("gross", "fee", "feeCurrency", "fxGross", "termCurrency", "frontEndLoad", "frontEndLoadCurrency", "amount", "baseCurrency", "exchangeRate") //
                                                         .match("^(Kauf|Wiederanlage) (?<gross>[\\.,\\d]+) [A-Z]{3} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ [A-Z]{3} \\+[\\.,\\d]+$") //
                                                         .match("^(.* )?(\\-)?(?<fee>[\\.,\\d]+) (?<feeCurrency>[A-Z]{3}) (?<fxGross>[\\.,\\d]+) (?<termCurrency>[A-Z]{3}) (?<frontEndLoad>[\\.,\\d]+) (?<frontEndLoadCurrency>[A-Z]{3}) [\\.,\\d]+$") //
-                                                        .match("^(?<amount>[\\.,\\d]+) (?<baseCurrency>[A-Z]{3}) (?<exchangeRate>[\\.,\\d]+) [A-Z]{3} [\\.,\\d]+$") //
+                                                        .match("^(?<amount>[\\.,\\d]+) (?<baseCurrency>[A-Z]{3}) (?<exchangeRate>[\\.,\\d]+) [A-Z]{3}( [\\.,\\d]+ %)? [\\.,\\d]+$") //
                                                         .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("baseCurrency")));
