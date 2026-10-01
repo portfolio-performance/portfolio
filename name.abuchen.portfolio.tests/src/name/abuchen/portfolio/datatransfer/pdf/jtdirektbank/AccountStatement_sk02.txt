@@ -1,0 +1,41 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.5
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+VÝPIS Z ÚČTU
+TERMÍNOVANÝ VKLADOVÝ ÚČET
+Číslo účtu: 476fg486fgh/56160
+Názov účtu: hlkjsa, ZoyNX                       KQpFj MgMCa
+Mena účtu: EUR
+Za obdobie: 31. 12. 2023 - 14. 05. 2024 lfWzhw gť/kí
+Dátum výpisu: 14. 05. 2024 61612 HmqQAbbs
+Číslo výpisu: 1/2024
+Adresa trvalého
+pobytu/sídla Klienta: k. EgHxqh bfg51
+4df52, NmvTaWWY
+Súhrn
+Aktuálna úroková sadzba (p.a.):    3,80 %
+Dátum zriadenia vkladu: 14. 11. 2023
+Dátum splatnosti vkladu: 14. 05. 2024
+Počiatočný zostatok 10 000,00 EUR
+Kreditné obraty (+)    189,48 EUR
+z toho pripísané hrubé úroky (+)    189,48 EUR
+Debetné obraty (-) -  10 189,48 EUR
+z toho poplatky (-)    0,00 EUR
+Konečný zostatok 0,00 EUR
+Rozpis transakcií
+Dátum Typ transakcie Číslo protiúčtu Suma (EUR)
+Valuta Správa pre príjemcu Názov protiúčtu Poplatok
+Detail transakcie
+14. 05. 2024 Vysporiadanie úroku vkladu 189,48
+14. 05. 2024 Aktuálna úroková sadzba (p.a.): 3,80 %
+14. 05. 2024 Daň z úrokov -36,00
+14. 05. 2024 Ukončenie vkladu SK80 8320 0000 0029 0004 7946   -10 153,48
+14. 05. 2024 Banka protiúčtu: JTBPSKBAXXX zTmbW oWWIo
+Váš vklad je chránený v rámci zákonného systému poistenia pohľadávok z vkladov. Informácie o poistenia môžete
+nájst na https://www.jtbanka.sk/poistenia-pohladavok .
+Strana č.:  1/1 Číslo účtu: b+9f8b49cf8g87
+J&T BANKA, a.s., Sokolovská 700/113a, 186 00 Praha 8, Česká republika, IČ: 471 15 378, zapísaná v obchodnom registri vedenom Mestským súdom v Prahe, spis. zn.: B 1731,
+podnikajúca na území Slovenskej republiky prostredníctvom organizačnej zložky J&T BANKA, a.s., pobočka zahraničnej banky, Dvořákovo nábrežie 8, 811 02 Bratislava,
+Slovenská republika, IČO: 35 964 693, zapísaná v obchodnom registri vedenom Mestským súdom Bratislava III, oddiel PO, vložka 1320/B.
+Komfort linka: 0800 900 500, zo zahraničia: +421 232 607 187, info@jtbanka.sk, www.jtbanka.sk.
