@@ -8,6 +8,7 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.util.Map;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -21,6 +22,8 @@ import name.abuchen.portfolio.money.Money;
 @SuppressWarnings("nls")
 public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
 {
+    private static final String SKIP_TRANSACTION = "skipTransaction";
+
     public QuirinBankAGPDFExtractor(Client client)
     {
         super(client);
@@ -626,22 +629,30 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // IE00BKM4GZ66 iShs Core MSCI EM IMI U.ETF 13.12.2024 Verkauf -0,00090 ST 33,556467 EUR 0,03 EUR 0,00 EUR 0,03 EUR
                         // @formatter:on
-                        .section("date", "shares", "amount", "currency") //
+                        .section("date", "shares", "fee", "amount", "currency") //
                         .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] .* " //
                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
                                         + "(Kauf|Verkauf) " //
                                         + "(\\-)?(?<shares>[\\.,\\d]+) ST " //
                                         + "[\\.,\\d]+ [A-Z]{3} " //
                                         + "(\\-)?[\\.,\\d]+ [A-Z]{3} " //
-                                        + "(\\-)?[\\.,\\d]+ [A-Z]{3} " //
+                                        + "(\\-)?(?<fee>[\\.,\\d]+) [A-Z]{3} " //
                                         + "(\\-)?(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
-                            // The column "Gebühren/Steuern" is not booked,
-                            // because the sign logic is still unclear.
                             t.setDate(asDate(v.get("date")));
                             t.setShares(asShares(v.get("shares")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
+
+                            // The column "Gebühren/Steuern" does not
+                            // distinguish between fees and taxes and the sign
+                            // logic is still unclear. Transactions with costs
+                            // are skipped, the dedicated securities settlement
+                            // has to be imported instead.
+                            if (asAmount(v.get("fee")) != 0)
+                                type.getCurrentContext().put(SKIP_TRANSACTION, Messages.MsgErrorTransactionSkipIfDetailsMissing);
+                            else
+                                type.getCurrentContext().remove(SKIP_TRANSACTION);
                         })
 
                         // @formatter:off
@@ -651,7 +662,14 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                         .match("^[A-Z]{3} .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>[\\d]+) .*$") //
                         .assign((t, v) -> t.setNote("Ref.-Nr.: " + trim(v.get("note"))))
 
-                        .wrap(BuySellEntryItem::new);
+                        .wrap(t -> {
+                            // The flag must be removed, because the document
+                            // contains multiple transactions.
+                            if (type.getCurrentContext().containsKey(SKIP_TRANSACTION))
+                                return new SkippedItem(new BuySellEntryItem(t), type.getCurrentContext().remove(SKIP_TRANSACTION));
+
+                            return new BuySellEntryItem(t);
+                        });
     }
 
     private void addDepotStatementTransaction()
