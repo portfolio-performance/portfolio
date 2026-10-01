@@ -36,7 +36,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -54,7 +53,7 @@ public class MorganStanleyPDFExtractorTest
     {
         var extractor = new MorganStanleyPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendReinvestment01.txt"), errors);
 
@@ -76,7 +75,7 @@ public class MorganStanleyPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-06-15T00:00"), hasExDate(null), //
+                        hasDate("2022-06-13T00:00"), hasExDate(null), //
                         hasShares(29.000), //
                         hasSource("DividendReinvestment01.txt"), //
                         hasNote(null), //
@@ -97,7 +96,7 @@ public class MorganStanleyPDFExtractorTest
     {
         var extractor = new MorganStanleyPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendReinvestment02.txt"), errors);
 
@@ -119,7 +118,7 @@ public class MorganStanleyPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-06-15T00:00"), hasExDate(null), //
+                        hasDate("2023-06-13T00:00"), hasExDate(null), //
                         hasShares(30.191), //
                         hasSource("DividendReinvestment02.txt"), //
                         hasNote(null), //
@@ -140,7 +139,7 @@ public class MorganStanleyPDFExtractorTest
     {
         var extractor = new MorganStanleyPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Release01.txt"), errors);
 
@@ -188,7 +187,7 @@ public class MorganStanleyPDFExtractorTest
     {
         var extractor = new MorganStanleyPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Release02.txt"), errors);
 
@@ -236,7 +235,7 @@ public class MorganStanleyPDFExtractorTest
     {
         var extractor = new MorganStanleyPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Release03.txt"), errors);
 
@@ -284,7 +283,7 @@ public class MorganStanleyPDFExtractorTest
     {
         var extractor = new MorganStanleyPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "QuarterlyStatement01.txt"), errors);
 
@@ -293,7 +292,7 @@ public class MorganStanleyPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(2L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(2L));
         assertThat(results.size(), is(5));
         new AssertImportActions().check(results, "USD");
@@ -312,19 +311,17 @@ public class MorganStanleyPDFExtractorTest
                         hasAmount("USD", 7.18), hasGrossValue("USD", 7.18), //
                         hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
 
-        // check failure message
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionOrderCancellationUnsupported, //
-                        taxRefund( //
-                                        hasDate("2022-08-23T00:00"), hasShares(0.00), //
-                                        hasSource("QuarterlyStatement01.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("USD", 11.48), hasGrossValue("USD", 11.48), //
-                                        hasTaxes("USD", 0.00), hasFees("USD", 0.00)))));
+        // check cancellation of the withholding tax of the previous dividend
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2022-08-23T00:00"), hasShares(0.00), //
+                        hasSource("QuarterlyStatement01.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 11.48), hasGrossValue("USD", 11.48), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
 
         // check skipped item (reinvested dividend, imported with the dividend reinvestment confirmation)
         assertThat(results, hasItem(skippedItem( //
-                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        Messages.MsgErrorTransactionAlternativeDocumentRequired, //
                         dividend( //
                                         hasDate("2022-09-10T00:00"), hasExDate(null), //
                                         hasShares(0.00), //
@@ -335,7 +332,7 @@ public class MorganStanleyPDFExtractorTest
 
         // check skipped item (withholding tax of the dividend)
         assertThat(results, hasItem(skippedItem( //
-                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        Messages.MsgErrorTransactionIncludedInOtherTransaction, //
                         taxes( //
                                         hasDate("2022-09-10T00:00"), hasShares(0.00), //
                                         hasSource("QuarterlyStatement01.txt"), //
@@ -349,7 +346,7 @@ public class MorganStanleyPDFExtractorTest
     {
         var extractor = new MorganStanleyPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "QuarterlyStatement02.txt"), errors);
 
@@ -384,7 +381,7 @@ public class MorganStanleyPDFExtractorTest
 
         // check skipped item (withholding tax of the dividend)
         assertThat(results, hasItem(skippedItem( //
-                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        Messages.MsgErrorTransactionIncludedInOtherTransaction, //
                         taxes( //
                                         hasDate("2025-09-10T00:00"), hasShares(0.00), //
                                         hasSource("QuarterlyStatement02.txt"), //
@@ -398,7 +395,7 @@ public class MorganStanleyPDFExtractorTest
     {
         var extractor = new MorganStanleyPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountSummary01.txt"), errors);
 
