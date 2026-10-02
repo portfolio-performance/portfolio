@@ -242,7 +242,7 @@ public class RaisinBankAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^Bestand (?<shares>[\\d]+\\.([\\d]{1,2}|[\\d]{4,})) St.ck.*$") //
+                                                        .match("^Bestand (?<shares>[\\d]+\\.[\\d]+) St.ck.*$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en", "US"))),
                                         // @formatter:off
                                         // Bestand 257,84 Stück
