@@ -262,7 +262,16 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        final var type = new DocumentType("(Ertrag|Dividendengutschrift|Kapitaltransaktion|Ertragsgutschrift nach .*)");
+        final var type = new DocumentType("(Ertrag|Dividendengutschrift|Kapitaltransaktion|Ertragsgutschrift nach .*)", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // Abrechnung Ereignis a
+                                        // 84111000 - 13.01.2026 a
+                                        // @formatter:on
+                                        .section("referenceNumber").optional() //
+                                        .find("Abrechnung Ereignis.*") //
+                                        .match("^(?<referenceNumber>[\\d]+) \\- [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*$") //
+                                        .assign((ctx, v) -> ctx.put("referenceNumber", v.get("referenceNumber"))));
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -438,6 +447,10 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                                             // @formatter:on
                                                             t.setType(AccountTransaction.Type.TAXES);
 
+                                                            // A tax charge on accumulated income
+                                                            // (ausschüttungsgleicher Ertrag) has no ex-date
+                                                            t.setExDate(null);
+
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
@@ -489,6 +502,23 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                                             var gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }),
+                                        // @formatter:off
+                                        // -632,29 USD
+                                        // Devisenkurs: 1,1705 (09.01.2026)  -540,18 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("fxGross", "termCurrency", "exchangeRate", "gross", "baseCurrency") //
+                                                        .match("^\\-(?<fxGross>[\\.,\\d]+) (?<termCurrency>[A-Z]{3})[\\s]*$") //
+                                                        .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}\\)[\\s]+\\-(?<gross>[\\.,\\d]+) (?<baseCurrency>[A-Z]{3}).*$") //
+                                                        .assign((t, v) -> {
+                                                            var rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }))
 
                         .optionalOneOf( //
@@ -512,6 +542,35 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                         .section("note").optional() //
                         .match("^.* Art der Dividende (?<note>.*)$") //
                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
+
+                        // @formatter:off
+                        // Zu Gunsten IBAN AT28 3840 2000 0006 8643 12,34 EUR
+                        // Belastung KESt bei ausschüttungsgleichen Erträgen ausländischer Investmentfonds
+                        // @formatter:on
+                        .section().optional() //
+                        .match("^Zu Gunsten IBAN .*$") //
+                        .match("^Belastung KESt bei aussch.ttungsgleichen Ertr.gen .*$") //
+                        .assign((t, v) -> {
+                            // A tax charge on accumulated income can only be
+                            // a debit, so a credit is treated as cancellation
+                            t.setType(AccountTransaction.Type.TAXES);
+                            t.setExDate(null);
+
+                            v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported);
+                        })
+
+                        // @formatter:off
+                        // Belastung KESt bei ausschüttungsgleichen Erträgen ausländischer Investmentfonds
+                        // @formatter:on
+                        .section().optional() //
+                        .documentContextOptionally("referenceNumber") //
+                        .match("^Belastung KESt bei aussch.ttungsgleichen Ertr.gen .*$") //
+                        .assign((t, v) -> {
+                            if (v.get("referenceNumber") != null)
+                                t.setNote(concatenate(t.getNote(), "Ref.-Nr.: " + v.get("referenceNumber"), " | "));
+
+                            t.setNote(concatenate(t.getNote(), "Ausschüttungsgleicher Ertrag", " | "));
+                        })
 
                         .wrap((t, ctx) -> {
                             // @formatter:off
@@ -756,7 +815,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransactions()
     {
-        final var type = new DocumentType("(Kontokorrent|Privatkonto|Tagesgeld Plus)", //
+        final var type = new DocumentType("(Kontokorrent|Privatkonto|Tagesgeld Plus|Ausbildungskonto|VR\\-Flex\\-Konto)", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // EUR-Konto Kontonummer 12364567
@@ -792,6 +851,8 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                         // 30.08. 30.08. LOHN/GEHALT PN:931                                                          1.200,00 H
                         // 27.08. 27.08. Auszahlung girocard PN:931                                           20,00 S
                         // 08.06. 08.06. Überweisung SEPA                                                      4,00 S
+                        // 23.05. 23.05. Überweisungsgutschr. PN:932                                                   500,00 H
+                        // 23.05. 23.05. SEPA-Überweisung PN:932                                             500,00 S
                         // @formatter:on
                         .section("day", "month", "note", "amount", "type").optional() //
                         .documentContext("currency", "nr", "year") //
@@ -805,6 +866,8 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                         + "|Auszahlung" //
                                         + "|LOHN\\/GEHALT" //
                                         + "|.berweisung SEPA" //
+                                        + "|.berweisungsgutschr\\." //
+                                        + "|SEPA\\-.berweisung" //
                                         + "|UEBERWEISUNG" //
                                         + "|RETOUREN" //
                                         + "|UEBERTRAG) " //
@@ -850,6 +913,9 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                             if ("UEBERTRAG".equals(v.get("note")))
                                 v.put("note", "Übertrag");
 
+                            if (v.get("note").matches("(?i).berweisungsgutschr\\."))
+                                v.put("note", "Überweisungsgutschrift");
+
                             t.setNote(v.get("note"));
                         })
 
@@ -892,6 +958,33 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                 return new TransactionItem(t);
                             return null;
                         }));
+
+        var taxRefundBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. Steuererstattung .* H$");
+        taxRefundBlock.setMaxSize(2);
+        type.addBlock(taxRefundBlock);
+        taxRefundBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
+
+                        // @formatter:off
+                        // 16.05. 16.05. Steuererstattung durch PN:967                                                   0,27 H
+                        //               Steuerausgleich            Kundennummer    1234567
+                        // @formatter:on
+                        .section("day", "month", "amount") //
+                        .documentContext("currency", "nr", "year") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2})\\.(?<month>[\\d]{2})\\. Steuererstattung .* (?<amount>[\\.,\\d]+) H$") //
+                        .assign((t, v) -> {
+                            dateTranactionHelper(t, v);
+
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .section("note").optional() //
+                        .match("^[\\s]+(?<note>Steuerausgleich) .*$") //
+                        .assign((t, v) -> t.setNote(v.get("note")))
+
+                        .wrap(TransactionItem::new));
 
         var interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. Abschluss.* [S|H]$");
         type.addBlock(interestBlock);
@@ -1135,7 +1228,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
         transaction //
 
                         .section("n").optional() //
-                        .match("^Zu (?<n>Lasten) .* \\-[\\.,\\d]+ [A-Z]{3}.*$") //
+                        .match("^Zu (?<n>Lasten|Gunsten) .* (\\-)?[\\.,\\d]+ [A-Z]{3}.*$") //
                         .match("^Belastung KESt bei aussch.ttungsgleichen Ertr.gen .*$") //
                         .assign((t, v) -> type.getCurrentContext().putBoolean("noTax", true));
 

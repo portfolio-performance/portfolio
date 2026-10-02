@@ -27,6 +27,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.skippedItem;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
@@ -1394,7 +1395,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         assertThat(results, hasItem(taxes( //
                         hasDate("2022-07-07T00:00"), hasShares(800), //
                         hasSource("Dividende08.txt"), //
-                        hasNote(null), //
+                        hasNote("Ref.-Nr.: 46102104 | Ausschüttungsgleicher Ertrag"), //
                         hasAmount("EUR", 156.32), hasGrossValue("EUR", 156.32), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
@@ -1736,6 +1737,50 @@ public class RaiffeisenbankgruppePDFExtractorTest
     }
 
     @Test
+    public void testDividende15WithSecurityInEUR()
+    {
+        var security = new Security("ROCHE HOLDING AG Inhaber-Aktien SF 1", "EUR");
+        security.setIsin("CH0012032113");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new RaiffeisenBankgruppePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende15.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-03-16T00:00"), hasExDate("2026-03-12T00:00"), //
+                        hasShares(100.00), //
+                        hasSource("Dividende15.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 558.26), hasGrossValue("EUR", 1078.58), //
+                        hasTaxes("EUR", 512.32), hasFees("EUR", 8.00), //
+                        check(tx -> {
+                            assertThat(tx.getUnit(Unit.Type.GROSS_VALUE).isPresent(), is(false));
+
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
     public void testDividende16()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
@@ -1769,6 +1814,128 @@ public class RaiffeisenbankgruppePDFExtractorTest
                         hasForexGrossValue("USD", 205.00), //
                         hasAmount("EUR", 118.20), hasGrossValue("EUR", 174.07), //
                         hasTaxes("EUR", 47.87), hasFees("EUR", 8.00))));
+    }
+
+    @Test
+    public void testDividende16WithSecurityInEUR()
+    {
+        var security = new Security("CISCO SYSTEMS INC. Registered Shares DL-,001", "EUR");
+        security.setIsin("US17275R1023");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new RaiffeisenBankgruppePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende16.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-01-21T00:00"), hasExDate("2026-01-02T00:00"), //
+                        hasShares(500.00), //
+                        hasSource("Dividende16.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 118.20), hasGrossValue("EUR", 174.07), //
+                        hasTaxes("EUR", 47.87), hasFees("EUR", 8.00), //
+                        check(tx -> {
+                            assertThat(tx.getUnit(Unit.Type.GROSS_VALUE).isPresent(), is(false));
+
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testDividende17()
+    {
+        var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende17.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B53SZB19"), hasWkn(null), hasTicker(null), //
+                        hasName("iShsVII-NASDAQ 100 UCITS ETF Reg. Shares USD (Acc) o.N."), //
+                        hasCurrencyCode("USD"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2026-01-12T00:00"), hasShares(50.00), //
+                        hasSource("Dividende17.txt"), //
+                        hasNote("Ref.-Nr.: 84111000 | Ausschüttungsgleicher Ertrag"), //
+                        hasForexGrossValue("USD", 632.29), //
+                        hasAmount("EUR", 540.18), hasGrossValue("EUR", 540.18), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende17WithSecurityInEUR()
+    {
+        var security = new Security("iShsVII-NASDAQ 100 UCITS ETF Reg. Shares USD (Acc) o.N.", "EUR");
+        security.setIsin("IE00B53SZB19");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new RaiffeisenBankgruppePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende17.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2026-01-12T00:00"), hasShares(50.00), //
+                        hasSource("Dividende17.txt"), //
+                        hasNote("Ref.-Nr.: 84111000 | Ausschüttungsgleicher Ertrag"), //
+                        hasAmount("EUR", 540.18), hasGrossValue("EUR", 540.18), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            assertThat(tx.getUnit(Unit.Type.GROSS_VALUE).isPresent(), is(false));
+
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
@@ -2708,6 +2875,105 @@ public class RaiffeisenbankgruppePDFExtractorTest
 
         assertThat(results, hasItem(interestCharge(hasDate("2024-04-30"), hasAmount("EUR", 0.11), //
                         hasSource("Kontoauszug08.txt"), hasNote(null))));
+    }
+
+    @Test
+    public void testKontoauszug09()
+    {
+        var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(13L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(13));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2017-05-02"), hasAmount("EUR", 50.00), //
+                        hasSource("Kontoauszug09.txt"), hasNote("Dauerauftrag"))));
+
+        assertThat(results, hasItem(removal(hasDate("2017-05-03"), hasAmount("EUR", 3.49), //
+                        hasSource("Kontoauszug09.txt"), hasNote("Basislastschrift"))));
+
+        assertThat(results, hasItem(removal(hasDate("2017-05-10"), hasAmount("EUR", 5.99), //
+                        hasSource("Kontoauszug09.txt"), hasNote("Basislastschrift"))));
+
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2017-05-16"), //
+                        hasSource("Kontoauszug09.txt"), //
+                        hasNote("Steuerausgleich"), //
+                        hasAmount("EUR", 0.27), hasGrossValue("EUR", 0.27), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2017-05-16"), //
+                        hasSource("Kontoauszug09.txt"), //
+                        hasNote("Steuerausgleich"), //
+                        hasAmount("EUR", 0.44), hasGrossValue("EUR", 0.44), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2017-05-16"), //
+                        hasSource("Kontoauszug09.txt"), //
+                        hasNote("Steuerausgleich"), //
+                        hasAmount("EUR", 4.93), hasGrossValue("EUR", 4.93), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(removal(hasDate("2017-05-16"), hasAmount("EUR", 5.00), //
+                        hasSource("Kontoauszug09.txt"), hasNote("Basislastschrift"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2017-05-23"), hasAmount("EUR", 500.00), //
+                        hasSource("Kontoauszug09.txt"), hasNote("Überweisungsgutschrift"))));
+
+        assertThat(results, hasItem(removal(hasDate("2017-05-26"), hasAmount("EUR", 100.00), //
+                        hasSource("Kontoauszug09.txt"), hasNote("Auszahlung"))));
+
+        assertThat(results, hasItem(removal(hasDate("2017-05-29"), hasAmount("EUR", 5.00), //
+                        hasSource("Kontoauszug09.txt"), hasNote("Basislastschrift"))));
+
+        assertThat(results, hasItem(removal(hasDate("2017-05-29"), hasAmount("EUR", 8.99), //
+                        hasSource("Kontoauszug09.txt"), hasNote("Basislastschrift"))));
+
+        assertThat(results, hasItem(removal(hasDate("2017-05-29"), hasAmount("EUR", 37.74), //
+                        hasSource("Kontoauszug09.txt"), hasNote("Basislastschrift"))));
+
+        assertThat(results, hasItem(removal(hasDate("2017-05-30"), hasAmount("EUR", 13.58), //
+                        hasSource("Kontoauszug09.txt"), hasNote("Basislastschrift"))));
+    }
+
+    @Test
+    public void testKontoauszug10()
+    {
+        var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2017-05-22"), hasAmount("EUR", 36072.06), //
+                        hasSource("Kontoauszug10.txt"), hasNote("Überweisungsgutschrift"))));
+
+        assertThat(results, hasItem(removal(hasDate("2017-05-23"), hasAmount("EUR", 500.00), //
+                        hasSource("Kontoauszug10.txt"), hasNote("SEPA-Überweisung"))));
     }
 
     @Test
