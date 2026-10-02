@@ -8,6 +8,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyC
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
@@ -45,6 +46,75 @@ import name.abuchen.portfolio.model.Client;
 @SuppressWarnings("nls")
 public class ABNAMROGroupPDFExtractorTest
 {
+
+    @Test
+    public void testWertpapierKauf01()
+    {
+        var extractor = new ABNAMROGroupPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("XS2940466316"), hasWkn(null), hasTicker(null), //
+                        hasName("iSHARES DIGITAL ASSETS AG Open End ETP Z. Bitcoin"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-09-25T17:00"), hasShares(25000.00), //
+                        hasSource("Kauf01.txt"), //
+                        hasNote("Beleg-Nr.: WP 33929294/7512819 | REFNR. 073641002"), //
+                        hasAmount("EUR", 183824.26), hasGrossValue("EUR", 183787.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 36.76))));
+    }
+
+    @Test
+    public void testWertpapierKauf02()
+    {
+        var extractor = new ABNAMROGroupPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BZ1NCS44"), hasWkn(null), hasTicker(null), //
+                        hasName("iShs VI-Bloomb.R.S.Comm.UC.ETF Registered Acc.Shs USD o.N."), //
+                        hasCurrencyCode("USD"))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-09-25T17:30"), hasShares(49000.00), //
+                        hasSource("Kauf02.txt"), //
+                        hasNote("Beleg-Nr.: WP 33929558/7512887 | REFNR. 360547306"), //
+                        hasAmount("EUR", 514584.61), hasGrossValue("EUR", 514481.72), //
+                        hasForexGrossValue("USD", 586123.30), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 102.89))));
+    }
 
     @Test
     public void testKontoauszug01()

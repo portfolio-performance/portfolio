@@ -1,7 +1,10 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
+import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -23,6 +26,7 @@ public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("ABN AMRO Bank N.V.");
         addBankIdentifier("Bij- en afschrijvingen");
 
+        addBuySellTransaction();
         addAccountStatementTransaction();
         addAccountStatementTransaction_Format02();
     }
@@ -30,7 +34,95 @@ public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "ABN AMRO Group / MoneYou";
+        return "ABN AMRO Group / MoneYou / Hauck Aufhäuser Lampe";
+    }
+
+    private void addBuySellTransaction()
+    {
+        final var type = new DocumentType("Wertpapierabrechnung: Kauf");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<BuySellEntry>();
+
+        var firstRelevantLine = new Block("^Wertpapierabrechnung: Kauf .*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
+
+                        // @formatter:off
+                        // iSHARES DIGITAL ASSETS AG Kurs
+                        // 25.000 Stück Open End ETP Z. Bitcoin EUR  7,35150 p.St.
+                        // ISIN XS2940466316
+                        //
+                        // iShs VI-Bloomb.R.S.Comm.UC.ETF Kurs
+                        // 49.000 Anteile Registered Acc.Shs USD o.N. USD  11,96170 p.Ant.
+                        // ISIN IE00BZ1NCS44
+                        // @formatter:on
+                        .section("name", "shares", "nameContinued", "currency", "isin") //
+                        .match("^(?<name>.*) Kurs$") //
+                        .match("^(?<shares>[\\.,\\d]+) (St.ck|Anteile) (?<nameContinued>.*) (?<currency>[A-Z]{3})[\\s]{1,}[\\.,\\d]+ p\\.(St|Ant)\\.[\\s]*$") //
+                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setShares(asShares(v.get("shares")));
+                        })
+
+                        // @formatter:off
+                        // Kauf am 25.09.2026 / 17:00 Uhr in Bloomberg NL
+                        // @formatter:on
+                        .section("date", "time") //
+                        .match("^Kauf am (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\/ (?<time>[\\d]{2}\\:[\\d]{2}) Uhr.*$") //
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
+
+                        // @formatter:off
+                        // Zu Lasten Konto 2178250443   Valuta 29.09.2026 EUR 183.824,26
+                        // @formatter:on
+                        .section("currency", "amount") //
+                        .match("^Zu Lasten Konto .* Valuta [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // @formatter:off
+                        // Kurswert USD 586.123,30
+                        // Umrechnung der Einzelpositionen in EUR zum Kurs von 1,13925
+                        // @formatter:on
+                        .section("termCurrency", "fxGross", "baseCurrency", "exchangeRate").optional() //
+                        .match("^Kurswert (?<termCurrency>[A-Z]{3}) (?<fxGross>[\\.,\\d]+)$") //
+                        .match("^Umrechnung der Einzelpositionen in (?<baseCurrency>[A-Z]{3}) zum Kurs von (?<exchangeRate>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            var rate = asExchangeRate(v);
+                            type.getCurrentContext().putType(rate);
+
+                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                            var gross = rate.convert(rate.getBaseCurrency(), fxGross);
+
+                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                        })
+
+                        // @formatter:off
+                        // Wertpapierabrechnung: Kauf Beleg-Nr.: WP 33929294/7512819
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^Wertpapierabrechnung: Kauf (?<note>Beleg\\-Nr\\.: .*)$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        // @formatter:off
+                        // WPABRECHNUNG-999.999   REFNR. 073641002
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^WPABRECHNUNG\\-[\\.,\\d]+[\\s]{1,}(?<note>REFNR\\. [\\d]+)$") //
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+
+                        .conclude(ExtractorUtils.fixGrossValueBuySell())
+
+                        .wrap(BuySellEntryItem::new);
+
+        addFeesSectionsTransaction(pdfTransaction, type);
     }
 
     private void addAccountStatementTransaction()
@@ -397,5 +489,18 @@ public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
+    }
+
+    private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
+    {
+        transaction //
+
+                        // @formatter:off
+                        // Provision EUR 36,76
+                        // Provision USD 117,22
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^Provision (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }
