@@ -236,12 +236,21 @@ public class RaisinBankAGPDFExtractor extends AbstractPDFExtractor
                         .match("^.*Vorabpauschale pro Anteil [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
+                        .oneOf(
                         // @formatter:off
-                        // Bestand 257,84 Stück
-                        // @formatter:on
-                        .section("shares") //
-                        .match("^Bestand (?<shares>[\\.,\\d]+).*$") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                                        // Bestand 77.20617 Stück
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^Bestand (?<shares>[\\d]+\\.([\\d]{1,2}|[\\d]{4,})) St.ck.*$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en", "US"))),
+                                        // @formatter:off
+                                        // Bestand 257,84 Stück
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^Bestand (?<shares>[\\.,\\d]+).*$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
                         // @formatter:off
                         // Tag des steuerpflichtigen Zuflusses 02.01.2025
@@ -252,9 +261,10 @@ public class RaisinBankAGPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Betrag zu Ihren Lasten -13,47 EUR
+                        // Betrag -11,65 EUR
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^Betrag zu Ihren Lasten \\-(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
+                        .match("^Betrag( zu Ihren Lasten)? (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
