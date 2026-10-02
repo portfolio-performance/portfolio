@@ -18,6 +18,12 @@ public class Messages extends NLS
     public static String AccountMenuImportPDF;
     public static String AccountMenuTransfer;
     public static String AccountMenuTroubleshootBalanceDiscrepancy;
+    public static String ApiAccessBtnAllowAlways;
+    public static String ApiAccessBtnAllowSession;
+    public static String ApiAccessBtnDecline;
+    public static String ApiAccessDialogMsg;
+    public static String ApiAccessDialogTitle;
+    public static String ApiAccessMsgNoFilesEnabled;
     public static String AttributeSettings;
     public static String AttributeSettings_LimitPrice_ColorSettings;
     public static String AttributeSettings_LimitPrice_ColorSettings_LimitExceededNegatively;
@@ -1182,6 +1188,7 @@ public class Messages extends NLS
     public static String MsgPreviousStockSplit;
     public static String MsgRateLimitExceeded;
     public static String MsgRateLimitExceededAndRetrying;
+    public static String MsgRestApiServerStarted;
     public static String MsgRestartRequiredAfterGUIReset;
     public static String MsgRestartRequiredAfterUpdate;
     public static String MsgSecurityHasNoQuotes;
@@ -1295,6 +1302,8 @@ public class Messages extends NLS
     public static String PrefLabelProxyHost;
     public static String PrefLabelProxyPort;
     public static String PrefLabelQuoteDigits;
+    public static String PrefLabelRestApiEnable;
+    public static String PrefLabelRestApiPort;
     public static String PrefLabelSharesDigits;
     public static String PrefLabelUseIndirectQuotation;
     public static String PrefLabelUseSWTChartLibrary;
@@ -1303,6 +1312,10 @@ public class Messages extends NLS
     public static String PrefMsgCalendar;
     public static String PrefMsgConfigureUpdates;
     public static String PrefMsgLanguageConfig;
+    public static String PrefMsgRestApiEnterClientName;
+    public static String PrefMsgRestApiInvalidPort;
+    public static String PrefMsgRestApiTokenShownOnce;
+    public static String PrefMsgRestApiUnsavedFiles;
     public static String PrefMyDividends24APIKey;
     public static String PrefNoteIndirectQuotation;
     public static String PrefNoteStoreSettingsNextToFile;
@@ -1311,6 +1324,16 @@ public class Messages extends NLS
     public static String PrefPrefixSecurityName;
     public static String PrefQuandlAPIKey;
     public static String PrefRelativeBackupDirectoryName;
+    public static String PrefRestApiBtnAddClient;
+    public static String PrefRestApiBtnRevoke;
+    public static String PrefRestApiColumnAlias;
+    public static String PrefRestApiColumnClient;
+    public static String PrefRestApiColumnCreated;
+    public static String PrefRestApiColumnFile;
+    public static String PrefRestApiColumnLastUsed;
+    public static String PrefRestApiLabelClients;
+    public static String PrefRestApiLabelSession;
+    public static String PrefRestApiTitleNewToken;
     public static String PrefStoreSettingsNextToFile;
     public static String PrefTitle;
     public static String PrefTitleAlphaVantage;
@@ -1332,6 +1355,7 @@ public class Messages extends NLS
     public static String PrefTitlePresentation;
     public static String PrefTitleProxy;
     public static String PrefTitleQuandl;
+    public static String PrefTitleRestApi;
     public static String PrefTitleTwelveData;
     public static String PrefTwelveDataAPIKey;
     public static String PrefUpdateQuotesAfterFileOpen;

@@ -1,26 +1,20 @@
-package name.abuchen.portfolio.ui.views.settings;
+package name.abuchen.portfolio.model;
 
 import java.time.LocalDate;
-import java.util.ResourceBundle;
 
-import name.abuchen.portfolio.model.Attributable;
-import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.AttributeType.AmountConverter;
 import name.abuchen.portfolio.model.AttributeType.AmountPlainConverter;
 import name.abuchen.portfolio.model.AttributeType.BookmarkConverter;
 import name.abuchen.portfolio.model.AttributeType.BooleanConverter;
 import name.abuchen.portfolio.model.AttributeType.Converter;
 import name.abuchen.portfolio.model.AttributeType.DateConverter;
+import name.abuchen.portfolio.model.AttributeType.ImageConverter;
 import name.abuchen.portfolio.model.AttributeType.LimitPriceConverter;
 import name.abuchen.portfolio.model.AttributeType.PercentConverter;
 import name.abuchen.portfolio.model.AttributeType.PercentPlainConverter;
 import name.abuchen.portfolio.model.AttributeType.QuoteConverter;
 import name.abuchen.portfolio.model.AttributeType.ShareConverter;
 import name.abuchen.portfolio.model.AttributeType.StringConverter;
-import name.abuchen.portfolio.model.AttributeType.ImageConverter;
-import name.abuchen.portfolio.model.Bookmark;
-import name.abuchen.portfolio.model.LimitPrice;
-import name.abuchen.portfolio.model.Security;
 
 public enum AttributeFieldType
 {
@@ -36,9 +30,6 @@ public enum AttributeFieldType
     LIMIT_PRICE(LimitPrice.class, LimitPriceConverter.class, Security.class), //
     BOOKMARK(Bookmark.class, BookmarkConverter.class), //
     IMAGE(String.class, ImageConverter.class);
-
-    private static final ResourceBundle RESOURCES = ResourceBundle
-                    .getBundle("name.abuchen.portfolio.ui.views.settings.labels"); //$NON-NLS-1$
 
     private final Class<?> type;
     private final Class<? extends Converter> converterClass;
@@ -79,12 +70,6 @@ public enum AttributeFieldType
     {
         return converterClass.isAssignableFrom(attribute.getConverter().getClass())
                         && type.isAssignableFrom(attribute.getType());
-    }
-
-    @Override
-    public String toString()
-    {
-        return RESOURCES.getString(name() + ".name"); //$NON-NLS-1$
     }
 
     public static AttributeFieldType of(AttributeType attribute)
