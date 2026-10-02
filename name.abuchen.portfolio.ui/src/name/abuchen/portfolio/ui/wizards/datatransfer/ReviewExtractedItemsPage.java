@@ -85,11 +85,23 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     private static final String IMPORT_NOTES = "IMPORT_NOTES"; //$NON-NLS-1$
 
     /**
+     * Preference for the import wizard that the source files are deleted after
+     * a successful import
+     */
+    private static final String IMPORT_DELETE_SOURCE_FILES = "IMPORT_DELETE_SOURCE_FILES"; //$NON-NLS-1$
+
+    /**
      * If embedded into the CSV import, the first page can change the parsing
      * result and transactions must be extracted before every page. If embedded
      * into the PDF or XML import wizard, do not extract transactions again.
      */
     private boolean doExtractBeforeEveryPageDisplay = false;
+
+    /**
+     * If true, the page offers a checkbox to delete the source files after the
+     * import.
+     */
+    private boolean offerDeleteSourceFiles = false;
 
     private ExtractedItemsTable itemsTable;
     private TableViewer errorTableViewer;
@@ -117,6 +129,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     private Button cbConvertToDelivery;
     private Button cbRemoveDividends;
     private Button cbImportNotesFromSource;
+    private Button cbDeleteSourceFiles;
 
     private final Client client;
     private final Extractor extractor;
@@ -152,6 +165,11 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     public void setDoExtractBeforeEveryPageDisplay(boolean doExtractBeforeEveryPageDisplay)
     {
         this.doExtractBeforeEveryPageDisplay = doExtractBeforeEveryPageDisplay;
+    }
+
+    public void setOfferDeleteSourceFiles(boolean offerDeleteSourceFiles)
+    {
+        this.offerDeleteSourceFiles = offerDeleteSourceFiles;
     }
 
     public List<ExtractedEntry> getEntries()
@@ -210,6 +228,11 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         return cbImportNotesFromSource.getSelection();
     }
 
+    public boolean doDeleteSourceFiles()
+    {
+        return cbDeleteSourceFiles != null && cbDeleteSourceFiles.getSelection();
+    }
+
     @Override
     public void createControl(Composite parent)
     {
@@ -254,6 +277,14 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         var hasKey = preferences.contains(IMPORT_NOTES + extractor.getLabel());
         cbImportNotesFromSource.setSelection(!hasKey || preferences.getBoolean(IMPORT_NOTES + extractor.getLabel()));
 
+        if (offerDeleteSourceFiles)
+        {
+            cbDeleteSourceFiles = new Button(container, SWT.CHECK);
+            cbDeleteSourceFiles.setText(Messages.LabelDeleteSourceFilesAfterImport);
+            cbDeleteSourceFiles.setSelection(
+                            preferences.getBoolean(IMPORT_DELETE_SOURCE_FILES + extractor.getLabel()));
+        }
+
         Composite compositeTable = new Composite(container, SWT.NONE);
         Composite errorTable = new Composite(container, SWT.NONE);
 
@@ -261,11 +292,14 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         // form layout
         //
 
-        FormDataFactory.startingWith(targetContainer) //
+        var checkboxes = FormDataFactory.startingWith(targetContainer) //
                         .top(new FormAttachment(0, 0)).left(new FormAttachment(0, 0)).right(new FormAttachment(100, 0))
                         .thenBelow(cbConvertToDelivery) //
                         .thenRight(cbRemoveDividends) //
                         .thenRight(cbImportNotesFromSource);
+
+        if (cbDeleteSourceFiles != null)
+            checkboxes.thenRight(cbDeleteSourceFiles);
 
         FormDataFactory.startingWith(cbConvertToDelivery) //
                         .thenBelow(compositeTable).right(targetContainer).bottom(new FormAttachment(80, 0)) //
@@ -479,6 +513,9 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         preferences.setValue(IMPORT_CONVERT_BUYSELL_TO_DELIVERY + extractor.getLabel(), doConvertToDelivery());
         preferences.setValue(IMPORT_REMOVE_DIVIDENDS + extractor.getLabel(), doRemoveDividends());
         preferences.setValue(IMPORT_NOTES + extractor.getLabel(), doImportNotesFromSource());
+
+        if (cbDeleteSourceFiles != null)
+            preferences.setValue(IMPORT_DELETE_SOURCE_FILES + extractor.getLabel(), doDeleteSourceFiles());
     }
 
     public void setAccount(Account account)
