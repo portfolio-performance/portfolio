@@ -22,6 +22,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interestCharge;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
@@ -40,17 +41,13 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertNull;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
-import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
@@ -60,11 +57,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class DkbPDFExtractorTest
@@ -860,7 +853,7 @@ public class DkbPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
         assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
@@ -871,13 +864,15 @@ public class DkbPDFExtractorTest
                         hasName("6,875 % MS DEUTSCHLAND GMBH INH.-SCHV. V.2012(2017)"), //
                         hasCurrencyCode("EUR"))));
 
-        // check buy sell transaction
-        assertThat(results, hasItem(sale( //
-                        hasDate("2016-01-13T00:00"), hasShares(20.00), //
-                        hasSource("Verkauf10.txt"), //
-                        hasNote("Auftragsnummer 9796635950 | Rückzahlungskurs 100 %"), //
-                        hasAmount("EUR", 1908.39), hasGrossValue("EUR", 2000.00), //
-                        hasTaxes("EUR", 80.01 + 4.40 + 7.20), hasFees("EUR", 0.00))));
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionOrderCancellationUnsupported, //
+                        sale( //
+                                        hasDate("2016-01-13T00:00"), hasShares(20.00), //
+                                        hasSource("Verkauf10.txt"), //
+                                        hasNote("Auftragsnummer 9796635950 | Rückzahlungskurs 100 %"), //
+                                        hasAmount("EUR", 1908.39), hasGrossValue("EUR", 2000.00), //
+                                        hasTaxes("EUR", 80.01 + 4.40 + 7.20), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -2214,8 +2209,8 @@ public class DkbPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
-        assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
@@ -2223,33 +2218,18 @@ public class DkbPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE000US9RGR9"));
-        assertThat(security.getWkn(), is("US9RGR"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("24,75 % UBS AG (LONDON BRANCH) EO-ANL. 14(16) RWE"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000US9RGR9"), hasWkn("US9RGR"), hasTicker(null), //
+                        hasName("24,75 % UBS AG (LONDON BRANCH) EO-ANL. 14(16) RWE"), //
+                        hasCurrencyCode("EUR"))));
 
-        // check transfer_out transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.TRANSFER_OUT));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.TRANSFER_OUT));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-11-30T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(250)));
-        assertThat(entry.getSource(), is("WertpapierAusgang01.txt"));
-        assertThat(entry.getNote(), is("Auftragsnummer 489130/67.00 | Depotkonto-Nr. 100235452280"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check outbound delivery transaction
+        assertThat(results, hasItem(outboundDelivery( //
+                        hasDate("2015-11-30"), hasShares(250.00), //
+                        hasSource("WertpapierAusgang01.txt"), //
+                        hasNote("Auftragsnummer 489130/67.00 | Depotkonto-Nr. 100235452280"), //
+                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3156,14 +3136,16 @@ public class DkbPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
         assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
-        // assert transaction
-        assertThat(results, hasItem(deposit(hasDate("2022-11-03"), hasAmount("EUR", 26.91), //
-                        hasSource("GiroKontoauszug18.txt"), hasNote("Storno Gutschrift"))));
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionOrderCancellationUnsupported, //
+                        deposit(hasDate("2022-11-03"), hasAmount("EUR", 26.91), //
+                                        hasSource("GiroKontoauszug18.txt"), hasNote("Storno Gutschrift")))));
     }
 
     @Test
@@ -3268,7 +3250,7 @@ public class DkbPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(12L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
         assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(12));
         new AssertImportActions().check(results, "EUR");
@@ -3321,13 +3303,15 @@ public class DkbPDFExtractorTest
                         hasAmount("EUR", 11.88), hasGrossValue("EUR", 11.88), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        assertThat(results, hasItem(feeRefund( //
-                        hasDate("2023-01-31"), //
-                        hasSource("GiroKontoauszug22.txt"), //
-                        hasNote("sonstige Entgelte Stornorechnung"), //
-                        hasAmount("EUR", 10.12), hasGrossValue("EUR", 10.12), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionOrderCancellationUnsupported, //
+                        feeRefund( //
+                                        hasDate("2023-01-31"), //
+                                        hasSource("GiroKontoauszug22.txt"), //
+                                        hasNote("sonstige Entgelte Stornorechnung"), //
+                                        hasAmount("EUR", 10.12), hasGrossValue("EUR", 10.12), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -4047,6 +4031,90 @@ public class DkbPDFExtractorTest
     }
 
     @Test
+    public void testGiroKontoauszug36()
+    {
+        var extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug36.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2026-01-19"), //
+                        hasSource("GiroKontoauszug36.txt"), //
+                        hasNote("sonstige Entgelte Girokarte"), //
+                        hasAmount("EUR", 11.88), hasGrossValue("EUR", 11.88), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-02-02"), hasAmount("EUR", 2400.00), //
+                        hasSource("GiroKontoauszug36.txt"), hasNote("Zahlungseingang"))));
+    }
+
+    @Test
+    public void testGiroKontoauszug37()
+    {
+        var extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug37.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2026-01-15"), hasAmount("EUR", 4.20), //
+                        hasSource("GiroKontoauszug37.txt"), hasNote("Echtzeit-Dauerauftrag"))));
+    }
+
+    @Test
+    public void testGiroKontoauszug38()
+    {
+        var extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug38.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-11-10"), hasAmount("EUR", 1.00), //
+                        hasSource("GiroKontoauszug38.txt"), hasNote("Kartenzahlung (Fremdwährung)"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-11-10"), hasAmount("EUR", 100.00), //
+                        hasSource("GiroKontoauszug38.txt"), hasNote("Kartenzahlung online (Fremdwährung)"))));
+    }
+
+    @Test
     public void testTagesgeldKontoauszug01()
     {
         var extractor = new DkbPDFExtractor(new Client());
@@ -4160,7 +4228,7 @@ public class DkbPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(4L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
         assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(4));
         new AssertImportActions().check(results, "EUR");
@@ -4177,13 +4245,15 @@ public class DkbPDFExtractorTest
         assertThat(results, hasItem(removal(hasDate("2025-01-04"), hasAmount("EUR", 406.99), //
                         hasSource("TagesgeldKontoauszug04.txt"), hasNote("Überweisung"))));
 
-        // assert transaction
-        assertThat(results, hasItem(interest( //
-                        hasDate("2025-01-05"), //
-                        hasSource("TagesgeldKontoauszug04.txt"), //
-                        hasNote("Stornorechnung zur Abrechnung 30.12.2024"), //
-                        hasAmount("EUR", 0.02), hasGrossValue("EUR", 0.02), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionOrderCancellationUnsupported, //
+                        interest( //
+                                        hasDate("2025-01-05"), //
+                                        hasSource("TagesgeldKontoauszug04.txt"), //
+                                        hasNote("Stornorechnung zur Abrechnung 30.12.2024"), //
+                                        hasAmount("EUR", 0.02), hasGrossValue("EUR", 0.02), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -4408,14 +4478,16 @@ public class DkbPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(9L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
         assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(9));
         new AssertImportActions().check(results, "EUR");
 
-        // assert transaction
-        assertThat(results, hasItem(deposit(hasDate("2015-10-23"), hasAmount("EUR", 1.00), //
-                        hasSource("KreditKontoauszug06.txt"), hasNote("STORNIERUNG"))));
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionOrderCancellationUnsupported, //
+                        deposit(hasDate("2015-10-23"), hasAmount("EUR", 1.00), //
+                                        hasSource("KreditKontoauszug06.txt"), hasNote("STORNIERUNG")))));
 
         // assert transaction
         assertThat(results, hasItem(interest( //
@@ -4540,7 +4612,7 @@ public class DkbPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(4L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
         assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(4));
         new AssertImportActions().check(results, "EUR");
@@ -4561,13 +4633,15 @@ public class DkbPDFExtractorTest
                         hasAmount("EUR", 19.88), hasGrossValue("EUR", 19.88), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        assertThat(results, hasItem(interest( //
-                        hasDate("2007-09-22"), //
-                        hasSource("KreditKontoauszug09.txt"), //
-                        hasNote("Storno Habenzinsen"), //
-                        hasAmount("EUR", 0.05), hasGrossValue("EUR", 0.05), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionOrderCancellationUnsupported, //
+                        interest( //
+                                        hasDate("2007-09-22"), //
+                                        hasSource("KreditKontoauszug09.txt"), //
+                                        hasNote("Storno Habenzinsen"), //
+                                        hasAmount("EUR", 0.05), hasGrossValue("EUR", 0.05), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test

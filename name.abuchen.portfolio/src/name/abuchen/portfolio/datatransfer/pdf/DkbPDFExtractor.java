@@ -85,7 +85,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         + "|Ausgabe Investmentfonds" //
                         + "|Verkauf" //
                         + "|Verkauf Direkthandel" //
-                        + "|Verkauf aus Kapitalmaßnahme" //
+                        + "|Verkauf aus Kapitalma.nahme" //
                         + "|R.cknahme Investmentfonds" //
                         + "|Gesamtk.ndigung" //
                         + "|Teilr.ckzahlung mit Nennwert.nderung" //
@@ -103,7 +103,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         + "|Ausgabe Investmentfonds" //
                         + "|Verkauf" //
                         + "|Verkauf Direkthandel" //
-                        + "|Verkauf aus Kapitalmaßnahme" //
+                        + "|Verkauf aus Kapitalma.nahme" //
                         + "|R.cknahme Investmentfonds" //
                         + "|Gesamtk.ndigung" //
                         + "|Teilr.ckzahlung mit Nennwert.nderung" //
@@ -128,28 +128,31 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                         + "|Ausgabe Investmentfonds" //
                                         + "|Verkauf" //
                                         + "|Verkauf Direkthandel" //
-                                        + "|Verkauf aus Kapitalmaßnahme" //
-                                        + "|R.cknahme Investmentfonds" + "|Gesamtk.ndigung" //
+                                        + "|Verkauf aus Kapitalma.nahme" //
+                                        + "|R.cknahme Investmentfonds" //
+                                        + "|Gesamtk.ndigung" //
                                         + "|Teilr.ckzahlung mit Nennwert.nderung" //
-                                        + "|Teilliquidation mit Nennwertreduzierung"
-                                        + "||Einl.sung bei Gesamtf.lligkeit))$") //
+                                        + "|Teilliquidation mit Nennwertreduzierung" //
+                                        + "|Einl.sung bei Gesamtf.lligkeit))$") //
                         .assign((t, v) -> {
-                            if ("Verkauf".equals(v.get("type")) //
-                                            || "Verkauf Direkthandel".equals(v.get("type")) //
-                                            || "Verkauf aus Kapitalmaßnahme".equals(v.get("type")) //
-                                            || "Rücknahme Investmentfonds".equals(v.get("type")) //
-                                            || "Gesamtkündigung".equals(v.get("type")) //
-                                            || "Teilrückzahlung mit Nennwertänderung".equals(v.get("type")) //
-                                            || "Teilliquidation mit Nennwertreduzierung".equals(v.get("type")) //
-                                            || "Einlösung bei Gesamtfälligkeit".equals(v.get("type"))) //
+                            if (v.get("type").matches("^(Verkauf" //
+                                            + "|Verkauf Direkthandel" //
+                                            + "|Verkauf aus Kapitalma.nahme" //
+                                            + "|R.cknahme Investmentfonds" //
+                                            + "|Gesamtk.ndigung" //
+                                            + "|Teilr.ckzahlung mit Nennwert.nderung" //
+                                            + "|Teilliquidation mit Nennwertreduzierung" //
+                                            + "|Einl.sung bei Gesamtf.lligkeit)$"))
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
                         // @formatter:off
                         // Storno, da der Ursprungsauftrag mit falscher Entgeltberechnung erfolgte.
+                        // Storno zur Abrechnung vom 13.01.2016
+                        // Storno wegen geänderter/ergänzter steuerlicher Daten.
                         // @formatter:on
                         .section("type").optional() //
-                        .match("^(?<type>Storno), .*$") //
+                        .match("^(?<type>Storno)(,| zur| wegen) .*$") //
                         .assign((t, v) -> v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported))
 
                         .oneOf( //
@@ -346,7 +349,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("currency", "name", "isin", "wkn", "nameContinued") //
                                                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)") //
                                                         .match("^(?<currency>[A-Z]{3}) [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
-                                                        .match("(?<nameContinued>.*)") //
+                                                        .match("^(?<nameContinued>.*)$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Nominale Wertpapierbezeichnung ISIN (WKN)
@@ -358,7 +361,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "isin", "wkn", "nameContinued", "currency") //
                                                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)") //
                                                         .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
-                                                        .match("(?<nameContinued>.*)") //
+                                                        .match("^(?<nameContinued>.*)$") //
                                                         .match("^Zahlbarkeitstag .* [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -372,9 +375,9 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "isin", "wkn", "nameContinued", "currency") //
                                                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)") //
                                                         .match("^St.ck [\\.,\\d]+ (?<name>.*)$") //
-                                                        .match("(?<nameContinued>.*)") //
+                                                        .match("^(?<nameContinued>.*)$") //
                                                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
-                                                        .match("^Ertrag pro St. [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
+                                                        .match("^Ertrag pro St\\. [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off
@@ -430,7 +433,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "gross").optional() //
                         .match("^Devisenkurs (?<baseCurrency>[A-Z]{3}) \\/ (?<termCurrency>[A-Z]{3}) (?<exchangeRate>[\\.,\\d]+).*$") //
-                        .match("^(Aussch.ttung|Dividendengutschrift|Kurswert|Zinsertrag) (?<fxGross>[\\.,\\d]+) [A-Z]{3} (?<gross>[\\.,\\d]+)\\+ [A-Z]{3}") //
+                        .match("^(Aussch.ttung|Dividendengutschrift|Kurswert|Zinsertrag) (?<fxGross>[\\.,\\d]+) [A-Z]{3} (?<gross>[\\.,\\d]+)\\+ [A-Z]{3}$") //
                         .assign((t, v) -> {
                             var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
@@ -476,7 +479,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         final var type = new DocumentType("Depotbuchung \\- Belastung", isJointAccount);
         this.addDocumentTyp(type);
 
-        var pdfTransaction = new Transaction<BuySellEntry>();
+        var pdfTransaction = new Transaction<PortfolioTransaction>();
 
         var firstRelevantLine = new Block("^Depotnummer.*$");
         type.addBlock(firstRelevantLine);
@@ -484,7 +487,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.TRANSFER_OUT))
+                        .subject(() -> new PortfolioTransaction(PortfolioTransaction.Type.DELIVERY_OUTBOUND))
 
                         // @formatter:off
                         // Nominale Wertpapierbezeichnung ISIN (WKN)
@@ -502,9 +505,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             var shares = asBigDecimal(v.get("shares"));
                             t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
 
+                            t.setCurrencyCode(asCurrencyCode(t.getSecurity().getCurrencyCode()));
                             t.setAmount(0L);
-                            t.setCurrencyCode(asCurrencyCode(
-                                            t.getPortfolioTransaction().getSecurity().getCurrencyCode()));
                         })
 
                         // @formatter:off
@@ -512,7 +514,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Auftragsnummer 489130/67.00
@@ -528,7 +530,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<note>Depotkonto\\-Nr\\. .*)$") //
                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
-                        .wrap(BuySellEntryItem::new);
+                        .wrap(TransactionItem::new);
     }
 
     private void addAdvanceTaxTransaction()
@@ -723,11 +725,11 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // Kontoauszug Nummer 002 / 2021 vom 05.01.2021 bis 04.02.2021
                                         // @formatter:on
-                                        .section("nr", "year") //
-                                        .match("^Kontoauszug Nummer (?<nr>[\\d]+) \\/ (?<year>[\\d]{4}) vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
+                                        .section("toMonth", "toYear") //
+                                        .match("^Kontoauszug Nummer [\\d]+ \\/ [\\d]{4} vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.(?<toMonth>[\\d]{2})\\.(?<toYear>[\\d]{4})$") //
                                         .assign((ctx, v) -> {
-                                            ctx.put("nr", v.get("nr").replaceFirst("^0+(?!$)", ""));
-                                            ctx.put("year", v.get("year"));
+                                            ctx.put("toMonth", v.get("toMonth"));
+                                            ctx.put("toYear", v.get("toYear"));
                                         })
 
                                         // @formatter:off
@@ -856,7 +858,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.REMOVAL))
 
                         .section("month1", "day", "month2", "note", "amount") //
-                        .documentContext("nr", "year", "currency") //
+                        .documentContext("toMonth", "toYear", "currency") //
                         .match("^(?i)[\\d]{2}\\.(?<month1>[\\d]{2})\\. (?<day>[\\d]{2})\\.(?<month2>[\\d]{2})\\. " //
                                         + "(?<note>(.berweisung" //
                                         + "|Dauerauftrag" //
@@ -914,7 +916,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("month1", "day", "month2", "note", "amount") //
-                        .documentContext("nr", "year", "currency") //
+                        .documentContext("toMonth", "toYear", "currency") //
                         .match("^(?i)[\\d]{2}\\.(?<month1>[\\d]{2})\\. (?<day>[\\d]{2})\\.(?<month2>[\\d]{2})\\. " //
                                         + "(?<note>(Lohn, Gehalt, Rente" //
                                         + "|Zahlungseingang" //
@@ -938,6 +940,10 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                 v.put("note", "Bareinzahlung am Geldautomat");
 
                             t.setNote(v.get("note"));
+
+                            // Cancellations (Storno) are not supported
+                            if ("Storno Gutschrift".equalsIgnoreCase(v.get("note")))
+                                v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported);
                         })
 
                         .wrap(TransactionItem::new));
@@ -949,7 +955,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
                         .section("month1", "day", "month2", "note", "amount") //
-                        .documentContext("nr", "year", "currency") //
+                        .documentContext("toMonth", "toYear", "currency") //
                         .match("^(?i)[\\d]{2}\\.(?<month1>[\\d]{2})\\. (?<day>[\\d]{2})\\.(?<month2>[\\d]{2})\\. [\\d]+ " //
                                         + "(?<note>Steuerausgleich) " //
                                         + "(?<amount>[\\.,\\d]+)$") //
@@ -974,7 +980,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         .section("month1", "day", "month2", "note1", "amount", "note2") //
-                        .documentContext("nr", "year", "currency") //
+                        .documentContext("toMonth", "toYear", "currency") //
                         .match("^(?i)[\\d]{2}\\.(?<month1>[\\d]{2})\\. (?<day>[\\d]{2})\\.(?<month2>[\\d]{2})\\. " //
                                         + "(?<note1>(Rechnung" //
                                         + "|Buchung" //
@@ -998,6 +1004,10 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(v.get("note1") + " " + v.get("note2"));
+
+                            // Cancellations (Storno) are not supported
+                            if ("Stornorechnung".equals(v.get("note2")))
+                                v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported);
 
                             // Formatting some notes
                             if ("BUCHUNG IDENTIFIKATIONSCODE".equalsIgnoreCase(t.getNote()))
@@ -1056,6 +1066,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                         + "|Echtzeit.berweisung" //
                                         + "|.berweisung" //
                                         + "|Dauerauftrag" //
+                                        + "|Echtzeit\\-Dauerauftr\\." //
                                         + "|Basislastschrift" //
                                         + "|Lastschrift" //
                                         + "|R.ckbuchung" //
@@ -1094,6 +1105,12 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             if ("Kartenzahlung FW".equals(v.get("note")))
                                 v.put("note", "Kartenzahlung (Fremdwährung)");
 
+                            if ("Kartenzahlung onl FW".equals(v.get("note")))
+                                v.put("note", "Kartenzahlung online (Fremdwährung)");
+
+                            if ("Echtzeit-Dauerauftr.".equals(v.get("note")))
+                                v.put("note", "Echtzeit-Dauerauftrag");
+
                             if ("Eingang Echtzeitüberw".equals(v.get("note")))
                                 v.put("note", "Eingang Echtzeitüberweisung");
 
@@ -1101,6 +1118,10 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                 v.put("note", "Bareinzahlung am Geldautomat");
 
                             t.setNote(v.get("note"));
+
+                            // Cancellations (Storno) are not supported
+                            if ("Storno Gutschrift".equals(v.get("note")))
+                                v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported);
                         })
 
                         .wrap((t) -> {
@@ -1120,7 +1141,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         // 08.04.2025 Kartenzahlung / Wert: 07.04.2025               -13,20
         // 06.11.2025 Echtzeitüberweisung               -50,00
         // @formatter:on
-        var depositRemovalBlock_Format02 = new Block("^[\\d\\s]{1,4}\\.[\\d]{2}\\.[\\d]{4}(?!(Wertpapierabrechnung|Abrechnung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})).*[\\.,\\d]+$");
+        var depositRemovalBlock_Format02 = new Block("^[\\d\\s]{1,4}\\.[\\d]{2}\\.[\\d]{4} (?!(Wertpapierabrechnung|Abrechnung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})).*[\\.,\\d]+$");
         type.addBlock(depositRemovalBlock_Format02);
         depositRemovalBlock_Format02.setMaxSize(1);
         depositRemovalBlock_Format02.set(new Transaction<AccountTransaction>()
@@ -1129,23 +1150,26 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "note", "type", "amount").optional() //
                         .documentContext("currency") //
-                        .match("^(?<date>[\\d\\s]{1,4}.[\\d]{2}\\.[\\d]{4}) " //
+                        .match("^(?<date>[\\d\\s]{1,4}\\.[\\d]{2}\\.[\\d]{4}) " //
                                         + "(?<note>(Lohn, Gehalt, Rente" //
                                         + "|Zahlungseingang" //
                                         + "|Storno Gutschrift" //
                                         + "|Bareinzahlung am GA" //
                                         + "|sonstige Buchung" //
                                         + "|Eingang Inst\\.Paym\\." //
-                                        + "|Eingang Echtzeit.berw"
+                                        + "|Eingang Echtzeit.berw" //
                                         + "|Eingang Echtzeit.bw\\." //
                                         + "|Echtzeit.berweisung" //
                                         + "|.berweisung" //
                                         + "|Dauerauftrag" //
+                                        + "|Echtzeit\\-Dauerauftr\\." //
                                         + "|Basislastschrift" //
                                         + "|Lastschrift" //
                                         + "|R.ckbuchung" //
                                         + "|Kartenzahlung" //
                                         + "|Kartenzahlung onl" //
+                                        + "|Kartenzahlung FW" //
+                                        + "|Kartenzahlung onl FW" //
                                         + "|Kreditkartenabr\\." //
                                         + "|Verf.gung Geldautomat" //
                                         + "|Verf.g\\. Geldautom\\. FW" //
@@ -1181,16 +1205,26 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             if ("Kartenzahlung FW".equals(v.get("note")))
                                 v.put("note", "Kartenzahlung (Fremdwährung)");
 
+                            if ("Kartenzahlung onl FW".equals(v.get("note")))
+                                v.put("note", "Kartenzahlung online (Fremdwährung)");
+
+                            if ("Echtzeit-Dauerauftr.".equals(v.get("note")))
+                                v.put("note", "Echtzeit-Dauerauftrag");
+
                             if ("Eingang Echtzeitübw.".equals(v.get("note")))
                                 v.put("note", "Eingang Echtzeitüberweisung");
 
-                            if ("Eingang Echtzeitüberw.".equals(v.get("note")))
+                            if ("Eingang Echtzeitüberw".equals(v.get("note")))
                                 v.put("note", "Eingang Echtzeitüberweisung");
 
                             if ("Bareinzahlung am GA".equals(v.get("note")))
                                 v.put("note", "Bareinzahlung am Geldautomat");
 
                             t.setNote(v.get("note"));
+
+                            // Cancellations (Storno) are not supported
+                            if ("Storno Gutschrift".equals(v.get("note")))
+                                v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported);
                         })
 
                         .wrap((t) -> {
@@ -1217,11 +1251,14 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         + "|Echtzeit.berweisung" //
                         + "|.berweisung" //
                         + "|Dauerauftrag" //
+                        + "|Echtzeit\\-Dauerauftr\\." //
                         + "|Basislastschrift" //
                         + "|Lastschrift" //
                         + "|R.ckbuchung" //
                         + "|Kartenzahlung" //
                         + "|Kartenzahlung onl" //
+                        + "|Kartenzahlung FW" //
+                        + "|Kartenzahlung onl FW" //
                         + "|Kreditkartenabr\\." //
                         + "|Verf.gung Geldautomat" //
                         + "|Verf.g\\. Geldautom\\. FW" //
@@ -1234,7 +1271,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "note", "type", "amount").optional() //
                         .documentContext("currency") //
-                        .match("^(?<date>[\\d\\s]{1,4}.[\\d]{2}\\.[\\d]{4}) " //
+                        .match("^(?<date>[\\d\\s]{1,4}\\.[\\d]{2}\\.[\\d]{4}) " //
                                         + "(?<note>(Lohn, Gehalt, Rente" //
                                         + "|Zahlungseingang" //
                                         + "|Storno Gutschrift" //
@@ -1245,11 +1282,14 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                         + "|Echtzeit.berweisung" //
                                         + "|.berweisung" //
                                         + "|Dauerauftrag" //
+                                        + "|Echtzeit\\-Dauerauftr\\." //
                                         + "|Basislastschrift" //
                                         + "|Lastschrift" //
                                         + "|R.ckbuchung" //
                                         + "|Kartenzahlung" //
                                         + "|Kartenzahlung onl" //
+                                        + "|Kartenzahlung FW" //
+                                        + "|Kartenzahlung onl FW" //
                                         + "|Kreditkartenabr\\." //
                                         + "|Verf.gung Geldautomat" //
                                         + "|Verf.g\\. Geldautom\\. FW" //
@@ -1285,6 +1325,12 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             if ("Kartenzahlung FW".equals(v.get("note")))
                                 v.put("note", "Kartenzahlung (Fremdwährung)");
 
+                            if ("Kartenzahlung onl FW".equals(v.get("note")))
+                                v.put("note", "Kartenzahlung online (Fremdwährung)");
+
+                            if ("Echtzeit-Dauerauftr.".equals(v.get("note")))
+                                v.put("note", "Echtzeit-Dauerauftrag");
+
                             if ("Eingang Echtzeitüberw".equals(v.get("note")))
                                 v.put("note", "Eingang Echtzeitüberweisung");
 
@@ -1292,6 +1338,10 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                 v.put("note", "Bareinzahlung am Geldautomat");
 
                             t.setNote(v.get("note"));
+
+                            // Cancellations (Storno) are not supported
+                            if ("Storno Gutschrift".equals(v.get("note")))
+                                v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported);
                         })
 
                         .wrap((t) -> {
@@ -1303,10 +1353,10 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             return null;
                         }));
 
-        var feesBlock = new Block("^[\\s]+(\\-)?[\\.,\\d]+$");
-        type.addBlock(feesBlock);
-        feesBlock.setMaxSize(3);
-        feesBlock.set(new Transaction<AccountTransaction>()
+        var feesBlock_Format01 = new Block("^[\\s]+(\\-)?[\\.,\\d]+$");
+        type.addBlock(feesBlock_Format01);
+        feesBlock_Format01.setMaxSize(3);
+        feesBlock_Format01.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES_REFUND))
 
@@ -1335,6 +1385,69 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(v.get("note1") + " " + v.get("note2"));
+
+                            // Cancellations (Storno) are not supported
+                            if ("Stornorechnung".equals(v.get("note2")))
+                                v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported);
+
+                            // Formatting some notes
+                            if ("Rechnung Entgelt für Konto ohne".equals(t.getNote()))
+                                t.setNote("Entgelt für Konto ohne mtl. Eingang");
+                        })
+
+                        .wrap((t) -> {
+                            var item = new TransactionItem(t);
+
+                            if (t.getDateTime() != null)
+                                return item;
+
+                            return null;
+                        }));
+
+        // @formatter:off
+        // 19.01.2026 sonstige Entgelte / Wert: 17.01.2026               -11,88
+        // Rechnung DEUTSCHE KREDITBANK AG Entgelt Girokarte
+        // @formatter:on
+        var feesBlock_Format02 = new Block("^[\\d\\s]{1,4}\\.[\\d]{2}\\.[\\d]{4} " //
+                        + "(Rechnung" //
+                        + "|Buchung" //
+                        + "|sonstige Entgelte)" //
+                        + "([\\s]\\/.*)?[\\s]{1,}(\\-)?[\\.,\\d]+$");
+        type.addBlock(feesBlock_Format02);
+        feesBlock_Format02.setMaxSize(2);
+        feesBlock_Format02.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES_REFUND))
+
+                        .section("date", "note1", "type", "amount", "note2").optional() //
+                        .documentContext("currency") //
+                        .match("^(?<date>[\\d\\s]{1,4}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                        + "(?<note1>(Rechnung" //
+                                        + "|Buchung" //
+                                        + "|sonstige Entgelte))" //
+                                        + "([\\s]\\/.*)?[\\s]{1,}" //
+                                        + "(?<type>[\\-\\s])(?<amount>[\\.,\\d]+)$") //
+                        .match("^.* (?<note2>(Bargeldeinzahlung" //
+                                        + "|R.ckruf\\/Nachforschung" //
+                                        + "|Identifikationscode" //
+                                        + "|Stornorechnung" //
+                                        + "|Girokarte" //
+                                        + "|Entgelt f.r Konto ohne)).*$") //
+                        .assign((t, v) -> {
+                            // @formatter:off
+                            // Is type is "-" change from FEES_REFUND to FEES
+                            // @formatter:on
+                            if ("-".equals(trim(v.get("type"))))
+                                t.setType(AccountTransaction.Type.FEES);
+
+                            t.setDateTime(asDate(stripBlanks(v.get("date"))));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setNote(v.get("note1") + " " + v.get("note2"));
+
+                            // Cancellations (Storno) are not supported
+                            if ("Stornorechnung".equals(v.get("note2")))
+                                v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported);
 
                             // Formatting some notes
                             if ("Rechnung Entgelt für Konto ohne".equals(t.getNote()))
@@ -1435,6 +1548,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         // 05.01.2025 Stornorechnung
         // Stornorechnung zur Abrechnung 30.12.2024 Erstattung:
         // Habenzinsen 0,02 EUR 20250103-BY111-00111111111
+        // @formatter:on
         var interestStorno = new Block("^[\\s]+ (\\-)?[\\.,\\d]+$");
         type.addBlock(interestStorno);
         interestStorno.set(new Transaction<AccountTransaction>()
@@ -1451,6 +1565,9 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(v.get("note"));
+
+                            // Cancellations (Storno) are not supported
+                            v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported);
                         })
 
                         .wrap(t -> {
@@ -1529,6 +1646,10 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                                                             if (t.getNote().endsWith(">"))
                                                                 t.setNote(trim(t.getNote().substring(0, t.getNote().length() - 1)));
+
+                                                            // Cancellations (Storno) are not supported
+                                                            if ("STORNIERUNG".equalsIgnoreCase(t.getNote()))
+                                                                v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported);
                                                         }),
                                         section -> section //
                                                         .attributes("date", "note", "amount") //
@@ -1550,6 +1671,10 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                                                             if (t.getNote().endsWith(">"))
                                                                 t.setNote(trim(t.getNote().substring(0, t.getNote().length() - 1)));
+
+                                                            // Cancellations (Storno) are not supported
+                                                            if ("STORNIERUNG".equalsIgnoreCase(t.getNote()))
+                                                                v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported);
                                                         }))
 
                         .wrap(TransactionItem::new));
@@ -1571,6 +1696,10 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(v.get("note"));
+
+                            // Cancellations (Storno) are not supported
+                            if ("Storno Habenzinsen".equals(v.get("note")))
+                                v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported);
                         })
 
                         .wrap(TransactionItem::new));
@@ -1616,9 +1745,9 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setNote(trim(v.get("note")));
 
-                                                        // @formatter:off
-                                            // Deletes characters that occur during withdrawals from foreign banks
-                                            // @formatter:on
+                                                            // @formatter:off
+                                                            // Deletes characters that occur during withdrawals from foreign banks
+                                                            // @formatter:on
                                                             if (t.getNote().startsWith("*"))
                                                                 t.setNote(trim(t.getNote().substring(1)));
 
@@ -1934,26 +2063,26 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
     /**
      * Helper method to set the date of an AccountTransaction based on the provided ParsedData.
      *
-     * This method checks if the transaction's "nr" field is "1" and if the months "month1" and "month2" are different.
-     * If both conditions are met, it assumes the transaction should be recorded in the previous year.
-     * Otherwise, it uses the year provided in the ParsedData. The final date is set using "day", "month2", and the determined year.
+     * The bookings of the old account statement format only contain day and month ("dd.MM."). The year is
+     * derived from the end date of the statement period ("vom ... bis ..."): if the month of the booking lies
+     * more than six months after the month of the end date, the booking belongs to the previous year; if it
+     * lies more than six months before, it belongs to the following year. Otherwise the year of the end date
+     * is used. The final date is set using "day", "month2" and the determined year.
      *
      * @param t The AccountTransaction object to set the date for.
-     * @param v The ParsedData object containing the date information. It should provide "nr", "day", "month1", "month2", and "year".
+     * @param v The ParsedData object containing the date information. It should provide "day", "month2",
+     *            "toMonth" and "toYear".
      */
     private void dateTranactionHelper(AccountTransaction t, ParsedData v)
     {
-        final var SPECIAL_NR = "1";
+        var month = Integer.parseInt(v.get("month2"));
+        var toMonth = Integer.parseInt(v.get("toMonth"));
+        var year = Integer.parseInt(v.get("toYear"));
 
-        var nr = v.get("nr");
-        var month1 = Integer.parseInt(v.get("month1"));
-        var month2 = Integer.parseInt(v.get("month2"));
-        var year = Integer.parseInt(v.get("year"));
-
-        if (nr.compareTo(SPECIAL_NR) == 0 && month1 != month2)
-        {
+        if (month - toMonth > 6)
             year--;
-        }
+        else if (toMonth - month > 6)
+            year++;
 
         t.setDateTime(asDate(v.get("day") + "." + v.get("month2") + "." + year));
     }
