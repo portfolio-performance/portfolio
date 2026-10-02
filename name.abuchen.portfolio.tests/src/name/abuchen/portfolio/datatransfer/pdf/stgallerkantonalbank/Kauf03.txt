@@ -1,0 +1,47 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.87.1.202608231105
+System: win32 | x86_64 | 21.0.12.1+1-LTS | Eclipse Adoptium
+-----------------------------------------
+VVFsFvT wX
+Vermögensverwaltungskonto CHF
+Depot-Nr. 1234.5678.9012 / SAMPLE PORTFOLIO
+IBAN CH00 0000 0000 0000 0000 0
+St.Galler Kantonalbank AG
+St. Leonhardstrasse 25
+9001 St. Gallen
+www.sgkb.ch
+BIC KBSGCH22
+Ihr Kontakt:
+Anna Muster Elektronisch versandt
+Telefon +41 71 000 00 00 VVFsFvT wX
+anna.muster@sgkb.ch Musterweg 1
+ 9000 St. Gallen
+St. Gallen, 16. Juli 2026
+Referenznummer 1234567890
+Abrechnung: Ihr Kauf
+Wir haben für Sie am 16. Juli 2026 gekauft (Details siehe Folgeseite):
+500 N-Akt Georg Fischer AG CHF 0.05 nom Valoren-Nr. 116915100
+ISIN CH1169151003
+Währung Betrag
+Kurs CHF 45.52164 CHF 22'760.82
+Eidg. Stempelsteuer CHF 17.07
+Ausführungsgebühr SSX CHF 2.98
+Total CHF 22'780.87
+Zu Ihren Lasten Valuta 20.07.2026 CHF 22'780.87
+Die Titel wurden in Ihr Depot eingebucht. Wir danken für Ihren Auftrag.
+Freundliche Grüsse
+St.Galler Kantonalbank AG
+244681 229793318 1234567890 Seite 1 von 2
+VVFsFvT wX
+Vermögensverwaltungskonto CHF
+IBAN CH00 0000 0000 0000 0000 0
+Ausführungsdetails
+Die Abrechnung setzt sich wie folgt zusammen:
+Menge Ausführungszeitpunkt Börsenplatz Währung Kurs
+26 16.07.2026 10:04:49 SIX Swiss Exchange CHF 45.52
+65 16.07.2026 10:04:49 SIX Swiss Exchange CHF 45.52
+120 16.07.2026 10:04:49 SIX Swiss Exchange CHF 45.52
+50 16.07.2026 10:04:49 SIX Swiss Exchange CHF 45.52
+198 16.07.2026 10:04:49 SIX Swiss Exchange - EBBO Book CHF 45.52
+41 16.07.2026 10:04:49 SIX Swiss Exchange CHF 45.54
+244681 229793318 1234567890 Seite 2 von 2
