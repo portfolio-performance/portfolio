@@ -30,9 +30,11 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.oauth.AccessToken;
 import name.abuchen.portfolio.oauth.AuthenticationException;
+import name.abuchen.portfolio.oauth.AuthenticationNetworkException;
 import name.abuchen.portfolio.oauth.OAuthClient;
 import name.abuchen.portfolio.online.AuthenticationExpiredException;
 import name.abuchen.portfolio.online.FeedConfigurationException;
+import name.abuchen.portfolio.online.NetworkConnectionException;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.online.QuoteFeedException;
@@ -81,9 +83,20 @@ public final class PortfolioPerformanceFeed implements QuoteFeed
                     "AS", "AT", "BD", "BE", "BR", "CO", "DE", "DU", "F", "HA", "HE", "HM", "IR", "IS", "L", "LS", "MC",
                     "ME", "MI", "MU", "OL", "PA", "PR", "RG", "SC", "ST", "SW", "SX", "TG", "TL", "VI", "VS", "WA");
 
-    private static final OAuthClient oauthClient = OAuthClient.INSTANCE;
+    private final OAuthClient oauthClient;
 
     private final PageCache<CachedResponse> cache = new PageCache<>();
+
+    public PortfolioPerformanceFeed()
+    {
+        this.oauthClient = OAuthClient.INSTANCE;
+    }
+
+    /** Package-private constructor for unit tests that need to inject a mock OAuthClient. */
+    PortfolioPerformanceFeed(OAuthClient client)
+    {
+        this.oauthClient = client;
+    }
 
     @Override
     public String getId()
@@ -308,6 +321,14 @@ public final class PortfolioPerformanceFeed implements QuoteFeed
             try
             {
                 accessToken = oauthClient.getAPIAccessToken();
+            }
+            catch (AuthenticationNetworkException e)
+            {
+                // Network / I/O error (no internet, DNS, firewall …). This is
+                // NOT an authentication failure – do not tell the user to log
+                // in again; instead surface the network error message directly.
+                PortfolioLog.error(e);
+                throw new NetworkConnectionException(e.getMessage(), e);
             }
             catch (AuthenticationException e)
             {
