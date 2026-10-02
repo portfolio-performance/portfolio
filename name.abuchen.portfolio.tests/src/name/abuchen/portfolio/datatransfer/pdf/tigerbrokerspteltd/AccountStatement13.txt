@@ -1,0 +1,834 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.87.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Tiger Brokers (Singapore) PTE.LTD.
+Address:1 Raffles Place, #35-61 One Raffles Place Tower 2, Singapore 048616.
+GST registration number:201810449W
+SSSSSSSS Statement Issuance Date:2025-12-31
+Statement Period:2025-08-06 - 2025-12-31
+Account Information
+Account Address Account Category Base Currency
+9999  TOKYO Cash USD
+Account Overview
+Cash Stock Fund Funds in Transit Interest Accruals Dividend Accruals Total
+Beginning Of The Period 0.00 0.00 0.00 0.00 0.00 0.00 0.00
+End Of The Period 21,121.02 186,615.88 0.00 0.00 0.00 1,037.14 208,774.05
+Short Stock Collateral(Base Currency): 0.00 USD
+Short Stock Margin(Base Currency): 0.00 USD
+Option Margin(Base Currency): 0.00 USD
+Note: 
+1. The cash column shows the balance excluding funds in the futures segment and reflects only other cash balances.
+2. Futures column = Total futures equity (incl. cash).
+Cash Report
+Currency: Base Currency Summary
+This statement also serves as a Tax Invoice for GST purpose. 1/20
+Tiger Brokers (Singapore) PTE.LTD.
+Total Securities Fund
+Starting Cash 0.00 0.00 0.00
+Commissions -52.86 -52.86 0
+Platform Fees -53.14 -53.14 0
+Deposits 160,148.39 160,148.39 0
+Withdrawals -7.78 -7.78 0
+Dividends 1,813.91 1,813.91 0
+Net Trades (Sales) 56,092.32 56,092.32 0
+Net Trades (Purchase) -196,960.49 -196,960.49 0
+Settlement Fees -10.92 -10.92 0
+Consolidated Audit Trail Fee -0.08 -0.08 0
+Trading Activity Fees -0.15 -0.15 0
+Exchange Fees -23.06 -23.06 0
+Withholding Tax -118.85 -118.85 0
+Allowance 293.72 293.72 0
+Ending Cash 21,121.02 21,121.02 0.00
+Ending Settled Cash 9,022.30 9,022.30 0.00
+Currency: USD
+Total Securities Fund
+Starting Cash 0.00 0.00 0.00
+Commissions -23.8 -23.8 0
+This statement also serves as a Tax Invoice for GST purpose. 2/20
+Tiger Brokers (Singapore) PTE.LTD.
+Total Securities Fund
+Platform Fees -23.88 -23.88 0
+Deposits 94,674.24 94,674.24 0
+Dividends 1,188.39 1,188.39 0
+Net Trades (Sales) 48,657.01 48,657.01 0
+Net Trades (Purchase) -131,184.55 -131,184.55 0
+Settlement Fees -10.92 -10.92 0
+Consolidated Audit Trail Fee -0.08 -0.08 0
+Trading Activity Fees -0.15 -0.15 0
+Withholding Tax -118.85 -118.85 0
+Allowance 60.35 60.35 0
+Ending Cash 13,217.76 13,217.76 0.00
+Ending Settled Cash 1,119.04 1,119.04 0.00
+Currency: SGD
+Total Securities Fund
+Starting Cash 0.00 0.00 0.00
+Commissions -37.36 -37.36 0
+Platform Fees -37.61 -37.61 0
+Deposits 84,167.83 84,167.83 0
+Withdrawals -10 -10 0
+Dividends 804.12 804.12 0
+Net Trades (Sales) 9,558.18 9,558.18 0
+This statement also serves as a Tax Invoice for GST purpose. 3/20
+Tiger Brokers (Singapore) PTE.LTD.
+Total Securities Fund
+Net Trades (Purchase) -84,555.78 -84,555.78 0
+Exchange Fees -29.64 -29.64 0
+Allowance 300 300 0
+Ending Cash 10,159.74 10,159.74 0.00
+Ending Settled Cash 10,159.74 10,159.74 0.00
+Notes:
+1. Net Trades:
+Sales: Cash received from selling securities
+Purchases: Cash paid for buying securities
+2. Other Fees: Including IPO fees, withdraw fees, bond custody fees and other expenses.
+3. Futures are traded on margin; therefore, changes in futures positions are not shown in this module.
+4. Withholding Tax: This refers to the tax automatically deducted from the cash dividends you receive from stocks or funds, in accordance with applicable tax rates.
+Transfer
+Product Symbol Date Transfer Method Source Account Destination Account Transfer Qty Fee Qty Cost Price Market Value Currency
+DBS
+Stock 2025-09-01, 15:38:02, GMT+8 EXTERNAL IN 9999 200 0 34.2100 10,040.00 SGD
+(D05.SI)
+Total DBS (D05.SI) 200 0 10,040.00 SGD
+OCBC Bank
+Stock 2025-09-01, 15:38:02, GMT+8 EXTERNAL IN 9999 1300 0 16.1500 21,775.00 SGD
+(O39.SI)
+Total OCBC Bank (O39.SI) 1300 0 21,775.00 SGD
+UOB
+Stock 2025-09-01, 15:38:02, GMT+8 EXTERNAL IN 9999 700 0 34.6000 24,668.00 SGD
+(U11.SI)
+Total UOB (U11.SI) 700 0 24,668.00 SGD
+SGX
+Stock 2025-08-22, 15:12:00, GMT+8 EXTERNAL IN 9999 100 0 11.8200 1,652.00 SGD
+(S68.SI)
+This statement also serves as a Tax Invoice for GST purpose. 4/20
+Tiger Brokers (Singapore) PTE.LTD.
+Product Symbol Date Transfer Method Source Account Destination Account Transfer Qty Fee Qty Cost Price Market Value Currency
+Total SGX (S68.SI) 100 0 1,652.00 SGD
+Total 58,135.00 SGD
+Total(In Base) 45,223.22 USD
+Trades
+Forex
+Symbol(Base.Quote) Activity Type Quantity(Base) Trade Price Amount(Quote) Notes Trade Time Settle Date Currency
+2025-09-09
+USD.SGD Buy 3,885.3600 1.28688 -5,000.00 2025-09-10 SGD
+13:52:45, US/Eastern
+2025-09-17
+USD.SGD Buy 92.1000 1.28118 -118.00 2025-09-17 SGD
+02:55:15, US/Eastern
+2025-10-10
+USD.SGD Buy 5,476.0300 1.30154 -7,127.28 2025-10-14 SGD
+04:17:42, US/Eastern
+2025-10-16
+USD.SGD Sell -5000 1.29103 6,455.15 2025-10-16 SGD
+01:14:03, US/Eastern
+2025-10-16
+USD.SGD Sell -1000 1.29103 1,291.03 2025-10-16 SGD
+01:18:32, US/Eastern
+Total USD.SGD 3,453.4900 -4,499.10 SGD
+Total -4,499.10 SGD
+Total(In Base) -3,499.85 USD
+Stock
+Activity Trade Accrued Interest Realized Settle 
+Symbol Market Exchange Quantity Amount Comm/Fee GST Notes Trade Time Currency
+Type Price in Trade P/L Date
+2025-08-07
+Exchange Fee: -0.11
+This statement also serves as a Tax Invoice for GST purpose. 5/20
+Tiger Brokers (Singapore) PTE.LTD.
+Activity Trade Accrued Interest Realized Settle 
+Symbol Market Exchange Quantity Amount Comm/Fee GST Notes Trade Time Currency
+Type Price in Trade P/L Date
+CapLand Ascendas REIT SG SGX Open 100 2.73000 273.00 0.00 Commission: -0.99 0.00 0.00 12:58:58, 2025- SGD
+(A17U.SI) Platform Fee: -1.00 GMT+8 08-11
+2025-08-07
+CapLand Ascendas REIT Exchange Fee: -0.33 2025-
+SG SGX Open 300 2.74000 822.00 0.00 51, SGD
+(A17U.SI) Commission: -0.99 0.00 0.00 14:24:
+Platform Fee: -1.00 08-11
+GMT+8
+-07
+CapLand Ascendas REIT Exchange Fee: -0.76 2025-08
+2025-
+SG SGX Open 700 2.74000 1,918.00 0.00
+(A17U.SI) Commission: -0.99 0.00 0.00 14:54:22, SGD
+Platform Fee: -1.00 08-11
+GMT+8
+08-08
+CapLand Ascendas REIT Exchange Fee: -1.19 2025-
+2025-
+SG SGX Open 1100 2.72000 2,992.00 0.00
+(A17U.SI) Commission: -0.99 0.00 0.00 14:10:30, SGD
+Platform Fee: -1.00 08-12
+GMT+8
+25-08-25
+CapLand Ascendas REIT Exchange Fee: -0.65 20
+2025-
+SG SGX Open 600 2.72000 1,632.00 0.00
+(A17U.SI) Commission: -0.99 0.00 0.00 14:44:30, SGD
+Platform Fee: -1.00 08-27
+GMT+8
+CapLand Ascendas REIT Exchange Fee: -1.98 2025-09-03
+2025-
+SG SGX Open 1800 2.75000 4,950.00 0.00 6:06:34, SGD
+(A17U.SI) Commission: -1.49 0.00 0.00 1
+Platform Fee: -1.49 09-05
+GMT+8
+Total A17U.SI 4600 12,587.00 0.00 -17.95 0.00 0.00 SGD
+Keppel DC Reit Exchange Fee: -1.78 2025-12-15
+2025-
+SG SGX Open 2000 2.23000 4,460.00 0.00
+(AJBU.SI) Commission: -1.34 0.00 0.00 16:32:07, SGD
+Platform Fee: -1.34 12-17
+GMT+8
+Total AJBU.SI 2000 4,460.00 0.00 -4.46 0.00 0.00 SGD
+2025-08-07
+Frasers L&C Tr Exchange Fee: -0.35 2025-
+SG SGX Open 1000 0.87500 875.00 0.00 .00 0.00 12:58:58, SGD
+(BUOU.SI) Commission: -0.99 0
+Platform Fee: -1.00 08-11
+GMT+8
+2025-08-07
+Frasers L&C Tr Exchange Fee: -0.07 2025-
+SG SGX Open 200 0.88000 176.00 0.00
+(BUOU.SI) Commission: -0.99 0.00 0.00 14:27:11, SGD
+Platform Fee: -1.00 08-11
+GMT+8
+Frasers L&C Tr Exchange Fee: -0.46 2025-08-08
+2025-
+SG SGX Open 1300 0.88500 1,150.50 0.00
+(BUOU.SI) Commission: -0.99 0.00 0.00 16:47:49, SGD
+Platform Fee: -1.00 08-12
+GMT+8
+2025-10-06
+16:49:35, 
+This statement also serves as a Tax Invoice for GST purpose. 6/20
+Tiger Brokers (Singapore) PTE.LTD.
+Activity Trade Accrued Interest Realized Settle 
+Symbol Market Exchange Quantity Amount Comm/Fee GST Notes Trade Time Currency
+Type Price in Trade P/L Date
+Frasers L&C Tr SG SGX Open 5200 0.96500 5,018.00 0.00 Exchange Fee: -2.01 0.00 0.00 GMT+8 2025- SGD
+(BUOU.SI) Commission: -1.51
+Platform Fee: -1.51 10-08
+2025-11-06
+Frasers L&C Tr Exchange Fee: -1.51 2025-
+SG SGX Open 4000 0.94500 3,780.00 0.00 :10, SGD
+(BUOU.SI) Commission: -1.13 0.00 0.00 10:18
+Platform Fee: -1.13 11-10
+GMT+8
+Total BUOU.SI 11700 10,999.50 0.00 -15.65 0.00 0.00 SGD
+ParkwayLife Reit Exchange Fee: -0.32 2025-11-04
+2025-
+SG SGX Open 200 4.03000 806.00 0.00
+(C2PU.SI) Commission: -0.99 0.00 0.00 16:43:23, SGD
+Platform Fee: -1.00 11-06
+GMT+8
+ParkwayLife Reit Exchange Fee: -1.61 2025-11-06
+2025-
+SG SGX Open 1000 4.04000 4,040.00 0.00
+(C2PU.SI) Commission: -1.20 0.00 0.00 10:33:41, SGD
+Platform Fee: -1.20 11-10
+GMT+8
+25-12-05
+ParkwayLife Reit Exchange Fee: -0.80 20
+2025-
+SG SGX Open 500 4.03000 2,015.00 0.00 SGD
+(C2PU.SI) Commission: -0.99 0.00 0.00 13:00:01, 
+Platform Fee: -1.00 12-09
+GMT+8
+Total C2PU.SI 1700 6,861.00 0.00 -9.11 0.00 0.00 SGD
+Frasers Cpt Tr Exchange Fee: -0.27 2025-08-07
+2025-
+SG SGX Open 300 2.22000 666.00 0.00
+(J69U.SI) Commission: -0.99 0.00 0.00 08:58:18, SGD
+Platform Fee: -1.00 08-11
+GMT+8
+Frasers Cpt Tr Exchange Fee: -0.17 2025-08-07
+2025-
+SG SGX Open 200 2.23000 446.00 0.00
+(J69U.SI) Commission: -0.99 0.00 0.00 14:30:15, SGD
+Platform Fee: -1.00 08-11
+GMT+8
+Frasers Cpt Tr Exchange Fee: -1.07 2025-08-07
+2025-
+SG SGX Open 1200 2.23000 2,676.00 0.00  SGD
+(J69U.SI) Commission: -0.99 0.00 0.00 14:53:49,
+Platform Fee: -1.00 08-11
+GMT+8
+2025-08-08
+Frasers Cpt Tr Exchange Fee: -1.17 2025-
+SG SGX Open 1300 2.24000 2,912.00 0.00 0.00 0.00 16:43:59, SGD
+(J69U.SI) Commission: -0.99
+Platform Fee: -1.00 08-12
+GMT+8
+2025-11-06
+Frasers Cpt Tr Exchange Fee: -1.37 2025-
+SG SGX Open 1500 2.27000 3,405.00 0.00
+(J69U.SI) Commission: -1.02 0.00 0.00 10:06:27, SGD
+Platform Fee: -1.02 11-10
+GMT+8
+2025-11-06
+10:30:34, 
+This statement also serves as a Tax Invoice for GST purpose. 7/20
+Tiger Brokers (Singapore) PTE.LTD.
+Activity Trade Accrued Interest Realized Settle 
+Symbol Market Exchange Quantity Amount Comm/Fee GST Notes Trade Time Currency
+Type Price in Trade P/L Date
+Frasers Cpt Tr SG SGX Open 2000 2.26000 4,520.00 0.00 Exchange Fee: -1.81 0.00 0.00 GMT+8 2025- SGD
+(J69U.SI) Commission: -1.36
+Platform Fee: -1.36 11-10
+2025-12-04
+Frasers Cpt Tr Exchange Fee: -0.91 2025-
+SG SGX Open 1000 2.27000 2,270.00 0.00 :19, SGD
+(J69U.SI) Commission: -0.99 0.00 0.00 16:51
+Platform Fee: -1.00 12-08
+GMT+8
+Total J69U.SI 7500 16,895.00 0.00 -21.48 0.00 0.00 SGD
+Mapletree Ind Tr Exchange Fee: -0.25 2025-08-07
+2025-
+SG SGX Open 300 2.00000 600.00 0.00
+(ME8U.SI) Commission: -0.99 0.00 0.00 11:30:49, SGD
+Platform Fee: -1.00 08-11
+GMT+8
+025-08-07
+Mapletree Ind Tr Exchange Fee: -0.16 2
+2025-
+SG SGX Open 200 2.01000 402.00 0.00
+(ME8U.SI) Commission: -0.99 0.00 0.00 14:32:45, SGD
+Platform Fee: -1.00 08-11
+GMT+8
+2025-08-11
+Mapletree Ind Tr Exchange Fee: -0.39 2025-
+SG SGX Open 500 1.99000 995.00 0.00 SGD
+(ME8U.SI) Commission: -0.99 0.00 0.00 09:16:23, 
+Platform Fee: -1.00 08-13
+GMT+8
+2025-08-27
+Mapletree Ind Tr Exchange Fee: -0.09 2025-
+SG SGX Open 100 2.05000 205.00 0.00 .00 0.00 16:33:19, SGD
+(ME8U.SI) Commission: -0.99 0
+Platform Fee: -1.00 08-29
+GMT+8
+2025-10-06
+Mapletree Ind Tr Exchange Fee: -1.98 2025-
+SG SGX Open 2300 2.15000 4,945.00 0.00
+(ME8U.SI) Commission: -1.48 0.00 0.00 16:50:47, SGD
+Platform Fee: -1.48 10-08
+GMT+8
+Mapletree Ind Tr Exchange Fee: -1.23 2025-11-06
+2025-
+SG SGX Open 1500 2.05000 3,075.00 0.00
+(ME8U.SI) Commission: -0.99 0.00 0.00 15:49:54, SGD
+Platform Fee: -1.00 11-10
+GMT+8
+Mapletree Ind Tr Exchange Fee: -0.49 2025-11-06
+2025-
+SG SGX Open 600 2.04000 1,224.00 0.00 SGD
+(ME8U.SI) Commission: -0.99 0.00 0.00 16:33:04, 
+Platform Fee: -1.00 11-10
+GMT+8
+25-12-01
+Mapletree Ind Tr Exchange Fee: -0.81 20
+2025-
+SG SGX Open 1000 2.03000 2,030.00 0.00 16:59:08, SGD
+(ME8U.SI) Commission: -0.99 0.00 0.00
+Platform Fee: -1.00 12-03
+GMT+8
+Total ME8U.SI 6500 13,476.00 0.00 -22.29 0.00 0.00 SGD
+Mapletree PanAsia Com 2025-08-06
+Tr 15:27:55, 
+This statement also serves as a Tax Invoice for GST purpose. 8/20
+Tiger Brokers (Singapore) PTE.LTD.
+Activity Trade Accrued Interest Realized Settle 
+Symbol Market Exchange Quantity Amount Comm/Fee GST Notes Trade Time Currency
+Type Price in Trade P/L Date
+(N2IU.SI) SG SGX Open 100 1.32000 132.00 0.00 Exchange Fee: -0.05 0.00 0.00 GMT+8 2025- SGD
+Commission: -0.99
+Platform Fee: -1.00 08-08
+Mapletree PanAsia Com Exchange Fee: -0.05 2025-08-07
+2025-
+Tr SG SGX Close -100 1.34000 -134.00 0.00 Commission: -0.99 0.00 -2.08 16:21:34, SGD
+08-11
+(N2IU.SI) Platform Fee: -1.00 GMT+8
+Total N2IU.SI 0 -2.00 0.00 -4.08 0.00 -2.08 SGD
+SGX Exchange Fee: -0.68 2025-08-25
+2025-
+SG SGX Close -100 16.78000 -1,678.00 0.00 4:42:32, SGD
+(S68.SI) Commission: -0.99 0.00 493.33 1
+Platform Fee: -1.00 08-27
+GMT+8
+Total S68.SI -100 -1,678.00 0.00 -2.67 0.00 493.33 SGD
+UOB Exchange Fee: -1.38 2025-10-16
+2025-
+SG SGX Open 100 34.50000 3,450.00 0.00 SGD
+(U11.SI) Commission: -1.04 0.00 0.00 13:16:02, 
+Platform Fee: -1.04 10-21
+GMT+8
+UOB Exchange Fee: -1.38 2025-10-16
+2025-
+SG SGX Open 100 34.50000 3,450.00 0.00 8:50, SGD
+(U11.SI) Commission: -1.04 0.00 0.00 14:5
+Platform Fee: -1.04 10-21
+GMT+8
+Total U11.SI 200 6,900.00 0.00 -6.92 0.00 0.00 SGD
+Total 70,498.50 0.00 -104.61 0.00 491.25 SGD
+Alexandria Real Estate Settlement Fee: -0.60
+Commission: -1.00 2025-10-29
+2025-
+Equities US NYSE Open 200 60.40230 12,080.46 0.00 Platform Fee: -1.00 0.00 0.00 11:51:25, US USD
+(ARE) Consolidated Audit Trail 10-30
+/Eastern
+Fee: -0.01
+Alexandria Real Estate Settlement Fee: -0.15 2025-10-30
+2025-
+Equities US NYSE Open 50 57.67000 2,883.50 0.00 Commission: -0.99 0.00 0.00 08:46:23, US USD
+(ARE) Platform Fee: -1.00 10-31
+/Eastern
+Alexandria Real Estate Settlement Fee: -0.40
+Trading Activity Fee: 2025-12-30
+2026-
+Equities US NYSE Close -133 48.42647 -6,440.72 0.00 -0.05 0.00 -1,596.96 22:02:07, US USD
+01-02
+(ARE) Commission: -0.99 /Eastern
+Platform Fee: -1.00
+Alexandria Real Estate Settlement Fee: -0.35
+Trading Activity Fee: 2025-12-30
+2026-
+Equities US NYSE Close -117 48.40000 -5,662.80 0.00 -0.02 0.00 -1,273.03 23:18:29, US USD
+(ARE) Commission: -0.99 01-02
+/Eastern
+Platform Fee: -1.00
+This statement also serves as a Tax Invoice for GST purpose. 9/20
+Tiger Brokers (Singapore) PTE.LTD.
+Activity Trade Accrued Interest Realized Settle 
+Symbol Market Exchange Quantity Amount Comm/Fee GST Notes Trade Time Currency
+Type Price in Trade P/L Date
+Total ARE 0 2,860.44 0.00 -9.55 0.00 -2,869.99 USD
+Blackstone Secured Settlement Fee: -1.09 2025-09-29
+2025-
+Lending Fund US NYSE Open 367 27.19272 9,979.73 0.00 Commission: -1.84 0.00 0.00 05:24:34, US USD
+Platform Fee: -1.84 09-30
+(BXSL) /Eastern
+Blackstone Secured Settlement Fee: -1.35
+Commission: -2.26 2025-10-06
+2025-
+Lending Fund US NYSE Open 451 26.24000 11,834.24 0.00 Platform Fee: -2.26 0.00 0.00 19:28:15, US USD
+(BXSL) Consolidated Audit Trail 10-07
+/Eastern
+Fee: -0.02
+Blackstone Secured Settlement Fee: -0.64 2025-10-10
+2025-
+Lending Fund US NYSE Open 215 25.38628 5,458.05 0.00 Commission: -1.08 0.00 0.00 04:22:05, US USD
+(BXSL) Platform Fee: -1.08 10-14
+/Eastern
+Total BXSL 1033 27,272.02 0.00 -13.46 0.00 0.00 USD
+Settlement Fee: -2.70
+Realty Income Commission: -4.51 2025-10-16
+2025-
+US NYSE Open 900 59.45946 53,513.51 0.00
+(O) Platform Fee: -4.51 0.00 0.00 08:25:56, US USD
+Consolidated Audit Trail 10-17
+/Eastern
+Fee: -0.03
+Settlement Fee: -0.75
+Trading Activity Fee: 
+-0.04 2025-10-23
+Realty Income 2025-
+US NYSE Close -250 60.00000 -15,000.00 0.00
+(O) Commission: -1.25 0.00 127.78 10:21:30, US USD
+Platform Fee: -1.25 10-24
+/Eastern
+Consolidated Audit Trail 
+Fee: -0.01
+Settlement Fee: -0.60
+Realty Income Trading Activity Fee: 2025-10-24
+2025-
+US NYSE Close -200 60.50000 -12,100.00 0.00 0.00 203.10 08:30:56, US USD
+(O) -0.04
+Commission: -1.00 10-27
+/Eastern
+Platform Fee: -1.00
+Settlement Fee: -0.60
+Realty Income Commission: -1.00 2025-10-29
+2025-
+US NYSE Open 200 58.90000 11,780.00 0.00
+(O) Platform Fee: -1.00 0.00 0.00 11:48:10, US USD
+Consolidated Audit Trail 10-30
+/Eastern
+Fee: -0.01
+Realty Income Settlement Fee: -0.01 2025-11-17
+Trade 2025-
+US NYSE Open 2.73213 56.96000 155.62 0.00
+(O) Commission: -0.99 0.00 0.00 13:30:02, US USD
+Platform Fee: -1.00 Allocation 11-18
+/Eastern
+Realty Income Settlement Fee: -0.01 2025-12-16
+Trade 2025-
+US NYSE Open 2.70965 57.68000 156.29 0.00
+(O) Commission: -0.99 0.00 0.00 13:30:02, US USD
+Platform Fee: -1.00 Allocation 12-17
+/Eastern
+Total O 655.44178 38,505.42 0.00 -24.30 0.00 330.88 USD
+This statement also serves as a Tax Invoice for GST purpose. 10/20
+Tiger Brokers (Singapore) PTE.LTD.
+Activity Trade Accrued Interest Realized Settle 
+Symbol Market Exchange Quantity Amount Comm/Fee GST Notes Trade Time Currency
+Type Price in Trade P/L Date
+-09
+Putnam Bdc Income ETF Settlement Fee: -0.35 2025-09
+2025-
+US ARCA Open 115 33.66000 3,870.90 0.00 0.00 0.00 13:53:58, US USD
+(PBDC) Commission: -0.99
+Platform Fee: -1.00 09-10
+/Eastern
+2025-09-17
+Putnam Bdc Income ETF Settlement Fee: -0.01 2025-
+US ARCA Open 3 33.19000 99.57 0.00 0.00 0.00 03:53:28, US USD
+(PBDC) Commission: -0.99
+Platform Fee: -1.00 09-18
+/Eastern
+Putnam Bdc Income ETF Settlement Fee: -1.16 2025-10-07
+2025-
+US ARCA Open 387 30.64000 11,857.68 0.00
+(PBDC) Commission: -1.94 0.00 0.00 04:00:43, US USD
+Platform Fee: -1.94 10-08
+/Eastern
+Putnam Bdc Income ETF Settlement Fee: -0.15 2025-10-16
+2025-
+US ARCA Open 50 30.30000 1,515.00 0.00
+(PBDC) Commission: -0.99 0.00 0.00 11:45:13, US USD
+Platform Fee: -1.00 10-17
+/Eastern
+Total PBDC 555 17,343.15 0.00 -11.52 0.00 0.00 USD
+Total 85,981.03 0.00 -58.83 0.00 -2,539.11 USD
+Total(In Base) 140,821.81 0.00 -140.21 0.00 -2,156.96 USD
+Note: 
+1. We calculate realized P&L using the FIFO (First In, First Out) method. This means that when you sell a position, we assume you're selling the earliest (oldest) shares you bought first.
+2. Trades and fees for futures options (including Hong Kong index futures options) are shown together with other futures transactions in the "Transaction Details — Futures" module.
+Deposits & Withdrawals
+Date Description Amount Currency
+2025-08-06 Deposit 432.18 SGD
+2025-08-06 Deposit 8,660.11 SGD
+2025-08-07 Withdrawal -10.00 SGD
+2025-08-08 Deposit 8,010.00 SGD
+2025-08-26 Deposit 65.54 SGD
+This statement also serves as a Tax Invoice for GST purpose. 11/20
+Tiger Brokers (Singapore) PTE.LTD.
+Date Description Amount Currency
+2025-09-01 Deposit 10,000.00 SGD
+2025-10-01 Deposit 17,000.00 SGD
+2025-11-05 Deposit 20,000.00 SGD
+2025-12-01 Deposit 20,000.00 SGD
+Total 84,157.83 SGD
+2025-09-29 Deposit 9,990.00 USD
+2025-10-06 Deposit 23,690.00 USD
+2025-10-15 Deposit 60,994.24 USD
+Total 94,674.24 USD
+Total(In Base) 160,140.62 USD
+Holdings
+Stock
+Symbol Quantity Multiplier Cost Price Close Price Value Unrealized P/L Initial Margin Maint Margin Currency
+CapLand Ascendas REIT
+4600 1.0 2.7402065 2.83000 13,018.00 413.05 0.00 0.00 SGD
+(A17U.SI)
+Keppel DC Reit
+2000 1.0 2.2322300 2.25000 4,500.00 35.54 0.00 0.00 SGD
+(AJBU.SI)
+Frasers L&C Tr
+11700 1.0 0.9414658 0.99500 11,641.50 626.35 0.00 0.00 SGD
+(BUOU.SI)
+ParkwayLife Reit
+1700 1.0 4.0412412 4.08000 6,936.00 65.89 0.00 0.00 SGD
+(C2PU.SI)
+DBS
+200 1.0 34.2100000 56.36000 11,272.00 4,430.00 0.00 0.00 SGD
+(D05.SI)
+This statement also serves as a Tax Invoice for GST purpose. 12/20
+Tiger Brokers (Singapore) PTE.LTD.
+Symbol Quantity Multiplier Cost Price Close Price Value Unrealized P/L Initial Margin Maint Margin Currency
+Frasers Cpt Tr
+7500 1.0 2.2555307 2.33000 17,475.00 558.52 0.00 0.00 SGD
+(J69U.SI)
+Mapletree Ind Tr
+6500 1.0 2.0766600 2.08000 13,520.00 21.71 0.00 0.00 SGD
+(ME8U.SI)
+OCBC Bank
+1300 1.0 16.1500000 19.76000 25,688.00 4,693.00 0.00 0.00 SGD
+(O39.SI)
+UOB
+900 1.0 34.5854667 35.06000 31,554.00 427.08 0.00 0.00 SGD
+(U11.SI)
+Total 36400 135,604.50 11,271.14 0.00 0.00 SGD
+Blackstone Secured Lending Fund
+1033 1.0 26.4138238 26.33000 27,198.89 -86.59 0.00 0.00 USD
+(BXSL)
+Realty Income
+655.44178 1.0 59.2891811 56.37000 36,947.25 -1,913.35 0.00 0.00 USD
+(O)
+Putnam Bdc Income ETF
+555 1.0 31.2696757 30.60000 16,983.00 -371.67 0.00 0.00 USD
+(PBDC)
+Total 2243.44178 81,129.14 -2,371.61 0.00 0.00 USD
+Total(In Base) 38643.44178 186,615.88 6,396.21 0.00 0.00 USD
+Note:
+1. The multiplier represents the fixed number used to calculate the total contract value by multiplying it with the price of the underlying asset in equity options or futures trading.
+2. For certain private funds, the end-of-period market value includes estimated adjustments for Equalization to smooth the calculation of performance fees or allocations.
+Dividends
+Dividend Reinvestment Cash 
+Date Product Symbol Quantity/Gross Rate Phase Shares Fees & Tax Net Cash Value Currency
+Plan Dividends
+Quantity: 2200
+2025-09- CapLand Ascendas REIT
+Stock Gross Rate: 0.000930 Paid 2.05 0 2.05 SGD
+04 (A17U.SI) Reinvestment
+/Share
+Quantity: 2200
+2025-09- CapLand Ascendas REIT
+This statement also serves as a Tax Invoice for GST purpose. 13/20
+Tiger Brokers (Singapore) PTE.LTD.
+Dividend Reinvestment Cash 
+Date Product Symbol Quantity/Gross Rate Phase Shares Fees & Tax Net Cash Value Currency
+Plan Dividends
+04 Stock (A17U.SI) Reinvestment Gross Rate: 0.009050 Paid 19.91 0 19.91 SGD
+/Share
+Quantity: 3000
+2025-11- Frasers Cpt Tr
+Stock Gross Rate: 0.002080 Paid 6.24 0 6.24 SGD
+28 (J69U.SI) Reinvestment
+/Share
+Quantity: 3000
+2025-11- Frasers Cpt Tr
+Stock Gross Rate: 0.001700 Paid 5.10 0 5.10 SGD
+28 (J69U.SI) Reinvestment
+/Share
+Quantity: 3000
+2025-10- Frasers Cpt Tr Dividend Accruals 
+Stock Gross Rate: 0.055850 167.55 0 167.55 SGD
+31 (J69U.SI) Reinvestment Increase
+/Share
+Quantity: 3000
+2025-11- Frasers Cpt Tr Dividend Accruals 
+Stock Gross Rate: 0.055850 -167.55 0 -167.55 SGD
+07 (J69U.SI) Reinvestment Reduction
+/Share
+Quantity: 3400
+2025-11- Mapletree Ind Tr Dividend Accruals 
+Stock Gross Rate: 0.023400 79.56 0 79.56 SGD
+05 (ME8U.SI) Reinvestment Increase
+/Share
+Quantity: 3400
+2025-11- Mapletree Ind Tr Dividend Accruals 
+Stock Gross Rate: 0.023400 -79.56 0 -79.56 SGD
+07 (ME8U.SI) Reinvestment Reduction
+/Share
+Quantity: 3000
+2025-11- Frasers Cpt Tr
+Stock Gross Rate: 0.055850 Paid 167.55 0 167.55 SGD
+28 (J69U.SI) Reinvestment
+/Share
+Quantity: 3400
+2025-12- Mapletree Ind Tr
+Stock Gross Rate: 0.023400 Paid 79.56 0 79.56 SGD
+10 (ME8U.SI)
+/Share
+Quantity: 3400
+2025-12- Mapletree Ind Tr
+Stock Gross Rate: 0.002300 Paid 7.82 0 7.82 SGD
+10 (ME8U.SI)
+/Share
+Quantity: 3400
+2025-12- Mapletree Ind Tr
+Stock Gross Rate: 0.006100 Paid 20.74 0 20.74 SGD
+10 (ME8U.SI)
+/Share
+Quantity: 200
+Gross Rate: 0.600000
+This statement also serves as a Tax Invoice for GST purpose. 14/20
+Tiger Brokers (Singapore) PTE.LTD.
+Dividend Reinvestment Cash 
+Date Product Symbol Quantity/Gross Rate Phase Shares Fees & Tax Net Cash Value Currency
+Plan Dividends
+2025-11- Stock DBS /Share Paid 120.00 0 120.00 SGD
+24 (D05.SI) Reinvestment
+Quantity: 200
+2025-11- DBS
+Stock Gross Rate: 0.150000 Paid 30.00 0 30.00 SGD
+24 (D05.SI) Reinvestment
+/Share
+Quantity: 11700
+2025-11- Frasers L&C Tr Dividend Accruals 
+Stock Gross Rate: 0.002400 28.08 0 28.08 SGD
+18 (BUOU.SI) Reinvestment Increase
+/Share
+Quantity: 11700
+2025-11- Frasers L&C Tr Dividend Accruals 
+Stock Gross Rate: 0.002400 -28.08 0 -28.08 SGD
+19 (BUOU.SI) Reinvestment Reduction
+/Share
+Quantity: 11700
+2025-12- Frasers L&C Tr
+Stock Gross Rate: 0.003400 Paid 39.78 0 39.78 SGD
+23 (BUOU.SI)
+/Share
+Quantity: 11700
+2025-12- Frasers L&C Tr
+Stock Gross Rate: 0.002600 Paid 30.42 0 30.42 SGD
+23 (BUOU.SI)
+/Share
+Quantity: 11700
+2025-12- Frasers L&C Tr
+Stock Gross Rate: 0.002400 Paid 28.08 0 28.08 SGD
+23 (BUOU.SI)
+/Share
+Quantity: 11700
+2025-12- Frasers L&C Tr
+Stock Gross Rate: 0.021100 Paid 246.87 0 246.87 SGD
+23 (BUOU.SI)
+/Share
+Total Accruals/Paid 0.00/804.12 SGD
+Blackstone Secured Lending Quantity: 367
+2025-10- Dividend tax: 
+Stock Fund Gross Rate: 0.770000 Paid 282.59 0 254.33 USD
+24 Reinvestment 28.26
+(BXSL) /Share
+Quantity: 118
+2025-10- Putnam Bdc Income ETF Dividend tax: 
+Stock Gross Rate: 0.820460 Paid 96.81 0 87.13 USD
+17 (PBDC) Reinvestment 9.68
+/Share
+Quantity: 650
+2025-11- Realty Income Dividend tax: 
+Stock Gross Rate: 0.269500 Paid 175.17 0 157.65 USD
+14 (O) Reinvestment 17.52
+/Share
+This statement also serves as a Tax Invoice for GST purpose. 15/20
+Tiger Brokers (Singapore) PTE.LTD.
+Dividend Reinvestment Cash 
+Date Product Symbol Quantity/Gross Rate Phase Shares Fees & Tax Net Cash Value Currency
+Plan Dividends
+Quantity: 652.7321
+2025-12- Realty Income Dividend tax: 
+Stock Gross Rate: 0.269500 Paid 175.91 0 158.31 USD
+15 (O) 17.60
+/Share
+Quantity: 555
+2025-12- Putnam Bdc Income ETF Dividend tax: 
+Stock Gross Rate: 0.825070 Paid 457.91 0 412.12 USD
+31 (PBDC) 45.79
+/Share
+Blackstone Secured Lending Quantity: 1033
+2025-12- Dividend Accruals Dividend tax: 
+Stock Fund Gross Rate: 0.770000 795.41 0 715.87 USD
+31 Increase 79.54
+(BXSL) /Share
+Quantity: 250
+2025-12- Alexandria Real Estate Equities Dividend Accruals Dividend tax: 
+Stock Gross Rate: 0.720000 180.00 0 162.00 USD
+31 (ARE) Cash Increase 18.00
+/Share
+Quantity: 655.4418
+2025-12- Realty Income Dividend Accruals Dividend tax: 
+Stock Gross Rate: 0.270000 176.97 0 159.27 USD
+31 (O) Cash Increase 17.70
+/Share
+1,037.14/1,
+Total Accruals/Paid USD
+069.54
+1,037.14/1,
+Total(In Base) Accruals/Paid USD
+695.06
+Notes: Accrued Dividends refers to the expected amount of cash or number of shares you will receive after a company announces a dividend. Before the payment is made, the amount or shares will appear as “accrued.” Once the 
+dividend is officially distributed, the cash will be credited to your account balance, or the shares will be added to your holdings.
+Allowance
+Date Description Amount Currency
+2025-10-06 Order Rebate 50.00 SGD
+2025-10-06 Order Rebate 50.00 SGD
+2025-10-16 Order Rebate 50.00 SGD
+2025-12-04 Order Rebate 50.00 SGD
+This statement also serves as a Tax Invoice for GST purpose. 16/20
+Tiger Brokers (Singapore) PTE.LTD.
+Date Description Amount Currency
+2025-12-05 Order Rebate 50.00 SGD
+2025-12-15 Order Rebate 50.00 SGD
+Total 300.00 SGD
+2025-09-09 Coupon Rebate 0.99 USD
+2025-09-17 Coupon Rebate 0.99 USD
+2025-09-29 Coupon Rebate 1.84 USD
+2025-10-06 Coupon Rebate 2.26 USD
+2025-10-07 Coupon Rebate 1.94 USD
+2025-10-10 Order Rebate 38.53 USD
+2025-10-10 Coupon Rebate 1.08 USD
+2025-10-16 Coupon Rebate 0.99 USD
+2025-10-16 Coupon Rebate 4.51 USD
+2025-10-23 Coupon Rebate 1.25 USD
+2025-10-24 Coupon Rebate 1.00 USD
+2025-10-29 Coupon Rebate 1.00 USD
+2025-10-29 Coupon Rebate 1.00 USD
+2025-10-30 Coupon Rebate 0.99 USD
+2025-12-31 Coupon Rebate 0.99 USD
+2025-12-31 Coupon Rebate 0.99 USD
+Total 60.35 USD
+Total(In Base) 293.72 USD
+Financial Instrument Information
+This statement also serves as a Tax Invoice for GST purpose. 17/20
+Tiger Brokers (Singapore) PTE.LTD.
+Forex
+Symbol Issuer Description Multiplier Expiry Strike Right
+USD.SGD USD.SGD 1
+Stock
+Symbol Issuer Description Multiplier Expiry Strike Right
+A17U.SI CapLand Ascendas REIT 1
+AJBU.SI Keppel DC Reit 1
+ARE Alexandria Real Estate Equities 1
+BUOU.SI Frasers L&C Tr 1
+BXSL Blackstone Secured Lending Fund 1
+C2PU.SI ParkwayLife Reit 1
+D05.SI DBS 1
+J69U.SI Frasers Cpt Tr 1
+ME8U.SI Mapletree Ind Tr 1
+N2IU.SI Mapletree PanAsia Com Tr 1
+O Realty Income 1
+O39.SI OCBC Bank 1
+PBDC Putnam Bdc Income ETF 1
+S68.SI SGX 1
+U11.SI UOB 1
+Base Currency Exchange Rate
+This statement also serves as a Tax Invoice for GST purpose. 18/20
+Tiger Brokers (Singapore) PTE.LTD.
+Date 2025-12-31
+USD 1
+AUD 0.66740
+CAD 0.72854
+CHF 1.26231
+CNH 0.14334
+EUR 1.17530
+GBP 1.34800
+HKD 0.12849
+IDR 0.00006
+JPY 0.00638
+MXN 0.05551
+MYR 0.24643
+NOK 0.09913
+NZD 0.57570
+PLN 0.27806
+SEK 0.10862
+SGD 0.77790
+TRY 0.02328
+Note: You can refer to the USD index table to view the exchange rate information as of the report cutoff date, with USD as the quote currency.
+Notes:
+This statement also serves as a Tax Invoice for GST purpose. 19/20
+Tiger Brokers (Singapore) PTE.LTD.
+1. Please examine the details in the monthly statement and promptly report any inaccuracy or discrepancy found to service@tigerbrokers.com.sg within 14 calendar days from the date of the statement. All the above details shall be 
+deemed correct and conclusive if no written notice of objection is received by us within 14 days from the date of the monthly statement.
+2. Tiger Brokers (Singapore) Pte Ltd is a member of Financial Institutions Dispute Resolution Centre (FIDReC), which is an independent and impartial institution specialising in the resolution of disputes between financial institutions 
+and consumers. Unresolved issues can also be brought up to FIDReC at www.fidrec.com.sg for mediation.
+3. Information on our fees can be found at https://www.tigerbrokers.com.sg/commissions/fees
+4. Information regarding your account can be found in the Terms and Conditions at https://www.tigerbrokers.com.sg/info/terms-n-conditions
+5. Customer money and assets are deposited in trust and held in custody, respectively in accordance with the Securities and Futures (Licensing and Conduct of Business) Regulations, governing the protection of client money and 
+assets.;
+[1] TIGER BROKERS (HK) GLOBAL LIMITED AS THE PRINCIPAL
+TIGER BROKERS (SINGAPORE) PTE. LTD.
++65 6331 2277
+WhatsApp +65 6331 2277
+service@tigerbrokers.com.sg
+This statement also serves as a Tax Invoice for GST purpose. 20/20
