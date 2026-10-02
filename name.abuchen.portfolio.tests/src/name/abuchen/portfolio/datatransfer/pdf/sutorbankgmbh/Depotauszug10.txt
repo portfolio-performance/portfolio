@@ -1,0 +1,126 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Sutor Bank GmbH, Postfach 11 33 37, 20433 Hamburg Kunden-Service: Tel.: 040 - 82 22 31 63
+Fax: 040 - 80 80 13 19
+Mail: info@sutorbank.de
+Service-Zeiten: Mo-Do 8.30 - 17.00 Uhr
+Fr 8.30 - 16.00 Uhr
+Frau Marta Mustermann Depotnummer: 1234567890
+Musterstr. 26
+12345 Musterstadt IBAN: DE12 3456 7890 1234 5678 90
+Hamburg, im Oktober 2025
+Depotauszug
+ 
+ 
+Sehr geehrte Frau Mustermann,
+ 
+Sie erhalten heute von uns in der Anlage die Aufstellung über die Kundenfinanzinstrumente per 30.09.2025 zu
+nachfolgendem Vertrag:
+ 
+Raisin Pension Rürup Nr. 1234567890
+ 
+Bitte prüfen Sie die Aufstellung der Umsätze sowie die Salden und Bestände. Sie gelten als von Ihnen
+anerkannt, wenn Sie nicht innerhalb von sechs Wochen unsere Revisionsabteilung über etwaige
+Unstimmigkeiten schriftlich benachrichtigen. Die Aufstellung wird von der Bank nicht unterschrieben, sie
+erfolgt automatisch vorbehaltlich Irrtum.
+ 
+Im Rahmen unserer gesetzlichen Vorgaben weisen wir darauf hin, dass Guthaben als Einlagen nach
+Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig sind. Nähere Informationen entnehmen Sie
+bitte dem "Informationsbogen für den Einleger", der auch auf www.sutorbank.de/agb als PDF hinterlegt ist.
+ 
+Sämtliche in diesem Depotauszug aufgeführten Wertpapiere unterliegen der Richtlinie 2014/65/EU (MiFID II)
+sowie deren ergänzenden Durchführungsmaßnahmen.
+ 
+Überprüfen Sie bitte, ob Ihr oben angegebener Name und Ihre Adresse vollständig, korrekt geschrieben und
+aktuell sind. Änderungen Ihres Namens sowie Ihrer Wohnsitz- und Postadresse teilen Sie uns bitte kurzfristig
+mit, anderenfalls gehen wir von einer Bestätigung der uns bekannten Daten aus.
+ 
+Wir freuen uns auf eine weiterhin erfolgreiche Zusammenarbeit und bedanken uns für Ihr Vertrauen.
+ 
+Mit freundlichen Grüßen
+Ihre SUTOR BANK
+Sutor Bank GmbH, Hermannstrasse 46, 20095 Hamburg | info@sutorbank.de | www.sutorbank.de
+Geschäftsleitung: Robert Freitag, Hartmut Giesen, Daniel Iskam, Thomas Meier
+Mitglied im Einlagensicherungsfonds des Bundesverbandes deutscher Banken Seite 0 von 3
+USt - IdNr DE155617009 | Amtsgericht Hamburg HRB 178357 | BLZ 202 308 00, BIC MHSBDEHBXXX
+Dies ist ein notwendiges Übel,
+  aber sonst klappt der Seitenumbruch nicht sauber!
+Aufstellung über Kundenfinanzinstrumente per 30.09.2025
+Marta Mustermann
+"Raisin Pension Rürup" Nr. 1234567890 / IBAN: DE12 3456 7890 1234 5678 90
+Investment ISIN Lagerstelle Verwahrart Anlagequote Bestand  Einheit Kurs Währung Kurswert
+Fonds
+Dimensional European Value Fund IE00B1W6CW87 Irland Wertpapierrechnung 0,00 % 799,7618  Anteile 23,5400 EUR 18.826,39 EUR
+x-tr. Portf.Total Ret. UCITS ETF LU0397221945 Irland Wertpapierrechnung 0,00 % 41,5730  Anteile 316,3244 EUR 13.150,55 EUR
+Dimensional Europ.Small Comp. F acc IE0032769055 Irland Wertpapierrechnung 0,00 % 416,7446  Anteile 57,9700 EUR 24.158,68 EUR
+Multi Amundi Core Nasdaq-100 UCITS LU1829221024 Deutschland Girosammelverwahrung 0,00 % 192,4400  Anteile 85,2191 EUR 16.399,56 EUR
+iShares Sustainable MSCI EM SRI acc IE00BYVJRP78 Irland Wertpapierrechnung 0,00 % 40,9050  Anteile 9,1655 US$* 319,32 EUR
+iShares Core MSCI Emerging Markets IE00BKM4GZ66 Irland Wertpapierrechnung 30,00 % 623,7395  Anteile 43,1212 US$* 22.908,10 EUR
+iShares Asia Pacific Dividend ETF IE00B14X4T88 Irland Wertpapierrechnung 0,00 % 776,7768  Anteile 26,5225 US$* 17.547,11 EUR
+iShares Edge MSCI Europe Momentum IE00BQN1K786 Irland Wertpapierrechnung 0,00 % 1.335,4009  Anteile 13,8585 EUR 18.506,65 EUR
+* Währungskurs: 1,1741 US$
+Kurswert Gesamt 131.816,36 EUR
+Geldsaldo 124,85 EUR
+Multi Amundi Core Nasdaq-100 UCITS
+Der Name des Fonds Multi Amundi Nasdaq-100 II UCITS hat sich geändert in Multi Amundi Core Nasdaq-100 UCITS.
+Erstellt im Oktober 2025 Seite 1 von 3
+Umsätze vom 01.07.2025 bis 30.09.2025 in EUR
+Buchungs- Wertstellung Transaktion Umsatz / Finanz-Instrument Anteile / Gramm W-Kurs Betrag Betrag Kosten KESt KiSt
+datum Handelsplatz ISIN Kurs / Preis Währung (brutto) (netto) SolZ
+14.07.2025 26.06.2025 Ausschüttung Betrag der Ausschüttung iShares Asia Pacific Dividend ETF - 353,38
+IE00B14X4T88 US$
+15.07.2025 15.07.2025 Einzahlung automatischer Lastschrifteinzug - 200,00
+-
+15.07.2025 15.07.2025 Gebühren anteilige Kontoführungs-u.Depotgeb.1.Hj. 2025 - -43,12
+-
+16.07.2025 15.07.2025 Kauf Kauf iShares Edge MSCI Europe Momentum 3,8356 -50,99
+11:46 Tradegate IE00BQN1K786 13,2940 EUR
+16.07.2025 15.07.2025 Kauf Kauf iShares Asia Pacific Dividend ETF 19,0518 1,1665 -408,28
+12:44 Tradegate IE00B14X4T88 24,9981 US$
+17.07.2025 15.07.2025 Kauf Kauf Dimensional European Value Fund 2,2622 -50,99
+außerbörslich IE00B1W6CW87 22,5400 EUR
+17.07.2025 16.07.2025 Verkauf Gebührentilgung x-tr. Portf.Total Ret. UCITS ETF -0,0700 21,24
+10:56 Tradegate LU0397221945 303,3501 EUR
+17.07.2025 16.07.2025 Verkauf Gebührentilgung iShares Edge MSCI Europe Momentum -2,2309 29,56
+11:49 Tradegate IE00BQN1K786 13,2500 EUR
+17.07.2025 16.07.2025 Verkauf Gebührentilgung Multi Amundi Nasdaq-100 II UCITS -0,3221 25,66
+12:44 Tradegate LU1829221024 79,6600 EUR
+17.07.2025 16.07.2025 Verkauf Gebührentilgung iShares Sustainable MSCI EM SRI acc -0,0685 1,1602 0,50
+13:17 Tradegate IE00BYVJRP78 8,4729 US$
+17.07.2025 16.07.2025 Verkauf Gebührentilgung iShares Asia Pacific Dividend ETF -1,2590 1,1602 27,00
+13:19 Tradegate IE00B14X4T88 24,8805 US$
+17.07.2025 16.07.2025 Verkauf Gebührentilgung iShares Core MSCI Emerging Markets -1,0364 1,1602 35,50
+13:43 Tradegate IE00BKM4GZ66 39,7404 US$
+18.07.2025 16.07.2025 Verkauf Gebührentilgung Dimensional Europ.Small Comp. F acc -0,7039 40,75
+außerbörslich IE0032769055 57,8900 EUR
+22.07.2025 17.07.2025 Verkauf Gebührentilgung Dimensional European Value Fund -1,3326 30,21
+außerbörslich IE00B1W6CW87 22,6700 EUR
+23.07.2025 23.07.2025 Gebühren Kontoführungs-u.Depotgebühren 1. Hj. 2025 - -210,42
+-
+15.08.2025 15.08.2025 Einzahlung automatischer Lastschrifteinzug - 200,00
+-
+18.08.2025 15.08.2025 Kauf Kauf iShares Asia Pacific Dividend ETF 3,1306 1,1688 -70,00
+12:00 Tradegate IE00B14X4T88 26,1344 US$
+18.08.2025 15.08.2025 Kauf Kauf iShares Edge MSCI Europe Momentum 4,7095 -65,00
+12:38 Tradegate IE00BQN1K786 13,8020 EUR
+19.08.2025 15.08.2025 Kauf Kauf Dimensional European Value Fund 2,7554 -65,00
+außerbörslich IE00B1W6CW87 23,5900 EUR
+15.09.2025 15.09.2025 Einzahlung automatischer Lastschrifteinzug - 200,00
+-
+Verwendete Abkürzungen: MK = Mischkurs KESt = Kapitalertragssteuer KiSt = Kirchensteuer Seite 2 von 3
+W-Kurs = Währungskurs SolZ = Solidaritätszuschlag
+Umsätze vom 01.07.2025 bis 30.09.2025 in EUR
+Buchungs- Wertstellung Transaktion Umsatz / Finanz-Instrument Anteile / Gramm W-Kurs Betrag Betrag Kosten KESt KiSt
+datum Handelsplatz ISIN Kurs / Preis Währung (brutto) (netto) SolZ
+16.09.2025 15.09.2025 Kauf Kauf iShares Edge MSCI Europe Momentum 4,6952 -65,00
+11:05 Tradegate IE00BQN1K786 13,8440 EUR
+16.09.2025 15.09.2025 Kauf Kauf iShares Asia Pacific Dividend ETF 3,0574 1,1766 -70,00
+11:51 Tradegate IE00B14X4T88 26,9383 US$
+17.09.2025 15.09.2025 Kauf Kauf Dimensional European Value Fund 2,7507 -65,00
+außerbörslich IE00B1W6CW87 23,6300 EUR
+29.09.2025 25.09.2025 Ausschüttung Betrag der Ausschüttung iShares Asia Pacific Dividend ETF - 124,85
+IE00B14X4T88 US$
+Verwendete Abkürzungen: MK = Mischkurs KESt = Kapitalertragssteuer KiSt = Kirchensteuer Seite 3 von 3
+W-Kurs = Währungskurs SolZ = Solidaritätszuschlag
