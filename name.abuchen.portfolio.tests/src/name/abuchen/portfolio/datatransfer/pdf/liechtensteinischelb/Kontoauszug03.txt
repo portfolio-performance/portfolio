@@ -1,0 +1,48 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.87.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Liechtensteinische
+Landesbank AG
+Städtle 44 · Postfach 384
+9490 Vaduz · Liechtenstein
+Telefon +423 236 88 11
+Fax +423 236 88 22
+Sitz Vaduz
+Registerbehörde: AJU
+HR FL-0001.000.289-1
+Herr oder Frau
+Dbmz oder GubMXAa MzbiwPnJ gOli FcgrDP
+NRpUmlQFLPKP 70 Referenz PBE / LJO
+Direktwahl +678 259 44 48
+8778 KbV
+Vaduz, 30. nDkR 2026
+Kontonummer 1111.2222.3333 Privatkonto EUR
+IBAN LI09 3555 4688 1236 5771 1 / BIC LILALI2X
+Kontoauszug in EUR 01.06.2026 - 30.06.2026
+Datum Buchungstext / Details Valuta Zu Ihren Lasten Zu Ihren Gunsten Saldo in EUR
+31.05. Saldovortrag 2'849.64
+08.06. E-Banking KontoübertragIm 08.06. 1'364.73 4'214.37
+Auftrag von XffZ oder yNSPeaZ
+BDVfqAAa, Aph
+Auftragsnummer: 824427279
+22.06. Gebühren 30.06. 447.50 3'766.87
+Anlagegebühr
+Periode 01.04.2026-30.06.2026
+Auftragsnummer: 827183171
+Saldo per 30.06.2026 3'766.87
+Umsatz 447.50 1'364.73
+Konditionen
+Sollzinsen
+01.04.2026 - 30.06.2026 10.58 %
+Habenzinsen
+01.04.2026 - 30.06.2026 0.00 %
+Bei Überschreitungen des laufenden Kontos beträgt der aktuelle Sollzinssatz 10.82% pro Jahr ab dem Zeitpunkt der
+Überschreitung. Als Referenzzinssatz gilt: Euribor 3 Monate, zuzüglich einer Marge von 8.50%. Der Sollzinssatz wird jeweils
+am ersten eines neuen Kalenderquartals aktualisiert und passt sich bei einer Änderung des Referenzzinssatzes automatisch
+entsprechend an und ist ab diesem Tag wirksam. Vorbehalten bleiben anderslautende Vereinbarungen.
+Einlagen auf diesem Konto sind nach Massgabe des Einlagensicherungs- und Anlegerentschädigungsgesetzes (EAG)
+grundsätzlich erstattungsfähig. Nähere Informationen können dem Informationsbogen für Einleger entnommen werden, den
+Sie auch unter www.llb.li/eag einsehen können.
+Elektronisch zugestellt
+ACC_STMT_MTH_DT_LLB  20260630 69480-307321540-537688320 EBANKING
