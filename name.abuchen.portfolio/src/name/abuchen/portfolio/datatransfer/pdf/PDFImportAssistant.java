@@ -42,6 +42,7 @@ public class PDFImportAssistant
         extractors.add(new AyvensBankPDFExtractor(client));
         extractors.add(new BaaderBankPDFExtractor(client));
         extractors.add(new Bank11PDFExtractor(client));
+        extractors.add(new Bank99PDFExtractor(client));
         extractors.add(new BancoBilbaoVizcayaArgentariaPDFExtractor(client));
         extractors.add(new BankSLMPDFExtractor(client));
         extractors.add(new BarclaysBankIrelandPLCPDFExtractor(client));
