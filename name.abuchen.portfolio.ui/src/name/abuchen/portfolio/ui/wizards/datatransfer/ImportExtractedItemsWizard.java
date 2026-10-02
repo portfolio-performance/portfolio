@@ -85,6 +85,12 @@ public final class ImportExtractedItemsWizard extends Wizard
     private Account account;
     private Portfolio portfolio;
 
+    /**
+     * If set, the review pages offer to delete the source files after import
+     */
+    private boolean offerDeleteSourceFiles = false;
+    private boolean deleteSourceFiles = false;
+
     // securities seen in auto-extracted results but not yet part of the client;
     // offered as choices in the manual entry dialogs
     private List<Security> additionalSecurities = Collections.emptyList();
@@ -138,6 +144,15 @@ public final class ImportExtractedItemsWizard extends Wizard
         this.portfolio = target;
     }
 
+    public void setOfferDeleteSourceFiles(boolean offerDeleteSourceFiles)
+    {
+        this.offerDeleteSourceFiles = offerDeleteSourceFiles;
+    }
+
+    public boolean isDeleteSourceFilesRequested()
+    {
+        return deleteSourceFiles;
+    }
 
     @Override
     public boolean canFinish()
@@ -201,6 +216,7 @@ public final class ImportExtractedItemsWizard extends Wizard
                                 page.setAccount(account);
                             if (portfolio != null)
                                 page.setPortfolio(portfolio);
+                            page.setOfferDeleteSourceFiles(offerDeleteSourceFiles);
                             pages.add(page);
                             addPage(page);
                         });
@@ -267,6 +283,9 @@ public final class ImportExtractedItemsWizard extends Wizard
         // 1. Import auto-extracted items (ImportController handles markDirty + consistency)
         if (!pages.isEmpty())
             new ImportController(client).perform(pages);
+
+        // read before the dialog closes and disposes the checkboxes
+        deleteSourceFiles = pages.stream().anyMatch(ReviewExtractedItemsPage::doDeleteSourceFiles);
 
         // 2. Import manual items
         boolean manualItemsImported = false;
