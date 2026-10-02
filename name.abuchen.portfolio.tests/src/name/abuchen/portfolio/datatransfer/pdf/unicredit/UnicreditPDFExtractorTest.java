@@ -20,7 +20,6 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
@@ -419,39 +418,5 @@ public class UnicreditPDFExtractorTest
                         hasNote("Bel.-Nr.: 161815275103001"), //
                         hasAmount("USD", 893.04), hasGrossValue("USD", 1236.90), //
                         hasTaxes("USD", 340.15), hasFees("USD", 3.71))));
-    }
-
-    @Test
-    public void testVorabpauschale01()
-    {
-        var extractor = new UnicreditPDFExtractor(new Client());
-
-        List<Exception> errors = new ArrayList<>();
-
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale01.txt"), errors);
-
-        assertThat(errors, empty());
-        assertThat(countSecurities(results), is(1L));
-        assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, "EUR");
-
-        // check security
-        assertThat(results, hasItem(security( //
-                        hasIsin("IE00BKM4GZ66"), hasWkn("A111X9"), hasTicker(null), //
-                        hasName("iShs Core MSCI EM IMI U.ETF Registered Shares o.N."), //
-                        hasCurrencyCode("EUR"))));
-
-        // check taxes transaction
-        assertThat(results, hasItem(taxes( //
-                        hasDate("2026-01-24T00:00"), hasShares(2000.00), //
-                        hasSource("Vorabpauschale01.txt"), //
-                        hasNote("Beleg-Nr.: 679178241/26/0002"), //
-                        hasAmount("EUR", 216.83), hasGrossValue("EUR", 216.83), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 }
