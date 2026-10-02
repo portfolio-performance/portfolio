@@ -135,14 +135,14 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                         + "|Teilliquidation mit Nennwertreduzierung" //
                                         + "|Einl.sung bei Gesamtf.lligkeit))$") //
                         .assign((t, v) -> {
-                            if ("Verkauf".equals(v.get("type")) //
-                                            || "Verkauf Direkthandel".equals(v.get("type")) //
-                                            || "Verkauf aus Kapitalmaßnahme".equals(v.get("type")) //
-                                            || "Rücknahme Investmentfonds".equals(v.get("type")) //
-                                            || "Gesamtkündigung".equals(v.get("type")) //
-                                            || "Teilrückzahlung mit Nennwertänderung".equals(v.get("type")) //
-                                            || "Teilliquidation mit Nennwertreduzierung".equals(v.get("type")) //
-                                            || "Einlösung bei Gesamtfälligkeit".equals(v.get("type"))) //
+                            if (v.get("type").matches("^(Verkauf" //
+                                            + "|Verkauf Direkthandel" //
+                                            + "|Verkauf aus Kapitalma.nahme" //
+                                            + "|R.cknahme Investmentfonds" //
+                                            + "|Gesamtk.ndigung" //
+                                            + "|Teilr.ckzahlung mit Nennwert.nderung" //
+                                            + "|Teilliquidation mit Nennwertreduzierung" //
+                                            + "|Einl.sung bei Gesamtf.lligkeit)$"))
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
