@@ -1309,6 +1309,17 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getIrr()));
         recordColumns.addColumn(column);
 
+        // internal rate of return after taxes
+        column = new Column("izf_after_tax", Messages.ColumnIRRAfterTax, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setMenuLabel(Messages.ColumnIRRAfterTax_MenuLabel);
+        column.setDescription(Messages.ColumnIRRAfterTax_Description);
+        column.setLabelProvider(new RowElementLabelProvider(new NumberColorLabelProvider<>(Values.Percent2,
+                        r -> ((LazySecurityPerformanceRecord) r).getIrrAfterTax())));
+        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getIrrAfterTax()));
+        column.setVisible(false);
+        recordColumns.addColumn(column);
+
         column = new Column("capitalgains", Messages.ColumnCapitalGains, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnCapitalGains_Description);
