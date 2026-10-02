@@ -19,6 +19,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundCash;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundCash;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
@@ -3488,6 +3489,77 @@ public class IBFlexStatementExtractorTest
                                         hasSecurity(hasTicker("GOVS")), //
                                         hasAmount("EUR", 62.05), //
                                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
+    public void testDividendReversalIsFlaggedAsFailedItem() throws IOException
+    {
+        var extractor = new IBFlexStatementExtractor(new Client());
+        var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile30.xml");
+        var tempFile = createTempFile(activityStatement);
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(Collections.singletonList(tempFile), errors);
+
+        assertThat(errors, empty());
+        assertThat(countAccountTransactions(results), is(3L));
+        new AssertImportActions().check(results, CurrencyUnit.USD);
+
+        // The reversal keeps the negative amount that IB reports and is flagged
+        // as a failure, because the correction cannot be applied to the
+        // original dividend. The user has to remove that one by hand.
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorCashDividendCorrectionUnmatched, //
+                        dividend( //
+                                        hasDate("2026-06-16"), hasShares(-8), //
+                                        hasSecurity(hasTicker("TEST")), //
+                                        hasAmount("USD", -0.70)))));
+
+        // The replacement dividend is imported as usual.
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-06-16"), hasShares(9), //
+                        hasSecurity(hasTicker("TEST")), //
+                        hasAmount("USD", 0.76))));
+
+        // Signed cash across all three rows nets to zero, which is the
+        // arithmetic the report asks for. Reading the reversal as income
+        // instead overstates the account by 1.40 USD.
+        var cashDelta = results.stream().filter(TransactionItem.class::isInstance).map(TransactionItem.class::cast)
+                        .map(TransactionItem::getSubject).map(AccountTransaction.class::cast)
+                        .mapToLong(t -> t.getType().isDebit() ? -t.getAmount() : t.getAmount()).sum();
+        assertThat(cashDelta, is(0L));
+    }
+
+    /// A withholding tax lands on the dividend the user can actually import.
+    @Test
+    public void testDividendReversalDoesNotConsumeTheWithholdingTax() throws IOException
+    {
+        var extractor = new IBFlexStatementExtractor(new Client());
+        var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile31.xml");
+        var tempFile = createTempFile(activityStatement);
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(Collections.singletonList(tempFile), errors);
+
+        assertThat(errors, empty());
+
+        // postProcessing pairs a tax with one dividend per date and security,
+        // and removes the tax item. The reversal and the replacement share both,
+        // so whichever is matched first takes the tax. It has to be the
+        // replacement: the reversal is flagged and never reaches the portfolio,
+        // which would drop the tax entirely.
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-06-16"), hasShares(9), //
+                        hasSecurity(hasTicker("TEST")), //
+                        hasAmount("USD", 0.65), hasGrossValue("USD", 0.76), //
+                        hasTaxes("USD", 0.11), hasFees("USD", 0.00))));
+
+        // The reversal keeps the amount IB reported and stays flagged.
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorCashDividendCorrectionUnmatched, //
+                        dividend( //
+                                        hasDate("2026-06-16"), hasShares(-8), //
+                                        hasAmount("USD", -0.70)))));
     }
 
     @Test
