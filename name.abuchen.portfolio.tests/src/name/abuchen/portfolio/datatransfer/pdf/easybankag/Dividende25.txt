@@ -1,0 +1,59 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.86.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+BAWAG, Bereich Treasury Service, A-1018 Wien
+Herrn
+jjxNg mQRRBnJ
+ti QwFOfsOh 6
+8440 rAbcNixt
+Wien, den 17.03.2026
+Wir haben für Sie am 17.03.2026 unten angeführtes Geschäft abgerechnet:
+Depot: 79088-040-881
+Verlusttopf Nr.: 010004677032
+Geschäftsart: Ertrag
+Bestand: Stk 700
+davon
+KESt-Neubestand mit Anschaffungskosten: Stk 700
+Titel: US02079K3059 Alphabet Inc.
+Reg. Shs Cap.Stk Cl. A DL-,001
+Dividende: 0,21 USD
+Verwahrart: WR Wertpapierrechnung
+Positionsdaten: Loco: New York
+Ertrag: 147,00 USD
+Auslands-KESt neu: -18,38 USD
+Quellensteuer: -22,05 USD
+106,57 USD
+Devisenkurs: 1,1544 (16.03.2026) 92,32 EUR
+Devisenprovision: -0,32 EUR
+Zu Gunsten osiV rD14 9493 7991 0462 7357 Valuta 18.03.2026 92,00 EUR
+Eingang vorbehalten
+QUSt pro Stück: 15%
+Extag: 09.03.2026
+Record-Tag: 09.03.2026
+Steuerrelevante Hinweise finden Sie auf der Rückseite.
+Seite 1 von 2
+BAWAG P.S.K. Bank für Arbeit und Wirtschaft und Österreichische Postsparkasse Aktiengesellschaft ⊥ Sitz in A-1100 Wien, Wiedner Gürtel 11
+Handelsgericht Wien FN 205340x ⊥ www.bawag.at ⊥ kundenservice@bawag.at
+GEODRU02 WGEWTGSDR15ABREP2026031703806P17_a/908
+Hinweis für KESt aus Neubestand mit Anschaffungskosten:
+Steuerrelevanter Anschaffungswert: 86.627,46 EUR
+Steuerrelevanter Anschaffungswert aktuell: 86.627,46 EUR
+Hinweis für den Verlustausgleichstopf:
+Bemessungsgrundlage KESt
+Einkünfteüberhang bisher 137,26 17,16 EUR
+Einkünfte 127,34 15,92 EUR
+Einkünfteüberhang aktuell 264,60 33,08 EUR
+Eine allfällige KESt-Abfuhr erfolgt an das Finanzamt für Großbetriebe.
+Die BAWAG erbringt keine Steuerberatung und übernimmt keine Haftung für eventuelle steuerliche Nachteile im
+Zusammenhang mit Wertpapiertransaktionen und Wertpapierveranlagungen ihrer Kunden. Die Besteuerung der
+Kapitaleinkünfte hängt von den persönlichen Verhältnissen des Anlegers ab und kann künftigen Änderungen
+unterworfen sein. Vor einer Veranlagungsentscheidung sollten Sie sich bei Ihrem Steuerberater über die damit
+verbundenen steuerlichen Konsequenzen und Meldepflichten informieren.
+Mit freundlichen Grüßen
+BAWAG P.S.K. Bank für Arbeit und Wirtschaft und
+Österreichische Postsparkasse Aktiengesellschaft
+Operations Wertpapierabwicklung
+Dieser Beleg wird von der Bank nicht unterfertigt.
+Seite 2 von 2
+GEODRU02 WGEWTGSDR15ABREP2026031703806P17_a/909
