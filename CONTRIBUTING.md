@@ -419,8 +419,11 @@ Test regular expressions at [regex101.com](https://regex101.com/).
 | Amount | 751,68 | `[\\.,\\d]+` or `[\\.\\d]+,[\\d]{2}` |
 | Amount | 74'120.00 | `[\\.'\\d]+` |
 | Amount | 20 120.00 | `[\\.\\d\\s]+` |
+| Amount directly after free text (e.g. a security name) | FUND 2030 1 181,76 | `[\\d]{1,3}(\\s[\\d]{3})*,[\\d]{2}` |
 | Currency | EUR | `[A-Z]{3}` |
 | Currency Symbol | € or $ | `\\p{Sc}` |
+
+**Amounts directly after free text:** When a security name is directly followed by an amount with space grouping, use the strict pattern `[\\d]{1,3}(\\s[\\d]{3})*,[\\d]{2}` instead of `[\\.\\d\\s]+`. Otherwise a name ending with a number (e.g. `AVENIR RETRAITE 2030 236,35`) is merged into the amount. Remaining ambiguities (e.g. `S&P 500 236,35`) can be resolved with a plausibility check, see [NatixisInterepargnePDFExtractor](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/NatixisInterepargnePDFExtractor.java).
 
 ### Color Code Reference
 

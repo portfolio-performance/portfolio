@@ -43,6 +43,7 @@ import name.abuchen.portfolio.datatransfer.ImportAction;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status.Code;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.actions.CheckForexGrossValueAction;
+import name.abuchen.portfolio.datatransfer.actions.CheckSecurityIdentifierAction;
 import name.abuchen.portfolio.datatransfer.actions.CheckSecurityRelatedValuesAction;
 import name.abuchen.portfolio.datatransfer.actions.CheckTransactionDateAction;
 import name.abuchen.portfolio.datatransfer.actions.CheckValidTypesAction;
@@ -657,6 +658,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         actions.add(new CheckTransactionDateAction());
         actions.add(new CheckValidTypesAction());
         actions.add(new CheckSecurityRelatedValuesAction());
+        actions.add(new CheckSecurityIdentifierAction());
         actions.add(new DetectDuplicatesAction(client));
         actions.add(new CheckCurrenciesAction());
         actions.add(new CheckForexGrossValueAction());
@@ -682,7 +684,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                 {
                     try
                     {
-                        ImportAction.Status actionStatus = entry.getItem().apply(action, this);
+                        ImportAction.Status actionStatus = entry.apply(action, this);
                         entry.addStatus(actionStatus);
                     }
                     catch (Exception e)
