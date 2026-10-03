@@ -4338,7 +4338,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin", "nameContinued") //
-                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.|t.t\\.) [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.|t.t\\.) [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d\\s]+ [A-Z]{3}$") //
                                                         .match("^(?<nameContinued>.*) [\\w]{4} [\\w]{3,4} [\\.,\\d]+$")
                                                         .match("^(ISIN[\\s]*:[\\s]*)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
@@ -4353,7 +4353,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin", "nameContinued") //
-                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.|t.t\\.) [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.|t.t\\.) [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d\\s]+ [A-Z]{3}$") //
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .match("^(ISIN[\\s]*:[\\s]*)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
@@ -4363,7 +4363,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin") //
-                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.|t.t\\.) [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.|t.t\\.) [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d\\s]+ [A-Z]{3}$") //
                                                         .match("^(ISIN[\\s]*:[\\s]*)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -4381,7 +4381,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin") //
-                                                        .match("^(?<name>.*) [\\.,\\d]+ [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d\\s]+ [A-Z]{3}$") //
                                                         .match("^(ISIN[\\s]*:[\\s]*)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
@@ -4409,7 +4409,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares", "sample") //
-                                                        .match("^.* (?<shares>[\\.,\\d]+) (Stk\\.|titre\\(s\\)|Pz\\.|t.t\\.) (.* )?(?<sample>[\\.,'\\d]+) [A-Z]{3}$") //
+                                                        .match("^.* (?<shares>[\\.,\\d]+) (Stk\\.|titre\\(s\\)|Pz\\.|t.t\\.) (.*? )?(?<sample>[\\d]{1,3}([\\s][\\d]{3})+([\\.,][\\d]+)?|[\\.,'\\d]+) [A-Z]{3}$") //
                                                         .assign((t, v) -> {
                                                             // use the monetary amount to detect the format for the shares
                                                             var locale = ExtractorUtils.guessNumberLocale(v.get("sample"), Locale.GERMANY);
@@ -4570,7 +4570,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // GESAMT 3.615,63 EUR
                         // @formatter:on
                         .section("amount", "currency").optional() //
-                        .match("^(GESAMT|TOTAL|TOTALE|SUMME) (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .match("^(GESAMT|TOTAL|TOTALE|SUMME) (\\-)?(?<amount>[\\.,\\d\\s]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             // @formatter:off
                             // For tax optimizations in sales,
