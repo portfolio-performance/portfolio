@@ -49,6 +49,8 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class XTBPDFExtractor extends AbstractPDFExtractor
 {
+    private static final String WITHHOLDING_TAX = "Withholding Tax";
+    private static final String INTEREST_TAX = "Free-funds Interest Tax";
     private static final Pattern INTEREST_PERIOD = Pattern.compile("^.* (?<period>[\\d]{4}\\-[\\d]{2})$");
 
     public XTBPDFExtractor(Client client)
@@ -252,6 +254,7 @@ public class XTBPDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asDate(v.get("date"), v.get("time")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(WITHHOLDING_TAX);
                         })
 
                         .wrap(TransactionItem::new));
@@ -337,6 +340,9 @@ public class XTBPDFExtractor extends AbstractPDFExtractor
      * Merges the "Withholding Tax" line into the "DIVIDENT" line with the
      * same security, the same time stamp and the same source file. The
      * dividend amount is the gross amount, therefore the tax is subtracted.
+     * Only taxes marked as withholding tax are considered, so that other
+     * security related taxes (e.g. the French financial transaction tax) are
+     * never merged into a dividend.
      */
     private void mergeDividendsWithWithholdingTax(List<Item> items)
     {
@@ -344,7 +350,7 @@ public class XTBPDFExtractor extends AbstractPDFExtractor
 
         var withholdingTaxItems = new ArrayList<>(filterAccountTransactions(items, AccountTransaction.Type.TAXES) //
                         .stream() //
-                        .filter(i -> ((AccountTransaction) i.getSubject()).getSecurity() != null) //
+                        .filter(i -> WITHHOLDING_TAX.equals(i.getSubject().getNote())) //
                         .toList());
 
         for (var dividendItem : dividendItems)
@@ -385,6 +391,7 @@ public class XTBPDFExtractor extends AbstractPDFExtractor
         var interestTaxItems = new ArrayList<>(filterAccountTransactions(items, AccountTransaction.Type.TAXES) //
                         .stream() //
                         .filter(i -> ((AccountTransaction) i.getSubject()).getSecurity() == null) //
+                        .filter(i -> i.getSubject().getNote() != null && i.getSubject().getNote().startsWith(INTEREST_TAX)) //
                         .toList());
 
         for (var interestItem : interestItems)
