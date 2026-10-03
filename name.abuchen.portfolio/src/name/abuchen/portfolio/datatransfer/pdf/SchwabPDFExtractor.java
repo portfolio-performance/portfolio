@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -32,6 +33,10 @@ import name.abuchen.portfolio.money.Values;
  *           The date column contains only month and day (MM/DD), the year is
  *           taken from the statement period. Rows without a date belong to the
  *           date of the previous dated row.
+ *
+ * @implSpec Purchase transactions:
+ *           Purchases with a value in the column "Charges/Interest" are not
+ *           supported and are not imported.
  *
  * @implSpec Dividend transactions:
  *           The amount of dividends is reported in gross. ADR pass-through fees
@@ -100,10 +105,25 @@ public class SchwabPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
-                        .section("tickerSymbol", "name", "shares", "amount") //
+                        .section("tickerSymbol", "name", "shares", "price", "amount") //
                         .documentRange("date", "year") //
-                        .match("^([\\d]{2}\\/[\\d]{2} )?Purchase (Reinvested Shares )?(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) (?<name>.*) (?<shares>[\\.,\\d]+) [\\.,\\d]+ \\((?<amount>[\\.,\\d]+)\\)$") //
+                        .match("^([\\d]{2}\\/[\\d]{2} )?Purchase (Reinvested Shares )?(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) (?<name>.*) (?<shares>[\\.,\\d]+) (?<price>[\\.,\\d]+) \\((?<amount>[\\.,\\d]+)\\)$") //
                         .assign((t, v) -> {
+                            // Purchases with a value in the column
+                            // "Charges/Interest" are not supported. On such
+                            // rows the values are shifted into the wrong
+                            // columns, which is detected by comparing quantity
+                            // multiplied by price with the amount.
+                            var shares = ExtractorUtils.convertToNumberBigDecimal(v.get("shares"), Values.Share, "en", "US");
+                            var price = ExtractorUtils.convertToNumberBigDecimal(v.get("price"), Values.Share, "en", "US");
+                            var amount = ExtractorUtils.convertToNumberBigDecimal(v.get("amount"), Values.Amount, "en", "US");
+
+                            if (shares.multiply(price).subtract(amount).abs().compareTo(new BigDecimal("0.01")) > 0)
+                            {
+                                v.getTransactionContext().putBoolean("unsupportedPurchase", true);
+                                return;
+                            }
+
                             v.put("currency", asCurrencyCode(USD));
 
                             t.setDate(asDate(v.get("date") + "/" + v.get("year"), Locale.US));
@@ -113,7 +133,15 @@ public class SchwabPDFExtractor extends AbstractPDFExtractor
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
-                        .wrap(BuySellEntryItem::new));
+                        .wrap((t, ctx) -> {
+                            if (!ctx.getBoolean("unsupportedPurchase"))
+                                return new BuySellEntryItem(t);
+
+                            // Do *not* return a skipped item here. Purchases
+                            // with charges are not supported and therefore not
+                            // imported (see plausibility check above).
+                            return null;
+                        }));
 
         // A dividend block starts with the dividend row and ends before the
         // next dated row (date change), before the next dividend row of the
