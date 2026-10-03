@@ -305,6 +305,7 @@ public class Messages extends NLS
     public static String MsgErrorTradeCollector_NoHoldingsForSell;
     public static String MsgErrorTradeCollector_NoHoldingsForTransfer;
     public static String MsgErrorTransactionAlternativeDocumentRequired;
+    public static String MsgErrorTransactionInboundDeliveryWithoutValue;
     public static String MsgErrorTransactionMissingExchangeRateIfInForex;
     public static String MsgErrorTransactionOrderCancellationUnsupported;
     public static String MsgErrorTransactionSkipIfDetailsMissing;

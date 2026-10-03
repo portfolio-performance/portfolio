@@ -300,6 +300,12 @@ public interface UIConstants
         String PDF_IMPORT_PATH = "PDF_IMPORT_PATH"; //$NON-NLS-1$
 
         /**
+         * Preference for directory from which to import text files extracted
+         * from PDF documents
+         */
+        String PDF_TEXT_IMPORT_PATH = "PDF_TEXT_IMPORT_PATH"; //$NON-NLS-1$
+
+        /**
          * Preference for directory from which to import CSV files
          */
         String CSV_IMPORT_PATH = "CSV_IMPORT_PATH"; //$NON-NLS-1$

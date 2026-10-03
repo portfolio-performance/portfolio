@@ -5,6 +5,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -513,7 +514,8 @@ public class ZuercherKantonalbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-01-19T00:00"), hasShares(2000), //
+                        hasDate("2024-01-19T00:00"), hasExDate("2023-11-23T00:00"), //
+                        hasShares(2000), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Abwicklungs-Nr. 744484581"), //
                         hasAmount("CHF", 37.25), hasGrossValue("CHF", 37.250), //
@@ -549,7 +551,8 @@ public class ZuercherKantonalbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-01-19T00:00"), hasShares(2000), //
+                        hasDate("2024-01-19T00:00"), hasExDate("2023-11-23T00:00"), //
+                        hasShares(2000), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Abwicklungs-Nr. 744484581"), //
                         hasAmount("CHF", 37.25), hasGrossValue("CHF", 37.250), //
@@ -590,7 +593,8 @@ public class ZuercherKantonalbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-01-04T00:00"), hasShares(200), //
+                        hasDate("2023-01-04T00:00"), hasExDate("2022-12-29T00:00"), //
+                        hasShares(200), //
                         hasSource("Dividende02.txt"), //
                         hasNote("Abwicklungs-Nr. 680426625"), //
                         hasAmount("CHF", 74.01), hasGrossValue("CHF", 105.73), //
@@ -626,7 +630,8 @@ public class ZuercherKantonalbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-01-04T00:00"), hasShares(200), //
+                        hasDate("2023-01-04T00:00"), hasExDate("2022-12-29T00:00"), //
+                        hasShares(200), //
                         hasSource("Dividende02.txt"), //
                         hasNote("Abwicklungs-Nr. 680426625"), //
                         hasAmount("CHF", 74.01), hasGrossValue("CHF", 105.73), //
@@ -667,7 +672,8 @@ public class ZuercherKantonalbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-02-06T00:00"), hasShares(200), //
+                        hasDate("2024-02-06T00:00"), hasExDate("2024-02-01T00:00"), //
+                        hasShares(200), //
                         hasSource("Dividende03.txt"), //
                         hasNote("Abwicklungs-Nr. 759703889"), //
                         hasAmount("USD", 42.08), hasGrossValue("USD", 60.12), //
@@ -702,7 +708,8 @@ public class ZuercherKantonalbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-02-06T00:00"), hasShares(200), //
+                        hasDate("2024-02-06T00:00"), hasExDate("2024-02-01T00:00"), //
+                        hasShares(200), //
                         hasSource("Dividende03.txt"), //
                         hasNote("Abwicklungs-Nr. 759703889"), //
                         hasAmount("USD", 42.08), hasGrossValue("USD", 60.12), //
@@ -744,7 +751,8 @@ public class ZuercherKantonalbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-01-24T00:00"), hasShares(930), //
+                        hasDate("2024-01-24T00:00"), hasExDate("2024-01-11T00:00"), //
+                        hasShares(930), //
                         hasSource("Dividende04.txt"), //
                         hasNote("Abwicklungs-Nr. 754899061"), //
                         hasAmount("USD", 99.14), hasGrossValue("USD", 99.14), //
