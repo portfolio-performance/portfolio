@@ -85,9 +85,10 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
                                             // @formatter:off
                                             //                                 KONTOAUSZUG  Nr. 1/2019
                                             // Renault Bank direkt - Postfach 269 - 45952 Gladbeck Kontoauszug Nr.   2/2021
+                                            // Renault Bank direkt - Postfach 269 - 45952 Gladbeck K o n to a u s z u g Nr.  1/2026
                                             // @formatter:on
                                             .section("year").optional() //
-                                            .match("^.*(KONTOAUSZUG|Kontoauszug)[\\s]*Nr\\.[\\s]*[\\d]{1,2}\\/(?<year>[\\d]{4}).*$") //
+                                            .match("^.*(KONTOAUSZUG|K[\\s]*o[\\s]*n[\\s]*t[\\s]*o[\\s]*a[\\s]*u[\\s]*s[\\s]*z[\\s]*u[\\s]*g)[\\s]*Nr\\.[\\s]*[\\d]{1,2}\\/(?<year>[\\d]{4}).*$") //
                                             .assign((ctx, v) -> ctx.put("year", v.get("year"))));
 
         this.addDocumentTyp(type);
@@ -126,7 +127,15 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
         // 17.02. 17.02. Dauerauftragsgutschr                                                          150,00 H
         // 22.02. 22.02. Überweisungsgutschr.                                                        7.547,85 H
         // @formatter:on
-        var depositRemovalBlock_Format02 = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}(?!Abschluss).* [\\.,\\d]+ [H|S][\\s]*$");
+        // @formatter:off
+        // The closing entry and the withholding taxes deducted from it are handled by interestBlock_Format02
+        // and must not be booked a second time as deposit or removal:
+        //
+        // 05.08. 31.07. Storno Abschluss                                                      3,59 S
+        // 26.02. 30.02. Solid.-Zuschlag aus                                                   0,04 S
+        // 26.02. 30.02. Kapitalertragsteuer aus                                               0,68 S
+        // @formatter:on
+        var depositRemovalBlock_Format02 = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}(?!(Storno )?Abschluss|Kapitalertrags(s)?teuer aus|Solid\\.\\-Zuschlag aus|Kirchensteuer aus).* [\\.,\\d]+ [H|S][\\s]*$");
         type.addBlock(depositRemovalBlock_Format02);
         depositRemovalBlock_Format02.set(new Transaction<AccountTransaction>()
 
