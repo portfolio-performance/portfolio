@@ -1,0 +1,231 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.83.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Schwab One® Account of
+Account Number Statement Period
+pKRvF ZcVDzXZ 6359-8029 April 1-30, 2026
+Account Summary
+Ending Account Value as of 04/30 Beginning Account Value as of 04/01
+$16,879.95 $16,736.15
+ $18.3K
+ $15.0K
+ $11.7K
+ $8.4K
+ $5.1K
+ $1.8K
+Manage Your Account May'25 Jun Jul Aug Sep Oct Nov Dec Jan'26 Feb Mar Apr
+This Statement YTD
+Customer Service and Trading:
+Call your Schwab Representative Beginning Account Value $16,736.15 $4,200.97
+1-800-435-4000
+24/7 Customer Service Deposits 0.00 12,500.00
+For the most current records on your account Withdrawals 0.00 0.00
+visit schwab.com/login. Statements are
+archived up to 10 years online. Dividends and Interest 4.89 15.67
+Market Appreciation/(Depreciation) 139.01 163.41
+Commitment to Transparency
+Expenses (0.10) (0.10)
+Client Relationship Summaries and Best Interest
+disclosures are at schwab.com/transparency.
+Charles Schwab & Co., Inc. Member SIPC. Ending Account Value $16,879.95 $16,879.95
+Account Ending Value reflects the market value of your cash and investments. It does not include pending
+Online Assistance transactions, unpriced securities or assets held outside Schwab's custody.
+Visit us online at schwab.com
+Visit schwab.com/stmt to explore the features
+and benefits of this statement.
+04/30-00000-ID222
+1 of 6
+HCKjS rHVaDAY
+59 TXHEymrdkh ZBd zLzx 0796
+BVOnOTWy OF 42552-9429
+Schwab One® Account of
+Account Number Statement Period
+wtetU iDzsDNa ****-*926 April 1-30, 2026
+i
+Asset Allocation Income Summary
+Current 8
+This Period Allocation
+6.4
+Cash and Cash Investments 2,544.46 15%
+4.89
+$16.87K Equities 2,657.17 16% 4.8
+Exchange Traded Funds 11,678.32 69% 3.2
+Total $16,879.95 100% 1.6
+0
+Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
+i
+Top Account Holdings This Period This Period YTD
+SYMBOL Market % of Federal Tax Status Tax-Exempt Taxable Tax-Exempt Taxable
+CUSIP Description Value Accounts
+Cash Dividends 0.00 4.89 0.00 12.23
+SGOV ISHARES 0-3 MONTH 10,067.00 60%
+Total Income $0.00 $4.89 $0.00 $12.23
+Cash 2,544.46 15%
+GLDM SPDR GOLD MINISHARES 1,096.44 6% i
+NVDA NVIDIA CORP 798.50 5% Margin Loan Information
+XOM EXXON MOBIL CORP 617.32 4% Opening Margin Closing Margin Funds Available Securities
+Loan Balance Loan Balance to Withdraw * Buying Power *
+.
+$0.00 $0.00 $9,694.46 $19,390.00
+Gain or (Loss) Summary
+Margin Loan Rates
+Short-Term (ST) Long-Term (LT) Vary by Balance
+9.825% - 11.575%
+Gain (Loss) Net Gain (Loss) Net
+* Values include any cash plus the amount available using margin borrowing.
+This 0.00 0.00 0.00 0.00 0.00 0.00 For more information about margin rates, please visit schwab.com/margin/margin-rates-and-requirements.
+Period
+YTD 0.00 0.00
+Unrealized $1,000.79
+Values may not reflect all of your gains/losses and may be rounded up to the nearest dollar; Schwab has
+provided accurate gain and loss information wherever possible for most investments. Cost basis may be
+incomplete or unavailable for some of your holdings and may change or be adjusted in certain cases.
+Please login to your account at Schwab.com for real-time gain/loss information. Statement information
+should not be used for tax preparation, instead refer to official tax documents. For additional information
+refer to Terms and Conditions.
+2 of 6
+Dollars ($)
+Schwab One® Account of
+Account Number Statement Period
+hjqgd QdDloNA ****-*429 April 1-30, 2026
+Positions - Summary
+Beginning Value Transfer of Dividends Change in Ending Value Unrealized
+as of 04/01 + Securities(In/Out) + Reinvested + Cash Activity + Market Value = as of 04/30 Cost Basis Gain/(Loss)
+$16,736.15 $0.00 ($0.04) $4.79 $139.05 $16,879.95 $13,334.70 $1,000.79
+Values may not reflect all of your gains/losses; Schwab has provided accurate gain and loss information wherever possible for most investments. Cost basis may be incomplete or unavailable for some of your holdings
+and may change or be adjusted in certain cases. Statement information should not be used for tax preparation, instead refer to official tax documents. For additional information refer to Terms and Conditions.
+Cash and Cash Investments
+Beginning Ending Change in Period Pending/Unsettled Interest/ % of
+Type Symbol Description Quantity Price($) Balance($) Balance($) Balance($) Cash($) Yield Rate Acct
+Cash , 13,784.82 2,544.46 (11,240.36) 0.00 15%
+Total Cash and Cash Investments $13,784.82 $2,544.46 ($11,240.36) 15%
+Positions - Equities
+Unrealized Est. Est. Annual % of
+Symbol Description Quantity Price($) Market Value($) Cost Basis($) Gain/(Loss)($) Yield Income($) Acct
+XOM EXXON MOBIL CORP (M) 4.0000 154.33000 617.32 593.80 23.52 2.66% 16.48 4%
+JXN JACKSON FINL INC (M),◊ 2.0860 115.77000 241.50 101.47 140.03 3.1% 7.51 1%
+NLCP NEWLAKE CAP PARTNERS INC 8.0000 14.51000 116.08 146.84 (30.76) 11.85% 13.76 <1%
+NEM NEWMONT CORP (M) 5.0000 111.09000 555.45 592.81 (37.36) 0.93% 5.20 3%
+NVDA NVIDIA CORP (M),◊ 4.0011 199.57000 798.50 485.87 312.63 0.02% 0.16 5%
+PFE PFIZER INC (M) 10.0000 26.70000 267.00 222.15 44.85 6.44% 17.20 2%
+QABSY QANTAS AIRWAYS LTD F 2.0000 30.66000 61.32 52.25 9.07 4.59% 2.82 <1%
+SPONSORED ADR
+1 ADR REPS 5 ORD SHS
+Total Equities $2,657.17 $2,195.19 $461.98 $63.13 16%
+3 of 6
+Schwab One® Account of
+Account Number Statement Period
+AWOUG vuxFzKB ****-*542 April 1-30, 2026
+Positions - Exchange Traded Funds
+Unrealized Est. Est. Annual % of
+Symbol Description Quantity Price($) Market Value($) Cost Basis($) Gain/(Loss)($) Yield Income($) Acct
+SGOV ISHARES 0-3 MONTH (M), 100.0000 100.67000 10,067.00 10,058.50 8.50 3.48% 351.23 60%
+GLDM SPDR GOLD MINISHARES (M),◊ , 12.0000 91.37000 1,096.44 648.36 448.08 N/A N/A 6%
+SPYM STATE STREET SPDR (M),◊ , 6.0889 84.56000 514.88 432.65 82.23 0.91% 4.73 3%
+Total Exchange Traded Funds $11,678.32 $11,139.51 $538.81 $355.96 69%
+Estimated Annual Income ("EAI") and Estimated Yield ("EY") calculations are for informational purposes only and are derived from information provided by outside parties. Schwab cannot guarantee the accuracy of such
+information. Since the interest and dividends are subject to change at any time, they should not be relied upon exclusively for making investment decisions. The actual income and yield might be lower or higher than the
+estimated amounts. EY is based upon EAI and the current price of the security and will fluctuate. For certain types of securities, the calculations could include a return of principal or capital gains in which case EAI and EY
+would be overstated. EY and EAI are not promptly updated to reflect when an issuer has missed a regular payment or announced changes to future payments, in which case EAI and EY will continue to display at a prior
+rate.
+Transactions - Summary
+Beginning Cash* as of 04/01 + Deposits + Withdrawals + Purchases + Sales/Redemptions + Dividends/Interest + Expenses = Ending Cash* as of 04/30
+$13,784.82 $0.00 $0.00 ($11,245.15) $0.00 $4.89 ($0.10) $2,544.46
+Other Activity $0.00 Other activity includes transactions which don't affect the cash balance such as stock transfers, splits, etc.
+*Cash (includes any cash debit balance) held in your account plus the value of any cash invested in a sweep money fund.
+Transaction Details
+Symbol/ Price/Rate Charges/ Realized
+Date Category Action CUSIP Description Quantity per Share($) Interest($) Amount($) Gain/(Loss)($)
+04/01 Purchase Reinvested Shares NVDA NVIDIA CORP 0.0002 175.9095 (0.04)
+Dividend Qual Div Reinvest NVDA NVIDIA CORP 0.04
+04/15 Purchase NEM NEWMONT CORP 5.0000 118.5620 (592.81)
+Dividend Qual. Dividend NLCP NEWLAKE CAP PARTNERS INC 3.44
+04/21 Purchase XOM EXXON MOBIL CORP 4.0000 148.4500 (593.80)
+04/22 Purchase SGOV ISHARES 0-3 MONTH TREASURY 100.0000 100.5850 (10,058.50)
+BOND ETF
+4 of 6
+Schwab One® Account of
+Account Number Statement Period
+lHbzl RopXzvi ****-*376 April 1-30, 2026
+Transaction Details (continued)
+Symbol/ Price/Rate Charges/ Realized
+Date Category Action CUSIP Description Quantity per Share($) Interest($) Amount($) Gain/(Loss)($)
+04/27 Dividend Qual. Dividend QABSY QANTAS AIRWAYS LTD 1.41
+FSPONSORED ADR 1 ADR
+REPS
+Expense ADR Pass Thru QABSY QANTAS AIRWAYS LTD (0.10)
+Fee FSPONSORED ADR 1 ADR
+REPS
+Total Transactions ($11,240.36)
+Date column represents the Settlement/Process date for each transaction.
+Endnotes For Your Account
+(M) Denotes a security that is marginable. Some mutual fund or ETF investments may not be ◊ Dividends paid on this security will be automatically reinvested.
+immediately marginable.
+Terms and Conditions
+GENERAL INFORMATION AND KEY TERMS: This Account statement is furnished solely by Charles except for the reinvestment of Schwab dividends, for which an independent broker-dealer acted as the
+Schwab & Co., Inc. ("Schwab") for your Account at Schwab ("Account"). Unless otherwise defined herein, buying agent. Further information on these transactions will be furnished upon written request. Gain (or
+capitalized terms have the same meanings as in your Account Agreement. If you receive any other Loss): Unrealized Gain or (Loss) and Realized Gain or (Loss) sections ("Gain/Loss Section(s)") contain a
+communication from any source other than Schwab which purports to represent your holdings at Schwab gain or a loss summary of your Account. This information has been provided on this statement at the
+(including balances held at a Depository Institution) you should verify its content with this statement. request of your Advisor, if applicable. This information is not a solicitation or a recommendation to buy or
+Accrued Income: Accrued Income is the sum of the total accrued interest and/or accrued dividends on sell. Schwab does not provide tax advice and encourages you to consult with your tax
+positions held in your Account, but the interest and/or dividends have not been received into your Account. professional. Please view the Cost Basis Disclosure Statement for additional information on how
+Schwab makes no representation that the amounts shown (or any other amount) will be received. Accrued gain (or loss) is calculated and how Schwab reports adjusted cost basis information to the IRS.
+amounts are not covered by SIPC account protection until actually received and held in the Account. AIP Interest: For the Schwab One Interest, Bank Sweep, and Bank Sweep for Benefit Plans features, interest is
+(Automatic Investment Plan) Customers: Schwab receives remuneration in connection with certain paid for a period that may differ from the Statement Period. Balances include interest paid as indicated on
+transactions effected through Schwab. If you participate in a systematic investment program through your statement by Schwab or one or more of its Program Banks. These balances do not include interest that
+Schwab, the additional information normally detailed on a trade confirmation will be provided upon request. may have accrued during the Statement Period after interest is paid. The interest paid may include interest
+Average Daily Balance: Average daily composite of all cash balances that earn interest and all loans from that accrued in the prior Statement Period. For the Schwab One Interest feature, interest accrues daily from
+Schwab that are charged interest. Bank Sweep and Bank Sweep for Benefit Plans Features: Schwab the second-to-last business day of the prior month and is posted on the second-to-last business day of the
+acts as your agent and custodian in establishing and maintaining your Deposit Account(s) as a feature of current month. For the Bank Sweep and Bank Sweep for Benefit Plans features, interest accrues daily from
+your brokerage Account(s). Deposit accounts held through these bank sweep features constitute direct the 16th day of the prior month and is credited/posted on the first business day after the 15th of the current
+obligations of one or more FDIC insured banks ("Program Banks") that are not obligations of Schwab. month. If, on any given day, the interest that Schwab calculates for the Free Credit Balances in the Schwab
+Funds swept to Program Banks are eligible for deposit insurance from the FDIC up to the applicable limits One Interest feature in your brokerage Account is less than $.005, you will not accrue any interest on that
+for each bank for funds held in the same insurable capacity. The balance in the Deposit Accounts can be day. For balances held at banks affiliated with Schwab in the Bank Sweep and Bank Sweep for Benefit
+withdrawn on your order and the proceeds returned to your brokerage Account or remitted to you as provided Plans features, interest will accrue even if the amount is less than $.005. Margin Account Customers:
+in your Account Agreement. For information on FDIC insurance and its limits, as well as other important This is a combined statement of your margin account and special memorandum account maintained for you
+disclosures about the bank sweep feature(s) in your Account(s), please refer to the Cash Features under Section 220.5 of Regulation T issued by the Board of Governors of the Federal Reserve System. The
+Disclosure Statement available online or from a Schwab representative. Cash: Any Free Credit Balance permanent record of the separate account as required by Regulation T is available for your inspection.
+owed by us to you payable upon demand which, although accounted for on our books of record, is not Securities purchased on margin are Schwab's collateral for the loan to you. It is important that you fully
+segregated and may be used in the conduct of this firm's business. Dividend Reinvestment Customers: understand the risks involved in trading securities on margin. These risks include: 1) You can lose more
+Dividend reinvestment transactions were effected by Schwab acting as a principal for its own account, funds than you deposit in the margin account; 2) Schwab can force the sale of securities or other assets in
+5 of 6
+Schwab One® Account of
+Account Number Statement Period
+tDvcy XVAIrir ****-*447 April 1-30, 2026
+Terms and Conditions (continued)
+any of your account(s) to maintain the required account equity without contacting you; 3) You are not entitled that period. Schwab and the Schwab Sweep Money Funds investment advisor may be voluntarily reducing a
+to choose which assets are liquidated nor are you entitled to an extension of time on a margin call; 4) portion of a Schwab Sweep Money Fund's expenses. Without these reductions, yields would have been
+Schwab can increase its "house" maintenance margin requirements at any time without advance written lower. Securities Products and Services: Securities products and services are offered by Charles
+notice to you. Market Price: The most recent price evaluation available to Schwab on the last business day Schwab & Co., Inc., Member SIPC. Securities products and services, including unswept intraday
+of the report period, normally the last trade price or bid as of market close. Unpriced securities denote that funds and net credit balances held in brokerage accounts are not deposits or other obligations of,
+no market evaluation update is currently available. Price evaluations are obtained from outside parties. or guaranteed by, any bank, are not FDIC insured, and are subject to investment risk and may lose
+Schwab shall have no responsibility for the accuracy or timeliness of any such valuations. Assets Not Held value. SIPC does not cover balances held at Program Banks in the Bank Sweep and Bank Sweep
+at Schwab are not held in your Account or covered by the Account's SIPC account protection and are not for Benefit Plans features. Please see your Cash Feature Disclosure Statement for more information on
+otherwise in Schwab's custody and are being provided as a courtesy to you. Information on Assets Not Held insurance coverage. Yield to Maturity: This is the actual average annual return on a note if held to maturity.
+at Schwab, including but not limited to valuations, is reported solely based on information you provide to IN CASE OF ERRORS OR DISCREPANCIES: If you find an error or discrepancy relating to your
+Schwab. Schwab can neither validate nor certify the existence of Assets Not Held at Schwab or the brokerage activity (other than an electronic fund transfer) you must notify us promptly, but no
+accuracy, completeness or timeliness of the information about Assets Not Held at Schwab, whether later than 10 days after this statement is sent or made available to you. If this statement shows that
+provided by you or otherwise. Descriptions of Assets Not Held at Schwab may be abbreviated or truncated. we have mailed or delivered security certificate(s) that you have not received, notify Schwab
+Some securities, especially thinly traded equities in the OTC market or foreign markets, may not report the immediately. You may call us at 800-435-4000. (Outside the U.S., call +1-415-667-8400.) If you're a
+most current price and are indicated as Stale Priced. Certain Limited Partnerships (direct participation client of an independent investment advisor, call us at 800-515-2157. Any oral communications
+programs) and unlisted Real Estate Investment Trust (REIT) securities, for which you may see a value on should be re-confirmed in writing to further protect your rights, including rights under the
+your monthly Account statement that reflects the issuer's appraised estimated value, are not listed on a Securities Investor Protection Act (SIPA). If you do not so notify us, you agree that the statement
+national securities exchange, and are generally illiquid. Even if you are able to sell such securities, the price activity and Account balance are correct for all purposes with respect to those brokerage
+received may be less than the per share appraised estimated value provided in the account statement. transactions. IN CASE OF COMPLAINTS: If you have a complaint regarding your Schwab statement,
+Market Value: The Market Value is computed by multiplying the Market Price by the Quantity of Shares. products or services, please write to Client Service & Support at Charles Schwab & Co., Inc., P.O. Box
+This is the dollar value of your present holdings in your specified Schwab Account or a summary of the 982603 El Paso, TX 79998-2603, or call customer service at 800-435-4000. (Outside the U.S., call
+Market Value summed over multiple accounts. Non-Publicly Traded Securities: All assets shown on this +1-415-667-8400.) If you're a client of an independent investment advisor, call us at 800-515-2157.
+statement, other than certain direct investments which may be held by a third party, are held in your Account. Address Changes: If you fail to notify Schwab in writing of any change of address or phone number, you
+Values of certain Non-Publicly Traded Securities may be furnished by a third party as provided by Schwab's may not receive important notifications about your Account, and trading or other restrictions might be placed
+Account Agreement. Schwab shall have no responsibility for the accuracy or timeliness of such valuations. on your Account. Additional Information: We are required by law to report to the Internal Revenue Service
+The Securities Investor Protection Corporation (SIPC) does not cover many limited partnership interests. adjusted cost basis information (if applicable), certain payments to you and credits to your Account during
+Schwab Sweep Money Funds: Includes the primary money market funds into which Free Credit Balances the calendar year. Retain this statement for income tax purposes. A financial statement for your inspection is
+may be automatically invested pursuant to your Account Agreement. Schwab or an affiliate acts and receives available at Schwab's offices or a copy will be mailed to you upon written request. Any third-party trademarks
+compensation as the Investment Advisor, Shareholder Service Agent and Distributor for the Schwab Sweep appearing herein are the property of their respective owners. Charles Schwab & Co., Inc., Charles Schwab
+Money Funds. The amount of such compensation is disclosed in the prospectus. The yield information for Bank, Charles Schwab Premier Bank, and Charles Schwab Trust Bank are separate but affiliated
+Schwab Sweep Money Funds is the current 7-day yield as of the statement period. Yields vary. If on any companies and subsidiaries of the Charles Schwab Corporation. © 2026 Charles Schwab & Co., Inc.
+given day, the accrued daily dividend for your selected sweep money fund as calculated for your account is ("Schwab"). All rights reserved. Member SIPC. (O1CUSTNC) (0822-20UL)
+less than ½ of 1 cent ($0.005), your account will not earn a dividend for that day. In addition, if you do not
+accrue at least 1 daily dividend of $0.01 during a pay period, you will not receive a money market dividend for
+6 of 6
