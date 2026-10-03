@@ -32,6 +32,7 @@ public class BaseSecurityPerformanceRecord
         String REALIZED_CAPITAL_GAINS_FOREX = "realizedCapitalGainsForex"; //$NON-NLS-1$
         String UNREALIZED_CAPITAL_GAINS = "unrealizedCapitalGains"; //$NON-NLS-1$
         String UNREALIZED_CAPITAL_GAINS_FOREX = "unrealizedCapitalGainsForex"; //$NON-NLS-1$
+        String ABSOLUTE_PERFORMANCE = "absolutePerformance"; //$NON-NLS-1$
     }
 
     protected final Client client;

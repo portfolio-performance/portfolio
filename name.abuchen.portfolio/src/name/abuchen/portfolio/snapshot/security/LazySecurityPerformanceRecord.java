@@ -430,6 +430,8 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
             case Trails.UNREALIZED_CAPITAL_GAINS_FOREX:
                 return Trail.of(getSecurityName(),
                                 getUnrealizedCapitalGains(CostMethod.FIFO).getForexCapitalGainsTrail());
+            case Trails.ABSOLUTE_PERFORMANCE:
+                return Trail.of(getSecurityName(), deltaCalculation.get().getDeltaTrail());
             default:
                 return Optional.empty();
         }
