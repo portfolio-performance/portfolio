@@ -1,0 +1,29 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.87.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH, BRANCH AUSTRIA  KÄRNTNER RING 5-7  1010 WIEN, ÖSTERREICH
+Max Mustermann SEITE 1 von 1
+Musterstraße 17 DATUM 02.10.2026
+1010 Wien AUSFÜHRUNG 9e9e-afd9
+SPARPLAN 60e4-37cc
+DEPOT 0154431602
+WERTPAPIERABRECHNUNG SPARPLAN
+ÜBERSICHT
+Sparplanausführung am 02.10.2026 an der Lang und Schwarz Exchange.
+Der Kontrahent der Transaktion ist Lang & Schwarz TradeCenter AG & Co. KG.
+POSITION ANZAHL DURCHSCHNITTSKURS BETRAG
+MSCI World Equal Weight (USD) Acc 336,134453 Stk. 5,95 EUR 2 000,00 EUR
+ISIN: IE000OEF25S1
+GESAMT 2 000,00 EUR
+BUCHUNG
+VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+AT941900500154431615 2026-10-06 -2 000,00 EUR
+MSCI World Equal Weight (USD) Acc nicht in Sammelverwahrung
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Wird keine Umsatzsteuer ausgewiesen, handelt es sich gemäß § 4 Nr. 8 UStG um eine umsatzsteuerfreie Leistung.
+Trade Republic Bank GmbH, Branch Austria www.traderepublic.at Sitz der Gesellschaft: Geschäftsführer
+Kärntner Ring 5-7 USt-IdNr DE307510626 Trade Republic Bank GmbH Andreas Torner
+1010 Wien, Österreich Brunnenstrasse 19-21 Gernot Mittendorfer
+FN 630983 t 10119 Berlin, Deutschland Christian Hecker
+AG Charlottenburg HRB 244347 B Thomas Pischke

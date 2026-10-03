@@ -11035,6 +11035,40 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testSparplan13()
+    {
+        var extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplan13.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE000OEF25S1"), hasWkn(null), hasTicker(null), //
+                        hasName("MSCI World Equal Weight (USD) Acc"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-10-02T00:00"), hasShares(336.134453), //
+                        hasSource("Sparplan13.txt"), //
+                        hasNote("Sparplan: 60e4-37cc | Ausführung: 9e9e-afd9"), //
+                        hasAmount("EUR", 2000.00), hasGrossValue("EUR", 2000.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testPianoDinvestimento01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
