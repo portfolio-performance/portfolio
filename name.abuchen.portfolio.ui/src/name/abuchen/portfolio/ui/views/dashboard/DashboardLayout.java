@@ -49,7 +49,7 @@ public class DashboardLayout extends Layout
 
         Rectangle availableBounds = composite.getBounds();
 
-        int widthPerWeight = (availableBounds.width - (children.length * SPACING)) / total;
+        int widthPerWeight = (availableBounds.width - (children.length * SPACING) - SPACING) / total;
 
         int x = 0;
         for (int ii = 0; ii < children.length; ii++)
