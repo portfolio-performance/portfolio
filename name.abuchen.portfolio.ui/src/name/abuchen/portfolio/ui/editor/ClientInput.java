@@ -77,6 +77,20 @@ public class ClientInput
 
     private boolean isDirty = false;
     private List<Job> regularJobs = new ArrayList<>();
+
+    /**
+     * false if the file was opened on behalf of the REST API: the jobs
+     * scheduled after opening must not show modal dialogs because they block
+     * all API writes until somebody dismisses them.
+     */
+    private boolean interactive = true;
+
+    /**
+     * true if a file opened on behalf of the REST API still needs the base
+     * currency migration; the API does not see the file until a human has
+     * opened it and chosen the currency.
+     */
+    private boolean migrationPending;
     private List<Runnable> disposeJobs = new ArrayList<>();
     private List<ClientInputListener> listeners = new ArrayList<>();
 
@@ -131,6 +145,20 @@ public class ClientInput
     public boolean isDirty()
     {
         return isDirty;
+    }
+
+    /**
+     * Marks the input as opened without a user in front of it. Must be called
+     * before the file is loaded.
+     */
+    public boolean isMigrationPending()
+    {
+        return migrationPending;
+    }
+
+    public void setInteractive(boolean interactive)
+    {
+        this.interactive = interactive;
     }
 
     /**
@@ -255,29 +283,7 @@ public class ClientInput
         BusyIndicator.showWhile(shell.getDisplay(), () -> {
             try
             {
-                if (preferences.getBoolean(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true))
-                    createBackup(clientFile, "backup"); //$NON-NLS-1$
-
-                ClientFactory.save(client, clientFile);
-                storePreferences(false);
-
-                broker.post(UIConstants.Event.File.SAVED, clientFile.getAbsolutePath());
-
-                // Cancel any pending asyncExec dirty notification. If a background
-                // modification arrived during the save the on-disk file may not reflect
-                // it, so we conservatively remain dirty in that case.
-                boolean hadPendingModification;
-                boolean hadPendingRecalculate;
-                synchronized (pendingLock)
-                {
-                    hadPendingModification = pendingDirty;
-                    hadPendingRecalculate = pendingRecalculate;
-                    pendingDirty = false;
-                    pendingRecalculate = false;
-                }
-                setDirty(hadPendingModification, hadPendingRecalculate);
-
-                listeners.forEach(ClientInputListener::onSaved);
+                save(true);
             }
             catch (IOException e)
             {
@@ -285,6 +291,51 @@ public class ClientInput
                                 new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
             }
         });
+    }
+
+    /**
+     * Saves the file at its current location in its current format without
+     * any user interface: no busy indicator, no error dialog (a failed backup
+     * is only logged), no "save as". Must be called on the UI thread. Used by
+     * the REST API.
+     *
+     * @throws IllegalStateException
+     *             if the file has never been saved and therefore has no
+     *             location
+     */
+    public void saveWithoutUI() throws IOException
+    {
+        save(false);
+    }
+
+    private void save(boolean showBackupError) throws IOException
+    {
+        if (clientFile == null)
+            throw new IllegalStateException("file has never been saved"); //$NON-NLS-1$
+
+        if (preferences.getBoolean(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true))
+            createBackup(clientFile, "backup", showBackupError); //$NON-NLS-1$
+
+        ClientFactory.save(client, clientFile);
+        storePreferences(false);
+
+        broker.post(UIConstants.Event.File.SAVED, clientFile.getAbsolutePath());
+
+        // Cancel any pending asyncExec dirty notification. If a background
+        // modification arrived during the save the on-disk file may not reflect
+        // it, so we conservatively remain dirty in that case.
+        boolean hadPendingModification;
+        boolean hadPendingRecalculate;
+        synchronized (pendingLock)
+        {
+            hadPendingModification = pendingDirty;
+            hadPendingRecalculate = pendingRecalculate;
+            pendingDirty = false;
+            pendingRecalculate = false;
+        }
+        setDirty(hadPendingModification, hadPendingRecalculate);
+
+        listeners.forEach(ClientInputListener::onSaved);
     }
 
     public void doSaveAs(Shell shell, String extension, Set<SaveFlag> flags) // NOSONAR
@@ -447,10 +498,10 @@ public class ClientInput
     public void createBackupAfterOpen()
     {
         if (clientFile != null && preferences.getBoolean(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true))
-            createBackup(clientFile, "backup-after-open"); //$NON-NLS-1$
+            createBackup(clientFile, "backup-after-open", interactive); //$NON-NLS-1$
     }
 
-    private void createBackup(File file, String suffix)
+    private void createBackup(File file, String suffix, boolean showError)
     {
         try
         {
@@ -465,8 +516,9 @@ public class ClientInput
         catch (IOException e)
         {
             PortfolioPlugin.log(e);
-            Display.getDefault().asyncExec(() -> MessageDialog.openError(Display.getDefault().getActiveShell(),
-                            Messages.LabelError, e.getMessage()));
+            if (showError)
+                Display.getDefault().asyncExec(() -> MessageDialog.openError(Display.getDefault().getActiveShell(),
+                                Messages.LabelError, e.getMessage()));
         }
     }
 
@@ -641,11 +693,13 @@ public class ClientInput
             var converter = new CurrencyConverterImpl(getExchangeRateProviderFacory(), client.getBaseCurrency());
             var predicate = config.getPredicate(converter, client);
 
-            Job initialQuoteUpdate = new UpdatePricesJob(client, predicate,
+            var initialQuoteUpdate = new UpdatePricesJob(client, predicate,
                             EnumSet.of(UpdatePricesJob.Target.LATEST, UpdatePricesJob.Target.HISTORIC));
+            initialQuoteUpdate.suppressAuthenticationDialog(!interactive);
             initialQuoteUpdate.schedule(1000);
 
             var checkInvestmentPlans = new CreateInvestmentPlanTxJob(client, exchangeRateProviderFacory);
+            checkInvestmentPlans.suppressInformationDialog(!interactive);
             checkInvestmentPlans.startAfter(initialQuoteUpdate);
             checkInvestmentPlans.schedule(1100);
 
@@ -728,15 +782,22 @@ public class ClientInput
 
         scheduleAutoSaveJob();
 
-        this.listeners.forEach(ClientInputListener::onLoaded);
-
-        if (client.getFileVersionAfterRead() < Client.VERSION_WITH_CURRENCY_SUPPORT)
+        // before notifying the listeners: the REST API's listener checks
+        // isMigrationPending() in onLoaded
+        if (client.getFileVersionAfterRead() < Client.VERSION_WITH_CURRENCY_SUPPORT && !interactive)
+        {
+            // the migration needs the user's choice of the base currency
+            migrationPending = true;
+        }
+        else if (client.getFileVersionAfterRead() < Client.VERSION_WITH_CURRENCY_SUPPORT)
         {
             Display.getDefault().asyncExec(() -> {
                 Dialog dialog = new ClientMigrationDialog(Display.getDefault().getActiveShell(), client);
                 dialog.open();
             });
         }
+
+        this.listeners.forEach(ClientInputListener::onLoaded);
     }
 
     private static void upgradePreferences(PreferenceStore preferenceStore, Client client)

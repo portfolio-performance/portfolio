@@ -1,0 +1,12 @@
+# Redocly configuration for linting the REST API specification.
+#
+# Lint locally with:
+#   npx @redocly/cli@2 lint
+#
+# CI runs the same command (see .github/workflows/main.yml, job "openapi-lint").
+apis:
+  portfolio-rest@v1:
+    root: name.abuchen.portfolio.rest/openapi.yaml
+
+extends:
+  - recommended
