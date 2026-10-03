@@ -75,7 +75,7 @@ import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
 @SuppressWarnings("nls")
 public class FinTechGroupBankPDFExtractorTest
 {
-    FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client())
+    FinTechGroupBankPDFExtractor cryptoExtractor = new FinTechGroupBankPDFExtractor(new Client())
     {
         @Override
         protected List<SecuritySearchProvider> lookupCryptoProvider()
@@ -4659,7 +4659,7 @@ public class FinTechGroupBankPDFExtractorTest
     {
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroCryptoKauf01.txt"), errors);
+        var results = cryptoExtractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroCryptoKauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -5105,7 +5105,7 @@ public class FinTechGroupBankPDFExtractorTest
     {
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroCryptoVerkauf01.txt"),
+        var results = cryptoExtractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroCryptoVerkauf01.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -5140,7 +5140,7 @@ public class FinTechGroupBankPDFExtractorTest
     {
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(
+        var results = cryptoExtractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "FlatExDegiroSammelabrechnungCrypto01.txt"), errors);
 
         assertThat(errors, empty());
@@ -8516,6 +8516,30 @@ public class FinTechGroupBankPDFExtractorTest
                         hasAmount("EUR", 1319.57), hasGrossValue("EUR", 1386.40), //
                         hasForexGrossValue("USD", 1604.34), //
                         hasTaxes("EUR", 51.93 + 2.85 + 4.15), hasFees("EUR", 5.90 + 2.00))));
+    }
+
+    @Test
+    public void testFlatExDeGiroRechnungsabschluss01()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroRechnungsabschluss01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        assertThat(results, hasItem(interestCharge(hasDate("2026-06-30"), hasAmount("EUR", 8.21), //
+                        hasSource("FlatExDegiroRechnungsabschluss01.txt"), hasNote(null))));
     }
 
     @Test
