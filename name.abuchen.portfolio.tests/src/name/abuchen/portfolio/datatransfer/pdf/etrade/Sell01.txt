@@ -1,0 +1,27 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.3
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Your Account Number: 386-Esx018-535
+Account Type - Cash
+pzJHe IzCBgNvRi
+23 CvhjGH STREET
+APT 21
+FKjxCYc 2651270 gWOlpt
+E*TRADE from Morgan Stanley
+P.O. BOX 484
+JERSEY CITY, NJ 07303-0484
+(800)-387-2331
+This transaction is confirmed in accordance with the information provided on the Conditions and Disclosures page.
+Trade Date Settlement Date Quantity Price Settlement Amount
+09/18/2025 09/19/2025 796 31.2851 Principal $24,902.94
+Net Amount $24,902.94
+Transaction Type: Sold
+Description: INTEL CORP
+Symbol / CUSIP / ISIN: lFPl / 700282723 / US4581401001
+Unsolicited trade
+Morgan Stanley Smith Barney LLC acted as agent.
+Morgan Stanley Smith Barney LLC. Member SIPC. The transaction(s) may have been executed with Morgan Stanley & Co. LLC, an
+affiliate, which may receive compensation for any such services. E*TRADE is a business of Morgan Stanley.
+1 of 2
+2 of 2
