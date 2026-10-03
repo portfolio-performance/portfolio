@@ -130,6 +130,7 @@ public class PDFImportAssistant
         extractors.add(new SBrokerPDFExtractor(client));
         extractors.add(new ScalableCapitalPDFExtractor(client));
         extractors.add(new SchelhammerCapitalBankAG(client));
+        extractors.add(new SchwabPDFExtractor(client));
         extractors.add(new ScorePriorityIncPDFExtractor(client));
         extractors.add(new SelfWealthPDFExtractor(client));
         extractors.add(new SimpelPDFExtractor(client));
