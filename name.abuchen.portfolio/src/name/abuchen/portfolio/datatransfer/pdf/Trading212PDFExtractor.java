@@ -68,17 +68,23 @@ public class Trading212PDFExtractor extends AbstractPDFExtractor
                         .match("^Anweisung (?<type>Kaufen)$") //
                         .assign((t, v) -> t.setType(PortfolioTransaction.Type.BUY))
 
+                        // Only EUR is supported. Currency symbols such as "£" are
+                        // ambiguous and no sample document of a foreign currency
+                        // trade exists, therefore any other currency or an exchange
+                        // rate other than 1 fails the import.
                         // @formatter:off
                         // Wertpapier Tencent
                         // Symbol NNND
                         // ISIN KYG875721634
                         // Ausführungskurs €54.09
+                        // Wechselkurs 1
                         // @formatter:on
                         .section("name", "tickerSymbol", "isin", "currency") //
                         .match("^Wertpapier (?<name>.*)$") //
                         .match("^Symbol (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)$") //
                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                        .match("^Ausf.hrungskurs (?<currency>\\p{Sc})[\\.,\\d]+$") //
+                        .match("^Ausf.hrungskurs (?<currency>€)[\\.,\\d]+$") //
+                        .match("^Wechselkurs 1$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
@@ -99,7 +105,7 @@ public class Trading212PDFExtractor extends AbstractPDFExtractor
                         // Kosten €50.00
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Kosten (?<currency>\\p{Sc})(?<amount>[\\.,\\d]+)$") //
+                        .match("^Kosten (?<currency>€)(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
