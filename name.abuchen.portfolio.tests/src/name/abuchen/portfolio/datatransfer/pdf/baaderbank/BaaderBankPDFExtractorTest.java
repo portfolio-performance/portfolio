@@ -1875,6 +1875,40 @@ public class BaaderBankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf38()
+    {
+        var extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf38.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BF4RFH31"), hasWkn("A2DWBY"), hasTicker(null), //
+                        hasName("iShsIII-MSCI Wld Sm.Ca.UCI.ETF Registered Shares USD(Acc)o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-03-02T14:09:43"), hasShares(20.00), //
+                        hasSource("Kauf38.txt"), //
+                        hasNote("Vorgangs-Nr.: 453010440"), //
+                        hasAmount("EUR", 168.60), hasGrossValue("EUR", 167.60), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", (0.50 - 0.40) + 0.90))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         var extractor = new BaaderBankPDFExtractor(new Client());
@@ -2918,6 +2952,40 @@ public class BaaderBankPDFExtractorTest
                         hasNote("Vorgangs-Nr.: 442024039"), //
                         hasAmount("EUR", 5576.69), hasGrossValue("EUR", 5828.13), //
                         hasTaxes("EUR", 219.61 + 19.76 + 12.07), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf22()
+    {
+        var extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf22.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US9224751084"), hasWkn("A1W5SA"), hasTicker(null), //
+                        hasName("Veeva System Inc. Registered Shares A DL -,00001"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-08-14T15:00:55"), hasShares(0.222), //
+                        hasSource("Verkauf22.txt"), //
+                        hasNote("Vorgangs-Nr.: 219895934"), //
+                        hasAmount("EUR", 45.57), hasGrossValue("EUR", 48.22), //
+                        hasTaxes("EUR", 1.57 + 0.08), hasFees("EUR", 1.00))));
     }
 
     @Test

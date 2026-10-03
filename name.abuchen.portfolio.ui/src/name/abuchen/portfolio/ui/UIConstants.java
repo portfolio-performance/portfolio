@@ -259,6 +259,8 @@ public interface UIConstants
 
         String COINGECKO_DEMO_API_KEY = "COINGECKO_DEMO_API_KEY"; //$NON-NLS-1$
 
+        String SIFTING_API_KEY = "SIFTING_API_KEY"; //$NON-NLS-1$
+
         @Deprecated(since = "2025-05-09")
         String PORTFOLIO_REPORT_API_KEY = "PORTFOLIO_REPORT_API_KEY"; //$NON-NLS-1$ //NOSONAR
         @Deprecated(since = "2025-05-09")
@@ -298,6 +300,12 @@ public interface UIConstants
          * Preference for directory from which to import PDF files
          */
         String PDF_IMPORT_PATH = "PDF_IMPORT_PATH"; //$NON-NLS-1$
+
+        /**
+         * Preference for directory from which to import text files extracted
+         * from PDF documents
+         */
+        String PDF_TEXT_IMPORT_PATH = "PDF_TEXT_IMPORT_PATH"; //$NON-NLS-1$
 
         /**
          * Preference for directory from which to import CSV files

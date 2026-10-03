@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
@@ -1530,10 +1531,48 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
-                        // Mindermengenzuschlag Finanzen.net EUR 1,00
+                        // Finanzkommission Baader EUR 0,50
+                        // Handelsplatzabhängige Gutschrift Baader EUR 0,40 -
+                        // @formatter:on
+                        .section("currency", "fee", "discountCurrency", "discount").optional() //
+                        .match("^Finanzkommission .* (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
+                        .match("^Handelsplatzabh.ngige Gutschrift .* (?<discountCurrency>[A-Z]{3}) (?<discount>[\\.,\\d]+) \\-$") //
+                        .assign((t, v) -> {
+                            var fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
+                            var discount = Money.of(asCurrencyCode(v.get("discountCurrency")), asAmount(v.get("discount")));
+
+                            if (fee.subtract(discount).isPositive())
+                            {
+                                fee = fee.subtract(discount);
+                                checkAndSetFee(fee, t, type.getCurrentContext());
+                            }
+
+                            type.getCurrentContext().putBoolean("noFinanzkommission", true);
+                        })
+
+                        // @formatter:off
+                        // Finanzkommission Baader EUR 0,50
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Mindermengenzuschlag .* (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
+                        .match("^Finanzkommission .* (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noFinanzkommission"))
+                                processFeeEntries(t, v, type);
+                        })
+
+                        // @formatter:off
+                        // Mindermengenzuschlag Finanzen.net EUR 1,00
+                        // Mindermengenzuschlag EUR 1,00 -
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^Mindermengenzuschlag( .*)? (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Vermittlungsentgelt Finanzen EUR 0,90
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^Vermittlungsentgelt .* (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
