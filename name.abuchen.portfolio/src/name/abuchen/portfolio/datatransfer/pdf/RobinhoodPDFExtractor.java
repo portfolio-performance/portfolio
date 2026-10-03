@@ -6,13 +6,10 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
@@ -28,7 +25,6 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.util.Pair;
 
 /**
  * @formatter:off
@@ -42,11 +38,16 @@ import name.abuchen.portfolio.util.Pair;
  *           The monthly account statement does not distinguish the debit and credit column in the text output.
  *           The direction of each transaction is therefore determined by the transaction type (Buy, Sell, ACH, ...).
  *
+ *           Internal transfers (ITRF) are classified by their description:
+ *           "Transfer from Brokerage to ..." is a removal, any other transfer (e.g. "Transfer from ... to Brokerage") is a deposit.
+ *           This has only been verified with the statement of the individual (brokerage) account.
+ *
  *           Dividend lines only contain the ticker symbol, therefore the ticker symbol is also used as name.
  *           The dividend lines contain the record date (R/D) but no ex-date.
  *
  *           Foreign withholding taxes (DTAX) are listed as separate lines.
- *           In postProcessing, they are merged into the dividend with the same date and security.
+ *           In postProcessing, they are merged into the dividend with the same statement, date and security,
+ *           but only if the assignment is unique. Otherwise the tax is kept as separate transaction.
  *
  *           Trades listed in "Executed Trades Pending Settlement" are not imported,
  *           because they are reported in the "Account Activity" of the following statement.
@@ -58,7 +59,7 @@ public class RobinhoodPDFExtractor extends AbstractPDFExtractor
 {
     private static final String USD = "USD";
 
-    private static record TransactionTaxesPair(Item transaction, Item tax)
+    private static record DividendTaxKey(String source, LocalDate date, Security security)
     {
     }
 
@@ -235,8 +236,12 @@ public class RobinhoodPDFExtractor extends AbstractPDFExtractor
                         .section("note", "type", "date", "amount") //
                         .match("^(?<note>(ACH Deposit|ACH Withdrawal|Transfer from .*|Cash back from .*)) Cash (?<type>(ACH|ITRF|XENT_CC)) (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) \\$(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            // Is type --> "ACH Withdrawal" or "ITRF" change from DEPOSIT to REMOVAL
-                            if ("ACH Withdrawal".equals(v.get("note")) || "ITRF".equals(v.get("type")))
+                            // Is type --> "ACH Withdrawal" change from DEPOSIT to REMOVAL
+                            if ("ACH Withdrawal".equals(v.get("note")))
+                                t.setType(AccountTransaction.Type.REMOVAL);
+
+                            // Is type --> "ITRF" out of the brokerage account change from DEPOSIT to REMOVAL
+                            if ("ITRF".equals(v.get("type")) && v.get("note").startsWith("Transfer from Brokerage "))
                                 t.setType(AccountTransaction.Type.REMOVAL);
 
                             t.setDateTime(asDate(v.get("date"), Locale.US));
@@ -270,37 +275,30 @@ public class RobinhoodPDFExtractor extends AbstractPDFExtractor
     @Override
     public void postProcessing(List<Item> items)
     {
-        // Filter transactions by taxes
-        var taxesList = items.stream() //
-                        .filter(TransactionItem.class::isInstance) //
-                        .filter(i -> i.getSubject() instanceof AccountTransaction) //
-                        .filter(i -> AccountTransaction.Type.TAXES //
-                                        .equals((((AccountTransaction) i.getSubject()).getType()))) //
-                        .toList();
-
-        // Filter transactions by dividend transactions
-        var dividendTransactionList = items.stream() //
-                        .filter(TransactionItem.class::isInstance) //
-                        .filter(i -> i.getSubject() instanceof AccountTransaction) //
-                        .filter(i -> AccountTransaction.Type.DIVIDENDS //
-                                        .equals((((AccountTransaction) i.getSubject()).getType()))) //
-                        .toList();
-
-        var dividendTaxPairs = matchTransactionPair(dividendTransactionList, taxesList);
+        // Group dividends and taxes by statement (source), date and security
+        var dividendsByKey = groupByKey(items, AccountTransaction.Type.DIVIDENDS);
+        var taxesByKey = groupByKey(items, AccountTransaction.Type.TAXES);
 
         // @formatter:off
-        // This loop iterates through a list of dividend and tax pairs.
+        // This loop iterates through the taxes grouped by statement, date and security.
         //
-        // For each pair, the tax amount is subtracted from the dividend amount and added as tax unit,
+        // A tax is only merged into a dividend if the assignment is unique, i.e. exactly one dividend
+        // and exactly one tax exist for the key. The DTAX line does not reference the gross amount of
+        // the dividend, so ambiguous taxes are kept as separate tax transactions.
+        //
+        // When merged, the tax amount is subtracted from the dividend amount and added as tax unit,
         // the source and note are combined and the tax transaction is removed from the 'items' list.
         // @formatter:on
-        for (TransactionTaxesPair pair : dividendTaxPairs)
+        for (var entry : taxesByKey.entrySet())
         {
-            if (pair.tax() == null)
+            var dividends = dividendsByKey.get(entry.getKey());
+            var taxes = entry.getValue();
+
+            if (dividends == null || dividends.size() != 1 || taxes.size() != 1)
                 continue;
 
-            var dividendTransaction = (AccountTransaction) pair.transaction().getSubject();
-            var taxesTransaction = (AccountTransaction) pair.tax().getSubject();
+            var dividendTransaction = (AccountTransaction) dividends.get(0).getSubject();
+            var taxesTransaction = (AccountTransaction) taxes.get(0).getSubject();
 
             dividendTransaction.setMonetaryAmount(dividendTransaction.getMonetaryAmount() //
                             .subtract(taxesTransaction.getMonetaryAmount()));
@@ -312,62 +310,41 @@ public class RobinhoodPDFExtractor extends AbstractPDFExtractor
 
             dividendTransaction.setNote(concatenate(dividendTransaction.getNote(), taxesTransaction.getNote(), " | "));
 
-            items.remove(pair.tax());
+            items.remove(taxes.get(0));
         }
     }
 
     /**
      * @formatter:off
-     * Matches transactions and taxes, ensuring unique pairs based on date and security.
+     * Groups the account transactions of the given type by statement (source), date and security.
      *
-     * This method matches transactions and taxes by creating a Pair consisting of the transaction's
-     * date and security. It uses a Set called 'keys' to prevent duplicates based on these Pair keys,
-     * ensuring that the same combination of date and security is not processed multiple times.
+     * The source is part of the key, because postProcessing receives the items of all statements
+     * of this extractor at once. A tax must only be merged into a dividend of the same statement.
+     * Multiple transactions per key are retained, so that ambiguous assignments can be detected.
      *
-     * @param transactionList  A list of transactions to be matched.
-     * @param taxesList        A list of taxes to be considered for matching.
-     * @return A collection of TransactionTaxesPair objects representing matched transactions and taxes.
+     * @param items  The list of all extracted items.
+     * @param type   The account transaction type to be grouped.
+     * @return A map of keys to the list of matching items.
      * @formatter:on
      */
-    private Collection<TransactionTaxesPair> matchTransactionPair(List<Item> transactionList, List<Item> taxesList)
+    private Map<DividendTaxKey, List<Item>> groupByKey(List<Item> items, AccountTransaction.Type type)
     {
-        // Use a Set to prevent duplicates
-        Set<Pair<LocalDate, Security>> keys = new HashSet<>();
-        Map<Pair<LocalDate, Security>, TransactionTaxesPair> pairs = new HashMap<>();
+        Map<DividendTaxKey, List<Item>> groups = new HashMap<>();
 
-        // Match identified transactions and taxes
-        transactionList.forEach( //
-                        transaction -> {
-                            var key = new Pair<>(transaction.getDate().toLocalDate(), transaction.getSecurity());
+        items.stream() //
+                        .filter(TransactionItem.class::isInstance) //
+                        .filter(i -> i.getSubject() instanceof AccountTransaction) //
+                        .filter(i -> type.equals(((AccountTransaction) i.getSubject()).getType())) //
+                        .filter(i -> i.getSecurity() != null) //
+                        .forEach(i -> {
+                            var transaction = (AccountTransaction) i.getSubject();
+                            var key = new DividendTaxKey(transaction.getSource(), i.getDate().toLocalDate(),
+                                            i.getSecurity());
 
-                            // Prevent duplicates
-                            if (keys.add(key))
-                                pairs.put(key, new TransactionTaxesPair(transaction, null));
-                        } //
-        );
+                            groups.computeIfAbsent(key, k -> new ArrayList<>()).add(i);
+                        });
 
-        // Iterate through the list of taxes to match them with transactions
-        taxesList.forEach( //
-                        tax -> {
-                            // Check if the tax has a security
-                            if (tax.getSecurity() == null)
-                                return;
-
-                            // Create a key based on the tax date and security
-                            var key = new Pair<>(tax.getDate().toLocalDate(), tax.getSecurity());
-
-                            // Retrieve the TransactionTaxesPair associated with
-                            // this key, if it exists
-                            var pair = pairs.get(key);
-
-                            // Skip if no transaction is found or if a tax
-                            // already exists
-                            if (pair != null && pair.tax() == null)
-                                pairs.put(key, new TransactionTaxesPair(pair.transaction(), tax));
-                        } //
-        );
-
-        return pairs.values();
+        return groups;
     }
 
     @Override
