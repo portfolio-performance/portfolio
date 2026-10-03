@@ -19,7 +19,9 @@ import name.abuchen.portfolio.money.Values;
  *
  *           The "Aktivitätsauszug" (activity statement) is a daily statement
  *           listing executed orders, deposits, card purchases and interest on
- *           cash. All amounts are formatted in US number format.
+ *           cash. The "Handelsbestätigung" (trade confirmation) is issued by
+ *           Trading 212 EU GmbH per execution of an order. All amounts are
+ *           formatted in US number format.
  * @formatter:on
  */
 @SuppressWarnings("nls")
@@ -31,6 +33,7 @@ public class Trading212PDFExtractor extends AbstractPDFExtractor
 
         addBankIdentifier("Trading 212");
 
+        addBuySellTransaction();
         addActivityStatementTransactions();
     }
 
@@ -38,6 +41,84 @@ public class Trading212PDFExtractor extends AbstractPDFExtractor
     public String getLabel()
     {
         return "Trading 212";
+    }
+
+    private void addBuySellTransaction()
+    {
+        final var type = new DocumentType("Handelsbest.tigung");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<BuySellEntry>();
+
+        var firstRelevantLine = new Block("^Auftragsdetails$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
+
+                        // Only purchases are supported. No sample document of a
+                        // sale exists, therefore a sale fails the import instead
+                        // of being imported as a purchase.
+                        // @formatter:off
+                        // Anweisung Kaufen
+                        // @formatter:on
+                        .section("type") //
+                        .match("^Anweisung (?<type>Kaufen)$") //
+                        .assign((t, v) -> t.setType(PortfolioTransaction.Type.BUY))
+
+                        // Only EUR is supported. Currency symbols such as "£" are
+                        // ambiguous and no sample document of a foreign currency
+                        // trade exists, therefore any other currency or an exchange
+                        // rate other than 1 fails the import.
+                        // @formatter:off
+                        // Wertpapier Tencent
+                        // Symbol NNND
+                        // ISIN KYG875721634
+                        // Ausführungskurs €54.09
+                        // Wechselkurs 1
+                        // @formatter:on
+                        .section("name", "tickerSymbol", "isin", "currency") //
+                        .match("^Wertpapier (?<name>.*)$") //
+                        .match("^Symbol (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)$") //
+                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                        .match("^Ausf.hrungskurs (?<currency>€)[\\.,\\d]+$") //
+                        .match("^Wechselkurs 1$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        // @formatter:off
+                        // Anzahl 0.92438528
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^Anzahl (?<shares>[\\.,\\d]+)$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // Ausführungszeitpunkt 15 Apr 2026, 06:07:41 (UTC)
+                        // @formatter:on
+                        .section("date", "time") //
+                        .match("^Ausf.hrungszeitpunkt (?<date>[\\d]{1,2} [\\p{L}]{3,4} [\\d]{4}), (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}) .*$") //
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
+
+                        // @formatter:off
+                        // Kosten €50.00
+                        // @formatter:on
+                        .section("currency", "amount") //
+                        .match("^Kosten (?<currency>€)(?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // @formatter:off
+                        // Auftrags-ID-Nr. 76880828286
+                        // @formatter:on
+                        .section("note") //
+                        .match("^Auftrags\\-ID\\-Nr\\. (?<note>[\\d]+)$") //
+                        .assign((t, v) -> t.setNote("Auftrags-ID-Nr.: " + v.get("note")))
+
+                        .wrap(BuySellEntryItem::new);
     }
 
     private void addActivityStatementTransactions()
