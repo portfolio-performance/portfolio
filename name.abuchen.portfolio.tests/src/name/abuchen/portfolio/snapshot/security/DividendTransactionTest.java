@@ -137,6 +137,18 @@ public class DividendTransactionTest
     }
 
     @Test
+    public void testPersonalDividendYieldUsesConvertedGrossValue()
+    {
+        var payment = createDividendTransaction(100L, 0L, 0L, LocalDateTime.of(2019, 1, 15, 12, 0));
+        payment.setFifoCost(Money.of(CurrencyUnit.EUR, 2000L));
+        payment.setMovingAverageCost(Money.of(CurrencyUnit.EUR, 2000L));
+        payment.setConvertedGrossValue(Money.of(CurrencyUnit.EUR, 200L));
+
+        assertEquals(0.1d, payment.getPersonalDividendYield(), 0.0d);
+        assertEquals(0.1d, payment.getPersonalDividendYieldMovingAverage(), 0.0d);
+    }
+
+    @Test
     public void testGetPersonalDiviendYieldNoSharesNoShares()
     {
         CalculationLineItem.DividendPayment t1 = createDividendTransaction(100L, 10L, 0L,

@@ -92,6 +92,10 @@ public class ClientSecurityFilter implements ClientFilter
                 getPortfolio.apply((Portfolio) pair.getOwner()).internalAddTransaction(
                                 convertToDelivery(pair.getTransaction(), PortfolioTransaction.Type.DELIVERY_OUTBOUND));
                 break;
+            case DIVIDENDS:
+                getPortfolio.apply((Portfolio) pair.getOwner()).internalAddTransaction(
+                                convertToDelivery(pair.getTransaction(), PortfolioTransaction.Type.DIVIDENDS));
+                break;
             case TRANSFER_IN:
                 convertTransfer(getPortfolio, pair);
             case TRANSFER_OUT:
@@ -170,7 +174,7 @@ public class ClientSecurityFilter implements ClientFilter
         long taxes = t.getUnitSum(Unit.Type.TAX).getAmount();
         long amount = t.getAmount();
 
-        pseudo.setAmount(pseudo.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND ? amount - taxes
+        pseudo.setAmount(pseudo.getType().isPurchase() ? amount - taxes
                         : amount + taxes);
 
         // copy all units (except for taxes) over to the pseudo

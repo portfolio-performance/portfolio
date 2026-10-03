@@ -115,6 +115,10 @@ private static final long serialVersionUID = 0L;
      * <code>FEE_REFUND = 14;</code>
      */
     FEE_REFUND(14),
+    /**
+     * <code>SECURITY_DIVIDEND = 15;</code>
+     */
+    SECURITY_DIVIDEND(15),
     UNRECOGNIZED(-1),
     ;
 
@@ -178,6 +182,10 @@ private static final long serialVersionUID = 0L;
      * <code>FEE_REFUND = 14;</code>
      */
     public static final int FEE_REFUND_VALUE = 14;
+    /**
+     * <code>SECURITY_DIVIDEND = 15;</code>
+     */
+    public static final int SECURITY_DIVIDEND_VALUE = 15;
 
 
     public final int getNumber() {
@@ -219,6 +227,7 @@ private static final long serialVersionUID = 0L;
         case 12: return TAX_REFUND;
         case 13: return FEE;
         case 14: return FEE_REFUND;
+        case 15: return SECURITY_DIVIDEND;
         default: return null;
       }
     }

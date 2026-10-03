@@ -44,6 +44,73 @@ public class ClientPerformanceSnapshotTest
     private final LocalDate endDate = LocalDate.of(2011, Month.DECEMBER, 31);
 
     @Test
+    public void testDividendPaidInSharesIsEarningWithoutCashDeposit()
+    {
+        Client client = new Client();
+        Account account = new Account();
+        client.addAccount(account);
+
+        Security security = new Security();
+        security.setCurrencyCode(CurrencyUnit.EUR);
+        security.addPrice(new SecurityPrice(startDate, Values.Quote.factorize(100)));
+        security.addPrice(new SecurityPrice(endDate, Values.Quote.factorize(100)));
+        client.addSecurity(security);
+
+        Portfolio portfolio = new Portfolio();
+        portfolio.setReferenceAccount(account);
+        client.addPortfolio(portfolio);
+        portfolio.addTransaction(new PortfolioTransaction(LocalDateTime.of(2010, Month.JANUARY, 1, 0, 0),
+                        CurrencyUnit.EUR, 500_00, security, Values.Share.factorize(5),
+                        PortfolioTransaction.Type.DELIVERY_INBOUND, 0, 0));
+        PortfolioTransaction dividend = new PortfolioTransaction(LocalDateTime.of(2011, Month.JUNE, 1, 0, 0),
+                        CurrencyUnit.EUR, 2_43, security, Values.Share.factorize(0.0243),
+                        PortfolioTransaction.Type.DIVIDENDS, 0, 0);
+        portfolio.addTransaction(dividend);
+
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, new TestCurrencyConverter(),
+                        startDate, endDate);
+
+        assertThat(account.getTransactions().size(), is(0));
+        assertThat(snapshot.getValue(CategoryType.INITIAL_VALUE), is(Money.of(CurrencyUnit.EUR, 500_00)));
+        assertThat(snapshot.getValue(CategoryType.EARNINGS), is(Money.of(CurrencyUnit.EUR, 2_43)));
+        assertThat(snapshot.getValue(CategoryType.TRANSFERS), is(Money.of(CurrencyUnit.EUR, 0)));
+        assertThat(snapshot.getValue(CategoryType.CAPITAL_GAINS), is(Money.of(CurrencyUnit.EUR, 0)));
+        assertThat(snapshot.getValue(CategoryType.FINAL_VALUE), is(Money.of(CurrencyUnit.EUR, 502_43)));
+    }
+
+    @Test
+    public void testDividendPaidInSharesWithWithheldCharges()
+    {
+        Client client = new Client();
+        Account account = new Account();
+        client.addAccount(account);
+
+        Security security = new Security();
+        security.setCurrencyCode(CurrencyUnit.EUR);
+        security.addPrice(new SecurityPrice(endDate, Values.Quote.factorize(100)));
+        client.addSecurity(security);
+
+        Portfolio portfolio = new Portfolio();
+        portfolio.setReferenceAccount(account);
+        client.addPortfolio(portfolio);
+
+        PortfolioTransaction dividend = new PortfolioTransaction(LocalDateTime.of(2011, Month.JUNE, 1, 0, 0),
+                        CurrencyUnit.EUR, 3_93, security, Values.Share.factorize(0.0243),
+                        PortfolioTransaction.Type.DIVIDENDS, 50, 100);
+        portfolio.addTransaction(dividend);
+
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, new TestCurrencyConverter(),
+                        startDate, endDate);
+
+        assertThat(account.getTransactions().size(), is(0));
+        assertThat(snapshot.getValue(CategoryType.EARNINGS), is(Money.of(CurrencyUnit.EUR, 3_93)));
+        assertThat(snapshot.getValue(CategoryType.FEES), is(Money.of(CurrencyUnit.EUR, 50)));
+        assertThat(snapshot.getValue(CategoryType.TAXES), is(Money.of(CurrencyUnit.EUR, 100)));
+        assertThat(snapshot.getValue(CategoryType.CAPITAL_GAINS), is(Money.of(CurrencyUnit.EUR, 0)));
+        assertThat(snapshot.getValue(CategoryType.FINAL_VALUE), is(Money.of(CurrencyUnit.EUR, 2_43)));
+    }
+
+    @Test
     public void testDepositPlusInterest()
     {
         Client client = new Client();

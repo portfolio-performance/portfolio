@@ -143,7 +143,7 @@ final class ShadowSession
             {
                 switch (pt.getType())
                 {
-                    case DELIVERY_INBOUND, DELIVERY_OUTBOUND:
+                    case DELIVERY_INBOUND, DELIVERY_OUTBOUND, DIVIDENDS:
                         entries.add(extractDelivery(pt, realPortfolio));
                         break;
 

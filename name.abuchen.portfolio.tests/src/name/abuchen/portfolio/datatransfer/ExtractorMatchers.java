@@ -423,6 +423,16 @@ public class ExtractorMatchers
     }
 
     @SafeVarargs
+    public static Matcher<Extractor.Item> securityDividend(Matcher<Transaction>... properties)
+    {
+        return new ExtractorItemMatcher<>("dividend in shares", //$NON-NLS-1$
+                        item -> item instanceof TransactionItem tItem //
+                                        && tItem.getSubject() instanceof PortfolioTransaction tx
+                                        && tx.getType() == PortfolioTransaction.Type.DIVIDENDS ? tx : null, //
+                        properties);
+    }
+
+    @SafeVarargs
     public static Matcher<Extractor.Item> outboundDelivery(Matcher<Transaction>... properties)
     {
         return new ExtractorItemMatcher<>("outbound delivery", //$NON-NLS-1$

@@ -163,6 +163,7 @@ message PTransaction {
     TAX_REFUND = 12;
     FEE = 13;
     FEE_REFUND = 14;
+    SECURITY_DIVIDEND = 15;
   }
 	
   string uuid = 1;

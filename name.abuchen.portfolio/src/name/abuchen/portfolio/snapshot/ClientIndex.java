@@ -145,7 +145,8 @@ import name.abuchen.portfolio.util.Interval;
                                     case DIVIDENDS:
                                         addValue(taxes, t.getCurrencyCode(), t.getUnitSum(Unit.Type.TAX).getAmount(),
                                                         interval, d);
-                                        addValue(dividends, t.getCurrencyCode(), t.getAmount(), interval, d);
+                                        addValue(dividends, t.getCurrencyCode(), t.getGrossValue().getAmount(),
+                                                        interval, d);
                                         addValue(fees, t.getCurrencyCode(), t.getUnitSum(Type.FEE).getAmount(),
                                                         interval, d);
                                         break;
@@ -196,6 +197,10 @@ import name.abuchen.portfolio.util.Interval;
                                         break;
                                     case DELIVERY_OUTBOUND:
                                         addValue(outboundTransferals, t.getCurrencyCode(), t.getAmount(), interval, d);
+                                        break;
+                                    case DIVIDENDS:
+                                        addValue(dividends, t.getCurrencyCode(), t.getGrossValue().getAmount(),
+                                                        interval, d);
                                         break;
                                     case BUY:
                                         addValue(buys, t.getCurrencyCode(), t.getAmount(), interval, d);

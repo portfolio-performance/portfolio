@@ -308,6 +308,8 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
             case SELL:
             case DELIVERY_OUTBOUND:
                 return "- "; //$NON-NLS-1$
+            case DIVIDENDS:
+                return "+ "; //$NON-NLS-1$
             default:
                 throw new UnsupportedOperationException();
         }
@@ -325,6 +327,8 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
                 return Messages.ColumnCreditNote;
             case DELIVERY_OUTBOUND:
                 return Messages.LabelValueOutboundDelivery;
+            case DIVIDENDS:
+                return PortfolioTransaction.Type.DIVIDENDS.toString();
             default:
                 throw new UnsupportedOperationException();
         }

@@ -18,6 +18,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.security.BaseSecurityPerformanceRecord.Periodicity;
 
@@ -56,6 +57,47 @@ public class DividendCalculationTest
     }
 
     @Test
+    public void portfolioDividendYieldUsesReceivingPortfolioCost()
+    {
+        Portfolio first = new Portfolio();
+        Portfolio second = new Portfolio();
+        LocalDateTime purchaseDate = LocalDateTime.of(2020, 1, 1, 12, 0);
+        LocalDateTime paymentDate = purchaseDate.plusMonths(1);
+
+        PortfolioTransaction firstBuy = new PortfolioTransaction();
+        firstBuy.setType(Type.BUY);
+        firstBuy.setSecurity(security);
+        firstBuy.setCurrencyCode("EUR"); //$NON-NLS-1$
+        firstBuy.setDateTime(purchaseDate);
+        firstBuy.setShares(Values.Share.factorize(10));
+        firstBuy.setAmount(10_000L);
+
+        PortfolioTransaction secondBuy = new PortfolioTransaction();
+        secondBuy.setType(Type.BUY);
+        secondBuy.setSecurity(security);
+        secondBuy.setCurrencyCode("EUR"); //$NON-NLS-1$
+        secondBuy.setDateTime(purchaseDate);
+        secondBuy.setShares(Values.Share.factorize(10));
+        secondBuy.setAmount(20_000L);
+
+        PortfolioTransaction dividend = new PortfolioTransaction();
+        dividend.setType(Type.DIVIDENDS);
+        dividend.setSecurity(security);
+        dividend.setCurrencyCode("EUR"); //$NON-NLS-1$
+        dividend.setDateTime(paymentDate);
+        dividend.setShares(Values.Share.factorize(1));
+        dividend.setAmount(1_000L);
+
+        var payment = (CalculationLineItem.DividendPayment) CalculationLineItem.dividend(first, dividend);
+        Calculation.perform(CostCalculation.class, converter, security, List.of( //
+                        CalculationLineItem.of(first, firstBuy), //
+                        CalculationLineItem.of(second, secondBuy), payment));
+
+        assertEquals(0.1d, payment.getPersonalDividendYield(), 0.0d);
+        assertEquals(1_000L / 15_000d, payment.getPersonalDividendYieldMovingAverage(), 0.0001d);
+    }
+
+    @Test
     public void noTransactionTest()
     {
         List<CalculationLineItem> transactions = new ArrayList<>();
@@ -65,6 +107,20 @@ public class DividendCalculationTest
         assertEquals(0, dc.getNumOfEvents());
         assertEquals(Periodicity.NONE, dc.getPeriodicity());
         assertEquals(0.0, dc.getRateOfReturnPerYear(), 0.0);
+    }
+
+    @Test
+    public void dividendInSharesTest()
+    {
+        Portfolio portfolio = new Portfolio();
+        PortfolioTransaction reward = new PortfolioTransaction(LocalDateTime.of(2019, 1, 15, 12, 0), "EUR", 243,
+                        security, Values.Share.factorize(0.0243), Type.DIVIDENDS, 0, 0);
+
+        DividendCalculation dividends = Calculation.perform(DividendCalculation.class, converter, security,
+                        List.of(CalculationLineItem.dividend(portfolio, reward), CalculationLineItem.of(portfolio, reward)));
+
+        assertEquals(1, dividends.getNumOfEvents());
+        assertEquals(Money.of("EUR", 243), dividends.getSum());
     }
 
     @Test
