@@ -2,9 +2,12 @@ package name.abuchen.portfolio.ui.wizards.datatransfer;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyledText;
@@ -37,6 +40,8 @@ import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
+import name.abuchen.portfolio.ui.wizards.search.SearchSecurityWizardDialog;
+import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 
 @SuppressWarnings("nls")
 public class ManualTransactionEntryPage extends AbstractWizardPage
@@ -101,6 +106,9 @@ public class ManualTransactionEntryPage extends AbstractWizardPage
 
     private final List<ExtractedEntry> entries = new ArrayList<>();
 
+    /** securities newly created on this page */
+    private final ManualSecurities manualSecurities;
+
     // widgets are created lazily and disposed again whenever the user leaves
     // the page (see #disposeControl), i.e. they are null while the page is not
     // being displayed. Everything that must survive lives in #entries and in
@@ -121,6 +129,7 @@ public class ManualTransactionEntryPage extends AbstractWizardPage
         this.part = part;
         this.client = client;
         this.additionalSecurities = additionalSecurities;
+        this.manualSecurities = new ManualSecurities(additionalSecurities, entries, this::allManualEntries);
         this.inputFile = inputFile;
         this.targetAccount = targetAccount;
         this.targetPortfolio = targetPortfolio;
@@ -230,7 +239,7 @@ public class ManualTransactionEntryPage extends AbstractWizardPage
         // one button per common transaction type plus a "More" drop-down for
         // the remaining types
         buttonRow = new Composite(container, SWT.NONE);
-        buttonRow.setLayout(new GridLayout(PRIMARY_TYPES.size() + 1, false));
+        buttonRow.setLayout(new GridLayout(PRIMARY_TYPES.size() + 2, false));
         buttonRow.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
         for (TransactionType type : PRIMARY_TYPES)
@@ -239,6 +248,10 @@ public class ManualTransactionEntryPage extends AbstractWizardPage
             button.setText(type.label);
             button.addListener(SWT.Selection, e -> openDialog(type));
         }
+
+        var newSecurityButton = new Button(buttonRow, SWT.PUSH);
+        newSecurityButton.setText(Messages.SecurityMenuNewSecurity);
+        newSecurityButton.addListener(SWT.Selection, e -> createNewSecurity());
 
         var moreButton = new Button(buttonRow, SWT.PUSH);
         moreButton.setText(Messages.LabelMore);
@@ -264,7 +277,7 @@ public class ManualTransactionEntryPage extends AbstractWizardPage
         itemsTable = new ExtractedItemsTable(tableComposite, client, entries);
         itemsTable.setOnEdit(this::editEntry);
         itemsTable.setOnDelete(selected -> {
-            entries.removeAll(selected);
+            manualSecurities.remove(selected, editorOpen);
             itemsTable.refresh();
         });
 
@@ -295,7 +308,7 @@ public class ManualTransactionEntryPage extends AbstractWizardPage
         if (shadowPortfolio != null)
             dialog.setPortfolio(shadowPortfolio);
 
-        openModeless(dialog, () -> entries.addAll(session.harvest()));
+        openModeless(dialog, () -> entries.addAll(manualSecurities.withSecurityDependencies(session.harvest())));
     }
 
     private void editEntry(ExtractedEntry extractedEntry)
@@ -363,12 +376,12 @@ public class ManualTransactionEntryPage extends AbstractWizardPage
                 // the entry is no longer in the list (should not happen while
                 // the page input is frozen, but guard against it): append the
                 // harvested transactions instead of inserting at -1
-                entries.addAll(session.harvest());
+                entries.addAll(manualSecurities.withSecurityDependencies(session.harvest()));
             }
             else
             {
                 entries.remove(extractedEntry);
-                entries.addAll(index, session.harvest());
+                entries.addAll(index, manualSecurities.withSecurityDependencies(session.harvest()));
             }
         });
     }
@@ -446,6 +459,46 @@ public class ManualTransactionEntryPage extends AbstractWizardPage
     {
         for (var child : buttonRow.getChildren())
             child.setEnabled(enabled);
+    }
+
+    /**
+     * Creates a new security the same way as the main menu does (search, then
+     * master data). The security is created in the client only when the items
+     * are imported: until then it is listed as a security entry on this page
+     * and offered in the transaction dialogs of all manual pages. After the
+     * import, the wizard proposes the price feed configuration as for all new
+     * securities.
+     */
+    private void createNewSecurity()
+    {
+        if (editorOpen)
+            return;
+
+        var search = new SearchSecurityWizardDialog(getShell(), client);
+        if (search.open() != Window.OK || search.getSecurity() == null)
+            return;
+
+        var security = search.getSecurity();
+
+        var dialog = part.make(EditSecurityDialog.class, getShell(), getShell(), client, security);
+        if (dialog.open() != Window.OK)
+            return;
+
+        manualSecurities.add(security);
+
+        if (itemsTable != null)
+            itemsTable.refresh();
+    }
+
+    /** all entries of the manual entry pages of the wizard */
+    private Stream<ExtractedEntry> allManualEntries()
+    {
+        if (getWizard() == null)
+            return Stream.empty();
+
+        return Arrays.stream(getWizard().getPages()) //
+                        .filter(ManualTransactionEntryPage.class::isInstance)
+                        .flatMap(page -> ((ManualTransactionEntryPage) page).entries.stream());
     }
 
     public List<Extractor.Item> getItems()
