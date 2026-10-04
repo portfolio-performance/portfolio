@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -41,7 +42,6 @@ import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 import name.abuchen.portfolio.ui.wizards.search.SearchSecurityWizardDialog;
-import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 
 @SuppressWarnings("nls")
 public class ManualTransactionEntryPage extends AbstractWizardPage
@@ -159,6 +159,12 @@ public class ManualTransactionEntryPage extends AbstractWizardPage
     @Override
     public void beforePage()
     {
+        // a new security may have been replaced by an existing one on another
+        // manual entry page
+        manualSecurities.applyReplacements();
+        if (itemsTable != null)
+            itemsTable.refresh();
+
         // the wizard dialog (re)creates the control before the page becomes
         // visible; guard anyway because the page may be disposed (see
         // #disposeControl)
@@ -462,12 +468,13 @@ public class ManualTransactionEntryPage extends AbstractWizardPage
     }
 
     /**
-     * Creates a new security the same way as the main menu does (search, then
-     * master data). The security is created in the client only when the items
-     * are imported: until then it is listed as a security entry on this page
-     * and offered in the transaction dialogs of all manual pages. After the
-     * import, the wizard proposes the price feed configuration as for all new
-     * securities.
+     * Creates a new security with the online search of the main menu. The
+     * master data dialog is not shown: it would apply taxonomy assignments to
+     * the client before the security is imported. The security is created in
+     * the client only when the items are imported: until then it is listed as
+     * a security entry on this page and offered in the transaction dialogs of
+     * all manual pages. After the import, the wizard proposes the price feed
+     * configuration as for all new securities.
      */
     private void createNewSecurity()
     {
@@ -480,9 +487,19 @@ public class ManualTransactionEntryPage extends AbstractWizardPage
 
         var security = search.getSecurity();
 
-        var dialog = part.make(EditSecurityDialog.class, getShell(), getShell(), client, security);
-        if (dialog.open() != Window.OK)
-            return;
+        // an empty security (created without search) has no name yet
+        if (security.getName() == null || security.getName().isBlank())
+        {
+            var input = new InputDialog(getShell(), Messages.SecurityMenuNewSecurity, Messages.ColumnName, "", //$NON-NLS-1$
+                            value -> value == null || value.isBlank() ? "" : null); //$NON-NLS-1$
+            if (input.open() != Window.OK)
+                return;
+
+            security.setName(input.getValue().trim());
+        }
+
+        if (security.getCurrencyCode() == null)
+            security.setCurrencyCode(client.getBaseCurrency());
 
         manualSecurities.add(security);
 
@@ -503,7 +520,7 @@ public class ManualTransactionEntryPage extends AbstractWizardPage
 
     public List<Extractor.Item> getItems()
     {
-        return entries.stream().filter(ExtractedEntry::isImported).map(ExtractedEntry::getItem).toList();
+        return manualSecurities.getItemsToImport();
     }
 
     public boolean hasCreatedTransactions()
