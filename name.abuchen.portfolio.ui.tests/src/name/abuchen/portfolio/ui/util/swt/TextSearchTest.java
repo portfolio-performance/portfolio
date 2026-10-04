@@ -117,4 +117,44 @@ public class TextSearchTest
         assertThat(format(TextSearch.subtract(ranges(0, 30), ranges(5, 5, 20, 5))), contains("0+5", "10+10", "25+5"));
         assertThat(format(TextSearch.subtract(ranges(0, 10, 20, 10), ranges(5, 20))), contains("0+5", "25+5"));
     }
+
+    // -- toggle
+
+    @Test
+    public void testToggleAddsSelectionWithoutOverlap()
+    {
+        assertThat(format(TextSearch.toggle(ranges(0, 5), 10, 4)), contains("0+5", "10+4"));
+        assertThat(format(TextSearch.toggle(List.of(), 3, 2)), contains("3+2"));
+    }
+
+    @Test
+    public void testToggleRemovesTheWholeHighlightIfItIsSelected()
+    {
+        // double click on a highlighted word
+        assertThat(TextSearch.toggle(ranges(10, 4), 10, 4), is(empty()));
+    }
+
+    @Test
+    public void testToggleRemovesOnlyTheSelectedPartOfAHighlight()
+    {
+        assertThat(format(TextSearch.toggle(ranges(10, 20), 15, 5)), contains("10+5", "20+10"));
+        assertThat(format(TextSearch.toggle(ranges(10, 20), 5, 10)), contains("15+15"));
+        assertThat(format(TextSearch.toggle(ranges(10, 20), 25, 10)), contains("10+15"));
+    }
+
+    @Test
+    public void testToggleKeepsHighlightsWhichAreNotSelected()
+    {
+        assertThat(format(TextSearch.toggle(ranges(0, 5, 10, 10, 30, 5), 12, 3)),
+                        contains("0+5", "30+5", "10+2", "15+5"));
+    }
+
+    @Test
+    public void testToggleDoesNotChangeTheGivenList()
+    {
+        var highlights = ranges(10, 20);
+        TextSearch.toggle(highlights, 15, 5);
+
+        assertThat(format(highlights), contains("10+20"));
+    }
 }
