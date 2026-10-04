@@ -88,4 +88,33 @@ final class TextSearch
 
         return result;
     }
+
+    /**
+     * Toggles the highlighting of the selected range ({start, length}): if the
+     * selection does not touch a highlighted part, it is added; otherwise only
+     * the selected text is removed from the overlapping parts, the rest of
+     * them stays highlighted.
+     */
+    static List<int[]> toggle(List<int[]> highlights, int start, int length)
+    {
+        var range = new int[] { start, length };
+
+        var overlapping = highlights.stream() //
+                        .filter(h -> h[0] < range[0] + range[1] && range[0] < h[0] + h[1]) //
+                        .toList();
+
+        var result = new ArrayList<>(highlights);
+
+        if (overlapping.isEmpty())
+        {
+            result.add(range);
+        }
+        else
+        {
+            result.removeAll(overlapping);
+            result.addAll(subtract(overlapping, List.of(range)));
+        }
+
+        return result;
+    }
 }

@@ -758,7 +758,7 @@ public class PDFViewer extends Composite
 
     /**
      * Adds the current selection to the highlighted parts, or removes the
-     * highlighting if the selection is already highlighted.
+     * selected text from the highlighting if it is already highlighted.
      */
     private void toggleHighlight()
     {
@@ -766,15 +766,9 @@ public class PDFViewer extends Composite
         if (selection.y <= selection.x)
             return;
 
-        var range = new int[] { selection.x, selection.y - selection.x };
-
-        var overlapping = highlights.stream().filter(h -> h[0] < range[0] + range[1] && range[0] < h[0] + h[1])
-                        .toList();
-
-        if (overlapping.isEmpty())
-            highlights.add(range);
-        else
-            highlights.removeAll(overlapping);
+        var updated = TextSearch.toggle(highlights, selection.x, selection.y - selection.x);
+        highlights.clear();
+        highlights.addAll(updated);
 
         showMatch(currentMatch);
     }
