@@ -118,10 +118,34 @@ public class ManualSecuritiesTest
     private void importAll()
     {
         var action = new InsertAction(client);
-        for (var entries : List.of(entriesA, entriesB))
-            for (var entry : entries)
-                if (entry.isImported())
-                    entry.getItem().apply(action, EMPTY_CONTEXT);
+        for (var page : List.of(pageA, pageB))
+            for (var item : page.getItemsToImport())
+                item.apply(action, EMPTY_CONTEXT);
+    }
+
+    /** as "Use existing security" of the table on the page of the security entry */
+    private static void useExistingSecurity(List<ExtractedEntry> entries, ExtractedEntry securityEntry,
+                    Security existing)
+    {
+        securityEntry.setImported(false);
+        securityEntry.setSecurityOverride(existing);
+        entries.stream().filter(e -> e.getSecurityDependency() == securityEntry)
+                        .forEach(e -> e.setSecurityOverride(existing));
+    }
+
+    /** as "Import" of the table on the page of the security entry */
+    private static void importAgain(List<ExtractedEntry> entries, ExtractedEntry securityEntry)
+    {
+        securityEntry.setImported(true);
+        securityEntry.setSecurityOverride(null);
+        entries.stream().filter(e -> e.getSecurityDependency() == securityEntry)
+                        .forEach(e -> e.setSecurityOverride(null));
+    }
+
+    private long shares(Security security)
+    {
+        return portfolio.getTransactions().stream().filter(t -> t.getSecurity() == security)
+                        .mapToLong(PortfolioTransaction::getShares).sum();
     }
 
     private long shares()
@@ -230,5 +254,98 @@ public class ManualSecuritiesTest
 
         assertThat(entriesA, hasSize(1));
         assertThat(entriesA.get(0).getSecurityDependency(), is(nullValue()));
+    }
+
+    // -- use an existing security instead of the new one
+
+    @Test
+    public void testExistingSecurityReplacesTheNewSecurityOnTheSamePage()
+    {
+        var existing = new SecurityBuilder(CurrencyUnit.EUR).addTo(client);
+
+        pageA.add(newSecurity);
+        buy(pageA, entriesA, newSecurity, 10);
+        useExistingSecurity(entriesA, entriesA.get(0), existing);
+
+        importAll();
+
+        assertThat(client.getSecurities().contains(newSecurity), is(false));
+        assertThat(shares(existing), is(Values.Share.factorize(10)));
+        assertThat(shares(newSecurity), is(0L));
+    }
+
+    @Test
+    public void testExistingSecurityReplacesTheNewSecurityOnOtherPages()
+    {
+        var existing = new SecurityBuilder(CurrencyUnit.EUR).addTo(client);
+
+        pageA.add(newSecurity);
+        buy(pageA, entriesA, newSecurity, 10);
+        buy(pageB, entriesB, newSecurity, 5);
+
+        // the table sets the override only for the entries of page A
+        useExistingSecurity(entriesA, entriesA.get(0), existing);
+
+        importAll();
+
+        assertThat(client.getSecurities().contains(newSecurity), is(false));
+        assertThat(shares(existing), is(Values.Share.factorize(15)));
+    }
+
+    @Test
+    public void testReplacementAppliesIfOnlyOtherPagesUseTheNewSecurity()
+    {
+        var existing = new SecurityBuilder(CurrencyUnit.EUR).addTo(client);
+
+        pageA.add(newSecurity);
+        buy(pageB, entriesB, newSecurity, 5);
+        useExistingSecurity(entriesA, entriesA.get(0), existing);
+
+        // shown again: the page applies the replacement before showing it
+        pageB.applyReplacements();
+        assertThat(entriesB.get(0).isImported(), is(true));
+
+        importAll();
+
+        assertThat(client.getSecurities().contains(newSecurity), is(false));
+        assertThat(shares(existing), is(Values.Share.factorize(5)));
+    }
+
+    @Test
+    public void testImportingTheNewSecurityAgainRevertsTheReplacementOnAllPages()
+    {
+        var existing = new SecurityBuilder(CurrencyUnit.EUR).addTo(client);
+
+        pageA.add(newSecurity);
+        buy(pageA, entriesA, newSecurity, 10);
+        buy(pageB, entriesB, newSecurity, 5);
+        useExistingSecurity(entriesA, entriesA.get(0), existing);
+        pageB.applyReplacements();
+
+        importAgain(entriesA, entriesA.get(0));
+
+        importAll();
+
+        assertThat(client.getSecurities().contains(newSecurity), is(true));
+        assertThat(shares(newSecurity), is(Values.Share.factorize(15)));
+        assertThat(shares(existing), is(0L));
+    }
+
+    @Test
+    public void testTransactionAddedAfterTheReplacementUsesTheExistingSecurity()
+    {
+        var existing = new SecurityBuilder(CurrencyUnit.EUR).addTo(client);
+
+        pageA.add(newSecurity);
+        useExistingSecurity(entriesA, entriesA.get(0), existing);
+
+        buy(pageB, entriesB, newSecurity, 7);
+
+        assertThat(entriesB.get(0).getSecurityOverride(), is(existing));
+
+        importAll();
+
+        assertThat(shares(existing), is(Values.Share.factorize(7)));
+        assertThat(client.getSecurities().contains(newSecurity), is(false));
     }
 }

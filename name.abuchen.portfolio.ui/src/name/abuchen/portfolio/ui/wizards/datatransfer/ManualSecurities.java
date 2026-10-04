@@ -58,7 +58,12 @@ final class ManualSecurities
     List<ExtractedEntry> withSecurityDependencies(List<ExtractedEntry> harvested)
     {
         for (var entry : harvested)
-            findNewSecurityEntry(entry.getItem().getSecurity()).ifPresent(entry::setSecurityDependency);
+        {
+            findNewSecurityEntry(entry.getItem().getSecurity()).ifPresent(dependency -> {
+                entry.setSecurityDependency(dependency);
+                applyReplacement(entry);
+            });
+        }
 
         return harvested;
     }
@@ -99,5 +104,42 @@ final class ManualSecurities
             entry.setImported(false);
             entries.removeIf(e -> e.getSecurityDependency() == entry);
         }
+    }
+
+    /**
+     * Applies the existing security which the user chose instead of a newly
+     * created one ("use existing security") to the dependent entries of all
+     * manual entry pages. The table stores the choice at the security entry,
+     * but sets it only for the dependent entries of its own page.
+     */
+    void applyReplacements()
+    {
+        allManualEntries.get().filter(entry -> entry.getSecurityDependency() != null)
+                        .forEach(ManualSecurities::applyReplacement);
+    }
+
+    private static void applyReplacement(ExtractedEntry entry)
+    {
+        var dependency = entry.getSecurityDependency();
+        if (!(dependency.getItem() instanceof Extractor.SecurityItem))
+            return;
+
+        entry.setSecurityOverride(dependency.isImported() ? null : dependency.getSecurityOverride());
+    }
+
+    /**
+     * Returns the items of this page to import. As for the automatically
+     * extracted items (see ImportController), the existing security chosen by
+     * the user replaces the newly created one.
+     */
+    List<Extractor.Item> getItemsToImport()
+    {
+        applyReplacements();
+
+        return entries.stream().filter(ExtractedEntry::isImported).map(entry -> {
+            if (entry.getSecurityOverride() != null)
+                entry.getItem().setSecurity(entry.getSecurityOverride());
+            return entry.getItem();
+        }).toList();
     }
 }
