@@ -1,8 +1,11 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.detectNumberLocale;
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
+
+import java.util.Locale;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
@@ -236,21 +239,19 @@ public class RaisinBankAGPDFExtractor extends AbstractPDFExtractor
                         .match("^.*Vorabpauschale pro Anteil [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                        .oneOf(
                         // @formatter:off
-                                        // Bestand 77.20617 Stück
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("shares") //
-                                                        .match("^Bestand (?<shares>[\\d]+\\.[\\d]+) St.ck.*$") //
-                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en", "US"))),
-                                        // @formatter:off
-                                        // Bestand 257,84 Stück
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("shares") //
-                                                        .match("^Bestand (?<shares>[\\.,\\d]+).*$") //
-                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
+                        // Bestand 257,84 Stück
+                        // Bestand 77.20617 Stück
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^Bestand (?<shares>[\\.,\\d]+) St.ck.*$") //
+                        .assign((t, v) -> {
+                            // The new layout prints the shares with a dot as
+                            // decimal separator while all amounts are German.
+                            // If the number is ambiguous (1.234), assume German.
+                            var locale = detectNumberLocale(v.get("shares")).orElse(Locale.GERMANY);
+                            t.setShares(asShares(v.get("shares"), locale));
+                        })
 
                         // @formatter:off
                         // Tag des steuerpflichtigen Zuflusses 02.01.2025
