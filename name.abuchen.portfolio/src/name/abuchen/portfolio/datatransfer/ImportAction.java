@@ -22,6 +22,18 @@ public interface ImportAction
 
         Account getSecondaryAccount(String currencyCode);
 
+        /**
+         * Returns the target account of a transfer from the source currency to
+         * the target currency. This allows to select different target accounts
+         * for transfers from different currencies into the same currency.
+         * <p>
+         * By default, only the target currency is considered.
+         */
+        default Account getSecondaryAccount(String sourceCurrencyCode, String targetCurrencyCode)
+        {
+            return getSecondaryAccount(targetCurrencyCode);
+        }
+
         Portfolio getSecondaryPortfolio();
     }
 
