@@ -1,0 +1,46 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.2
+-----------------------------------------
+Gern berät Sie:
+Volksbank eG
+Union Investment - Kundenservice
+Telefon: 069 58998-6100
+E-Mail: service@union-investment.de
+Frau UnionDepot: 123456789
+Maria Musterfrau Depotinhaberin:
+Musterstr.1 Maria Musterfrau
+12345 Musterstadt
+5. Juli 2024
+Umschichtungen in Ihrem UniProfiRente Select-Depot vom 01.01.2024 bis 30.06.2024
+UnionDepot-Nr.: 123456789
+Preisdatum ISIN Fondsname Anteile Preis in EUR Anteilbestand
+ Umschichtung durch Produktkonzept
+19.02.2024 LU0732152185 UniVorsorge 3 ASP 19,468 45,88 121,072
+LU0186860408 UniDividendenAss A 6,973 62,43 60,217
+LU0732152268 UniVorsorge 4 ASP -27,291 48,68 143,756
+ Umschichtung durch Produktkonzept
+08.03.2024 LU0732152185 UniVorsorge 3 ASP 2,145 46,08 123,587
+LU0186860408 UniDividendenAss A 7,649 63,56 68,065
+LU0732152268 UniVorsorge 4 ASP -11,893 49,19 132,286
+ Umschichtung durch Produktkonzept
+30.04.2024 LU0732152185 UniVorsorge 3 ASP 12,637 45,78 136,607
+LU0186860408 UniDividendenAss A 8,222 65,36 76,496
+LU0732152268 UniVorsorge 4 ASP -22,993 48,53 109,682
+Depotstruktur Ihrer UniProfiRente Select zum 30.06.2024
+Fondsname Anteile Rücknahme- Gegenwert
+ISIN preis in EUR in EUR
+UniDividendenAss A 81,122 63,48 5.149,62
+LU0186860408
+UniVorsorge 3 ASP 139,985 46,08 6.450,51
+LU0732152185
+UniVorsorge 4 ASP 112,175 48,79 5.473,02
+LU0732152268
+Gesamtwert 17.073,15
+Die Bewertung des Fonds erfolgt zum jeweils letzten verfügbaren Rücknahmepreis.
+Informationen zu den Investmentfonds Ihrer UniProfiRente Select finden Sie im Internet unter www.union-investment.de.
+Haben Sie Fragen zu den Umschichtungen? Rufen Sie uns einfach an! Wir sind gern für Sie da. Sie erreichen uns montags bis freitags zwi-
+schen 08:00 und 18:00 Uhr.
+Union Investment Service Bank AG · 60621 Frankfurt am Main
+Tel.: 069 58998-0 · E-Mail: service@union-investment.de · Internet: www.union-investment.de · Registergericht: Amtsgericht Frankfurt am Main HRB 54979
+Vorstand: Christoph Pöhlsen, Barbara Resch, Bettina Tews · Aufsichtsratsvorsitzende: Sonja Albers · Gläubiger-ID: DE81USB00000002100  
+Einzahlungen: DZ BANK AG Deutsche Zentral-Genossenschaftsbank, Frankfurt am Main, IBAN: DE34 5006 0400 0000 0006 86 (BIC: GENODEFFXXX)

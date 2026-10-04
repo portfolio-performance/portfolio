@@ -1,8 +1,11 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.detectNumberLocale;
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
+
+import java.util.Locale;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
@@ -238,10 +241,17 @@ public class RaisinBankAGPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Bestand 257,84 Stück
+                        // Bestand 77.20617 Stück
                         // @formatter:on
                         .section("shares") //
-                        .match("^Bestand (?<shares>[\\.,\\d]+).*$") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .match("^Bestand (?<shares>[\\.,\\d]+) St.ck.*$") //
+                        .assign((t, v) -> {
+                            // The new layout prints the shares with a dot as
+                            // decimal separator while all amounts are German.
+                            // If the number is ambiguous (1.234), assume German.
+                            var locale = detectNumberLocale(v.get("shares")).orElse(Locale.GERMANY);
+                            t.setShares(asShares(v.get("shares"), locale));
+                        })
 
                         // @formatter:off
                         // Tag des steuerpflichtigen Zuflusses 02.01.2025
@@ -252,9 +262,10 @@ public class RaisinBankAGPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Betrag zu Ihren Lasten -13,47 EUR
+                        // Betrag -11,65 EUR
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^Betrag zu Ihren Lasten \\-(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
+                        .match("^Betrag( zu Ihren Lasten)? (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
