@@ -1089,7 +1089,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
         });
         this.addDocumentTyp(type);
 
-        var pdfTransaction = new Transaction<BuySellEntry>();
+        var pdfTransaction = new Transaction<PortfolioTransaction>();
 
         var firstRelevantLine = new Block("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{4} )?[A-Z]{2}[A-Z0-9]{9}[0-9] .* (\\-)?[\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+$");
         firstRelevantLine.setMaxSize(1);
@@ -1098,7 +1098,9 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
+                        // A reallocation moves shares between funds without any cash
+                        // involved, therefore it is imported as inbound and outbound delivery
+                        .subject(() -> new PortfolioTransaction(PortfolioTransaction.Type.DELIVERY_INBOUND))
 
                         // @formatter:off
                         // Preisdatum ISIN Fondsname Anteile Preis in EUR Anteilbestand
@@ -1113,13 +1115,13 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             var context = type.getCurrentContext();
 
-                            // Is type --> "-" change from BUY to SELL
+                            // Is type --> "-" change from DELIVERY_INBOUND to DELIVERY_OUTBOUND
                             if ("-".equals(trim(v.get("type"))))
-                                t.setType(PortfolioTransaction.Type.SELL);
+                                t.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
 
                             t.setSecurity(getOrCreateSecurity(v));
 
-                            t.setDate(asDate(getNearestPrecedingValue(context, REALLOCATION_DATE, v.getStartLineNumber())));
+                            t.setDateTime(asDate(getNearestPrecedingValue(context, REALLOCATION_DATE, v.getStartLineNumber())));
                             t.setShares(asShares(v.get("shares")));
 
                             // @formatter:off
@@ -1138,7 +1140,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                             t.setNote(getNearestPrecedingValue(context, REALLOCATION_NOTE, v.getStartLineNumber()));
                         })
 
-                        .wrap(BuySellEntryItem::new);
+                        .wrap(TransactionItem::new);
     }
 
     private void addStockSplitTransaction()

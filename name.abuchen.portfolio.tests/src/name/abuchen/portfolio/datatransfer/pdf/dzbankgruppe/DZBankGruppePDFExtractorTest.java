@@ -17,6 +17,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundDelivery;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
@@ -3446,8 +3447,8 @@ public class DZBankGruppePDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(3L));
-        assertThat(countBuySell(results), is(9L));
-        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(9L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
@@ -3472,72 +3473,72 @@ public class DZBankGruppePDFExtractorTest
                         hasName("UniVorsorge 4 ASP"), //
                         hasCurrencyCode("EUR"))));
 
-        // check purchase transaction
-        assertThat(results, hasItem(purchase( //
+        // check delivery inbound (Einlieferung) transaction
+        assertThat(results, hasItem(inboundDelivery( //
                         hasDate("2024-02-19T00:00"), hasShares(19.468), //
                         hasSource("Umschichtung01.txt"), //
                         hasNote("Umschichtung durch Produktkonzept"), //
                         hasAmount("EUR", 893.19), hasGrossValue("EUR", 893.19), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // check purchase transaction
-        assertThat(results, hasItem(purchase( //
+        // check delivery inbound (Einlieferung) transaction
+        assertThat(results, hasItem(inboundDelivery( //
                         hasDate("2024-02-19T00:00"), hasShares(6.973), //
                         hasSource("Umschichtung01.txt"), //
                         hasNote("Umschichtung durch Produktkonzept"), //
                         hasAmount("EUR", 435.32), hasGrossValue("EUR", 435.32), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // check sale transaction
-        assertThat(results, hasItem(sale( //
+        // check delivery outbound (Auslieferung) transaction
+        assertThat(results, hasItem(outboundDelivery( //
                         hasDate("2024-02-19T00:00"), hasShares(27.291), //
                         hasSource("Umschichtung01.txt"), //
                         hasNote("Umschichtung durch Produktkonzept"), //
                         hasAmount("EUR", 1328.53), hasGrossValue("EUR", 1328.53), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // check purchase transaction
-        assertThat(results, hasItem(purchase( //
+        // check delivery inbound (Einlieferung) transaction
+        assertThat(results, hasItem(inboundDelivery( //
                         hasDate("2024-03-08T00:00"), hasShares(2.145), //
                         hasSource("Umschichtung01.txt"), //
                         hasNote("Umschichtung durch Produktkonzept"), //
                         hasAmount("EUR", 98.84), hasGrossValue("EUR", 98.84), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // check purchase transaction
-        assertThat(results, hasItem(purchase( //
+        // check delivery inbound (Einlieferung) transaction
+        assertThat(results, hasItem(inboundDelivery( //
                         hasDate("2024-03-08T00:00"), hasShares(7.649), //
                         hasSource("Umschichtung01.txt"), //
                         hasNote("Umschichtung durch Produktkonzept"), //
                         hasAmount("EUR", 486.17), hasGrossValue("EUR", 486.17), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // check sale transaction
-        assertThat(results, hasItem(sale( //
+        // check delivery outbound (Auslieferung) transaction
+        assertThat(results, hasItem(outboundDelivery( //
                         hasDate("2024-03-08T00:00"), hasShares(11.893), //
                         hasSource("Umschichtung01.txt"), //
                         hasNote("Umschichtung durch Produktkonzept"), //
                         hasAmount("EUR", 585.02), hasGrossValue("EUR", 585.02), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // check purchase transaction
-        assertThat(results, hasItem(purchase( //
+        // check delivery inbound (Einlieferung) transaction
+        assertThat(results, hasItem(inboundDelivery( //
                         hasDate("2024-04-30T00:00"), hasShares(12.637), //
                         hasSource("Umschichtung01.txt"), //
                         hasNote("Umschichtung durch Produktkonzept"), //
                         hasAmount("EUR", 578.52), hasGrossValue("EUR", 578.52), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // check purchase transaction
-        assertThat(results, hasItem(purchase( //
+        // check delivery inbound (Einlieferung) transaction
+        assertThat(results, hasItem(inboundDelivery( //
                         hasDate("2024-04-30T00:00"), hasShares(8.222), //
                         hasSource("Umschichtung01.txt"), //
                         hasNote("Umschichtung durch Produktkonzept"), //
                         hasAmount("EUR", 537.39), hasGrossValue("EUR", 537.39), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // check sale transaction
-        assertThat(results, hasItem(sale( //
+        // check delivery outbound (Auslieferung) transaction
+        assertThat(results, hasItem(outboundDelivery( //
                         hasDate("2024-04-30T00:00"), hasShares(22.993), //
                         hasSource("Umschichtung01.txt"), //
                         hasNote("Umschichtung durch Produktkonzept"), //
