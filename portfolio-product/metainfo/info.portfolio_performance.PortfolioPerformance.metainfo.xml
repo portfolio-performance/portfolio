@@ -37,6 +37,32 @@
 	    <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.88.0" date="2026-10-04">
+      <description>
+        <ul>
+          <li>New: Sifting is now available as an online provider for historical prices.</li>
+          <li>New: PDF importers for Alpian, Chase, Fondsdepot Bank, Morgan Stanley, Relai and Swisscard AECS.</li>
+          <li>New: The lists of deposit accounts, securities accounts and savings plans can be exported to CSV.</li>
+          <li>Improvement: Enhanced PDF importers for 1822direkt, 3 Banken, Advanzia Bank, Baader Bank, Bison, Consorsbank, DEGIRO, DZ Bank, Hello Bank, HypoVereinsbank, Hypothekarbank Lenzburg, ING-DiBa, LGT Bank, Liberty Vorsorge, Merkur Privatbank, MLP Banking, N26, Norddeutsche Landesbank, Oldenburgische Landesbank, Pictet, Postbank, Questrade, Quirin Privatbank, Schelhammer Capital Bank, Sutor Bank, Swissquote, Tradegate, UBS, Union Investment, V-Bank, Vanguard, VDK Bank, Volksbank, VZ VermögensZentrum, Weberbank and Zürcher Kantonalbank.</li>
+          <li>Improvement: The Yahoo Finance exchange picker now shows a label for FTSE Global Index quotes (.FGI).</li>
+          <li>Improvement: Converting a transaction now keeps the source it was imported from (for example, a buy into a delivery).</li>
+          <li>Fix: Historical prices from AMFI India load again after the provider changed its data format.</li>
+          <li>Fix: Yahoo Finance now uses the correct exchange code for the Saudi Stock Exchange (.SR).</li>
+          <li>Fix: The price preview for the MFAPI quote feed now updates when the scheme code changes.</li>
+          <li>Fix: The main tab area can no longer be detached by accident.</li>
+          <li xml:lang="de">Neu: Sifting steht jetzt als Online-Anbieter für historische Kurse zur Verfügung.</li>
+          <li xml:lang="de">Neu: PDF-Importer für Alpian, Chase, Fondsdepot Bank, Morgan Stanley, Relai und Swisscard AECS.</li>
+          <li xml:lang="de">Neu: Die Listen der Konten, Depots und Sparpläne lassen sich als CSV exportieren.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für 1822direkt, 3 Banken, Advanzia Bank, Baader Bank, Bison, Consorsbank, DEGIRO, DZ Bank, Hello Bank, HypoVereinsbank, Hypothekarbank Lenzburg, ING-DiBa, LGT Bank, Liberty Vorsorge, Merkur Privatbank, MLP Banking, N26, Norddeutsche Landesbank, Oldenburgische Landesbank, Pictet, Postbank, Questrade, Quirin Privatbank, Schelhammer Capital Bank, Sutor Bank, Swissquote, Tradegate, UBS, Union Investment, V-Bank, Vanguard, VDK Bank, Volksbank, VZ VermögensZentrum, Weberbank und Zürcher Kantonalbank wurden verbessert.</li>
+          <li xml:lang="de">Verbesserung: Die Auswahl der Börsenplätze bei Yahoo Finance zeigt jetzt eine Bezeichnung für Kurse des FTSE Global Index (.FGI).</li>
+          <li xml:lang="de">Verbesserung: Beim Umwandeln einer Buchung (zum Beispiel eines Kaufs in eine Einlieferung) bleibt die Quelle des Imports jetzt erhalten.</li>
+          <li xml:lang="de">Fehlerbehebung: Historische Kurse von AMFI India werden wieder geladen, nachdem der Anbieter sein Datenformat geändert hat.</li>
+          <li xml:lang="de">Fehlerbehebung: Yahoo Finance verwendet jetzt das korrekte Börsenkürzel für die saudische Börse (.SR).</li>
+          <li xml:lang="de">Fehlerbehebung: Die Kursvorschau für den Anbieter MFAPI wird jetzt aktualisiert, wenn sich der Scheme Code ändert.</li>
+          <li xml:lang="de">Fehlerbehebung: Der Hauptbereich mit den Registerkarten lässt sich nicht mehr versehentlich abdocken.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.87.0" date="2026-08-16">
       <description>
         <ul>
