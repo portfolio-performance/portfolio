@@ -287,10 +287,30 @@ public class StatementOfAssetsViewer
             elements.stream().filter(Element::isSecurity)
                             .forEach(e -> e.setPerformance(currencyCode, interval, map.get(e.getSecurity())));
 
-            elements.stream().filter(Element::isAccount).forEach(e -> {
-                var index = new LazyValue<PerformanceIndex>(() -> PerformanceIndex.forAccount(filteredClient,
-                                converter.with(currencyCode), e.getAccount(), interval, new ArrayList<>()));
+            var accountConverter = converter.with(currencyCode);
+            Map<Account, Long> interestByAccount = new HashMap<>();
+            Map<Account, LazyValue<PerformanceIndex>> indexesByAccount = new HashMap<>();
+            Map<Account, Long> sharesByAccount = elements.stream().filter(Element::isAccount)
+                            .collect(Collectors.groupingBy(Element::getAccount,
+                                            Collectors.summingLong(e -> e.getPosition().getPosition().getShares())));
 
+            elements.stream().filter(Element::isAccount).forEach(e -> {
+                var account = e.getAccount();
+                long interest = interestByAccount.computeIfAbsent(account,
+                                a -> calculateAccountInterest(this, a, currencyCode, interval));
+                // Include unassigned positions and match SecurityPosition.split rounding.
+                long allocatedInterest = BigDecimal.valueOf(interest)
+                                .multiply(BigDecimal.valueOf(e.getPosition().getPosition().getShares()))
+                                .divide(BigDecimal.valueOf(sharesByAccount.get(account)), 0, RoundingMode.HALF_DOWN)
+                                .longValueExact();
+                var interestValue = Money.of(currencyCode, allocatedInterest);
+                e.accountInterest.put(key, interestValue);
+                var balance = accountConverter.convert(getDate(), e.getPosition().getPosition().calculateValue());
+                e.accountPurchaseValue.put(key, balance.subtract(interestValue));
+
+                var index = indexesByAccount.computeIfAbsent(account,
+                                a -> new LazyValue<>(() -> PerformanceIndex.forAccount(filteredClient,
+                                                accountConverter, a, interval, new ArrayList<>())));
                 e.setPerformanceForCategoryTotals(currencyCode, interval, index);
             });
 
@@ -641,7 +661,8 @@ public class StatementOfAssetsViewer
                         + Messages.ColumnAccountPurchaseValue_Description);
         labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
                         record -> record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED), withSum(),
-                        (element, currencyCode, interval) -> accountPurchaseValue(model, element, currencyCode), null),
+                        (element, currencyCode, interval) -> accountPurchaseValue(model, element, currencyCode, interval),
+                        null),
                         false);
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
@@ -656,7 +677,8 @@ public class StatementOfAssetsViewer
                         + Messages.ColumnAccountPurchaseValue_Description);
         labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
                         record -> record.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED), withSum(),
-                        (element, currencyCode, interval) -> accountPurchaseValue(model, element, currencyCode), null),
+                        (element, currencyCode, interval) -> accountPurchaseValue(model, element, currencyCode, interval),
+                        null),
                         false);
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
@@ -1213,7 +1235,7 @@ public class StatementOfAssetsViewer
         labelProvider = new ReportingPeriodLabelProvider(
                         new ElementValueProvider(record -> record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
                                         null, (element, currencyCode, interval) -> accountPurchaseValue(model, element,
-                                                        currencyCode),
+                                                        currencyCode, interval),
                                         null),
                         e -> e.isSecurity() ? e.getSecurity().getCurrencyCode()
                                         : e.isAccount() ? e.getAccount().getCurrencyCode()
@@ -1402,30 +1424,31 @@ public class StatementOfAssetsViewer
                         .collect(MoneyCollectors.sum(model.getCurrencyConverter().getTermCurrency()));
     }
 
-    /* testing */ static Money accountPurchaseValue(Model model, Element element, String currencyCode)
+    /* testing */ static Money accountPurchaseValue(Model model, Element element, String currencyCode,
+                    Interval interval)
     {
-        CurrencyConverter converter = model.getCurrencyConverter().with(currencyCode);
-        Money balance = converter.convert(model.getDate(), element.getPosition().getPosition().calculateValue());
-        Money interest = accountInterest(model, element, currencyCode, model.getGlobalInterval());
-        return balance.subtract(interest);
+        model.calculatePerformanceAndInjectIntoElements(currencyCode, interval);
+        return element.accountPurchaseValue.get(new CacheKey(currencyCode, interval));
     }
 
     /* testing */ static Money accountInterest(Model model, Element element, String currencyCode, Interval interval)
     {
+        model.calculatePerformanceAndInjectIntoElements(currencyCode, interval);
+        return element.accountInterest.get(new CacheKey(currencyCode, interval));
+    }
+
+    private static long calculateAccountInterest(Model model, Account account, String currencyCode, Interval interval)
+    {
         CurrencyConverter converter = model.getCurrencyConverter().with(currencyCode);
-        long interest = element.getAccount().getTransactions().stream() //
+        return account.getTransactions().stream() //
                         .filter(t -> interval.contains(t.getDateTime())) //
                         .filter(t -> t.getType() == AccountTransaction.Type.INTEREST
                                         || t.getType() == AccountTransaction.Type.INTEREST_CHARGE) //
                         .mapToLong(t -> {
-                            long amount = converter.convert(t.getDateTime(), t.getMonetaryAmount()).getAmount();
+                            // Use the balance's valuation date so both account columns use the same exchange rate.
+                            long amount = converter.convert(model.getDate(), t.getMonetaryAmount()).getAmount();
                             return t.getType() == AccountTransaction.Type.INTEREST ? amount : -amount;
                         }).sum();
-
-        long shares = element.getPosition().getPosition().getShares();
-        long allocatedInterest = BigDecimal.valueOf(interest).multiply(BigDecimal.valueOf(shares))
-                        .divide(BigDecimal.valueOf(Values.Share.factor()), 0, RoundingMode.HALF_UP).longValueExact();
-        return Money.of(currencyCode, allocatedInterest);
     }
 
     public ShowHideColumnHelper getColumnHelper()
@@ -1467,6 +1490,8 @@ public class StatementOfAssetsViewer
 
         private Map<CacheKey, LazySecurityPerformanceRecord> performance = new HashMap<>();
         private Map<CacheKey, LazyValue<PerformanceIndex>> performanceForCategoryTotals = new HashMap<>();
+        private Map<CacheKey, Money> accountInterest = new HashMap<>();
+        private Map<CacheKey, Money> accountPurchaseValue = new HashMap<>();
 
         private Element(GroupByTaxonomy groupByTaxonomy, AssetCategory category, int sortOrder)
         {
@@ -1793,7 +1818,7 @@ public class StatementOfAssetsViewer
         private Object collectValue(Stream<Element> elements, String currencyCode, Interval interval)
         {
             return collector.apply(elements //
-                            .filter(e -> e.isSecurity() || accountValueProvider != null && e.isAccount()) //
+                            .filter(e -> e.isSecurity() || (accountValueProvider != null && e.isAccount())) //
                             .map(child -> getValue(child, currencyCode, interval)) //
                             .filter(Objects::nonNull));
         }

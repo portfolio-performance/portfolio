@@ -37,6 +37,14 @@
 	    <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.87.1" type="development">
+      <description>
+        <ul>
+          <li>New: Accounts now show purchase value, profit/loss from interest, and performance in the statement of assets. Purchase value and profit/loss totals now include accounts.</li>
+          <li xml:lang="de">Neu: Konten zeigen in der Vermögensaufstellung jetzt Einstandswert, Gewinn/Verlust aus Zinsen und Performance. Die Summen für Einstandswert und Gewinn/Verlust berücksichtigen jetzt auch Konten.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.87.0" date="2026-08-16">
       <description>
         <ul>
