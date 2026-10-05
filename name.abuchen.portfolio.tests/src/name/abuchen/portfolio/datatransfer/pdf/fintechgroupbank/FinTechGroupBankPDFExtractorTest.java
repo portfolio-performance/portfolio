@@ -7655,6 +7655,60 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testFlatExDegiroKontoauszug11()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroKontoauszug11.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(6L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(1L));
+        assertThat(results.size(), is(7));
+        new AssertImportActions().check(results, "EUR");
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        interest( //
+                                        hasDate("2026-03-31"), hasShares(0.00), //
+                                        hasSource("FlatExDegiroKontoauszug11.txt"), //
+                                        hasNote("Zinsabschluss 01.01.2026 - 31.03.2026"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-04-17"), hasAmount("EUR", 250.00), //
+                        hasSource("FlatExDegiroKontoauszug11.txt"), hasNote("Er752174888515904584"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-04-17"), hasAmount("EUR", 150.00), //
+                        hasSource("FlatExDegiroKontoauszug11.txt"), hasNote("Go232073202152738067"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-05-19"), hasAmount("EUR", 250.00), //
+                        hasSource("FlatExDegiroKontoauszug11.txt"), hasNote("eJ978910244859480755"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-05-19"), hasAmount("EUR", 1800.00), //
+                        hasSource("FlatExDegiroKontoauszug11.txt"), hasNote("Wd391247229262193081"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2026-06-10"), hasAmount("EUR", 8000.00), //
+                        hasSource("FlatExDegiroKontoauszug11.txt"), hasNote("XC023307750674965771"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-06-17"), hasAmount("EUR", 250.00), //
+                        hasSource("FlatExDegiroKontoauszug11.txt"), hasNote("Oc723230964070762008"))));
+    }
+
+    @Test
     public void testFlatExDeGiroSammelabrechnung01()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());

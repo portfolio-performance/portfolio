@@ -1862,11 +1862,6 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        // @formatter:off
-        // 01.10. 01.10. BIIWATWWXXX
-        // Mn132692519750748439 3.000,00-
-        // HEoVS yjYhmWXs
-        // @formatter:on
         var depositRemovalblock_Format02 = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}[A-Za-z0-9]{10,30}$");
         type.addBlock(depositRemovalblock_Format02);
         depositRemovalblock_Format02.setMaxSize(2);
@@ -1874,37 +1869,69 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
-                        .section("date", "note", "amount", "type") //
-                        .documentContext("year", "currency") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}[A-Za-z0-9]{10,12}$") //
-                        .match("(?<note>(.berweisung" //
-                                        + "|Lastschrift" //
-                                        + "|[A-Za-z0-9]{10,30}" //
-                                        + "|CASH .*" //
-                                        + "|EINZAHLUNG .*" //
-                                        + "|AUSZAHLUNG .*" //
-                                        + "|\\/REC\\/.*" //
-                                        + "|Pr.mie .*" //
-                                        + "|R\\-Transaktion"
-                                        + "|Gutschrift aus Kulanz))" //
-                                        + "[\\s]{1,}" //
-                                        + "(?<amount>[\\-\\.,\\d]+)" //
-                                        + "(?<type>[\\+|\\-]).*$") //
-                        .assign((t, v) -> {
-                            // Is type --> "-" change from DEPOSIT to REMOVAL
-                            if ("-".equals(v.get("type")))
-                                t.setType(AccountTransaction.Type.REMOVAL);
+                        .oneOf( //
+                                        // @formatter:off
+                                        // 01.10. 01.10. BIIWATWWXXX
+                                        // Mn132692519750748439 3.000,00-
+                                        // HEoVS yjYhmWXs
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "note", "amount", "type") //
+                                                        .documentContext("year", "currency") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}[A-Za-z0-9]{10,12}$") //
+                                                        .match("(?<note>(.berweisung" //
+                                                                        + "|Lastschrift" //
+                                                                        + "|[A-Za-z0-9]{10,30}" //
+                                                                        + "|CASH .*" //
+                                                                        + "|EINZAHLUNG .*" //
+                                                                        + "|AUSZAHLUNG .*" //
+                                                                        + "|\\/REC\\/.*" //
+                                                                        + "|Pr.mie .*" //
+                                                                        + "|R\\-Transaktion"
+                                                                        + "|Gutschrift aus Kulanz))" //
+                                                                        + "[\\s]{1,}" //
+                                                                        + "(?<amount>[\\-\\.,\\d]+)" //
+                                                                        + "(?<type>[\\+|\\-]).*$") //
+                                                        .assign((t, v) -> {
+                                                            // Is type --> "-" change from DEPOSIT to REMOVAL
+                                                            if ("-".equals(v.get("type")))
+                                                                t.setType(AccountTransaction.Type.REMOVAL);
 
-                            t.setDateTime(asDate(v.get("date") + v.get("year")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(v.get("currency"));
 
-                            // Formatting some notes
-                            if (v.get("note").startsWith("Prämie"))
-                                v.put("note", "Prämie");
+                                                            // Formatting some notes
+                                                            if (v.get("note").startsWith("Prämie"))
+                                                                v.put("note", "Prämie");
 
-                            t.setNote(trim(v.get("note")));
-                        })
+                                                            t.setNote(trim(v.get("note")));
+                                                        }),
+                                        // @formatter:off
+                                        // Überweisung
+                                        // BAWAATWWXXX
+                                        // 19.05. 19.05. Wd391247229262193081
+                                        // VCsXTN vPUBJu 1.800,00+
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "note", "amount", "type") //
+                                                        .documentContext("year", "currency") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}" //
+                                                                        + "(?<note>[A-Za-z0-9]{15,30})$") //
+                                                        .match("^.*[\\s]{1,}" //
+                                                                        + "(?<amount>[\\.,\\d]+)" //
+                                                                        + "(?<type>[\\+|\\-])$") //
+                                                        .assign((t, v) -> {
+                                                            // Is type --> "-" change from DEPOSIT to REMOVAL
+                                                            if ("-".equals(v.get("type")))
+                                                                t.setType(AccountTransaction.Type.REMOVAL);
+
+                                                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setNote(trim(v.get("note")));
+                                                        }))
 
                         .wrap(TransactionItem::new));
 
