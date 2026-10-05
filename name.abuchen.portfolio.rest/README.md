@@ -163,6 +163,15 @@ on a client's behalf. Watchlist and taxonomy membership do not block the delete.
 {"uuid": "d9f0…", "name": "Broker", "referenceCashAccount": "c4b2…", "note": "…"}
 ```
 
+## Compatibility
+
+Everything under `/v1` is additive: nothing changes meaning, changes type or disappears, and a
+breaking change means `/v2` at a new path. `GET /v1/version` reports the contract version. In return,
+a client must **ignore properties it does not know**, and must **accept unknown values in an open
+set**: a response field marked `x-extensible-enum` in `openapi.yaml` — problem `type`, `FieldError`
+`code`, trade warning `code`, attribute `type`, holding `type` — can gain values within v1, and each
+says what an unknown value means. A field with a plain `enum` is closed for v1.
+
 ## Writes are not saved
 
 A write mutates the in-memory file and marks it dirty, exactly as if you had edited it in the UI —

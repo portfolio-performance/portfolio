@@ -54,6 +54,17 @@ info:
     *newer* `1.x` than the server it meets will find some endpoints absent (`404`)
     and should say which, rather than failing wholesale.
 
+    For that to hold, a client owes two things in return:
+
+    - **Ignore properties you do not know.** New fields appear in responses
+      without notice.
+    - **Accept values you do not know in an open set.** A response field marked
+      `x-extensible-enum` lists the values known today, and new ones may be
+      added within v1 — new problem types, error codes, attribute types, kinds
+      of holding. Each such field says what an unknown value means; handle it
+      that way instead of failing. A field typed with a plain `enum` is closed:
+      its values are fixed for v1.
+
     Two things this deliberately does **not** promise: the order of items in a
     collection where none is documented, and the exact prose of a `title` or
     `message` field. Match on `type` and `code`, never on prose.
@@ -1554,8 +1565,12 @@ components:
           $ref: "#/components/schemas/InstrumentReference"
         code:
           type: string
-          description: Why the collector gave up on this security.
-          enum:
+          description: |
+            Why the collector gave up on this security.
+
+            **Open set:** new codes may be added within v1. Whatever the code,
+            the instrument contributed no trades; `message` says why.
+          x-extensible-enum:
             [
               no-holdings-for-sell,
               missing-holdings-for-sell,
@@ -1868,7 +1883,10 @@ components:
             desktop reads such an attribute as a percentage — the expected
             dividends column — 5 means 5%). Compound — `limit-price`,
             `bookmark`, `image` — appear with `supported: false`.
-          enum:
+
+            **Open set:** new types may be added within v1, as the application
+            gains them. Treat an unknown type as `supported: false`.
+          x-extensible-enum:
             - string
             - boolean
             - date
@@ -1967,7 +1985,11 @@ components:
       properties:
         type:
           type: string
-          enum: [instrument, cash-account]
+          description: |
+            **Open set:** new kinds of holding may be added within v1. A holding
+            of an unknown type still counts in `totalAssets` and `weight`; only
+            the join to master data is unknown.
+          x-extensible-enum: [instrument, cash-account]
         uuid:
           type: string
           description: |
@@ -2365,8 +2387,12 @@ components:
           description: The offending field (or the resource facet that blocks the operation).
         code:
           type: string
-          description: A stable, machine-readable reason.
-          enum:
+          description: |
+            A stable, machine-readable reason.
+
+            **Open set:** new codes may be added within v1. Treat an unknown
+            code as a rejection of `field` for the reason given in `message`.
+          x-extensible-enum:
             - required
             - invalid-type
             - invalid-value
@@ -2408,7 +2434,10 @@ components:
             with the `id`), `delete-blocked` (give up — the instrument is referenced).
             `method-not-allowed` (405) is returned for any method a path does not
             list; v1 has no create endpoints.
-          enum:
+
+            **Open set:** new problem types may be added within v1. Treat an
+            unknown `type` by its HTTP `status`.
+          x-extensible-enum:
             - https://portfolio-performance.info/rest/problems/invalid-request
             - https://portfolio-performance.info/rest/problems/unauthorized
             - https://portfolio-performance.info/rest/problems/forbidden-host
