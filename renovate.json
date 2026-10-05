@@ -6,6 +6,7 @@
     "The p2 update sites (<repository>/<unit> entries) are updated manually on a quarterly schedule and are deliberately out of scope."
   ],
   "extends": ["config:recommended"],
+  "rebaseWhen": "conflicted",
   "enabledManagers": ["custom.regex"],
   "customManagers": [
     {

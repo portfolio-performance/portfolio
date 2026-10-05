@@ -8,6 +8,7 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.util.Map;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -21,6 +22,8 @@ import name.abuchen.portfolio.money.Money;
 @SuppressWarnings("nls")
 public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
 {
+    private static final String SKIP_TRANSACTION = "skipTransaction";
+
     public QuirinBankAGPDFExtractor(Client client)
     {
         super(client);
@@ -33,6 +36,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
         addDividendeTransaction_Format01();
         addDividendeTransaction_Format02();
         addAdvanceTaxTransaction();
+        addQuarterlyReportBuySellTransaction();
         addDepotStatementTransaction();
     }
 
@@ -319,6 +323,13 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                         .match("^Zahlungstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
+                        // @formatter:off
+                        // Ex-Tag 16.09.2019
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Ex\\-Tag (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
                         .oneOf( //
                                         // @formatter:off
                                         // Ausmachender Betrag USD 1,57
@@ -426,6 +437,13 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                         .section("date") //
                         .match("^Zahlungstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Extag 27.01.2010
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Extag (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
 
                         // @formatter:off
                         // For dividend transactions, the gross amount is calculated.
@@ -570,6 +588,88 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setNote("Ref.-Nr.: " + trim(v.get("note"))))
 
                         .wrap(TransactionItem::new);
+    }
+
+    private void addQuarterlyReportBuySellTransaction()
+    {
+        final var type = new DocumentType("Wertpapierums.tze");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<BuySellEntry>();
+
+        var firstRelevantLine = new Block("^[A-Z]{2}[A-Z0-9]{9}[0-9] .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Kauf|Verkauf) .*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.setMaxSize(2);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
+
+                        // Is type --> "Verkauf" change from BUY to SELL
+                        .section("type").optional() //
+                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<type>(Kauf|Verkauf)) .*$") //
+                        .assign((t, v) -> {
+                            if ("Verkauf".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.SELL);
+                        })
+
+                        // @formatter:off
+                        // LU1931974692 Amundi Index Solu.-A.PRIME GL. 14.11.2024 Kauf 0,17890 ST 36,1050 EUR -6,46 EUR 0,00 EUR -6,46 EUR
+                        // EUR Nam.-Ant.UCI.ETF DR USD Dis.oN 18.11.2024 535338205 Berlin - Tradegate Exchange
+                        // @formatter:on
+                        .section("isin", "name", "currency", "name1") //
+                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Kauf|Verkauf) .*$") //
+                        .match("^(?<currency>[A-Z]{3}) (?<name1>.*) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ .*$") //
+                        .assign((t, v) -> {
+                            v.put("name", concatenate(v.get("name"), v.get("name1"), " "));
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
+
+                        // @formatter:off
+                        // IE00BKM4GZ66 iShs Core MSCI EM IMI U.ETF 13.12.2024 Verkauf -0,00090 ST 33,556467 EUR 0,03 EUR 0,00 EUR 0,03 EUR
+                        // @formatter:on
+                        .section("date", "shares", "fee", "amount", "currency") //
+                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] .* " //
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                        + "(Kauf|Verkauf) " //
+                                        + "(\\-)?(?<shares>[\\.,\\d]+) ST " //
+                                        + "[\\.,\\d]+ [A-Z]{3} " //
+                                        + "(\\-)?[\\.,\\d]+ [A-Z]{3} " //
+                                        + "(\\-)?(?<fee>[\\.,\\d]+) [A-Z]{3} " //
+                                        + "(\\-)?(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> {
+                            t.setDate(asDate(v.get("date")));
+                            t.setShares(asShares(v.get("shares")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+
+                            // The column "Gebühren/Steuern" does not
+                            // distinguish between fees and taxes and the sign
+                            // logic is still unclear. Transactions with costs
+                            // are skipped, the dedicated securities settlement
+                            // has to be imported instead.
+                            if (asAmount(v.get("fee")) != 0)
+                                type.getCurrentContext().put(SKIP_TRANSACTION, Messages.MsgErrorTransactionSkipIfDetailsMissing);
+                            else
+                                type.getCurrentContext().remove(SKIP_TRANSACTION);
+                        })
+
+                        // @formatter:off
+                        // EUR Nam.-Ant.UCI.ETF DR USD Dis.oN 18.11.2024 535338205 Berlin - Tradegate Exchange
+                        // @formatter:on
+                        .section("note") //
+                        .match("^[A-Z]{3} .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>[\\d]+) .*$") //
+                        .assign((t, v) -> t.setNote("Ref.-Nr.: " + trim(v.get("note"))))
+
+                        .wrap(t -> {
+                            // The flag must be removed, because the document
+                            // contains multiple transactions.
+                            if (type.getCurrentContext().containsKey(SKIP_TRANSACTION))
+                                return new SkippedItem(new BuySellEntryItem(t), type.getCurrentContext().remove(SKIP_TRANSACTION));
+
+                            return new BuySellEntryItem(t);
+                        });
     }
 
     private void addDepotStatementTransaction()

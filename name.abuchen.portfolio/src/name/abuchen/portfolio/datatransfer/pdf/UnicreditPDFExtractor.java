@@ -6,6 +6,7 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -33,6 +34,7 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
 
         addBuySellTransaction();
         addDividendTransaction();
+        addAdvanceTaxTransaction();
     }
 
     @Override
@@ -319,6 +321,81 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
 
         addFeesSectionsTransaction(pdfTransaction, type);
         addTaxesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addAdvanceTaxTransaction()
+    {
+        final var type = new DocumentType("Vorabpauschale f.r [\\d]{4}");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block("^S t e u e r \\- I n f o r m a t i o n s b e l e g.*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
+
+                        // @formatter:off
+                        // Nennwert / Stück / Kontraktzahl Wertpapier- bzw. Derivatbezeichnung     Wertpapierkennnummer/ISIN
+                        // St. 2.000,000 iShs Core MSCI EM IMI U.ETF   A111X9
+                        // Registered Shares o.N. IE00BKM4GZ66
+                        // @formatter:on
+                        .section("name", "wkn", "name1", "isin") //
+                        .find("Nennwert \\/ St.ck \\/ Kontraktzahl .*") //
+                        .match("^St\\. [\\.,\\d]+ (?<name>.*)[\\s]{1,}(?<wkn>[A-Z0-9]{6})$") //
+                        .match("^(?<name1>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                        .assign((t, v) -> {
+                            v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
+
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
+
+                        // @formatter:off
+                        // St. 2.000,000 iShs Core MSCI EM IMI U.ETF   A111X9
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^St\\. (?<shares>[\\.,\\d]+) .*$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // Valuta 24.01.2026
+                        // @formatter:on
+                        .section("date") //
+                        .match("^Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Belastung/Gutschrift EUR 216,83-
+                        // @formatter:on
+                        .section("currency", "amount", "type") //
+                        .match("^Belastung\\/Gutschrift (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)(?<type>(\\-)?).*$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+
+                            // Is type --> no "-" and amount is not zero change from TAXES to TAX_REFUND
+                            if (!"-".equals(v.get("type")) && t.getAmount() != 0)
+                                t.setType(AccountTransaction.Type.TAX_REFUND);
+                        })
+
+                        // @formatter:off
+                        // Buchungs-Kontonummer Steuer-Informationsbeleg-Nr.
+                        // 0000 9433405345 (R1) 679178241/26/0002
+                        // @formatter:on
+                        .section("note").optional() //
+                        .find("Buchungs\\-Kontonummer Steuer\\-Informationsbeleg\\-Nr\\..*") //
+                        .match("^.* (?<note>[\\d]+\\/[\\d]+\\/[\\d]+)[\\s]*$") //
+                        .assign((t, v) -> t.setNote("Beleg-Nr.: " + trim(v.get("note"))))
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                            return new TransactionItem(t);
+                        });
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)

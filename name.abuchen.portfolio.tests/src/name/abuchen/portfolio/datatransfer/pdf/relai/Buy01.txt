@@ -1,0 +1,15 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.4
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Account Email Account ID
+Max Mustermann max.mustermann@me.com 0b7593f4-fb78-48e6-8e51-2c0fdfdXXXXX
+Start date End date Exported at
+17.10.2025 22.10.2025 04.11.2025
+Statement of Bitcoin holdings on 22.10.2025
+Total BTC amount Bitcoin Price Total fiat amount
+0.00116054 BTC 86 431.18 CHF 99.10 CHF
+Transaction history report for MAX MUSTERMANN
+Date (DD.MM.YYYY) Type BTC amount BTC price Fiat amount excl. fee Fee Counterparty
+17.10.2025 20:09:05 Buy 0.00116054 85 374.42 CHF 99.10 CHF 0.90 CHF Relai Switzerland
+Page 1 of 1
