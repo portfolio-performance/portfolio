@@ -635,6 +635,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
                                         // @formatter:off
+                                        // Devisenkurs 1,161500 USD / EUR
                                         // 67,74 EUR
                                         // Netto in EUR
                                         // 78,68 USD
@@ -642,8 +643,31 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount", "currency") //
+                                                        .find("Devisenkurs.*") //
                                                         .find("Netto in [A-Z]{3}") //
-                                                        .match("^(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$")
+                                                        .match("^(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .match("^Netto in [A-Z]{3} (zugunsten|zulasten) .*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // Without capital gains tax there is no
+                                        // "Netto in EUR" line.
+                                        // The credited amount in foreign
+                                        // currency is then the line
+                                        // after "Quellensteuer in EUR".
+                                        // @formatter:off
+                                        // Devisenkurs 1,14630 USD / EUR
+                                        // 1,74 EUR
+                                        // Quellensteuer in EUR
+                                        // 11,26 USD
+                                        // Netto in USD zugunsten IBAN DE49 6789 3605 4408 5892 04
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .find("Devisenkurs.*") //
+                                                        .find("Quellensteuer in [A-Z]{3}") //
+                                                        .match("^(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                                                         .match("^Netto in [A-Z]{3} (zugunsten|zulasten) .*$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));

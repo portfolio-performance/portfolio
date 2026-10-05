@@ -1,0 +1,129 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.2
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+jRHej YyHFwnyTu EUWAX Aktiengesellschaft
+fYPlvJvpF-ruGlUSavA-zTg. 36 Börsenstraße 4
+65930 bdbSnm 70174 Stuttgart
+E-Mail: support@bisonapp.com
+Vorläufiger BISON Info-Report für das Steuerjahr 2026 (bis zum
+Der  vorläufige  Info-Report  zeigt  dir  die  Transaktionen  an,  die  bis  einschließlich
+17.01.2026 getätigt wurden. Realisierte Gewinne und Verluste können sich ändern, wenn
+(1) weitere Transaktionen innerhalb des Steuerjahres 2026 getätigt werden oder (2) sich
+der Preis der jeweiligen Kryptowährung ändert. Transaktionen, die im Kalenderjahr 2026
+nach  dem  17.01.2026  getätigt  werden,  sind  in  diesem  vorläufigen  Report  nicht
+berücksichtigt.
+Mit  dem  Info-Report  stellt  dir  BISON  deine  Transaktionen  übersichtlich  und  detailliert
+dar  und  stellt  dir  eine  unverbindliche  Berechnung  über  die  realisierten  Gewinne  und
+Verluste bei BISON nach dem FiFo-Verfahren (First-In First-Out) zu Verfügung.
+Unverbindliche  Berechnung  des  realisierten  Gewinns/Verlusts  nach  FiFo  aus
+Transaktionen bei BISON im Jahr 2026 (bis zum 17.01.2026 15:12) mit einer Haltedauer
+unter einem Jahr:
+0,00 €
+Bitte beachte, dass bei dieser Berechnung Kryptowährungen, bei denen du eine Krypto
+Ein- oder Auszahlung getätigt hast, nicht in die Berechnung der realisierten Gewinne und
+Verluste eingehen. Transaktionen für diese Kryptowährungen werden in Abschnitt 1 und
+2 grau hinterlegt.
+Diese  Information  stellt  keine  steuerliche  oder  rechtliche  Beratung  dar.  Bei  Fragen  zu
+deiner Einkommensteuererklärung oder sonstigen Angelegenheiten wende dich bitte an
+deinen Steuerberater.
+Mit freundlichen Grüßen
+BISON
+EUWAX Aktiengesellschaft Sitz der Gesellschaft: Stuttgart Vorstand: Dr. Manfred Pumbo,
+Börsenstraße 4 Registergericht: Amtsgericht Dragan Radanovic
+70174 Stuttgart Stuttgart, HRB 19972 Aufsichtsratsvorsitzender:
+support@bisonapp.com USt-ID: DE 175042226 Jürgen Steffan
+Anhang:
+1. Vorläufiger Info-Report für das Steuerjahr 2026 (bis zum 17.01.2026 15:12)
+2. Export deiner Transaktionsübersicht für das Steuerjahr 2026 (bis zum 17.01.2026
+3. Export deiner Krypto-Einzahlungen
+4. Export deiner Krypto-Auszahlungen
+EUWAX Aktiengesellschaft Sitz der Gesellschaft: Stuttgart Vorstand: Dr. Manfred Pumbo,
+Börsenstraße 4 Registergericht: Amtsgericht Dragan Radanovic
+70174 Stuttgart Stuttgart, HRB 19972 Aufsichtsratsvorsitzender:
+support@bisonapp.com USt-ID: DE 175042226 Jürgen Steffan
+1. Vorläufiger Info-Report für das Steuerjahr 2026 (bis zum 17.01.2026 15:12)
+Bei  BISON  werden  realisierte  Gewinne  und  Verluste  nach  dem  FiFo-Verfahren  (First-In
+First-Out)  errechnet.  Gewinne  und  Verluste  mit  über  einem  Jahr  Haltedauer  werden
+nicht berücksichtigt.
+Bitte beachte, dass bei dieser Berechnung Kryptowährungen, bei denen du eine Krypto
+Ein- oder Auszahlung getätigt hast, nicht in die Berechnung der realisierten Gewinne und
+Verluste eingehen. Transaktionen für diese Kryptowährungen werden in Abschnitt 1 und
+2 grau hinterlegt. Zusätzlich werden deine individuellen Krypto Ein- und Auszahlungen in
+Abschnitt 3 und 4 gesondert aufgelistet.
+Bitcoin
+Summe realisierte Gewinne/Verluste 2026 (bis zum 0,00 €
+Davon Haltedauer > 1 Jahr 0,00 €
+Davon Haltedauer ≤ 1 Jahr 0,00 €
+Ethereum
+Summe realisierte Gewinne/Verluste 2026 (bis zum 0,00 €
+Davon Haltedauer > 1 Jahr 0,00 €
+Davon Haltedauer ≤ 1 Jahr 0,00 €
+Summe erhaltene Staking Rewards 2026 (bis zum + 4,61 €
+Gesamtsumme realisierte Gewinne/Verluste 2026 (bis zum 0,00 €
+Davon Haltedauer > 1 Jahr 0,00 €
+Davon Haltedauer ≤ 1 Jahr 0,00 €
+Summe erhaltene Staking Rewards 2026 (bis zum + 4,61 €
+Unverbindliche Berechnung des realisierten 0,00 €
+Gewinns/Verlusts aus Transaktionen bei BISON im Jahr
+2026 (bis zum 17.01.2026 15:12) mit einer Haltedauer
+unter einem Jahr
+EUWAX Aktiengesellschaft Sitz der Gesellschaft: Stuttgart Vorstand: Dr. Manfred Pumbo,
+Börsenstraße 4 Registergericht: Amtsgericht Dragan Radanovic
+70174 Stuttgart Stuttgart, HRB 19972 Aufsichtsratsvorsitzender:
+support@bisonapp.com USt-ID: DE 175042226 Jürgen Steffan
+2. Export deiner Transaktionsübersicht für das Steuerjahr 2026 (bis zum
+*  Im Info-Report  berücksichtigte  Transaktionen  für  die  unverbindliche  Berechnung  des
+realisierten  Gewinns/Verlustes  aus  Transaktionen  bei  BISON  im  Jahr  2026  (bis  zum
+17.01.2026 15:12) mit einer Haltedauer unter einem Jahr.
+Einzahlung
+16.01.2026 07:48 + 1.000,00 €
+Staking-Belohnung ETH 0,00087820
+12.01.2026 08:00 2.705,45 €/ETH + 2,38 €
+Staking-Belohnung ETH 0,00086188
+05.01.2026 08:00 2.589,59 €/ETH + 2,23 €
+Kauf BTC 0,01316467
+01.01.2026 09:06 75.960,88 €/BTC - 1.000,00 €
+EUWAX Aktiengesellschaft Sitz der Gesellschaft: Stuttgart Vorstand: Dr. Manfred Pumbo,
+Börsenstraße 4 Registergericht: Amtsgericht Dragan Radanovic
+70174 Stuttgart Stuttgart, HRB 19972 Aufsichtsratsvorsitzender:
+support@bisonapp.com USt-ID: DE 175042226 Jürgen Steffan
+3. Export deiner Krypto-Einzahlungen
+Kryptowährungen, bei denen du eine Krypto-Einzahlung getätigt hast, gehen nicht in die
+Berechnung  der  realisierten  Gewinne  und  Verluste  ein,  da  BISON  keine  Informationen
+über das ursprüngliche Kaufdatum bzw. den Kaufpreis einer Krypto-Einzahlung hat. Eine
+Zuordnung nach FiFo-Verfahren (First-In First-Out) ist nicht möglich.
+EUWAX Aktiengesellschaft Sitz der Gesellschaft: Stuttgart Vorstand: Dr. Manfred Pumbo,
+Börsenstraße 4 Registergericht: Amtsgericht Dragan Radanovic
+70174 Stuttgart Stuttgart, HRB 19972 Aufsichtsratsvorsitzender:
+support@bisonapp.com USt-ID: DE 175042226 Jürgen Steffan
+4. Export deiner Krypto-Auszahlungen
+Kryptowährungen, bei denen du eine Krypto-Auszahlung getätigt hast, gehen nicht in die
+Berechnung  der  realisierten  Gewinne  und  Verluste  ein,  da  diese  nicht  über  BISON
+verkauft  wurden.  Eine  Zuordnung  nach  FiFo-Verfahren  (First-In  First-Out)  ist  nicht
+möglich.
+EUWAX Aktiengesellschaft Sitz der Gesellschaft: Stuttgart Vorstand: Dr. Manfred Pumbo,
+Börsenstraße 4 Registergericht: Amtsgericht Dragan Radanovic
+70174 Stuttgart Stuttgart, HRB 19972 Aufsichtsratsvorsitzender:
+support@bisonapp.com USt-ID: DE 175042226 Jürgen Steffan
+Hinweise zum Info-Report
+Für Deutschland gilt:
+Der Tausch oder Rücktausch von Kryptowährung, die vom Verkäufer nicht selbst generiert wurden, in Euro
+oder eine andere Kryptowährung führen zu einem privaten Veräußerungsgeschäft i. S. des § 23 Abs. 1 Satz 1
+Nr.  2  EStG.  Das  gilt  jedoch  nur,  wenn  zwischen  Erwerb  und  Veräußerung  nicht  mehr  als  ein  Jahr  liegt
+(Spekulationsfrist) und die jährliche Freigrenze in Höhe von 1.000 EUR überschritten wurde. Diese Freigrenze
+gilt  allerdings  für  den  Gesamtgewinn  aus  sämtlichen  privaten  Veräußerungsgeschäften  innerhalb  eines
+Jahres.  Verluste  dürfen  nur  bis  zu  Höhe  des  Gewinns,  der  im  gleichen  Jahr  aus  privaten
+Veräußerungsgeschäften  erzielt  wurde,  verrechnet  werden.  Ein  Verlustrücktrag  bzw.  -  vortrag  ist
+grundsätzlich möglich.
+Der  Gewinn  aus  der  Veräußerung  von  Kryptowährung  ergibt  sich  als  Differenz  zwischen  den
+Anschaffungskosten und dem Veräußerungspreis. Hierbei wird die Fifo-Methode angewandt (§ 23 Abs. 1 Nr.
+2  Satz  3  EStG),  wonach unterstellt  wird,  dass  die  zuerst  angeschafften Bestände zuerst  veräußert  wurden.
+Realisierte Gewinne und Verluste sind in der Regel in der Anlage SO bei der Steuererklärung anzugeben.
+Diese  Information  stellt  keine  steuerliche  oder  rechtliche  Beratung  dar.  Bei  Fragen  zu  deiner
+Einkommensteuererklärung oder sonstigen Angelegenheiten wende dich bitte an deinen Steuerberater.
+Diese Bescheinigung ist maschinell erstellt und wird nicht unterschrieben.
+EUWAX Aktiengesellschaft Sitz der Gesellschaft: Stuttgart Vorstand: Dr. Manfred Pumbo,
+Börsenstraße 4 Registergericht: Amtsgericht Dragan Radanovic
+70174 Stuttgart Stuttgart, HRB 19972 Aufsichtsratsvorsitzender:
+support@bisonapp.com USt-ID: DE 175042226 Jürgen Steffan

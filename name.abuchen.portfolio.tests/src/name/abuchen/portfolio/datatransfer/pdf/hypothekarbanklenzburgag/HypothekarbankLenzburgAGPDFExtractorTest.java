@@ -4,6 +4,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -830,7 +831,8 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-06-26T00:00"), hasShares(168.00), //
+                        hasDate("2024-06-26T00:00"), hasExDate("2024-06-13T00:00"), //
+                        hasShares(168.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Quartalsdividende | Transaktion 65062408"), //
                         hasAmount("CHF", 116.96), hasGrossValue("CHF", 116.96), //
@@ -866,7 +868,8 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-06-26T00:00"), hasShares(168.00), //
+                        hasDate("2024-06-26T00:00"), hasExDate("2024-06-13T00:00"), //
+                        hasShares(168.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Quartalsdividende | Transaktion 65062408"), //
                         hasAmount("CHF", 116.96), hasGrossValue("CHF", 116.96), //
@@ -900,7 +903,8 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-07-02T00:00"), hasShares(7.00), //
+                        hasDate("2024-07-02T00:00"), hasExDate("2024-06-24T00:00"), //
+                        hasShares(7.00), //
                         hasSource("Dividende02.txt"), //
                         hasNote("Quartalsdividende | Transaktion 65379273"), //
                         hasAmount("CHF", 2.66), hasGrossValue("CHF", 2.66), //
@@ -936,7 +940,8 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-07-02T00:00"), hasShares(7.00), //
+                        hasDate("2024-07-02T00:00"), hasExDate("2024-06-24T00:00"), //
+                        hasShares(7.00), //
                         hasSource("Dividende02.txt"), //
                         hasNote("Quartalsdividende | Transaktion 65379273"), //
                         hasAmount("CHF", 2.66), hasGrossValue("CHF", 2.66), //
@@ -970,7 +975,8 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-04-04T00:00"), hasShares(10.00), //
+                        hasDate("2024-04-04T00:00"), hasExDate("2024-04-02T00:00"), //
+                        hasShares(10.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote("Jahresdividende | Transaktion 46148061"), //
                         hasAmount("CHF", 143.00), hasGrossValue("CHF", 220.00), //
@@ -1004,7 +1010,8 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-04-25T00:00"), hasShares(25.00), //
+                        hasDate("2024-04-25T00:00"), hasExDate("2024-04-23T00:00"), //
+                        hasShares(25.00), //
                         hasSource("Dividende04.txt"), //
                         hasNote("Jahresdividende | Transaktion 57923179"), //
                         hasAmount("CHF", 56.87), hasGrossValue("CHF", 87.50), //
@@ -1038,7 +1045,8 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-04-25T00:00"), hasShares(25.00), //
+                        hasDate("2024-04-25T00:00"), hasExDate("2024-04-23T00:00"), //
+                        hasShares(25.00), //
                         hasSource("Dividende05.txt"), //
                         hasNote("Transaktion 62847906"), //
                         hasAmount("CHF", 87.50), hasGrossValue("CHF", 87.50), //
@@ -1072,7 +1080,8 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-09-12T00:00"), hasShares(9.00), //
+                        hasDate("2023-09-12T00:00"), hasExDate("2023-08-10T00:00"), //
+                        hasShares(9.00), //
                         hasSource("Dividende06.txt"), //
                         hasNote("Halbjahresdividende | Transaktion 55134009"), //
                         hasAmount("CHF", 6.75), hasGrossValue("CHF", 6.75), //
@@ -1108,7 +1117,8 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-09-12T00:00"), hasShares(9.00), //
+                        hasDate("2023-09-12T00:00"), hasExDate("2023-08-10T00:00"), //
+                        hasShares(9.00), //
                         hasSource("Dividende06.txt"), //
                         hasNote("Halbjahresdividende | Transaktion 55134009"), //
                         hasAmount("CHF", 6.75), hasGrossValue("CHF", 6.75), //
@@ -1142,7 +1152,8 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-05-13T00:00"), hasShares(2.00), //
+                        hasDate("2025-05-13T00:00"), hasExDate("2025-05-09T00:00"), //
+                        hasShares(2.00), //
                         hasSource("Dividende07.txt"), //
                         hasNote("Jahresdividende | Transaktion 78321807"), //
                         hasAmount("CHF", 3.73), hasGrossValue("CHF", 5.06), //
@@ -1178,7 +1189,8 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-05-13T00:00"), hasShares(2.00), //
+                        hasDate("2025-05-13T00:00"), hasExDate("2025-05-09T00:00"), //
+                        hasShares(2.00), //
                         hasSource("Dividende07.txt"), //
                         hasNote("Jahresdividende | Transaktion 78321807"), //
                         hasAmount("CHF", 3.73), hasGrossValue("CHF", 5.06), //
@@ -1212,7 +1224,8 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-10-13T00:00"), hasShares(4.00), //
+                        hasDate("2023-10-13T00:00"), hasExDate("2023-09-29T00:00"), //
+                        hasShares(4.00), //
                         hasSource("Dividende08.txt"), //
                         hasNote("Quartalsdividende | Transaktion 56086336"), //
                         hasAmount("CHF", 0.19), hasGrossValue("CHF", 0.24), //
@@ -1248,7 +1261,8 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-10-13T00:00"), hasShares(4.00), //
+                        hasDate("2023-10-13T00:00"), hasExDate("2023-09-29T00:00"), //
+                        hasShares(4.00), //
                         hasSource("Dividende08.txt"), //
                         hasNote("Quartalsdividende | Transaktion 56086336"), //
                         hasAmount("CHF", 0.19), hasGrossValue("CHF", 0.24), //
