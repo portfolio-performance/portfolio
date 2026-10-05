@@ -102,8 +102,9 @@ resolution, the modal write gate, UI-thread marshalling for entity reads/writes,
 mapping all live in the filter chain and cannot be forgotten per endpoint. Calculation endpoints use
 the same file-scope resolution but intentionally run their expensive read-only work off the UI thread.
 The wire conventions that would force a `/v2` if changed later — money shape, date format, list
-responses as an `{items: […]}` envelope rather than a bare array, and the problem `code` vocabulary —
-are fixed from day one.
+responses as an `{items: […]}` envelope rather than a bare array, and the meaning of each problem
+`type` and `code` — are fixed from day one. The *set* of types and codes is open: new ones are added
+within v1, and clients are told to expect them.
 
 The port is fixed (default 5712) and never hops on bind failure; a conflict is reported rather than
 silently worked around, because a client that finds the API on an unexpected port cannot know whose

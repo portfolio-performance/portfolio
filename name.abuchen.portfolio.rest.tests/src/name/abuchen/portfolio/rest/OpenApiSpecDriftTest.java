@@ -61,6 +61,24 @@ public class OpenApiSpecDriftTest
      */
     private static final Set<String> NOT_REST_OPERATIONS = Set.of("POST /mcp");
 
+    /**
+     * Response enums whose set of values may grow within v1. Each documents
+     * what a client does with a value it does not know.
+     */
+    private static final Set<String> OPEN_ENUMS = Set.of("Problem.type", "FieldError.code", "TradeWarning.code",
+                    "AttributeDefinition.type", "Holding.type");
+
+    /**
+     * Response enums whose values are fixed for v1: binary by nature, a state
+     * machine whose outcomes are exhaustive, or the echo of a request parameter
+     * - which only carries a new value if the client sent it.
+     */
+    private static final Set<String> CLOSED_ENUMS = Set.of("Trade.status", "Trade.direction",
+                    "PairingRequestStatus.status", "TradesResponse.costMethod", "TradesResponse.taxesAndFees",
+                    "TradesResponse.grouping", "TradesResponse.status", "Performance.costMethod",
+                    "InstrumentPerformanceContext.costMethod", "InstrumentPerformanceContext.taxesAndFees",
+                    "InstrumentPerformanceContext.metrics");
+
     private IEclipsePreferences node;
 
     @Before
@@ -104,10 +122,25 @@ public class OpenApiSpecDriftTest
         var orphaned = new TreeSet<>(documented);
         orphaned.removeAll(emitted);
 
-        assertThat("FieldError codes emitted by handlers but missing from the OpenAPI FieldError.code enum: "
+        assertThat("FieldError codes emitted by handlers but missing from the OpenAPI FieldError.code values: "
                         + undocumented, undocumented, is(empty()));
-        assertThat("codes in the OpenAPI FieldError.code enum that no handler emits: " + orphaned, orphaned,
+        assertThat("codes in the OpenAPI FieldError.code values that no handler emits: " + orphaned, orphaned,
                         is(empty()));
+    }
+
+    /**
+     * Adding a value to a closed enum breaks a client generated from the
+     * document, adding one to an open enum does not - so every response enum
+     * has to be classified deliberately rather than defaulting to closed. A
+     * new enum fails here until it is added to one of the two lists.
+     */
+    @Test
+    public void testEveryResponseEnumIsClassifiedOpenOrClosed() throws IOException
+    {
+        assertThat("response enums marked x-extensible-enum", documentedSchemaEnums("x-extensible-enum:"),
+                        is(new TreeSet<>(OPEN_ENUMS)));
+        assertThat("response enums marked enum (closed for v1)", documentedSchemaEnums("enum:"),
+                        is(new TreeSet<>(CLOSED_ENUMS)));
     }
 
     @Test
@@ -466,7 +499,7 @@ public class OpenApiSpecDriftTest
         return codes;
     }
 
-    /** The FieldError.code enum values documented in the OpenAPI file. */
+    /** The FieldError.code values documented in the OpenAPI file (an open set). */
     private Set<String> documentedFieldErrorCodes() throws IOException
     {
         var codes = new TreeSet<String>();
@@ -488,7 +521,7 @@ public class OpenApiSpecDriftTest
                 inFieldError = "FieldError:".equals(content);
                 inEnum = false;
             }
-            else if (inFieldError && content.equals("enum:"))
+            else if (inFieldError && content.equals("x-extensible-enum:"))
                 inEnum = true;
             else if (inFieldError && inEnum && content.startsWith("- "))
                 codes.add(content.substring(2).strip());
@@ -497,9 +530,61 @@ public class OpenApiSpecDriftTest
         }
 
         if (codes.isEmpty())
-            throw new IllegalStateException("no FieldError.code enum parsed from the OpenAPI document");
+            throw new IllegalStateException("no FieldError.code values parsed from the OpenAPI document");
 
         return codes;
+    }
+
+    /**
+     * The properties under {@code components/schemas} that carry the given
+     * enum keyword, as "Schema.property". Request enums live in parameters,
+     * not schemas, so this is exactly the set of enums a response can carry.
+     */
+    private Set<String> documentedSchemaEnums(String keyword) throws IOException
+    {
+        var result = new TreeSet<String>();
+
+        var inSchemas = false;
+        String schema = null;
+        String property = null;
+
+        for (var raw : readSpec().split("\n", -1))
+        {
+            if (raw.isBlank())
+                continue;
+
+            var indent = indentOf(raw);
+            var content = raw.strip();
+
+            if (indent <= 2)
+            {
+                inSchemas = indent == 2 && "schemas:".equals(content);
+                schema = null;
+                property = null;
+            }
+            else if (!inSchemas)
+            {
+                continue;
+            }
+            else if (indent == 4 && content.endsWith(":"))
+            {
+                schema = content.substring(0, content.length() - 1);
+                property = null;
+            }
+            else if (indent == 8 && content.endsWith(":"))
+            {
+                property = content.substring(0, content.length() - 1);
+            }
+            else if (schema != null && property != null && content.startsWith(keyword))
+            {
+                result.add(schema + "." + property);
+            }
+        }
+
+        if (result.isEmpty())
+            throw new IllegalStateException("no " + keyword + " parsed from the OpenAPI document");
+
+        return result;
     }
 
     /** Locates {@code name.abuchen.portfolio.rest/src} by walking up from the working directory. */
