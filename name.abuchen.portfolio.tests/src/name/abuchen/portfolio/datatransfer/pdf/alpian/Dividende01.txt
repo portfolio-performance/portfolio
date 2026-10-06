@@ -1,0 +1,36 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.79.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Alpian SA
+Chemin des Crêts 17
+Petit-Saconnex - 1209 Geneva
+Switzerland
+www.alpian.com
+Geneva, 24 January 2025
+hLT
+aKfuq
+snnCsCQDfRoX
+EQSersmG
+1526
+CH
+Payment dividend advice
+Dear XJW aKfuq,
+We would like to notify you about a cash dividend received for the following security:
+Security ISIN & name: 800000-056   iShares Swiss Dom Govt BdCH0016999846
+Currency: CHF
+TRANSACTION DETAILS
+Trade date: 21.01.2025
+Value date: 23.01.2025
+Qualifying nominal: 3
+Dividend per share: 0.58
+Gross total amount: CHF 1.74
+Witholding tax: CHF 0.61
+Net amount: CHF 1.13
+This amount has been credited on your account.
+We remain at your disposal for any additional information.
+Kind regards,
+Alpian SA
+Advice without signature
+Disclaimer: This statement shall be considered to be approved if no complaint is received by Alpian SA within 30 days.
+24.01.2025 16:31:00.534 7def2298-14e1-4d11-940d-0ddb2ca344e5 Page 1 of 1

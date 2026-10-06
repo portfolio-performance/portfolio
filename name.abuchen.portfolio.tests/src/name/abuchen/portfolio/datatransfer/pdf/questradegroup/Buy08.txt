@@ -1,0 +1,74 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.85.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE CONFIRMATION REPORT
+Account #: 70254714 Dealer: Questrade, Inc. Type: RSP
+Client: RcyZRb TjznDiY
+Order execution only account
+Summary
+Stocks and Options Canadian securities U.S. securities
+Purchase 0.00 (3,140.14)
+Sales 0.00 0.00
+Total gross 0.00 (3,140.14)
+Commission 0.00 0.00
+Sec fees 0.00 0.00
+Interest amount 0.00 0.00
+Total fees 0.00 0.00
+Total amount 0.00 (3,140.14)
+U.S. stocks and options - Account 1168657824
+Report generated on 04:42:49 PM 07.07.2026 TRADE CONFIRMATION REPORT 1 of 10
+TRADE CONFIRMATION REPORT
+Account #: 63734632 Dealer: Questrade, Inc. Type: RSP
+Client: JhznMi FjhiUzH
+Order execution only account
+Report generated on 04:42:49 PM 07.07.2026 TRADE CONFIRMATION REPORT 2 of 10
+TRADE CONFIRMATION REPORT
+Account #: 73499048 Dealer: Questrade, Inc. Type: RSP
+Client: zULLWo grNQzYk
+Order execution only account
+Trade D Settlement Trade # Action Quantity Symbol T G SEC fees Interest 
+ate ross am
+B EX Price (USD) ount 
+date (USD) Comm (USD) (USD) amount Net amount (USD)
+(USD)
+15-07-25 16-07-25 30F9C7 Buy 96 IVLU A NY 32.71 (3,140.14) 0.00 0.00 0.00 (3,140.14)
+Description ISHARES TRUST, ISHARES MSCI INTL VALUE FACTOR, ETF 
+Totals (3,140.14) 0.00 0.00 0.00 (3,140.14)
+Report generated on 04:42:49 PM 07.07.2026 TRADE CONFIRMATION REPORT 3 of 10
+TRADE CONFIRMATION REPORT
+Account #: 11998494 Dealer: Questrade, Inc. Type: RSP
+Client: FDQRVS AWdjojB
+Order execution only account
+Report generated on 04:42:49 PM 07.07.2026 TRADE CONFIRMATION REPORT 4 of 10
+TRADE CONFIRMATION REPORT
+Account #: 05298065 Dealer: Questrade, Inc. Type: RSP
+Client: gBdHGE sLkpQnh
+Order execution only account
+Report generated on 04:42:49 PM 07.07.2026 TRADE CONFIRMATION REPORT 5 of 10
+TRADE CONFIRMATION REPORT
+Account #: 33099929 Dealer: Questrade, Inc. Type: RSP
+Client: SdlLhq pyFDUjM
+Order execution only account
+Report generated on 04:42:49 PM 07.07.2026 TRADE CONFIRMATION REPORT 6 of 10
+TRADE CONFIRMATION REPORT
+Account #: 21460576 Dealer: Questrade, Inc. Type: RSP
+Client: gYDXCF AlcYJCa
+Order execution only account
+Report generated on 04:42:49 PM 07.07.2026 TRADE CONFIRMATION REPORT 7 of 10
+TRADE CONFIRMATION REPORT
+Account #: 61399389 Dealer: Questrade, Inc. Type: RSP
+Client: HxgfPO XXntPxF
+Order execution only account
+Report generated on 04:42:49 PM 07.07.2026 TRADE CONFIRMATION REPORT 8 of 10
+TRADE CONFIRMATION REPORT
+Account #: 37453210 Dealer: Questrade, Inc. Type: RSP
+Client: QDmVVX btqmnEp
+Order execution only account
+Report generated on 04:42:49 PM 07.07.2026 TRADE CONFIRMATION REPORT 9 of 10
+TRADE CONFIRMATION REPORT
+Account #: 92730879 Dealer: Questrade, Inc. Type: RSP
+Client: eqJWJj GDBCLOO
+Order execution only account
+Report generated on 04:42:49 PM 07.07.2026 TRADE CONFIRMATION REPORT 10 of 10
+

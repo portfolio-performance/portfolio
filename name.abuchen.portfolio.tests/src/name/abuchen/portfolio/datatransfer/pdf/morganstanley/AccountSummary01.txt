@@ -1,0 +1,167 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.87.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+SlIRc YECSNV​ Account Summary​
+iDzRBEHCMAOXEkbQAn 36​ Summary Period: 01-Jan-2025 to 31-Dec-2025​
+YhtpFk  22319​ Account Number: MS-123456-78​
+ElVZeNa​ Company: IBM​
+ ​
+Price History Over Summary Period​
+ ​ 01-Jan-2025​ 31-Dec-2025​ % Change​
+IBM - NYSE​ $219.83​ $296.21​ 35%​
+All currencies are in US Dollars unless specified.​
+ ​
+ ​
+ ​
+Page 1​
+ Share Units - Release (RB12345678)​
+Grant Name:​ 2000-01-01T00:00:00 1000 RSU​ Delivery Method:​ Retain shares in StockPlan Connect​
+07/10/2023 132.36​ Account​
+Grant Date:​ 10-Jul-2023​ Number of Restricted Awards Released:​ 57​
+Market Price at Time of Grant:​ $132.36 USD​ Number of Restricted Awards Withheld:​ 26​
+Release Price:​ $285.555 USD​ Number of Restricted Awards Issued:​ 31​
+Quantity Released:​ 57​ Number of Restricted Awards Sold:​ 0​
+Release Date:​ 10-Jul-2025​ Number of Restricted Awards Disbursed:​ 31​
+Settlement Date:​ 14-Jul-2025​ Gross Release Value:​ $16,276.635 USD​
+Release Method:​ Withhold shares to cover taxes, pay for​  ​  ​
+fees separately, receive remaining shares​
+ Value of Shares Withheld​
+Description​ Value​
+Federal Tax​ $7,424.43 USD​
+ ​
+ ​
+Summary of Long Share Holding Account​
+ ​
+IBM Long Share Account​
+Plan Information as of 31-Dec-2025​
+Plan Entry :​ 01-Jan-2000​
+Last Contribution :​ None​
+Last Transaction :​ 12-Sep-2026​
+Employee Plan Status :​ Open​
+ ​
+ Current Value​
+Stock​ Cash Awaiting​ Current Value​ Vested Value​ Unvested Value​ Source​
+Investment​ Participant​
+Cash - USD​ $0.00​ $4.30​ $4.30​ $0.00​ $4.30​
+IBM - NYSE​ $0.00​ $27,563.82​ $27,563.82​ $0.00​ $27,563.82​
+ ​ $0.00​ $27,568.12​ $27,568.12​ $0.00​ $27,568.12​
+All currencies are in US Dollars unless specified.​
+ ​
+ Summary of Cash Holdings​
+Stock​ Current Value​
+Type of Money: Participant​
+Cash - USD​ $4.30​
+* The cost basis displayed here may not be equal to the original purchase price and may have been adjusted after this transaction has settled.​
+All currencies are in US Dollars unless specified.​
+ ​
+ Summary of Stock/Shares Holdings​
+Stock​ Acquisition Date​ Lot​ Capital Gain​ Adjusted​ Adjusted Cost​ Adjusted Cost​ Total Shares​ Current Price​ Current Value​
+Impact​ Gain/Loss​ Basis *​ Basis Per Share​ You Hold​ per Share​
+*​
+Type of Money: Participant​
+IBM - NYSE​ 01-May-2022​ 1​ Long Term​ $162.44​ $133.77​ $133.77​ 1​ $296.21​ $296.21​
+IBM - NYSE​ 01-May-2022​ 2​ Long Term​ $4,548.46​ $3,745.42​ $133.76​ 28​ $296.21​ $8,293.88​
+IBM - NYSE​ 15-Jun-2022​ 1​ Long Term​ $42.72​ $36.37​ $136.22​ 0.267​ $296.21​ $79.09​
+IBM - NYSE​ 15-Sep-2022​ 1​ Long Term​ $53.14​ $41.05​ $129.09​ 0.318​ $296.21​ $94.19​
+IBM - NYSE​ 15-Dec-2022​ 1​ Long Term​ $39.37​ $41.50​ $152.01​ 0.273​ $296.21​ $80.87​
+IBM - NYSE​ 13-Mar-2023​ 1​ Long Term​ $56.76​ $41.88​ $125.77​ 0.333​ $296.21​ $98.64​
+IBM - NYSE​ 13-Jun-2023​ 1​ Long Term​ $49.23​ $42.60​ $137.42​ 0.31​ $296.21​ $91.83​
+IBM - NYSE​ 12-Sep-2023​ 1​ Long Term​ $43.45​ $43.04​ $147.40​ 0.292​ $296.21​ $86.49​
+IBM - NYSE​ 12-Dec-2023​ 1​ Long Term​ $34.16​ $43.45​ $165.84​ 0.262​ $296.21​ $77.61​
+IBM - NYSE​ 10-Jul-2024​ 1​ Long Term​ $3,715.35​ $5,467.16​ $176.36​ 31​ $296.21​ $9,182.51​
+IBM - NYSE​ 10-Jul-2025​ 1​ Long Term​ $330.30​ $8,852.21​ $285.56​ 31​ $296.21​ $9,182.51​
+ ​  ​  ​  ​ $9,075.37​ $18,488.45​  ​ 93.055​  ​ $27,563.82​
+* The cost basis displayed here may not be equal to the original purchase price and may have been adjusted after this transaction has settled.​
+All currencies are in US Dollars unless specified.​
+Page 2​
+ ​
+ Activity​
+Entry Date​ Activity​ Source​ Cash​ Number of​ Share Price​ Book Value​ Market​
+Shares​ Value​
+Stock: Cash - USD​
+01-Jan-2025​ Opening Value​  ​ $4.30​  ​  ​  ​ $4.30​
+10-Mar-2025​ Cash Transfer In​ Participant​ $88.09​  ​  ​  ​  ​
+11-Mar-2025​ Transfer out​ Participant​ $-88.09​  ​  ​  ​  ​
+10-Jun-2025​ Cash Transfer In​ Participant​ $88.61​  ​  ​  ​  ​
+11-Jun-2025​ Transfer out​ Participant​ $-88.61​  ​  ​  ​  ​
+10-Sep-2025​ Cash Transfer In​ Participant​ $132.88​  ​  ​  ​  ​
+11-Sep-2025​ Transfer out​ Participant​ $-132.88​  ​  ​  ​  ​
+10-Dec-2025​ Cash Transfer In​ Participant​ $132.88​  ​  ​  ​  ​
+11-Dec-2025​ Transfer out​ Participant​ $-132.88​  ​  ​  ​  ​
+31-Dec-2025​ Closing Value​  ​ $4.30​  ​  ​  ​ $4.30​
+Stock: IBM - NYSE​
+01-Jan-2025​ Opening Value​  ​ $0.00​ 62.055000​ $219.83​ $9,636.24​ $13,641.55​
+10-Mar-2025​ Dividend (Cash)​ Participant​ $103.63​  ​  ​  ​  ​
+10-Mar-2025​ IRS Nonresident Alien​ Participant​ $-15.54​  ​  ​  ​  ​
+Withholding​
+10-Mar-2025​ Cash Transfer Out​ Participant​ $-88.09​  ​  ​  ​  ​
+10-Jun-2025​ Dividend (Cash)​ Participant​ $104.25​  ​  ​  ​  ​
+10-Jun-2025​ IRS Nonresident Alien​ Participant​ $-15.64​  ​  ​  ​  ​
+Withholding​
+10-Jun-2025​ Cash Transfer Out​ Participant​ $-88.61​  ​  ​  ​  ​
+14-Jul-2025​ Release (RB12345678)​ Participant​  ​ 31.000000​  ​ $8,852.20​  ​
+10-Sep-2025​ Dividend (Cash)​ Participant​ $156.33​  ​  ​  ​  ​
+10-Sep-2025​ IRS Nonresident Alien​ Participant​ $-23.45​  ​  ​  ​  ​
+Withholding​
+10-Sep-2025​ Cash Transfer Out​ Participant​ $-132.88​  ​  ​  ​  ​
+10-Dec-2025​ Dividend (Cash)​ Participant​ $156.33​  ​  ​  ​  ​
+10-Dec-2025​ IRS Nonresident Alien​ Participant​ $-23.45​  ​  ​  ​  ​
+Withholding​
+10-Dec-2025​ Cash Transfer Out​ Participant​ $-132.88​  ​  ​  ​  ​
+31-Dec-2025​ Closing Value​  ​ $0.00​ 93.055000​ $296.21​ $18,488.45​ $27,563.82​
+All currencies are in US Dollars unless specified.​
+ ​
+ Withdrawal on March 10, 2025​
+Reference Number:​ WBC12345678-1EE​ Withdrawal Type:​ Income​
+Savings Plan:​ IBM Long Share Account​ Transaction Type:​ Bulk Share Withdrawal​
+Stock​ Cash - USD​ Settlement Date:​ 11-Mar-2025​
+Source of Money:​ Participant​ Proceeds:​ $88.09 USD​
+Delivery Method:​ Electronic Funds Transfer (US accounts​  ​  ​
+only)​
+ Proceeds Breakdown​
+Description​ Value​
+Gross Proceeds​ $88.09 USD​
+Net Proceeds: $88.09 USD​
+ ​
+ ​
+ Withdrawal on June 10, 2025​
+Reference Number:​ WBC12345678-1EE​ Withdrawal Type:​ Income​
+Savings Plan:​ IBM Long Share Account​ Transaction Type:​ Bulk Share Withdrawal​
+Stock​ Cash - USD​ Settlement Date:​ 11-Jun-2025​
+Source of Money:​ Participant​ Proceeds:​ $88.61 USD​
+Delivery Method:​ Electronic Funds Transfer (US accounts​  ​  ​
+only)​
+ Proceeds Breakdown​
+Description​ Value​
+Gross Proceeds​ $88.61 USD​
+Net Proceeds: $88.61 USD​
+Page 3​
+ ​
+ ​
+ Withdrawal on September 10, 2025​
+Reference Number:​ WBC12345678-1EE​ Withdrawal Type:​ Income​
+Savings Plan:​ IBM Long Share Account​ Transaction Type:​ Bulk Share Withdrawal​
+Stock​ Cash - USD​ Settlement Date:​ 11-Sep-2025​
+Source of Money:​ Participant​ Proceeds:​ $132.88 USD​
+Delivery Method:​ Electronic Funds Transfer (US accounts​  ​  ​
+only)​
+ Proceeds Breakdown​
+Description​ Value​
+Gross Proceeds​ $132.88 USD​
+Net Proceeds: $132.88 USD​
+ ​
+ ​
+ Withdrawal on December 10, 2025​
+Reference Number:​ WBC12345678-1EE​ Withdrawal Type:​ Income​
+Savings Plan:​ IBM Long Share Account​ Transaction Type:​ Bulk Share Withdrawal​
+Stock​ Cash - USD​ Settlement Date:​ 11-Dec-2025​
+Source of Money:​ Participant​ Proceeds:​ $132.88 USD​
+Delivery Method:​ Electronic Funds Transfer (US accounts​  ​  ​
+only)​
+ Proceeds Breakdown​
+Description​ Value​
+Gross Proceeds​ $132.88 USD​
+Net Proceeds: $132.88 USD​
+Page 4​
+
