@@ -93,7 +93,9 @@ public final class McpDispatch
     {
         var match = router.match(method, path);
         // the five-argument constructor is the authenticated one, and a /v1
-        // route never consults the flag anyway
+        // route never consults the flag anyway. It does not carry *which*
+        // client called: once tokens can be restricted, the caller
+        // must be passed through here, or every tool call bypasses the check
         return match.handler().handle(new Request(method, path, match.pathParams(), query, body));
     }
 

@@ -191,8 +191,13 @@ public class FileAccessRegistry
     private FileAccess read(String path)
     {
         var child = node.node(encode(path));
-        return new FileAccess(path, child.get("uuid", null), child.get("alias", null), //$NON-NLS-1$ //$NON-NLS-2$
-                        child.getBoolean("enabled", false)); //$NON-NLS-1$
+
+        // "scopes" is reserved for a later version that restricts what may be
+        // done with a file (e.g. read-only). This version cannot enforce a
+        // restriction, so it treats the file as not enabled.
+        var enabled = child.getBoolean("enabled", false) && child.get("scopes", null) == null; //$NON-NLS-1$ //$NON-NLS-2$
+
+        return new FileAccess(path, child.get("uuid", null), child.get("alias", null), enabled); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     private static void checkAliasFormat(String alias)

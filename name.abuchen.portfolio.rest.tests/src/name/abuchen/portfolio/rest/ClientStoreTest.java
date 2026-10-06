@@ -207,6 +207,29 @@ public class ClientStoreTest
         assertThat(newStore().listClients(), hasSize(0));
     }
 
+    /**
+     * A client restricted by a later version must not authenticate
+     * with full access here, and must survive this version rewriting the file.
+     */
+    @Test
+    public void testRestrictedClientIsNotAuthenticatedButKept() throws Exception
+    {
+        var restricted = "{\"id\":\"r\",\"tokenHash\":\"h\",\"name\":\"Reader\","
+                        + "\"created\":\"2026-07-20T10:00:00Z\",\"scopes\":[\"read\"]}";
+        writeStore("{\"clients\":[" + restricted + "]}");
+
+        var store = newStore();
+        assertThat(store.listClients(), hasSize(0));
+
+        // any save rewrites the file
+        store.addPersistentClient("Other");
+
+        var content = Files.readString(dir().resolve("api-clients.json"));
+        assertThat(content.contains("\"Reader\""), is(true));
+        assertThat(content.contains("\"scopes\":[\"read\"]"), is(true));
+        assertThat(newStore().listClients(), hasSize(1));
+    }
+
     /** one malformed entry must not discard the sibling entries that parse fine */
     @Test
     public void testValidEntriesSurviveAMalformedSibling() throws Exception
