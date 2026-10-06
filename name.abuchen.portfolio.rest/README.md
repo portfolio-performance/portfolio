@@ -325,6 +325,15 @@ endpoint takes none, so a new endpoint is strict without doing anything. Documen
 now return one. `OpenApiSpecDriftTest` fails if any of that drifts apart, and `McpToolsDriftTest`
 fails until the new route either has a tool or is listed as one that deliberately has none.
 
+The drift tests compare the specification with the code; the `openapi-compat` Maven profile
+compares it with the published contract. It runs [oasdiff](https://github.com/oasdiff/oasdiff)
+against `openapi.yaml` as tagged `rest-api-v1.0.0`, and fails on anything that would break a
+1.0 client: a removed path, parameter or response property, a changed type, or a new value in
+a closed enum (if the set is meant to grow, declare it `x-extensible-enum` instead). It needs Go
+on the `PATH`; add `-Popenapi-compat` to any `verify` command that builds this bundle. When the
+tag is pushed, add `-Popenapi-compat` next to `-Popenapi-lint` in both Maven jobs of
+`.github/workflows/main.yml`. Until then the profile fails, because there is no baseline.
+
 Run the tests:
 
 ```bash

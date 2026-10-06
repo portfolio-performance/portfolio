@@ -74,5 +74,49 @@
 				</plugins>
 			</build>
 		</profile>
+		<!--
+			openapi-compat: fails the verify phase if openapi.yaml breaks the /v1
+			contract as published in the rest-api-v1.0.0 tag. oasdiff reads the
+			baseline straight from the tag. The baseline stays 1.0 for every 1.x,
+			because each one must keep the 1.0 promise. WARN rather than ERR because
+			oasdiff only warns when an optional response property disappears, and
+			/v1 promises that nothing disappears. Opt-in for the same reasons as
+			openapi-lint, with Go in place of Node; it fails while the tag does
+			not exist, so CI activates it only from the 1.0 release on.
+		-->
+		<profile>
+			<id>openapi-compat</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>oasdiff-breaking</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>go</executable>
+									<!-- repository root, so the git ref and the file path agree -->
+									<workingDirectory>${project.basedir}/..</workingDirectory>
+									<arguments>
+										<argument>run</argument>
+										<argument>github.com/oasdiff/oasdiff@v1.33.0</argument>
+										<argument>breaking</argument>
+										<argument>rest-api-v1.0.0:name.abuchen.portfolio.rest/openapi.yaml</argument>
+										<argument>name.abuchen.portfolio.rest/openapi.yaml</argument>
+										<argument>--fail-on</argument>
+										<argument>WARN</argument>
+									</arguments>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 </project>
