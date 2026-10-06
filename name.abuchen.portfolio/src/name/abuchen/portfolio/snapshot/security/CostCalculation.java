@@ -248,8 +248,9 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
     @Override
     public void visit(CurrencyConverter converter, CalculationLineItem.DividendPayment t)
     {
-        taxes += t.getTransaction().orElseThrow(IllegalArgumentException::new).getUnitSum(Unit.Type.TAX, converter)
-                        .getAmount();
+        var tx = t.getTransaction().orElseThrow(IllegalArgumentException::new);
+        fees += tx.getUnitSum(Unit.Type.FEE, converter).getAmount();
+        taxes += tx.getUnitSum(Unit.Type.TAX, converter).getAmount();
 
         t.setFifoCost(getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED));
         t.setMovingAverageCost(getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED));
