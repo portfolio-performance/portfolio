@@ -3,18 +3,23 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.LineSpan;
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.SplittingStrategy;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -44,7 +49,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        final var type = new DocumentType("(Wertpapierabrechnung|Contract note|Transactiebevestiging|Nota contrattuale|Laufzeitende|Knock Out)");
+        final var type = new DocumentType("(Wertpapierabrechnung|Contract note|Note de contrat|Transactiebevestiging|Nota contrattuale|Laufzeitende|Knock Out)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
@@ -108,10 +113,13 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         //
                                         // Sell ASML Holding 19.00 pc. 786.90 EUR 14,951.10 EUR
                                         // NL0010273215
+                                        //
+                                        // Acheter iShares Physical Gold ETC 1.002416 pc. 78.61 EUR 78.80 EUR
+                                        // IE00B4ND3602
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin") //
-                                                        .match("^(Buy|Sell) (?<name>.*) [\\.,\\d]+ pc\\. [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}[\\s]*$") //
+                                                        .match("^(Buy|Sell|Acheter) (?<name>.*) [\\.,\\d]+ pc\\. [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}[\\s]*$") //
                                                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])[\\s]*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
 
@@ -155,10 +163,11 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // Buy Amundi Stoxx Europe 600 (Acc) 22.650225 pc. 919.45 EUR 2,788.00 EUR
                                         // Sell ASML Holding 19.00 pc. 786.90 EUR 14,951.10 EUR
+                                        // Acheter iShares Physical Gold ETC 1.002416 pc. 78.61 EUR 78.80 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^(Buy|Sell) .* (?<shares>[\\.,\\d]+) pc\\. [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .match("^(Buy|Sell|Acheter) .* (?<shares>[\\.,\\d]+) pc\\. [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3}$") //
                                                         .assign((t, v) -> t.setShares(
                                                                         asShares(v.get("shares"), "en", "US"))),
 
@@ -176,10 +185,11 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         // Execution 05.05.2025 12:25:16 Exchange ID 86828W28lTD45195
                                         // Uitvoering 07.05.2025 11:28:30 Exchange-ID 347993001
                                         // Esecuzione 25.08.2025 11:07:44 ID di scambio 0782210
+                                        // Exécution 22.04.2026 11:25:50 ID d'échange 4656365001
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time") //
-                                                        .match("^(Ausf.hrung|Execution|Uitvoering|Esecuzione) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$")
+                                                        .match("^(Ausf.hrung|Execution|Ex.cution|Uitvoering|Esecuzione) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$")
                                                         .assign((t, v) -> {
                                                             t.setDate(asDate(v.get("date"), v.get("time")));
 
@@ -210,9 +220,10 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         // Totaal 5.00 EUR
                         // Addebito 250.00 EUR
                         // Gesamtbetrag 289,43 EUR
+                        // Débit 78.80 EUR
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^(Total|Gutschrift|Belastung|Debit|Credit|Totaal|Addebito|Gesamtbetrag) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .match("^(Total|Gutschrift|Belastung|Debit|D.bit|Credit|Totaal|Addebito|Gesamtbetrag) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -259,7 +270,14 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^Type .* Order ID (?<note>.*)$") //
-                                                        .assign((t, v) -> t.setNote("Order ID: " + trim(v.get("note")))))
+                                                        .assign((t, v) -> t.setNote("Order ID: " + trim(v.get("note")))),
+                                        // @formatter:off
+                                        // Type LIMIT Numéro d'ordre QwDZ2j74jraGJHW
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^Type .* Num.ro d.ordre (?<note>.*)$") //
+                                                        .assign((t, v) -> t.setNote("Numéro d'ordre: " + trim(v.get("note")))))
 
                         .wrap((t, ctx) -> {
                             var item = new BuySellEntryItem(t);
@@ -283,7 +301,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendTransaction()
     {
-        final var type = new DocumentType("(Dividende|Zinszahlung|Dividend|Kapitalr.ckzahlung)", //
+        final var type = new DocumentType("(Dividende|Zinszahlung|Dividend|Kapitalr.ckzahlung|Reklassifizierung einer Aussch.ttung)", //
                         "(Kauf|Buy|Kopen|Acquisto|Verkauf|Sell|Sparplan|Sparplanausf.hrung|Laufzeitende|Knock Out)");
         this.addDocumentTyp(type);
 
@@ -296,6 +314,16 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
         pdfTransaction //
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
+
+                        // The reclassification of a distribution can also be a debit,
+                        // which reverses a distribution that has already been paid out.
+                        // A dividend with a negative amount cannot be imported.
+                        // @formatter:off
+                        // 07.04.2026 08.04.2026 Belastung 0,2695 USD 1,180634 0,27 EUR
+                        // @formatter:on
+                        .section("type").optional() //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<type>Belastung) [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [\\.,\\d]+ [A-Z]{3}.*$") //
+                        .assign((t, v) -> v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported))
 
                         .oneOf( //
                                         // @formatter:off
@@ -317,12 +345,16 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         // BerechtigtesWertpapier PepsiCo Inc.
                                         // ISIN US7134481081
                                         // 09.01.2026 09.01.2026 Gutschrift 1,42 USD 1,588739 1,93 EUR
+                                        //
+                                        // Berechtigtes Wertpapier Realty Income Corp.
+                                        // ISIN US7561091049
+                                        // 07.04.2026 08.04.2026 Belastung 0,2695 USD 1,180634 0,27 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "isin", "currency") //
                                                         .match("^Berechtigtes[\\s]*Wertpapier (?<name>.*)$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
-                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Gutschrift [\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Gutschrift|Belastung) [\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Entitled security E.ON SE
@@ -372,10 +404,11 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
                                         // @formatter:off
                                         // 15.01.2025 15.01.2025 Gutschrift 0,12 USD 0,663129 0,08 EUR
+                                        // 07.04.2026 08.04.2026 Belastung 0,2695 USD 1,180634 0,27 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Gutschrift [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [\\.,\\d]+ [A-Z]{3}.*$")
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (Gutschrift|Belastung) [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [\\.,\\d]+ [A-Z]{3}.*$")
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
                                         // @formatter:off
                                         // 27.04.2026 28.04.2026 Credit 0.57 EUR 17 9.69 EUR
@@ -451,22 +484,43 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
-                        // @formatter:off
-                        // Gesamt 13,69 EUR
-                        // @formatter:on
-                        .section("currency", "amount") //
-                        .match("^Gesamt (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Gesamt 13,69 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^Gesamt (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // If there is no interest section, the interest amount is zero.
+                                        // @formatter:off
+                                        // Kontostand am 30.06.2026 137,93 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency") //
+                                                        .match("^Kontostand am [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?[\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(0L);
+                                                        }))
 
+                        // The interest and the related taxes are imported with the
+                        // account statement (Kontoauszug), therefore this document is
+                        // not processed.
                         // @formatter:off
                         // Kontostand am 31.03.2025 726,58 EUR (Soll- & Habenzinsen berücksichtigt)
+                        // Kontostand am 30.06.2026 137,93 EUR
                         // @formatter:on
                         .section("date") //
                         .match("^Kontostand am (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+
+                            v.markAsFailure(Messages.MsgErrorTransactionAlternativeDocumentRequired);
+                        })
 
                         // @formatter:off
                         // Zeitraum 01.01.2025 - 31.03.2025
@@ -488,10 +542,12 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // 07.04.2025 07.04.2025 Überweisung +29.715,63 EUR
         // 14.08.2025 15.08.2025 Lastschrift +558,52 EUR
+        // 13.08.2026 13.08.2026 Neue Einzahlung auf das Geldkonto +50,00 EUR
         // @formatter:on
         var depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
                         + "(.berweisung" //
                         + "|Lastschrift" //
+                        + "|Neue Einzahlung auf das Geldkonto" //
                         + "|Direct debit) " //
                         + "\\+[\\.,\\d]+ [A-Z]{3}[\\s]*$");
         type.addBlock(depositBlock);
@@ -503,6 +559,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
                                         + "(?<note>(.berweisung" //
                                         + "|Lastschrift" //
+                                        + "|Neue Einzahlung auf das Geldkonto" //
                                         + "|Direct debit)) " //
                                         + "\\+(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
                         .assign((t, v) -> {
@@ -516,9 +573,12 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
         // @formatter:off
         // 03.04.2025 04.04.2025 Prime-Abonnementgebühr -4,99 EUR
+        // 13.08.2026 13.08.2026 Überweisung -50,00 EUR
         // @formatter:on
-        var removalBlock = new Block(
-                        "^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Prime\\-Abonnementgeb.hr) \\-[\\.,\\d]+ [A-Z]{3}[\\s]*$");
+        var removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                        + "(Prime\\-Abonnementgeb.hr" //
+                        + "|.berweisung) " //
+                        + "\\-[\\.,\\d]+ [A-Z]{3}[\\s]*$");
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
@@ -526,7 +586,8 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "note", "amount", "currency") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
-                                        + "(?<note>(Prime\\-Abonnementgeb.hr)) " //
+                                        + "(?<note>(Prime\\-Abonnementgeb.hr" //
+                                        + "|.berweisung)) " //
                                         + "\\-(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
@@ -537,59 +598,144 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
+        // Interest and the related taxes are listed with the same booking
+        // and value date. The taxes can be listed above or below the interest.
+        // All other taxes (e.g. dividends or sales) are ignored, because they
+        // are already imported with the corresponding individual statement.
+        //
+        // A block starts with the first tax line directly above the interest
+        // and ends with the last tax line directly below the interest. Only
+        // page headers and footers are skipped. Any other line (e.g. another
+        // booking or a detail line like "2,02 Stk. VICI Properties (...)")
+        // stops the search.
+        //
         // @formatter:off
-        // 01.07.2025 30.06.2025 Abgezogener oder erstatteter Solidaritätszuschlag auf Kundenebene -0,77 EUR
-        // 01.07.2025 30.06.2025 Auf Kundenebene einbehaltene oder erstattete Kapitalertragssteuer -14,07 EUR
-        // 01.01.2026 31.12.2025 Auf Kundenebene einbehaltene oder erstattete Kirchensteuer -1,10 EUR 
+        // 01.04.2026 31.03.2026 Auf Kundenebene einbehaltene oder erstattete Kapitalertragssteuer -0,36 EUR
+        // 01.04.2026 31.03.2026 Erhaltene Zinsen +1,44 EUR
+        // 01.04.2026 31.03.2026 Abgezogener oder erstatteter Solidaritätszuschlag auf Kundenebene -0,02 EUR
         // @formatter:on
-        var taxesBlock = new Block(
-                        "^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (.*oder erstattete.*) [\\-|\\+][\\.,\\d]+ [A-Z]{3}[\\s]*$");
-        type.addBlock(taxesBlock);
-        taxesBlock.set(new Transaction<AccountTransaction>()
+        var interestLine = Pattern.compile("^(?<dates>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                        + "Erhaltene Zinsen " //
+                        + "[\\-\\+][\\.,\\d]+ [A-Z]{3}[\\s]*$");
+        var interestTaxLine = Pattern.compile("^(?<dates>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                        + ".*(Kapitalertrag(s)?steuer|Solidarit.tszuschlag|Kirchensteuer).* " //
+                        + "[\\-\\+][\\.,\\d]+ [A-Z]{3}[\\s]*$");
+        var pageBreakLine = Pattern.compile("^(Kontoauszug" //
+                        + "|Zeitraum .*" //
+                        + "|Buchung Wertstellung Beschreibung Betrag" //
+                        + "|.*Seitzstra.e.*" //
+                        + "|.*80538 M.nchen.*" //
+                        + "|.*Gesch.ftsf.hrer.*" //
+                        + "|.*Aufsichtsrat.*" //
+                        + "|.*HRB 217778.*" //
+                        + "|Urmoneit.*)?[\\s]*$");
 
-                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
+        var interestSplittingStrategy = (SplittingStrategy) lines -> {
+            var spans = new ArrayList<LineSpan>();
 
-                        .section("date", "note", "type", "amount", "currency") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
-                                        + ".*" //
-                                        + "(?<note>(Solidarit.tszuschlag|Kapitalertrag(s)?steuer|Kirchensteuer)).*" //
-                                        + "(?<type>[\\-|\\+])(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
-                        .assign((t, v) -> {
-                            // Is type --> "+" change from TAXES to TAX_REFUND
-                            if ("+".equals(v.get("type")))
-                                t.setType(AccountTransaction.Type.TAX_REFUND);
+            for (var ii = 0; ii < lines.length; ii++)
+            {
+                var matcher = interestLine.matcher(lines[ii]);
+                if (!matcher.matches())
+                    continue;
 
-                            t.setDateTime(asDate(v.get("date")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setNote(v.get("note"));
-                        })
+                var dates = matcher.group("dates");
+                var startLine = ii;
+                var endLine = ii;
 
-                        .wrap(TransactionItem::new));
+                // search upwards for related taxes
+                for (var jj = ii - 1; jj >= 0; jj--)
+                {
+                    // skip page headers and footers
+                    if (pageBreakLine.matcher(lines[jj]).matches())
+                        continue;
 
-        // @formatter:off
-        // 01.07.2025 30.06.2025 Erhaltene Zinsen +56,27 EUR
-        // @formatter:on
-        var interestBlock = new Block(
-                        "^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Erhaltene Zinsen) [\\-|\\+][\\.,\\d]+ [A-Z]{3}[\\s]*$");
+                    var taxMatcher = interestTaxLine.matcher(lines[jj]);
+                    if (!taxMatcher.matches() || !dates.equals(taxMatcher.group("dates")))
+                        break;
+
+                    startLine = jj;
+                }
+
+                // search downwards for related taxes
+                for (var jj = ii + 1; jj < lines.length; jj++)
+                {
+                    // skip page headers and footers
+                    if (pageBreakLine.matcher(lines[jj]).matches())
+                        continue;
+
+                    var taxMatcher = interestTaxLine.matcher(lines[jj]);
+                    if (!taxMatcher.matches() || !dates.equals(taxMatcher.group("dates")))
+                        break;
+
+                    endLine = jj;
+                }
+
+                spans.add(new LineSpan(startLine, endLine));
+            }
+
+            return spans;
+        };
+
+        var interestBlock = new Block(interestSplittingStrategy);
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
+                        // @formatter:off
+                        // 01.07.2025 30.06.2025 Erhaltene Zinsen +56,27 EUR
+                        // @formatter:on
                         .section("date", "type", "amount", "currency") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*" //
-                                        + "(?<type>[\\-|\\+])(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                        + "Erhaltene Zinsen " //
+                                        + "(?<type>[\\-\\+])(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
                         .assign((t, v) -> {
-                         v.markAsFailure(Messages.MsgErrorTransactionAlternativeDocumentRequired);
-
-                         // Is type --> "-" change from INTEREST to INTEREST_CHARGE
+                            // Is type --> "-" change from INTEREST to INTEREST_CHARGE
                             if ("-".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.INTEREST_CHARGE);
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
+
+                            type.getCurrentContext().remove("interestTax");
+                        })
+
+                        // @formatter:off
+                        // 01.07.2025 30.06.2025 Abgezogener oder erstatteter Solidaritätszuschlag auf Kundenebene -0,77 EUR
+                        // 01.07.2025 30.06.2025 Auf Kundenebene einbehaltene oder erstattete Kapitalertragssteuer -14,07 EUR
+                        // 01.01.2026 31.12.2025 Auf Kundenebene einbehaltene oder erstattete Kirchensteuer -1,10 EUR
+                        // 08.04.2025 10.04.2025 Abgezogener oder erstatteter Solidaritätszuschlag auf Kundenebene +1,40 EUR
+                        // @formatter:on
+                        .section("type", "tax").optional().multipleTimes() //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                                        + ".*(Kapitalertrag(s)?steuer|Solidarit.tszuschlag|Kirchensteuer).* " //
+                                        + "(?<type>[\\-\\+])(?<tax>[\\.,\\d]+) [A-Z]{3}[\\s]*$") //
+                        .assign((t, v) -> {
+                            var tax = asAmount(v.get("tax"));
+
+                            // Is type --> "+" it is a tax refund, which reduces the taxes
+                            if ("+".equals(v.get("type")))
+                                tax = -tax;
+
+                            var context = type.getCurrentContext();
+                            var interestTax = context.containsKey("interestTax") ? Long.parseLong(context.get("interestTax")) : 0L;
+                            context.put("interestTax", Long.toString(interestTax + tax));
+                        })
+
+                        .conclude(t -> {
+                            var context = type.getCurrentContext();
+                            if (!context.containsKey("interestTax"))
+                                return;
+
+                            var interestTax = Long.parseLong(context.get("interestTax"));
+                            context.remove("interestTax");
+
+                            if (interestTax > 0)
+                                t.addUnit(new Unit(Unit.Type.TAX, Money.of(t.getCurrencyCode(), interestTax)));
+
+                            t.setAmount(t.getAmount() - interestTax);
                         })
 
                         .wrap(TransactionItem::new));
