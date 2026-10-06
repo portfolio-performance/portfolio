@@ -1,7 +1,11 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetTax;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
+import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -19,9 +23,13 @@ import name.abuchen.portfolio.money.Values;
  *
  *           The "Aktivitätsauszug" (activity statement) is a daily statement
  *           listing executed orders, deposits, card purchases and interest on
- *           cash. The "Handelsbestätigung" (trade confirmation) is issued by
- *           Trading 212 EU GmbH per execution of an order. All amounts are
- *           formatted in US number format.
+ *           cash. All amounts are formatted in US number format.
+ *
+ *           The "Handelsbestätigung" (trade confirmation) is issued by
+ *           Trading 212 EU GmbH per execution of an order. It exists in two
+ *           variants: Format01 with US number format and leading currency
+ *           symbol (€50.00), Format02 with German number format and trailing
+ *           currency symbol (21,55 €).
  * @formatter:on
  */
 @SuppressWarnings("nls")
@@ -58,57 +66,132 @@ public class Trading212PDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
-                        // Only purchases are supported. No sample document of a
-                        // sale exists, therefore a sale fails the import instead
-                        // of being imported as a purchase.
-                        // @formatter:off
-                        // Anweisung Kaufen
-                        // @formatter:on
+                        // Is type --> "Verkaufen" change from BUY to SELL
                         .section("type") //
-                        .match("^Anweisung (?<type>Kaufen)$") //
-                        .assign((t, v) -> t.setType(PortfolioTransaction.Type.BUY))
+                        .match("^Anweisung (?<type>(Kaufen|Verkaufen))$") //
+                        .assign((t, v) -> {
+                            if ("Verkaufen".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.SELL);
+                        })
 
-                        // Only EUR is supported. Currency symbols such as "£" are
-                        // ambiguous and no sample document of a foreign currency
-                        // trade exists, therefore any other currency or an exchange
-                        // rate other than 1 fails the import.
-                        // @formatter:off
-                        // Wertpapier Tencent
-                        // Symbol NNND
-                        // ISIN KYG875721634
-                        // Ausführungskurs €54.09
-                        // Wechselkurs 1
-                        // @formatter:on
-                        .section("name", "tickerSymbol", "isin", "currency") //
-                        .match("^Wertpapier (?<name>.*)$") //
-                        .match("^Symbol (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)$") //
-                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                        .match("^Ausf.hrungskurs (?<currency>€)[\\.,\\d]+$") //
-                        .match("^Wechselkurs 1$") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        // Only "€" and "$" are supported. Other currency symbols
+                        // such as "£" are ambiguous and fail the import.
+                        .oneOf( //
+                                        // Format01 (US number format) is only supported
+                                        // without currency conversion.
+                                        // @formatter:off
+                                        // Wertpapier Tencent
+                                        // Symbol NNND
+                                        // ISIN KYG875721634
+                                        // Ausführungskurs €54.09
+                                        // Wechselkurs 1
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "tickerSymbol", "isin", "currency") //
+                                                        .match("^Wertpapier (?<name>.*)$") //
+                                                        .match("^Symbol (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^Ausf.hrungskurs (?<currency>€)[\\.,\\d]+$") //
+                                                        .match("^Wechselkurs 1$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Wertpapier Veea
+                                        // Symbol VEEA
+                                        // ISIN US6934892059
+                                        // Ausführungskurs 4,99 $
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "tickerSymbol", "isin", "currency") //
+                                                        .match("^Wertpapier (?<name>.*)$") //
+                                                        .match("^Symbol (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^Ausf.hrungskurs [\\.,\\d]+ (?<currency>[€\\$])$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
-                        // @formatter:off
-                        // Anzahl 0.92438528
-                        // @formatter:on
-                        .section("shares") //
-                        .match("^Anzahl (?<shares>[\\.,\\d]+)$") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Format01 (US number format)
+                                        // Anzahl 0.92438528
+                                        // Ausführungskurs €54.09
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^Anzahl (?<shares>[\\.,\\d]+)$") //
+                                                        .match("^Ausf.hrungskurs \\p{Sc}[\\.,\\d]+$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
+                                        // Format02 (German number format)
+                                        // Anzahl 0,712562
+                                        // Ausführungskurs 33,83 $
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^Anzahl (?<shares>[\\.,\\d]+)$") //
+                                                        .match("^Ausf.hrungskurs [\\.,\\d]+ \\p{Sc}$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"), "de", "DE"))))
 
                         // @formatter:off
                         // Ausführungszeitpunkt 15 Apr 2026, 06:07:41 (UTC)
+                        // Ausführungszeitpunkt 05 Okt 2026, 16:41:38 (UTC)
                         // @formatter:on
                         .section("date", "time") //
                         .match("^Ausf.hrungszeitpunkt (?<date>[\\d]{1,2} [\\p{L}]{3,4} [\\d]{4}), (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}) .*$") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
+                        // The negative "Kosten" line on the "Rendite" page of a
+                        // sale is the cost basis and must not be matched.
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Format01 (US number format)
+                                        // Kosten €50.00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^Kosten (?<currency>€)(?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        // Format02 (German number format)
+                                        // Kosten 21,55 €
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^Kosten (?<amount>[\\.,\\d]+) (?<currency>€)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount"), "de", "DE"));
+                                                        }),
+                                        // @formatter:off
+                                        // Format02 (German number format)
+                                        // Verkaufserlös vor Steuern 88,94 €
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^Verkaufserl.s vor Steuern (?<amount>[\\.,\\d]+) (?<currency>€)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount"), "de", "DE"));
+                                                        }))
+
                         // @formatter:off
-                        // Kosten €50.00
+                        // Wert 99,80 $
+                        // Wechselkurs 1,12046704
                         // @formatter:on
-                        .section("currency", "amount") //
-                        .match("^Kosten (?<currency>€)(?<amount>[\\.,\\d]+)$") //
+                        .section("fxGross", "termCurrency", "exchangeRate").optional() //
+                        .match("^Wert (?<fxGross>[\\.,\\d]+) (?<termCurrency>[€\\$])$") //
+                        .match("^Wechselkurs (?<exchangeRate>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
+                            var baseCurrency = t.getPortfolioTransaction().getCurrencyCode();
+                            var rate = new ExtrExchangeRate(asExchangeRate(v.get("exchangeRate")), //
+                                            baseCurrency, asCurrencyCode(v.get("termCurrency")));
+                            type.getCurrentContext().putType(rate);
+
+                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross"), "de", "DE"));
+                            var gross = rate.convert(baseCurrency, fxGross);
+
+                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
 
                         // @formatter:off
@@ -119,6 +202,135 @@ public class Trading212PDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setNote("Auftrags-ID-Nr.: " + v.get("note")))
 
                         .wrap(BuySellEntryItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
+
+        addTaxReturnBlock(type);
+    }
+
+    private void addTaxReturnBlock(DocumentType type)
+    {
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block("^Auftragsdetails$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Wertpapier Tencent
+                                        // Symbol NNND
+                                        // ISIN KYG875721634
+                                        // Ausführungskurs €54.09
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "tickerSymbol", "isin", "currency") //
+                                                        .match("^Wertpapier (?<name>.*)$") //
+                                                        .match("^Symbol (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^Ausf.hrungskurs (?<currency>€)[\\.,\\d]+$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Wertpapier PDS Biotechnology
+                                        // Symbol PDSB
+                                        // ISIN US70465T1079
+                                        // Ausführungskurs 1,26 $
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "tickerSymbol", "isin", "currency") //
+                                                        .match("^Wertpapier (?<name>.*)$") //
+                                                        .match("^Symbol (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^Ausf.hrungskurs [\\.,\\d]+ (?<currency>[€\\$])$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
+
+                        // @formatter:off
+                        // Ausführungszeitpunkt 05 Okt 2026, 17:02:31 (UTC)
+                        // @formatter:on
+                        .section("date", "time") //
+                        .match("^Ausf.hrungszeitpunkt (?<date>[\\d]{1,2} [\\p{L}]{3,4} [\\d]{4}), (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}) .*$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"), v.get("time"))))
+
+                        // A positive tax correction on a sale is a tax refund
+                        // (loss offsetting) booked as a separate transaction.
+                        // The exchange rate is required for the gross value of
+                        // a security in foreign currency.
+                        // @formatter:off
+                        // Wert 126,00 $
+                        // Wechselkurs 1,12029874
+                        // Steuerkorrektur 0,09 €
+                        // @formatter:on
+                        .section("termCurrency", "exchangeRate", "amount", "currency").optional() //
+                        .match("^Wert [\\.,\\d]+ (?<termCurrency>[€\\$])$") //
+                        .match("^Wechselkurs (?<exchangeRate>[\\.,\\d]+)$") //
+                        .match("^Steuerkorrektur (?<amount>[\\.,\\d]+) (?<currency>€)$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount"), "de", "DE"));
+
+                            var rate = new ExtrExchangeRate(asExchangeRate(v.get("exchangeRate")), //
+                                            t.getCurrencyCode(), asCurrencyCode(v.get("termCurrency")));
+                            type.getCurrentContext().putType(rate);
+
+                            var gross = t.getMonetaryAmount();
+                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
+
+                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                        })
+
+                        // @formatter:off
+                        // Auftrags-ID-Nr. 58419967594
+                        // @formatter:on
+                        .section("note") //
+                        .match("^Auftrags\\-ID\\-Nr\\. (?<note>[\\d]+)$") //
+                        .assign((t, v) -> t.setNote("Auftrags-ID-Nr.: " + v.get("note")))
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+
+                            return null;
+                        });
+    }
+
+    private void addTaxesSectionsTransaction(Transaction<BuySellEntry> transaction, DocumentType type)
+    {
+        transaction //
+
+                        // Capital gains tax withheld on a sale. The amount is
+                        // taken before taxes, so the tax is deducted from it.
+                        // @formatter:off
+                        // Steuern -0,21 €
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Steuern \\-(?<tax>[\\.,\\d]+) (?<currency>€)$") //
+                        .assign((t, v) -> {
+                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"), "de", "DE"));
+
+                            t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().subtract(tax));
+                            checkAndSetTax(tax, t, type.getCurrentContext());
+                        });
+    }
+
+    private void addFeesSectionsTransaction(Transaction<BuySellEntry> transaction, DocumentType type)
+    {
+        transaction //
+
+                        // @formatter:off
+                        // FX Gebühr 0,03 €
+                        // FX Gebühr -0,13 €
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("^FX Geb.hr (\\-)?(?<fee>[\\.,\\d]+) (?<currency>€)$") //
+                        .assign((t, v) -> {
+                            var fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"), "de", "DE"));
+                            checkAndSetFee(fee, t, type.getCurrentContext());
+                        });
     }
 
     private void addActivityStatementTransactions()
