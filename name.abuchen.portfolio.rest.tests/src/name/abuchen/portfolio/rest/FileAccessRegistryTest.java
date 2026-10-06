@@ -70,6 +70,19 @@ public class FileAccessRegistryTest
         assertThat(registry.resolve("main"), instanceOf(FileAccessRegistry.Resolution.Ambiguous.class));
     }
 
+    /** a file restricted by a later version must not be reachable with full access here */
+    @Test
+    public void testRestrictedRecordCountsAsNotEnabled()
+    {
+        var access = registry.ensureRecord("/a.xml");
+        registry.setEnabled("/a.xml", true);
+        node.node(Base64.getUrlEncoder().withoutPadding().encodeToString("/a.xml".getBytes(StandardCharsets.UTF_8)))
+                        .put("scopes", "read");
+
+        assertThat(registry.byPath("/a.xml").get().enabled(), is(false));
+        assertThat(registry.resolve(access.uuid()), instanceOf(FileAccessRegistry.Resolution.NotFound.class));
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void testAliasMustBeUnique()
     {

@@ -84,6 +84,15 @@ public class ClientStore
     private final SecureRandom random = new SecureRandom();
     private final List<Entry> entries = new ArrayList<>();
 
+    /**
+     * Clients restricted by a later version, kept verbatim. This version cannot
+     * enforce a restriction (e.g. read-only), so it does not authenticate them
+     * rather than grant them full access - but it writes them back, so that
+     * they still exist when the user returns to the later version. A client
+     * with full access is therefore always written without "scopes".
+     */
+    private final List<JsonObject> restricted = new ArrayList<>();
+
     public ClientStore(Path directory)
     {
         this(directory, Instant::now);
@@ -226,6 +235,12 @@ public class ClientStore
         // fatal, so one bad record cannot revoke every other client
         for (var element : clients.getAsJsonArray())
         {
+            if (element.isJsonObject() && element.getAsJsonObject().has("scopes")) //$NON-NLS-1$
+            {
+                restricted.add(element.getAsJsonObject());
+                continue;
+            }
+
             var entry = parseEntry(element);
             if (entry != null)
                 entries.add(entry);
@@ -289,6 +304,7 @@ public class ClientStore
                 json.addProperty("lastUsed", entry.lastUsed.toString()); //$NON-NLS-1$
             clients.add(json);
         }
+        restricted.forEach(clients::add);
         var root = new JsonObject();
         root.add("clients", clients); //$NON-NLS-1$
 

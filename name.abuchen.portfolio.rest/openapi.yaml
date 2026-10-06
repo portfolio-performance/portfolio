@@ -296,6 +296,9 @@ paths:
             schema:
               type: object
               required: [clientName]
+              additionalProperties: false
+              description: |
+                Any other member is rejected with `422` and code `unknown-field`.
               properties:
                 clientName:
                   type: string

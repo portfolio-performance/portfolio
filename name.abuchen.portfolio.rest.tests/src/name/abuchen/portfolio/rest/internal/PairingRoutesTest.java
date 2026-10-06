@@ -111,6 +111,26 @@ public class PairingRoutesTest
         assertStatus("POST", "/v1/auth/requests", "{\"clientName\":42}", 422);
     }
 
+    /** a later client asking for narrower access must not silently get a full token */
+    @Test
+    public void testUnknownBodyFieldIs422() throws Exception
+    {
+        try
+        {
+            call("POST", "/v1/auth/requests", "{\"clientName\":\"Claude Code\",\"scopes\":[\"read\"]}");
+            assertThat("expected ApiException", false, is(true));
+        }
+        catch (ApiException e)
+        {
+            assertThat(e.getStatus(), is(422));
+            assertThat(e.getErrors().size(), is(1));
+            assertThat(e.getErrors().get(0).field(), is("scopes"));
+            assertThat(e.getErrors().get(0).code(), is("unknown-field"));
+        }
+
+        assertThat(host.lastAccessRequest() == null, is(true));
+    }
+
     @Test
     public void testInvalidJsonBodyIs400() throws Exception
     {
