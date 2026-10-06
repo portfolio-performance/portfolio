@@ -21,6 +21,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
@@ -114,6 +115,75 @@ public class ABNAMROGroupPDFExtractorTest
                         hasAmount("EUR", 514584.61), hasGrossValue("EUR", 514481.72), //
                         hasForexGrossValue("USD", 586123.30), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 102.89))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf01()
+    {
+        var extractor = new ABNAMROGroupPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BYX2JD69"), hasWkn(null), hasTicker(null), //
+                        hasName("iShsIV-MSCI Wld.SRI UCITS ETF Registered Shs EUR Acc. o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check sale transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-12-14T10:03"), hasShares(18000.00), //
+                        hasSource("Verkauf01.txt"), //
+                        hasNote("Beleg-Nr.: WP 23659454/5173723 | REFNR. 2474555"), //
+                        hasAmount("EUR", 159041.42), hasGrossValue("EUR", 159156.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", (79.58 + 35.00)))));
+    }
+
+    @Test
+    public void testDividende01()
+    {
+        var extractor = new ABNAMROGroupPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "USD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US1912161007"), hasWkn(null), hasTicker(null), //
+                        hasName("Coca-Cola Co., The Registered Shares DL -,25"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-10-02"), hasExDate("2023-09-14"), //
+                        hasShares(726.00), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote("Beleg-Nr.: CA 2845446/2010548 | REFNR. 12761060"), //
+                        hasAmount("USD", 233.78), hasGrossValue("USD", 333.96), //
+                        hasTaxes("USD", (50.09 + 50.09)), hasFees("USD", 0.00))));
     }
 
     @Test

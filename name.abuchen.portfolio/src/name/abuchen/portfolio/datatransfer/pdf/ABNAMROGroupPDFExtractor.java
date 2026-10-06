@@ -25,8 +25,11 @@ public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
 
         addBankIdentifier("ABN AMRO Bank N.V.");
         addBankIdentifier("Bij- en afschrijvingen");
+        addBankIdentifier("Hauck Aufhäuser Lampe");
+        addBankIdentifier("hal-privatbank.com");
 
         addBuySellTransaction();
+        addDividendeTransaction();
         addAccountStatementTransaction();
         addAccountStatementTransaction_Format02();
     }
@@ -39,18 +42,29 @@ public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        final var type = new DocumentType("Wertpapierabrechnung: Kauf");
+        final var type = new DocumentType("Wertpapierabrechnung: (Kauf|Verkauf)( Drittbank)?");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
 
-        var firstRelevantLine = new Block("^Wertpapierabrechnung: Kauf .*$");
+        var firstRelevantLine = new Block("^Wertpapierabrechnung: (Kauf|Verkauf)( Drittbank)? .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
+
+                        // @formatter:off
+                        // Wertpapierabrechnung: Verkauf Drittbank Beleg-Nr.: WP 23659454/5173723
+                        // @formatter:on
+                        .section("type").optional() //
+                        .match("^Wertpapierabrechnung: (?<type>(Kauf|Verkauf))( Drittbank)? .*$") //
+                        .assign((t, v) -> {
+                            // Is type --> "Verkauf" change from BUY to SELL
+                            if ("Verkauf".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.SELL);
+                        })
 
                         // @formatter:off
                         // iSHARES DIGITAL ASSETS AG Kurs
@@ -60,10 +74,14 @@ public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
                         // iShs VI-Bloomb.R.S.Comm.UC.ETF Kurs
                         // 49.000 Anteile Registered Acc.Shs USD o.N. USD  11,96170 p.Ant.
                         // ISIN IE00BZ1NCS44
+                        //
+                        // iShsIV-MSCI Wld.SRI UCITS ETF Kurs
+                        // 18.000     Anteile Registered Shs EUR Acc. o.N. EUR  8,84200 p.Ant.
+                        // ISIN IE00BYX2JD69
                         // @formatter:on
                         .section("name", "shares", "nameContinued", "currency", "isin") //
                         .match("^(?<name>.*) Kurs$") //
-                        .match("^(?<shares>[\\.,\\d]+) (St.ck|Anteile) (?<nameContinued>.*) (?<currency>[A-Z]{3})[\\s]{1,}[\\.,\\d]+ p\\.(St|Ant)\\.[\\s]*$") //
+                        .match("^(?<shares>[\\.,\\d]+)[\\s]{1,}(St.ck|Anteile) (?<nameContinued>.*) (?<currency>[A-Z]{3})[\\s]{1,}[\\.,\\d]+ p\\.(St|Ant)\\.[\\s]*$") //
                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
@@ -72,16 +90,18 @@ public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Kauf am 25.09.2026 / 17:00 Uhr in Bloomberg NL
+                        // Verkauf Drittbank am 14.12.2022 / 10:03 Uhr ausserbörslich Ausland
                         // @formatter:on
                         .section("date", "time") //
-                        .match("^Kauf am (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\/ (?<time>[\\d]{2}\\:[\\d]{2}) Uhr.*$") //
+                        .match("^(Kauf|Verkauf)( Drittbank)? am (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\/ (?<time>[\\d]{2}\\:[\\d]{2}) Uhr.*$") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
                         // @formatter:off
                         // Zu Lasten Konto 2178250443   Valuta 29.09.2026 EUR 183.824,26
+                        // Zu Gunsten Konto 2252302   Valuta 16.12.2022 EUR 159.041,42
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Zu Lasten Konto .* Valuta [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
+                        .match("^Zu (Lasten|Gunsten) Konto .* Valuta [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -106,22 +126,104 @@ public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Wertpapierabrechnung: Kauf Beleg-Nr.: WP 33929294/7512819
+                        // Wertpapierabrechnung: Verkauf Drittbank Beleg-Nr.: WP 23659454/5173723
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^Wertpapierabrechnung: Kauf (?<note>Beleg\\-Nr\\.: .*)$") //
+                        .match("^Wertpapierabrechnung: (Kauf|Verkauf)( Drittbank)? (?<note>Beleg\\-Nr\\.: .*)$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                        // @formatter:off
-                        // WPABRECHNUNG-999.999   REFNR. 073641002
-                        // @formatter:on
-                        .section("note").optional() //
-                        .match("^WPABRECHNUNG\\-[\\.,\\d]+[\\s]{1,}(?<note>REFNR\\. [\\d]+)$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // WPABRECHNUNG-999.999   REFNR. 073641002
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^WPABRECHNUNG\\-[\\.,\\d]+[\\s]{1,}(?<note>REFNR\\. [\\d]+)$") //
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))),
+                                        // @formatter:off
+                                        // REFNR. 2474555
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^(?<note>REFNR\\. [\\d]+)$") //
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))))
 
                         .conclude(ExtractorUtils.fixGrossValueBuySell())
 
                         .wrap(BuySellEntryItem::new);
 
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addDividendeTransaction()
+    {
+        final var type = new DocumentType("Dividende");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block("^Dividende Beleg\\-Nr\\.: .*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
+
+                        // @formatter:off
+                        // Coca-Cola Co., The Ausschüttung
+                        // 726 Stück Registered Shares DL -,25 USD  0,46000 p.St.
+                        // ISIN US1912161007
+                        // @formatter:on
+                        .section("name", "shares", "nameContinued", "currency", "isin") //
+                        .match("^(?<name>.*) Aussch.ttung$") //
+                        .match("^(?<shares>[\\.,\\d]+)[\\s]{1,}(St.ck|Anteile) (?<nameContinued>.*) (?<currency>[A-Z]{3})[\\s]{1,}[\\.,\\d]+ p\\.(St|Ant)\\.[\\s]*$") //
+                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setShares(asShares(v.get("shares")));
+                        })
+
+                        // @formatter:off
+                        // Zu Gunsten Konto 2102252307   Valuta 02.10.2023 USD 233,78
+                        // @formatter:on
+                        .section("date", "currency", "amount") //
+                        .match("^Zu Gunsten Konto .* Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // @formatter:off
+                        // Ex-Tag: Kupon-Nr. 000000000000000000
+                        // 14.09.2023
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Ex\\-Tag: Kupon\\-Nr\\. [\\d]+$") //
+                        .match("^(?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
+                        // @formatter:off
+                        // Dividende Beleg-Nr.: CA 2845446/2010548
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^Dividende (?<note>Beleg\\-Nr\\.: .*)$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        // @formatter:off
+                        // REFNR. 12761060
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^(?<note>REFNR\\. [\\d]+)$") //
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+
+                        .conclude(ExtractorUtils.fixGrossValueA())
+
+                        .wrap(TransactionItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
@@ -491,6 +593,25 @@ public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new));
     }
 
+    private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
+    {
+        transaction //
+
+                        // @formatter:off
+                        // US-Quellensteuer (EUR 47,29 -) USD 50,09 -
+                        // @formatter:on
+                        .section("currency", "tax").optional() //
+                        .match("^US\\-Quellensteuer \\([A-Z]{3} [\\.,\\d]+ \\-\\) (?<currency>[A-Z]{3}) (?<tax>[\\.,\\d]+) \\-$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // US-Quellensteuer ohne Dokumentation (EUR 47,29 -) USD 50,09 -
+                        // @formatter:on
+                        .section("currency", "tax").optional() //
+                        .match("^US\\-Quellensteuer ohne Dokumentation \\([A-Z]{3} [\\.,\\d]+ \\-\\) (?<currency>[A-Z]{3}) (?<tax>[\\.,\\d]+) \\-$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type));
+    }
+
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction //
@@ -498,9 +619,17 @@ public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Provision EUR 36,76
                         // Provision USD 117,22
+                        // Provision EUR 35,00 -
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Provision (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)$") //
+                        .match("^Provision (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)([\\s]{1,}\\-)?$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Brokerage EUR 79,58 -
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^Brokerage (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)([\\s]{1,}\\-)?$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }
