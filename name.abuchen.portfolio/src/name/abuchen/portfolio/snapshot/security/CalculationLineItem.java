@@ -19,6 +19,7 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
+import name.abuchen.portfolio.util.SnapshotUtil;
 
 public interface CalculationLineItem
 {
@@ -51,7 +52,9 @@ public interface CalculationLineItem
         @Override
         public LocalDateTime getDateTime()
         {
-            return txPair.getTransaction().getDateTime();
+            Transaction transaction = txPair.getTransaction();
+
+            return SnapshotUtil.getPerformanceDateTime(transaction);
         }
 
         @Override
