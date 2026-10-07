@@ -457,6 +457,23 @@ public class DetectDuplicatesActionTest
 
     @SuppressWarnings("nls")
     @Test
+    public void testFileWithMostOccurrencesDeterminesOnlyNumberOfKeptTransactions()
+    {
+        // A.pdf contains the fee once, Z.pdf twice: two fees are kept. Which
+        // ones is determined by the fixed order (file, position): the fee of
+        // A.pdf and the first fee of Z.pdf. The second fee of Z.pdf is marked
+        // as duplicate although it stems from the file with the most
+        // occurrences.
+        var items = fees("A.pdf", "Z.pdf", "Z.pdf");
+        assertThat(statusOf(items), is(List.of(Code.OK, Code.OK, Code.WARNING)));
+
+        // same result if the files are read in a different order
+        items = fees("Z.pdf", "Z.pdf", "A.pdf");
+        assertThat(statusOf(items), is(List.of(Code.OK, Code.WARNING, Code.OK)));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
     public void testResultDoesNotDependOnOrderOfFiles()
     {
         // four files: an account statement with two identical fees and one

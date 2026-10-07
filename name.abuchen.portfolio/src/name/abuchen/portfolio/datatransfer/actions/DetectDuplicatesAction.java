@@ -85,12 +85,16 @@ public class DetectDuplicatesAction implements ImportAction
      * Determines the duplicates within the import. The result depends only on
      * the set of items, not on the order in which the files were read:
      * <ul>
-     * <li>Identical transactions from the same input file are no duplicates
-     * (a document can legitimately contain identical transactions).</li>
+     * <li>If all occurrences of a transaction stem from the same input file,
+     * none of them is a duplicate (a document can legitimately contain
+     * identical transactions).</li>
      * <li>The input file with the most occurrences of a transaction determines
-     * how many of them are kept.</li>
-     * <li>Which transactions are kept is determined by a fixed order: by input
-     * file, then by position within the file.</li>
+     * how many of them are kept - but not which ones.</li>
+     * <li>Which transactions are kept is determined by a fixed order across all
+     * input files: by input file, then by position within the file. Therefore
+     * the kept transactions can stem from different input files, and
+     * occurrences in the input file with the most occurrences can be marked as
+     * duplicates.</li>
      * </ul>
      */
     private static Set<Transaction> detectDuplicatesWithinImport(List<Extractor.Item> items)
