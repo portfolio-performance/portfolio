@@ -3,6 +3,7 @@
   <children xsi:type="basic:TrimmedWindow" xmi:id="_Zk-qYBfFEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.window.mainwindow" selectedElement="_nBpq4BfFEeOders_POVQHQ" label="Portfolio Performance" width="1000" height="700">
     <children xsi:type="basic:PartStack" xmi:id="_nBpq4BfFEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.partstack.main">
       <tags>NoDetach</tags>
+      <tags>NoAutoCollapse</tags>
       <children xsi:type="basic:Part" xmi:id="_gK7-APO8EeOuTsL2OeJEvQ" elementId="name.abuchen.portfolio.ui.part.welcome" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.parts.WelcomePart" label="%part.welcome" closeable="true">
         <tags>NoDetach</tags>
       </children>
@@ -355,6 +356,7 @@
   <addons xmi:id="_D8SDphfFEeOders_POVQHQ" elementId="org.eclipse.e4.ui.workbench.bindings.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.swt/org.eclipse.e4.ui.workbench.swt.util.BindingProcessingAddon"/>
   <addons xmi:id="_SBOEgLdnEeO0acAVfaNMbA" elementId="name.abuchen.portfolio.ui.addons.OSXStartupAddon" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.OSXStartupAddon"/>
   <addons xmi:id="_czmqcPl_EeWALp6nnaAZRw" elementId="name.abuchen.portfolio.ui.addons.CopyMenuToNewWindowAddon" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.CopyMenuToNewWindowAddon"/>
+  <addons xmi:id="_mPsA4KN5EfGq7rZb2Lk0Xw" elementId="name.abuchen.portfolio.ui.addons.MainPartStackAddon" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.MainPartStackAddon"/>
   <addons xmi:id="_ITGS4MGeEeeACft0IXqMbg" elementId="name.abuchen.portfolio.ui.addons.Preference2EnvAddon" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.Preference2EnvAddon"/>
   <addons xmi:id="_7uSaEArLEeuW1fd9YKaYaw" elementId="name.abuchen.portfolio.ui.addons.ThemeAddon" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.theme.ThemeAddon"/>
   <addons xmi:id="_Qk2rIKr3Ee6TxKrPZLmSQg" elementId="name.abuchen.portfolio.ui.update.UpdateIndicatorAddon" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.update.UpdateIndicatorAddon"/>
