@@ -166,6 +166,7 @@ public class PDFImportAssistant
         extractors.add(new WirBankPDFExtractor(client));
         extractors.add(new WitheBoxGmbHPDFExtractor(client));
         extractors.add(new WeberbankPDFExtractor(client));
+        extractors.add(new WuestenrotBankAGPDFExtractor(client));
         extractors.add(new ZuercherKantonalbankPDFExtractor(client));
     }
 
