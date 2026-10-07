@@ -5653,7 +5653,7 @@ public class BaaderBankPDFExtractorTest
         assertTrue(firstError instanceof UnsupportedOperationException);
 
         var expectedErrorMessage = MessageFormat.format(Messages.PDFdbMsgCannotDetermineFileType,
-                        "Baader Bank AG / Scalable Capital Vermögensverwaltung GmbH / Traders Place GmbH & Co. KGaA",
+                        "Baader Bank AG",
                         "Periodenauszug10.txt");
         assertEquals(expectedErrorMessage, firstError.getMessage());
     }
@@ -5818,7 +5818,7 @@ public class BaaderBankPDFExtractorTest
 
         // Check the error message of the first error
         var expectedErrorMessage = MessageFormat.format(Messages.PDFdbMsgCannotDetermineFileType,
-                        "Baader Bank AG / Scalable Capital Vermögensverwaltung GmbH / Traders Place GmbH & Co. KGaA",
+                        "Baader Bank AG",
                         "Periodenauszug15.txt");
         assertEquals(expectedErrorMessage, firstError.getMessage());
     }
