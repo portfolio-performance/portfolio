@@ -917,8 +917,10 @@ public class Messages extends NLS
     public static String LabelShowAverage;
     public static String LabelShowEventsStarting;
     public static String LabelShowHeadline;
+    public static String LabelShowNote;
     public static String LabelShowOnlyOneYear;
     public static String LabelShowRawResponse;
+    public static String LabelShowTaxesAndFees;
     public static String LabelSiftingAssetClass;
     public static String LabelSmallerSize;
     public static String LabelStartTyping;
