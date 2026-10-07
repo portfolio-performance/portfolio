@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.util.chart;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -75,6 +76,7 @@ public class TimelineChart extends Chart // NOSONAR
     private List<MarkerLine> markerLines = new ArrayList<>();
     private List<NonTradingDayMarker> nonTradingDayMarkers = new ArrayList<>();
     private Map<Object, IAxis> addedAxis = new HashMap<>();
+    private DateTimeFormatter xAxisDateFormat;
 
     private ChartToolsManager chartTools;
     private TimelineChartToolTip toolTip;
@@ -145,6 +147,18 @@ public class TimelineChart extends Chart // NOSONAR
     public void setLineWidthConfigurable(boolean configurable)
     {
         contextMenu.setLineWidthConfigurable(configurable);
+    }
+
+    /**
+     * Sets the format used to label the vertical grid lines of the time axis.
+     * By default the format is derived from the length of the displayed
+     * interval. Charts that do not show real calendar dates - for example
+     * charts that project several years onto one reference year - use this to
+     * suppress the year.
+     */
+    public void setXAxisDateFormat(DateTimeFormatter format)
+    {
+        this.xAxisDateFormat = format;
     }
 
     public void addMarkerLine(LocalDate date, Color color, String label)
@@ -257,7 +271,8 @@ public class TimelineChart extends Chart // NOSONAR
         LocalDate start = LocalDate.ofEpochDay((long) range.lower);
         LocalDate end = LocalDate.ofEpochDay((long) range.upper);
 
-        TimeGridHelper.paintTimeGrid(this, e, start, end, cursor -> xAxis.getPixelCoordinate(cursor.toEpochDay()));
+        TimeGridHelper.paintTimeGrid(this, e, start, end, cursor -> xAxis.getPixelCoordinate(cursor.toEpochDay()),
+                        xAxisDateFormat);
     }
 
     private void paintMarkerLines(PaintEvent e) // NOSONAR
