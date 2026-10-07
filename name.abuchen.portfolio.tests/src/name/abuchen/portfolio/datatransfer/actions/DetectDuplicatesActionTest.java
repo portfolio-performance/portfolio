@@ -11,7 +11,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -19,7 +21,9 @@ import java.util.Set;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
+import name.abuchen.portfolio.datatransfer.Extractor.AccountTransferItem;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
+import name.abuchen.portfolio.datatransfer.Extractor.PortfolioTransferItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.ImportAction;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status.Code;
@@ -153,26 +157,31 @@ public class DetectDuplicatesActionTest
     @Test
     public void testDuplicateWithinImport4AccountTransactionFromDifferentSources()
     {
-        var account = new Account();
-        var action = new DetectDuplicatesAction(new Client(), true);
+        var items = List.<Extractor.Item>of( //
+                        new TransactionItem(getTestEntry(AccountTransaction.Type.DIVIDENDS, "Dividende01.pdf")),
+                        new TransactionItem(getTestEntry(AccountTransaction.Type.DIVIDENDS,
+                                        "Dividende01 (Kopie).pdf")));
 
-        assertThat(action.process(getTestEntry(AccountTransaction.Type.DIVIDENDS, "Dividende01.pdf"), account)
-                        .getCode(), is(Code.OK));
-        assertThat(action.process(getTestEntry(AccountTransaction.Type.DIVIDENDS, "Dividende01 (Kopie).pdf"),
-                        account).getCode(), is(Code.WARNING));
+        // the transaction to keep is determined by the sorted file names, not
+        // by the order of the items: "Dividende01 (Kopie).pdf" comes first
+        assertThat(statusOf(items), is(List.of(Code.WARNING, Code.OK)));
     }
 
     @SuppressWarnings("nls")
     @Test
-    public void testDuplicateWithinImport4DepositAndTransferInFromDifferentSources()
+    public void testDuplicateWithinImport4RemovalAndAccountTransferFromDifferentSources()
     {
-        var account = new Account();
-        var action = new DetectDuplicatesAction(new Client(), true);
+        var source = new Account();
+        var target = new Account();
 
-        assertThat(action.process(getTestEntry(AccountTransaction.Type.DEPOSIT, "Kontoauszug01.pdf"), account)
-                        .getCode(), is(Code.OK));
-        assertThat(action.process(getTestEntry(AccountTransaction.Type.TRANSFER_IN, "Kontoauszug02.pdf"), account)
-                        .getCode(), is(Code.WARNING));
+        var removal = getTestEntry(AccountTransaction.Type.REMOVAL, "Kontoauszug01.pdf");
+        var transfer = getTestTransfer(source, target, "Kontoauszug02.pdf");
+
+        var action = new DetectDuplicatesAction(new Client(),
+                        List.of(new TransactionItem(removal), new AccountTransferItem(transfer, true)));
+
+        assertThat(action.process(removal, source).getCode(), is(Code.OK));
+        assertThat(action.process(transfer, source, target).getCode(), is(Code.WARNING));
     }
 
     @SuppressWarnings("nls")
@@ -181,75 +190,56 @@ public class DetectDuplicatesActionTest
     {
         // a single document can contain identical transactions (e.g. two
         // identical fees on the same day)
-        var account = new Account();
-        var action = new DetectDuplicatesAction(new Client(), true);
+        var items = List.<Extractor.Item>of( //
+                        new TransactionItem(getTestEntry(AccountTransaction.Type.FEES, "Kontoauszug01.pdf")),
+                        new TransactionItem(getTestEntry(AccountTransaction.Type.FEES, "Kontoauszug01.pdf")));
 
-        assertThat(action.process(getTestEntry(AccountTransaction.Type.FEES, "Kontoauszug01.pdf"), account)
-                        .getCode(), is(Code.OK));
-        assertThat(action.process(getTestEntry(AccountTransaction.Type.FEES, "Kontoauszug01.pdf"), account)
-                        .getCode(), is(Code.OK));
+        assertThat(statusOf(items), is(List.of(Code.OK, Code.OK)));
     }
 
     @SuppressWarnings("nls")
     @Test
     public void testNoDuplicateWithinImportWithoutSource()
     {
-        var account = new Account();
-        var action = new DetectDuplicatesAction(new Client(), true);
+        var items = List.<Extractor.Item>of( //
+                        new TransactionItem(getTestEntry(AccountTransaction.Type.FEES, null)),
+                        new TransactionItem(getTestEntry(AccountTransaction.Type.FEES, "Kontoauszug01.pdf")),
+                        new TransactionItem(getTestEntry(AccountTransaction.Type.FEES, null)));
 
-        assertThat(action.process(getTestEntry(AccountTransaction.Type.FEES, null), account).getCode(),
-                        is(Code.OK));
-        assertThat(action.process(getTestEntry(AccountTransaction.Type.FEES, "Kontoauszug01.pdf"), account)
-                        .getCode(), is(Code.OK));
-        assertThat(action.process(getTestEntry(AccountTransaction.Type.FEES, null), account).getCode(),
-                        is(Code.OK));
+        assertThat(statusOf(items), is(List.of(Code.OK, Code.OK, Code.OK)));
     }
 
     @SuppressWarnings("nls")
     @Test
     public void testNoDuplicateWithinImportWithDifferentValues()
     {
-        var account = new Account();
-        var action = new DetectDuplicatesAction(new Client(), true);
-
-        assertThat(action.process(getTestEntry(AccountTransaction.Type.DIVIDENDS, "Dividende01.pdf"), account)
-                        .getCode(), is(Code.OK));
-
         var otherAmount = getTestEntry(AccountTransaction.Type.DIVIDENDS, "Dividende02.pdf");
         otherAmount.setAmount(1001);
-        assertThat(action.process(otherAmount, account).getCode(), is(Code.OK));
 
         var otherDate = getTestEntry(AccountTransaction.Type.DIVIDENDS, "Dividende03.pdf");
         otherDate.setDateTime(LocalDateTime.of(2025, 12, 16, 0, 0));
-        assertThat(action.process(otherDate, account).getCode(), is(Code.OK));
 
         var otherType = getTestEntry(AccountTransaction.Type.INTEREST, "Zinsen01.pdf");
-        assertThat(action.process(otherType, account).getCode(), is(Code.OK));
-    }
 
-    @SuppressWarnings("nls")
-    @Test
-    public void testNoDuplicateWithinImportForDifferentAccounts()
-    {
-        var action = new DetectDuplicatesAction(new Client(), true);
+        var items = List.<Extractor.Item>of( //
+                        new TransactionItem(getTestEntry(AccountTransaction.Type.DIVIDENDS, "Dividende01.pdf")),
+                        new TransactionItem(otherAmount), //
+                        new TransactionItem(otherDate), //
+                        new TransactionItem(otherType));
 
-        assertThat(action.process(getTestEntry(AccountTransaction.Type.DIVIDENDS, "Dividende01.pdf"), new Account())
-                        .getCode(), is(Code.OK));
-        assertThat(action.process(getTestEntry(AccountTransaction.Type.DIVIDENDS, "Dividende01 (Kopie).pdf"),
-                        new Account()).getCode(), is(Code.OK));
+        assertThat(statusOf(items), is(List.of(Code.OK, Code.OK, Code.OK, Code.OK)));
     }
 
     @SuppressWarnings("nls")
     @Test
     public void testDuplicateWithExistingTransactionIsStillDetectedWithinImport()
     {
-        var action = new DetectDuplicatesAction(new Client(), true);
+        var subject = getTestEntry(AccountTransaction.Type.DIVIDENDS, "Dividende01.pdf");
+        var action = new DetectDuplicatesAction(new Client(), List.of(new TransactionItem(subject)));
 
         var existing = getTestEntry(AccountTransaction.Type.DIVIDENDS, null);
-        var status = action.process(getTestEntry(AccountTransaction.Type.DIVIDENDS, "Dividende01.pdf"),
-                        account(existing));
 
-        assertThat(status.getCode(), is(Code.WARNING));
+        assertThat(action.process(subject, account(existing)).getCode(), is(Code.WARNING));
     }
 
     @SuppressWarnings("nls")
@@ -257,26 +247,27 @@ public class DetectDuplicatesActionTest
     public void testDuplicateWithinImport4PortfolioTransactionFromDifferentSources()
     {
         var security = new Security();
-        var portfolio = new Portfolio();
-        var action = new DetectDuplicatesAction(new Client(), true);
 
-        assertThat(action.process(getTestEntry(PortfolioTransaction.Type.DELIVERY_INBOUND, security, "Eingang01.pdf"),
-                        portfolio).getCode(), is(Code.OK));
-        assertThat(action.process(getTestEntry(PortfolioTransaction.Type.DELIVERY_INBOUND, security, "Eingang02.pdf"),
-                        portfolio).getCode(), is(Code.WARNING));
+        var items = List.<Extractor.Item>of( //
+                        new TransactionItem(getTestEntry(PortfolioTransaction.Type.DELIVERY_INBOUND, security,
+                                        "Eingang01.pdf")),
+                        new TransactionItem(getTestEntry(PortfolioTransaction.Type.DELIVERY_INBOUND, security,
+                                        "Eingang02.pdf")));
+
+        assertThat(statusOf(items), is(List.of(Code.OK, Code.WARNING)));
     }
 
     @SuppressWarnings("nls")
     @Test
     public void testNoDuplicateWithinImport4PortfolioTransactionWithDifferentSecurities()
     {
-        var portfolio = new Portfolio();
-        var action = new DetectDuplicatesAction(new Client(), true);
+        var items = List.<Extractor.Item>of( //
+                        new TransactionItem(getTestEntry(PortfolioTransaction.Type.DELIVERY_INBOUND, new Security(),
+                                        "Eingang01.pdf")),
+                        new TransactionItem(getTestEntry(PortfolioTransaction.Type.DELIVERY_INBOUND, new Security(),
+                                        "Eingang02.pdf")));
 
-        assertThat(action.process(getTestEntry(PortfolioTransaction.Type.DELIVERY_INBOUND, new Security(),
-                        "Eingang01.pdf"), portfolio).getCode(), is(Code.OK));
-        assertThat(action.process(getTestEntry(PortfolioTransaction.Type.DELIVERY_INBOUND, new Security(),
-                        "Eingang02.pdf"), portfolio).getCode(), is(Code.OK));
+        assertThat(statusOf(items), is(List.of(Code.OK, Code.OK)));
     }
 
     @SuppressWarnings("nls")
@@ -284,19 +275,19 @@ public class DetectDuplicatesActionTest
     public void testDuplicateWithinImport4BuySellEntryFromDifferentSources()
     {
         var security = new Security();
-        var account = new Account();
-        var portfolio = new Portfolio();
-        var action = new DetectDuplicatesAction(new Client(), true);
-
-        assertThat(action.process(getTestEntry(PortfolioTransaction.Type.BUY, security, 100L, "Kauf01.pdf"), account,
-                        portfolio).getCode(), is(Code.OK));
-        assertThat(action.process(getTestEntry(PortfolioTransaction.Type.BUY, security, 100L, "Kauf01 (1).pdf"),
-                        account, portfolio).getCode(), is(Code.WARNING));
 
         // same security and shares, but different amount
         var otherAmount = getTestEntry(PortfolioTransaction.Type.BUY, security, 100L, "Kauf02.pdf");
         otherAmount.setAmount(2000);
-        assertThat(action.process(otherAmount, account, portfolio).getCode(), is(Code.OK));
+
+        var items = List.<Extractor.Item>of( //
+                        new BuySellEntryItem(getTestEntry(PortfolioTransaction.Type.BUY, security, 100L, "Kauf01.pdf")),
+                        new BuySellEntryItem(getTestEntry(PortfolioTransaction.Type.BUY, security, 100L,
+                                        "Kauf01 (1).pdf")),
+                        new BuySellEntryItem(otherAmount));
+
+        // "Kauf01 (1).pdf" is sorted before "Kauf01.pdf" and is kept
+        assertThat(statusOf(items), is(List.of(Code.WARNING, Code.OK, Code.OK)));
     }
 
     @SuppressWarnings("nls")
@@ -304,15 +295,15 @@ public class DetectDuplicatesActionTest
     public void testDuplicateWithinImport4PurchaseAndDelivery()
     {
         var security = new Security();
-        var portfolio = new Portfolio();
-        var action = new DetectDuplicatesAction(new Client(), true);
-
-        assertThat(action.process(getTestEntry(PortfolioTransaction.Type.BUY, security, 100L, "Kauf01.pdf"),
-                        new Account(), portfolio).getCode(), is(Code.OK));
 
         var delivery = getTestEntry(PortfolioTransaction.Type.DELIVERY_INBOUND, security, "Eingang01.pdf");
         delivery.setShares(100L);
-        assertThat(action.process(delivery, portfolio).getCode(), is(Code.WARNING));
+
+        var items = List.<Extractor.Item>of( //
+                        new BuySellEntryItem(getTestEntry(PortfolioTransaction.Type.BUY, security, 100L, "Kauf01.pdf")),
+                        new TransactionItem(delivery));
+
+        assertThat(statusOf(items), is(List.of(Code.WARNING, Code.OK)));
     }
 
     @SuppressWarnings("nls")
@@ -321,117 +312,15 @@ public class DetectDuplicatesActionTest
     {
         var source = new Account();
         var target = new Account();
-        var action = new DetectDuplicatesAction(new Client(), true);
 
-        assertThat(action.process(getTestTransfer(source, target, "Umbuchung01.pdf"), source, target).getCode(),
-                        is(Code.OK));
-        assertThat(action.process(getTestTransfer(source, target, "Umbuchung02.pdf"), source, target).getCode(),
-                        is(Code.WARNING));
-    }
+        var transfer1 = getTestTransfer(source, target, "Umbuchung01.pdf");
+        var transfer2 = getTestTransfer(source, target, "Umbuchung02.pdf");
 
-    @SuppressWarnings("nls")
-    @Test
-    public void testDuplicateWithinImportViaExtractedItems()
-    {
-        // simulates the same document imported twice with different file names
-        // plus a document with two identical transactions
-        var security = new Security();
-        var account = new Account();
-        account.setCurrencyCode("EUR");
-        var portfolio = new Portfolio();
-        var context = context(account, portfolio);
+        var action = new DetectDuplicatesAction(new Client(),
+                        List.of(new AccountTransferItem(transfer1, true), new AccountTransferItem(transfer2, true)));
 
-        var action = new DetectDuplicatesAction(new Client(), true);
-
-        List<Extractor.Item> items = new ArrayList<>();
-        items.add(new BuySellEntryItem(getTestEntry(PortfolioTransaction.Type.BUY, security, 100L, "Kauf01.pdf")));
-        items.add(new TransactionItem(getTestEntry(AccountTransaction.Type.FEES, "Kauf01.pdf")));
-        items.add(new TransactionItem(getTestEntry(AccountTransaction.Type.FEES, "Kauf01.pdf")));
-        items.add(new BuySellEntryItem(getTestEntry(PortfolioTransaction.Type.BUY, security, 100L, "Kauf01_2.pdf")));
-        items.add(new TransactionItem(getTestEntry(AccountTransaction.Type.FEES, "Kauf01_2.pdf")));
-        items.add(new TransactionItem(getTestEntry(AccountTransaction.Type.FEES, "Kauf01_2.pdf")));
-
-        var codes = items.stream().map(item -> item.apply(action, context).getCode()).toList();
-
-        assertThat(codes, is(List.of(Code.OK, Code.OK, Code.OK, Code.WARNING, Code.WARNING, Code.WARNING)));
-    }
-
-    @SuppressWarnings("nls")
-    @Test
-    public void testDuplicateWithinImportFromFilesWithSameNameInDifferentFolders()
-    {
-        // e.g. a ZIP archive containing Ordner1/Kauf01.pdf and
-        // Ordner2/Kauf01.pdf: the source (file name) is identical, the input
-        // files are not
-        var security = new Security();
-        var account = new Account();
-        account.setCurrencyCode("EUR");
-        var portfolio = new Portfolio();
-        var context = context(account, portfolio);
-
-        List<Extractor.Item> items = new ArrayList<>();
-        items.add(withSourceKey(new BuySellEntryItem(getTestEntry(PortfolioTransaction.Type.BUY, security, 100L,
-                        "Kauf01.pdf")), "/tmp/import/Ordner1/Kauf01.pdf"));
-        items.add(withSourceKey(new TransactionItem(getTestEntry(AccountTransaction.Type.DIVIDENDS, "Dividende01.pdf")),
-                        "/tmp/import/Ordner1/Dividende01.pdf"));
-        items.add(withSourceKey(new BuySellEntryItem(getTestEntry(PortfolioTransaction.Type.BUY, security, 100L,
-                        "Kauf01.pdf")), "/tmp/import/Ordner2/Kauf01.pdf"));
-        items.add(withSourceKey(new TransactionItem(getTestEntry(AccountTransaction.Type.DIVIDENDS, "Dividende01.pdf")),
-                        "/tmp/import/Ordner2/Dividende01.pdf"));
-
-        var action = new DetectDuplicatesAction(new Client(), true, DetectDuplicatesAction.sourceKeysOf(items));
-
-        var codes = items.stream().map(item -> item.apply(action, context).getCode()).toList();
-
-        assertThat(codes, is(List.of(Code.OK, Code.OK, Code.WARNING, Code.WARNING)));
-    }
-
-    @SuppressWarnings("nls")
-    @Test
-    public void testNoDuplicateWithinImportFromSameInputFile()
-    {
-        // identical transactions of the same input file are no duplicates,
-        // even if the input file is identified by its path
-        var account = new Account();
-        account.setCurrencyCode("EUR");
-        var context = context(account, new Portfolio());
-
-        List<Extractor.Item> items = new ArrayList<>();
-        items.add(withSourceKey(new TransactionItem(getTestEntry(AccountTransaction.Type.FEES, "Kontoauszug01.pdf")),
-                        "/tmp/import/Ordner1/Kontoauszug01.pdf"));
-        items.add(withSourceKey(new TransactionItem(getTestEntry(AccountTransaction.Type.FEES, "Kontoauszug01.pdf")),
-                        "/tmp/import/Ordner1/Kontoauszug01.pdf"));
-
-        var action = new DetectDuplicatesAction(new Client(), true, DetectDuplicatesAction.sourceKeysOf(items));
-
-        var codes = items.stream().map(item -> item.apply(action, context).getCode()).toList();
-
-        assertThat(codes, is(List.of(Code.OK, Code.OK)));
-    }
-
-    @SuppressWarnings("nls")
-    @Test
-    public void testSourceKeysOfUsesSourceKeyOfItem()
-    {
-        var security = new Security();
-        var buySell = getTestEntry(PortfolioTransaction.Type.BUY, security, 100L, "Kauf01.pdf");
-        var transfer = getTestTransfer(new Account(), new Account(), "Umbuchung01.pdf");
-        var dividend = getTestEntry(AccountTransaction.Type.DIVIDENDS, "Dividende01.pdf");
-
-        List<Extractor.Item> items = new ArrayList<>();
-        items.add(withSourceKey(new BuySellEntryItem(buySell), "/tmp/import/Ordner1/Kauf01.pdf"));
-        items.add(withSourceKey(new Extractor.AccountTransferItem(transfer, true), "/tmp/import/Umbuchung01.pdf"));
-        items.add(new TransactionItem(dividend));
-
-        var sourceKeyOf = DetectDuplicatesAction.sourceKeysOf(items);
-
-        assertThat(sourceKeyOf.apply(buySell.getPortfolioTransaction()), is("/tmp/import/Ordner1/Kauf01.pdf"));
-        assertThat(sourceKeyOf.apply(buySell.getAccountTransaction()), is("/tmp/import/Ordner1/Kauf01.pdf"));
-        assertThat(sourceKeyOf.apply(transfer.getSourceTransaction()), is("/tmp/import/Umbuchung01.pdf"));
-        assertThat(sourceKeyOf.apply(transfer.getTargetTransaction()), is("/tmp/import/Umbuchung01.pdf"));
-
-        // no source key --> fall back to the source (file name)
-        assertThat(sourceKeyOf.apply(dividend), is("Dividende01.pdf"));
+        assertThat(action.process(transfer1, source, target).getCode(), is(Code.OK));
+        assertThat(action.process(transfer2, source, target).getCode(), is(Code.WARNING));
     }
 
     @SuppressWarnings("nls")
@@ -442,20 +331,16 @@ public class DetectDuplicatesActionTest
         var source = new Portfolio();
         var target = new Portfolio();
 
-        List<Extractor.Item> items = new ArrayList<>();
-        items.add(withSourceKey(new Extractor.PortfolioTransferItem(
-                        getTestTransfer(source, target, security, "Depotuebertrag01.pdf")),
-                        "/tmp/import/Ordner1/Depotuebertrag01.pdf"));
-        items.add(withSourceKey(new Extractor.PortfolioTransferItem(
-                        getTestTransfer(source, target, security, "Depotuebertrag01.pdf")),
-                        "/tmp/import/Ordner2/Depotuebertrag01.pdf"));
+        var transfer1 = getTestTransfer(source, target, security, "Depotuebertrag01.pdf");
+        var transfer2 = getTestTransfer(source, target, security, "Depotuebertrag01.pdf");
 
-        var action = new DetectDuplicatesAction(new Client(), true, DetectDuplicatesAction.sourceKeysOf(items));
+        var action = new DetectDuplicatesAction(new Client(), List.of( //
+                        withSourceKey(new PortfolioTransferItem(transfer1), "/tmp/import/Ordner1/Depotuebertrag01.pdf"),
+                        withSourceKey(new PortfolioTransferItem(transfer2),
+                                        "/tmp/import/Ordner2/Depotuebertrag01.pdf")));
 
-        assertThat(action.process((PortfolioTransferEntry) items.get(0).getSubject(), source, target).getCode(),
-                        is(Code.OK));
-        assertThat(action.process((PortfolioTransferEntry) items.get(1).getSubject(), source, target).getCode(),
-                        is(Code.WARNING));
+        assertThat(action.process(transfer1, source, target).getCode(), is(Code.OK));
+        assertThat(action.process(transfer2, source, target).getCode(), is(Code.WARNING));
     }
 
     @SuppressWarnings("nls")
@@ -466,36 +351,209 @@ public class DetectDuplicatesActionTest
         var source = new Portfolio();
         var target = new Portfolio();
 
-        List<Extractor.Item> items = new ArrayList<>();
-        items.add(withSourceKey(new Extractor.PortfolioTransferItem(
-                        getTestTransfer(source, target, security, "Depotuebertrag01.pdf")),
-                        "/tmp/import/Ordner1/Depotuebertrag01.pdf"));
-        items.add(withSourceKey(new Extractor.PortfolioTransferItem(
-                        getTestTransfer(source, target, security, "Depotuebertrag01.pdf")),
-                        "/tmp/import/Ordner1/Depotuebertrag01.pdf"));
+        var transfer1 = getTestTransfer(source, target, security, "Depotuebertrag01.pdf");
+        var transfer2 = getTestTransfer(source, target, security, "Depotuebertrag01.pdf");
 
-        var action = new DetectDuplicatesAction(new Client(), true, DetectDuplicatesAction.sourceKeysOf(items));
+        var action = new DetectDuplicatesAction(new Client(), List.of( //
+                        withSourceKey(new PortfolioTransferItem(transfer1), "/tmp/import/Ordner1/Depotuebertrag01.pdf"),
+                        withSourceKey(new PortfolioTransferItem(transfer2),
+                                        "/tmp/import/Ordner1/Depotuebertrag01.pdf")));
 
-        assertThat(action.process((PortfolioTransferEntry) items.get(0).getSubject(), source, target).getCode(),
-                        is(Code.OK));
-        assertThat(action.process((PortfolioTransferEntry) items.get(1).getSubject(), source, target).getCode(),
-                        is(Code.OK));
+        assertThat(action.process(transfer1, source, target).getCode(), is(Code.OK));
+        assertThat(action.process(transfer2, source, target).getCode(), is(Code.OK));
     }
 
     @SuppressWarnings("nls")
     @Test
-    public void testSourceKeysOfUsesSourceKeyOfPortfolioTransferItem()
+    public void testDuplicateWithinImportViaExtractedItems()
     {
-        var transfer = getTestTransfer(new Portfolio(), new Portfolio(), new Security(), "Depotuebertrag01.pdf");
+        // simulates the same document imported twice with different file names
+        // plus a document with two identical transactions
+        var security = new Security();
 
-        List<Extractor.Item> items = new ArrayList<>();
-        items.add(withSourceKey(new Extractor.PortfolioTransferItem(transfer),
-                        "/tmp/import/Ordner1/Depotuebertrag01.pdf"));
+        var items = List.<Extractor.Item>of( //
+                        new BuySellEntryItem(getTestEntry(PortfolioTransaction.Type.BUY, security, 100L, "Kauf01.pdf")),
+                        new TransactionItem(getTestEntry(AccountTransaction.Type.FEES, "Kauf01.pdf")),
+                        new TransactionItem(getTestEntry(AccountTransaction.Type.FEES, "Kauf01.pdf")),
+                        new BuySellEntryItem(getTestEntry(PortfolioTransaction.Type.BUY, security, 100L,
+                                        "Kauf01_2.pdf")),
+                        new TransactionItem(getTestEntry(AccountTransaction.Type.FEES, "Kauf01_2.pdf")),
+                        new TransactionItem(getTestEntry(AccountTransaction.Type.FEES, "Kauf01_2.pdf")));
 
-        var sourceKeyOf = DetectDuplicatesAction.sourceKeysOf(items);
+        assertThat(statusOf(items),
+                        is(List.of(Code.OK, Code.OK, Code.OK, Code.WARNING, Code.WARNING, Code.WARNING)));
+    }
 
-        assertThat(sourceKeyOf.apply(transfer.getSourceTransaction()), is("/tmp/import/Ordner1/Depotuebertrag01.pdf"));
-        assertThat(sourceKeyOf.apply(transfer.getTargetTransaction()), is("/tmp/import/Ordner1/Depotuebertrag01.pdf"));
+    @SuppressWarnings("nls")
+    @Test
+    public void testDuplicateWithinImportFromFilesWithSameNameInDifferentFolders()
+    {
+        // e.g. a ZIP archive containing Ordner1/Kauf01.pdf and
+        // Ordner2/Kauf01.pdf: the source (file name) is identical, the input
+        // files are not
+        var security = new Security();
+
+        var items = List.<Extractor.Item>of( //
+                        withSourceKey(new BuySellEntryItem(getTestEntry(PortfolioTransaction.Type.BUY, security, 100L,
+                                        "Kauf01.pdf")), "/tmp/import/Ordner1/Kauf01.pdf"),
+                        withSourceKey(new TransactionItem(getTestEntry(AccountTransaction.Type.DIVIDENDS,
+                                        "Dividende01.pdf")), "/tmp/import/Ordner1/Dividende01.pdf"),
+                        withSourceKey(new BuySellEntryItem(getTestEntry(PortfolioTransaction.Type.BUY, security, 100L,
+                                        "Kauf01.pdf")), "/tmp/import/Ordner2/Kauf01.pdf"),
+                        withSourceKey(new TransactionItem(getTestEntry(AccountTransaction.Type.DIVIDENDS,
+                                        "Dividende01.pdf")), "/tmp/import/Ordner2/Dividende01.pdf"));
+
+        assertThat(statusOf(items), is(List.of(Code.OK, Code.OK, Code.WARNING, Code.WARNING)));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testNoDuplicateWithinImportFromSameInputFile()
+    {
+        // identical transactions of the same input file are no duplicates,
+        // even if the input file is identified by its path
+        var items = List.<Extractor.Item>of( //
+                        withSourceKey(new TransactionItem(getTestEntry(AccountTransaction.Type.FEES,
+                                        "Kontoauszug01.pdf")), "/tmp/import/Ordner1/Kontoauszug01.pdf"),
+                        withSourceKey(new TransactionItem(getTestEntry(AccountTransaction.Type.FEES,
+                                        "Kontoauszug01.pdf")), "/tmp/import/Ordner1/Kontoauszug01.pdf"));
+
+        assertThat(statusOf(items), is(List.of(Code.OK, Code.OK)));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testIdenticalFeesInStatementAndDetailDocumentsStatementFirst()
+    {
+        // the account statement lists two identical fees, each fee is also
+        // documented in a separate document: economically there are two fees
+        var items = fees("AccountStatement01.pdf", "AccountStatement01.pdf", "FeeStatement01.pdf",
+                        "FeeStatement02.pdf");
+
+        assertThat(kept(items), is(2L));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testIdenticalFeesInStatementAndDetailDocumentsDetailDocumentsFirst()
+    {
+        // same documents as above, but the detail documents are processed
+        // first: the result must not depend on the order of the files
+        var items = fees("FeeStatement01.pdf", "FeeStatement02.pdf", "AccountStatement01.pdf",
+                        "AccountStatement01.pdf");
+
+        assertThat(kept(items), is(2L));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testNumberOfKeptTransactionsDoesNotDependOnFileNames()
+    {
+        // the account statement (Z.pdf) is sorted after the detail documents
+        // (A.pdf, B.pdf): still two fees must be kept
+        assertThat(kept(fees("A.pdf", "B.pdf", "Z.pdf", "Z.pdf")), is(2L));
+        assertThat(kept(fees("Z.pdf", "Z.pdf", "A.pdf", "B.pdf")), is(2L));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testResultDoesNotDependOnOrderOfFiles()
+    {
+        // four files: an account statement with two identical fees and one
+        // dividend, a copy of the account statement, and two fee documents
+        var security = new Security();
+
+        List<List<Extractor.Item>> files = List.of( //
+                        List.of(new TransactionItem(getTestEntry(AccountTransaction.Type.FEES, "Kontoauszug01.pdf")),
+                                        new TransactionItem(getTestEntry(AccountTransaction.Type.FEES,
+                                                        "Kontoauszug01.pdf")),
+                                        new TransactionItem(dividend(security, "Kontoauszug01.pdf"))),
+                        List.of(new TransactionItem(getTestEntry(AccountTransaction.Type.FEES,
+                                        "Kontoauszug01 (Kopie).pdf")),
+                                        new TransactionItem(getTestEntry(AccountTransaction.Type.FEES,
+                                                        "Kontoauszug01 (Kopie).pdf")),
+                                        new TransactionItem(dividend(security, "Kontoauszug01 (Kopie).pdf"))),
+                        List.of(new TransactionItem(getTestEntry(AccountTransaction.Type.FEES, "Gebuehr01.pdf"))),
+                        List.of(new TransactionItem(getTestEntry(AccountTransaction.Type.FEES, "Gebuehr02.pdf"))));
+
+        Set<Extractor.Item> expected = null;
+
+        for (var order : permutations(List.of(0, 1, 2, 3)))
+        {
+            List<Extractor.Item> items = new ArrayList<>();
+            order.forEach(index -> items.addAll(files.get(index)));
+
+            var codes = statusOf(items);
+
+            Set<Extractor.Item> keptItems = Collections.newSetFromMap(new IdentityHashMap<>());
+            for (int ii = 0; ii < items.size(); ii++)
+            {
+                if (codes.get(ii) == Code.OK)
+                    keptItems.add(items.get(ii));
+            }
+
+            // two fees and one dividend survive
+            assertThat(order.toString(), keptItems.size(), is(3));
+
+            if (expected == null)
+                expected = keptItems;
+            else
+                assertThat(order.toString(), keptItems, is(expected));
+        }
+    }
+
+    private List<Code> statusOf(List<Extractor.Item> items)
+    {
+        var account = new Account();
+        account.setCurrencyCode("EUR"); //$NON-NLS-1$
+        var context = context(account, new Portfolio());
+
+        var action = new DetectDuplicatesAction(new Client(), items);
+
+        return items.stream().map(item -> item.apply(action, context).getCode()).toList();
+    }
+
+    private long kept(List<Extractor.Item> items)
+    {
+        return statusOf(items).stream().filter(code -> code == Code.OK).count();
+    }
+
+    private List<Extractor.Item> fees(String... sources)
+    {
+        return Arrays.stream(sources) //
+                        .<Extractor.Item>map(source -> new TransactionItem(
+                                        getTestEntry(AccountTransaction.Type.FEES, source)))
+                        .toList();
+    }
+
+    private AccountTransaction dividend(Security security, String source)
+    {
+        var transaction = getTestEntry(AccountTransaction.Type.DIVIDENDS, source);
+        transaction.setSecurity(security);
+        transaction.setAmount(500);
+        return transaction;
+    }
+
+    private static <T> List<List<T>> permutations(List<T> list)
+    {
+        if (list.isEmpty())
+            return List.of(List.of());
+
+        List<List<T>> result = new ArrayList<>();
+        for (int ii = 0; ii < list.size(); ii++)
+        {
+            var head = list.get(ii);
+            List<T> rest = new ArrayList<>(list);
+            rest.remove(ii);
+            for (var permutation : permutations(rest))
+            {
+                List<T> p = new ArrayList<>();
+                p.add(head);
+                p.addAll(permutation);
+                result.add(p);
+            }
+        }
+        return result;
     }
 
     private Extractor.Item withSourceKey(Extractor.Item item, String sourceKey)

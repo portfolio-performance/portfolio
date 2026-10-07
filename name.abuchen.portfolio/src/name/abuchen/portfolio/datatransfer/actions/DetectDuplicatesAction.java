@@ -1,15 +1,17 @@
 package name.abuchen.portfolio.datatransfer.actions;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
+import java.util.Set;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
@@ -22,6 +24,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 
 public class DetectDuplicatesAction implements ImportAction
@@ -35,108 +38,169 @@ public class DetectDuplicatesAction implements ImportAction
      */
     public static final String SOURCE_KEY = "sourceKey"; //$NON-NLS-1$
 
+    /**
+     * Transactions which are compared with each other to detect duplicates
+     * within the import: same kind of transaction (incl. equivalent types),
+     * date, currency, amount, shares and security.
+     */
+    private record DuplicateKey(Set<?> types, LocalDate date, String currencyCode, long amount, long shares,
+                    Security security)
+    {
+    }
+
+    /**
+     * A transaction of the import together with the input file it stems from
+     * and its position within that file.
+     */
+    private record Candidate(Transaction transaction, String sourceKey, int position)
+    {
+    }
+
     private final Client client;
 
     /**
-     * If true, the transactions of the current import are compared with each
-     * other as well. Only transactions from different sources (files) are
-     * compared, because a single document can legitimately contain identical
-     * transactions.
+     * Transactions of the current import which are duplicates of other
+     * transactions of the same import (identity based).
      */
-    private final boolean detectDuplicatesWithinImport;
-
-    /**
-     * Returns the key identifying the source (input file) of a transaction.
-     * Transactions are only compared with each other if their keys differ.
-     */
-    private final Function<Transaction, Object> sourceKeyOf;
-
-    /**
-     * Transactions of the current import which have already been processed,
-     * grouped by the account or portfolio they will be booked into.
-     */
-    private final Map<Account, List<AccountTransaction>> importedAccountTransactions = new HashMap<>();
-    private final Map<Portfolio, List<PortfolioTransaction>> importedPortfolioTransactions = new HashMap<>();
+    private final Set<Transaction> duplicatesWithinImport;
 
     public DetectDuplicatesAction(Client client)
     {
-        this(client, false);
-    }
-
-    public DetectDuplicatesAction(Client client, boolean detectDuplicatesWithinImport)
-    {
-        this(client, detectDuplicatesWithinImport, Transaction::getSource);
-    }
-
-    public DetectDuplicatesAction(Client client, boolean detectDuplicatesWithinImport,
-                    Function<Transaction, Object> sourceKeyOf)
-    {
-        this.client = client;
-        this.detectDuplicatesWithinImport = detectDuplicatesWithinImport;
-        this.sourceKeyOf = sourceKeyOf;
+        this(client, Collections.emptyList());
     }
 
     /**
-     * Creates a function which returns for each transaction of the given items
-     * the {@link #SOURCE_KEY} of its item. If the item has no such key, the
-     * source (file name) of the transaction is used.
+     * @param importedItems
+     *            the items of the current import which are additionally
+     *            checked for duplicates among each other. Pass an empty list
+     *            to only check against the existing transactions.
      */
-    public static Function<Transaction, Object> sourceKeysOf(List<Extractor.Item> items)
+    public DetectDuplicatesAction(Client client, List<Extractor.Item> importedItems)
     {
-        var keys = new IdentityHashMap<Transaction, Object>();
+        this.client = client;
+        this.duplicatesWithinImport = detectDuplicatesWithinImport(importedItems);
+    }
+
+    /**
+     * Determines the duplicates within the import. The result depends only on
+     * the set of items, not on the order in which the files were read:
+     * <ul>
+     * <li>Identical transactions from the same input file are no duplicates
+     * (a document can legitimately contain identical transactions).</li>
+     * <li>The input file with the most occurrences of a transaction determines
+     * how many of them are kept.</li>
+     * <li>Which transactions are kept is determined by a fixed order: by input
+     * file, then by position within the file.</li>
+     * </ul>
+     */
+    private static Set<Transaction> detectDuplicatesWithinImport(List<Extractor.Item> items)
+    {
+        Map<DuplicateKey, List<Candidate>> groups = new HashMap<>();
+        Map<String, Integer> positions = new HashMap<>();
 
         for (var item : items)
         {
-            var key = item.getData(SOURCE_KEY);
-            if (key == null)
+            var transaction = representativeTransactionOf(item);
+            if (transaction == null)
                 continue;
 
-            var subject = item.getSubject();
+            var sourceKey = sourceKeyOf(item);
+            if (sourceKey == null)
+                continue;
 
-            if (subject instanceof Transaction transaction)
-            {
-                keys.put(transaction, key);
-            }
-            else if (subject instanceof BuySellEntry entry)
-            {
-                keys.put(entry.getPortfolioTransaction(), key);
-                keys.put(entry.getAccountTransaction(), key);
-            }
-            else if (subject instanceof AccountTransferEntry entry)
-            {
-                keys.put(entry.getSourceTransaction(), key);
-                keys.put(entry.getTargetTransaction(), key);
-            }
-            else if (subject instanceof PortfolioTransferEntry entry)
-            {
-                keys.put(entry.getSourceTransaction(), key);
-                keys.put(entry.getTargetTransaction(), key);
-            }
+            var position = positions.merge(sourceKey, 1, Integer::sum);
+
+            groups.computeIfAbsent(duplicateKeyOf(transaction), k -> new ArrayList<>())
+                            .add(new Candidate(transaction, sourceKey, position));
         }
 
-        return transaction -> keys.containsKey(transaction) ? keys.get(transaction) : transaction.getSource();
+        Set<Transaction> duplicates = Collections.newSetFromMap(new IdentityHashMap<>());
+
+        for (var group : groups.values())
+        {
+            if (group.size() < 2)
+                continue;
+
+            Map<String, Integer> occurrencesPerSource = new HashMap<>();
+            group.forEach(c -> occurrencesPerSource.merge(c.sourceKey(), 1, Integer::sum));
+
+            var numberToKeep = Collections.max(occurrencesPerSource.values());
+
+            group.stream() //
+                            .sorted(Comparator.comparing(Candidate::sourceKey) //
+                                            .thenComparingInt(Candidate::position)) //
+                            .skip(numberToKeep) //
+                            .forEach(c -> duplicates.add(c.transaction()));
+        }
+
+        return duplicates;
+    }
+
+    /**
+     * Returns the transaction of the item which is used to detect duplicates
+     * within the import - the same transaction which is checked against the
+     * existing transactions.
+     */
+    private static Transaction representativeTransactionOf(Extractor.Item item)
+    {
+        var subject = item.getSubject();
+
+        if (subject instanceof AccountTransaction transaction)
+            return transaction;
+        else if (subject instanceof PortfolioTransaction transaction)
+            return transaction;
+        else if (subject instanceof BuySellEntry entry)
+            return entry.getPortfolioTransaction();
+        else if (subject instanceof AccountTransferEntry entry)
+            return entry.getSourceTransaction();
+        else if (subject instanceof PortfolioTransferEntry entry)
+            return entry.getTargetTransaction();
+        else
+            return null;
+    }
+
+    /**
+     * Returns the key identifying the input file of the item. If the item has
+     * no {@link #SOURCE_KEY}, the source (file name) is used.
+     */
+    private static String sourceKeyOf(Extractor.Item item)
+    {
+        if (item.getData(SOURCE_KEY) instanceof String sourceKey)
+            return sourceKey;
+
+        return item.getSource();
+    }
+
+    private static DuplicateKey duplicateKeyOf(Transaction transaction)
+    {
+        Set<?> types;
+        if (transaction instanceof AccountTransaction t)
+            types = equivalentTypesOf(t.getType());
+        else if (transaction instanceof PortfolioTransaction t)
+            types = equivalentTypesOf(t.getType());
+        else
+            throw new IllegalArgumentException(transaction.getClass().getName());
+
+        return new DuplicateKey(types, transaction.getDateTime().toLocalDate(), transaction.getCurrencyCode(),
+                        transaction.getAmount(), transaction.getShares(), transaction.getSecurity());
     }
 
     @Override
     public Status process(AccountTransaction transaction, Account account)
     {
         var status = check(transaction, account.getTransactions());
-        if (status.getCode() == Status.Code.OK)
-            status = check(transaction, fromOtherSources(importedAccountTransactions, account, transaction));
-
-        remember(importedAccountTransactions, account, transaction);
-        return status;
+        if (status.getCode() != Status.Code.OK)
+            return status;
+        return checkWithinImport(transaction);
     }
 
     @Override
     public Status process(PortfolioTransaction transaction, Portfolio portfolio)
     {
         var status = check(transaction, portfolio.getTransactions());
-        if (status.getCode() == Status.Code.OK)
-            status = check(transaction, fromOtherSources(importedPortfolioTransactions, portfolio, transaction));
-
-        remember(importedPortfolioTransactions, portfolio, transaction);
-        return status;
+        if (status.getCode() != Status.Code.OK)
+            return status;
+        return checkWithinImport(transaction);
     }
 
     @Override
@@ -160,48 +224,31 @@ public class DetectDuplicatesAction implements ImportAction
             }
         }
 
-        var accountTransaction = entry.getAccountTransaction();
-        var portfolioTransaction = entry.getPortfolioTransaction();
-
-        var status = check(accountTransaction, account.getTransactions());
-        if (status.getCode() == Status.Code.OK)
-            status = check(portfolioTransaction, portfolio.getTransactions());
-        if (status.getCode() == Status.Code.OK)
-            status = check(accountTransaction,
-                            fromOtherSources(importedAccountTransactions, account, accountTransaction));
-        if (status.getCode() == Status.Code.OK)
-            status = check(portfolioTransaction,
-                            fromOtherSources(importedPortfolioTransactions, portfolio, portfolioTransaction));
-
-        remember(importedAccountTransactions, account, accountTransaction);
-        remember(importedPortfolioTransactions, portfolio, portfolioTransaction);
-        return status;
+        Status status = check(entry.getAccountTransaction(), account.getTransactions());
+        if (status.getCode() != Status.Code.OK)
+            return status;
+        status = check(entry.getPortfolioTransaction(), portfolio.getTransactions());
+        if (status.getCode() != Status.Code.OK)
+            return status;
+        return checkWithinImport(entry.getPortfolioTransaction());
     }
 
     @Override
     public Status process(AccountTransferEntry entry, Account source, Account target)
     {
-        var transaction = entry.getSourceTransaction();
-
-        var status = check(transaction, source.getTransactions());
-        if (status.getCode() == Status.Code.OK)
-            status = check(transaction, fromOtherSources(importedAccountTransactions, source, transaction));
-
-        remember(importedAccountTransactions, source, transaction);
-        return status;
+        var status = check(entry.getSourceTransaction(), source.getTransactions());
+        if (status.getCode() != Status.Code.OK)
+            return status;
+        return checkWithinImport(entry.getSourceTransaction());
     }
 
     @Override
     public Status process(PortfolioTransferEntry entry, Portfolio source, Portfolio target)
     {
-        var transaction = entry.getTargetTransaction();
-
-        var status = check(transaction, source.getTransactions());
-        if (status.getCode() == Status.Code.OK)
-            status = check(transaction, fromOtherSources(importedPortfolioTransactions, source, transaction));
-
-        remember(importedPortfolioTransactions, source, transaction);
-        return status;
+        var status = check(entry.getTargetTransaction(), source.getTransactions());
+        if (status.getCode() != Status.Code.OK)
+            return status;
+        return checkWithinImport(entry.getTargetTransaction());
     }
 
     public Transaction findInvestmentPlanTransaction(Transaction subject, List<Transaction> transactions)
@@ -215,32 +262,12 @@ public class DetectDuplicatesAction implements ImportAction
         return null;
     }
 
-    /**
-     * Returns the already processed transactions of the current import which
-     * are booked into the same account or portfolio but stem from a different
-     * source (input file) than the subject.
-     */
-    private <K, T extends Transaction> List<T> fromOtherSources(Map<K, List<T>> imported, K owner, Transaction subject)
+    private Status checkWithinImport(Transaction subject)
     {
-        if (!detectDuplicatesWithinImport)
-            return Collections.emptyList();
+        if (duplicatesWithinImport.contains(subject))
+            return new Status(Status.Code.WARNING, Messages.LabelPotentialDuplicate);
 
-        var subjectKey = sourceKeyOf.apply(subject);
-        if (subjectKey == null)
-            return Collections.emptyList();
-
-        return imported.getOrDefault(owner, Collections.emptyList()).stream() //
-                        .filter(t -> {
-                            var key = sourceKeyOf.apply(t);
-                            return key != null && !key.equals(subjectKey);
-                        }) //
-                        .toList();
-    }
-
-    private <K, T extends Transaction> void remember(Map<K, List<T>> imported, K owner, T transaction)
-    {
-        if (detectDuplicatesWithinImport)
-            imported.computeIfAbsent(owner, k -> new ArrayList<>()).add(transaction);
+        return Status.OK_STATUS;
     }
 
     private Status check(AccountTransaction subject, List<AccountTransaction> transactions)

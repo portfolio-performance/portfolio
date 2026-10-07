@@ -662,14 +662,26 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         }
     }
 
+    /**
+     * Returns the items which are checked by the import actions, i.e. without
+     * failures and skipped items
+     */
+    private static List<Extractor.Item> importedItems(List<ExtractedEntry> entries)
+    {
+        return entries.stream() //
+                        .map(ExtractedEntry::getItem) //
+                        .filter(item -> !item.isFailure() && !item.isSkipped()) //
+                        .toList();
+    }
+
     private void checkEntries(List<ExtractedEntry> entries)
     {
         List<ImportAction> actions = new ArrayList<>();
         actions.add(new CheckTransactionDateAction());
         actions.add(new CheckValidTypesAction());
         actions.add(new CheckSecurityRelatedValuesAction());
-        actions.add(new DetectDuplicatesAction(client, detectDuplicatesWithinImport,
-                        DetectDuplicatesAction.sourceKeysOf(entries.stream().map(ExtractedEntry::getItem).toList())));
+        actions.add(new DetectDuplicatesAction(client,
+                        detectDuplicatesWithinImport ? importedItems(entries) : List.of()));
         actions.add(new CheckCurrenciesAction());
         actions.add(new CheckForexGrossValueAction());
 
