@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
+import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -46,6 +47,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         addInterestStatementTransaction_Format01();
         addInterestStatementTransaction_Format02();
         addInterestStatementTransaction_Format03();
+        addInterestStatementWithTaxCorrectionTransaction();
         addFeeStatementTransaction();
         addNonImportableTransaction();
     }
@@ -236,7 +238,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin", "nameContinued") //
-                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.|t.t\\.) [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.|t.t\\.) [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d\\s]+ [A-Z]{3}$") //
                                                         .match("^(?<nameContinued>.*) [\\w]{4} [\\w]{3,4} [\\.,\\d]+$")
                                                         .match("^(ISIN[\\s]*:[\\s]*)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
@@ -251,7 +253,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin", "nameContinued") //
-                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.|t.t\\.) [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.|t.t\\.) [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d\\s]+ [A-Z]{3}$") //
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .match("^(ISIN[\\s]*:[\\s]*)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
@@ -261,7 +263,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin") //
-                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.|t.t\\.) [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.|t.t\\.) [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d\\s]+ [A-Z]{3}$") //
                                                         .match("^(ISIN[\\s]*:[\\s]*)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -279,7 +281,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin") //
-                                                        .match("^(?<name>.*) [\\.,\\d]+ [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d\\s]+ [A-Z]{3}$") //
                                                         .match("^(ISIN[\\s]*:[\\s]*)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
@@ -308,7 +310,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares", "sample") //
-                                                        .match("^.* (?<shares>[\\.,\\d]+) (Stk\\.|titre\\(s\\)|Pz\\.|t.t\\.) (.* )?(?<sample>[\\.,'\\d]+) [A-Z]{3}$") //
+                                                        .match("^.* (?<shares>[\\.,\\d]+) (Stk\\.|titre\\(s\\)|Pz\\.|t.t\\.) (.*? )?(?<sample>[\\d]{1,3}([\\s][\\d]{3})+([\\.,][\\d]+)?|[\\.,'\\d]+) [A-Z]{3}$") //
                                                         .assign((t, v) -> {
                                                             // use the monetary amount to detect the format for the shares
                                                             var locale = ExtractorUtils.guessNumberLocale(v.get("sample"), Locale.GERMANY);
@@ -471,8 +473,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // GESAMT -1.396,60 EUR
                         // @formatter:on
                         .section("negative").optional() //
-                        .match("(GESAMT|TOTAL|TOTALE) (\\-)?[\\.,\\d]+ [A-Z]{3}") //
-                        .match("(GESAMT|TOTAL|TOTALE) (?<negative>\\-)[\\.,\\d]+ [A-Z]{3}") //
+                        .match("(GESAMT|TOTAL|TOTALE) (\\-)?[\\.,\\d\\s]+ [A-Z]{3}") //
+                        .match("(GESAMT|TOTAL|TOTALE) (?<negative>\\-)[\\.,\\d\\s]+ [A-Z]{3}") //
                         .assign((t, v) -> {
                             if (t.getPortfolioTransaction().getType().isLiquidation())
                                 type.getCurrentContext().putBoolean("negative", true);
@@ -492,17 +494,17 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount", "currency", "gross", "grossCurrency") //
-                                                        .match("^(GESAMT|TOTAL|TOTALE) (\\-)?(?<gross>[\\.,\\d]+) (?<grossCurrency>[A-Z]{3})$") //
-                                                        .match("^(GESAMT|TOTAL|TOTALE) (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .match("^(GESAMT|TOTAL|TOTALE) (\\-)?(?<gross>[\\.,\\d\\s]+) (?<grossCurrency>[A-Z]{3})$") //
+                                                        .match("^(GESAMT|TOTAL|TOTALE) (\\-)?(?<amount>[\\.,\\d\\s]+) (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             if (type.getCurrentContext().getBoolean("negative"))
                                                             {
-                                                                t.setAmount(asAmount(v.get("gross")));
+                                                                t.setAmount(asAmount(stripBlanks(v.get("gross"))));
                                                                 t.setCurrencyCode(asCurrencyCode(v.get("grossCurrency")));
                                                             }
                                                             else
                                                             {
-                                                                t.setAmount(asAmount(v.get("amount")));
+                                                                t.setAmount(asAmount(stripBlanks(v.get("amount"))));
                                                                 t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             }
                                                         }),
@@ -512,10 +514,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount", "currency") //
-                                                        .match("^SUMME (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
-                                                        .match("^SUMME [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .match("^SUMME (?<amount>[\\.,\\d\\s]+) (?<currency>[A-Z]{3})$") //
+                                                        .match("^SUMME [\\.,\\d\\s]+ [A-Z]{3}$") //
                                                         .assign((t, v) -> {
-                                                                t.setAmount(asAmount(v.get("amount")));
+                                                                t.setAmount(asAmount(stripBlanks(v.get("amount"))));
                                                                 t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                         }),
                                         // In case there is no tax,
@@ -529,10 +531,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount", "currency") //
-                                                        .match("^(GESAMT|TOTAL|TOTALE) (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .match("^(GESAMT|TOTAL|TOTALE) (\\-)?(?<amount>[\\.,\\d\\s]+) (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setAmount(asAmount(stripBlanks(v.get("amount"))));
                                                         }),
                                         // @formatter:off
                                         // VERRECHNUNGSKONTO DATUM DER ZAHLUNG
@@ -616,7 +618,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("amount", "currency").optional() //
                         .match("^([\\d] )?Kapitalertrags(s)?teuer Optimierung (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
-                        .match("^(GESAMT|TOTAL|TOTALE|) (\\-)?[\\.,\\d]+ [A-Z]{3}$") //
+                        .match("^(GESAMT|TOTAL|TOTALE|) (\\-)?[\\.,\\d\\s]+ [A-Z]{3}$") //
                         .assign((t, v) -> {
                             var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
                             t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().subtract(tax));
@@ -627,7 +629,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("amount", "currency").optional() //
                         .match("^([\\d] )?Solidarit.tszuschlag Optimierung (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
-                        .match("^(GESAMT|TOTAL|TOTALE|) (\\-)?[\\.,\\d]+ [A-Z]{3}$") //
+                        .match("^(GESAMT|TOTAL|TOTALE|) (\\-)?[\\.,\\d\\s]+ [A-Z]{3}$") //
                         .assign((t, v) -> {
                             var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
                             t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().subtract(tax));
@@ -638,7 +640,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("amount", "currency").optional() //
                         .match("^([\\d] )?Kirchensteuer Optimierung (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
-                        .match("^(GESAMT|TOTAL|TOTALE|) (\\-)?[\\.,\\d]+ [A-Z]{3}$") //
+                        .match("^(GESAMT|TOTAL|TOTALE|) (\\-)?[\\.,\\d\\s]+ [A-Z]{3}$") //
                         .assign((t, v) -> {
                             var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
                             t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().subtract(tax));
@@ -1275,7 +1277,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         + "|DIVIDENDO" //
                         + "|DISTRIBUZIONE" //
                         + "|Distribution" //
-                        + "|KAPITALREDUKTION)", //
+                        + "|KAPITALREDUKTION" //
+                        + "|REKLASSIFI[A-Z]+ US\\-DIVIDENDE)", //
                         "(ABRECHNUNG ZINSEN|AUSSCH.TTUNGSGLEICHER ERTRAG)");
         this.addDocumentTyp(type);
 
@@ -1552,7 +1555,16 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("exDate") //
                                                         .match("^Dividende en esp.ces .* -(?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})\\.$") //
                                                         .assign((t, v) -> t.setExDate(asDate(v.get(
-                                                                        "exDate"))))
+                                                                        "exDate")))),
+
+                                        // @formatter:off
+                                        // Unternehmens widerzuspiegeln. Du siehst dann eine Stornierung und eine neue Gutschrift einer früheren Dividende vom 19.03.2025 (ursprüngliches Ex-
+                                        // Datum). Das sind routinemäßige steuerliche Anpassungen, um sicherzustellen, dass die steuerliche Behandlung und deine Steuerbescheinigung korrekt
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("exDate") //
+                                                        .match("^.* vom (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\(urspr.ngliches Ex\\-(Datum\\))?.*$") //
+                                                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
                         )
 
                         .oneOf( //
@@ -1827,12 +1839,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
     private void addExAnteFeeTransaction()
     {
-        final var type = new DocumentType("EX-ANTE KOSTENINFORMATION ZUM WERTPAPIERKAUF");
+        final var type = new DocumentType("EX\\-ANTE KOSTENINFORMATION ZUM WERTPAPIER(KAUF|VERKAUF)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^TRADE REPUBLIC BANK GMBH.*$", "^Die Gesamtkosten der Wertpapiertransaktion.*$");
+        var firstRelevantLine = new Block("^TRADE REPUBLIC BANK GMBH.*$", //
+                        "^(Die Gesamtkosten der Wertpapiertransaktion|Beim Wertpapierverkauf belaufen sich).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -1840,32 +1853,50 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
+                        // The ex-ante cost information only announces the
+                        // upcoming
+                        // transaction, it does not book anything. The booking
+                        // itself is
+                        // processed with the securities settlement document.
+                        .section("type") //
+                        .match("^(?<type>EX\\-ANTE KOSTENINFORMATION ZUM WERTPAPIER(KAUF|VERKAUF))$") //
+                        .assign((t, v) -> v.skipTransaction(Messages.MsgErrorTransactionAlternativeDocumentRequired))
+
                         .oneOf( //
                                         // @formatter:off
                                         // WERTPAPIER BESTELLUNG / BETRAG WERT
                                         // BYD
                                         // Buy 12 Stk. 464,64 €
                                         // ISIN: CNE100000296
+                                        //
+                                        // WERTPAPIER BESTELLUNG / BETRAG WERT HANDELSPLATZ
+                                        // Meta Platforms (A)
+                                        // Kauf 4 Stk. 2.114,80 € Lang & Schwarz Exchange
+                                        // ISIN: US30303M1027
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin") //
-                                                        .find("WERTPAPIER BESTELLUNG \\/ BETRAG WERT")
+                                                        .find("WERTPAPIER BESTELLUNG \\/ BETRAG WERT( HANDELSPLATZ)?")
                                                         .match("^(?<name>.*)$") //
-                                                        .match(".*[\\.,\\d]+ Stk\\. [\\.,\\d]+ (?<currency>\\p{Sc})$") //
+                                                        .match("^.*[\\.,\\d]+ Stk\\. [\\.,\\d]+ (?<currency>\\p{Sc})( .*)?$") //
                                                         .match("^(ISIN: )?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off
                         // Buy 12 Stk. 464,64 €
                         // Kauf 0.851192 Stk. 124,239984 €
+                        // Verkauf 10 Stk. 1.027,50 € Lang & Schwarz Exchange
                         // @formatter:on
                         .section("shares") //
-                        .match("^.* (?<shares>[\\.,\\d]+) Stk\\. [\\.,\\d]+ \\p{Sc}$") //
+                        .match("^.* (?<shares>[\\.,\\d]+) Stk\\. [\\.,\\d]+ \\p{Sc}( .*)?$") //
                         .assign((t, v) -> {
-                            if (!v.get("shares").contains(","))
-                                t.setShares(asShares(v.get("shares"), "en", "US"));
-                            else
+                            // The quantity is either German formatted with grouped
+                            // thousands (1.000) or US formatted with a decimal point
+                            // (0.851192)
+                            if (v.get("shares").contains(",") || v.get("shares").matches("[\\d]{1,3}(\\.[\\d]{3})+"))
                                 t.setShares(asShares(v.get("shares")));
+                            else
+                                t.setShares(asShares(v.get("shares"), "en", "US"));
                         })
 
                         .oneOf( //
@@ -1883,7 +1914,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("amount", "currency").optional() //
                         .find("KOSTEN DES WERTPAPIER.* BETRAG") //
-                        .match("^GESAMT (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc})$") //)
+                        .match("^GESAMT (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc})$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -3809,6 +3840,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         + "|RESOCONTO INTERESSI MATURATI" //
                         + "|INTEREST INVOICE" //
                         + "|RAPPORT D.INT.R.TS)", //
+                        "Steuerkorrektur f.r Rechnung am [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} angewendet", //
                         documentContext -> documentContext //
                                         .oneOf(
                                                         // @formatter:off
@@ -3983,6 +4015,59 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addInterestStatementWithTaxCorrectionTransaction()
+    {
+        final var type = new DocumentType("Steuerkorrektur f.r Rechnung am [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} angewendet", //
+                        documentContext -> documentContext //
+                        // @formatter:off
+                                        // Steuerkorrektur für Rechnung am 02.07.2026 angewendet
+                                        // @formatter:on
+                                        .section("date") //
+                                        .match("^Steuerkorrektur f.r Rechnung am (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) angewendet$") //
+                                        .assign((ctx, v) -> ctx.put("date", v.get("date"))));
+
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block("^KORREKTURDETAILS: .*$");
+        firstRelevantLine.setMaxSize(1);
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
+
+                        // The interest and dividend amounts of this document
+                        // have already
+                        // been settled with the original statement. Only the
+                        // tax correction
+                        // is left over and has to be booked manually.
+                        // @formatter:off
+                        // KORREKTURDETAILS: Dein Konto wurde mit 1,86 EUR belastet. Das entspricht der obigen Steuerkorrektur.
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .documentContext("date") //
+                        .match("^KORREKTURDETAILS: .* (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}) belastet\\..*$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+
+                            v.markAsFailure(Messages.MsgErrorTransactionTaxCorrectionUnsupported);
+                        })
+
+                        // @formatter:off
+                        // KORREKTURDETAILS: Dein Konto wurde mit 1,86 EUR belastet. Das entspricht der obigen Steuerkorrektur.
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^KORREKTURDETAILS: .* (?<note>Steuerkorrektur)\\.$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        .wrap(TransactionItem::new);
     }
 
     private void addFeeStatementTransaction()
@@ -4253,7 +4338,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin", "nameContinued") //
-                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.|t.t\\.) [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.|t.t\\.) [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d\\s]+ [A-Z]{3}$") //
                                                         .match("^(?<nameContinued>.*) [\\w]{4} [\\w]{3,4} [\\.,\\d]+$")
                                                         .match("^(ISIN[\\s]*:[\\s]*)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
@@ -4268,7 +4353,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin", "nameContinued") //
-                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.|t.t\\.) [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.|t.t\\.) [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d\\s]+ [A-Z]{3}$") //
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .match("^(ISIN[\\s]*:[\\s]*)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
@@ -4278,7 +4363,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin") //
-                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.|t.t\\.) [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.|t.t\\.) [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d\\s]+ [A-Z]{3}$") //
                                                         .match("^(ISIN[\\s]*:[\\s]*)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -4296,7 +4381,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin") //
-                                                        .match("^(?<name>.*) [\\.,\\d]+ [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d\\s]+ [A-Z]{3}$") //
                                                         .match("^(ISIN[\\s]*:[\\s]*)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
@@ -4324,7 +4409,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares", "sample") //
-                                                        .match("^.* (?<shares>[\\.,\\d]+) (Stk\\.|titre\\(s\\)|Pz\\.|t.t\\.) (.* )?(?<sample>[\\.,'\\d]+) [A-Z]{3}$") //
+                                                        .match("^.* (?<shares>[\\.,\\d]+) (Stk\\.|titre\\(s\\)|Pz\\.|t.t\\.) (.*? )?(?<sample>[\\d]{1,3}([\\s][\\d]{3})+([\\.,][\\d]+)?|[\\.,'\\d]+) [A-Z]{3}$") //
                                                         .assign((t, v) -> {
                                                             // use the monetary amount to detect the format for the shares
                                                             var locale = ExtractorUtils.guessNumberLocale(v.get("sample"), Locale.GERMANY);
@@ -4485,7 +4570,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // GESAMT 3.615,63 EUR
                         // @formatter:on
                         .section("amount", "currency").optional() //
-                        .match("^(GESAMT|TOTAL|TOTALE|SUMME) (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .match("^(GESAMT|TOTAL|TOTALE|SUMME) (\\-)?(?<amount>[\\.,\\d\\s]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             // @formatter:off
                             // For tax optimizations in sales,

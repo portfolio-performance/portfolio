@@ -1,0 +1,502 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.5
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+500 Colonial Center Parkway, Suite 100, Lake Mary, FL 32746 Page 1 of 16
+help@robinhood.com 01/01/2026 to 01/31/2026
+rdWVe rNmAcEj
+Individual Account #:368651984
+4411 O gFRBoi jl, dGX 5i, USnvJpR, kD 59379
+ Portfolio Allocation
+Account Summary Opening Balance Closing Balance
+Brokerage Cash Balance $36.25 $0.00
+Cash and Cash Equivalents
+Deposit Sweep Balance $69,171.91 $50,645.16  10.73%
+Equities
+Total Securities $397,359.86 $421,441.34  
+ 89.27%
+Portfolio Value $466,568.02 $472,086.50 Options
+ 0.00%
+Income and Expense Summary This Period Year to Date
+Dividends $125.05 $125.05
+Capital Gains Distributions $0.00 $0.00
+Interest Earned $161.04 $161.04
+Please note that when “Managed” is in the account title, it refers to accounts that are managed by Robinhood Asset Management, LLC ("RAM"), subject to the terms of the Robinhood Asset Management Advisory Agreement.
+As of the closing date of this statement, the annual percentage yield (APY) for customers subscribed to Robinhood Gold or enrolled in a boosted rate promotion, the APY ranges from 3.25% - 3.75%. For accounts managed by RAM, the APY is 3.25%. Program banks pay 
+interest on your swept cash, minus any fees paid to Robinhood. RAM does not receive fees related to the cash sweep program. Uninvested cash swept to the program banks is eligible for FDIC insurance up to applicable limits, subject to FDIC rules. Robinhood Financial LLC 
+and its affiliates are not FDIC-insured banks. Deposit insurance covers the failure of an insured bank. Products other than the cash sweep program are not insured by the FDIC, are not deposits, and may lose value. Certain conditions must be satisfied for pass-through FDIC 
+deposit insurance coverage to apply. The Securities Investor Protection Corporation has taken the position that uninvested cash swept to the program banks is not covered by the Securities Investor Protection Act.
+This statement shall be conclusive if not objected to in writing within ten days (except with respect to debit card transactions). Errors and omissions exempted. Please address all communications to the firm and not to the individuals. Address changes or other material 
+changes in your account should be directed to the office servicing your account. Kindly mention your account number. This statement should be retained as it may be helpful in preparing your income tax returns. However, it is not a substitute for IRS Form 1099. Only 
+information on Forms 1099 should be used for tax reporting.
+Robinhood Securities, LLC (“RHS”) carries your account as the clearing broker by arrangement with your introducing broker-dealer, Robinhood Financial LLC (“RHF”). If applicable, advisory services provided by RAM, an SEC-registered investment adviser.
+Robinhood Gold is a subscription-based membership program of premium services offered through Robinhood Gold, LLC.
+RHS is a Member of SIPC, which protects securities customers of its members up to $500,000 (including $250,000 for claims for cash). Explanatory brochure available upon request or at www.sipc.org. 4990988
+Page 2 of 16
+Portfolio Summary
+Securities Held in Account Sym/Cusip Acct Type Qty Price Mkt Value Est. Dividend Yield % of Total Portfolio
+Apple
+AAPL Cash 2 $259.48000 $518.96 $2.07 0.11%
+Estimated Yield: 0.40%
+AMD
+AMD Cash 83 $236.73000 $19,648.59 $0.00 4.16%
+Estimated Yield: 0.00%
+Amazon
+AMZN Cash 22 $239.30000 $5,264.60 $0.00 1.12%
+Estimated Yield: 0.00%
+Arista
+ANET Cash 30 $141.74000 $4,252.20 $0.00 0.90%
+Estimated Yield: 0.00%
+Arm Holdings plc
+ARM Cash 92 $105.36000 $9,693.12 $0.00 2.05%
+Estimated Yield: 0.00%
+ASML Holding NV
+ASML Cash 10 $1,423.00000 $14,230.00 $61.28 3.01%
+Estimated Yield: 0.43%
+Broadcom
+AVGO Cash 37 $331.30000 $12,258.10 $89.69 2.60%
+Estimated Yield: 0.73%
+Citigroup
+C Cash 14 $115.71000 $1,619.94 $32.62 0.34%
+Estimated Yield: 2.01%
+Costco
+COST Cash 4 $940.25000 $3,761.00 $19.97 0.80%
+Estimated Yield: 0.53%
+Credo Technology Group
+CRDO Cash 14 $125.28000 $1,753.92 $0.00 0.37%
+Estimated Yield: 0.00%
+Salesforce
+CRM Cash 24 $212.29000 $5,094.96 $39.60 1.08%
+Estimated Yield: 0.78%
+CrowdStrike Holdings
+CRWD Cash 25 $441.40500 $11,035.13 $0.00 2.34%
+Estimated Yield: 0.00%
+CoreWeave
+CRWV Cash 44 $93.19000 $4,100.36 $0.00 0.87%
+Estimated Yield: 0.00%
+Page 3 of 16
+Portfolio Summary
+Securities Held in Account Sym/Cusip Acct Type Qty Price Mkt Value Est. Dividend Yield % of Total Portfolio
+Alphabet Class A
+GOOGL Cash 33 $338.00000 $11,154.00 $27.37 2.36%
+Estimated Yield: 0.25%
+Goldman Sachs
+GS Cash 2 $935.41000 $1,870.82 $27.86 0.40%
+Estimated Yield: 1.49%
+Goldman Sachs Equal Weight US Large Cap Equity ETF
+GSEW Cash 60 $87.32700 $5,239.62 $78.79 1.11%
+Estimated Yield: 1.50%
+Robinhood Markets
+HOOD Cash 9 $99.48000 $895.32 $0.00 0.19%
+Estimated Yield: 0.00%
+iShares Core S&P MidCap ETF
+IJH Cash 78 $68.67000 $5,356.26 $66.65 1.14%
+Estimated Yield: 1.24%
+Intel
+INTC Cash 192 $46.47000 $8,922.24 $0.00 1.89%
+Estimated Yield: 0.00%
+iShares Core S&P 500 ETF
+IVV Cash 2 $695.03000 $1,390.06 $15.10 0.30%
+Estimated Yield: 1.09%
+JPMorgan Chase
+JPM Cash 19 $305.89000 $5,811.91 $105.27 1.23%
+Estimated Yield: 1.81%
+KKR & Co
+KKR Cash 4 $114.26000 $457.04 $2.90 0.10%
+Estimated Yield: 0.63%
+Klarna Group
+KLAR Cash 26 $23.07000 $599.82 $0.00 0.13%
+Estimated Yield: 0.00%
+Meta Platforms
+META Cash 17 $716.50000 $12,180.50 $34.65 2.58%
+Estimated Yield: 0.28%
+Monolithic Power Systems
+MPWR Cash 3 $1,124.15000 $3,372.45 $17.79 0.71%
+Estimated Yield: 0.53%
+Marvell Technology
+MRVL Cash 14 $78.92000 $1,104.88 $3.26 0.23%
+Estimated Yield: 0.30%
+Page 4 of 16
+Portfolio Summary
+Securities Held in Account Sym/Cusip Acct Type Qty Price Mkt Value Est. Dividend Yield % of Total Portfolio
+Microsoft
+MSFT Cash 9 $430.29000 $3,872.61 $30.37 0.82%
+Estimated Yield: 0.78%
+Micron Technology
+MU Cash 5 $414.88000 $2,074.40 $2.19 0.44%
+Estimated Yield: 0.11%
+ServiceNow
+NOW Cash 7 $117.01000 $819.07 $0.00 0.17%
+Estimated Yield: 0.00%
+NVIDIA
+NVDA Cash 206 $191.13000 $39,372.78 $8.18 8.34%
+Estimated Yield: 0.02%
+Oracle
+ORCL Cash 24 $164.58000 $3,949.92 $44.40 0.84%
+Estimated Yield: 1.12%
+Paramount Skydance Corporation Class B
+PSKY Cash 43 $11.21000 $482.03 $8.56 0.10%
+Estimated Yield: 1.78%
+Qualcomm
+QCOM Cash 30 $151.59000 $4,547.70 $105.16 0.96%
+Estimated Yield: 2.31%
+Reddit
+RDDT Cash 42 $180.27000 $7,571.34 $0.00 1.60%
+Estimated Yield: 0.00%
+ResMed
+RMD Cash 7 $258.31000 $1,808.17 $15.86 0.38%
+Estimated Yield: 0.88%
+Invesco S&P 500 Equal Weight ETF
+RSP Cash 24 $198.08000 $4,753.92 $82.86 1.01%
+Estimated Yield: 1.74%
+Schwab US Large-Cap ETF
+SCHX Cash 60 $27.24000 $1,634.40 $17.52 0.35%
+Estimated Yield: 1.07%
+Super Micro Computer
+SMCI Cash 15 $29.11000 $436.65 $0.00 0.09%
+Estimated Yield: 0.00%
+Taiwan Semiconductor Manufacturing
+TSM Cash 115 $330.56000 $38,014.40 $272.00 8.05%
+Estimated Yield: 0.72%
+Page 5 of 16
+Portfolio Summary
+Securities Held in Account Sym/Cusip Acct Type Qty Price Mkt Value Est. Dividend Yield % of Total Portfolio
+Tyler Technologies
+TYL Cash 6 $369.40000 $2,216.40 $0.00 0.47%
+Estimated Yield: 0.00%
+Uber
+UBER Cash 12 $80.05000 $960.60 $0.00 0.20%
+Estimated Yield: 0.00%
+Vanguard FTSE All-World ex-US ETF
+VEU Cash 46 $77.73000 $3,575.58 $84.80 0.76%
+Estimated Yield: 2.37%
+Vanguard Total Stock Market ETF
+VTI Cash 197.406272 $340.57000 $67,230.65 $781.83 14.24%
+Estimated Yield: 1.16%
+Vanguard Value ETF
+VTV Cash 141.489349 $199.75000 $28,262.50 $586.25 5.99%
+Estimated Yield: 2.07%
+Vanguard FTSE Emerging Markets Fund
+VWO Cash 42 $56.47000 $2,371.74 $48.05 0.50%
+Estimated Yield: 2.03%
+Vanguard Total International Stock ETF
+VXUS Cash 650 $79.66000 $51,779.00 $1,334.45 10.97%
+Estimated Yield: 2.58%
+Wells Fargo
+WFC Cash 10 $90.49000 $904.90 $16.97 0.19%
+Estimated Yield: 1.88%
+Walmart
+WMT Cash 27 $119.14000 $3,216.78 $25.75 0.68%
+Estimated Yield: 0.80%
+Total Securities $421,441.34 $4,090.07 89.27%
+Brokerage Cash Balance $0.00 0.00%
+Deposit Sweep Balance $50,645.16 10.73%
+Total Priced Portfolio $472,086.50
+Page 6 of 16
+Account Activity
+Description Symbol Acct Type Transaction Date Qty Price Debit Credit
+Cash Div: R/D 2025-12-18 P/D 2026-01-02 - 43 shares at 0.05 PSKY Cash CDIV 01/02/2026 $2.15
+Transfer from Brokerage to Traditional IRA Cash ITRF 01/02/2026 $7,500.00
+Vanguard FTSE All-World ex-US ETF VEU Cash Buy 12/31/2025 10 $73.66500 $736.65
+CUSIP: 922042775
+ACH Deposit Cash ACH 01/02/2026 $7,500.00
+AMD AMD Cash Sell 01/02/2026 1 $224.36000 $224.36
+CUSIP: 007903107
+Cash Div: R/D 2025-12-12 P/D 2026-01-05 - 27 shares at 0.235 WMT Cash CDIV 01/05/2026 $6.35
+AMD
+AMD Cash Sell 01/05/2026 1 $232.72000 $232.72
+CUSIP: 007903107
+Cash Div: R/D 2025-12-11 P/D 2026-01-08 - 115 shares at 0.79542 TSM Cash CDIV 01/08/2026 $91.47
+Cash Div: R/D 2025-12-18 P/D 2026-01-08 - 24 shares at 0.416 CRM Cash CDIV 01/08/2026 $9.98
+Foreign Tax Witholding at $19.21 TSM Cash DTAX 01/08/2026 $19.21
+Arm Holdings plc ARM Cash Buy 01/08/2026 2 $112.12000 $224.24
+CUSIP: 042068205
+Arm Holdings plc ARM Cash Buy 01/09/2026 2 $110.24000 $220.48
+CUSIP: 042068205
+Cash back from Robinhood Credit Card Cash XENT_CC 01/12/2026 $70.00
+Intel
+INTC Cash Sell 01/09/2026 4 $45.36000 $181.44
+CUSIP: 458140100
+Vanguard FTSE All-World ex-US ETF
+VEU Cash Buy 01/09/2026 12 $75.60000 $907.20
+CUSIP: 922042775
+Page 7 of 16
+Account Activity
+Description Symbol Acct Type Transaction Date Qty Price Debit Credit
+Arm Holdings plc
+ARM Cash Buy 01/12/2026 2 $109.24000 $218.48
+CUSIP: 042068205
+Schwab US Large-Cap ETF
+SCHX Cash Buy 01/12/2026 12 $27.24000 $326.88
+CUSIP: 808524201
+ACH Withdrawal Cash ACH 01/13/2026 $10,000.00
+Cash Div: R/D 2025-12-29 P/D 2026-01-14 - 5 shares at 0.115 MU Cash CDIV 01/14/2026 $0.58
+JPMorgan Chase JPM Cash Buy 01/13/2026 2 $316.24000 $632.48
+CUSIP: 46625H100
+JPMorgan Chase JPM Cash Buy 01/13/2026 2 $312.36000 $624.72
+CUSIP: 46625H100
+JPMorgan Chase JPM Cash Buy 01/13/2026 2 $310.72000 $621.44
+CUSIP: 46625H100
+ServiceNow NOW Cash Buy 01/13/2026 2 $138.72000 $277.44
+CUSIP: 81762P102
+Arm Holdings plc ARM Cash Buy 01/14/2026 2 $104.36000 $208.72
+CUSIP: 042068205
+Cash Div: R/D 2025-12-31 P/D 2026-01-15 - 3 shares at 1.56 MPWR Cash CDIV 01/15/2026 $4.68
+JPMorgan Chase JPM Cash Buy 01/14/2026 2 $308.60000 $617.20
+CUSIP: 46625H100
+Microsoft MSFT Cash Buy 01/14/2026 1 $464.36000 $464.36
+CUSIP: 594918104
+AMD AMD Cash Sell 01/15/2026 2 $228.18000 $456.36
+CUSIP: 007903107
+AMD AMD Cash Sell 01/15/2026 2 $228.60000 $457.20
+CUSIP: 007903107
+Page 8 of 16
+Account Activity
+Description Symbol Acct Type Transaction Date Qty Price Debit Credit
+AMD
+AMD Cash Sell 01/15/2026 1 $231.12000 $231.12
+CUSIP: 007903107
+AMD
+AMD Cash Sell 01/15/2026 1 $234.60000 $234.60
+CUSIP: 007903107
+AMD
+AMD Cash Sell 01/15/2026 2 $236.25000 $472.50
+CUSIP: 007903107
+Goldman Sachs
+GS Cash Sell 01/15/2026 1 $959.48000 $959.48
+CUSIP: 38141G104
+Intel
+INTC Cash Sell 01/15/2026 2 $50.24000 $100.48
+CUSIP: 458140100
+Interest Payment Sweep INT 01/20/2026 $102.83
+Robinhood Markets
+HOOD Cash Buy 01/16/2026 1 $107.36000 $107.36
+CUSIP: 770700102
+AMD
+AMD Cash Sell 01/20/2026 1 $238.48000 $238.48
+CUSIP: 007903107
+Alphabet Class A
+GOOGL Cash Buy 01/20/2026 1 $321.60000 $321.60
+CUSIP: 02079K305
+Alphabet Class A
+GOOGL Cash Buy 01/20/2026 1 $318.72000 $318.72
+CUSIP: 02079K305
+Meta Platforms
+META Cash Buy 01/20/2026 1 $604.24000 $604.24
+CUSIP: 30303M102
+Microsoft
+MSFT Cash Buy 01/20/2026 1 $454.24000 $454.24
+CUSIP: 594918104
+Oracle
+ORCL Cash Buy 01/20/2026 1 $184.12000 $184.12
+CUSIP: 68389X105
+Page 9 of 16
+Account Activity
+Description Symbol Acct Type Transaction Date Qty Price Debit Credit
+Oracle
+ORCL Cash Buy 01/20/2026 2 $182.72000 $365.44
+CUSIP: 68389X105
+Oracle
+ORCL Cash Buy 01/20/2026 1 $180.60000 $180.60
+CUSIP: 68389X105
+Robinhood Markets
+HOOD Cash Buy 01/20/2026 1 $103.36000 $103.36
+CUSIP: 770700102
+Schwab US Large-Cap ETF
+SCHX Cash Buy 01/20/2026 15 $26.96000 $404.40
+CUSIP: 808524201
+Schwab US Large-Cap ETF
+SCHX Cash Buy 01/20/2026 9 $26.96000 $242.64
+CUSIP: 808524201
+Vanguard FTSE All-World ex-US ETF
+VEU Cash Buy 01/20/2026 2 $76.36000 $152.72
+CUSIP: 922042775
+Vanguard FTSE All-World ex-US ETF
+VEU Cash Buy 01/20/2026 2 $76.00000 $152.00
+CUSIP: 922042775
+Vanguard FTSE All-World ex-US ETF
+VEU Cash Buy 01/20/2026 8 $75.96000 $607.68
+CUSIP: 922042775
+AMD
+AMD Cash Sell 01/21/2026 1 $244.96000 $244.96
+CUSIP: 007903107
+Intel
+INTC Cash Sell 01/21/2026 2 $52.72000 $105.44
+CUSIP: 458140100
+Klarna Group
+KLAR Cash Buy 01/21/2026 4 $27.12000 $108.48
+CUSIP: G5279N105
+Oracle
+ORCL Cash Buy 01/21/2026 2 $176.72000 $353.44
+CUSIP: 68389X105
+Schwab US Large-Cap ETF
+SCHX Cash Buy 01/21/2026 24 $26.70000 $640.80
+CUSIP: 808524201
+Page 10 of 16
+Account Activity
+Description Symbol Acct Type Transaction Date Qty Price Debit Credit
+AMD
+AMD Cash Sell 01/22/2026 1 $254.73300 $254.73
+CUSIP: 007903107
+Cash Div: R/D 2026-01-09 P/D 2026-01-23 - 18 shares at 0.5 ORCL Cash CDIV 01/23/2026 $9.00
+AMD
+AMD Cash Sell 01/23/2026 2 $264.48000 $528.96
+CUSIP: 007903107
+Broadcom
+AVGO Cash Buy 01/23/2026 1 $317.60000 $317.60
+CUSIP: 11135F101
+JPMorgan Chase
+JPM Cash Buy 01/23/2026 2 $298.60000 $597.20
+CUSIP: 46625H100
+Alphabet Class A
+GOOGL Cash Buy 01/26/2026 1 $324.00000 $324.00
+CUSIP: 02079K305
+ASML Holding NV
+ASML Cash Sell 01/27/2026 1 $1,469.36000 $1,469.36
+CUSIP: N07059210
+Cash Div: R/D 2026-01-09 P/D 2026-01-29 - 14 shares at 0.06 MRVL Cash CDIV 01/29/2026 $0.84
+Credo Technology Group CRDO Cash Buy 01/28/2026 2 $127.96000 $255.92
+CUSIP: G25457105
+Alphabet Class A GOOGL Cash Buy 01/29/2026 1 $327.36000 $327.36
+CUSIP: 02079K305
+Cash back from Robinhood Credit Card Cash XENT_CC 01/30/2026 $30.46
+Credo Technology Group CRDO Cash Buy 01/29/2026 2 $124.36000 $248.72
+CUSIP: G25457105
+Interest Payment Sweep INT 01/30/2026 $58.21
+Microsoft
+MSFT Cash Buy 01/29/2026 1 $434.72000 $434.72
+CUSIP: 594918104
+Page 11 of 16
+Account Activity
+Description Symbol Acct Type Transaction Date Qty Price Debit Credit
+Robinhood Markets
+HOOD Cash Buy 01/29/2026 1 $100.72000 $100.72
+CUSIP: 770700102
+Tyler Technologies
+TYL Cash Buy 01/29/2026 1 $396.72000 $396.72
+CUSIP: 902252105
+Vanguard FTSE All-World ex-US ETF
+VEU Cash Buy 01/29/2026 12 $78.12000 $937.44
+CUSIP: 922042775
+Total Funds Paid and Received $32,841.74 $14,278.74
+Page 12 of 16
+Executed Trades Pending Settlement
+These transactions may not be reflected in the other summaries
+Description Acct Type Transaction Trade Date Settle Date Qty Price Debit Credit
+Microsoft Cash Buy 01/30/2026 02/02/2026 1 $434.72000 $434.72
+CUSIP: 594918104
+Vanguard FTSE All-World ex-US ETF Cash Buy 01/30/2026 02/02/2026 6 $78.36000 $470.16
+CUSIP: 922042775
+Vanguard FTSE All-World ex-US ETF Cash Buy 01/30/2026 02/02/2026 8 $78.24000 $625.92
+CUSIP: 922042775
+Vanguard FTSE All-World ex-US ETF Cash Buy 01/30/2026 02/02/2026 8 $78.18000 $625.44
+CUSIP: 922042775
+Vanguard FTSE All-World ex-US ETF Cash Buy 01/30/2026 02/02/2026 12 $78.12000 $937.44
+CUSIP: 922042775
+Vanguard FTSE All-World ex-US ETF Cash Buy 01/30/2026 02/02/2026 12 $77.96000 $935.52
+CUSIP: 922042775
+Vanguard FTSE All-World ex-US ETF Cash Buy 01/30/2026 02/02/2026 12 $77.72000 $932.64
+CUSIP: 922042775
+Vanguard FTSE All-World ex-US ETF Cash Buy 01/30/2026 02/02/2026 12 $77.48000 $929.76
+CUSIP: 922042775
+Total Executed Trades Pending Settlement $5,891.60 $0.00
+Page 13 of 16
+Deposit Sweep Program Banks
+These are the program banks where your uninvested cash is held as of 01/30/2026. Balances are insured by FDIC, not SIPC.
+Bank Balance
+Goldman Sachs $50,611.78
+Morgan Stanley Private Bank $2.92
+US Bank $30.46
+As of the closing date of this statement, the annual percentage yield (APY) for customers subscribed to Robinhood Gold or enrolled in a boosted rate promotion, the APY ranges from 3.25% - 3.75%. For accounts managed by RAM, the APY is 3.25%. Program banks pay 
+interest on your swept cash, minus any fees paid to Robinhood. RAM does not receive fees related to the cash sweep program. Uninvested cash swept to the program banks is eligible for FDIC insurance up to applicable limits, subject to FDIC rules. Robinhood Financial LLC 
+and its affiliates are not FDIC-insured banks. Deposit insurance covers the failure of an insured bank. Products other than the cash sweep program are not insured by the FDIC, are not deposits, and may lose value. Certain conditions must be satisfied for pass-through FDIC 
+deposit insurance coverage to apply. The Securities Investor Protection Corporation has taken the position that uninvested cash swept to the program banks is not covered by the Securities Investor Protection Act.
+Page 14 of 16
+Deposit Sweep Activity
+These transactions reflect movements of uninvested cash to and from program banks.
+Description Date Debit Credit Balance
+Opening Sweep Balance 01/01/2026 $69,171.91
+FDIC Sweep 01/02/2026 $700.40 $68,471.51
+FDIC Sweep 01/02/2026 $7,500.00 $60,971.51
+FDIC Sweep 01/05/2026 $7,726.51 $68,698.02
+FDIC Sweep 01/06/2026 $239.07 $68,937.09
+FDIC Sweep 01/09/2026 $142.00 $68,795.09
+FDIC Sweep 01/12/2026 $946.24 $67,848.85
+FDIC Sweep 01/12/2026 $70.00 $67,918.85
+FDIC Sweep 01/13/2026 $545.36 $67,373.49
+FDIC Sweep 01/14/2026 $12,156.08 $55,217.41
+FDIC Sweep 01/15/2026 $1,289.70 $53,927.71
+FDIC Sweep 01/16/2026 $2,916.42 $56,844.13
+FDIC Sweep 01/20/2026 $107.36 $56,736.77
+Interest Payment 01/20/2026 $102.83 $56,839.60
+FDIC Sweep 01/21/2026 $3,853.28 $52,986.32
+FDIC Sweep 01/22/2026 $752.32 $52,234.00
+FDIC Sweep 01/23/2026 $254.73 $52,488.73
+Page 15 of 16
+Deposit Sweep Activity
+These transactions reflect movements of uninvested cash to and from program banks.
+Description Date Debit Credit Balance
+FDIC Sweep 01/26/2026 $376.84 $52,111.89
+FDIC Sweep 01/27/2026 $324.00 $51,787.89
+FDIC Sweep 01/28/2026 $1,469.36 $53,257.25
+FDIC Sweep 01/29/2026 $255.92 $53,001.33
+FDIC Sweep 01/30/2026 $2,444.84 $50,556.49
+FDIC Sweep 01/30/2026 $30.46 $50,586.95
+Interest Payment 01/30/2026 $58.21 $50,645.16
+Closing Sweep Balance 01/31/2026 $50,645.16
+Total Swept Funds $31,394.34 $12,867.59
+Page 16 of 16
+Important Information
+If this is a margin account and we maintain a special miscellaneous account Notice to Customers
+for you, this is a combined statement of your general account and special RHF will investigate your complaint and will correct any error promptly. If we 
+miscellaneous account maintained for you under Regulation T issued by the As required under SEC rules, both the RHF and the RHS Order Routing Reports take more than ten (10) business days to do this, RHF will credit your account 
+Board of Governors of the Federal Reserve System. The permanent record of (pursuant to SEC Rule 606) are publicly available, at https://robinhood.com for the amount you think is in error, so that you will have the use of the money 
+the special miscellaneous account as required by Regulation T is available for /us/en/about/legal/. Information regarding specific order routing is available during the time it takes RHF to complete our investigation.
+your inspection at your request. free of charge upon request.
+Please see the Robinhood Securities, LLC & Robinhood Financial LLC Insured 
+The per annum rate of interest charged on debit balances in your account As a clearing agent, RHS provides securities clearance and may provide order Network Deposit Sweep Program Disclosures, available at rbnhd.co/ind-
+may change from time to time in accordance with fluctuations in interest execution based on RHF instructions. RHS will not be involved with or have disclosure, for the terms and conditions of the sweep program, including 
+rates. Interest is computed from the 1st day of the month to the last day of any responsibility for decisions regarding securities transactions in your information regarding FDIC insurance coverage.
+the month. The interest is based on the average daily balance in your account account. RHF will be responsible for opening, approving and monitoring all 
+with us, and for the actual number of days based on an interest year of 360 activities in connection with your account. The entry of orders and any RHF and RHS are members of the Financial Industry Regulatory Authority, Inc. 
+days. instructions regarding the deposit or withdrawal of securities or monies (“FINRA”), and we are required to inform you of the availability of the FINRA 
+should be made through RHF. Investor Brochure, which contains information on FINRA BrokerCheck. You 
+Short sales involve selling securities that you do not currently own, with the may contact FINRA at 800-289-9999 or via their website www.finra.org. RHS 
+intention of repurchasing those securities at a later time. Short sale In addition to the above mentioned services, RHS will provide cashiering carries your account and acts as your custodian for funds and securities 
+transactions may expose you to the risk of unlimited losses and must be services, safeguard funds and securities while they are in its possession, deposited with us directly by you, through RHF as a result of transactions we 
+executed through a margin account as they are subject to margin monitor compliance with applicable credit, Regulation T and other RHS process to your account. Any suspected inaccuracy or discrepancy in your 
+requirements. To maintain short positions, you may be asked to deposit funds internal policies, and prepare and make accessible your account records account statement must be promptly reported to RHF. In order to protect your 
+and/or securities and your short positions may be subject to a “buy-in” at any (including transaction confirmations and periodic statements of your rights, please confirm any oral communications in writing and include your 
+time. Short sales may be subject to borrow fees, which vary based on market account). brokerage account number. General inquiries, concerns, or complaints 
+conditions and availability of the securities. The dividend totals reflected in the Income and Expense Summary are regarding your account can be directed to either help@robinhood.com or by 
+inclusive of both taxable and non-taxable dividends. calling 650-761-7789. Written correspondence can be sent to 500 Colonial 
+This statement includes dividend and interest amounts credited to your Center Parkway, Suite 100, Lake Mary, FL 32746.
+account on securities held for you in our name. While this statement should Interest charges to your account may be based on the size of your net debit 
+be retained for income tax purposes, it is not a substitute for IRS Form 1099. balance during the interest period. These rates are subject to revision with All trade confirmations are transmitted on or about the transaction date.
+Amounts reported on your 1099 may be different than what is reported here. appropriate notice. For more complete information regarding interest charges 
+Therefore, only information on Forms 1099 should be used for tax reporting. Statement of Financial Condition
+to customers, consult the RHF Fee Schedule, available at https://rbnhd.co Robinhood Securities, LLC. Unaudited Statement of Financial Condition as of 
+Information relative to regulatory trading/transaction fees and any other /fees. June 30, 2025 is available on the Company’s website at www.robinhood.com
+charges incurred in connection with equity or listed option transactions Robinhood Gold Card is offered by Robinhood Credit, Inc. ("RCT") and is /legal. A paper copy may be requested at no cost by calling 1-(800)-282-
+occurring during the month has previously been furnished to you in issued by Coastal Community Bank, Member FDIC, pursuant to a license from 1327. On June 30, 2025, Robinhood Securities, LLC. had a net capital of 
+confirmation of such transactions. A summary of the information will be made Visa U.S.A. Inc. RCT is a financial technology company, not a bank. $2,886,226,715, which was $2,670,990,426 in excess of its required net 
+available to you promptly upon request. Exercise assignment notices for capital of $215,236,289.
+option contracts are allocated among customer short positions pursuant to a In case of errors or questions about your electronic transfers, including your 
+manual procedure which randomly selects from amongst all customer short debit card transactions, or if you think your statement or receipt is wrong or if Please retain this statement as it may be helpful in preparing your income tax 
+option positions including those contracts which are subject to exercise. All you need more information about a transaction listed on the statement or returns and may be needed along with subsequent statements to verify 
+short American style option positions are liable for assignment at any time receipt, email RHF or RHS at help@robinhood.com. RHF must hear from you interest charges in your account. However, it is not a substitute for IRS Form 
+whereas European style options are assigned at expiration. A more detailed no later than sixty (60) days after you were sent the FIRST statement on 1099. Only information on Forms 1099 should be used for tax reporting. 
+description of our random allocation procedure is available upon request. which the problem or error appeared. Please review the information contained in your account statement carefully. 
+If details of any transactions or balances within your account are incorrect, 
+You are to promptly advise Robinhood of any material changes concerning 1.  Tell RHF your name and account number. you must notify us promptly at help@robinhood.com. This statement shall be 
+your investment objectives or financial situation by updating your information 2.  Describe the error or the transfer you are unsure about, and deemed conclusive unless objected to in writing within ten (10) days.
+using the Robinhood platform or by contacting help@robinhood.com. We will explain as clearly as you can why you believe it is an error or 
+consider the information currently appearing on your investor profile as the why you need more information.
+most current, complete, and accurate information. If you are a RAM customer, 3.  Tell RHF the dollar amount of the suspected error.
+you must promptly advise of material changes in your investment objectives, 
+financial situation or if you wish to impose reasonable restrictions or modify 
+the management of your account.
+Any free credit balances represent funds payable on demand of the customer.
+RHS acts as clearing agent for your trades. Your account, which was 
+introduced to us by RHF, is established under your name on a “fully 
+disclosed” basis at RHS. You remain a customer of RHF. 4990988

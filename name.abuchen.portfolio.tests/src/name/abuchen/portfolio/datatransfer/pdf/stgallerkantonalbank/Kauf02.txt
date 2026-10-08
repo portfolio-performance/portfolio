@@ -1,0 +1,43 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.85.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+VVFsFvT wX Vermögensverwaltungskonto CHF
+Depot-Nr. 8563.5863.3467 / NkYDmDU CZpfRDnl
+IBAN CH56 7637 3751 4833 2247 2
+St.Galler Kantonalbank AG
+St. Leonhardstrasse 25
+9001 St. Gallen
+www.sgkb.ch
+BIC KBSGCH22
+Ihr Kontakt: ZYoEd VFysae vXkksX ihoEjmz Eu
+Telefon +41 71 227 18 40
+xmYVHKt 6150
+ZYoEd.vXkksX@sgkb.ch
+6447 du Qb
+St. Gallen, 8. Juli 2026
+Referenznummer 2327228781
+Abrechnung: Ihr Kauf
+Wir haben für Sie am 28. Mai 2026 gekauft (Details siehe Folgeseite):
+500 N-Akt Nestle AG CHF 0.1 nom
+Valoren-Nr. 3886335
+ISIN CH0038863350
+Währung Betrag
+Kurs CHF 79.39
+CHF 39'695.00
+Eidg. Stempelsteuer CHF 29.77
+Ausführungsgebühr SSX CHF 4.08
+Total CHF 39'728.85 Zu Ihren Lasten
+Valuta 01.06.2026 CHF 39'728.85
+Die Titel wurden in Ihr Depot eingebucht.
+Wir danken für Ihren Auftrag.
+Freundliche Grüsse
+St.Galler Kantonalbank AG
+PrintPreview 4118853 229614434 BP00000000 Seite 1 von 2
+wNbbDKA tQ Vermögensverwaltungskonto CHF
+IBAN CH56 7637 3751 4833 2247 2
+Ausführungsdetails
+Die Abrechnung setzt sich wie folgt zusammen:
+Menge Ausführungszeitpunkt Börsenplatz Währung Kurs
+500 28.05.2026 14:04:36 SIX Swiss Exchange - EBBO Book CHF 79.39
+PrintPreview 4118853 229614434 BP00000000 Seite 2 von 2
