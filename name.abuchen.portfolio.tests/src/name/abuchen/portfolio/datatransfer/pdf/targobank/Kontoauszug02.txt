@@ -1,0 +1,193 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.87.0
+System: linux | x86_64 | 25.0.4+7-1-26.04-Ubuntu | Ubuntu
+-----------------------------------------
+TARGOBANK AG
+TARGOBANK AG - Postfach 10 02 30 - 47002 Duisburg Musterallee 2
+10000 Musterstadt
+Geschäftszeiten:
+MO-FR 10:00-13:00 Uhr
+MODI 14:00-18:00 Uhr
+Herr
+Max Mustermann
+Musterstr. 1
+10001 Musterhausen Telefon-Banking: 0211 - 900 20 111
+7 x 24 Stunden
+Kundennummer: 566666666
+Sehr geehrter Herr Mustermann,
+mehr Informationen zu unseren Produkten und Services erhalten Sie unter www.targobank.de.
+Mit freundlichen Grüßen
+Ihre TARGOBANK
+F I N A N Z S T A T U S vom 01.08.2026 - 31.08.2026
+Informationen über Ihre Konten auf einen Blick
+Alle Beträge sind, soweit nicht anders ausgewiesen, in Euro angegeben.
+Girokonten
+_K_o_n_to_t_yp_______________________________K_o_n_to_n_u_m_m__er_____________W_ä_h_ru_n_g___________G_u_t_ha_b_e_n_/K_r_e_d_it
+_O_N_L_IN_E_-_K_O_N_T_O__________________________5_3_3_33_3_3_3_33_______________E_U_R_____________________1_.4_8_9,_2_5
+Summe EUR 1.489,25
+Geldanlage & Investments
+_K_o_n_to_t_yp_______________________________K_o_n_to_n_u_m_m__er_____________W_ä_h_ru_n_g_____________S_p_ar_g_u_th_a_b_e_n
+EUR TAGESGELDKONTO 5222222250 EUR 2.726,52
+Zinssatz p.a.:
+0,60%
+_K_o_n_to_t_yp_______________________________D_e_p_o_tn_u_m_m__er_____________W_ä_h_ru_n_g________________K_u_r_sw__er_t
+_D_E_P_O_T________________________________5_3_3_33_3_3_3_33_1_0_____________E_U_R______________________6_.3_5_7,_1_7
+_S_u_m_m_e_ _G_el_d_a_nl_a_ge_n_ _&_ In_v_e_s_tm_e_n_t_s__________________________________E_U_R______________________9_.0_8_3,_6_9
+Gesamtguthaben EUR 10.572,94
+Seite 1/4
+77777777777777777777
+77777777777777777777
+77777777777777777777
+77777777777777777777
+77777777777777777777
+77777777777777777777
+77777777777777777777
+77777777777777777777
+77777777777777777777
+TARGOBANK AG | Vorstand: Isabelle Chevelard (Vorsitzende); Berthold Rüsing; Maria Topaler; Marco Voosen 77777777777777777777
+77777777777777777777
+Vorsitzender des Aufsichtsrates: René Dangel | Sitz der Gesellschaft: Düsseldorf 77777777777777777777
+77777777777777777777
+77777777777777777777
+Handelsregister Amtsgericht Düsseldorf HRB 83351 | USt-ID-Nr.: DE 811 285 485 77777777777777777777
+77777777777777777777
+77777777777777777777
+USt-ID-Nr. des umsatzsteuerlichen Organträgers: DE 811 623 326 77777777777777777777
+77777777777777777777
+77777777777777777777
+KH.20260901.111111.5001.1111.4089 X 0 2
+01.09.2026 Max Mustermann C555555555
+Monatsübersicht
+Alle Transaktionen Ihres Girokontos des letzten Monates in einer Übersicht
+ONLINE-KONTO                            5333333333 EUR
+Herr  Max Mustermann
+______________________________________________________________________________________
+Für Girokonten erfolgt jeweils am letzten Bankgeschäftstag der Monate März, Juni, September und Dezember ein
+Rechnungsabschluss. Dieser gilt gemäß Ziff. 7 Abs. 2 unserer AGB als genehmigt, wenn Einwendungen nicht vor Ablauf von sechs
+Wochen nach dessen Zugang geltend gemacht werden. Bei textförmlichen Einwendungen oder Erstattungsansprüchen genügt die
+Absendung innerhalb der jeweils genannten Frist. Sie können bei einer Belastungsbuchung aufgrund einer von Ihnen autorisierten
+SEPA-Basislastschrift innerhalb von acht Wochen nach Belastungsbuchung ohne Angabe von Gründen die Erstattung des belasteten
+Lastschriftbetrages verlangen.
+______________________________________________________________________________________
+IBAN: DE37 3002 0900 5333 3333 33                   BIC CODE: CMCIDEDD
+_T_ra_n_s_a_kt_io_n_e_n____________________________________________________________________________
+_D_at_u_m__T_a_g__B_uc_h_u_n_g_s_te_x_t ___________________________________B_e_l_as_t_u_n_ge_n___G_u_t_s_ch_r_if_te_n__G_u_t_h_ab_e_n_/K_r_e_d_it
+31.07. FR ANFANGSSALDO 1.493,20
+04.08. DI Grundgebühr für Juli      2026 3,95 1.489,25
+KONTOFüHRUNG
+_3_1_.0_8_. _M_O___E_N_D_S_A_LD_O__________________________________________________________________1_.4_8_9,_2_5
+Summe 3,95 0,00
+Frei verfügbar 1.489,25
+Dieser Finanzstatus ist gleichzeitig Ihr Kontoauszug Nr. 8
+77777777777777777777
+77777777777777777777
+77777777777777777777
+77777777777777777777
+77777777777777777777
+77777777777777777777
+77777777777777777777
+77777777777777777777
+77777777777777777777
+77777777777777777777
+Seite 2/4    77777777777777777777
+77777777777777777777
+77777777777777777777
+77777777777777777777
+77777777777777777777
+77777777777777777777
+KH.20260901.111111.5001.1111.1089 X 0 V
+01.09.2026 Max Mustermann C555555555
+Monatsübersicht Fortsetzung
+EUR TAGESGELDKONTO                      5222222250 EUR
+Herr  Max Mustermann
+______________________________________________________________________________________
+IBAN: DE37 3002 0900 5333 3333 33                   BIC CODE: CMCIDEDD
+_T_ra_n_s_a_kt_io_n_e_n____________________________________________________________________________
+_D_at_u_m__T_a_g__B_uc_h_u_n_g_s_te_x_t ___________________________________B_e_l_as_t_u_n_ge_n___G_u_t_s_ch_r_if_te_n__G_u_t_h_ab_e_n_/K_r_e_d_it
+01.08. SA ANFANGSSALDO 2.726,52
+31.08. MO ENDSALDO 2.726,52
+Summe 0,00 0,00
+Frei verfügbar 2.726,52
+Ihre Geldanlagen & Investment Details
+DEPOT                                   533333333310
+Herr  Max Mustermann
+______________________________________________________________________________________
+Für alle im Depot befindlichen Wertpapiere wird der Wert zu dem Monatsultimo letztbekannten Kurs angegeben. Sollte zu einem
+Wertpapier kein Kurs vorliegen, erfolgt keine Bewertung.
+______________________________________________________________________________________
+Whr/Stk/ Nominale/ Wertpapierbezeichnung/ISIN Kurs Whr Börse Datum Kurswert in EUR
+_Z_in_s_ %__ p_.a_.__F_ä_lli_n_g________________________________________________________________________
+STK 1.000,0000 Alberta, Provinz              DL-Bonds 2024(34) 840,33
+US013051ET04 97,90000 USD EDF 31.08.2026
+STK 3,0000 ARERO - Der Weltfonds         Inhaber-Anteile o.N. 1.057,56
+LU0360863863 352,52000 EUR EDF 31.08.2026
+STK 4,0000 Berkshire Hathaway Inc.       Reg.Shares B New DL -,00333 1.745,00
+US0846707026 436,25000 EUR EDF 31.08.2026
+STK 6,0000 Schroder ISF-Gl.Multi-Ass.Bal.Namensant. A Acc EUR o.N. 1.112,39
+LU0776414087 185,39940 EUR XXH 31.08.2026
+STK 30,0000 Xtr.(IE)-MSCI USA Cons.StaplesRegistered Shares 1D USD 1.288,05
+o.N. 42,93500 EUR EDF 31.08.2026
+IE00BGQYRQ28
+STK 200,0000 Xtrackers MSCI Singapore      Inhaber-Anteile 1C USD o.N. 489,50
+LU0659578842 2,44750 EUR EDF 31.08.2026
+______________________________________________________________________________________
+Summe 6357,17
+Sämtliche der in diesem Depotauszug aufgeführten Wertpapiere unterliegen der Richtlinie 2014/65/EU (MiFID II) sowie deren
+ergänzenden Durchführungsmaßnahmen. Sofern für in diesem Depotauszug aufgeführte Wertpapiere kein Kurs ermittelt werden konnte,
+kann dies auf mangelnde Liquidität hindeuten Die hier aufgeführten Kundenbestände waren nicht Gegenstand von
+Wertpapierfinanzierungsgeschäften.
+Seite 3/4
+77777777777777777777
+77777777777777777777
+77777777777777777777
+77777777777777777777
+77777777777777777777
+77777777777777777777
+77777777777777777777
+77777777777777777777
+TARGOBANK AG | Vorstand: Isabelle Chevelard (Vorsitzende); Berthold Rüsing; Maria Topaler; Marco Voosen 77777777777777777777
+77777777777777777777
+Vorsitzender des Aufsichtsrates: René Dangel | Sitz der Gesellschaft: Düsseldorf 77777777777777777777
+77777777777777777777
+77777777777777777777
+Handelsregister Amtsgericht Düsseldorf HRB 83351 | USt-ID-Nr.: DE 811 285 485 2?77777777777777777777
+77777777777777777777
+77777777777777777777
+USt-ID-Nr. des umsatzsteuerlichen Organträgers: DE 811 623 326 777777777777777777777
+77777777777777777777
+77777777777777777777
+KH.20260901.111111.5001.1111.1090 X 0 2
+01.09.2026 Max Mustermann C555555555
+______________________________________________________________________________________
+Allgemeine Hinweise
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können Sie
+dem "Informationsbogen für den Einleger" entnehmen.
+______________________________________________________________________________________
+Haben Sie Fragen oder Anmerkungen zu Ihrem Auszug?
+Bitte prüfen Sie die Kontobewegungen und Berechnungen dieses Konto- bzw. Monatsauszugs unverzüglich auf die Richtigkeit.
+Zusätzlich zu unseren Filialmitarbeitern sind auch die Mitarbeiter unseres Telefon-Bankings rund um die Uhr für Sie da. Bei
+Unstimmigkeiten wenden Sie sich bitte an die TARGOBANK Innenrevision, Postfach 101818, 40009 Düsseldorf.
+______________________________________________________________________________________
+Der Schutz Ihrer Privatsphäre ist uns wichtig.
+Unsere Datenschutzhinweise einschließlich Informationen zur Datenschutzgrundverordnung (DSGVO) finden Sie auch im Internet
+(www.targobank.de). Sollten Ihre Daten unrichtig sein, Sie von uns keine Werbung oder Befragung zu Zwecken der Markt- und
+Meinungsforschung wünschen oder allgemeine Fragen zum Datenschutz bestehen, wenden Sie sich bitte an unsere Mitarbeiter oder
+unmittelbar an unseren Datenschutzbeauftragten, Postfach 21 04 53, 47026 Duisburg.
+77777777777777777777
+77777777777777777777
+77777777777777777777
+77777777777777777777
+77777777777777777777
+77777777777777777777
+77777777777777777777
+77777777777777777777
+77777777777777777777
+77777777777777777777
+Seite 4/4    77777777777777777777
+77777777777777777777
+77777777777777777777
+77777777777777777777
+77777777777777777777
+77777777777777777777
+77777777777777777777
+KH.20260901.111111.5001.1111.1090 X 0 V
