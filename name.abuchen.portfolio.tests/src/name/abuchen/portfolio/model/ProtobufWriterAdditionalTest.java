@@ -148,4 +148,97 @@ public class ProtobufWriterAdditionalTest
         assertThat(reloadedTransaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100))));
     }
+
+    @Test
+    public void testPercentageQuotedSecurityRoundtrip() throws IOException
+    {
+        Client client = new Client();
+
+        Security bond = new Security("Bond", CurrencyUnit.EUR);
+        bond.setUpdatedAt(Instant.now());
+        bond.setPercentageQuoted(true);
+        client.addSecurity(bond);
+
+        Security share = new Security("Share", CurrencyUnit.EUR);
+        share.setUpdatedAt(Instant.now());
+        client.addSecurity(share);
+
+        ProtobufWriter protobufWriter = new ProtobufWriter();
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        protobufWriter.save(client, stream);
+        stream.close();
+
+        Client newClient = protobufWriter.load(new ByteArrayInputStream(stream.toByteArray()));
+
+        assertThat(newClient.getSecurities().size(), is(2));
+        assertThat(newClient.getSecurities().stream().filter(s -> "Bond".equals(s.getName())).findFirst()
+                        .orElseThrow().isPercentageQuoted(), is(true));
+        assertThat(newClient.getSecurities().stream().filter(s -> "Share".equals(s.getName())).findFirst()
+                        .orElseThrow().isPercentageQuoted(), is(false));
+    }
+
+    @Test
+    public void testAccruedInterestRoundtrip() throws IOException
+    {
+        Client newClient = saveAndLoad(createClientWithAccruedInterest(), true);
+        assertAccruedInterest(newClient);
+    }
+
+    @Test
+    public void testAccruedInterestRoundtripXML() throws IOException
+    {
+        Client newClient = saveAndLoad(createClientWithAccruedInterest(), false);
+        assertAccruedInterest(newClient);
+    }
+
+    private static Client createClientWithAccruedInterest()
+    {
+        Client client = new Client();
+
+        Account account = new Account("Account");
+        account.setCurrencyCode(CurrencyUnit.EUR);
+        account.setUpdatedAt(Instant.now());
+        client.addAccount(account);
+
+        Portfolio portfolio = new Portfolio("Portfolio");
+        portfolio.setReferenceAccount(account);
+        portfolio.setUpdatedAt(Instant.now());
+        client.addPortfolio(portfolio);
+
+        Security bond = new Security("Bond", CurrencyUnit.EUR);
+        bond.setUpdatedAt(Instant.now());
+        bond.setPercentageQuoted(true);
+        client.addSecurity(bond);
+
+        BuySellEntry entry = new BuySellEntry(portfolio, account);
+        entry.setType(PortfolioTransaction.Type.BUY);
+        entry.setDate(LocalDateTime.parse("2025-08-19T00:00"));
+        entry.setSecurity(bond);
+        entry.setShares(Values.Share.factorize(1000));
+        entry.setMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1015.50)));
+        entry.getPortfolioTransaction().addUnit(new Transaction.Unit(Transaction.Unit.Type.ACCRUED_INTEREST,
+                        Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.50))));
+        entry.insert();
+
+        return client;
+    }
+
+    private static Client saveAndLoad(Client client, boolean binary) throws IOException
+    {
+        if (!binary)
+            return ClientFactory.duplicate(client); // XML serialization
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        new ProtobufWriter().save(client, stream);
+        stream.close();
+        return new ProtobufWriter().load(new ByteArrayInputStream(stream.toByteArray()));
+    }
+
+    private static void assertAccruedInterest(Client client)
+    {
+        PortfolioTransaction t = client.getPortfolios().get(0).getTransactions().get(0);
+        assertThat(t.getAccruedInterest(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.50))));
+        assertThat(t.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1010.00))));
+    }
 }

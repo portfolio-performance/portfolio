@@ -122,12 +122,12 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
 
         // amount
 
-        Input shares = new Input(editArea, Messages.ColumnShares);
-        shares.bindValue(Properties.shares.name(), Messages.ColumnShares, Values.Share, true);
+        Input shares = new Input(editArea, getSharesLabel());
+        shares.bindValue(Properties.shares.name(), getSharesLabel(), Values.Share, true);
 
         Input quote = new Input(editArea, "x " + Messages.ColumnQuote); //$NON-NLS-1$
         quote.bindBigDecimal(Properties.quote.name(), Values.Quote.pattern());
-        quote.bindCurrency(Properties.securityCurrencyCode.name());
+        quote.bindCurrency(Properties.securityQuotation.name());
 
         Input amount = new Input(editArea, "="); //$NON-NLS-1$
         amount.bindValue(Properties.amount.name(), Messages.ColumnAmount, Values.Amount, true);
@@ -177,6 +177,18 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
         warnings.add(() -> new StockSplitWarning().check(model().getSecurity(), model().getDate()));
         model.addPropertyChangeListener(Properties.security.name(), e -> warnings.check());
         model.addPropertyChangeListener(Properties.date.name(), e -> warnings.check());
+
+        // make share/nominal input label depend on security quotation
+        model.addPropertyChangeListener(Properties.security.name(), event -> { // NOSONAR
+            shares.label.setText(getSharesLabel());
+            shares.label.requestLayout();
+        });
+    }
+
+    private String getSharesLabel()
+    {
+        var security = model().getSecurity();
+        return (security != null && security.isPercentageQuoted()) ? Messages.ColumnNominal : Messages.ColumnShares;
     }
 
     @Override

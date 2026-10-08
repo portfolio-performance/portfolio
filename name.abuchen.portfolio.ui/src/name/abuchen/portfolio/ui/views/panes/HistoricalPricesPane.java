@@ -157,7 +157,8 @@ public class HistoricalPricesPane implements InformationPanePage
             public String getText(Object element)
             {
                 SecurityPrice price = (SecurityPrice) element;
-                return Values.Quote.format(security.getCurrencyCode(), price.getValue(), client.getBaseCurrency());
+                return Values.Quote.formatFor(security, security.getCurrencyCode(), price.getValue(),
+                                client.getBaseCurrency());
             }
         });
         ColumnViewerSorter.create(SecurityPrice.class, "value").attachTo(column); //$NON-NLS-1$

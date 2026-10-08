@@ -50,7 +50,7 @@ public class SecurityTest
                 skipped++;
         }
 
-        assertThat(skipped, equalTo(13));
+        assertThat(skipped, equalTo(14));
 
         Security target = source.deepCopy();
         assertThat(target.getUUID(), not(equalTo(source.getUUID())));
@@ -254,5 +254,20 @@ public class SecurityTest
         assertThat(prices.get(1).getValue(), is(2l));
         assertThat(prices.get(2).getValue(), is(3l));
         assertThat(prices.get(3).getValue(), is(4l));
+    }
+
+    @Test
+    public void testPercentQuoted()
+    {
+        Security security = new Security();
+
+        // default is regular price quoting
+        assertThat(security.isPercentageQuoted(), is(false));
+
+        security.setPercentageQuoted(true);
+        assertThat(security.isPercentageQuoted(), is(true));
+
+        security.setPercentageQuoted(false);
+        assertThat(security.isPercentageQuoted(), is(false));
     }
 }

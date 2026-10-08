@@ -710,7 +710,7 @@ public class SecuritiesChart
 
         label = new Label(composite, SWT.NONE);
         label.setText(MessageFormat.format(Messages.LabelToolTipInvestmentDetails, Values.Share.format(t.getShares()),
-                        Values.CalculatedQuote.format(
+                        Values.CalculatedQuote.formatFor(t.getSecurity(),
                                         t.getGrossPricePerShare(converter.with(t.getSecurity().getCurrencyCode())))));
     }
 
@@ -1703,14 +1703,14 @@ public class SecuritiesChart
                         .filter(p -> chartInterval.contains(p.getDate())) //
                         .min(Comparator.comparing(SecurityPrice::getValue));
 
-        max.ifPresent(high -> addExtremeMarker(high, PlotSymbolType.DIAMOND, //
+        max.ifPresent(high -> addExtremeMarker(security, high, PlotSymbolType.DIAMOND, //
                         Messages.LabelChartDetailMarkerHigh, colorExtremeMarkerHigh, chartConfig));
-        min.ifPresent(low -> addExtremeMarker(low, PlotSymbolType.DIAMOND, //
+        min.ifPresent(low -> addExtremeMarker(security, low, PlotSymbolType.DIAMOND, //
                         Messages.LabelChartDetailMarkerLow, colorExtremeMarkerLow, chartConfig));
     }
 
-    private void addExtremeMarker(SecurityPrice price, PlotSymbolType plotSymbolType, String seriesLabel, Color color,
-                    EnumSet<ChartDetails> chartConfig)
+    private void addExtremeMarker(Security security, SecurityPrice price, PlotSymbolType plotSymbolType,
+                    String seriesLabel, Color color, EnumSet<ChartDetails> chartConfig)
     {
         LocalDate eventDate = price.getDate();
         double value = price.getValue() / Values.Quote.divider();
@@ -1719,7 +1719,7 @@ public class SecuritiesChart
         {
             if (chartConfig.contains(ChartDetails.SHOW_DATA_EXTREMES_LABEL))
             {
-                String valueFormat = Values.Quote.format(price.getValue());
+                String valueFormat = Values.Quote.formatFor(security, price.getValue());
                 chart.addMarkerLine(eventDate, color, valueFormat, value);
             }
             else
@@ -1727,7 +1727,7 @@ public class SecuritiesChart
         }
         else
         {
-            String valueFormat = Values.Quote.format(price.getValue());
+            String valueFormat = Values.Quote.formatFor(security, price.getValue());
             LocalDate zonedDate = eventDate;
 
             @SuppressWarnings("unchecked")
