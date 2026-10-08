@@ -380,4 +380,25 @@ public class InvestmentPlanTest
         assertThat(tx.get(3).getDateTime(), is(LocalDateTime.parse("2024-04-08T00:00")));
     }
 
+    @Test
+    public void testGenerationOfBuyTransactionForPercentageQuotedSecurity() throws IOException
+    {
+        Security bond = new SecurityBuilder().addPrice("2015-01-01", Values.Quote.factorize(101)).addTo(client);
+        bond.setPercentageQuoted(true);
+
+        investmentPlan.setType(InvestmentPlan.Type.PURCHASE_OR_DELIVERY);
+        investmentPlan.setAccount(account);
+        investmentPlan.setPortfolio(portfolio);
+        investmentPlan.setSecurity(bond);
+        investmentPlan.setAmount(Values.Amount.factorize(1010));
+        investmentPlan.setStart(LocalDateTime.parse("2016-01-29T00:00:00"));
+
+        investmentPlan.generateTransactions(new TestCurrencyConverter());
+
+        // 1,010.00 EUR at 101 % buys a nominal value of 1,000
+        PortfolioTransaction tx = (PortfolioTransaction) investmentPlan.getTransactions().get(0);
+        assertThat(tx.getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(tx.getShares(), is(Values.Share.factorize(1000)));
+        assertThat(tx.getAmount(), is(Values.Amount.factorize(1010)));
+    }
 }

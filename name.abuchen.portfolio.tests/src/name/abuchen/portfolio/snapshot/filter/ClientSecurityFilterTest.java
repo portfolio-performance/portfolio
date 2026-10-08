@@ -22,10 +22,14 @@ import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.AccruedInterestScenario;
+import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
+import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.util.Interval;
 
@@ -147,5 +151,30 @@ public class ClientSecurityFilterTest
 
         assertThat(all.getFinalAccumulatedPercentage(), is(filteredAll.getFinalAccumulatedPercentage()));
         assertThat(all.getDeltaPercentage(), is(filteredAll.getDeltaPercentage()));
+    }
+
+    @Test
+    public void testAccruedInterestIsKept()
+    {
+        var scenario = new AccruedInterestScenario();
+
+        Client filtered = new ClientSecurityFilter(scenario.bond).filter(scenario.client);
+
+        // without the account, buy and sell become deliveries; the accrued
+        // interest is kept and still counted as earnings
+        var buy = AccruedInterestScenario.transaction(filtered, PortfolioTransaction.Type.DELIVERY_INBOUND);
+        assertThat(buy.getAccruedInterest(), is(AccruedInterestScenario.eur(10)));
+        var sell = AccruedInterestScenario.transaction(filtered, PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+        assertThat(sell.getAccruedInterest(), is(AccruedInterestScenario.eur(5)));
+
+        var snapshot = new ClientPerformanceSnapshot(filtered, new TestCurrencyConverter(),
+                        LocalDate.parse("2023-12-31"), LocalDate.parse("2024-12-31"));
+        assertThat(snapshot.getValue(CategoryType.EARNINGS), is(AccruedInterestScenario.eur(25)));
+
+        // the categories add up to the final value
+        assertThat(snapshot.getValue(CategoryType.INITIAL_VALUE, CategoryType.TRANSFERS, CategoryType.CAPITAL_GAINS,
+                        CategoryType.REALIZED_CAPITAL_GAINS, CategoryType.EARNINGS, CategoryType.CURRENCY_GAINS)
+                        .subtract(snapshot.getValue(CategoryType.FEES, CategoryType.TAXES)),
+                        is(snapshot.getValue(CategoryType.FINAL_VALUE)));
     }
 }

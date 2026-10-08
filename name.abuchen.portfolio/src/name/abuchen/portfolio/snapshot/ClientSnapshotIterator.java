@@ -132,6 +132,7 @@ import name.abuchen.portfolio.money.Values;
                             .movePointLeft(Values.Share.precision())
                             .multiply(BigDecimal.valueOf(price.getValue()), Values.MC)
                             .movePointLeft(Values.Quote.precisionDeltaToMoney()) //
+                            .multiply(position.security.getQuoteMultiplier()) //
                             .setScale(0, RoundingMode.HALF_UP).longValue();
 
             if (converter.getTermCurrency().equals(position.security.getCurrencyCode()))

@@ -59,10 +59,11 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
         // the basis: the gross value leaves out the taxes and fees embedded in
         // the trade, the monetary amount takes them in - on both legs, as a
         // sale's gross value is the proceeds before the charges are deducted
+        // accrued interest is income, not part of the basis (both legs)
         var forexBasis = taxesAndFees.isIncluded()
-                        ? t.getMonetaryAmount(converter.with(securityCurrency)).getAmount()
+                        ? t.getMonetaryAmountWithoutAccruedInterest(converter.with(securityCurrency)).getAmount()
                         : t.getGrossValue(converter.with(securityCurrency)).getAmount();
-        var termBasis = taxesAndFees.isIncluded() ? t.getMonetaryAmount(converter).getAmount()
+        var termBasis = taxesAndFees.isIncluded() ? t.getMonetaryAmountWithoutAccruedInterest(converter).getAmount()
                         : t.getGrossValue(converter).getAmount();
 
         switch (t.getType())

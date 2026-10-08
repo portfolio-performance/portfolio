@@ -106,4 +106,51 @@ public class PortfolioSnapshotTest
                         is(new SecurityPrice(LocalDate.parse("2010-01-10"), Values.Quote.factorize(121.41))));
 
     }
+
+    @Test
+    public void testValuationOfPercentageQuotedSecurity()
+    {
+        Client client = new Client();
+        Security bond = new SecurityBuilder() //
+                        .addPrice("2010-01-01", Values.Quote.factorize(100.555)) //
+                        .addTo(client);
+        bond.setPercentageQuoted(true);
+
+        Portfolio portfolio = new PortfolioBuilder() //
+                        .buy(bond, "2010-01-01", Values.Share.factorize(3333), Values.Amount.factorize(3333)) //
+                        .addTo(client);
+
+        LocalDate date = LocalDate.parse("2010-01-31");
+        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new TestCurrencyConverter(), date);
+
+        assertThat(snapshot.getPositions(), hasSize(1));
+
+        // 3,333 nominal x 100.555 % = 3,351.49815 -> rounded to 3,351.50
+        SecurityPosition position = snapshot.getPositions().get(0);
+        assertThat(position.calculateValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3351.50))));
+    }
+
+    @Test
+    public void testValuationOfPercentageQuotedSecurityIfNoPricesExist()
+    {
+        Client client = new Client();
+        Security bond = new SecurityBuilder().addTo(client);
+        bond.setPercentageQuoted(true);
+
+        Portfolio portfolio = new PortfolioBuilder() //
+                        .buy(bond, "2010-01-10", Values.Share.factorize(3000), Values.Amount.factorize(3016.67)) //
+                        .addTo(client);
+
+        LocalDate date = LocalDate.parse("2010-01-31");
+        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new TestCurrencyConverter(), date);
+
+        assertThat(snapshot.getPositions(), hasSize(1));
+
+        // the price of the last transaction is used, given in percent
+        // (precision is limited to 10 significant digits by Values.MC)
+        SecurityPosition position = snapshot.getPositions().get(0);
+        assertThat(position.getPrice(),
+                        is(new SecurityPrice(LocalDate.parse("2010-01-10"), Values.Quote.factorize(100.5556667))));
+        assertThat(position.calculateValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3016.67))));
+    }
 }

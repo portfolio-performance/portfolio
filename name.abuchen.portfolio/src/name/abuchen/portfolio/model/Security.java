@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -61,6 +62,8 @@ public final class Security implements Attributable, InvestmentVehicle
         }
     }
 
+    private static final BigDecimal PERCENTAGE_QUOTE_MULTIPLIER = new BigDecimal("0.01"); //$NON-NLS-1$
+
     private String uuid;
     private String onlineId;
 
@@ -100,6 +103,8 @@ public final class Security implements Attributable, InvestmentVehicle
     private transient SecurityEphemeralData data; // NOSONAR
 
     private Instant updatedAt;
+
+    private boolean percentageQuoted = false;
 
     @Deprecated
     private String type;
@@ -934,6 +939,8 @@ public final class Security implements Attributable, InvestmentVehicle
 
         answer.updatedAt = updatedAt;
 
+        answer.percentageQuoted = percentageQuoted;
+
         return answer;
     }
 
@@ -964,6 +971,45 @@ public final class Security implements Attributable, InvestmentVehicle
     private boolean notEmpty(String s)
     {
         return s != null && s.length() > 0;
+    }
+
+    /**
+     * Enables percentage-based quoting of prices.
+     * <p>
+     * By default, price quotes are given in absolute values per share. A
+     * percentage-based price is applied as a factor (after deduction of 100) to
+     * the nominal value.
+     * <p>
+     * Note that a change of the setting after the first transaction involving
+     * this security is likely to distort statistics.
+     *
+     * @param percentageQuoted
+     *            Enable/disable percentage-quotation.
+     */
+    public void setPercentageQuoted(boolean percentageQuoted)
+    {
+        this.percentageQuoted = percentageQuoted;
+        this.updatedAt = Instant.now();
+    }
+
+    public boolean isPercentageQuoted()
+    {
+        return this.percentageQuoted;
+    }
+
+    /**
+     * Returns the multiplier between the quoted price and the value of one
+     * share: 0.01 for percentage-quoted securities (price in percent of the
+     * nominal value), 1 otherwise. The multiplier is a decimal so that further
+     * quotations can be represented, e.g. a contract size of 100 for options.
+     * <p>
+     * Use it wherever shares (or nominal values) and prices are multiplied or
+     * divided: value = shares x price x multiplier, price = value / (shares x
+     * multiplier).
+     */
+    public BigDecimal getQuoteMultiplier()
+    {
+        return percentageQuoted ? PERCENTAGE_QUOTE_MULTIPLIER : BigDecimal.ONE;
     }
 
 }

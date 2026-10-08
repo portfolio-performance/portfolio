@@ -277,6 +277,26 @@ public final class SecuritiesTable implements ModificationListener
         new BooleanEditingSupport(Security.class, "retired").addListener(this).attachTo(column); //$NON-NLS-1$
         column.setVisible(false);
         support.addColumn(column);
+
+        column = new Column("percentage-quotation", Messages.ColumnPercentageQuotation, SWT.LEFT, 40); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return ""; //$NON-NLS-1$
+            }
+
+            @Override
+            public Image getImage(Object e)
+            {
+                return ((Security) e).isPercentageQuoted() ? Images.CHECK.image() : null;
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(Security.class, "percentageQuoted")); //$NON-NLS-1$
+        new BooleanEditingSupport(Security.class, "percentageQuoted").addListener(this).attachTo(column); //$NON-NLS-1$
+        column.setVisible(false);
+        support.addColumn(column);
     }
 
     private void addColumnLatestPrice() // NOSONAR
@@ -294,9 +314,9 @@ public final class SecuritiesTable implements ModificationListener
                     return null;
 
                 if (security.getCurrencyCode() == null)
-                    return Values.Quote.format(latest.getValue());
+                    return Values.Quote.formatFor(security, latest.getValue());
                 else
-                    return Values.Quote.format(security.getCurrencyCode(), latest.getValue(),
+                    return Values.Quote.formatFor(security, security.getCurrencyCode(), latest.getValue(),
                                     getClient().getBaseCurrency());
             }
         });
@@ -337,12 +357,14 @@ public final class SecuritiesTable implements ModificationListener
             {
                 return Messages.ColumnLatestPrice + ": " //$NON-NLS-1$
                                 + MessageFormat.format(Messages.TooltipQuoteAtDate,
-                                                Values.Quote.format(previous.get().getLeft().getValue()),
+                                                Values.Quote.formatFor((Security) element,
+                                                                previous.get().getLeft().getValue()),
                                                 Values.Date.format(previous.get().getLeft().getDate()))
                                 + "\n" // //$NON-NLS-1$
                                 + Messages.ColumnPreviousPrice + ": " //$NON-NLS-1$
                                 + MessageFormat.format(Messages.TooltipQuoteAtDate,
-                                                Values.Quote.format(previous.get().getRight().getValue()),
+                                                Values.Quote.formatFor((Security) element,
+                                                                previous.get().getRight().getValue()),
                                                 Values.Date.format(previous.get().getRight().getDate()));
             }
             else
@@ -398,12 +420,14 @@ public final class SecuritiesTable implements ModificationListener
             {
                 return Messages.ColumnLatestPrice + ": " //$NON-NLS-1$
                                 + MessageFormat.format(Messages.TooltipQuoteAtDate,
-                                                Values.Quote.format(previous.get().getLeft().getValue()),
+                                                Values.Quote.formatFor((Security) element,
+                                                                previous.get().getLeft().getValue()),
                                                 Values.Date.format(previous.get().getLeft().getDate()))
                                 + "\n" // //$NON-NLS-1$
                                 + Messages.ColumnPreviousPrice + ": " //$NON-NLS-1$
                                 + MessageFormat.format(Messages.TooltipQuoteAtDate,
-                                                Values.Quote.format(previous.get().getRight().getValue()),
+                                                Values.Quote.formatFor((Security) element,
+                                                                previous.get().getRight().getValue()),
                                                 Values.Date.format(previous.get().getRight().getDate()));
             }
             else
@@ -1208,8 +1232,10 @@ public final class SecuritiesTable implements ModificationListener
 
             Double valuePA = getAnnualizedQuoteChange(prices.get());
 
-            String firstPrice = Values.Quote.format(security.getCurrencyCode(), prices.get().getLeft().getValue());
-            String secondPrice = Values.Quote.format(security.getCurrencyCode(), prices.get().getRight().getValue());
+            String firstPrice = Values.Quote.formatFor(security, security.getCurrencyCode(),
+                            prices.get().getLeft().getValue());
+            String secondPrice = Values.Quote.formatFor(security, security.getCurrencyCode(),
+                            prices.get().getRight().getValue());
 
             String firstDate = Values.Date.format(prices.get().getLeft().getDate());
             String secondDate = Values.Date.format(prices.get().getRight().getDate());

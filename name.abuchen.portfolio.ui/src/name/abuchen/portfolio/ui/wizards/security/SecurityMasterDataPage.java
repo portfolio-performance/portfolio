@@ -67,6 +67,8 @@ public class SecurityMasterDataPage extends AbstractPage
             targetCurrencyCode.setToolTipText(Messages.ColumnTargetCurrencyToolTip);
         }
 
+        bindings.bindBooleanInput(container, Messages.ColumnPercentageQuotation, "percentageQuoted"); //$NON-NLS-1$
+
         if (!isExchangeRate)
         {
             bindings.bindISINInput(container, Messages.ColumnISIN, "isin", 30); //$NON-NLS-1$

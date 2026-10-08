@@ -519,6 +519,19 @@ public class ClientPerformanceSnapshot
                     taxesBySecurity.computeIfAbsent(t.getSecurity(), s -> MutableMoney.of(termCurrency)).add(unit);
                 }
 
+                // accrued interest paid with a purchase reduces, received with
+                // a sale increases the earnings (it is not part of the capital
+                // gains)
+                unit = t.getAccruedInterest(converter);
+                if (!unit.isZero())
+                {
+                    Money signed = t.getType().isPurchase() ? unit.multiply(-1) : unit;
+                    mEarnings.add(signed);
+                    earnings.add(new TransactionPair<PortfolioTransaction>(portfolio, t));
+                    earningsBySecurity.computeIfAbsent(t.getSecurity(), s -> MutableMoney.of(termCurrency))
+                                    .add(signed);
+                }
+
                 switch (t.getType())
                 {
                     case DELIVERY_INBOUND:

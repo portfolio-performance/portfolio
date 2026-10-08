@@ -88,6 +88,10 @@ public class DivvyDiaryUploader
             if (Strings.isNullOrEmpty(security.getIsin()))
                 continue;
 
+            // DivvyDiary does not support percentage-quoted instruments (bonds)
+            if (security.isPercentageQuoted())
+                continue;
+
             JSONObject item = new JSONObject();
             item.put("isin", security.getIsin());
 
