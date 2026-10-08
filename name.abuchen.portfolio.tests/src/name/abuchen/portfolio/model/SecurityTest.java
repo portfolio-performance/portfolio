@@ -10,6 +10,7 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -269,5 +270,17 @@ public class SecurityTest
 
         security.setPercentageQuoted(false);
         assertThat(security.isPercentageQuoted(), is(false));
+    }
+
+    @Test
+    public void testSetPercentageQuotedUpdatesTimestamp()
+    {
+        Security security = new Security();
+        Instant before = Instant.parse("2020-01-01T00:00:00Z");
+        security.setUpdatedAt(before);
+
+        security.setPercentageQuoted(true);
+
+        assertThat(security.getUpdatedAt().isAfter(before), is(true));
     }
 }

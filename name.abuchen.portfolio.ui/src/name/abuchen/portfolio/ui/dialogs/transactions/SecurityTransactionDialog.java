@@ -350,7 +350,9 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
 
     private boolean isAccruedInterestVisible()
     {
-        if (!(model() instanceof BuySellModel))
+        // buy/sell and deliveries (e.g. a purchase converted into an inbound
+        // delivery keeps its accrued interest)
+        if (!(model() instanceof BuySellModel) && !(model() instanceof SecurityDeliveryModel))
             return false;
 
         var security = model().getSecurity();

@@ -1214,7 +1214,8 @@ public class DeutscheBankPDFExtractorTest
                         hasSource("Kauf11.txt"), //
                         hasNote("Belegnummer 1234567890 / 1234567"), //
                         hasAmount("EUR", 1010.00), hasGrossValue("EUR", 1010.00), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        hasAccruedInterest("EUR", 0.00))));
     }
 
     @Test
@@ -1256,7 +1257,8 @@ public class DeutscheBankPDFExtractorTest
                         hasSource("Kauf11.txt"), //
                         hasNote("Belegnummer 1234567890 / 1234567"), //
                         hasAmount("EUR", 1010.00), hasGrossValue("EUR", 1010.00), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        hasAccruedInterest("EUR", 0.00))));
     }
 
     @Test

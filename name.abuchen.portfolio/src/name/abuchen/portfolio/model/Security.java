@@ -989,6 +989,7 @@ public final class Security implements Attributable, InvestmentVehicle
     public void setPercentageQuoted(boolean percentageQuoted)
     {
         this.percentageQuoted = percentageQuoted;
+        this.updatedAt = Instant.now();
     }
 
     public boolean isPercentageQuoted()
