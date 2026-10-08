@@ -1,0 +1,32 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.84.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+Herr Jeh SEITE 1 von 1
+Straße 1 DATUM 30.06.2026
+01234 Ort AUFTRAG 694cf111
+DEPOT 0123456789
+EX-ANTE KOSTENINFORMATION ZUM WERTPAPIERVERKAUF
+WERTPAPIER BESTELLUNG / BETRAG WERT HANDELSPLATZ
+Aflac
+Verkauf 10 Stk. 1.027,50 € Lang & Schwarz Exchange
+ISIN: US0010551028
+KOSTEN DES WERTPAPIERVERKAUFS BETRAG
+Abwicklungspauschale 1,00 €
+GESAMT 1,00 €
+Beim Wertpapierverkauf belaufen sich die voraussichtlichen Gesamtkosten für dich auf 1,00 € und reduzieren deine Rendite um 0%. Die tatsächlichen 
+Kosten können davon abweichen.
+AUFTEILUNG DER GESAMTKOSTEN UND AUSWIRKUNG AUF DIE RENDITE BETRAG
+Produktkosten 0,00 € / 0,00%
+Zuwendungen Dritter 0,75 € / 0,07%
+Kosten des Wertpapierverkaufs 1,00 € / 0,10%
+GESAMT 1,75 € / 0,17%
+ZAHLUNGEN VON DRITTEN AN DIE BANK
+Zusätzlich zu den oben genannten Kosten wird die Bank voraussichtlich Zuschüsse in Höhe von 0,75 € (0,07% ) erhalten. Die Gesamtkosten für dich und 
+die Zahlungen von Dritten an die Bank belaufen sich somit auf 1,00 € (0,1% ).
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
