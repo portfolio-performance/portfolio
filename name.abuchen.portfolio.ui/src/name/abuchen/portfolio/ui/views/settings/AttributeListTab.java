@@ -42,25 +42,25 @@ import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.views.AbstractTabbedView;
+import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 
 public class AttributeListTab implements AbstractTabbedView.Tab, ModificationListener
 {
     /* package */ enum Mode
     {
-        SECURITY(Security.class, Messages.LabelSecurities, client -> client.getSecurities()), //
-        ACCOUNT(Account.class, Messages.LabelAccounts, client -> client.getAccounts()), //
-        PORTFOLIO(Portfolio.class, Messages.LabelPortfolios, client -> client.getPortfolios()), //
-        INVESTMENT_PLAN(InvestmentPlan.class, Messages.LabelInvestmentPlans, client -> client.getPlans());
+        SECURITY(Security.class, client -> client.getSecurities()), //
+        ACCOUNT(Account.class, client -> client.getAccounts()), //
+        PORTFOLIO(Portfolio.class, client -> client.getPortfolios()), //
+        INVESTMENT_PLAN(InvestmentPlan.class, client -> client.getPlans());
 
         private final Class<? extends Attributable> type;
         private final String label;
         private final Function<Client, List<? extends Attributable>> listFunction;
 
-        private Mode(Class<? extends Attributable> type, String label,
-                        Function<Client, List<? extends Attributable>> listFunction)
+        private Mode(Class<? extends Attributable> type, Function<Client, List<? extends Attributable>> listFunction)
         {
             this.type = type;
-            this.label = label;
+            this.label = AttributeColumn.getTargetLabel(type);
             this.listFunction = listFunction;
         }
 
