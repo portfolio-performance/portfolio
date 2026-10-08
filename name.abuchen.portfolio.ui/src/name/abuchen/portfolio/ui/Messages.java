@@ -109,6 +109,7 @@ public class Messages extends NLS
     public static String ColumnActualValue;
     public static String ColumnActualValueBaseCurrency;
     public static String ColumnAmount;
+    public static String ColumnAttributeDefinedFor;
     public static String ColumnAverage;
     public static String ColumnAutoGenerate;
     public static String ColumnBalance;

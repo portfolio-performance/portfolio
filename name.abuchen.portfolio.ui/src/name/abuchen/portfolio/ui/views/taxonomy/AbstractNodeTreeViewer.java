@@ -757,7 +757,7 @@ import name.abuchen.portfolio.util.TextUtil;
 
         getModel().getAttachedModels().forEach(m -> m.addColumns(support));
 
-        AttributeColumn.createFor(getModel().getClient(), Security.class) //
+        AttributeColumn.createForSecuritiesAndAccounts(getModel().getClient()) //
                         .forEach(c -> {
                             c.setSorter(null);
                             c.getEditingSupport().addListener(this);
