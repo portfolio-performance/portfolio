@@ -1312,8 +1312,14 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                             var exchangeRate = BigDecimal.valueOf(fxTax).divide(BigDecimal.valueOf(tax), 10, RoundingMode.HALF_UP);
 
-                            type.getCurrentContext().putType(new ExtrExchangeRate(exchangeRate, //
-                                            asCurrencyCode(v.get("baseCurrency")), asCurrencyCode(v.get("termCurrency"))));
+                            var rate = new ExtrExchangeRate(exchangeRate, //
+                                            asCurrencyCode(v.get("baseCurrency")), asCurrencyCode(v.get("termCurrency")));
+                            type.getCurrentContext().putType(rate);
+
+                            var gross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                            var fxGross = rate.convert(rate.getBaseCurrency(), gross);
+
+                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
 
                         // @formatter:off
@@ -1330,7 +1336,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .section("currency").optional() //
                         .match("^.*[\\*]+Einbeh\\. Steuer[:\\s]{1,}\\-[\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
-                            if (!t.getCurrencyCode().equals(asCurrencyCode(v.get("currency"))))
+                            if (t.getCurrencyCode() != null && !t.getCurrencyCode().equals(asCurrencyCode(v.get("currency"))))
                                 v.markAsFailure(Messages.MsgErrorTransactionMissingExchangeRateIfInForex);
                         })
 
@@ -3222,9 +3228,9 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                                 var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
                                                                 var fxGross = rate.convert(rate.getTermCurrency(), gross);
 
-                                                                checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-
                                                                 t.setMonetaryAmount(gross);
+
+                                                                checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                             }
                                                             else
                                                             {
