@@ -806,12 +806,9 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                                 type.getCurrentContext().putBoolean("negativeTax", true);
 
                                                                 var fxTaxRefund = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxRefund")));
-
-                                                                var exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                                                                var inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-
-                                                                var taxRefund = Money.of(t.getPortfolioTransaction().getCurrencyCode(), BigDecimal.valueOf(fxTaxRefund.getAmount())
-                                                                                .multiply(inverseRate).setScale(0, RoundingMode.HALF_UP).longValue());
+                                                                var rate = new ExtrExchangeRate(asExchangeRate(v.get("exchangeRate")), //
+                                                                                fxTaxRefund.getCurrencyCode(), t.getPortfolioTransaction().getCurrencyCode());
+                                                                var taxRefund = rate.convert(t.getPortfolioTransaction().getCurrencyCode(), fxTaxRefund);
 
                                                                 t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().subtract(taxRefund));
                                                                 }
@@ -3216,26 +3213,32 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Devisenkurs[:\\s]{1,}(?<exchangeRate>[\\.,\\d]+).*$") //
                                                         .match("^.* [\\*]+[\\s]*Einbeh\\. Steuer[:\\s]{1,}\\-(?<gross>[\\.,\\d]+) (?<baseCurrency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
-                                                            v.put("termCurrency", t.getSecurity().getCurrencyCode());
-
                                                             type.getCurrentContext().putBoolean("negativeTax", true);
 
-                                                            if (!t.getSecurity().getCurrencyCode().contentEquals(v.get("baseCurrency")))
+                                                            var settlementCurrency = t.getCurrencyCode();
+                                                            var securityCurrency = t.getSecurity().getCurrencyCode();
+                                                            var taxRefund = Money.of(asCurrencyCode(v.get("baseCurrency")), asAmount(v.get("gross")));
+
+                                                            if (!settlementCurrency.equals(taxRefund.getCurrencyCode()) || !settlementCurrency.equals(securityCurrency))
                                                             {
+                                                                v.put("termCurrency", !settlementCurrency.equals(taxRefund.getCurrencyCode()) //
+                                                                                ? settlementCurrency : securityCurrency);
                                                                 var rate = asExchangeRate(v);
                                                                 type.getCurrentContext().putType(rate);
 
-                                                                var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                                                                var fxGross = rate.convert(rate.getTermCurrency(), gross);
-
+                                                                var gross = settlementCurrency.equals(taxRefund.getCurrencyCode()) //
+                                                                                ? taxRefund : rate.convert(settlementCurrency, taxRefund);
                                                                 t.setMonetaryAmount(gross);
 
-                                                                checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                                if (!settlementCurrency.equals(securityCurrency))
+                                                                {
+                                                                    var fxGross = rate.convert(securityCurrency, gross);
+                                                                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                                }
                                                             }
                                                             else
                                                             {
-                                                                t.setCurrencyCode(asCurrencyCode(v.get("baseCurrency")));
-                                                                t.setAmount(asAmount(v.get("gross")));
+                                                                t.setMonetaryAmount(taxRefund);
                                                             }
                                                         }),
                                         // @formatter:off

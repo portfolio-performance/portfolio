@@ -5400,6 +5400,65 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testFlatExSammelabrechnung02TaxRefund_synthetic()
+    {
+        // Based on FlatExSammelabrechnung02: each sale has an EUR 0.84 tax refund
+        // instead of zero tax, and its USD settlement amount is increased by USD 1.00.
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExSammelabrechnung02TaxRefund_synthetic.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(2L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(5));
+        new AssertImportActions().check(results, "USD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US4581401001"), hasWkn("855681"), hasTicker(null), //
+                        hasName("INTEL CORP.       DL-,001"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-30T18:09"), hasShares(100.00), //
+                        hasSource("FlatExSammelabrechnung02TaxRefund_synthetic.txt"), //
+                        hasNote("Transaktion-Nr.: 2101694078"), //
+                        hasAmount("USD", 4773.36), hasGrossValue("USD", 4780.50), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 7.03 + 0.11))));
+
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-30T18:09"), hasShares(20.00), //
+                        hasSource("FlatExSammelabrechnung02TaxRefund_synthetic.txt"), //
+                        hasNote("Transaktion-Nr.: 2101694102"), //
+                        hasAmount("USD", 955.98), hasGrossValue("USD", 956.00), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.02))));
+
+        // check tax refund transactions
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2020-11-30T18:09"), hasShares(100.00), //
+                        hasSource("FlatExSammelabrechnung02TaxRefund_synthetic.txt"), //
+                        hasNote("Transaktion-Nr.: 2101694078"), //
+                        hasAmount("USD", 1.00), hasGrossValue("USD", 1.00), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2020-11-30T18:09"), hasShares(20.00), //
+                        hasSource("FlatExSammelabrechnung02TaxRefund_synthetic.txt"), //
+                        hasNote("Transaktion-Nr.: 2101694102"), //
+                        hasAmount("USD", 1.00), hasGrossValue("USD", 1.00), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+    }
+
+    @Test
     public void testFlatExSammelabrechnung02WithSecurityInEUR()
     {
         var security = new Security("INTEL CORP.       DL-,001", "EUR");
