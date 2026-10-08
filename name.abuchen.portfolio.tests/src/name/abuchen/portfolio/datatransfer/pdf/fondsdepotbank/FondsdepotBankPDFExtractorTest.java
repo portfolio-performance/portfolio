@@ -613,4 +613,92 @@ public class FondsdepotBankPDFExtractorTest
                         hasAmount("EUR", 19.81), hasGrossValue("EUR", 24.29), //
                         hasTaxes("EUR", 4.25 + 0.23 + 0.00), hasFees("EUR", 0.00))));
     }
+
+    @Test
+    public void testDividende01MitWiederanlage01()
+    {
+        var extractor = new FondsdepotBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt", "Wiederanlage01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0731782404"), hasWkn("A1JSY0"), hasTicker(null), //
+                        hasName("FF-GloDivFd A-QINCOME(G)Eur"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-11-11"), hasExDate("2025-11-03"), //
+                        hasShares(157.501), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 19.81), hasGrossValue("EUR", 24.29), //
+                        hasTaxes("EUR", 4.25 + 0.23 + 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-11-11"), hasShares(0.775), //
+                        hasSource("Wiederanlage01.txt"), //
+                        hasNote("Wiederanlage Ertrag"), //
+                        hasAmount("EUR", 19.81), hasGrossValue("EUR", 19.81), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00 + 0.00))));
+    }
+
+    @Test
+    public void testDividende01MitWiederanlage01_SourceFilesReversed()
+    {
+        var extractor = new FondsdepotBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Wiederanlage01.txt", "Dividende01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0731782404"), hasWkn("A1JSY0"), hasTicker(null), //
+                        hasName("FF-GloDivFd A-QINCOME(G)Eur"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-11-11"), hasExDate("2025-11-03"), //
+                        hasShares(157.501), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 19.81), hasGrossValue("EUR", 24.29), //
+                        hasTaxes("EUR", 4.25 + 0.23 + 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-11-11"), hasShares(0.775), //
+                        hasSource("Wiederanlage01.txt"), //
+                        hasNote("Wiederanlage Ertrag"), //
+                        hasAmount("EUR", 19.81), hasGrossValue("EUR", 19.81), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00 + 0.00))));
+    }
 }
