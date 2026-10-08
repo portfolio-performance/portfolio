@@ -4927,6 +4927,43 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testFlatExDegiroDividende13WithSecurityInEUR()
+    {
+        var security = new Security("J.M. SMUCKER CO.", "EUR");
+        security.setIsin("US8326964058");
+        security.setWkn("633835");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new FinTechGroupBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroDividende13.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "USD");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-12-01T00:00"), hasExDate("2025-11-14"), //
+                        hasShares(30.00), //
+                        hasSource("FlatExDegiroDividende13.txt"), //
+                        hasNote("Transaktion-Nr. : 6155515228"), //
+                        hasAmount("USD", 24.57), hasGrossValue("USD", 33.00), //
+                        hasForexGrossValue("EUR", 28.35), //
+                        hasTaxes("USD", 4.95 + 3.48), hasFees("USD", 0.00))));
+    }
+
+    @Test
     public void testFlatExDegiroDividende14()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
