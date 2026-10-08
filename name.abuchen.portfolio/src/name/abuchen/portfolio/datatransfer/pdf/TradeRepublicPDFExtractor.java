@@ -1860,7 +1860,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // processed with the securities settlement document.
                         .section("type") //
                         .match("^(?<type>EX\\-ANTE KOSTENINFORMATION ZUM WERTPAPIER(KAUF|VERKAUF))$") //
-                        .assign((t, v) -> v.markAsFailure(Messages.MsgErrorTransactionAlternativeDocumentRequired))
+                        .assign((t, v) -> v.skipTransaction(Messages.MsgErrorTransactionAlternativeDocumentRequired))
 
                         .oneOf( //
                                         // @formatter:off
