@@ -28,6 +28,7 @@ A hand-off-ready spec for a CLI that lets AI agents (GitHub Copilot, Claude Code
 - [Can PP core load, calculate and save a client file outside the workbench?](issues/01-headless-core-feasibility.md): yes, on a plain classpath from the built bundle jar plus target-platform jars; no OSGi launch needed, with caveats (stdout logging, ECB rate cache, online feeds).
 - [What prior art exists for programmatic access to client files?](issues/02-prior-art.md): ~25 tools, none runs PP's engine headlessly with validation; the maintainer is building an in-app REST API (PR #5870) and endorsed a read-only CLI over the same API as a starting point.
 - [Where does the CLI live and what code does it build on?](issues/03-architecture.md): a new additive Java 21 module in this fork running the core engine headlessly on a closed file, one JVM per command, no code dependency on #5870; see ADR 0002.
+- [What does the read command surface look like?](issues/04-read-surface.md): read-only `pp-cli` commands (info, instruments, accounts, transactions as logical records, holdings, prices, performance, allocation, describe); UUID-canonical addressing; JSON envelope `{data, meta, warnings}`; native currency for records, base currency for aggregates; FIFO default.
 
 ## Not yet specified
 
