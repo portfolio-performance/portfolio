@@ -7,6 +7,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -2222,7 +2223,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2016-12-15T00:00"), hasShares(66.00), //
+                        hasDate("2016-12-15T00:00"), hasExDate("2016-11-29"), hasShares(66.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 44.01), hasGrossValue("EUR", 59.11), //
@@ -2258,7 +2259,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2016-12-15T00:00"), hasShares(66.00), //
+                        hasDate("2016-12-15T00:00"), hasExDate("2016-11-29"), hasShares(66.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 44.01), hasGrossValue("EUR", 59.11), //
@@ -2292,7 +2293,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2016-12-15T00:00"), hasShares(694.00), //
+                        hasDate("2016-12-15T00:00"), hasExDate("2016-12-15"), hasShares(694.00), //
                         hasSource("Dividende02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 234.92), hasGrossValue("EUR", 303.60), //
@@ -2326,7 +2327,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2017-03-22T00:00"), hasShares(35.00), //
+                        hasDate("2017-03-22T00:00"), hasExDate("2017-03-20"), hasShares(35.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 58.19), hasGrossValue("EUR", 89.53), //
@@ -2362,7 +2363,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2017-03-22T00:00"), hasShares(35.00), //
+                        hasDate("2017-03-22T00:00"), hasExDate("2017-03-20"), hasShares(35.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 58.19), hasGrossValue("EUR", 89.53), //
@@ -2396,7 +2397,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2019-05-09T00:00"), hasShares(55.00), //
+                        hasDate("2019-05-09T00:00"), hasExDate("2019-05-07"), hasShares(55.00), //
                         hasSource("Dividende04.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 38.50), hasGrossValue("EUR", 55.00), //
@@ -2430,7 +2431,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-12-15T00:00"), hasShares(10.00), //
+                        hasDate("2020-12-15T00:00"), hasExDate("2020-11-30"), hasShares(10.00), //
                         hasSource("Dividende05.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 8.94), hasGrossValue("EUR", 10.52), //
@@ -2466,7 +2467,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-12-15T00:00"), hasShares(10.00), //
+                        hasDate("2020-12-15T00:00"), hasExDate("2020-11-30"), hasShares(10.00), //
                         hasSource("Dividende05.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 8.94), hasGrossValue("EUR", 10.52), //
@@ -2500,7 +2501,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2021-03-01T00:00"), hasShares(16.00), //
+                        hasDate("2021-03-01T00:00"), hasExDate("2021-02-04"), hasShares(16.00), //
                         hasSource("Dividende06.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 3.90), hasGrossValue("EUR", 4.58), //
@@ -2536,7 +2537,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2021-03-01T00:00"), hasShares(16.00), //
+                        hasDate("2021-03-01T00:00"), hasExDate("2021-02-04"), hasShares(16.00), //
                         hasSource("Dividende06.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 3.90), hasGrossValue("EUR", 4.58), //
@@ -2570,7 +2571,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2021-03-01T00:00"), hasShares(5.00), //
+                        hasDate("2021-03-01T00:00"), hasExDate("2021-02-11"), hasShares(5.00), //
                         hasSource("Dividende07.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 1.12), hasGrossValue("EUR", 1.32), //
@@ -2606,7 +2607,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2021-03-01T00:00"), hasShares(5.00), //
+                        hasDate("2021-03-01T00:00"), hasExDate("2021-02-11"), hasShares(5.00), //
                         hasSource("Dividende07.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 1.12), hasGrossValue("EUR", 1.32), //
@@ -2640,7 +2641,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2021-03-01T00:00"), hasShares(250.00), //
+                        hasDate("2021-03-01T00:00"), hasExDate("2021-02-04"), hasShares(250.00), //
                         hasSource("Dividende08.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 60.82), hasGrossValue("EUR", 71.55), //
@@ -2676,7 +2677,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2021-03-01T00:00"), hasShares(250.00), //
+                        hasDate("2021-03-01T00:00"), hasExDate("2021-02-04"), hasShares(250.00), //
                         hasSource("Dividende08.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 60.82), hasGrossValue("EUR", 71.55), //
@@ -2710,7 +2711,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2021-03-01T00:00"), hasShares(165.00), //
+                        hasDate("2021-03-01T00:00"), hasExDate("2021-02-11"), hasShares(165.00), //
                         hasSource("Dividende09.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 29.60), hasGrossValue("EUR", 45.94), //
@@ -2746,7 +2747,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2021-03-01T00:00"), hasShares(165.00), //
+                        hasDate("2021-03-01T00:00"), hasExDate("2021-02-11"), hasShares(165.00), //
                         hasSource("Dividende09.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 29.60), hasGrossValue("EUR", 45.94), //
@@ -2780,7 +2781,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2021-03-01T00:00"), hasShares(11.97545), //
+                        hasDate("2021-03-01T00:00"), hasExDate("2021-02-11"), hasShares(11.97545), //
                         hasSource("Dividende10.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 2.68), hasGrossValue("EUR", 3.15), //
@@ -2816,7 +2817,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2021-03-01T00:00"), hasShares(11.97545), //
+                        hasDate("2021-03-01T00:00"), hasExDate("2021-02-11"), hasShares(11.97545), //
                         hasSource("Dividende10.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 2.68), hasGrossValue("EUR", 3.15), //
@@ -2850,7 +2851,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2015-09-15T00:00"), hasShares(18.00), //
+                        hasDate("2015-09-15T00:00"), hasExDate("2015-09-15"), hasShares(18.00), //
                         hasSource("Dividende11.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 6.70), hasGrossValue("EUR", 6.70), //
@@ -2884,7 +2885,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2015-12-15T00:00"), hasShares(10.00), //
+                        hasDate("2015-12-15T00:00"), hasExDate("2015-12-15"), hasShares(10.00), //
                         hasSource("Dividende12.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 72.50), hasGrossValue("EUR", 72.50), //
@@ -2918,7 +2919,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2016-10-17T00:00"), hasShares(1112.0958), //
+                        hasDate("2016-10-17T00:00"), hasExDate("2016-10-17"), hasShares(1112.0958), //
                         hasSource("Dividende13.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 101.32), hasGrossValue("EUR", 116.84), //
@@ -2995,7 +2996,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2016-05-12T00:00"), hasShares(500.00), //
+                        hasDate("2016-05-12T00:00"), hasExDate("2016-05-12"), hasShares(500.00), //
                         hasSource("Dividende15.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 468.04), hasGrossValue("EUR", 650.00), //
@@ -3029,7 +3030,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2018-12-21T00:00"), hasShares(700.00), //
+                        hasDate("2018-12-21T00:00"), hasExDate("2018-11-08"), hasShares(700.00), //
                         hasSource("Dividende16.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 61.85), hasGrossValue("EUR", 61.85), //
@@ -3065,7 +3066,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2018-12-21T00:00"), hasShares(700.00), //
+                        hasDate("2018-12-21T00:00"), hasExDate("2018-11-08"), hasShares(700.00), //
                         hasSource("Dividende16.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 61.85), hasGrossValue("EUR", 61.85), //
@@ -3099,7 +3100,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-05-01T00:00"), hasShares(42.00), //
+                        hasDate("2023-05-01T00:00"), hasExDate("2023-04-17"), hasShares(42.00), //
                         hasSource("Dividende17.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 3.24), hasGrossValue("EUR", 3.81), //
@@ -3135,7 +3136,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-05-01T00:00"), hasShares(42.00), //
+                        hasDate("2023-05-01T00:00"), hasExDate("2023-04-17"), hasShares(42.00), //
                         hasSource("Dividende17.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 3.24), hasGrossValue("EUR", 3.81), //
@@ -3169,7 +3170,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-04-27T00:00"), hasShares(10.00), //
+                        hasDate("2023-04-27T00:00"), hasExDate("2023-04-06"), hasShares(10.00), //
                         hasSource("Dividende18.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 3.08), hasGrossValue("EUR", 3.62), //
@@ -3205,7 +3206,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-04-27T00:00"), hasShares(10.00), //
+                        hasDate("2023-04-27T00:00"), hasExDate("2023-04-06"), hasShares(10.00), //
                         hasSource("Dividende18.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 3.08), hasGrossValue("EUR", 3.62), //
@@ -3239,7 +3240,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-04-28T00:00"), hasShares(50.00), //
+                        hasDate("2023-04-28T00:00"), hasExDate("2023-03-30"), hasShares(50.00), //
                         hasSource("Dividende19.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 25.10), hasGrossValue("EUR", 29.53), //
@@ -3275,7 +3276,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-04-28T00:00"), hasShares(50.00), //
+                        hasDate("2023-04-28T00:00"), hasExDate("2023-03-30"), hasShares(50.00), //
                         hasSource("Dividende19.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 25.10), hasGrossValue("EUR", 29.53), //
@@ -3309,7 +3310,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-01-02T00:00"), hasShares(50.00), //
+                        hasDate("2024-01-02T00:00"), hasExDate("2024-01-02"), hasShares(50.00), //
                         hasSource("Dividende20.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 50.00), hasGrossValue("EUR", 50.00), //
@@ -3343,7 +3344,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-09-03T00:00"), hasShares(20.00), //
+                        hasDate("2025-09-03T00:00"), hasExDate("2025-09-03"), hasShares(20.00), //
                         hasSource("Dividende21.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 60.74), hasGrossValue("EUR", 82.50), //
@@ -3377,7 +3378,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-06-07T00:00"), hasShares(103.00), //
+                        hasDate("2024-06-07T00:00"), hasExDate(null), hasShares(103.00), //
                         hasSource("Dividendos01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 51.25), hasGrossValue("EUR", 63.27), //
@@ -3411,7 +3412,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-05-02T00:00"), hasShares(95.00), //
+                        hasDate("2024-05-02T00:00"), hasExDate(null), hasShares(95.00), //
                         hasSource("Dividendos02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 59.25), hasGrossValue("EUR", 73.15), //
@@ -3445,7 +3446,7 @@ public class INGDiBaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-06-27T00:00"), hasShares(52.00), //
+                        hasDate("2024-06-27T00:00"), hasExDate(null), hasShares(52.00), //
                         hasSource("Dividendos03.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 41.54), hasGrossValue("EUR", 60.33), //
@@ -3481,7 +3482,7 @@ public class INGDiBaPDFExtractorTest
         assertThat(results, hasItem(withFailureMessage( //
                         Messages.MsgErrorTransactionOrderCancellationUnsupported, //
                         dividend( //
-                                        hasDate("2020-04-17T00:00"), //
+                                        hasDate("2020-04-17T00:00"), hasExDate("2020-03-26"), //
                                         hasShares(100.00), //
                                         hasSource("DividendeStorno01.txt"), //
                                         hasNote(null), //
@@ -3714,6 +3715,42 @@ public class INGDiBaPDFExtractorTest
     }
 
     @Test
+    public void testUmtauschEingang02()
+    {
+        var extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "UmtauschEingang02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0006969603"), hasWkn("696960"), hasTicker(null), //
+                        hasName("PUMA SE Inhaber-Aktien o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check unsupported transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        inboundDelivery( //
+                                        hasDate("2025-12-30T00:00"), hasShares(22.00), //
+                                        hasSource("UmtauschEingang02.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
     public void testUmtauschAusgang01()
     {
         var extractor = new INGDiBaPDFExtractor(new Client());
@@ -3744,6 +3781,42 @@ public class INGDiBaPDFExtractorTest
                         outboundDelivery( //
                                         hasDate("2023-08-25T00:00"), hasShares(2.00), //
                                         hasSource("UmtauschAusgang01.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
+    public void testUebertragAusgang01()
+    {
+        var extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "UebertragAusgang01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE000KJPDY61"), hasWkn("A40121"), hasTicker(null), //
+                        hasName("iShs III-iShs Wl.E.H.In.Ac.ETF Reg.Shs USD Dis. oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check unsupported transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        outboundDelivery( //
+                                        hasDate("2026-08-31T00:00"), hasShares(601.00), //
+                                        hasSource("UebertragAusgang01.txt"), //
                                         hasNote(null), //
                                         hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
                                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
@@ -3936,6 +4009,38 @@ public class INGDiBaPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2018-11-29"), hasAmount("EUR", 1200.04), //
                         hasSource("GiroKontoauszug07.txt"), hasNote("Bezüge Freie Hansestadt Bremen"))));
+    }
+
+    @Test
+    public void testGiroKontoauszug08()
+    {
+        var extractor = new INGDiBaPDFExtractor(new Client());
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug08.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2010-11-01"), hasAmount("EUR", 500.00), //
+                        hasSource("GiroKontoauszug08.txt"), hasNote("Gutschrift NPkVomtcG EcftL"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2010-11-03"), hasAmount("EUR", 54.52), //
+                        hasSource("GiroKontoauszug08.txt"), hasNote("Lastschrift SB-TANK. 5128, uKava"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2010-11-16"), hasAmount("EUR", 250.00), //
+                        hasSource("GiroKontoauszug08.txt"), hasNote("Gutschrift-Dauerauftrag dfgfg,dafbfhb mavr gOVG"))));
     }
 
     @Test
