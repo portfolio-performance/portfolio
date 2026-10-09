@@ -23,6 +23,9 @@ A hand-off-ready spec for a CLI that lets AI agents (GitHub Copilot, Claude Code
 
 <!-- one line per closed ticket: [title](issues/NN-slug.md): gist -->
 
+- [Can PP core load, calculate and save a client file outside the workbench?](issues/01-headless-core-feasibility.md): yes, on a plain classpath from the built bundle jar plus target-platform jars; no OSGi launch needed, with caveats (stdout logging, ECB rate cache, online feeds).
+- [What prior art exists for programmatic access to client files?](issues/02-prior-art.md): ~25 tools, none runs PP's engine headlessly with validation; the maintainer is building an in-app REST API (PR #5870) and endorsed a read-only CLI over the same API as a starting point.
+
 ## Not yet specified
 
 - **Packaging and distribution**: how users install and launch the CLI (jlink/jpackage, fat jar, shipped inside the PP install). Hangs on the architecture decision.
