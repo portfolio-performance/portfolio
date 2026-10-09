@@ -36,3 +36,7 @@ The external name for a **Portfolio**.
 
 **Cash account**:
 The external name for an **Account**.
+
+**Holding**:
+The quantity of one **Instrument** held in an **Investment account** (or across all of them) at a given date, with its market value.
+_Avoid_: position (internal core term), asset
