@@ -971,7 +971,7 @@ public class SBrokerPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2014-11-17"), //
+                        hasDate("2014-11-17"), hasExDate("2014-11-17"), //
                         hasShares(16), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Ertrag für 2014/15 (12,70 EUR)"), //
@@ -1006,7 +1006,7 @@ public class SBrokerPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2014-12-15"), //
+                        hasDate("2014-12-15"), hasExDate("2014-11-26"), //
                         hasShares(103), //
                         hasSource("Dividende02.txt"), //
                         hasNote(null), //
@@ -1042,7 +1042,7 @@ public class SBrokerPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2014-12-15"), //
+                        hasDate("2014-12-15"), hasExDate("2014-11-26"), //
                         hasShares(103), //
                         hasSource("Dividende02.txt"), //
                         hasNote(null), //
@@ -1084,7 +1084,7 @@ public class SBrokerPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2021-05-17"), //
+                        hasDate("2021-05-17"), hasExDate("2021-04-22"), //
                         hasShares(25), //
                         hasSource("Dividende03.txt"), //
                         hasNote(null), //
@@ -1120,7 +1120,7 @@ public class SBrokerPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2021-05-17"), //
+                        hasDate("2021-05-17"), hasExDate("2021-04-22"), //
                         hasShares(25), //
                         hasSource("Dividende03.txt"), //
                         hasNote(null), //
@@ -1742,7 +1742,7 @@ public class SBrokerPDFExtractorTest
 
         // check dividende transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2021-09-07T00:00"), hasExDate(null), //
+                        hasDate("2021-09-07T00:00"), hasExDate("2021-08-23"), //
                         hasShares(8.000), //
                         hasSource("Dividende13.txt"), //
                         hasNote(null), //
@@ -1936,7 +1936,7 @@ public class SBrokerPDFExtractorTest
 
         // check dividende transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2016-11-15T00:00"), hasExDate(null), //
+                        hasDate("2016-11-15T00:00"), hasExDate("2016-11-15"), //
                         hasShares(105.00), //
                         hasSource("Dividende16.txt"), //
                         hasNote("Ertrag für 2016/17 (57,56 EUR)"), //
@@ -2192,7 +2192,7 @@ public class SBrokerPDFExtractorTest
         assertThat(results, hasItem(withFailureMessage( //
                         Messages.MsgErrorTransactionOrderCancellationUnsupported, //
                         dividend( //
-                                        hasDate("2016-06-15"), hasShares(84.092), //
+                                        hasDate("2016-06-15"), hasExDate("2016-06-15"), hasShares(84.092), //
                                         hasSource("DividendeStorno01.txt"), //
                                         hasNote("Abrechnungs-Nr. 60667425 | Ertrag für 2015/16 (20,24 EUR)"), //
                                         hasAmount("EUR", 20.24), hasGrossValue("EUR", 20.28), //
