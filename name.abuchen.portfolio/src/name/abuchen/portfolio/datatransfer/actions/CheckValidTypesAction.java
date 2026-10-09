@@ -6,6 +6,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ImportAction;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 
@@ -51,6 +52,25 @@ public class CheckValidTypesAction implements ImportAction
             case DELIVERY_INBOUND:
             case DELIVERY_OUTBOUND:
                 return Status.OK_STATUS;
+            default:
+                throw new UnsupportedOperationException();
+        }
+    }
+
+    @Override
+    public Status process(BuySellEntry entry, Account account, Portfolio portfolio)
+    {
+        switch (entry.getPortfolioTransaction().getType())
+        {
+            case BUY:
+            case SELL:
+                return Status.OK_STATUS;
+            case TRANSFER_IN:
+            case TRANSFER_OUT:
+            case DELIVERY_INBOUND:
+            case DELIVERY_OUTBOUND:
+                return new Status(Status.Code.ERROR, MessageFormat.format(Messages.MsgCheckInvalidTransactionType,
+                                entry.getPortfolioTransaction().getType().toString()));
             default:
                 throw new UnsupportedOperationException();
         }

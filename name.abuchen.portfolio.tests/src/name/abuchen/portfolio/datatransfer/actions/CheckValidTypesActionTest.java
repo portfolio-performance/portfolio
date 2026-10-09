@@ -8,6 +8,7 @@ import org.junit.Test;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -80,5 +81,36 @@ public class CheckValidTypesActionTest
         assertThat(action.process(t, portfolio).getCode(), is(Status.Code.OK));
         t.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
         assertThat(action.process(t, portfolio).getCode(), is(Status.Code.OK));
+    }
+
+    @Test
+    public void testBuySellEntry()
+    {
+        Account account = new Account();
+        account.setCurrencyCode("EUR");
+
+        Portfolio portfolio = new Portfolio();
+
+        Security security = new Security("", "EUR");
+
+        BuySellEntry entry = new BuySellEntry(portfolio, account);
+        entry.setMonetaryAmount(Money.of("EUR", 1_00));
+        entry.setSecurity(security);
+
+        // set the type on the portfolio transaction directly because
+        // BuySellEntry#setType rejects the delivery types
+        entry.getPortfolioTransaction().setType(PortfolioTransaction.Type.BUY);
+        assertThat(action.process(entry, account, portfolio).getCode(), is(Status.Code.OK));
+        entry.getPortfolioTransaction().setType(PortfolioTransaction.Type.SELL);
+        assertThat(action.process(entry, account, portfolio).getCode(), is(Status.Code.OK));
+
+        entry.getPortfolioTransaction().setType(PortfolioTransaction.Type.TRANSFER_IN);
+        assertThat(action.process(entry, account, portfolio).getCode(), is(Status.Code.ERROR));
+        entry.getPortfolioTransaction().setType(PortfolioTransaction.Type.TRANSFER_OUT);
+        assertThat(action.process(entry, account, portfolio).getCode(), is(Status.Code.ERROR));
+        entry.getPortfolioTransaction().setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+        assertThat(action.process(entry, account, portfolio).getCode(), is(Status.Code.ERROR));
+        entry.getPortfolioTransaction().setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+        assertThat(action.process(entry, account, portfolio).getCode(), is(Status.Code.ERROR));
     }
 }
