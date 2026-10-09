@@ -193,7 +193,7 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .find("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Von|An) .* [\\.,\\d]+$") //
-                        .match("^(?<note>(?!NOBA Bank Group)(?![\\d]{2}\\.[\\d]{2}\\.[\\d]{4} ).*)$") //
+                        .match("^(?<note>(?!Bank Norwegian)(?!NOBA Bank Group)(?![\\d]{2}\\.[\\d]{2}\\.[\\d]{4} ).*)$") //
                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " ")))
 
                         .wrap(TransactionItem::new));
