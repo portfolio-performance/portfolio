@@ -13,6 +13,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.ParsedData;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -24,6 +25,8 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 {
+    private static final String REMAINING_DISCOUNT = "remainingDiscount";
+
     /**
      * Broker (white label partner of the Baader Bank) with the identifiers
      * found in the letterhead or the footer of its documents.
@@ -1591,11 +1594,17 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Finanzkommission Baader EUR 0,50
                         // Handelsplatzabhängige Gutschrift Baader EUR 0,40 -
+                        //
+                        // Finanzkommission Baader EUR 0,50 -
+                        // Handelsplatzabhängige Gutschrift Baader EUR 3,15
                         // @formatter:on
                         .section("currency", "fee", "discountCurrency", "discount").optional() //
                         .match("^Finanzkommission .* (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
-                        .match("^Handelsplatzabh.ngige Gutschrift .* (?<discountCurrency>[A-Z]{3}) (?<discount>[\\.,\\d]+) \\-$") //
+                        .match("^Handelsplatzabh.ngige Gutschrift .* (?<discountCurrency>[A-Z]{3}) (?<discount>[\\.,\\d]+)( \\-)?$") //
                         .assign((t, v) -> {
+                            // The sign of the credit depends on the direction
+                            // of the document (purchase: "-", sale: no sign),
+                            // but it always reduces the fees.
                             var fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
                             var discount = Money.of(asCurrencyCode(v.get("discountCurrency")), asAmount(v.get("discount")));
 
@@ -1603,6 +1612,13 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                             {
                                 fee = fee.subtract(discount);
                                 checkAndSetFee(fee, t, type.getCurrentContext());
+                            }
+                            else if (discount.subtract(fee).isPositive())
+                            {
+                                // The credit exceeds the Finanzkommission. Keep
+                                // the remaining credit to offset the following
+                                // fees.
+                                putRemainingDiscount(discount.subtract(fee), v);
                             }
 
                             type.getCurrentContext().putBoolean("noFinanzkommission", true);
@@ -1624,21 +1640,60 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("currency", "fee").optional() //
                         .match("^Mindermengenzuschlag( .*)? (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
-                        .assign((t, v) -> processFeeEntries(t, v, type))
+                        .assign((t, v) -> processFeeEntriesWithRemainingDiscount(t, v, type))
 
                         // @formatter:off
                         // Vermittlungsentgelt Finanzen EUR 0,90
+                        // Vermittlungsentgelt Tradersplace EUR 2,65 -
                         // @formatter:on
                         .section("currency", "fee").optional() //
                         .match("^Vermittlungsentgelt .* (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
-                        .assign((t, v) -> processFeeEntries(t, v, type))
+                        .assign((t, v) -> processFeeEntriesWithRemainingDiscount(t, v, type))
 
                         // @formatter:off
                         // Stamp HongKong EUR 0,12
                         // @formatter:on
                         .section("currency", "fee").optional() //
                         .match("^Stamp HongKong (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
-                        .assign((t, v) -> processFeeEntries(t, v, type));
+                        .assign((t, v) -> processFeeEntriesWithRemainingDiscount(t, v, type));
+    }
+
+    /**
+     * Stores the part of the "Handelsplatzabhängige Gutschrift" which exceeds
+     * the "Finanzkommission" in the transaction context. The transaction
+     * context only exists while one transaction is parsed, therefore a
+     * remaining credit can never offset the fees of another transaction.
+     */
+    private void putRemainingDiscount(Money discount, ParsedData v)
+    {
+        v.getTransactionContext().put(REMAINING_DISCOUNT, discount);
+    }
+
+    /**
+     * Processes a fee and offsets it against the remaining credit of the
+     * "Handelsplatzabhängige Gutschrift". Fees cannot be negative, therefore
+     * only the positive difference is booked and an excess credit is carried
+     * forward to the next fee. Without remaining credit, the fee is processed
+     * as usual.
+     */
+    private void processFeeEntriesWithRemainingDiscount(Object t, ParsedData v, DocumentType type)
+    {
+        var fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
+
+        if (!(v.getTransactionContext().get(REMAINING_DISCOUNT) instanceof Money discount)
+                        || !fee.getCurrencyCode().equals(discount.getCurrencyCode()))
+        {
+            processFeeEntries(t, v, type);
+            return;
+        }
+
+        v.getTransactionContext().remove(REMAINING_DISCOUNT);
+
+        var remainingFee = fee.subtract(discount);
+        if (remainingFee.isPositive())
+            checkAndSetFee(remainingFee, t, type.getCurrentContext());
+        else if (remainingFee.isNegative())
+            putRemainingDiscount(remainingFee.absolute(), v);
     }
 
     @Override
