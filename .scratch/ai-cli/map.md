@@ -29,13 +29,13 @@ A hand-off-ready spec for a CLI that lets AI agents (GitHub Copilot, Claude Code
 - [What prior art exists for programmatic access to client files?](issues/02-prior-art.md): ~25 tools, none runs PP's engine headlessly with validation; the maintainer is building an in-app REST API (PR #5870) and endorsed a read-only CLI over the same API as a starting point.
 - [Where does the CLI live and what code does it build on?](issues/03-architecture.md): a new additive Java 21 module in this fork running the core engine headlessly on a closed file, one JVM per command, no code dependency on #5870; see ADR 0002.
 - [What does the read command surface look like?](issues/04-read-surface.md): read-only `pp-cli` commands (info, instruments, accounts, transactions as logical records, holdings, prices, performance, allocation, describe); UUID-canonical addressing; JSON envelope `{data, meta, warnings}`; native currency for records, base currency for aggregates; FIFO default.
+- [How do backup and dry-run behave on writes?](issues/06-write-safety.md): one safe-write sequence (lock, `Checker` no-new-issues check, timestamped backup in `backups/`, temp file plus atomic rename, hash/mtime re-check, `lsof` warning); writes applied by default with opt-in `--dry-run` reporting entity-level changes; format kept, newer files refused; minimal `restore`.
 
 ## Not yet specified
 
 - **Packaging and distribution**: how users install and launch the CLI (jlink/jpackage, fat jar, shipped inside the PP install). Hangs on the architecture decision.
 - **Format and version support mechanics**: how non-XML formats and future file versions are handled, and the cost of tracking upstream format changes. Hangs on the architecture decision.
 - **MCP surface**: whether the spec adds an MCP server over the same operations, and at what cost once the CLI shape is known.
-- **Open-in-app guard**: whether and how the CLI detects that the desktop app has the client file open before writing.
 
 ## Out of scope
 
