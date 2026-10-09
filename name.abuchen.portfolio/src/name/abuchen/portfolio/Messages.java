@@ -261,7 +261,9 @@ public class Messages extends NLS
     public static String MsgCheckTransactionCurrencyDoesNotMatchAccount;
     public static String MsgCheckTransactionMustNotHaveGrossAmount;
     public static String MsgCheckTransactionTypeCannotHaveASecurity;
+    public static String MsgCheckTransactionTypeCannotHaveFees;
     public static String MsgCheckTransactionTypeCannotHaveShares;
+    public static String MsgCheckTransactionTypeCannotHaveTaxes;
     public static String MsgCheckUnitForexMismatch;
     public static String MsgCheckUnitForexNotValid;
     public static String MsgCheckUnsupportedCurrency;
