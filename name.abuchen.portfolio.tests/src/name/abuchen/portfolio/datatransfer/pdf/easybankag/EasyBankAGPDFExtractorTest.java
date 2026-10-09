@@ -4,6 +4,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -2127,7 +2128,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-05-09T00:00"), hasShares(115.00), //
+                        hasDate("2022-05-09T00:00"), hasExDate("2022-05-05T00:00"), //
+                        hasShares(115.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 910.69), hasGrossValue("EUR", 1242.00), //
@@ -2161,7 +2163,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-05-11T00:00"), hasShares(1250.00), //
+                        hasDate("2022-05-11T00:00"), hasExDate("2022-05-09T00:00"), //
+                        hasShares(1250.00), //
                         hasSource("Dividende02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 1649.80), hasGrossValue("EUR", 2250.00), //
@@ -2195,7 +2198,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-05-12T00:00"), hasShares(1204.86), //
+                        hasDate("2022-05-12T00:00"), hasExDate("2022-05-03T00:00"), //
+                        hasShares(1204.86), //
                         hasSource("Dividende03.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 315.56), hasGrossValue("EUR", (336.16 / 1.06145)), //
@@ -2230,7 +2234,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-05-12T00:00"), hasShares(1204.86), //
+                        hasDate("2022-05-12T00:00"), hasExDate("2022-05-03T00:00"), //
+                        hasShares(1204.86), //
                         hasSource("Dividende03.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 315.56), hasGrossValue("EUR", (336.16 / 1.06145)), //
@@ -2264,7 +2269,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-05-17T00:00"), hasShares(200.00), //
+                        hasDate("2022-05-17T00:00"), hasExDate("2022-04-21T00:00"), //
+                        hasShares(200.00), //
                         hasSource("Dividende04.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 120.62), hasGrossValue("EUR", (182.66 / 1.05005)), //
@@ -2299,7 +2305,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-05-17T00:00"), hasShares(200.00), //
+                        hasDate("2022-05-17T00:00"), hasExDate("2022-04-21T00:00"), //
+                        hasShares(200.00), //
                         hasSource("Dividende04.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 120.62), hasGrossValue("EUR", (182.66 / 1.05005)), //
@@ -2333,7 +2340,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-05-24T00:00"), hasShares(100.00), //
+                        hasDate("2022-05-24T00:00"), hasExDate("2022-05-19T00:00"), //
+                        hasShares(100.00), //
                         hasSource("Dividende05.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 179.24), hasGrossValue("EUR", 245.00), //
@@ -2367,7 +2375,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-05-27T00:00"), hasShares(3568.5778), //
+                        hasDate("2022-05-27T00:00"), hasExDate("2022-05-12T00:00"), //
+                        hasShares(3568.5778), //
                         hasSource("Dividende06.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 101.96), hasGrossValue("EUR", (110.63 / 1.07305)), //
@@ -2402,7 +2411,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-05-27T00:00"), hasShares(3568.5778), //
+                        hasDate("2022-05-27T00:00"), hasExDate("2022-05-12T00:00"), //
+                        hasShares(3568.5778), //
                         hasSource("Dividende06.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 101.96), hasGrossValue("EUR", (110.63 / 1.07305)), //
@@ -2436,7 +2446,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-05-05T00:00"), hasShares(100.00), //
+                        hasDate("2022-05-05T00:00"), hasExDate("2022-05-03T00:00"), //
+                        hasShares(100.00), //
                         hasSource("Dividende07.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 137.75), hasGrossValue("EUR", 190.00), //
@@ -2470,7 +2481,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-05-09T00:00"), hasShares(115.00), //
+                        hasDate("2022-05-09T00:00"), hasExDate("2022-05-05T00:00"), //
+                        hasShares(115.00), //
                         hasSource("Dividende08.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 910.69), hasGrossValue("EUR", 1242.00), //
@@ -2504,7 +2516,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-05-11T00:00"), hasShares(1250.00), //
+                        hasDate("2022-05-11T00:00"), hasExDate("2022-05-09T00:00"), //
+                        hasShares(1250.00), //
                         hasSource("Dividende09.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 1649.80), hasGrossValue("EUR", 2250.00), //
@@ -2538,7 +2551,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-05-12T00:00"), hasShares(1204.86), //
+                        hasDate("2022-05-12T00:00"), hasExDate("2022-05-03T00:00"), //
+                        hasShares(1204.86), //
                         hasSource("Dividende10.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 315.56), hasGrossValue("EUR", 316.70), //
@@ -2573,7 +2587,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-05-12T00:00"), hasShares(1204.86), //
+                        hasDate("2022-05-12T00:00"), hasExDate("2022-05-03T00:00"), //
+                        hasShares(1204.86), //
                         hasSource("Dividende10.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 315.56), hasGrossValue("EUR", 316.70), //
@@ -2607,7 +2622,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-05-24T00:00"), hasShares(100.00), //
+                        hasDate("2022-05-24T00:00"), hasExDate("2022-05-19T00:00"), //
+                        hasShares(100.00), //
                         hasSource("Dividende11.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 179.24), hasGrossValue("EUR", 245.00), //
@@ -2641,7 +2657,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-05-27T00:00"), hasShares(3568.5778), //
+                        hasDate("2022-05-27T00:00"), hasExDate("2022-05-12T00:00"), //
+                        hasShares(3568.5778), //
                         hasSource("Dividende12.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 101.96), hasGrossValue("EUR", 103.10), //
@@ -2676,7 +2693,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-05-27T00:00"), hasShares(3568.5778), //
+                        hasDate("2022-05-27T00:00"), hasExDate("2022-05-12T00:00"), //
+                        hasShares(3568.5778), //
                         hasSource("Dividende12.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 101.96), hasGrossValue("EUR", 103.10), //
@@ -2710,7 +2728,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-06-07T00:00"), hasShares(1200.00), //
+                        hasDate("2022-06-07T00:00"), hasExDate("2022-06-02T00:00"), //
+                        hasShares(1200.00), //
                         hasSource("Dividende13.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 478.50), hasGrossValue("EUR", 660.00), //
@@ -2744,7 +2763,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2021-07-02T00:00"), hasShares(60.00), //
+                        hasDate("2021-07-02T00:00"), hasExDate("2021-06-30T00:00"), //
+                        hasShares(60.00), //
                         hasSource("Dividende14.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 4.03), hasGrossValue("EUR", 6.60), //
@@ -2778,7 +2798,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-11-02T00:00"), hasShares(16.00), //
+                        hasDate("2022-11-02T00:00"), hasExDate("2022-10-05T00:00"), //
+                        hasShares(16.00), //
                         hasSource("Dividende15.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 11.56), hasGrossValue("EUR", 16.00 * 0.99975), //
@@ -2813,7 +2834,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-11-02T00:00"), hasShares(16.00), //
+                        hasDate("2022-11-02T00:00"), hasExDate("2022-10-05T00:00"), //
+                        hasShares(16.00), //
                         hasSource("Dividende15.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 11.56), hasGrossValue("EUR", 16.00 * 0.99975), //
@@ -2847,7 +2869,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-10-17T00:00"), hasShares(966.48), //
+                        hasDate("2022-10-17T00:00"), hasExDate("2022-10-17T00:00"), //
+                        hasShares(966.48), //
                         hasSource("Dividende16.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 1043.22), hasGrossValue("EUR", 1046.36), //
@@ -2881,7 +2904,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-10-19T00:00"), hasShares(750.00), //
+                        hasDate("2022-10-19T00:00"), hasExDate("2022-10-17T00:00"), //
+                        hasShares(750.00), //
                         hasSource("Dividende17.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 232.49), hasGrossValue("EUR", 233.63), //
@@ -2915,7 +2939,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-09-28T00:00"), hasShares(374.95), //
+                        hasDate("2022-09-28T00:00"), hasExDate("2022-09-15T00:00"), //
+                        hasShares(374.95), //
                         hasSource("Dividende18.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 116.93), hasGrossValue("EUR", 118.07), //
@@ -2949,7 +2974,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-02-27T00:00"), hasShares(20.00), //
+                        hasDate("2023-02-27T00:00"), hasExDate("2023-02-25T00:00"), //
+                        hasShares(20.00), //
                         hasSource("Dividende19.txt"), //
                         hasNote("2,5 % von 25.2.2022 bis 24.2.2023"), //
                         hasAmount("EUR", 48.86), hasGrossValue("EUR", 50.00), //
@@ -2983,7 +3009,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-11-13T00:00"), hasShares(31.807), //
+                        hasDate("2024-11-13T00:00"), hasExDate("2024-11-01T00:00"), //
+                        hasShares(31.807), //
                         hasSource("Dividende20.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 5.09), hasGrossValue("EUR", 8.59), //
@@ -3027,7 +3054,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-11-13T00:00"), hasShares(31.807), //
+                        hasDate("2024-11-13T00:00"), hasExDate("2024-11-01T00:00"), //
+                        hasShares(31.807), //
                         hasSource("Dividende20.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 5.09), hasGrossValue("EUR", 8.59), //
@@ -3069,7 +3097,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2019-02-02T00:00"), hasShares(120.00), //
+                        hasDate("2019-02-02T00:00"), hasExDate("2019-01-17T00:00"), //
+                        hasShares(120.00), //
                         hasSource("Dividende21.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 5.11), hasGrossValue("EUR", 7.07), //
@@ -3104,7 +3133,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2019-02-02T00:00"), hasShares(120.00), //
+                        hasDate("2019-02-02T00:00"), hasExDate("2019-01-17T00:00"), //
+                        hasShares(120.00), //
                         hasSource("Dividende21.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 5.11), hasGrossValue("EUR", 7.07), //
@@ -3138,7 +3168,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-02-03T00:00"), hasShares(120.00), //
+                        hasDate("2020-02-03T00:00"), hasExDate("2020-01-23T00:00"), //
+                        hasShares(120.00), //
                         hasSource("Dividende22.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 5.47), hasGrossValue("EUR", 7.58), //
@@ -3173,7 +3204,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-02-03T00:00"), hasShares(120.00), //
+                        hasDate("2020-02-03T00:00"), hasExDate("2020-01-23T00:00"), //
+                        hasShares(120.00), //
                         hasSource("Dividende22.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 5.47), hasGrossValue("EUR", 7.58), //
@@ -3207,7 +3239,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-05-06T00:00"), hasShares(100.00), //
+                        hasDate("2022-05-06T00:00"), hasExDate("2022-03-24T00:00"), //
+                        hasShares(100.00), //
                         hasSource("Dividende23.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 46.60), hasGrossValue("EUR", 64.51), //
@@ -3242,7 +3275,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-05-06T00:00"), hasShares(100.00), //
+                        hasDate("2022-05-06T00:00"), hasExDate("2022-03-24T00:00"), //
+                        hasShares(100.00), //
                         hasSource("Dividende23.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 46.60), hasGrossValue("EUR", 64.51), //
@@ -3276,7 +3310,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-02-03T00:00"), hasShares(100.00), //
+                        hasDate("2024-02-03T00:00"), hasExDate("2023-12-21T00:00"), //
+                        hasShares(100.00), //
                         hasSource("Dividende24.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 48.59), hasGrossValue("EUR", 67.27), //
@@ -3319,7 +3354,8 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-02-03T00:00"), hasShares(100.00), //
+                        hasDate("2024-02-03T00:00"), hasExDate("2023-12-21T00:00"), //
+                        hasShares(100.00), //
                         hasSource("Dividende24.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 48.59), hasGrossValue("EUR", 67.27), //
@@ -3332,6 +3368,77 @@ public class EasyBankAGPDFExtractorTest
                         hasNote(null), //
                         hasAmount("EUR", 18.50), hasGrossValue("EUR", 18.50), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende25()
+    {
+        var extractor = new EasyBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende25.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US02079K3059"), hasWkn(null), hasTicker(null), //
+                        hasName("Alphabet Inc. Reg. Shs Cap.Stk Cl. A DL-,001"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-03-18T00:00"), hasExDate("2026-03-09T00:00"), //
+                        hasShares(700.00), //
+                        hasSource("Dividende25.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 92.00), hasGrossValue("EUR", 127.34), //
+                        hasForexGrossValue("USD", 147.00), //
+                        hasTaxes("EUR", (15.92 + 19.10)), hasFees("EUR", 0.32))));
+    }
+
+    @Test
+    public void testDividende25WithSecurityInEUR()
+    {
+        var security = new Security("Alphabet Inc. Reg. Shs Cap.Stk Cl. A DL-,001", "EUR");
+        security.setIsin("US02079K3059");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new EasyBankAGPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende25.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-03-18T00:00"), hasExDate("2026-03-09T00:00"), //
+                        hasShares(700.00), //
+                        hasSource("Dividende25.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 92.00), hasGrossValue("EUR", 127.34), //
+                        hasTaxes("EUR", (15.92 + 19.10)), hasFees("EUR", 0.32))));
     }
 
     @Test
@@ -3362,7 +3469,8 @@ public class EasyBankAGPDFExtractorTest
         assertThat(results, hasItem(withFailureMessage( //
                         Messages.MsgErrorTransactionOrderCancellationUnsupported, //
                         dividend( //
-                                        hasDate("2021-01-04T00:00"), hasShares(180.00), //
+                                        hasDate("2021-01-04T00:00"), hasExDate("2020-12-22T00:00"), //
+                                        hasShares(180.00), //
                                         hasSource("DividendeStorno01.txt"), //
                                         hasNote(null), //
                                         hasAmount("EUR", 7.38), hasGrossValue("EUR", 10.22), //
@@ -3399,7 +3507,8 @@ public class EasyBankAGPDFExtractorTest
         assertThat(results, hasItem(withFailureMessage( //
                         Messages.MsgErrorTransactionOrderCancellationUnsupported, //
                         dividend( //
-                                        hasDate("2021-01-04T00:00"), hasShares(180.00), //
+                                        hasDate("2021-01-04T00:00"), hasExDate("2020-12-22T00:00"), //
+                                        hasShares(180.00), //
                                         hasSource("DividendeStorno01.txt"), //
                                         hasNote(null), //
                                         hasAmount("EUR", 7.38), hasGrossValue("EUR", 10.22), //
