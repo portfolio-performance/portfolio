@@ -5,6 +5,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -1147,6 +1148,40 @@ public class ErsteBankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf19()
+    {
+        var extractor = new ErsteBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf19.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("AT0000828637"), hasWkn(null), hasTicker(null), //
+                        hasName("CORE DYNAMIC T MITEIGENTUMSANTEILE - THESAURIEREND"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-04-13T13:43:45"), hasShares(12.00), //
+                        hasSource("Kauf19.txt"), //
+                        hasNote("Ref.-Nr.: 35082457"), //
+                        hasAmount("EUR", 2148.54), hasGrossValue("EUR", 2075.88), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 72.66))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
@@ -2008,7 +2043,7 @@ public class ErsteBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2015-09-15T00:00"), //
+                        hasDate("2015-09-15T00:00"), hasExDate("2015-08-27T00:00"), //
                         hasShares(35), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Ref.-Nr.: 12-123456789"), //
@@ -2044,7 +2079,7 @@ public class ErsteBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2015-09-15T00:00"), //
+                        hasDate("2015-09-15T00:00"), hasExDate("2015-08-27T00:00"), //
                         hasShares(35), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Ref.-Nr.: 12-123456789"), //
@@ -2086,7 +2121,7 @@ public class ErsteBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2010-04-29T00:00"), //
+                        hasDate("2010-04-29T00:00"), hasExDate("2010-04-29T00:00"), //
                         hasShares(35), //
                         hasSource("Dividende02.txt"), //
                         hasNote("Ref.-Nr.: 12-12345"), //
@@ -2121,7 +2156,7 @@ public class ErsteBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2010-01-29T00:00"), //
+                        hasDate("2010-01-29T00:00"), hasExDate("2010-01-26T00:00"), //
                         hasShares(90), //
                         hasSource("Dividende03.txt"), //
                         hasNote("Ref.-Nr.: 12-12345"), //
@@ -2156,7 +2191,7 @@ public class ErsteBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2010-08-13T00:00"), //
+                        hasDate("2010-08-13T00:00"), hasExDate("2010-07-28T00:00"), //
                         hasShares(60), //
                         hasSource("Dividende04.txt"), //
                         hasNote("Ref.-Nr.: 12-123456"), //
@@ -2192,7 +2227,7 @@ public class ErsteBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2010-08-13T00:00"), //
+                        hasDate("2010-08-13T00:00"), hasExDate("2010-07-28T00:00"), //
                         hasShares(60), //
                         hasSource("Dividende04.txt"), //
                         hasNote("Ref.-Nr.: 12-123456"), //
@@ -2234,7 +2269,7 @@ public class ErsteBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2010-11-26T00:00"), //
+                        hasDate("2010-11-26T00:00"), hasExDate("2010-11-26T00:00"), //
                         hasShares(35.275), //
                         hasSource("Dividende05.txt"), //
                         hasNote("Ref.-Nr.: 12-123456"), //
@@ -2269,7 +2304,7 @@ public class ErsteBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2011-06-15T00:00"), //
+                        hasDate("2011-06-15T00:00"), hasExDate("2011-06-15T00:00"), //
                         hasShares(20.286), //
                         hasSource("Dividende06.txt"), //
                         hasNote("Ref.-Nr.: 12-123456"), //
@@ -2304,7 +2339,7 @@ public class ErsteBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2012-11-23T00:00"), //
+                        hasDate("2012-11-23T00:00"), hasExDate("2012-11-23T00:00"), //
                         hasShares(77.638), //
                         hasSource("Dividende07.txt"), //
                         hasNote("Ref.-Nr.: 12-123456789"), //
@@ -2339,7 +2374,7 @@ public class ErsteBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2013-11-22T00:00"), //
+                        hasDate("2013-11-22T00:00"), hasExDate("2013-11-22T00:00"), //
                         hasShares(96.324), //
                         hasSource("Dividende08.txt"), //
                         hasNote("Ref.-Nr.: 12-123456789"), //
@@ -2374,7 +2409,7 @@ public class ErsteBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2016-06-16T00:00"), //
+                        hasDate("2016-06-16T00:00"), hasExDate("2016-06-15T00:00"), //
                         hasShares(62), //
                         hasSource("Dividende09.txt"), //
                         hasNote("Ausschüttung"), //
@@ -2409,7 +2444,7 @@ public class ErsteBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2016-03-16T00:00"), //
+                        hasDate("2016-03-16T00:00"), hasExDate("2016-02-25T00:00"), //
                         hasShares(35), //
                         hasSource("Dividende10.txt"), //
                         hasNote("Quartalsdividende"), //
@@ -2445,7 +2480,7 @@ public class ErsteBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2016-03-16T00:00"), //
+                        hasDate("2016-03-16T00:00"), hasExDate("2016-02-25T00:00"), //
                         hasShares(35), //
                         hasSource("Dividende10.txt"), //
                         hasNote("Quartalsdividende"), //
@@ -2487,7 +2522,7 @@ public class ErsteBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2016-05-04T00:00"), //
+                        hasDate("2016-05-04T00:00"), hasExDate("2016-04-20T00:00"), //
                         hasShares(75), //
                         hasSource("Dividende11.txt"), //
                         hasNote(null), //
@@ -2522,7 +2557,7 @@ public class ErsteBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2016-05-06T00:00"), //
+                        hasDate("2016-05-06T00:00"), hasExDate("2016-05-05T00:00"), //
                         hasShares(60), //
                         hasSource("Dividende12.txt"), //
                         hasNote(null), //
@@ -2557,7 +2592,7 @@ public class ErsteBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2017-06-08T00:00"), //
+                        hasDate("2017-06-08T00:00"), hasExDate("2017-06-02T00:00"), //
                         hasShares(1270.4), //
                         hasSource("Dividende13.txt"), //
                         hasNote(null), //
@@ -2592,7 +2627,7 @@ public class ErsteBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-08-01T00:00"), //
+                        hasDate("2022-08-01T00:00"), hasExDate("2022-07-28T00:00"), //
                         hasShares(25.621), //
                         hasSource("Dividende14.txt"), //
                         hasNote(null), //
@@ -2627,7 +2662,7 @@ public class ErsteBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-05-05T00:00"), //
+                        hasDate("2022-05-05T00:00"), hasExDate("2022-05-02T00:00"), //
                         hasShares(60), //
                         hasSource("Dividende15.txt"), //
                         hasNote(null), //
@@ -2662,7 +2697,7 @@ public class ErsteBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2009-04-23T00:00"), //
+                        hasDate("2009-04-23T00:00"), hasExDate("2009-04-23T00:00"), //
                         hasShares(35), //
                         hasSource("Dividende16.txt"), //
                         hasNote("Ref.-Nr.: 12-12345"), //
@@ -2697,7 +2732,7 @@ public class ErsteBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2011-08-19T00:00"), //
+                        hasDate("2011-08-19T00:00"), hasExDate("2011-05-04T00:00"), //
                         hasShares(50), //
                         hasSource("Dividende17.txt"), //
                         hasNote("Ref.-Nr.: 12-123456"), //
@@ -2733,7 +2768,7 @@ public class ErsteBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2011-08-19T00:00"), //
+                        hasDate("2011-08-19T00:00"), hasExDate("2011-05-04T00:00"), //
                         hasShares(50), //
                         hasSource("Dividende17.txt"), //
                         hasNote("Ref.-Nr.: 12-123456"), //
@@ -2775,7 +2810,7 @@ public class ErsteBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2012-08-24T00:00"), //
+                        hasDate("2012-08-24T00:00"), hasExDate("2012-05-09T00:00"), //
                         hasShares(50), //
                         hasSource("Dividende18.txt"), //
                         hasNote("Ref.-Nr.: 12-123456789"), //
@@ -2811,7 +2846,7 @@ public class ErsteBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2012-08-24T00:00"), //
+                        hasDate("2012-08-24T00:00"), hasExDate("2012-05-09T00:00"), //
                         hasShares(50), //
                         hasSource("Dividende18.txt"), //
                         hasNote("Ref.-Nr.: 12-123456789"), //
@@ -2853,7 +2888,7 @@ public class ErsteBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2012-05-23T00:00"), //
+                        hasDate("2012-05-23T00:00"), hasExDate("2012-05-18T00:00"), //
                         hasShares(33), //
                         hasSource("Dividende19.txt"), //
                         hasNote("Ref.-Nr.: 12-123456789"), //
@@ -2888,7 +2923,7 @@ public class ErsteBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2010-06-15T00:00"), //
+                        hasDate("2010-06-15T00:00"), hasExDate("2010-06-15T00:00"), //
                         hasShares(7.054), //
                         hasSource("Dividende20.txt"), //
                         hasNote("Ref.-Nr.: 12-12345"), //
@@ -2923,7 +2958,7 @@ public class ErsteBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2009-08-20T00:00"), //
+                        hasDate("2009-08-20T00:00"), hasExDate("2009-08-20T00:00"), //
                         hasShares(90.000), //
                         hasSource("Dividende21.txt"), //
                         hasNote("Ref.-Nr.: 12-12345"), //
@@ -2958,7 +2993,7 @@ public class ErsteBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2011-10-05T00:00"), //
+                        hasDate("2011-10-05T00:00"), hasExDate("2011-09-30T00:00"), //
                         hasShares(1750.000), //
                         hasSource("Dividende22.txt"), //
                         hasNote("Ref.-Nr.: 12-123456"), //
@@ -2993,12 +3028,159 @@ public class ErsteBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2012-10-15T00:00"), //
+                        hasDate("2012-10-15T00:00"), hasExDate("2012-10-08T00:00"), //
                         hasShares(1750.000), //
                         hasSource("Dividende23.txt"), //
                         hasNote("Ref.-Nr.: 12-123456789"), //
                         hasAmount("EUR", 262.50), hasGrossValue("EUR", 262.50), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende24()
+    {
+        var extractor = new ErsteBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende24.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US02079K3059"), hasWkn(null), hasTicker(null), //
+                        hasName("ALPHABET INC. REG. SHS CL. A DL-,001"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-06-18T00:00"), hasExDate("2024-06-10T00:00"), //
+                        hasShares(700), //
+                        hasSource("Dividende24.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 88.12), hasGrossValue("EUR", 130.69), //
+                        hasForexGrossValue("USD", 140.00), //
+                        hasTaxes("EUR", 19.60 + 16.34), hasFees("EUR", 6.63))));
+    }
+
+    @Test
+    public void testDividende24WithSecurityInEUR()
+    {
+        var security = new Security("ALPHABET INC. REG. SHS CL. A DL-,001", "EUR");
+        security.setIsin("US02079K3059");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new ErsteBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende24.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-06-18T00:00"), hasExDate("2024-06-10T00:00"), //
+                        hasShares(700), //
+                        hasSource("Dividende24.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 88.12), hasGrossValue("EUR", 130.69), //
+                        hasTaxes("EUR", 19.60 + 16.34), hasFees("EUR", 6.63), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testDividende25()
+    {
+        var extractor = new ErsteBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende25.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0008474214"), hasWkn(null), hasTicker(null), //
+                        hasName("DWS GLOBAL COMMUNICATIONS INHABER-ANTEILE ND"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2024-12-09T00:00"), hasShares(5), //
+                        hasSource("Dividende25.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 16.38), hasGrossValue("EUR", 16.38), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende26()
+    {
+        var extractor = new ErsteBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende26.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("AT0000A08SH5"), hasWkn(null), hasTicker(null), //
+                        hasName("ERSTEIMMOFDEURRT MITEIGENTUMSANTEILE - THESAURIEREND"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2021-07-15T00:00"), hasExDate("2021-07-13T00:00"), //
+                        hasShares(12), //
+                        hasSource("Dividende26.txt"), //
+                        hasNote("Ausschüttung"), //
+                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 5.32), //
+                        hasTaxes("EUR", 5.32), hasFees("EUR", 0.00))));
     }
 
     @Test
