@@ -9,7 +9,9 @@ A hand-off-ready spec for a CLI that lets AI agents (GitHub Copilot, Claude Code
 ## Notes
 
 - Read `GLOSSARY.md` first; "portfolio" means the depot entity, the data file is the **client file**.
-- Audience: own use + community; upstream acceptance is a factor, not a driver.
+- Audience: personal use only. Upstream acceptance is not a goal; do not wait on PR #5870. If upstream ships a full REST API with writes, the project is archived; if only #5870 merges, continue by adding endpoints for personal use (contributing them is allowed but not a goal).
+- Vocabulary on the external surface follows #5870: *instrument*, *investment account*, *cash account* (see `GLOSSARY.md`).
+- Reads work headlessly on a closed client file; live reads from the running app are an optional later add-on.
 - Required clients: Copilot (VS Code) and Claude Code via shell. MCP is nice-to-have.
 - Writes assume the desktop app has the client file closed; reads may happen while it is open.
 - Writes are domain operations only (no free-form XML editing), with automatic backup and dry-run.

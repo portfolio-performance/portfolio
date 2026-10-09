@@ -19,3 +19,20 @@ _Avoid_: depot, securities account; never use for the whole client file
 **Account**:
 A cash account in one currency, recording deposits, removals, dividends, interest, fees and taxes.
 _Avoid_: cash account, bank account
+
+**Security**:
+A tradable instrument (stock, fund, bond, crypto, ...) that portfolios hold and transactions refer to.
+_Avoid_: stock, asset
+
+## AI/CLI vocabulary
+
+Terms used on the external surface for AI agents, aligned with the upstream REST API proposal (PR #5870). They name the same things as the entries above.
+
+**Instrument**:
+The external name for a **Security**.
+
+**Investment account**:
+The external name for a **Portfolio**.
+
+**Cash account**:
+The external name for an **Account**.
