@@ -1,0 +1,45 @@
+```
+PDFBox Version: 3.0.8
+Portfolio Performance Version: 0.88.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Postbank
+Beratungsteam
+Vorname Nachname 24/7-Kundenservice (0228) 5500-5500
+  
+Adressstr. 1
+01234 Stadt
+7. Oktober 2026
+Abrechnung: Zeichnung von Wertpapieren 
+Depotinhaber: Vorname Nachname
+Filialnummer Depotnummer Wertpapierbezeichnung Seite
+123 9876543 05 3,1% DT.BANK FESTZINSANL.V.26 9.10. 28 1/1
+WKN DB9WSZ Nominal EUR 3.000,00
+ISIN DE000DB9WSZ7 Kurs 100,50 %
+Verwahrart Girosammeldepot
+Geschäft Festpreisgeschäft
+Belegnummer 7654421234 / 8989898 Schlusstag 06.10.2026
+Ihre Referenz IPODB9WSZ
+Auftragsart Festpreisgeschäft
+Abrechnung Währung Betrag
+Kurswert EUR 3.015,00
+Belastung
+Buchung ,00
+ auf Kontonummer 9876543 00 mit Wertstellung 09.10.2026 EUR 3.015
+Das abgerechnete Geschäft haben entweder Sie nach einem mit Ihnen geführten Beratungsgespräch oder Ihr 
+Bevollmächtigter nach einem mit ihm geführten Beratungsgespräch getätigt. Zu dem Gespräch wurde eine 
+Geeignetheitserklärung erstellt, welche dem Gesprächsteilnehmer zur Verfügung gestellt wurde.
+Die Wertpapiere haben wir entsprechend der Abrechnung gebucht. Unser Geschäftsverkehr mit Ihnen wird durch unsere Allgemeinen Geschäftsbedingungen 
+und die Sonderbedingungen für Wertpapiergeschäfte geregelt. Bitte überprüfen Sie diese Abrechnung schnellstmöglich und richten Sie etwaige Einwendungen 
+in den Geschäftsräumen der Bank oder schriftlich an Deutsche Bank AG, QM - Support, 04082 Leipzig. Andernfalls gilt diese Abrechnung als genehmigt. 
+Die unter § 4 Nr. 8 UStG im Inland fallenden Bank- und Finanzdienstleistungen sind von der Umsatzsteuer befreit, sofern Umsatzsteuer nicht gesondert 
+ausgewiesen ist. Soweit der Leistungsempfänger umsatzsteuerlicher Unternehmer ist und seinen Sitz in einem anderen EU-Mitgliedstaat hat und die Bank 
+und Finanzdienstleistungen nach dortigem Recht umsatzsteuerpflichtig sind, gilt die Steuerschuldnerschaft des Leistungsempfängers. Umsatzsteuer ID 
+Nr.: Deutsche Bank AG, 60262 Frankfurt DE114103379
+Postbank - eine Niederlassung der Deutsche Bank AG - Vorsitzender des Aufsichtsrats: Alexander R. Wynaendts - Vorstand: Christian Sewing (Vorsitzender),
+Fabrizio Campelli, Raja Akram, Marcus Chromik, Marie-Jeanne Deverdun, Stefan Hoops, Alexander von zur Mühlen, Laura Padovani, Claudio de Sanctis, Rebecca Short 
+Deutsche Bank AG mit Sitz in Frankfurt am Main, Amtsgericht Frankfurt am Main, HRB Nr. 30 000, Umsatzsteuer-Id.-Nr. DE114103379; www.postbank.de
+TR00000001 20261007 723_000_
+  
+
+```
