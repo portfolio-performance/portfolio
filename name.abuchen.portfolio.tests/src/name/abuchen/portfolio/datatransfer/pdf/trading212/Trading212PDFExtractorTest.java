@@ -5,6 +5,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
@@ -44,6 +45,154 @@ import name.abuchen.portfolio.model.Client;
 @SuppressWarnings("nls")
 public class Trading212PDFExtractorTest
 {
+    @Test
+    public void testWertpapierKauf01()
+    {
+        var extractor = new Trading212PDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("KYG875721634"), hasWkn(null), hasTicker("NNND"), //
+                        hasName("Tencent"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-04-15T06:07:41"), hasShares(0.92438528), //
+                        hasSource("Kauf01.txt"), //
+                        hasNote("Auftrags-ID-Nr.: 76880828286"), //
+                        hasAmount("EUR", 50.00), hasGrossValue("EUR", 50.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierKauf02()
+    {
+        var extractor = new Trading212PDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US6541061031"), hasWkn(null), hasTicker("NKE"), //
+                        hasName("Nike"), //
+                        hasCurrencyCode("USD"))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-10-05T13:30:01"), hasShares(0.712562), //
+                        hasSource("Kauf02.txt"), //
+                        hasNote("Auftrags-ID-Nr.: 58300887379"), //
+                        hasAmount("EUR", 21.55), hasGrossValue("EUR", 21.52), //
+                        hasForexGrossValue("USD", 24.11), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.03))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf01()
+    {
+        var extractor = new Trading212PDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US6934892059"), hasWkn(null), hasTicker("VEEA"), //
+                        hasName("Veea"), //
+                        hasCurrencyCode("USD"))));
+
+        // check sale transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-10-05T16:41:38"), hasShares(20.00), //
+                        hasSource("Verkauf01.txt"), //
+                        hasNote("Auftrags-ID-Nr.: 58419963102"), //
+                        hasAmount("EUR", 88.73), hasGrossValue("EUR", 89.07), //
+                        hasForexGrossValue("USD", 99.80), //
+                        hasTaxes("EUR", 0.21), hasFees("EUR", 0.13))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf02()
+    {
+        var extractor = new Trading212PDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US70465T1079"), hasWkn(null), hasTicker("PDSB"), //
+                        hasName("PDS Biotechnology"), //
+                        hasCurrencyCode("USD"))));
+
+        // check sale transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-10-05T17:02:31"), hasShares(100.00), //
+                        hasSource("Verkauf02.txt"), //
+                        hasNote("Auftrags-ID-Nr.: 58419967594"), //
+                        hasAmount("EUR", 112.30), hasGrossValue("EUR", 112.47), //
+                        hasForexGrossValue("USD", 126.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.17))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2026-10-05T17:02:31"), hasShares(0.00), //
+                        hasSource("Verkauf02.txt"), //
+                        hasNote("Auftrags-ID-Nr.: 58419967594"), //
+                        hasAmount("EUR", 0.09), hasGrossValue("EUR", 0.09), //
+                        hasForexGrossValue("USD", 0.10), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
     @Test
     public void testAktivitaetsauszug01()
     {
