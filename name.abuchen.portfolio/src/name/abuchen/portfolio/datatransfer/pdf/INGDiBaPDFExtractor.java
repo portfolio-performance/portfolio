@@ -542,7 +542,14 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
                         .conclude(ExtractorUtils.fixGrossValueA())
 
-                        .wrap(TransactionItem::new);
+                        .wrap(t -> {
+                            // a taxes transaction books the taxes as its
+                            // amount and cannot carry tax units
+                            if (t.getType() == AccountTransaction.Type.TAXES)
+                                t.removeUnits(Unit.Type.TAX);
+
+                            return new TransactionItem(t);
+                        });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);

@@ -2951,22 +2951,13 @@ public class INGDiBaPDFExtractorTest
                         hasName("iShs VII-Core MSCI EMU UCI.ETF Reg. Shares EUR (Acc) o.N."), //
                         hasCurrencyCode("EUR"))));
 
-        // check tax transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-02T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(304)));
-        assertThat(transaction.getSource(), is("Dividende14.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(20.03))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(17.65 + 1.41 + 0.97))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2020-01-02T00:00"), hasShares(304), //
+                        hasSource("Dividende14.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 20.03), hasGrossValue("EUR", 20.03), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
