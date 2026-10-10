@@ -27,6 +27,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("European Bank for Financial Services AG");
         addBankIdentifier("FNZ Bank AG");
         addBankIdentifier("FNZ Bank SE");
+        addBankIdentifier("ebase GmbH");
 
         addDividendeTransaction();
         addDepotStatement_BuySellTransaction();
@@ -36,6 +37,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
         addDepotStatement_FeesWithSecurityTransaction();
         addDepotStatement_FeesWithDeliveryInOutBoundTransaction();
         addAccountStatementTransaction();
+        addNonImportableTransaction();
     }
 
     @Override
@@ -85,6 +87,13 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                         .section("date") //
                         .match("^Den Betrag buchen wir mit Wertstellung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Ex-Tag 24.06.2021 Art der Dividende Schlussdividende
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Ex\\-Tag (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
 
                         // @formatter:off
                         // Ausmachender Betrag 84,05+ EUR
@@ -457,13 +466,14 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
                             if (type.getCurrentContext().containsKey(SKIP_TRANSACTION))
                             {
-                                // @formatter:off
+                                var skipped = new SkippedItem(item, type.getCurrentContext().get(SKIP_TRANSACTION));
+
                                 // If we have multiple entries in the document,
-                                // then the "skipTransaction" flag must be removed.
-                                // @formatter:on
+                                // then the SKIP_TRANSACTION flag must be
+                                // removed.
                                 type.getCurrentContext().remove(SKIP_TRANSACTION);
 
-                                return new SkippedItem(item, type.getCurrentContext().get(SKIP_TRANSACTION));
+                                return skipped;
                             }
 
                             return item;
@@ -1115,6 +1125,66 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
+    }
+
+    private void addNonImportableTransaction()
+    {
+        // The transaction overview ("Umsätze im Zeitraum") from the online
+        // depot is only a list of bookings without taxes and fees. It cannot be
+        // imported, the settlement documents must be imported instead.
+
+        final var type = new DocumentType("Ums.tze im Zeitraum", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // Umsätze im Zeitraum: 01.01.2020 -
+                                        // 15.01.2023 15.01.2023 09:30 Uhr
+                                        // @formatter:on
+                                        .section("periodFrom", "periodTo", "date", "time") //
+                                        .match("^Ums.tze im Zeitraum: (?<periodFrom>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\-[\\s]*$") //
+                                        .match("^(?<periodTo>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}) Uhr$") //
+                                        .assign((ctx, v) -> {
+                                            ctx.put("periodFrom", v.get("periodFrom"));
+                                            ctx.put("periodTo", v.get("periodTo"));
+                                            ctx.put("date", v.get("date"));
+                                            ctx.put("time", v.get("time"));
+                                        })
+
+                                        // @formatter:off
+                                        // Bestand: 0,00 EUR
+                                        // @formatter:on
+                                        .section("currency") //
+                                        .match("^Bestand: [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        // The header is repeated on every page, therefore the block starts
+        // at the page footer of the first page to create only one item.
+        var firstRelevantLine = new Block("^Seite 1 von [\\d]+$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
+
+                        // @formatter:off
+                        // Seite 1 von 6
+                        // @formatter:on
+                        .section() //
+                        .documentContext("periodFrom", "periodTo", "date", "time", "currency") //
+                        .match("^Seite 1 von [\\d]+$") //
+                        .assign((t, v) -> {
+                            v.markAsFailure(Messages.MsgErrorTransactionAlternativeDocumentRequired);
+
+                            t.setDateTime(asDate(v.get("date"), v.get("time")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(0L);
+                            t.setNote("Zeitraum: " + v.get("periodFrom") + " - " + v.get("periodTo"));
+                        })
+
+                        .wrap(TransactionItem::new);
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
