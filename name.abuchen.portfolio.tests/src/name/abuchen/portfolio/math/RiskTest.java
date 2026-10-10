@@ -122,6 +122,22 @@ public class RiskTest
     }
 
     /**
+     * Tests the annualized volatility calculation with a set of returns.
+     * Scenario: The same return values as {@link #testVolatility()} are used.
+     * Expects: The annualized standard deviation equals the daily standard
+     * deviation scaled by the square root of 252 trading days, i.e. it is
+     * independent of the number of observations in the period.
+     */
+    @Test
+    public void testAnnualizedVolatility()
+    {
+        double[] delta = { 0.005, -1 / 300d, -0.005, 0.01, 0.01, -0.005 };
+        Volatility volatility = new Volatility(delta, index -> true);
+
+        assertThat(volatility.getAnnualizedStandardDeviation(), closeTo(0.114946904780, TOLERANCE));
+    }
+
+    /**
      * Tests the Volatility calculation while skipping the first return value.
      * Scenario: The first return value is skipped in the volatility calculation.
      * Expects: Volatility to be consistent with calculations that include the first value, within specified tolerance.
