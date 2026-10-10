@@ -20,6 +20,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interestCharge;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundDelivery;
@@ -1942,6 +1943,41 @@ public class BaaderBankPDFExtractorTest
                         hasNote("Vorgangs-Nr.: 566532696"), //
                         hasAmount("EUR", 5339.70), hasGrossValue("EUR", 5339.70), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.50 + 2.65 - 3.15))));
+    }
+
+    @Test
+    public void testWertpapierKauf40()
+    {
+        var extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf40.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0290358497"), hasWkn("DBX0AN"), hasTicker(null), //
+                        hasName("Xtrackers II EUR Over.Rate Sw. Inhaber-Anteile 1C o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check delivery inbound (Einlieferung) transaction
+        // Purchase without value (bonus shares for new customers)
+        assertThat(results, hasItem(inboundDelivery( //
+                        hasDate("2025-09-10T09:36:22"), hasShares(0.693), //
+                        hasSource("Kauf40.txt"), //
+                        hasNote("Vorgangs-Nr.: 265866388 | Neukundenbonus"), //
+                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test

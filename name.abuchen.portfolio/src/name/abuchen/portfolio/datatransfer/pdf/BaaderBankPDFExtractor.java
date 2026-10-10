@@ -332,6 +332,16 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        // Total Valuta: 12.09.2025 EUR 0,00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^Total Valuta: [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
                                                         }))
 
                         .optionalOneOf( //
@@ -407,9 +417,37 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                             t.setNote(concatenate(t.getNote(), v.get("note3"), " "));
                         })
 
+                        // @formatter:off
+                        // NEUKUNDENBONUS
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^(?<note>NEUKUNDENBONUS)$") //
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), "Neukundenbonus", " | ")))
+
                         .conclude(ExtractorUtils.fixGrossValueBuySell())
 
-                        .wrap(BuySellEntryItem::new);
+                        .wrap(t -> {
+                            var portfolioTransaction = t.getPortfolioTransaction();
+
+                            // A purchase without any value (e.g. bonus shares
+                            // for new customers) is booked as delivery
+                            // inbound, because a purchase must have a value.
+                            if (portfolioTransaction.getType() == PortfolioTransaction.Type.BUY
+                                            && portfolioTransaction.getAmount() == 0L)
+                            {
+                                var delivery = new PortfolioTransaction(PortfolioTransaction.Type.DELIVERY_INBOUND);
+                                delivery.setDateTime(portfolioTransaction.getDateTime());
+                                delivery.setSecurity(portfolioTransaction.getSecurity());
+                                delivery.setShares(portfolioTransaction.getShares());
+                                delivery.setCurrencyCode(portfolioTransaction.getCurrencyCode());
+                                delivery.setAmount(portfolioTransaction.getAmount());
+                                delivery.setNote(portfolioTransaction.getNote());
+
+                                return new TransactionItem(delivery);
+                            }
+
+                            return new BuySellEntryItem(t);
+                        });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
