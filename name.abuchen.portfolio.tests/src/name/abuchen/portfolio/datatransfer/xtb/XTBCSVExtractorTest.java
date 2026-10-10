@@ -4,7 +4,9 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSecurity;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
@@ -17,6 +19,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAc
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 
@@ -61,7 +64,7 @@ public class XTBCSVExtractorTest
     private void assertCashOperations(List<Item> items)
     {
         assertThat(countBuySell(items), is(4L));
-        assertThat(countAccountTransactions(items), is(8L));
+        assertThat(countAccountTransactions(items), is(12L));
         assertThat(items, hasItem(deposit(hasAmount("EUR", 100.00))));
         assertThat(items, hasItem(purchase(hasShares(2.00), hasAmount("EUR", 50.25))));
         assertThat(items, hasItem(purchase(hasShares(0.02), hasAmount("EUR", 0.56))));
@@ -75,6 +78,15 @@ public class XTBCSVExtractorTest
         assertThat(items, hasItem(interest(hasAmount("EUR", 0.03))));
         assertThat(items, hasItem(interest(hasAmount("EUR", 0.06), hasGrossValue("EUR", 0.07),
                         hasTaxes("EUR", 0.01))));
+        assertThat(items, hasItem(interestCharge(hasAmount("EUR", 2.50), not(hasSecurity()),
+                        hasNote("ETHEREUM: Profit of position #102 (XTB ID: 18)"))));
+        assertThat(items, hasItem(interestCharge(hasAmount("EUR", 0.20), not(hasSecurity()),
+                        hasNote("ETHEREUM: Swap of position #102 (XTB ID: 19)"))));
+        // the CFD shares the ticker with the real instrument, but its result
+        // must not be booked as income of that security
+        assertThat(items, hasItem(interest(hasAmount("EUR", 1.25), not(hasSecurity()),
+                        hasNote("Example ETF: Profit of position #103 (XTB ID: 20)"))));
+        assertThat(items, hasItem(dividend(hasAmount("EUR", 0.96), hasSecurity(hasName("Example ETF")))));
         new AssertImportActions().check(items, "EUR");
     }
 
@@ -179,7 +191,7 @@ public class XTBCSVExtractorTest
         }, errors);
 
         assertThat(errors, empty());
-        assertThat(items.size(), is(12));
+        assertThat(items.size(), is(16));
         assertThat(items, hasItem(deposit(hasNote("Vklad odměny za pozvání přátel (XTB ID: 1)"))));
     }
 
