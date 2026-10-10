@@ -62,7 +62,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
     {
         final var type = new DocumentType("(Wertpapier )?Abrechnung(:)? "//
                         + "(Kauf" //
-                        + "|Kauf von Wertpapieren" //
+                        + "|(Kauf|Zeichnung) von Wertpapieren" //
                         + "|Verkauf" //
                         + "|Verkauf\\-Festpreisgesch.ft" //
                         + "|Ausgabe Investmentfonds" //
@@ -114,6 +114,17 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^[\\d]{3} [\\d]+ [\\d]+ (?<name>.*) [\\d]\\/[\\d]$") //
                                                         .match("^WKN (?<wkn>[A-Z0-9]{6}).*$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Kurs (?<currency>[A-Z]{3}) [\\.,\\d]+$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))), //
+                                        // @formatter:off
+                                        // 123 9876543 05 3,1% DT.BANK FESTZINSANL.V.26 9.10. 28 1/1
+                                        // WKN DB9WSZ Nominal EUR 3.000,00
+                                        // ISIN DE000DB9WSZ7 Kurs 100,50 %
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "wkn", "isin", "currency") //
+                                                        .match("^[\\d]{3} [\\d]+ [\\d]+ (?<name>.*) [\\d]\\/[\\d]$") //
+                                                        .match("^WKN (?<wkn>[A-Z0-9]{6})\\s+Nominal\\s+(?<currency>[A-Z]{3})\\s+[.,\\d]+.*$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Kurs [\\.,\\d]+\\s*%$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         .oneOf( //
@@ -127,8 +138,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                                             // Percentage quotation, workaround for bonds
                                                             if (v.get("notation") != null && !"Stück".equalsIgnoreCase(v.get("notation")))
                                                             {
-                                                                var shares = asBigDecimal(v.get("shares"));
-                                                                t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                                                t.setShares(asBondNominal(v.get("shares")));
                                                             }
                                                             else
                                                             {
@@ -141,7 +151,15 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^WKN [A-Z0-9]{6} .* ST (?<shares>[\\.,\\d]+)$") //
-                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+
+                                        // @formatter:off
+                                        // WKN DB9WSZ Nominal EUR 3.000,00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^WKN [A-Z0-9]{6} Nominal [A-Z]{3} (?<shares>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> t.setShares(asBondNominal(v.get("shares")))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -202,6 +220,18 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Buchung auf Kontonummer [\\s\\d]+ mit Wertstellung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }), //
+                                        // @formatter:off
+                                        // Buchung ,00
+                                        // auf Kontonummer 9876543 00 mit Wertstellung 09.10.2026 EUR 3.015
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount1", "amount2") //
+                                                        .match("^Buchung (?<amount2>[.,\\d]+).*$") //
+                                                        .match("^.*auf Kontonummer [\\s\\d]+ mit Wertstellung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[A-Z]{3}) (?<amount1>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount1") + v.get("amount2")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                         }))
 
