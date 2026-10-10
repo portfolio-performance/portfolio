@@ -2,6 +2,8 @@ package name.abuchen.portfolio.ui.views;
 
 import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -55,6 +57,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.Attributable;
@@ -283,6 +286,33 @@ public class StatementOfAssetsViewer
 
             elements.stream().filter(Element::isSecurity)
                             .forEach(e -> e.setPerformance(currencyCode, interval, map.get(e.getSecurity())));
+
+            var accountConverter = converter.with(currencyCode);
+            Map<Account, Long> interestByAccount = new HashMap<>();
+            Map<Account, LazyValue<PerformanceIndex>> indexesByAccount = new HashMap<>();
+            Map<Account, Long> sharesByAccount = elements.stream().filter(Element::isAccount)
+                            .collect(Collectors.groupingBy(Element::getAccount,
+                                            Collectors.summingLong(e -> e.getPosition().getPosition().getShares())));
+
+            elements.stream().filter(Element::isAccount).forEach(e -> {
+                var account = e.getAccount();
+                long interest = interestByAccount.computeIfAbsent(account,
+                                a -> calculateAccountInterest(this, a, currencyCode, interval));
+                // Include unassigned positions and match SecurityPosition.split rounding.
+                long allocatedInterest = BigDecimal.valueOf(interest)
+                                .multiply(BigDecimal.valueOf(e.getPosition().getPosition().getShares()))
+                                .divide(BigDecimal.valueOf(sharesByAccount.get(account)), 0, RoundingMode.HALF_DOWN)
+                                .longValueExact();
+                var interestValue = Money.of(currencyCode, allocatedInterest);
+                e.accountInterest.put(key, interestValue);
+                var balance = accountConverter.convert(getDate(), e.getPosition().getPosition().calculateValue());
+                e.accountPurchaseValue.put(key, balance.subtract(interestValue));
+
+                var index = indexesByAccount.computeIfAbsent(account,
+                                a -> new LazyValue<>(() -> PerformanceIndex.forAccount(filteredClient,
+                                                accountConverter, a, interval, new ArrayList<>())));
+                e.setPerformanceForCategoryTotals(currencyCode, interval, index);
+            });
 
             // create (lazily!) the performance index for categories
 
@@ -627,9 +657,13 @@ public class StatementOfAssetsViewer
         column.setGroupLabel(Messages.ColumnPurchaseValue);
         column.setHeading(Messages.LabelTaxesAndFeesIncluded);
         column.setMenuLabel(Messages.ColumnPurchaseValue_MenuLabel);
-        column.setDescription(Messages.ColumnPurchaseValue_Description);
+        column.setDescription(Messages.ColumnPurchaseValue_Description + TextUtil.PARAGRAPH_BREAK
+                        + Messages.ColumnAccountPurchaseValue_Description);
         labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
-                        record -> record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED), withSum()), false);
+                        record -> record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED), withSum(),
+                        (element, currencyCode, interval) -> accountPurchaseValue(model, element, currencyCode, interval),
+                        null),
+                        false);
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
@@ -639,9 +673,13 @@ public class StatementOfAssetsViewer
         column = new Column("pvmvavg", Messages.ColumnPurchaseValueMovingAverage, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.ColumnPurchaseValue);
         column.setMenuLabel(Messages.ColumnPurchaseValueMovingAverage_MenuLabel);
-        column.setDescription(Messages.ColumnPurchaseValueMovingAverage_Description);
+        column.setDescription(Messages.ColumnPurchaseValueMovingAverage_Description + TextUtil.PARAGRAPH_BREAK
+                        + Messages.ColumnAccountPurchaseValue_Description);
         labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
-                        record -> record.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED), withSum()), false);
+                        record -> record.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED), withSum(),
+                        (element, currencyCode, interval) -> accountPurchaseValue(model, element, currencyCode, interval),
+                        null),
+                        false);
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
@@ -652,9 +690,12 @@ public class StatementOfAssetsViewer
         column.setMenuLabel(MessageFormat.format(Messages.LabelWithQualifier, Messages.ColumnProfitLoss,
                         CostMethod.FIFO.getLabel()));
         column.setDescription(Messages.ColumnProfitLossFIFO_Description + TextUtil.PARAGRAPH_BREAK
-                        + Messages.ColumnProfitLossGeneric_Description);
+                        + Messages.ColumnProfitLossGeneric_Description + TextUtil.PARAGRAPH_BREAK
+                        + Messages.ColumnAccountInterest_Description);
         labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
-                        record -> record.getCapitalGainsOnHoldings(CostMethod.FIFO), withSum()), true);
+                        record -> record.getCapitalGainsOnHoldings(CostMethod.FIFO), withSum(),
+                        (element, currencyCode, interval) -> accountInterest(model, element, currencyCode, interval),
+                        null), true);
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
@@ -668,9 +709,12 @@ public class StatementOfAssetsViewer
         column.setMenuLabel(MessageFormat.format(Messages.LabelWithQualifier, Messages.ColumnProfitLoss,
                         CostMethod.MOVING_AVERAGE.getLabel()));
         column.setDescription(Messages.ColumnProfitLossMovingAverage_Description + TextUtil.PARAGRAPH_BREAK
-                        + Messages.ColumnProfitLossGeneric_Description);
+                        + Messages.ColumnProfitLossGeneric_Description + TextUtil.PARAGRAPH_BREAK
+                        + Messages.ColumnAccountInterest_Description);
         labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
-                        record -> record.getCapitalGainsOnHoldings(CostMethod.MOVING_AVERAGE), withSum()), true);
+                        record -> record.getCapitalGainsOnHoldings(CostMethod.MOVING_AVERAGE), withSum(),
+                        (element, currencyCode, interval) -> accountInterest(model, element, currencyCode, interval),
+                        null), true);
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
@@ -1185,12 +1229,16 @@ public class StatementOfAssetsViewer
 
         column = new Column("purchaseValueBaseCurrency", //$NON-NLS-1$
                         Messages.ColumnPurchaseValue + Messages.BaseCurrencyCue, SWT.RIGHT, 80);
-        column.setDescription(Messages.ColumnPurchaseValueBaseCurrency);
+        column.setDescription(Messages.ColumnPurchaseValueBaseCurrency + TextUtil.PARAGRAPH_BREAK
+                        + Messages.ColumnAccountPurchaseValue_Description);
         column.setGroupLabel(Messages.ColumnForeignCurrencies);
         labelProvider = new ReportingPeriodLabelProvider(
                         new ElementValueProvider(record -> record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
+                                        null, (element, currencyCode, interval) -> accountPurchaseValue(model, element,
+                                                        currencyCode, interval),
                                         null),
                         e -> e.isSecurity() ? e.getSecurity().getCurrencyCode()
+                                        : e.isAccount() ? e.getAccount().getCurrencyCode()
                                         : model.getCurrencyConverter().getTermCurrency(),
                         false);
         column.setLabelProvider(labelProvider);
@@ -1214,11 +1262,15 @@ public class StatementOfAssetsViewer
 
         column = new Column("profitLossBaseCurrency", //$NON-NLS-1$
                         Messages.ColumnProfitLoss + Messages.BaseCurrencyCue, SWT.RIGHT, 80);
-        column.setDescription(Messages.ColumnProfitLossBaseCurrency);
+        column.setDescription(Messages.ColumnProfitLossBaseCurrency + TextUtil.PARAGRAPH_BREAK
+                        + Messages.ColumnAccountInterest_Description);
         column.setGroupLabel(Messages.ColumnForeignCurrencies);
         labelProvider = new ReportingPeriodLabelProvider(
-                        new ElementValueProvider(record -> record.getCapitalGainsOnHoldings(CostMethod.FIFO), null),
+                        new ElementValueProvider(record -> record.getCapitalGainsOnHoldings(CostMethod.FIFO), null,
+                                        (element, currencyCode, interval) -> accountInterest(model, element,
+                                                        currencyCode, interval), null),
                         e -> e.isSecurity() ? e.getSecurity().getCurrencyCode()
+                                        : e.isAccount() ? e.getAccount().getCurrencyCode()
                                         : model.getCurrencyConverter().getTermCurrency(),
                         true);
         column.setLabelProvider(labelProvider);
@@ -1372,6 +1424,33 @@ public class StatementOfAssetsViewer
                         .collect(MoneyCollectors.sum(model.getCurrencyConverter().getTermCurrency()));
     }
 
+    /* testing */ static Money accountPurchaseValue(Model model, Element element, String currencyCode,
+                    Interval interval)
+    {
+        model.calculatePerformanceAndInjectIntoElements(currencyCode, interval);
+        return element.accountPurchaseValue.get(new CacheKey(currencyCode, interval));
+    }
+
+    /* testing */ static Money accountInterest(Model model, Element element, String currencyCode, Interval interval)
+    {
+        model.calculatePerformanceAndInjectIntoElements(currencyCode, interval);
+        return element.accountInterest.get(new CacheKey(currencyCode, interval));
+    }
+
+    private static long calculateAccountInterest(Model model, Account account, String currencyCode, Interval interval)
+    {
+        CurrencyConverter converter = model.getCurrencyConverter().with(currencyCode);
+        return account.getTransactions().stream() //
+                        .filter(t -> interval.contains(t.getDateTime())) //
+                        .filter(t -> t.getType() == AccountTransaction.Type.INTEREST
+                                        || t.getType() == AccountTransaction.Type.INTEREST_CHARGE) //
+                        .mapToLong(t -> {
+                            // Use the balance's valuation date so both account columns use the same exchange rate.
+                            long amount = converter.convert(model.getDate(), t.getMonetaryAmount()).getAmount();
+                            return t.getType() == AccountTransaction.Type.INTEREST ? amount : -amount;
+                        }).sum();
+    }
+
     public ShowHideColumnHelper getColumnHelper()
     {
         return support;
@@ -1411,6 +1490,8 @@ public class StatementOfAssetsViewer
 
         private Map<CacheKey, LazySecurityPerformanceRecord> performance = new HashMap<>();
         private Map<CacheKey, LazyValue<PerformanceIndex>> performanceForCategoryTotals = new HashMap<>();
+        private Map<CacheKey, Money> accountInterest = new HashMap<>();
+        private Map<CacheKey, Money> accountPurchaseValue = new HashMap<>();
 
         private Element(GroupByTaxonomy groupByTaxonomy, AssetCategory category, int sortOrder)
         {
@@ -1626,23 +1707,36 @@ public class StatementOfAssetsViewer
 
     /* testing */ static class ElementValueProvider
     {
+        @FunctionalInterface
+        public interface AccountValueProvider
+        {
+            Object getValue(Element element, String currencyCode, Interval interval);
+        }
+
         private final Function<LazySecurityPerformanceRecord, ?> valueProvider;
         private final Function<Stream<Object>, Object> collector;
+        private final AccountValueProvider accountValueProvider;
         private final Function<PerformanceIndex, ?> valueProviderTotal;
 
         public ElementValueProvider(Function<LazySecurityPerformanceRecord, ?> valueProvider,
                         Function<Stream<Object>, Object> collector)
         {
-            this.valueProvider = valueProvider;
-            this.collector = collector;
-            this.valueProviderTotal = null;
+            this(valueProvider, collector, null, null);
         }
 
         public ElementValueProvider(Function<LazySecurityPerformanceRecord, ?> valueProvider,
                         Function<Stream<Object>, Object> collector, Function<PerformanceIndex, ?> valueProviderTotal)
         {
+            this(valueProvider, collector, null, valueProviderTotal);
+        }
+
+        public ElementValueProvider(Function<LazySecurityPerformanceRecord, ?> valueProvider,
+                        Function<Stream<Object>, Object> collector, AccountValueProvider accountValueProvider,
+                        Function<PerformanceIndex, ?> valueProviderTotal)
+        {
             this.valueProvider = valueProvider;
             this.collector = collector;
+            this.accountValueProvider = accountValueProvider;
             this.valueProviderTotal = valueProviderTotal;
         }
 
@@ -1691,6 +1785,15 @@ public class StatementOfAssetsViewer
                     return value;
                 }
             }
+            else if (element.isAccount())
+            {
+                if (accountValueProvider != null)
+                    return accountValueProvider.getValue(element, currencyCode, interval);
+                else if (valueProviderTotal != null)
+                    return valueProviderTotal.apply(element.getPerformanceForCategoryTotals(currencyCode, interval));
+                else
+                    return null;
+            }
             else if (element.isCategory())
             {
                 if (collector != null)
@@ -1718,7 +1821,8 @@ public class StatementOfAssetsViewer
 
         private Object collectValue(Stream<Element> elements, String currencyCode, Interval interval)
         {
-            return collector.apply(elements.filter(Element::isSecurity) //
+            return collector.apply(elements //
+                            .filter(e -> e.isSecurity() || (accountValueProvider != null && e.isAccount())) //
                             .map(child -> getValue(child, currencyCode, interval)) //
                             .filter(Objects::nonNull));
         }
