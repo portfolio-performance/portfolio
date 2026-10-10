@@ -19,6 +19,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -432,8 +433,14 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                             // A purchase without any value (e.g. bonus shares
                             // for new customers) is booked as delivery
                             // inbound, because a purchase must have a value.
+                            // If fees or taxes were parsed, the document is
+                            // not a bonus and remains a purchase, so that the
+                            // inconsistency is reported by the import checks
+                            // instead of silently dropping the charges.
                             if (portfolioTransaction.getType() == PortfolioTransaction.Type.BUY
-                                            && portfolioTransaction.getAmount() == 0L)
+                                            && portfolioTransaction.getAmount() == 0L
+                                            && portfolioTransaction.getUnits().noneMatch(u -> u.getType() == Unit.Type.FEE
+                                                            || u.getType() == Unit.Type.TAX))
                             {
                                 var delivery = new PortfolioTransaction(PortfolioTransaction.Type.DELIVERY_INBOUND);
                                 delivery.setDateTime(portfolioTransaction.getDateTime());
