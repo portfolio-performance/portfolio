@@ -140,7 +140,9 @@ curl -s -X PATCH -H "Authorization: Bearer $TOKEN" \
 
 Writable: `name` (non-empty), `isin`, `wkn`, `tickerSymbol`, `note` (string or `null`), and
 `currencyCode` (a known currency; **rejected while the instrument has transactions**, matching the
-UI's own rule). Everything else — prices, quote feeds, attributes, events — is read-only in v1.
+UI's own rule), and `attributes` — a nested merge patch over the custom attributes keyed by
+attribute id (`null` clears one; see `openapi.yaml`). Everything else — prices, quote feeds,
+events — is read-only in v1.
 
 Any field that is unknown or not writable is a **422, never a silent no-op**: a typo must not look
 like success. All violations come back at once so you can fix them in one round-trip.
