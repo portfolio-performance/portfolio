@@ -10,6 +10,7 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -40,6 +41,7 @@ public class NewDashboardDialog extends Dialog
 
     private Template selectedTemplate = Template.EMTPY;
     private String selectedName = Messages.LabelDashboard;
+    private String importFilePath = null;
 
     protected NewDashboardDialog(Shell parentShell)
     {
@@ -81,10 +83,34 @@ public class NewDashboardDialog extends Dialog
             button.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> selectedTemplate = template));
         }
 
+        Button importButton = new Button(editArea, SWT.PUSH);
+        importButton.setText(Messages.LabelImportTemplate);
+        importButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            FileDialog fileDialog = new FileDialog(getShell(), SWT.OPEN);
+            fileDialog.setFilterNames(new String[] { Messages.CSVConfigCSVImportLabelFileJSON });
+            fileDialog.setFilterExtensions(new String[] { "*.json;*.JSON" }); //$NON-NLS-1$
+            String path = fileDialog.open();
+            if (path != null)
+            {
+                importFilePath = path;
+                okPressed();
+            }
+        }));
+
         FormDataFactory.startingWith(label).thenRight(name).width(150);
         FormDataFactory.startingWith(label).thenBelow(group, 10).right(name);
+        FormDataFactory.startingWith(group).thenBelow(importButton, 10);
 
         return composite;
+    }
+
+    /**
+     * Returns the file path selected for import, or {@code null} if the user
+     * chose to create a new dashboard from a template instead.
+     */
+    public String getImportFilePath()
+    {
+        return importFilePath;
     }
 
     public Dashboard createDashboard()
