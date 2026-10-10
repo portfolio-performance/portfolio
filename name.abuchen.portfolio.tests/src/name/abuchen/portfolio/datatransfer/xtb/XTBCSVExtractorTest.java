@@ -22,6 +22,7 @@ import static org.hamcrest.collection.IsEmptyCollection.empty;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -180,5 +181,28 @@ public class XTBCSVExtractorTest
         assertThat(errors, empty());
         assertThat(items.size(), is(12));
         assertThat(items, hasItem(deposit(hasNote("Vklad odměny za pozvání přátel (XTB ID: 1)"))));
+    }
+
+    @Test
+    public void testUtf8ByteOrderMark() throws IOException
+    {
+        var resource = TestExtractorHelper.loadResourceAsInputFile(getClass(), "EUR_account_sample.csv");
+        var content = "﻿" + Files.readString(resource.getFile().toPath());
+        var file = Files.createTempFile("xtb-bom-", ".csv");
+        Files.writeString(file, content, StandardCharsets.UTF_8);
+
+        var client = new Client();
+        var errors = new ArrayList<Exception>();
+        var items = new XTBCSVExtractor(client).extract(new SecurityCache(client), new InputFile(file.toFile())
+        {
+            @Override
+            public String getName()
+            {
+                return "EUR_account_sample.csv";
+            }
+        }, errors);
+
+        assertThat(errors, empty());
+        assertCashOperations(items);
     }
 }

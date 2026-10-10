@@ -200,8 +200,11 @@ public class XTBCSVExtractor implements Extractor
         var bytes = Files.readAllBytes(inputFile.getFile().toPath());
         try
         {
-            return StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT)
+            var content = StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT)
                             .onUnmappableCharacter(CodingErrorAction.REPORT).decode(ByteBuffer.wrap(bytes)).toString();
+            // Excel's "CSV UTF-8" starts with a byte order mark, which the
+            // decoder keeps as a leading
+            return content.startsWith("﻿") ? content.substring(1) : content;
         }
         catch (CharacterCodingException e)
         {
