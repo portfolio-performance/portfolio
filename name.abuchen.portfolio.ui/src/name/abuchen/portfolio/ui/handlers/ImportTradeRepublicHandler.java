@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.ui.handlers;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,6 +16,7 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
@@ -107,14 +110,35 @@ public class ImportTradeRepublicHandler
             var preferences = portfolioPart.getPreferenceStore();
 
             var wizard = new ImportExtractedItemsWizard(client, preferences, result, e, new HashMap<>(), portfolioPart);
+            wizard.setOfferDeleteSourceFiles(true);
             portfolioPart.inject(wizard);
             var dialog = new ImportWizardDialog(Display.getDefault().getActiveShell(), wizard);
-            dialog.open();
+
+            if (dialog.open() == Window.OK && wizard.isDeleteSourceFilesRequested())
+            {
+                for (var f : files)
+                {
+                    if (!e.containsKey(f.getFile()))
+                        deleteFile(f.getFile());
+                }
+            }
         }
         catch (IllegalArgumentException e)
         {
             PortfolioPlugin.log(e);
             MessageDialog.openError(shell, Messages.LabelError, e.getMessage());
+        }
+    }
+
+    private void deleteFile(File file)
+    {
+        try
+        {
+            Files.deleteIfExists(file.toPath());
+        }
+        catch (IOException e)
+        {
+            PortfolioPlugin.log(e);
         }
     }
 }

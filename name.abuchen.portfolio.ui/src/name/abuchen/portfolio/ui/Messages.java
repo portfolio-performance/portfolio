@@ -682,6 +682,7 @@ public class Messages extends NLS
     public static String LabelDecimalSeparator;
     public static String LabelDefaultFontSize;
     public static String LabelDefaultReferenceAccountName;
+    public static String LabelDeleteSourceFilesAfterImport;
     public static String LabelDelta;
     public static String LabelDescription;
     public static String LabelDividendPerShare;
