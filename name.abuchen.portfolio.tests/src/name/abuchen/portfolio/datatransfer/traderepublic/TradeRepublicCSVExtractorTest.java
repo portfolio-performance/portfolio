@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.traderepublic;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
@@ -69,18 +70,19 @@ public class TradeRepublicCSVExtractorTest
         //   + 1 DISTRIBUTION(DIVIDEND) + 17 REMOVAL(TRANSFER_INSTANT_OUTBOUND)
         //   + 16 REMOVAL(CARD_TRANSACTION) + 2 DEPOSIT(BENEFITS_SAVEBACK)
         //   + 3 TAX_REFUND(SEC_ACCOUNT) + 3 TAXES(PRE_DETERMINED_TAX_BASE)
-        //   + 1 FEES(SELL split) + 1 failure (TransactionItem with failure message) = 151
+        //   + 1 FEES(SELL split) + 10 FEES(INPAYMENT) + 1 failure (TransactionItem
+        //   with failure message) = 161
         // Skipped: 2 REDEMPTION + 1 WARRANT_EXERCISE + 1 FINAL_MATURITY(CA) = 4
         // Failures: 1 SPLIT = 1 (included in account tx count)
         // Securities: 39
 
         assertThat(countSecurities(results), is(39L));
         assertThat(countBuySell(results), is(185L));
-        assertThat(countAccountTransactions(results), is(151L));
+        assertThat(countAccountTransactions(results), is(161L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(1L));
         assertThat(countSkippedItems(results), is(4L));
-        assertThat(results.size(), is(39 + 185 + 151 + 4));
+        assertThat(results.size(), is(39 + 185 + 161 + 4));
 
         new AssertImportActions().check(results, "EUR");
 
@@ -255,12 +257,17 @@ public class TradeRepublicCSVExtractorTest
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // CUSTOMER_INPAYMENT 2021-08-06: amount=352.45, fee=-2.45
-        // PP amount = abs(352.45 + -2.45) = 350.00
         assertThat(results, hasItem(deposit( //
                         hasDate("2021-08-06"), hasShares(0.00), //
                         hasSource(filename), //
-                        hasAmount("EUR", 350.00), hasGrossValue("EUR", 352.45), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 2.45))));
+                        hasAmount("EUR", 352.45), hasGrossValue("EUR", 352.45), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(fee( //
+                        hasDate("2021-08-06"), hasShares(0.00), //
+                        hasSource(filename), //
+                        hasAmount("EUR", 2.45), hasGrossValue("EUR", 2.45), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // TRANSFER_INBOUND 2024-12-16: amount=300.00
         assertThat(results, hasItem(deposit( //
@@ -400,11 +407,11 @@ public class TradeRepublicCSVExtractorTest
 
         assertThat(countSecurities(results), is(2L));
         assertThat(countBuySell(results), is(3L));
-        assertThat(countAccountTransactions(results), is(6L));
+        assertThat(countAccountTransactions(results), is(10L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(2 + 3 + 6));
+        assertThat(results.size(), is(2 + 3 + 10));
 
         new AssertImportActions().check(results, "EUR");
 
@@ -465,39 +472,64 @@ public class TradeRepublicCSVExtractorTest
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // CUSTOMER_INPAYMENT 2026-03-06T10:19:47.982485Z: amount=10.10, fee=-0.10
-        // PP amount = abs(10.10 + -0.10) = 10.00
         assertThat(results, hasItem(deposit( //
                         hasDate("2026-03-06T10:19:47.982485"), hasShares(0.00), //
                         hasSource(filename), //
                         hasNote("Card Top up with ****1234"), //
-                        hasAmount("EUR", 10.00), hasGrossValue("EUR", 10.10), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.10))));
+                        hasAmount("EUR", 10.10), hasGrossValue("EUR", 10.10), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(fee( //
+                        hasDate("2026-03-06T10:19:47.982485"), hasShares(0.00), //
+                        hasSource(filename), //
+                        hasNote("Card Top up with ****1234"), //
+                        hasAmount("EUR", 0.10), hasGrossValue("EUR", 0.10), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // CUSTOMER_INPAYMENT 2026-03-06T10:17:57.448665Z: amount=50.50, fee=-0.50
-        // PP amount = abs(50.50 + -0.50) = 50.00
         assertThat(results, hasItem(deposit( //
                         hasDate("2026-03-06T10:17:57.448665"), hasShares(0.00), //
                         hasSource(filename), //
                         hasNote("Card Top up with ****1234"), //
-                        hasAmount("EUR", 50.00), hasGrossValue("EUR", 50.50), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.50))));
+                        hasAmount("EUR", 50.50), hasGrossValue("EUR", 50.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(fee( //
+                        hasDate("2026-03-06T10:17:57.448665"), hasShares(0.00), //
+                        hasSource(filename), //
+                        hasNote("Card Top up with ****1234"), //
+                        hasAmount("EUR", 0.50), hasGrossValue("EUR", 0.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // CUSTOMER_INPAYMENT 2026-03-13T10:06:02.926905Z: amount=10.10, fee=-0.10
         assertThat(results, hasItem(deposit( //
                         hasDate("2026-03-13T10:06:02.926905"), hasShares(0.00), //
                         hasSource(filename), //
                         hasNote("Card Top up with ****1234"), //
-                        hasAmount("EUR", 10.00), hasGrossValue("EUR", 10.10), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.10))));
+                        hasAmount("EUR", 10.10), hasGrossValue("EUR", 10.10), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(fee( //
+                        hasDate("2026-03-13T10:06:02.926905"), hasShares(0.00), //
+                        hasSource(filename), //
+                        hasNote("Card Top up with ****1234"), //
+                        hasAmount("EUR", 0.10), hasGrossValue("EUR", 0.10), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // CUSTOMER_INPAYMENT 2026-03-13T00:00:00Z: amount=48.48, fee=-0.48
-        // PP amount = abs(48.48 + -0.48) = 48.00
         assertThat(results, hasItem(deposit( //
                         hasDate("2026-03-13"), hasShares(0.00), //
                         hasSource(filename), //
                         hasNote("Card Top up with ****1234"), //
-                        hasAmount("EUR", 48.00), hasGrossValue("EUR", 48.48), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.48))));
+                        hasAmount("EUR", 48.48), hasGrossValue("EUR", 48.48), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(fee( //
+                        hasDate("2026-03-13"), hasShares(0.00), //
+                        hasSource(filename), //
+                        hasNote("Card Top up with ****1234"), //
+                        hasAmount("EUR", 0.48), hasGrossValue("EUR", 0.48), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
