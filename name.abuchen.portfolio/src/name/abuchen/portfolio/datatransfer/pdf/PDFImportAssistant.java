@@ -109,6 +109,7 @@ public class PDFImportAssistant
         extractors.add(new ModenaEstoniaPDFExtractor(client));
         extractors.add(new MorganStanleyPDFExtractor(client));
         extractors.add(new N26BankAGPDFExtractor(client));
+        extractors.add(new NatixisInterepargnePDFExtractor(client));
         extractors.add(new NeonSwitzerlandAGPDFExtractor(client));
         extractors.add(new NIBCBankPDFExtractor(client));
         extractors.add(new NordaxBankABPDFExtractor(client));
