@@ -260,21 +260,28 @@ public class XTBCSVExtractor implements Extractor
                 entry.setSource(source);
                 items.add(new BuySellEntryItem(entry));
                 break;
-            case "Deposit", "Withdrawal", "Dividend", "Withholding tax", "Tax IFTT", "Swap",
-                            "Free funds interest", "Free funds interest tax":
+            case "Deposit", "Withdrawal", "Dividend", "Spinoff", "Withholding tax", "Tax IFTT", "Swap",
+                            "Close trade", "Free funds interest", "Free funds interest tax":
                 var transaction = new AccountTransaction();
                 transaction.setType(switch (type)
                 {
                     case "Deposit" -> AccountTransaction.Type.DEPOSIT;
                     case "Withdrawal" -> AccountTransaction.Type.REMOVAL;
-                    case "Dividend" -> AccountTransaction.Type.DIVIDENDS;
+                    case "Dividend", "Spinoff" -> AccountTransaction.Type.DIVIDENDS;
                     case "Free funds interest" -> AccountTransaction.Type.INTEREST;
-                    case "Swap" -> signedAmount > 0 ? AccountTransaction.Type.INTEREST
+                    case "Swap", "Close trade" -> signedAmount > 0 ? AccountTransaction.Type.INTEREST
                                     : AccountTransaction.Type.INTEREST_CHARGE;
                     default -> AccountTransaction.Type.TAXES;
                 });
-                if ("Dividend".equals(type) || "Withholding tax".equals(type) || "Tax IFTT".equals(type))
+                if ("Dividend".equals(type) || "Spinoff".equals(type) || "Withholding tax".equals(type)
+                                || "Tax IFTT".equals(type))
                     transaction.setSecurity(lookupSecurity(record, columns, currency, securityCache));
+                // A CFD position settles in cash only: the realised result
+                // ("Close trade") and the accumulated overnight financing
+                // ("Swap") are booked without a security because the CFD
+                // shares its ticker with the real instrument
+                if ("Swap".equals(type) || "Close trade".equals(type))
+                    note = value(record, columns.instrument()) + ": " + note;
                 transaction.setDateTime(date);
                 transaction.setCurrencyCode(currency);
                 transaction.setAmount(amount);
