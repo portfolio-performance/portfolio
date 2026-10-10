@@ -81,6 +81,7 @@ public class CheckCurrenciesAction implements ImportAction
             return status;
 
         if (transaction.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
+                        || transaction.getType() == PortfolioTransaction.Type.DIVIDENDS
                         || transaction.getType() == PortfolioTransaction.Type.BUY)
         {
             // tax + fees must be < than transaction amount

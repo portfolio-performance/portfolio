@@ -527,6 +527,13 @@ public class ClientPerformanceSnapshot
                     case DELIVERY_OUTBOUND:
                         mRemovals.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
                         break;
+                    case DIVIDENDS:
+                        Money earned = t.getMonetaryAmount().with(converter.at(t.getDateTime()));
+                        mEarnings.add(earned);
+                        earnings.add(new TransactionPair<PortfolioTransaction>(portfolio, t));
+                        earningsBySecurity.computeIfAbsent(t.getSecurity(), s -> MutableMoney.of(termCurrency))
+                                        .add(earned);
+                        break;
                     case BUY:
                     case SELL:
                     case TRANSFER_IN:

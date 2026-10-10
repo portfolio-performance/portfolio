@@ -127,14 +127,17 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
         // to both legs of a trade - a sale's gross value is the proceeds
         // *before* the charges are deducted, so relieving a fee-inclusive lot
         // against it would book the charges as a gain
-        var basis = taxesAndFees.isIncluded() ? t.getMonetaryAmount() : t.getGrossValue();
+        var basis = taxesAndFees.isIncluded() && t.getType() != PortfolioTransaction.Type.DIVIDENDS
+                        ? t.getMonetaryAmount() : t.getGrossValue();
 
         // prefer the exchange rate recorded on the transaction (via
         // getGrossValue/getMonetaryAmount(converter)) over the historic day rate
         // of the exchange-rate provider, in both the term and the security
         // currency
-        var termBasis = taxesAndFees.isIncluded() ? t.getMonetaryAmount(converter) : t.getGrossValue(converter);
-        var forexBasis = taxesAndFees.isIncluded() ? t.getMonetaryAmount(converter.with(securityCurrency))
+        var termBasis = taxesAndFees.isIncluded() && t.getType() != PortfolioTransaction.Type.DIVIDENDS
+                        ? t.getMonetaryAmount(converter) : t.getGrossValue(converter);
+        var forexBasis = taxesAndFees.isIncluded() && t.getType() != PortfolioTransaction.Type.DIVIDENDS
+                        ? t.getMonetaryAmount(converter.with(securityCurrency))
                         : t.getGrossValue(converter.with(securityCurrency));
 
         // asGrossValue adds the "without taxes and fees" step only when the
@@ -241,6 +244,11 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                                     Values.DateTime.format(t.getDateTime())));
                 }
 
+                break;
+
+            case DIVIDENDS:
+                fifo.add(new LineItem(t.getShares(), t.getDateTime().toLocalDate(), termBasis.getAmount(),
+                                forexBasis.getAmount(), txTrail, forexTxTrail, transactionItem));
                 break;
 
             case TRANSFER_IN:

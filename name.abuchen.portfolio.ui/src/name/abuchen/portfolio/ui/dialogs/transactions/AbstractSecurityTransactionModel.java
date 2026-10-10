@@ -643,6 +643,8 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
             case SELL:
             case DELIVERY_OUTBOUND:
                 return total + feesAndTaxes;
+            case DIVIDENDS:
+                return Math.max(0, total - feesAndTaxes);
             default:
                 throw new UnsupportedOperationException();
         }
@@ -660,6 +662,8 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
             case SELL:
             case DELIVERY_OUTBOUND:
                 return Math.max(0, convertedGrossValue - feesAndTaxes);
+            case DIVIDENDS:
+                return convertedGrossValue + feesAndTaxes;
             default:
                 throw new UnsupportedOperationException();
         }

@@ -28,6 +28,9 @@ import name.abuchen.portfolio.money.CurrencyConverter;
             case DELIVERY_OUTBOUND:
                 sharesHeld -= t.getShares();
                 break;
+            case DIVIDENDS:
+                sharesHeld += t.getShares();
+                break;
             case TRANSFER_IN:
             case TRANSFER_OUT:
                 break;

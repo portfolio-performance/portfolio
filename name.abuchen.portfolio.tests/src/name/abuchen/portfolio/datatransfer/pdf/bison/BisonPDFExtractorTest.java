@@ -21,6 +21,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.securityDividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
@@ -336,8 +337,8 @@ public class BisonPDFExtractorTest
         assertThat(results, hasItem(deposit(hasDate("2025-02-03T20:17"), hasAmount("EUR", 53.00), //
                         hasSource("InfoReport04.txt"), hasNote(null))));
 
-        // check inbound delivery transactions
-        assertThat(results, hasItem(inboundDelivery( //
+        // check staking reward transactions
+        assertThat(results, hasItem(securityDividend( //
                         hasDate("2025-02-03T08:48"), hasShares(0.00000541), //
                         hasSource("InfoReport04.txt"), //
                         hasNote("Staking Reward"), //
@@ -360,8 +361,8 @@ public class BisonPDFExtractorTest
                         hasAmount("EUR", 8.40), hasGrossValue("EUR", 8.40), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // check inbound delivery transactions
-        assertThat(results, hasItem(inboundDelivery( //
+        // check staking reward transactions
+        assertThat(results, hasItem(securityDividend( //
                         hasDate("2025-01-27T07:50"), hasShares(0.00000150), //
                         hasSource("InfoReport04.txt"), //
                         hasNote("Staking Reward"), //

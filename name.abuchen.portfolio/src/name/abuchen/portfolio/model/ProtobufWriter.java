@@ -409,6 +409,13 @@ import name.abuchen.portfolio.money.Money;
 
                     break;
 
+                case SECURITY_DIVIDEND:
+                    PortfolioTransaction securityDividend = new PortfolioTransaction(newTransaction.getUuid());
+                    securityDividend.setType(PortfolioTransaction.Type.DIVIDENDS);
+                    loadCommonTransaction(newTransaction, securityDividend, lookup, true);
+                    lookup.getPortfolio(newTransaction.getPortfolio()).addTransaction(securityDividend);
+                    break;
+
                 case CASH_TRANSFER:
                     Account sourceAccount = lookup.getAccount(newTransaction.getAccount());
                     AccountTransaction sourceATx = new AccountTransaction(newTransaction.getUuid());
@@ -1097,6 +1104,9 @@ import name.abuchen.portfolio.money.Money;
                 break;
             case DELIVERY_OUTBOUND:
                 newTransaction.setTypeValue(PTransaction.Type.OUTBOUND_DELIVERY_VALUE);
+                break;
+            case DIVIDENDS:
+                newTransaction.setTypeValue(PTransaction.Type.SECURITY_DIVIDEND_VALUE);
                 break;
             case TRANSFER_IN:
             default:
