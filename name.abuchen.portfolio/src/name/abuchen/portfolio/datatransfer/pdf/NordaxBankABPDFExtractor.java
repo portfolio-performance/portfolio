@@ -19,6 +19,7 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
 
         addBankIdentifier("Nordax Bank AB");
         addBankIdentifier("Bank Norwegian");
+        addBankIdentifier("NOBA Bank Group AB");
 
         addAccountStatementTransaction();
     }
@@ -156,6 +157,44 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
                                                             if (!v.get("note").startsWith("Bank Norwegian"))
                                                                 t.setNote(concatenate(t.getNote(), v.get("note")," "));
                                                         }))
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // 02.10.2026 02.10.2026 Von jmLJWph ZVhDSo CmINZBXnX 100,00
+        // 06.01.2026 06.01.2026 An LDRyMxdSV liNnRA 1.000,00
+        // @formatter:on
+        var depositRemovalNameBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Von|An) .* [\\.,\\d]+$");
+        type.addBlock(depositRemovalNameBlock);
+        depositRemovalNameBlock.setMaxSize(2);
+        depositRemovalNameBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
+
+                        .section("date", "type", "note", "amount") //
+                        .documentContext("currency") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<type>(Von|An)) (?<note>.*) (?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            // @formatter:off
+                            // When "An" change from DEPOSIT to REMOVAL
+                            // @formatter:on
+                            if ("An".equals(v.get("type")))
+                                t.setType(AccountTransaction.Type.REMOVAL);
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(trim(v.get("note")));
+                        })
+
+                        // @formatter:off
+                        // 03.08.2026 03.08.2026 Von VTWOQZd vnHoiA 1.000,00
+                        // PxvraKLvt
+                        // @formatter:on
+                        .section("note").optional() //
+                        .find("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Von|An) .* [\\.,\\d]+$") //
+                        .match("^(?<note>(?!Bank Norwegian)(?!NOBA Bank Group)(?![\\d]{2}\\.[\\d]{2}\\.[\\d]{4} ).*)$") //
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " ")))
 
                         .wrap(TransactionItem::new));
     }
