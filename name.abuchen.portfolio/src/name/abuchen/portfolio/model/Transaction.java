@@ -28,7 +28,16 @@ public abstract class Transaction implements Annotated, Adaptable
     {
         public enum Type
         {
-            GROSS_VALUE, TAX, FEE
+            GROSS_VALUE, TAX, FEE,
+
+            /**
+             * Accrued interest of interest-bearing securities (bonds): paid in
+             * addition to the price with a purchase, received in addition to
+             * the proceeds with a sale. It is neither part of the gross value
+             * nor of the cost of the security, but interest income (negative
+             * when paid, positive when received).
+             */
+            ACCRUED_INTEREST
         }
 
         /**

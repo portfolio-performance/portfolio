@@ -8,6 +8,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,6 +26,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.snapshot.AccruedInterestScenario;
 
 /**
  * This is intended to be unit test for Trade (and by extension, TradeCollector)
@@ -392,5 +394,45 @@ public class TradeTest
         // simple return of USD 7,850 / USD 5,150 - 1
         assertThat(trade.getReturn(), is(7850 / 5150.0 - 1));
         assertEquals(0.52427, trade.getIRR(), 0.0001);
+    }
+
+    @Test
+    public void testOpenTradeOfPercentageQuotedSecurity() throws TradeCollectorException
+    {
+        Client client = new Client();
+        TradeCollector collector = new TradeCollector(client, new TestCurrencyConverter());
+
+        var port = new PortfolioBuilder();
+        port.addTo(client);
+
+        Security bond = new SecurityBuilder().addPrice(LocalDate.now().toString(), quoteOf(101)).addTo(client);
+        bond.setPercentageQuoted(true);
+        port.buy(bond, "2024-01-01", sharesOf(1000), amountOf(1000));
+
+        List<Trade> trades = collector.collect(bond);
+        assertThat(trades.size(), is(1));
+
+        // 1,000 nominal x 101 % = 1,010.00 EUR
+        Trade trade = trades.get(0);
+        assertThat(trade.isClosed(), is(false));
+        assertThat(trade.getEntryValue(), is(Money.of(CurrencyUnit.EUR, amountOf(1000))));
+        assertThat(trade.getExitValue(), is(Money.of(CurrencyUnit.EUR, amountOf(1010))));
+    }
+
+    @Test
+    public void testTradeWithAccruedInterest() throws TradeCollectorException
+    {
+        var scenario = new AccruedInterestScenario();
+
+        List<Trade> trades = new TradeCollector(scenario.client, new TestCurrencyConverter()).collect(scenario.bond);
+        assertThat(trades.size(), is(1));
+
+        // accrued interest is income, not part of the trade
+        Trade trade = trades.get(0);
+        assertThat(trade.isClosed(), is(true));
+        assertThat(trade.getEntryValue(), is(AccruedInterestScenario.eur(1005)));
+        assertThat(trade.getExitValue(), is(AccruedInterestScenario.eur(1005)));
+        assertThat(trade.getProfitLoss(), is(AccruedInterestScenario.eur(0)));
+        assertThat(trade.getProfitLossWithoutTaxesAndFees(), is(AccruedInterestScenario.eur(10)));
     }
 }

@@ -113,7 +113,8 @@ public class LimitExceededWidget extends AbstractSecurityListWidget<LimitExceede
                         : settings.getLimitExceededNegativelyColor(Colors.theme().redBackground());
         price.setBackdropColor(bgColor);
         price.setForeground(Colors.getTextColor(bgColor));
-        price.setText(Values.Quote.format(item.getSecurity().getCurrencyCode(), item.price.getValue()));
+        price.setText(Values.Quote.formatFor(item.getSecurity(), item.getSecurity().getCurrencyCode(),
+                        item.price.getValue()));
 
         Label limit = createLabel(composite, settings.getFullLabel(item.limit, item.price));
 

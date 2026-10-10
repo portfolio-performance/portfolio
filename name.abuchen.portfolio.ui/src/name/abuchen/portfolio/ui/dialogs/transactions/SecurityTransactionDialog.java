@@ -130,12 +130,12 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
 
         // other input fields
 
-        Input shares = new Input(editArea, Messages.ColumnShares);
-        shares.bindValue(Properties.shares.name(), Messages.ColumnShares, Values.Share, true);
+        Input shares = new Input(editArea, getSharesLabel());
+        shares.bindValue(Properties.shares.name(), getSharesLabel(), Values.Share, true);
 
         Input quote = new Input(editArea, "x " + Messages.ColumnQuote); //$NON-NLS-1$
         quote.bindBigDecimal(Properties.quote.name(), Values.Quote.pattern());
-        quote.bindCurrency(Properties.securityCurrencyCode.name());
+        quote.bindCurrency(Properties.securityQuotation.name());
 
         Input grossValue = new Input(editArea, "="); //$NON-NLS-1$
         grossValue.bindValue(Properties.grossValue.name(), Messages.ColumnSubTotal, Values.Amount, true);
@@ -159,6 +159,21 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
         convertedGrossValue.bindValue(Properties.convertedGrossValue.name(), Messages.ColumnSubTotal, Values.Amount,
                         true);
         convertedGrossValue.bindCurrency(Properties.transactionCurrencyCode.name());
+
+        // accrued interest (bonds): paid with a purchase, received with a sale
+
+        Label plusForexAccruedInterest = new Label(editArea, SWT.NONE);
+        plusForexAccruedInterest.setText("+"); //$NON-NLS-1$
+
+        Input forexAccruedInterest = new Input(editArea, "+ " + Messages.ColumnAccruedInterest); //$NON-NLS-1$
+        forexAccruedInterest.bindValue(Properties.forexAccruedInterest.name(), Messages.ColumnAccruedInterest,
+                        Values.Amount, false);
+        forexAccruedInterest.bindCurrency(Properties.securityCurrencyCode.name());
+
+        Input accruedInterest = new Input(editArea, "+ " + Messages.ColumnAccruedInterest); //$NON-NLS-1$
+        accruedInterest.bindValue(Properties.accruedInterest.name(), Messages.ColumnAccruedInterest, Values.Amount,
+                        false);
+        accruedInterest.bindCurrency(Properties.transactionCurrencyCode.name());
 
         // fees
 
@@ -242,6 +257,9 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
                         // converted gross value
                         .thenBelow(convertedGrossValue.value).width(width).label(convertedGrossValue.label)
                         .suffix(convertedGrossValue.currency)
+                        // accrued interest
+                        .thenBelow(accruedInterest.value).width(width).label(accruedInterest.label)
+                        .suffix(accruedInterest.currency)
                         // fees
                         .thenBelow(fees.value).width(width).label(fees.label).suffix(fees.currency)
                         // taxes
@@ -251,6 +269,10 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
                         // note
                         .thenBelow(valueNote).height(SWTHelper.lineHeight(valueNote) * 3)
                         .left(securities.value.getControl()).right(total.value).label(lblNote);
+
+        startingWith(accruedInterest.value).thenLeft(plusForexAccruedInterest)
+                        .thenLeft(forexAccruedInterest.currency).width(currencyWidth)
+                        .thenLeft(forexAccruedInterest.value).width(width).thenLeft(forexAccruedInterest.label);
 
         startingWith(fees.value).thenLeft(plusForexFees).thenLeft(forexFees.currency).width(currencyWidth)
                         .thenLeft(forexFees.value).width(width).thenLeft(forexFees.label);
@@ -286,8 +308,36 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
             {
                 model().setForexFees(0);
                 model().setForexTaxes(0);
+                model().setForexAccruedInterest(0);
             }
         });
+
+        // make share/nominal input label depend on security quotation
+        model.addPropertyChangeListener(Properties.security.name(), event -> { // NOSONAR
+            shares.label.setText(getSharesLabel());
+            shares.label.requestLayout();
+        });
+
+        // show accrued interest for purchases and sales of percentage-quoted
+        // securities (bonds) or if the transaction already has some. If the
+        // currencies differ, it can be entered in both currencies (like fees
+        // and taxes)
+        Runnable updateAccruedInterestVisibility = () -> {
+            boolean visible = isAccruedInterestVisible();
+            boolean forex = isForex();
+            accruedInterest.setVisible(visible);
+            accruedInterest.label.setVisible(visible && !forex);
+            forexAccruedInterest.setVisible(visible && forex);
+            plusForexAccruedInterest.setVisible(visible && forex);
+        };
+        model.addPropertyChangeListener(Properties.security.name(), event -> updateAccruedInterestVisibility.run());
+        model.addPropertyChangeListener(Properties.exchangeRateCurrencies.name(),
+                        event -> updateAccruedInterestVisibility.run());
+        model.addPropertyChangeListener(Properties.accruedInterest.name(),
+                        event -> updateAccruedInterestVisibility.run());
+        model.addPropertyChangeListener(Properties.forexAccruedInterest.name(),
+                        event -> updateAccruedInterestVisibility.run());
+        updateAccruedInterestVisibility.run();
 
         WarningMessages warnings = new WarningMessages(this);
         warnings.add(() -> model().getDate().isAfter(LocalDate.now()) ? Messages.MsgDateIsInTheFuture : null);
@@ -296,6 +346,26 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
         model.addPropertyChangeListener(Properties.date.name(), e -> warnings.check());
 
         model.firePropertyChange(Properties.exchangeRateCurrencies.name(), "", model().getExchangeRateCurrencies()); //$NON-NLS-1$
+    }
+
+    private boolean isAccruedInterestVisible()
+    {
+        // buy/sell and deliveries (e.g. a purchase converted into an inbound
+        // delivery keeps its accrued interest)
+        if (!(model() instanceof BuySellModel) && !(model() instanceof SecurityDeliveryModel))
+            return false;
+
+        var security = model().getSecurity();
+        return (security != null && security.isPercentageQuoted()) || model().getAccruedInterest() != 0
+                        || model().getForexAccruedInterest() != 0;
+    }
+
+    private boolean isForex()
+    {
+        String securityCurrency = model().getSecurityCurrencyCode();
+        String accountCurrency = model().getTransactionCurrencyCode();
+        return securityCurrency.length() > 0 && accountCurrency.length() > 0
+                        && !securityCurrency.equals(accountCurrency);
     }
 
     private String sign()
@@ -328,6 +398,12 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
             default:
                 throw new UnsupportedOperationException();
         }
+    }
+
+    private String getSharesLabel()
+    {
+        var security = model().getSecurity();
+        return (security != null && security.isPercentageQuoted()) ? Messages.ColumnNominal : Messages.ColumnShares;
     }
 
     @Override

@@ -302,7 +302,8 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
         Money cost = getCostMoney(costMethod, taxesAndFees);
 
         return Quote.of(cost.getCurrencyCode(), Math.round(cost.getAmount() / (double) sharesHeldForCostCalculation
-                        * Values.Share.factor() * Values.Quote.factorToMoney()));
+                        * Values.Share.factor() * Values.Quote.factorToMoney()
+                        / security.getQuoteMultiplier().doubleValue()));
     }
 
     public Money getSumOfDividends()

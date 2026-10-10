@@ -27,7 +27,8 @@ public class SecurityTransferModel extends AbstractModel
 {
     public enum Properties
     {
-        security, securityCurrencyCode, sourcePortfolio, targetPortfolio, date, time, shares, quote, amount, note, calculationStatus;
+        security, securityCurrencyCode, securityQuotation, sourcePortfolio, targetPortfolio, date, time, shares, //
+        quote, amount, note, calculationStatus;
     }
 
     private final Client client;
@@ -118,13 +119,15 @@ public class SecurityTransferModel extends AbstractModel
     private IStatus calculateStatus()
     {
         if (shares == 0L)
-            return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnShares));
+            return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired,
+                            security != null && security.isPercentageQuoted() ? Messages.ColumnNominal
+                                            : Messages.ColumnShares));
 
         // check whether gross value is in range
-        long lower = Math.round(shares * quote.add(BigDecimal.valueOf(-0.01)).doubleValue() * Values.Amount.factor()
-                        / Values.Share.divider());
-        long upper = Math.round(shares * quote.add(BigDecimal.valueOf(0.01)).doubleValue() * Values.Amount.factor()
-                        / Values.Share.divider());
+        long lower = Math.round(shares * quote.add(BigDecimal.valueOf(-0.01)).doubleValue() * getQuoteMultiplier()
+                        * Values.Amount.factor() / Values.Share.divider());
+        long upper = Math.round(shares * quote.add(BigDecimal.valueOf(0.01)).doubleValue() * getQuoteMultiplier()
+                        * Values.Amount.factor() / Values.Share.divider());
         if (amount < lower || amount > upper)
             return ValidationStatus.error(Messages.MsgIncorrectSubTotal);
 
@@ -206,8 +209,10 @@ public class SecurityTransferModel extends AbstractModel
     public void setSecurity(Security security)
     {
         String oldCurrencyCode = getSecurityCurrencyCode();
+        String oldQuotation = getSecurityQuotation();
         firePropertyChange(Properties.security.name(), this.security, this.security = security);
         firePropertyChange(Properties.securityCurrencyCode.name(), oldCurrencyCode, getSecurityCurrencyCode());
+        firePropertyChange(Properties.securityQuotation.name(), oldQuotation, getSecurityQuotation());
 
         updateSharesAndQuote();
     }
@@ -268,11 +273,13 @@ public class SecurityTransferModel extends AbstractModel
 
         if (quote.doubleValue() != 0)
         {
-            setAmount(Math.round(shares * quote.doubleValue() * Values.Amount.factor() / Values.Share.divider()));
+            setAmount(Math.round(shares * quote.doubleValue() * getQuoteMultiplier() * Values.Amount.factor()
+                            / Values.Share.divider()));
         }
         else if (amount != 0 && shares != 0)
         {
-            setQuote(BigDecimal.valueOf(amount * Values.Share.factor() / (shares * Values.Amount.divider())));
+            setQuote(BigDecimal.valueOf(amount * Values.Share.factor()
+                            / (shares * Values.Amount.divider() * getQuoteMultiplier())));
         }
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
@@ -288,7 +295,8 @@ public class SecurityTransferModel extends AbstractModel
     {
         firePropertyChange(Properties.quote.name(), this.quote, this.quote = quote);
 
-        triggerAmount(Math.round(shares * quote.doubleValue() * Values.Amount.factor() / Values.Share.divider()));
+        triggerAmount(Math.round(shares * quote.doubleValue() * getQuoteMultiplier() * Values.Amount.factor()
+                        / Values.Share.divider()));
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus());
@@ -305,8 +313,8 @@ public class SecurityTransferModel extends AbstractModel
 
         if (shares != 0)
         {
-            BigDecimal newQuote = BigDecimal
-                            .valueOf(amount * Values.Share.factor() / (shares * Values.Amount.divider()));
+            BigDecimal newQuote = BigDecimal.valueOf(amount * Values.Share.factor()
+                            / (shares * Values.Amount.divider() * getQuoteMultiplier()));
             firePropertyChange(Properties.quote.name(), this.quote, this.quote = newQuote);
         }
 
@@ -317,6 +325,16 @@ public class SecurityTransferModel extends AbstractModel
     public void triggerAmount(long amount)
     {
         firePropertyChange(Properties.amount.name(), this.amount, this.amount = amount);
+    }
+
+    /**
+     * Returns the quote multiplier of the security (see
+     * {@link Security#getQuoteMultiplier()}), 1 if no security is selected
+     * yet.
+     */
+    private double getQuoteMultiplier()
+    {
+        return security != null ? security.getQuoteMultiplier().doubleValue() : 1;
     }
 
     public String getNote()
@@ -332,5 +350,14 @@ public class SecurityTransferModel extends AbstractModel
     public String getSecurityCurrencyCode()
     {
         return security != null ? security.getCurrencyCode() : ""; //$NON-NLS-1$
+    }
+
+    /**
+     * Returns either the currency code (for securities quoted with absolute
+     * values) or a percent sign (%).
+     */
+    public String getSecurityQuotation()
+    {
+        return security != null && security.isPercentageQuoted() ? "%" : getSecurityCurrencyCode(); //$NON-NLS-1$
     }
 }

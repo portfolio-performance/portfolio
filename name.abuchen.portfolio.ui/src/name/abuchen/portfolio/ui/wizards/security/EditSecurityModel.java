@@ -210,6 +210,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
     private String latestFeed;
     private String latestFeedURL;
     private boolean isRetired;
+    private boolean isPercentageQuoted;
 
     /**
      * Used to pipe the status of a manually validated quote provider into the
@@ -243,6 +244,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         this.latestFeed = security.getLatestFeed();
         this.latestFeedURL = security.getLatestFeedURL();
         this.isRetired = security.isRetired();
+        this.isPercentageQuoted = security.isPercentageQuoted();
 
         for (Taxonomy taxonomy : client.getTaxonomies())
             this.taxonomies.add(new TaxonomyDesignation(taxonomy, security));
@@ -413,6 +415,16 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         firePropertyChange("retired", this.isRetired, this.isRetired = isRetired); //$NON-NLS-1$ //NOSONAR
     }
 
+    public boolean isPercentageQuoted()
+    {
+        return isPercentageQuoted;
+    }
+
+    public void setPercentageQuoted(boolean isPercentageQuoted)
+    {
+        firePropertyChange("percentageQuoted", this.isPercentageQuoted, this.isPercentageQuoted = isPercentageQuoted); //$NON-NLS-1$ //NOSONAR
+    }
+
     public String getStatusHistoricalQuotesProvider()
     {
         return statusHistoricalQuotesProvider;
@@ -492,6 +504,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         security.setLatestFeed(latestFeed);
         security.setLatestFeedURL(latestFeedURL);
         security.setRetired(isRetired);
+        security.setPercentageQuoted(isPercentageQuoted);
 
         Attributes a = new Attributes();
         for (AttributeDesignation attribute : attributes)

@@ -374,7 +374,8 @@ public class TradesTableViewer
                                 new TabularDataSource.Column(Messages.ColumnShares) //
                                                 .withFormatter(o -> Values.Share.formatNonZero((Long) o)), //
                                 new TabularDataSource.Column(Messages.ColumnQuote) //
-                                                .withFormatter(o -> Values.CalculatedQuote.format((Quote) o, //
+                                                .withFormatter(o -> Values.CalculatedQuote.formatFor(
+                                                                trade.getSecurity(), (Quote) o, //
                                                                 view.getClient().getBaseCurrency())), //
                                 new TabularDataSource.Column(Messages.ColumnAmount) //
                                                 .withFormatter(o -> Values.Money.formatNonZero((Money) o,
@@ -398,7 +399,7 @@ public class TradesTableViewer
                     pair.withAccountTransaction().ifPresent(t -> row[1] = t.getTransaction().getType().toString());
                     pair.withPortfolioTransaction().ifPresent(t -> row[1] = t.getTransaction().getType().toString());
                     row[2] = pair.getTransaction().getShares();
-                    row[3] = pair.getTransaction().getGrossPricePerShare();
+                    row[3] = pair.getTransaction().getQuotedGrossPricePerShare();
                     row[4] = pair.getTransaction().getGrossValue();
                     row[5] = pair.getTransaction().getUnitSum(Unit.Type.FEE);
                     row[6] = pair.getTransaction().getUnitSum(Unit.Type.TAX);

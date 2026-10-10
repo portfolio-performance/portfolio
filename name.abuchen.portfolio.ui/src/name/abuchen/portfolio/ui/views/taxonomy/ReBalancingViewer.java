@@ -491,7 +491,8 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                     return null;
 
                 SecurityPrice price = security.getSecurityPrice(LocalDate.now());
-                return Values.Quote.format(security.getCurrencyCode(), price.getValue(), getModel().getCurrencyCode());
+                return Values.Quote.formatFor(security, security.getCurrencyCode(), price.getValue(),
+                                getModel().getCurrencyCode());
             }
         });
         support.addColumn(column);
@@ -554,7 +555,8 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                                     .convert(LocalDate.now(), Money.of(deltaCurrency, delta)).getAmount();
                 }
 
-                long shares = Math.round(delta * Values.Share.divider() * Values.Quote.dividerToMoney() / price);
+                long shares = Math.round(delta * Values.Share.divider() * Values.Quote.dividerToMoney()
+                                / (price * security.getQuoteMultiplier().doubleValue()));
                 return Values.Share.format(shares);
             }
 
