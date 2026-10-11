@@ -18,9 +18,10 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundCash;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundCash;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -45,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
@@ -3607,75 +3609,91 @@ public class IBFlexStatementExtractorTest
     @Test
     public void testParseDateTimeFormats()
     {
-        // Compact format yyyyMMdd - date only
-        assertThat(IBFlexStatementExtractor.parseDateTime("20240115"), is(LocalDateTime.of(2024, 1, 15, 0, 0, 0)));
+        TimeZone sysTZ = TimeZone.getDefault();
+        TimeZone.setDefault(TimeZone.getTimeZone("Europe/Berlin"));
+        try
+        {
+            // Compact format yyyyMMdd - date only
+            assertThat(IBFlexStatementExtractor.parseDateTime("20240115"), is(LocalDateTime.of(2024, 1, 15, 0, 0, 0)));
 
-        // Compact format yyyyMMdd with time HHmmss
-        assertThat(IBFlexStatementExtractor.parseDateTime("20240115;143052"),
-                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+            // Compact format yyyyMMdd with time HHmmss
+            assertThat(IBFlexStatementExtractor.parseDateTime("20240115;143052"),
+                            is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
 
-        // Compact format yyyyMMdd with time HH:mm:ss
-        assertThat(IBFlexStatementExtractor.parseDateTime("20240115;14:30:52"),
-                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+            // Compact format yyyyMMdd with time HH:mm:ss
+            assertThat(IBFlexStatementExtractor.parseDateTime("20240115;14:30:52"),
+                            is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
 
-        // Compact format with timezone (timezone is dropped)
-        assertThat(IBFlexStatementExtractor.parseDateTime("20240115;143052 EST"),
-                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+            // Compact format with timezone
+            assertThat(IBFlexStatementExtractor.parseDateTime("20240115;143052 EST"),
+                            is(LocalDateTime.of(2024, 1, 15, 20, 30, 52)));
 
-        // ISO format yyyy-MM-dd - date only
-        assertThat(IBFlexStatementExtractor.parseDateTime("2024-01-15"), is(LocalDateTime.of(2024, 1, 15, 0, 0, 0)));
+            // ISO format yyyy-MM-dd - date only
+            assertThat(IBFlexStatementExtractor.parseDateTime("2024-01-15"),
+                            is(LocalDateTime.of(2024, 1, 15, 0, 0, 0)));
 
-        // ISO format with comma+space separator (backward compat with
-        // CorporateAction)
-        assertThat(IBFlexStatementExtractor.parseDateTime("2024-01-15, 14:30:52"),
-                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+            // ISO format with comma+space separator (backward compat with
+            // CorporateAction)
+            assertThat(IBFlexStatementExtractor.parseDateTime("2024-01-15, 14:30:52"),
+                            is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
 
-        // ISO format with semicolon separator
-        assertThat(IBFlexStatementExtractor.parseDateTime("2024-01-15;143052"),
-                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+            // ISO format with semicolon separator
+            assertThat(IBFlexStatementExtractor.parseDateTime("2024-01-15;143052"),
+                            is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
 
-        // US format MM/dd/yyyy
-        assertThat(IBFlexStatementExtractor.parseDateTime("01/15/2024"), is(LocalDateTime.of(2024, 1, 15, 0, 0, 0)));
+            // US format MM/dd/yyyy
+            assertThat(IBFlexStatementExtractor.parseDateTime("01/15/2024"),
+                            is(LocalDateTime.of(2024, 1, 15, 0, 0, 0)));
 
-        assertThat(IBFlexStatementExtractor.parseDateTime("01/15/2024;143052"),
-                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+            assertThat(IBFlexStatementExtractor.parseDateTime("01/15/2024;143052"),
+                            is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
 
-        assertThat(IBFlexStatementExtractor.parseDateTime("01/15/2024;14:30:52"),
-                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+            assertThat(IBFlexStatementExtractor.parseDateTime("01/15/2024;14:30:52"),
+                            is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
 
-        // US format MM/dd/yy (2-digit year)
-        assertThat(IBFlexStatementExtractor.parseDateTime("01/15/24;143052"),
-                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+            // US format MM/dd/yy (2-digit year)
+            assertThat(IBFlexStatementExtractor.parseDateTime("01/15/24;143052"),
+                            is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
 
-        // European format dd/MM/yyyy - use day > 12 to avoid ambiguity
-        assertThat(IBFlexStatementExtractor.parseDateTime("15/01/2024"), is(LocalDateTime.of(2024, 1, 15, 0, 0, 0)));
+            // European format dd/MM/yyyy - use day > 12 to avoid ambiguity
+            assertThat(IBFlexStatementExtractor.parseDateTime("15/01/2024"),
+                            is(LocalDateTime.of(2024, 1, 15, 0, 0, 0)));
 
-        assertThat(IBFlexStatementExtractor.parseDateTime("15/01/2024;143052"),
-                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+            assertThat(IBFlexStatementExtractor.parseDateTime("15/01/2024;143052"),
+                            is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
 
-        // European format dd/MM/yy (2-digit year)
-        assertThat(IBFlexStatementExtractor.parseDateTime("15/01/24;143052"),
-                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+            // European format dd/MM/yy (2-digit year)
+            assertThat(IBFlexStatementExtractor.parseDateTime("15/01/24;143052"),
+                            is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
 
-        // Month abbreviation format dd-MMM-yy
-        assertThat(IBFlexStatementExtractor.parseDateTime("15-Jan-24"), is(LocalDateTime.of(2024, 1, 15, 0, 0, 0)));
+            // Month abbreviation format dd-MMM-yy
+            assertThat(IBFlexStatementExtractor.parseDateTime("15-Jan-24"), is(LocalDateTime.of(2024, 1, 15, 0, 0, 0)));
 
-        assertThat(IBFlexStatementExtractor.parseDateTime("15-Jan-24;143052"),
-                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+            assertThat(IBFlexStatementExtractor.parseDateTime("15-Jan-24;143052"),
+                            is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
 
-        assertThat(IBFlexStatementExtractor.parseDateTime("15-Jan-24;14:30:52"),
-                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+            assertThat(IBFlexStatementExtractor.parseDateTime("15-Jan-24;14:30:52"),
+                            is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
 
-        // With timezone (should be dropped)
-        assertThat(IBFlexStatementExtractor.parseDateTime("15-Jan-24;143052 UTC"),
-                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+            // With timezone
+            assertThat(IBFlexStatementExtractor.parseDateTime("15-Jan-24;143052 UTC"),
+                            is(LocalDateTime.of(2024, 1, 15, 15, 30, 52)));
 
-        // Null and empty handling
-        assertThat(IBFlexStatementExtractor.parseDateTime(null), is(nullValue()));
-        assertThat(IBFlexStatementExtractor.parseDateTime(""), is(nullValue()));
+            // Null and empty handling
+            assertThat(IBFlexStatementExtractor.parseDateTime(null), is(nullValue()));
+            assertThat(IBFlexStatementExtractor.parseDateTime(""), is(nullValue()));
 
-        // Invalid format should return null
-        assertThat(IBFlexStatementExtractor.parseDateTime("invalid"), is(nullValue()));
+            // Invalid format should return null
+            assertThat(IBFlexStatementExtractor.parseDateTime("invalid"), is(nullValue()));
+
+            // from a given sample that failed to be parsed correctly
+            assertThat(IBFlexStatementExtractor.parseDateTime("20261005;06:11:35 EDT"),
+                            is(LocalDateTime.of(2026, 10, 05, 12, 11, 35)));
+        }
+        finally
+        {
+            TimeZone.setDefault(sysTZ);
+        }
     }
 
     @Test
@@ -3887,5 +3905,62 @@ public class IBFlexStatementExtractorTest
         assertThat(krdivTransaction.getCurrencyCode(), is("KRW"));
         assertThat(krdivTransaction.getAmount(), is(Values.Amount.factorize(3100)));
         assertThat(krdivTransaction.getShares(), is(Values.Share.factorize(2)));
+    }
+
+    @Test
+    public void testIBFlexStatementFile30() throws IOException
+    {
+        var client = new Client();
+
+        var referenceAccountAwithUSD = new Account("A");
+        referenceAccountAwithUSD.setCurrencyCode("USD");
+        client.addAccount(referenceAccountAwithUSD);
+
+        // name starts with the name of the reference account, but has different
+        // currency. For now, this is the naming convention to support the
+        // multi-currency accounts in the import file
+        var accountAwithEUR = new Account("A EUR");
+        accountAwithEUR.setCurrencyCode("EUR");
+        client.addAccount(accountAwithEUR);
+
+        var referenceAcctountBwithEUR = new Account("B");
+        referenceAcctountBwithEUR.setCurrencyCode("EUR");
+        client.addAccount(referenceAcctountBwithEUR);
+
+        // Match on accountId.
+        var portfolioA = new Portfolio("U12345678");
+        portfolioA.setReferenceAccount(referenceAccountAwithUSD);
+        client.addPortfolio(portfolioA);
+
+        // Match on acctAlias.
+        var portfolioB = new Portfolio("B");
+        portfolioB.setReferenceAccount(referenceAcctountBwithEUR);
+        client.addPortfolio(portfolioB);
+
+        var extractor = new IBFlexStatementExtractor(client);
+        var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile30.xml");
+        var tempFile = createTempFile(activityStatement);
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(Collections.singletonList(tempFile), errors);
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+
+        assertThat(results, hasItem(allOf( //
+                        hasPortfolio(portfolioA), //
+                        hasAccount(referenceAccountAwithUSD), //
+                        purchase( //
+                                        hasDate("2026-10-05T12:11:35"), hasShares(26), //
+                                        hasSecurity(hasTicker("AUUSIUSD"), hasIsin("CH0106027193")), //
+                                        hasAmount("USD", 3454.2), //
+                                        hasTaxes("USD", 0.00), hasFees("USD", 4.00), //
+                                        hasNote("Trade-ID: 1234567890 | Transaction-ID: 1234567890") //
+                        ))));
+
+
+        assertThat(results, not(hasItem(outboundCash( //
+                        hasNote("Trade-ID: 1144440025 | Transaction-ID: 4606872535")))));
     }
 }
