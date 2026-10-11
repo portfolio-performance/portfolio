@@ -149,7 +149,6 @@ public class IBFlexStatementExtractor implements Extractor
     /**
      * Parses a date/time string using all supported formats.
      * <p/>
-     * If a timezone is present, it is dropped (not converted).
      *
      * @param dateTime
      *            the date/time string to parse
