@@ -1285,6 +1285,7 @@ public class Messages extends NLS
     public static String PrefDescriptionCoinGeckoDemoAPIKey;
     public static String PrefDescriptionDivvyDiary;
     public static String PrefDescriptionEODHistoricalData;
+    public static String PrefDescriptionFXMacroData;
     public static String PrefDescriptionFinnhub;
     public static String PrefDescriptionLeeway;
     public static String PrefDescriptionMyDividends24;
@@ -1296,6 +1297,7 @@ public class Messages extends NLS
     public static String PrefDescriptionTwelveData;
     public static String PrefDivvyDiaryAPIKey;
     public static String PrefEODHistoricalDataAPIKey;
+    public static String PrefFXMacroDataAPIKey;
     public static String PrefFinnhubAPIKey;
     public static String PrefLabelAlwaysDisplayCurrencyCode;
     public static String PrefLabelAutoSaveFrequency;
@@ -1356,6 +1358,7 @@ public class Messages extends NLS
     public static String PrefTitleEODHistoricalData;
     public static String PrefTitleExperimentalFeatures;
     public static String PrefSiftingAPIKey;
+    public static String PrefTitleFXMacroData;
     public static String PrefTitleFinnhub;
     public static String PrefTitleFormatting;
     public static String PrefTitleGeneral;
