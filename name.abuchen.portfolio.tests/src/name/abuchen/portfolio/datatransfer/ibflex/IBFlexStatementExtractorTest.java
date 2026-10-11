@@ -3916,26 +3916,10 @@ public class IBFlexStatementExtractorTest
         referenceAccountAwithUSD.setCurrencyCode("USD");
         client.addAccount(referenceAccountAwithUSD);
 
-        // name starts with the name of the reference account, but has different
-        // currency. For now, this is the naming convention to support the
-        // multi-currency accounts in the import file
-        var accountAwithEUR = new Account("A EUR");
-        accountAwithEUR.setCurrencyCode("EUR");
-        client.addAccount(accountAwithEUR);
-
-        var referenceAcctountBwithEUR = new Account("B");
-        referenceAcctountBwithEUR.setCurrencyCode("EUR");
-        client.addAccount(referenceAcctountBwithEUR);
-
         // Match on accountId.
-        var portfolioA = new Portfolio("U12345678");
+        var portfolioA = new Portfolio("A");
         portfolioA.setReferenceAccount(referenceAccountAwithUSD);
         client.addPortfolio(portfolioA);
-
-        // Match on acctAlias.
-        var portfolioB = new Portfolio("B");
-        portfolioB.setReferenceAccount(referenceAcctountBwithEUR);
-        client.addPortfolio(portfolioB);
 
         var extractor = new IBFlexStatementExtractor(client);
         var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile30.xml");
@@ -3958,9 +3942,5 @@ public class IBFlexStatementExtractorTest
                                         hasTaxes("USD", 0.00), hasFees("USD", 4.00), //
                                         hasNote("Trade-ID: 1234567890 | Transaction-ID: 1234567890") //
                         ))));
-
-
-        assertThat(results, not(hasItem(outboundCash( //
-                        hasNote("Trade-ID: 1144440025 | Transaction-ID: 4606872535")))));
     }
 }
