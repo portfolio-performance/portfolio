@@ -3925,7 +3925,6 @@ public class IBFlexStatementExtractorTest
         referenceAccountAwithUSD.setCurrencyCode("USD");
         client.addAccount(referenceAccountAwithUSD);
 
-        // Match on accountId.
         var portfolioA = new Portfolio("A");
         portfolioA.setReferenceAccount(referenceAccountAwithUSD);
         client.addPortfolio(portfolioA);
