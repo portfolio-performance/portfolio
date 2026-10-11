@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Portfolio Performance REST API
 Bundle-SymbolicName: name.abuchen.portfolio.rest
-Bundle-Version: 0.89.0
+Bundle-Version: 0.89.1.qualifier
 Bundle-Vendor: Andreas Buchen
 Bundle-RequiredExecutionEnvironment: JavaSE-21
 Require-Bundle: name.abuchen.portfolio;bundle-version="0.85.1",
