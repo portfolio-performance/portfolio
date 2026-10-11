@@ -463,6 +463,10 @@ public class RestApiPreferencePage extends PreferencePage
     @Override
     public boolean performOk()
     {
+        // The dialog also saves pages the user has not visited.
+        if (portText == null)
+            return true;
+
         int port;
         try
         {
