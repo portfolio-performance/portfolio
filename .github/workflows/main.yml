@@ -44,7 +44,7 @@ jobs:
         run: |
           mvn verify \
             --batch-mode \
-            -Popenapi-lint \
+            -Popenapi-lint,openapi-compat \
             --file portfolio-app/pom.xml
 
   # Runs only on the master branch of the main repo; includes SonarQube analysis.
@@ -85,7 +85,7 @@ jobs:
         run: |
           mvn verify sonar:sonar \
             --batch-mode \
-            -Popenapi-lint \
+            -Popenapi-lint,openapi-compat \
             -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
             --file portfolio-app/pom.xml
         env:
