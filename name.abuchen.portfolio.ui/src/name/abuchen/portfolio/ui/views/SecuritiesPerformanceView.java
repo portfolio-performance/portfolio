@@ -1380,6 +1380,8 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
                         aggregate -> Values.Money.format(
                                         aggregate.sum(getClient().getBaseCurrency(), r -> r.getDelta()),
                                         getClient().getBaseCurrency())));
+        column.setToolTipProvider(element -> ((RowElement) element)
+                        .explain(LazySecurityPerformanceRecord.Trails.ABSOLUTE_PERFORMANCE));
         column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getDelta()));
         recordColumns.addColumn(column);
 
