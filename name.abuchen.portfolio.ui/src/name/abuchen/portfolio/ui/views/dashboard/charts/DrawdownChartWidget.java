@@ -85,7 +85,7 @@ public class DrawdownChartWidget extends WidgetDelegate<Object>
         // just fill the cache - the chart series builder will look it up and
         // pass it directly to the chart
 
-        DataSeriesCache cache = getDashboardData().getDataSeriesCache();
+        DataSeriesCache cache = getDataSeriesCache();
 
         DataSeries serie = get(DataSeriesConfig.class).getDataSeries();
         Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now());
@@ -118,7 +118,7 @@ public class DrawdownChartWidget extends WidgetDelegate<Object>
             Interval reportingPeriod = get(ReportingPeriodConfig.class).getReportingPeriod()
                             .toInterval(LocalDate.now());
 
-            PerformanceIndex index = getDashboardData().getDataSeriesCache()
+            PerformanceIndex index = getDataSeriesCache()
                             .lookup(get(DataSeriesConfig.class).getDataSeries(), reportingPeriod);
 
             addDrawdown(index);

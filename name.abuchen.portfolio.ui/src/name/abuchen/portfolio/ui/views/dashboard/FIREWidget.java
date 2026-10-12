@@ -414,7 +414,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             {
                 // Use last 1 year for current value calculation
                 var interval = Interval.of(now.minusYears(1), now);
-                var index = getDashboardData().calculate(dataSeries, interval);
+                var index = calculate(dataSeries, interval);
 
                 var totals = index.getTotals();
                 if (totals.length > 0)

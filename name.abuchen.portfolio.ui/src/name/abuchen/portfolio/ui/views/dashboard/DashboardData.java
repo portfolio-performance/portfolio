@@ -20,6 +20,7 @@ import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.editor.ReportingPeriods;
+import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesSet;
@@ -145,6 +146,17 @@ public class DashboardData
         return dataSeriesCache;
     }
 
+    public DataSeriesCache getDataSeriesCache(Widget widget)
+    {
+        String filterId = widget.getConfiguration().get(Dashboard.Config.CLIENT_FILTER.name());
+        if (filterId == null || filterId.isEmpty())
+            return dataSeriesCache;
+
+        var menu = new ClientFilterMenu(client, preferences);
+        return menu.selectItemFromClientFilterId(filterId).map(item -> dataSeriesCache.filtered(item.getFilter()))
+                        .orElse(dataSeriesCache);
+    }
+
     /**
      * Returns a generic cache that can be used by widgets to share data for the
      * current dashboard.
@@ -167,6 +179,11 @@ public class DashboardData
     public PerformanceIndex calculate(DataSeries dataSeries, Interval reportingPeriod)
     {
         return dataSeriesCache.lookup(dataSeries, reportingPeriod);
+    }
+
+    public PerformanceIndex calculate(DataSeries dataSeries, Interval reportingPeriod, Widget widget)
+    {
+        return getDataSeriesCache(widget).lookup(dataSeries, reportingPeriod);
     }
 
     public synchronized Map<Widget, Object> getResultCache()

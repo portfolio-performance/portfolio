@@ -28,7 +28,7 @@ public class TopContributorsReturnWidget extends AbstractTopContributorsWidget<L
         return () -> {
             var interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now());
 
-            var index = getDashboardData().calculate(get(DataSeriesConfig.class).getDataSeries(), interval);
+            var index = calculate(get(DataSeriesConfig.class).getDataSeries(), interval);
 
             var snapshot = index.getClientPerformanceSnapshot().orElseThrow(IllegalArgumentException::new);
             var client = snapshot.getClient();

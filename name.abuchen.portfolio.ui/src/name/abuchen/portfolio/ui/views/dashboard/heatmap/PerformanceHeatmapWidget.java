@@ -45,7 +45,7 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget<Double>
                         interval.getEnd().with(TemporalAdjusters.lastDayOfMonth()));
 
         DataSeries dataSeries = get(DataSeriesConfig.class).getDataSeries();
-        PerformanceIndex performanceIndex = getDashboardData().calculate(dataSeries, calcInterval);
+        PerformanceIndex performanceIndex = calculate(dataSeries, calcInterval);
 
         var actualInterval = performanceIndex.getActualInterval();
 
@@ -64,7 +64,7 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget<Double>
             // 0).
             actualInterval = performanceIndex.getFirstHoldingInterval();
 
-            PerformanceIndex benchmarkIndex = getDashboardData().calculate(benchmark, calcInterval);
+            PerformanceIndex benchmarkIndex = calculate(benchmark, calcInterval);
 
             DoubleBinaryOperator operator = get(ExcessReturnOperatorConfig.class).getValue().getOperator();
             var notBefore = actualInterval.getStart();

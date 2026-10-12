@@ -32,13 +32,11 @@ public class RatioWidget extends AbstractIndicatorWidget<Object>
     }
 
     @Override
-    public void onWidgetConfigEdited(Class<? extends WidgetConfig> type)
+    protected String getDefaultLabel()
     {
-        // construct label to indicate the data series (user can manually
-        // change the label later)
-        getWidget().setLabel(WidgetFactory.valueOf(getWidget().getType()).getLabel() + ", " //$NON-NLS-1$
+        return WidgetFactory.valueOf(getWidget().getType()).getLabel() + ", " //$NON-NLS-1$
                         + get(DataSeriesConfig.class).getDataSeries().getLabel() + " / " //$NON-NLS-1$
-                        + get(BaseDataSeriesConfig.class).getDataSeries().getLabel());
+                        + get(BaseDataSeriesConfig.class).getDataSeries().getLabel();
     }
 
     @Override
@@ -52,11 +50,9 @@ public class RatioWidget extends AbstractIndicatorWidget<Object>
             // reporting period, we shorten the calculation interval
             interval = Interval.of(interval.getEnd(), interval.getEnd());
 
-            PerformanceIndex index = getDashboardData().calculate(get(DataSeriesConfig.class).getDataSeries(),
-                            interval);
+            PerformanceIndex index = calculate(get(DataSeriesConfig.class).getDataSeries(), interval);
 
-            PerformanceIndex base = getDashboardData().calculate(get(BaseDataSeriesConfig.class).getDataSeries(),
-                            interval);
+            PerformanceIndex base = calculate(get(BaseDataSeriesConfig.class).getDataSeries(), interval);
 
             return (double) index.getTotals()[index.getTotals().length - 1]
                             / base.getTotals()[base.getTotals().length - 1];

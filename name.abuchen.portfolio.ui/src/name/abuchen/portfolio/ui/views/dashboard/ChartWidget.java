@@ -194,6 +194,7 @@ public class ChartWidget extends WidgetDelegate<Object>
         this.dataSeriesSet = new DataSeriesSet(dashboardData.getClient(), dashboardData.getPreferences(), useCase);
 
         addConfig(new ChartConfig(this, useCase));
+        addConfig(new ClientFilterConfig(this));
         if (useCase == DataSeries.UseCase.PERFORMANCE)
             addConfig(new AggregationConfig(this));
         addConfig(new ReportingPeriodConfig(this));
@@ -259,7 +260,7 @@ public class ChartWidget extends WidgetDelegate<Object>
         // just fill the cache - the chart series builder will look it up and
         // pass it directly to the chart
 
-        DataSeriesCache cache = getDashboardData().getDataSeriesCache();
+        DataSeriesCache cache = getDataSeriesCache();
 
         List<DataSeries> series = new DataSeriesSerializer().fromString(dataSeriesSet,
                         get(ChartConfig.class).getData());
@@ -327,14 +328,14 @@ public class ChartWidget extends WidgetDelegate<Object>
     private void buildAssetSeries(List<DataSeries> series, Interval reportingPeriod)
     {
         StatementOfAssetsSeriesBuilder b1 = new StatementOfAssetsSeriesBuilder(chart,
-                        getDashboardData().getDataSeriesCache());
+                        getDataSeriesCache());
         series.forEach(s -> b1.build(s, reportingPeriod));
     }
 
     private void buildPerformanceSeries(List<DataSeries> series, Interval reportingPeriod)
     {
         PerformanceChartSeriesBuilder b2 = new PerformanceChartSeriesBuilder(chart,
-                        getDashboardData().getDataSeriesCache());
+                        getDataSeriesCache());
         series.forEach(s -> b2.build(s, reportingPeriod, get(AggregationConfig.class).getAggregation()));
     }
 }

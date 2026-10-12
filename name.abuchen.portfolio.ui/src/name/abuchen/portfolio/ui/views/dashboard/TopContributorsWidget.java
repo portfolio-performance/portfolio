@@ -67,7 +67,7 @@ public class TopContributorsWidget extends AbstractTopContributorsWidget<ClientP
     public Supplier<ClientPerformanceSnapshot> getUpdateTask()
     {
         return () -> {
-            PerformanceIndex index = getDashboardData().calculate(get(DataSeriesConfig.class).getDataSeries(),
+            PerformanceIndex index = calculate(get(DataSeriesConfig.class).getDataSeries(),
                             get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now()));
             return index.getClientPerformanceSnapshot(true).orElseThrow(IllegalArgumentException::new);
         };

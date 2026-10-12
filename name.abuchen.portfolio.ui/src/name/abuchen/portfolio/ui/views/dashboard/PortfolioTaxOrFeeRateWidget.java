@@ -49,7 +49,7 @@ public class PortfolioTaxOrFeeRateWidget extends AbstractIndicatorWidget<Object>
     public Supplier<Object> getUpdateTask()
     {
         return () -> {
-            PerformanceIndex index = getDashboardData().calculate(get(DataSeriesConfig.class).getDataSeries(),
+            PerformanceIndex index = calculate(get(DataSeriesConfig.class).getDataSeries(),
                             get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now()));
 
             ClientPerformanceSnapshot snapshot = index.getClientPerformanceSnapshot()

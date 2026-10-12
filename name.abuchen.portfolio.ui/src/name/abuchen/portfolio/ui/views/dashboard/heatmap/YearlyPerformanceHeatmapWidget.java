@@ -66,7 +66,7 @@ public class YearlyPerformanceHeatmapWidget extends AbstractHeatmapWidget<Double
             // yearly data
             for (DataSeries series : dataSeries)
             {
-                PerformanceIndex performanceIndex = getDashboardData().calculate(series,
+                PerformanceIndex performanceIndex = calculate(series,
                                 new ReportingPeriod.YearX(year.getValue()).toInterval(now));
                 row.addData(performanceIndex.getFinalAccumulatedPercentage());
             }
@@ -81,7 +81,7 @@ public class YearlyPerformanceHeatmapWidget extends AbstractHeatmapWidget<Double
             sum = new HeatmapModel.Row<>("\u03A3", HeatmapOrnament.SUM.toString()); //$NON-NLS-1$
             for (DataSeries series : dataSeries)
             {
-                PerformanceIndex performanceIndex = getDashboardData().calculate(series, calcInterval);
+                PerformanceIndex performanceIndex = calculate(series, calcInterval);
                 sum.addData(performanceIndex.getFinalAccumulatedPercentage());
             }
         }
