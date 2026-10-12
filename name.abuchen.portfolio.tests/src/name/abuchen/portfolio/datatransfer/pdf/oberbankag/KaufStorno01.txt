@@ -1,0 +1,37 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.6.qualifier
+System: macosx | aarch64 | 21.0.9+10-LTS | Eclipse Adoptium
+-----------------------------------------
+Wertpapier-Abrechnu n g                             Kauf
+    Storno 888888 - 13.04.2021
+Depotnummer Betreuer
+Mustermann Max 111-1111.11 Z 3
+23
+Wertpapiernummer Bezeichnung Nominale/Stück
+US79466L3024 salesforce.com Inc. Abgang Stk .               9,00
+Registered Shares DL -,001
+Kurs 194 EUR Kurswert EUR            1.746,00
+Spesen EUR                7,25
+Summe EUR            1.753,25
+Handelszeitpunkt: 12.04.2021 09:09:43
+Handelsplatz: XETRA-Frankfurt
+Auftrags-Nr. 999999-12.04.2021
+Schlusstag 12.04.2021
+Kassatag 14.04.2021
+Verrechnung
+Verwahrart, Positionsdaten
+Wertpapierrechnung Wert 14.04.2021 EUR            1.753,25
+zu Gunsten Konto AT11 1111 1111 1111 1111
+Düsseldorf
+      Seite 1 von 2
+Oberbank AG, Rechtsform: Aktiengesellschaft, Sitz: Linz, Firmenbuch Nr. FN 79063w, Landesgericht Linz, DVR: 0019020, UID-Nr. ATU22852606
+Wertpapier-Abrechnung
+    Storno 888888 - 13.04.2021
+Depotbezeichnung Depotnummer Betreuer
+Mustermann Max 111-1111.11 Z 3
+23
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden                           9,00 STK
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG
+  steuerlicher Anschaffungswert:                                                 1.746,00 EUR
+Auftragszeitpunkt: 12.04.2021 um 09:03:10 Uhr
+Oberbank AG, Rechtsform: Aktiengesellschaft, Sitz: Linz, Firmenbuch Nr. FN 79063w, Landesgericht Linz, DVR: 0019020, UID-Nr. ATU22852606       Seite 2 von 2
