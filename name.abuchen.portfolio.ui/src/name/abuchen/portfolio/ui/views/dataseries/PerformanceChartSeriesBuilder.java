@@ -1,10 +1,13 @@
 package name.abuchen.portfolio.ui.views.dataseries;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swtchart.LineStyle;
 
 import name.abuchen.portfolio.snapshot.Aggregation;
+import name.abuchen.portfolio.snapshot.IRRSeries;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
