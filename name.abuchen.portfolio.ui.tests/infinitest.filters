@@ -1,2 +1,6 @@
 name.abuchen.portfolio.ui.update.NewVersionTest
 name.abuchen.portfolio.ui.wizards.pdfdebug.PDFDebugTextTest
+# Requires SWT colors and the Eclipse application runtime
+name.abuchen.portfolio.ui.views.dashboard.DashboardAccountFilterTest
+# Requires Eclipse workspace preferences and bundle state locations
+name.abuchen.portfolio.ui.preferences.RestApiPreferencePageTest

@@ -28,11 +28,23 @@ public class ClientFilterConfig implements WidgetConfig
                         .ifPresent(item -> this.menu.select(item));
     }
 
+    public void setSelectedItem(ClientFilterMenu.Item item)
+    {
+        // Reload definitions so that a filter created from the column menu is
+        // also available in this widget's menu.
+        menu = new ClientFilterMenu(delegate.getClient(), delegate.getDashboardData().getPreferences(),
+                        f -> filterSelected());
+        menu.selectItemFromClientFilterId(item.getId());
+        filterSelected();
+    }
+
     private void filterSelected()
     {
         // store/save selected filter
         delegate.getWidget().getConfiguration().put(Dashboard.Config.CLIENT_FILTER.name(),
                         menu.getSelectedItem().getId());
+
+        delegate.onWidgetConfigEdited(ClientFilterConfig.class);
 
         delegate.update();
         delegate.getClient().touch();

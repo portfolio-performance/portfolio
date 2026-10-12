@@ -42,7 +42,7 @@ jobs:
 
       - name: Build
         run: |
-          mvn verify \
+          xvfb-run --auto-servernum mvn verify \
             --batch-mode \
             -Popenapi-lint,openapi-compat \
             --file portfolio-app/pom.xml
@@ -83,7 +83,7 @@ jobs:
       - name: Build and analyze
         # sonar.login is deprecated since SonarQube 10.0 / SonarCloud — use sonar.token
         run: |
-          mvn verify sonar:sonar \
+          xvfb-run --auto-servernum mvn verify sonar:sonar \
             --batch-mode \
             -Popenapi-lint,openapi-compat \
             -Dsonar.token=${{ secrets.SONAR_TOKEN }} \

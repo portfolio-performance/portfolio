@@ -56,7 +56,7 @@ public enum WidgetFactory
                     (widget, data) -> IndicatorWidget.<Money>create(widget, data) //
                                     .with(Values.Money) //
                                     .with((ds, period) -> {
-                                        PerformanceIndex index = data.calculate(ds, period);
+                                        PerformanceIndex index = data.calculate(ds, period, widget);
                                         int length = index.getTotals().length;
                                         return Money.of(index.getCurrency(), index.getTotals()[length - 1]);
                                     }) //
@@ -67,7 +67,7 @@ public enum WidgetFactory
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
                                     .with(Values.Percent2) //
                                     .with((ds, period) -> {
-                                        PerformanceIndex index = data.calculate(ds, period);
+                                        PerformanceIndex index = data.calculate(ds, period, widget);
                                         return index.getFinalAccumulatedPercentage();
                                     }).build()),
 
@@ -75,21 +75,21 @@ public enum WidgetFactory
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
                                     .with(Values.AnnualizedPercent2) //
                                     .with((ds, period) -> {
-                                        PerformanceIndex index = data.calculate(ds, period);
+                                        PerformanceIndex index = data.calculate(ds, period, widget);
                                         return index.getFinalAccumulatedAnnualizedPercentage();
                                     }).build()),
 
     IRR(Messages.LabelIRR, Messages.ClientEditorLabelPerformance, //
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
                                     .with(Values.AnnualizedPercent2) //
-                                    .with((ds, period) -> data.calculate(ds, period).getPerformanceIRR()) //
+                                    .with((ds, period) -> data.calculate(ds, period, widget).getPerformanceIRR()) //
                                     .build()),
 
     ABSOLUTE_CHANGE(Messages.LabelAbsoluteChange, Messages.LabelStatementOfAssets, //
                     (widget, data) -> IndicatorWidget.<Money>create(widget, data) //
                                     .with(Values.Money) //
                                     .with((ds, period) -> {
-                                        PerformanceIndex index = data.calculate(ds, period);
+                                        PerformanceIndex index = data.calculate(ds, period, widget);
                                         int length = index.getTotals().length;
                                         return Money.of(index.getCurrency(),
                                                         index.getTotals()[length - 1] - index.getTotals()[0]);
@@ -101,7 +101,7 @@ public enum WidgetFactory
                     (widget, data) -> IndicatorWidget.<Money>create(widget, data) //
                                     .with(Values.Money) //
                                     .with((ds, period) -> {
-                                        long[] d = data.calculate(ds, period).calculateDelta();
+                                        long[] d = data.calculate(ds, period, widget).calculateDelta();
                                         return Money.of(data.getTermCurrency(), d.length > 0 ? d[d.length - 1] : 0L);
                                     }) //
                                     .withBenchmarkDataSeries(false) //
@@ -111,7 +111,7 @@ public enum WidgetFactory
                     (widget, data) -> IndicatorWidget.<Money>create(widget, data) //
                                     .with(Values.Money) //
                                     .with((ds, period) -> {
-                                        long[] d = data.calculate(ds, period).calculateAbsoluteDelta();
+                                        long[] d = data.calculate(ds, period, widget).calculateAbsoluteDelta();
                                         return Money.of(data.getTermCurrency(), d.length > 0 ? d[d.length - 1] : 0L);
                                     }) //
                                     .withBenchmarkDataSeries(false) //
@@ -121,7 +121,7 @@ public enum WidgetFactory
                     (widget, data) -> IndicatorWidget.<Money>create(widget, data) //
                                     .with(Values.Money) //
                                     .with((ds, period) -> {
-                                        long[] d = data.calculate(ds, period).getTransferals();
+                                        long[] d = data.calculate(ds, period, widget).getTransferals();
                                         // skip d[0] because it refers to the
                                         // day before start
                                         return Money.of(data.getTermCurrency(),
@@ -137,7 +137,7 @@ public enum WidgetFactory
                     (widget, data) -> IndicatorWidget.<Money>create(widget, data) //
                                     .with(Values.Money) //
                                     .with((ds, period) -> {
-                                        long[] d = data.calculate(ds, period).calculateInvestedCapital();
+                                        long[] d = data.calculate(ds, period, widget).calculateInvestedCapital();
                                         return Money.of(data.getTermCurrency(), d.length > 0 ? d[d.length - 1] : 0L);
                                     }) //
                                     .withBenchmarkDataSeries(false) //
@@ -149,7 +149,7 @@ public enum WidgetFactory
                     (widget, data) -> IndicatorWidget.<Money>create(widget, data) //
                                     .with(Values.Money) //
                                     .with((ds, period) -> {
-                                        long[] d = data.calculate(ds, period).calculateAbsoluteInvestedCapital();
+                                        long[] d = data.calculate(ds, period, widget).calculateAbsoluteInvestedCapital();
                                         return Money.of(data.getTermCurrency(), d.length > 0 ? d[d.length - 1] : 0L);
                                     }) //
                                     .withBenchmarkDataSeries(false) //
@@ -161,14 +161,14 @@ public enum WidgetFactory
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
                                     .with(Values.Percent2) //
                                     .with((ds, period) -> {
-                                        PerformanceIndex index = data.calculate(ds, period);
+                                        PerformanceIndex index = data.calculate(ds, period, widget);
                                         return index.getDrawdown().getMaxDrawdown();
                                     }) //
                                     .withTooltip((ds, period) -> {
                                         DateTimeFormatter formatter = DateTimeFormatter
                                                         .ofLocalizedDate(FormatStyle.LONG)
                                                         .withZone(ZoneId.systemDefault());
-                                        PerformanceIndex index = data.calculate(ds, period);
+                                        PerformanceIndex index = data.calculate(ds, period, widget);
                                         Drawdown drawdown = index.getDrawdown();
                                         return MessageFormat.format(Messages.TooltipMaxDrawdown,
                                                         formatter.format(
@@ -182,7 +182,7 @@ public enum WidgetFactory
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
                                     .with(Values.Percent2) //
                                     .with((ds, period) -> {
-                                        PerformanceIndex index = data.calculate(ds, period);
+                                        PerformanceIndex index = data.calculate(ds, period, widget);
                                         double[] accumulated = index.getAccumulatedPercentage();
                                         if (accumulated.length == 0)
                                             return 0.0;
@@ -229,7 +229,7 @@ public enum WidgetFactory
                                         }
                                     }) //
                                     .withTooltip((ds, period) -> {
-                                        PerformanceIndex index = data.calculate(ds, period);
+                                        PerformanceIndex index = data.calculate(ds, period, widget);
                                         double[] accumulated = index.getAccumulatedPercentage();
                                         if (accumulated.length == 0)
                                             return Messages.TooltipCurrentDrawdown;
@@ -267,7 +267,7 @@ public enum WidgetFactory
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
                                     .with(Values.Percent2) //
                                     .with((ds, period) -> {
-                                        PerformanceIndex index = data.calculate(ds, period);
+                                        PerformanceIndex index = data.calculate(ds, period, widget);
                                         return index.getVolatility().getStandardDeviation();
                                     }) //
                                     .withTooltip((ds, period) -> Messages.TooltipVolatility) //
@@ -280,7 +280,7 @@ public enum WidgetFactory
                                     .withColoredValues(false) //
                                     .withConfig(delegate -> new RiskFreeRateOfReturnConfig(delegate)) //
                                     .with((ds, period) -> {
-                                        PerformanceIndex index = data.calculate(ds, period);
+                                        PerformanceIndex index = data.calculate(ds, period, widget);
                                         double r = index.getPerformanceIRR();
                                         double rf = new ClientProperties(data.getClient()).getRiskFreeRateOfReturn();
                                         double volatility = index.getVolatility().getStandardDeviation();
@@ -293,7 +293,7 @@ public enum WidgetFactory
                                         return excessReturn / volatility;
                                     }) //
                                     .withTooltip((ds, period) -> {
-                                        PerformanceIndex index = data.calculate(ds, period);
+                                        PerformanceIndex index = data.calculate(ds, period, widget);
                                         double r = index.getPerformanceIRR();
                                         double rf = new ClientProperties(data.getClient()).getRiskFreeRateOfReturn();
                                         double volatility = index.getVolatility().getStandardDeviation();
@@ -308,11 +308,11 @@ public enum WidgetFactory
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
                                     .with(Values.Percent2) //
                                     .with((ds, period) -> {
-                                        PerformanceIndex index = data.calculate(ds, period);
+                                        PerformanceIndex index = data.calculate(ds, period, widget);
                                         return index.getVolatility().getSemiDeviation();
                                     }) //
                                     .withTooltip((ds, period) -> {
-                                        PerformanceIndex index = data.calculate(ds, period);
+                                        PerformanceIndex index = data.calculate(ds, period, widget);
                                         Volatility vola = index.getVolatility();
                                         return MessageFormat.format(Messages.TooltipSemiVolatility,
                                                         Values.Percent5.format(vola.getExpectedSemiDeviation()),
@@ -385,7 +385,7 @@ public enum WidgetFactory
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
                                     .with(Values.Percent2) //
                                     .with((ds, period) -> {
-                                        PerformanceIndex index = data.calculate(ds, period);
+                                        PerformanceIndex index = data.calculate(ds, period, widget);
                                         OptionalDouble average = LongStream.of(index.getTotals()).average();
                                         if (!average.isPresent() || average.getAsDouble() <= 0)
                                             return 0.0;
@@ -395,7 +395,7 @@ public enum WidgetFactory
                                     }) //
                                     .withBenchmarkDataSeries(false) //
                                     .withTooltip((ds, period) -> {
-                                        PerformanceIndex index = data.calculate(ds, period);
+                                        PerformanceIndex index = data.calculate(ds, period, widget);
                                         String currency = data.getCurrencyConverter().getTermCurrency();
                                         OptionalDouble average = LongStream.of(index.getTotals()).average();
                                         long buy = LongStream.of(index.getBuys()).sum();
@@ -526,7 +526,7 @@ public enum WidgetFactory
                     (widget, data) -> IndicatorWidget.<Money>create(widget, data) //
                                     .with(Values.Money) //
                                     .with((ds, period) -> {
-                                        PerformanceIndex index = data.calculate(ds, period);
+                                        PerformanceIndex index = data.calculate(ds, period, widget);
                                         long[] totals = index.getTotals();
                                         long maxValue = 0;
                                         for (long value : totals)
@@ -537,7 +537,7 @@ public enum WidgetFactory
                                     }) //
                                     .withBenchmarkDataSeries(false) //
                                     .withTooltip((ds, period) -> {
-                                        PerformanceIndex index = data.calculate(ds, period);
+                                        PerformanceIndex index = data.calculate(ds, period, widget);
                                         long[] totals = index.getTotals();
                                         long maxValue = 0;
                                         int maxIndex = 0;
@@ -612,7 +612,9 @@ public enum WidgetFactory
 
     public WidgetDelegate<?> constructDelegate(Dashboard.Widget widget, DashboardData data)
     {
-        return this.createFunction.apply(widget, data);
+        var delegate = this.createFunction.apply(widget, data);
+        delegate.updateDefaultLabel();
+        return delegate;
     }
 
     public Widget constructWidget()

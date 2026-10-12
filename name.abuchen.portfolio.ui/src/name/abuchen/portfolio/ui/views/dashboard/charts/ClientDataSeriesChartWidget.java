@@ -144,7 +144,7 @@ public class ClientDataSeriesChartWidget extends WidgetDelegate<PerformanceIndex
     @Override
     public Supplier<PerformanceIndex> getUpdateTask()
     {
-        DataSeriesCache cache = getDashboardData().getDataSeriesCache();
+        DataSeriesCache cache = getDataSeriesCache();
 
         DataSeries serie = get(DataSeriesConfig.class).getDataSeries();
         Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now());

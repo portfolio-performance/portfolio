@@ -11,6 +11,10 @@ import org.eclipse.swt.widgets.Control;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Dashboard;
+import name.abuchen.portfolio.snapshot.PerformanceIndex;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
+import name.abuchen.portfolio.util.Interval;
 
 /**
  * Base UI class for a widget. <D> represents the data object which is
@@ -33,6 +37,10 @@ public abstract class WidgetDelegate<D>
     public final void addConfig(WidgetConfig config)
     {
         this.config.add(config);
+        // Widgets that calculate data series can also restrict their accounts.
+        if ((config.getClass() == DataSeriesConfig.class || config instanceof MultiDataSeriesConfig)
+                        && optionallyGet(ClientFilterConfig.class).isEmpty())
+            this.config.add(new ClientFilterConfig(this));
     }
 
     public final void addConfigAfter(Class<? extends WidgetConfig> type, WidgetConfig config)
@@ -64,6 +72,16 @@ public abstract class WidgetDelegate<D>
         return data;
     }
 
+    protected DataSeriesCache getDataSeriesCache()
+    {
+        return data.getDataSeriesCache(widget);
+    }
+
+    protected PerformanceIndex calculate(DataSeries series, Interval interval)
+    {
+        return getDataSeriesCache().lookup(series, interval);
+    }
+
     public <C extends WidgetConfig> C get(Class<C> type)
     {
         return type.cast(config.stream().filter(c -> type.equals(c.getClass())).findAny()
@@ -82,13 +100,34 @@ public abstract class WidgetDelegate<D>
 
     public void onWidgetConfigEdited(Class<? extends WidgetConfig> type)
     {
-        if (type == DataSeriesConfig.class)
+        if (DataSeriesConfig.class.isAssignableFrom(type) || type == ClientFilterConfig.class)
         {
-            // construct label to indicate the data series (user can manually
-            // change the label later)
-            getWidget().setLabel(WidgetFactory.valueOf(getWidget().getType()).getLabel() + ", " //$NON-NLS-1$
-                            + get(DataSeriesConfig.class).getDataSeries().getLabel());
+            // Construct a label for the selected series and account filter.
+            // The user can manually change the label later.
+            var label = new StringBuilder(getDefaultLabel());
+            optionallyGet(ClientFilterConfig.class).map(ClientFilterConfig::getSelectedItem)
+                            .filter(item -> !item.getId().isEmpty())
+                            .ifPresent(item -> label.append(", ").append(item.getLabel())); //$NON-NLS-1$
+            getWidget().setLabel(label.toString());
         }
+    }
+
+    protected String getDefaultLabel()
+    {
+        String defaultLabel = WidgetFactory.valueOf(getWidget().getType()).getLabel();
+        return optionallyGet(DataSeriesConfig.class).map(DataSeriesConfig::getDataSeries)
+                        .map(series -> defaultLabel + ", " + series.getLabel()).orElse(defaultLabel); //$NON-NLS-1$
+    }
+
+    void updateDefaultLabel()
+    {
+        // Upgrade existing generated labels after loading all configurations.
+        // Custom labels remain editable and are preserved when opening a
+        // dashboard.
+        String defaultLabel = WidgetFactory.valueOf(getWidget().getType()).getLabel();
+        if (defaultLabel.equals(widget.getLabel()) || getDefaultLabel().equals(widget.getLabel()))
+            optionallyGet(ClientFilterConfig.class).filter(config -> !config.getSelectedItem().getId().isEmpty())
+                            .ifPresent(config -> onWidgetConfigEdited(ClientFilterConfig.class));
     }
 
     public abstract Composite createControl(Composite parent, DashboardResources resources);

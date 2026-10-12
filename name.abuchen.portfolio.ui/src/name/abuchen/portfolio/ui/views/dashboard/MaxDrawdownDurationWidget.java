@@ -46,7 +46,7 @@ public class MaxDrawdownDurationWidget extends AbstractIndicatorWidget<Performan
     @Override
     public Supplier<PerformanceIndex> getUpdateTask()
     {
-        return () -> getDashboardData().getDataSeriesCache() //
+        return () -> getDataSeriesCache() //
                         .lookup(get(DataSeriesConfig.class).getDataSeries(), get(ReportingPeriodConfig.class)
                                         .getReportingPeriod().toInterval(LocalDate.now()));
     }
