@@ -252,6 +252,65 @@ public class FXMacroDataQuoteFeedTest
     }
 
     @Test
+    public void testHistoricalQuotesRetriesFullRangeAfterLaterHttpError()
+                    throws IOException, QuoteFeedException, URISyntaxException
+    {
+        var feed = feed();
+        var security = security("USD/JPY");
+        doReturn(FIRST_PAGE).doThrow(new WebAccessException("500 Internal Server Error", 500, List.of(),
+                        "{ \"detail\": \"Synthetic later-page failure\" }"))
+                        .when(feed).request(any());
+
+        var failed = feed.getHistoricalQuotes(security, true);
+
+        assertTrue(failed.getLatestPrices().isEmpty()); // NOSONAR
+        assertThat(failed.getErrors().size(), is(1));
+        assertThat(failed.getResponses().size(), is(1));
+        // This is the same merge used by HistoricalTask's default policy.
+        assertFalse(security.addAllPrices(failed.getPrices()));
+        assertTrue(security.getPrices().isEmpty()); // NOSONAR
+
+        doReturn(FIRST_PAGE, SECOND_PAGE).when(feed).request(any());
+        var retried = feed.getHistoricalQuotes(security, false);
+
+        assertTrue(retried.getErrors().isEmpty()); // NOSONAR
+        assertThat(retried.getLatestPrices().size(), is(3));
+
+        var requests = ArgumentCaptor.forClass(WebAccess.class);
+        verify(feed, times(4)).request(requests.capture());
+        var startDate = "start_date=" + LocalDate.now().minusYears(10);
+        assertThat(requests.getAllValues().get(0).getURL(), containsString(startDate));
+        assertThat(requests.getAllValues().get(2).getURL(), containsString(startDate));
+    }
+
+    @Test
+    public void testHistoricalQuotesDiscardsPricesAfterLaterIoError() throws IOException, QuoteFeedException
+    {
+        var feed = feed();
+        doReturn(FIRST_PAGE).doThrow(new IOException("Synthetic later-page failure"))
+                        .when(feed).request(any());
+
+        var data = feed.getHistoricalQuotes(security("USD/JPY"), true);
+
+        assertTrue(data.getLatestPrices().isEmpty()); // NOSONAR
+        assertThat(data.getErrors().size(), is(1));
+        assertThat(data.getResponses().size(), is(1));
+        verify(feed, times(2)).request(any());
+    }
+
+    @Test
+    public void testHistoricalQuotesThrowsAfterLaterRateLimit() throws IOException
+    {
+        var feed = feed();
+        doReturn(FIRST_PAGE).doThrow(new WebAccessException("429 Too Many Requests", 429, List.of(), null))
+                        .when(feed).request(any());
+
+        assertThrows(RateLimitExceededException.class,
+                        () -> feed.getHistoricalQuotes(security("USD/JPY"), false));
+        verify(feed, times(2)).request(any());
+    }
+
+    @Test
     public void testApiKeyIsSentAsHeaderOnly() throws IOException, QuoteFeedException, URISyntaxException
     {
         var feed = feed();

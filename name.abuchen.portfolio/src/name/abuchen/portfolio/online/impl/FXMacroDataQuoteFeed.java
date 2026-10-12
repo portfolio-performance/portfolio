@@ -247,6 +247,11 @@ public class FXMacroDataQuoteFeed implements QuoteFeed
             offset = nextOffset;
         }
 
+        // The caller merges returned prices even when errors are present. Do
+        // not advance its next start date with an incomplete history download.
+        if (!data.getErrors().isEmpty())
+            data.getLatestPrices().clear();
+
         return data;
     }
 
