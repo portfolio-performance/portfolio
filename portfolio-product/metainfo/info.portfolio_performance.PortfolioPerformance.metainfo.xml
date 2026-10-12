@@ -37,6 +37,32 @@
 	    <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.89.0" date="2026-10-11">
+      <description>
+        <ul>
+          <li>Experimental: An MCP endpoint lets AI assistants read and update parts of your portfolio data. This first version does not cover everything yet, and feedback is welcome. It is off by default and can be enabled in the preferences.</li>
+          <li>New: "Open in new window" in the tab context menu opens a copy of the portfolio view in a separate window.</li>
+          <li>New: Deposit account attributes can now be shown as columns in the Statement of Assets and in taxonomies.</li>
+          <li>New: PDF importers for bank99, Charles Schwab, E*TRADE, Robinhood and Volksbank Wien.</li>
+          <li>Improvement: Improved PDF importers for Baader Bank, C24 Bank, DEGIRO, Deutsche Bank, DKB, easybank, Erste Bank, flatex, ING-DiBa, J&amp;T Direktbank (now also J&amp;T Banka Slovakia), Liechtensteinische Landesbank, Postbank, Raiffeisenbank, S-Broker, Scalable Capital, St.Galler Kantonalbank, Targobank and Trade Republic.</li>
+          <li>Improvement: The Trade Republic CSV importer now books deposit fees as separate fee transactions.</li>
+          <li>Improvement: The attribute type "Percent (simple)" has been renamed to "Number (2 decimals)" because the old name incorrectly suggested that the value was a percentage.</li>
+          <li>Fix: Fees charged on dividends are now included in a security's total fees.</li>
+          <li>Fix: For short trades, the moving-average cost is now shown as undefined instead of zero.</li>
+          <li>Fix: The Kraken quote feed now loads historical prices for securities without existing price data.</li>
+          <li xml:lang="de">Experimentell: Über einen MCP-Endpunkt können KI-Assistenten Teile deiner Portfoliodaten lesen und ändern. Diese erste Version deckt noch nicht alles ab und über Feedback freuen wir uns. Die Funktion ist standardmäßig ausgeschaltet und lässt sich in den Einstellungen aktivieren.</li>
+          <li xml:lang="de">Neu: "In neuem Fenster öffnen" im Kontextmenü der Registerkarten öffnet eine Kopie der Portfolioansicht in einem separaten Fenster.</li>
+          <li xml:lang="de">Neu: Attribute von Konten können jetzt als Spalten in der Vermögensaufstellung und in den Klassifizierungen angezeigt werden.</li>
+          <li xml:lang="de">Neu: PDF-Importer für bank99, Charles Schwab, E*TRADE, Robinhood und Volksbank Wien.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für Baader Bank, C24 Bank, DEGIRO, Deutsche Bank, DKB, easybank, Erste Bank, flatex, ING-DiBa, J&amp;T Direktbank (jetzt auch J&amp;T Banka Slowakei), Liechtensteinische Landesbank, Postbank, Raiffeisenbank, S-Broker, Scalable Capital, St.Galler Kantonalbank, Targobank und Trade Republic wurden verbessert.</li>
+          <li xml:lang="de">Verbesserung: Der CSV-Importer für Trade Republic bucht Gebühren bei Einlagen/Einzahlungen jetzt als separate Gebührenbuchungen.</li>
+          <li xml:lang="de">Verbesserung: Der Attributtyp "Prozentzahl (einfach)" heißt jetzt "Zahl (2 Dezimalstellen)", da der alte Name fälschlicherweise einen Prozentwert suggerierte.</li>
+          <li xml:lang="de">Fehlerbehebung: Gebühren auf Dividenden werden jetzt in den Gesamtgebühren eines Wertpapiers berücksichtigt.</li>
+          <li xml:lang="de">Fehlerbehebung: Bei Leerverkäufen (Short-Trades) wird der gleitende Durchschnittseinstand jetzt als undefiniert statt als 0 angezeigt.</li>
+          <li xml:lang="de">Fehlerbehebung: Der Kursanbieter Kraken lädt jetzt historische Kurse auch für Wertpapiere, für die noch keine Kurse vorhanden sind.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.88.0" date="2026-10-04">
       <description>
         <ul>

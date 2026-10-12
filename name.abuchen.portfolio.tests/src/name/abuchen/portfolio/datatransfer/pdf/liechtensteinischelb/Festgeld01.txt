@@ -1,0 +1,35 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.87.1.202609180847
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Liechtensteinische
+Landesbank AG
+Städtle 44 · Postfach 384
+9490 Vaduz · Liechtenstein
+Telefon +423 236 88 11
+Fax +423 236 88 22
+Sitz Vaduz
+Registerbehörde: AJU
+HR FL-0001.000.289-1
+Herr oder Frau 
+Lmmx oder lzcWcaR wbmyCvIB NArH eOhhO
+gwVRitVNyWQq 92 Referenz STX / ZiD
+Direktwahl +454 236 82 45
+0814 lTvq 
+Direktfax +423 236 72 98
+Vaduz, 2. Juni 2023
+Portfolionummer 1111.2222.3333
+Fixed-Term Deposit HUF, 14.7%, 06.06.23-06.07.23 (1972515)
+Festgeldanlage
+Auftragsnummer 305856191
+Sie haben bei uns folgende Festgeldanlage getätigt:
+Anlagebetrag HUF 3'770'000.00
+Zinssatz 14.7 % p. a.
+Laufzeit 06.06.2023 - 06.07.2023
+Anzahl Zinstage 30
+Zinsusanz 365/360
+Zinsertrag bei Fälligkeit HUF 46'182.50
+Zu Ihren Lasten Valuta 6. Juni 2023 HUF 3'770'000.00
+Den Betrag haben wir belastet: Konto 9999.8888.7777 Kontokorrent HUF.
+Elektronisch zugestellt
+MMKT 1757 20230602 61499-853067907-284628665 EBANKING

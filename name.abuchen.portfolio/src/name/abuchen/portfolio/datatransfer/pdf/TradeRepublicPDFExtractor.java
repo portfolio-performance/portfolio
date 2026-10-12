@@ -75,6 +75,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         + "|REGOLAMENTO TITOLI" //
                         + "|REGOLAMENTO TITOLI ROUND UP" //
                         + "|ZWANGS.BERNAHME" //
+                        + "|(?m:^FUSION$(?![\\s\\S]*^[\\d] Einbuchung ))" //
                         + "|TILGUNG" //
                         + "|REPAYMENT" //
                         + "|AUS.BUNG VON OPTIONSSCHEINEN)", //
@@ -108,6 +109,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         + "|Ex.cution de l.investissement programm." //
                                         + "|REINVESTIERUNG" //
                                         + "|ZWANGS.BERNAHME" //
+                                        + "|FUSION" //
                                         + "|TILGUNG" //
                                         + "|REPAYMENT))" //
                                         + ".*$")
@@ -117,6 +119,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                             || "Venta".equalsIgnoreCase(v.get("type")) //
                                             || "Vente".equalsIgnoreCase(v.get("type")) //
                                             || "ZWANGSÜBERNAHME".equalsIgnoreCase(v.get("type")) //
+                                            || "FUSION".equalsIgnoreCase(v.get("type")) //
                                             || "TILGUNG".equalsIgnoreCase(v.get("type")) //
                                             || "REPAYMENT".equalsIgnoreCase(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
@@ -191,6 +194,22 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^.* .[\\.,\\d]+ (?<currency>\\p{Sc}) (?<name>.*)$")
                                                         .match("^[\\d] (Ausbuchung|Tilgung|Repayment) [\\.,\\d]+ St.cke$")
                                                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // NR. BUCHUNG WERTPAPIER BETRAG
+                                        // Warner Bros Discovery
+                                        // 1 Ausbuchung 48 Stücke
+                                        // US9344231041
+                                        // ABRECHNUNG
+                                        // Zwischensumme 1488.80 USD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "currency") //
+                                                        .find("NR\\. BUCHUNG WERTPAPIER BETRAG")
+                                                        .match("^(?<name>.*)$")
+                                                        .match("^[\\d] Ausbuchung [\\.,\\d]+ St.cke$")
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
+                                                        .match("^Zwischensumme [\\.,\\d]+ (?<currency>[A-Z]{3})$")
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Bundesrep.Deutschland 1.019 EUR 98,05 % 999,13 EUR
@@ -593,11 +612,23 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // 1 Barausgleich 108,46 NOK
                                         // Zwischensumme 11,370137 EUR/NOK 9,54 EUR
+                                        //
+                                        // Zwischensumme 1488.80 USD
+                                        // Zwischensumme 1.126900 USD/EUR 1321.15 EUR
                                         // @formatter:on
                                         section -> section
-                                                .attributes("exchangeRate", "baseCurrency", "termCurrency", "gross")
-                                                .match("^Zwischensumme (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[A-Z]{3})\\/(?<termCurrency>[A-Z]{3}) (?<gross>[\\.,\\d]+) [A-Z]{3}$")
+                                                .attributes("exchangeRate", "baseCurrency", "termCurrency", "gross", "currency")
+                                                .match("^Zwischensumme (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[A-Z]{3})\\/(?<termCurrency>[A-Z]{3}) (?<gross>[\\.,\\d]+) (?<currency>[A-Z]{3})$")
                                                 .assign((t, v) -> {
+                                                    // The currency pair can be labelled the other way round
+                                                    // (USD/EUR instead of EUR/USD), the amount is always in
+                                                    // the base currency
+                                                    if (!asCurrencyCode(v.get("currency")).equals(asCurrencyCode(v.get("baseCurrency"))))
+                                                    {
+                                                        v.put("termCurrency", asCurrencyCode(v.get("baseCurrency")));
+                                                        v.put("baseCurrency", asCurrencyCode(v.get("currency")));
+                                                    }
+
                                                     var rate = asExchangeRate(v);
                                                     type.getCurrentContext().putType(rate);
 
@@ -4119,6 +4150,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         + "|SPIN\\-OFF" //
                         + "|UMTAUSCH\\/BEZUG" //
                         + "|STEUERLICHER UMTAUSCH)", //
+                        "(?m)^FUSION$(?![\\s\\S]*^[\\d] Einbuchung )", //
                         documentContext -> documentContext //
                                         .section("transaction") //
                                         .match("^(?<transaction>(SPLIT" //
@@ -4291,6 +4323,22 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^.* .[\\.,\\d]+ (?<currency>\\p{Sc}) (?<name>.*)$")
                                                         .match("^[\\d] (Ausbuchung|Tilgung|Repayment) [\\.,\\d]+ St.cke$")
                                                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // NR. BUCHUNG WERTPAPIER BETRAG
+                                        // Warner Bros Discovery
+                                        // 1 Ausbuchung 48 Stücke
+                                        // US9344231041
+                                        // ABRECHNUNG
+                                        // Zwischensumme 1488.80 USD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "currency") //
+                                                        .find("NR\\. BUCHUNG WERTPAPIER BETRAG")
+                                                        .match("^(?<name>.*)$")
+                                                        .match("^[\\d] Ausbuchung [\\.,\\d]+ St.cke$")
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
+                                                        .match("^Zwischensumme [\\.,\\d]+ (?<currency>[A-Z]{3})$")
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Bundesrep.Deutschland 1.019 EUR 98,05 % 999,13 EUR

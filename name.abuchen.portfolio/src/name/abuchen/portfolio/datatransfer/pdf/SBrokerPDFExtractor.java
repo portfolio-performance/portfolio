@@ -368,12 +368,16 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
                         .oneOf( //
                                         // @formatter:off
+                                        // Nominal Ex-Tag Zahltag Ausschüttungsbetrag pro Stück
                                         // STK 16,000 17.11.2014 17.11.2014 EUR 0,793806
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("date") //
-                                                        .match("^STK [\\.,\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .attributes("exDate", "date") //
+                                                        .match("^STK [\\.,\\d]+ (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setExDate(asDate(v.get("exDate")));
+                                                        }),
                                         // @formatter:off
                                         // Zahlbarkeitstag 31.12.2021 Ausschüttung pro St. 0,125275000 USD
                                         // @formatter:on
@@ -603,6 +607,11 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             // If we have a gross reinvestment, then the "noTax"
                             // flag must be removed.
                             type.getCurrentContext().remove("noTax");
+
+                            // The ex-date is only relevant for dividends, not
+                            // for accumulations (taxes or tax refunds).
+                            if (t.getType() != AccountTransaction.Type.DIVIDENDS)
+                                t.setExDate(null);
 
                             return new TransactionItem(t);
                         });

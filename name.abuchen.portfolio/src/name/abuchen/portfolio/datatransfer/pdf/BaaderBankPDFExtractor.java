@@ -6,12 +6,14 @@ import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Locale;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.ParsedData;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -23,6 +25,51 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 {
+    private static final String REMAINING_DISCOUNT = "remainingDiscount";
+
+    /**
+     * Broker (white label partner of the Baader Bank) with the identifiers
+     * found in the letterhead or the footer of its documents.
+     */
+    private record Broker(String label, List<String> identifiers)
+    {
+    }
+
+    /**
+     * The Baader Bank settles the transactions for several brokers. To
+     * remember the target portfolio and account per broker in the import
+     * wizard, each document is labeled with the broker that issued it.
+     * <p>
+     * The first matching broker wins, therefore the order matters. Documents
+     * without any broker identifier keep the default label.
+     */
+    private static final List<Broker> BROKERS = List.of( //
+                    // GRATISBROKER was acquired by finanzen.net in 2021 and
+                    // renamed to finanzen.net zero. Both are intentionally
+                    // grouped under one label: old and new documents belong to
+                    // the same depot and should be imported into the same
+                    // portfolio and account. Do not split them.
+                    new Broker("Baader Bank AG / finanzen.net zero", //
+                                    List.of("finanzen.net zero GmbH", "finanzen.net/zero", "GRATISBROKER GmbH")), //
+
+                    new Broker("Baader Bank AG / Smartbroker+", //
+                                    List.of("Smartbroker AG", "smartbrokerplus.de", "SMARTBROKER+")), //
+
+                    // Oskar shares the address of Scalable Capital (Seitzstraße
+                    // 8e). Therefore Oskar is checked before Scalable Capital
+                    // and the address is not used as identifier.
+                    new Broker("Baader Bank AG / Oskar", //
+                                    List.of("Oskar.de GmbH")), //
+
+                    // Scalable Capital is checked before Traders Place because
+                    // there are documents with a Scalable Capital letterhead
+                    // and a Traders Place footer.
+                    new Broker("Baader Bank AG / Scalable Capital", //
+                                    List.of("Scalable Capital", "scalable.capital")), //
+
+                    new Broker("Baader Bank AG / Traders Place", //
+                                    List.of("Traders Place GmbH", "tradersplace.de")));
+
     public BaaderBankPDFExtractor(Client client)
     {
         super(client);
@@ -46,7 +93,21 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Baader Bank AG / Scalable Capital Vermögensverwaltung GmbH / Traders Place GmbH & Co. KGaA";
+        return "Baader Bank AG";
+    }
+
+    @Override
+    public String getLabel(PDFInputFile inputFile)
+    {
+        var text = inputFile.getText();
+
+        for (var broker : BROKERS)
+        {
+            if (broker.identifiers().stream().anyMatch(text::contains))
+                return broker.label();
+        }
+
+        return getLabel();
     }
 
     private void addBuySellTransaction()
@@ -1533,11 +1594,17 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Finanzkommission Baader EUR 0,50
                         // Handelsplatzabhängige Gutschrift Baader EUR 0,40 -
+                        //
+                        // Finanzkommission Baader EUR 0,50 -
+                        // Handelsplatzabhängige Gutschrift Baader EUR 3,15
                         // @formatter:on
                         .section("currency", "fee", "discountCurrency", "discount").optional() //
                         .match("^Finanzkommission .* (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
-                        .match("^Handelsplatzabh.ngige Gutschrift .* (?<discountCurrency>[A-Z]{3}) (?<discount>[\\.,\\d]+) \\-$") //
+                        .match("^Handelsplatzabh.ngige Gutschrift .* (?<discountCurrency>[A-Z]{3}) (?<discount>[\\.,\\d]+)( \\-)?$") //
                         .assign((t, v) -> {
+                            // The sign of the credit depends on the direction
+                            // of the document (purchase: "-", sale: no sign),
+                            // but it always reduces the fees.
                             var fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
                             var discount = Money.of(asCurrencyCode(v.get("discountCurrency")), asAmount(v.get("discount")));
 
@@ -1545,6 +1612,13 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                             {
                                 fee = fee.subtract(discount);
                                 checkAndSetFee(fee, t, type.getCurrentContext());
+                            }
+                            else if (discount.subtract(fee).isPositive())
+                            {
+                                // The credit exceeds the Finanzkommission. Keep
+                                // the remaining credit to offset the following
+                                // fees.
+                                putRemainingDiscount(discount.subtract(fee), v);
                             }
 
                             type.getCurrentContext().putBoolean("noFinanzkommission", true);
@@ -1566,21 +1640,60 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("currency", "fee").optional() //
                         .match("^Mindermengenzuschlag( .*)? (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
-                        .assign((t, v) -> processFeeEntries(t, v, type))
+                        .assign((t, v) -> processFeeEntriesWithRemainingDiscount(t, v, type))
 
                         // @formatter:off
                         // Vermittlungsentgelt Finanzen EUR 0,90
+                        // Vermittlungsentgelt Tradersplace EUR 2,65 -
                         // @formatter:on
                         .section("currency", "fee").optional() //
                         .match("^Vermittlungsentgelt .* (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
-                        .assign((t, v) -> processFeeEntries(t, v, type))
+                        .assign((t, v) -> processFeeEntriesWithRemainingDiscount(t, v, type))
 
                         // @formatter:off
                         // Stamp HongKong EUR 0,12
                         // @formatter:on
                         .section("currency", "fee").optional() //
                         .match("^Stamp HongKong (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
-                        .assign((t, v) -> processFeeEntries(t, v, type));
+                        .assign((t, v) -> processFeeEntriesWithRemainingDiscount(t, v, type));
+    }
+
+    /**
+     * Stores the part of the "Handelsplatzabhängige Gutschrift" which exceeds
+     * the "Finanzkommission" in the transaction context. The transaction
+     * context only exists while one transaction is parsed, therefore a
+     * remaining credit can never offset the fees of another transaction.
+     */
+    private void putRemainingDiscount(Money discount, ParsedData v)
+    {
+        v.getTransactionContext().put(REMAINING_DISCOUNT, discount);
+    }
+
+    /**
+     * Processes a fee and offsets it against the remaining credit of the
+     * "Handelsplatzabhängige Gutschrift". Fees cannot be negative, therefore
+     * only the positive difference is booked and an excess credit is carried
+     * forward to the next fee. Without remaining credit, the fee is processed
+     * as usual.
+     */
+    private void processFeeEntriesWithRemainingDiscount(Object t, ParsedData v, DocumentType type)
+    {
+        var fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
+
+        if (!(v.getTransactionContext().get(REMAINING_DISCOUNT) instanceof Money discount)
+                        || !fee.getCurrencyCode().equals(discount.getCurrencyCode()))
+        {
+            processFeeEntries(t, v, type);
+            return;
+        }
+
+        v.getTransactionContext().remove(REMAINING_DISCOUNT);
+
+        var remainingFee = fee.subtract(discount);
+        if (remainingFee.isPositive())
+            checkAndSetFee(remainingFee, t, type.getCurrentContext());
+        else if (remainingFee.isNegative())
+            putRemainingDiscount(remainingFee.absolute(), v);
     }
 
     @Override

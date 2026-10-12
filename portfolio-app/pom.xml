@@ -5,7 +5,7 @@
 
 	<groupId>name.abuchen.portfolio</groupId>
 	<artifactId>portfolio-app</artifactId>
-	<version>0.88.1-SNAPSHOT</version>
+	<version>0.89.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Portfolio Performance</name>
@@ -49,6 +49,8 @@
 		<module>../name.abuchen.portfolio</module>
 		<module>../name.abuchen.portfolio.junit</module>
 		<module>../name.abuchen.portfolio.tests</module>
+		<module>../name.abuchen.portfolio.rest</module>
+		<module>../name.abuchen.portfolio.rest.tests</module>
 		<module>../name.abuchen.portfolio.ui</module>
 		<module>../name.abuchen.portfolio.ui.tests</module>
 		<module>../name.abuchen.portfolio.feature</module>

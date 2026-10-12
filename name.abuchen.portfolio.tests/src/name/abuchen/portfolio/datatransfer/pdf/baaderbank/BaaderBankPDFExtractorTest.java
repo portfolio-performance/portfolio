@@ -1909,6 +1909,42 @@ public class BaaderBankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf39()
+    {
+        var extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf39.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0908500753"), hasWkn("LYX0Q0"), hasTicker(null), //
+                        hasName("AIS-Amundi Core Stoxx Eur.600 Act.Nom.UCITS ETF Acc oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        // Finanzkommission 0,50 + Vermittlungsentgelt 2,65 - Handelsplatzabhängige
+        // Gutschrift 3,15 (credit with sign on a purchase)
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-10-06T15:29:38"), hasShares(17.00), //
+                        hasSource("Kauf39.txt"), //
+                        hasNote("Vorgangs-Nr.: 566532696"), //
+                        hasAmount("EUR", 5339.70), hasGrossValue("EUR", 5339.70), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.50 + 2.65 - 3.15))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         var extractor = new BaaderBankPDFExtractor(new Client());
@@ -2986,6 +3022,42 @@ public class BaaderBankPDFExtractorTest
                         hasNote("Vorgangs-Nr.: 219895934"), //
                         hasAmount("EUR", 45.57), hasGrossValue("EUR", 48.22), //
                         hasTaxes("EUR", 1.57 + 0.08), hasFees("EUR", 1.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf23()
+    {
+        var extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf23.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0908500753"), hasWkn("LYX0Q0"), hasTicker(null), //
+                        hasName("AIS-Amundi Core Stoxx Eur.600 Act.Nom.UCITS ETF Acc oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        // Finanzkommission 0,50 + Vermittlungsentgelt 2,65 - Handelsplatzabhängige
+        // Gutschrift 3,15 (credit without sign on a sale)
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-10-06T15:27:15"), hasShares(17.00), //
+                        hasSource("Verkauf23.txt"), //
+                        hasNote("Vorgangs-Nr.: 940980029"), //
+                        hasAmount("EUR", 5341.40), hasGrossValue("EUR", 5341.40), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.50 + 2.65 - 3.15))));
     }
 
     @Test
@@ -5653,7 +5725,7 @@ public class BaaderBankPDFExtractorTest
         assertTrue(firstError instanceof UnsupportedOperationException);
 
         var expectedErrorMessage = MessageFormat.format(Messages.PDFdbMsgCannotDetermineFileType,
-                        "Baader Bank AG / Scalable Capital Vermögensverwaltung GmbH / Traders Place GmbH & Co. KGaA",
+                        "Baader Bank AG",
                         "Periodenauszug10.txt");
         assertEquals(expectedErrorMessage, firstError.getMessage());
     }
@@ -5818,7 +5890,7 @@ public class BaaderBankPDFExtractorTest
 
         // Check the error message of the first error
         var expectedErrorMessage = MessageFormat.format(Messages.PDFdbMsgCannotDetermineFileType,
-                        "Baader Bank AG / Scalable Capital Vermögensverwaltung GmbH / Traders Place GmbH & Co. KGaA",
+                        "Baader Bank AG",
                         "Periodenauszug15.txt");
         assertEquals(expectedErrorMessage, firstError.getMessage());
     }

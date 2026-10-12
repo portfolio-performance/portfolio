@@ -478,18 +478,30 @@ public class TradeRepublicCSVExtractor implements Extractor
         var totalAmount = computeTotalAmount(csvRecord);
         var fee = parseFee(csvRecord);
 
+        // PP cannot represent a DEPOSIT with fees (e.g. card top-ups). Book
+        // the full deposit and a separate FEES account transaction.
         var t = new AccountTransaction();
         t.setType(AccountTransaction.Type.DEPOSIT);
         t.setDateTime(date);
         t.setCurrencyCode(currency);
-        t.setAmount(totalAmount);
+        t.setAmount(totalAmount + fee);
         t.setNote(getField(csvRecord, "description"));
         t.setSource(source);
 
-        if (fee > 0)
-            t.addUnit(new Unit(Unit.Type.FEE, Money.of(currency, fee)));
-
         items.add(new TransactionItem(t));
+
+        if (fee > 0)
+        {
+            var f = new AccountTransaction();
+            f.setType(AccountTransaction.Type.FEES);
+            f.setDateTime(date);
+            f.setCurrencyCode(currency);
+            f.setAmount(fee);
+            f.setNote(getField(csvRecord, "description"));
+            f.setSource(source);
+
+            items.add(new TransactionItem(f));
+        }
     }
 
     private void processCashRemoval(CSVRecord csvRecord, String source, List<Item> items)
