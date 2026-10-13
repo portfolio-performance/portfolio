@@ -1262,9 +1262,36 @@ public final class SecuritiesTable implements ModificationListener
             if (previous.getDate().isAfter(interval.getStart()))
                 return Optional.empty();
 
+            // Delayed-NAV funds may return the same published quote for both
+            // ends of the reporting interval. In that case fall back to the
+            // latest two published prices, matching the behaviour of FT and
+            // Morningstar.
+
+            if (latest.getDate().equals(previous.getDate()))
+            {
+                List<SecurityPrice> history = security.getPricesIncludingLatest();
+
+                if (history.size() < 2)
+                    return Optional.empty();
+
+                latest = history.get(history.size() - 1);
+
+                for (int i = history.size() - 2; i >= 0; i--)
+                {
+                    previous = history.get(i);
+
+                    if (previous.getValue() != 0
+                            && !previous.getDate().equals(latest.getDate()))
+                    {
+                        return Optional.of(new Pair<>(previous, latest));
+                    }
+                }
+
+                return Optional.empty();
+            }
+
             return Optional.of(new Pair<>(previous, latest));
         }
-
         @Override
         public Image getImage(Object e)
         {
