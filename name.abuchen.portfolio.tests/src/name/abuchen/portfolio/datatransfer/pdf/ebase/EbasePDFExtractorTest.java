@@ -3825,7 +3825,11 @@ public class EbasePDFExtractorTest
                         hasSource("DepotStatement04.txt"), hasNote("SEPA Überweisung | Ref.-Nr.: 014852180"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2021-06-21"), hasAmount("EUR", 2.50), //
-                        hasSource("DepotStatement04.txt"), hasNote("Entgeltbuchung | Ref.-Nr.: 014852181"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2021-06-21"), //
+                        hasSource("DepotStatement04.txt"), //
+                        hasNote("Entgeltbuchung | Ref.-Nr.: 014852181"), //
+                        hasAmount("EUR", 2.50), hasGrossValue("EUR", 2.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 }
