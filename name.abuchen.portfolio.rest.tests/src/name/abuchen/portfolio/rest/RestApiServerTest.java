@@ -249,12 +249,17 @@ public class RestApiServerTest
         assertThat(sendWithHost(null), is(403));
     }
 
-    /** an unbounded read would let any local process exhaust the heap */
+    /**
+     * an unbounded read would let any local process exhaust the heap. The body
+     * is exactly one byte over the limit so the server consumes all of it: any
+     * unread excess makes the connection close with a TCP reset, which can
+     * race the 413 and surface as a client IOException instead.
+     */
     @Test
     public void testOversizedRequestBodyIs413Problem() throws Exception
     {
         var response = http.send(request("/v1/auth/requests")
-                        .POST(HttpRequest.BodyPublishers.ofByteArray(new byte[2 * 1024 * 1024])).build(),
+                        .POST(HttpRequest.BodyPublishers.ofByteArray(new byte[1024 * 1024 + 1])).build(),
                         HttpResponse.BodyHandlers.ofString());
         assertThat(response.statusCode(), is(413));
         assertThat(response.body(), containsString("problems/request-too-large"));
