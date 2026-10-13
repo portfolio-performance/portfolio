@@ -1,334 +1,338 @@
 package name.abuchen.portfolio.ui.views;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StackLayout;
+import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swtchart.ICircularSeries;
+import org.eclipse.swtchart.ICustomPaintListener;
 import org.eclipse.swtchart.ISeries.SeriesType;
 import org.eclipse.swtchart.model.Node;
 
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.snapshot.ClientSnapshot;
+import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.CircularChart;
 import name.abuchen.portfolio.ui.util.chart.CircularChart.RenderLabelsCenteredInPie;
-import name.abuchen.portfolio.ui.util.chart.CircularChart.RenderLabelsOutsidePie;
-import name.abuchen.portfolio.ui.views.dataseries.DataSeries.Type;
-import name.abuchen.portfolio.ui.views.dataseries.DataSeries.UseCase;
-import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
-import name.abuchen.portfolio.ui.views.dataseries.DataSeriesSet;
-import name.abuchen.portfolio.util.Interval;
 
-public class AbsolutePerformancePieChart implements IPieChart
+public class AbsolutePerformancePieChart
 {
+    enum SliceType
+    {
+        INVESTED_CAPITAL, REMAINING_VALUE, GAIN, LOSS
+    }
+
+    record Slice(SliceType type, long amount)
+    {
+    }
+
+    record ChartValues(Money investedCapital, Money delta, Money currentValue)
+    {
+        boolean isLoss()
+        {
+            return delta.isNegative();
+        }
+
+        long percentageBasis()
+        {
+            return isLoss() ? investedCapital.getAmount() : currentValue.getAmount();
+        }
+
+        boolean isEmpty()
+        {
+            return investedCapital.isZero() && delta.isZero() && currentValue.isZero();
+        }
+
+        List<Slice> slices()
+        {
+            if (investedCapital.isNegative() || currentValue.isNegative() || percentageBasis() <= 0)
+                return List.of();
+
+            var slices = new ArrayList<Slice>();
+            long capital = isLoss() ? currentValue.getAmount() : investedCapital.getAmount();
+            if (capital > 0)
+                slices.add(new Slice(isLoss() ? SliceType.REMAINING_VALUE : SliceType.INVESTED_CAPITAL, capital));
+            if (!delta.isZero())
+                slices.add(new Slice(isLoss() ? SliceType.LOSS : SliceType.GAIN,
+                                isLoss() ? -delta.getAmount() : delta.getAmount()));
+            return List.copyOf(slices);
+        }
+    }
+
     private CircularChart chart;
-    private ClientSnapshot snapshot;
-    private Map<String, NodeData> id2nodeData;
-    private Client client;
-    private IPreferenceStore preferences;
-    private DataSeriesCache cache;
-    private String position;
+    private Composite container;
+    private Composite chartContainer;
+    private StackLayout chartLayout;
+    private Label status;
+    private Label heading;
+    private Label currentValueLabel;
+    private Label currentValue;
+    private Label investedCapital;
+    private Label delta;
+    private Label deltaLabel;
+    private ClientPerformanceSnapshot snapshot;
+    private ChartValues values;
+    private String inputLabel;
 
-    private class NodeData
-    {
-        String percentageString;
-        String value;
-        String label;
-    }
-
-    private class InvestedWrapper
-    {
-        long invested = 0;
-        long delta = 0;
-        int counter = 0;
-    }
-
-
-    public AbsolutePerformancePieChart(Client client, IPreferenceStore preferences, DataSeriesCache cache)
-    {
-        this.client = client;
-        this.preferences = preferences;
-        this.cache = cache;
-
-        id2nodeData = new HashMap<>();
-    }
-
-    @Override
     public Control createControl(Composite parent)
     {
-        chart = new CircularChart(parent, SeriesType.DOUGHNUT, this::getNodeLabel);
+        container = new Composite(parent, SWT.NONE);
+        GridLayoutFactory.fillDefaults().numColumns(2).spacing(20, 0).applyTo(container);
+
+        chartContainer = new Composite(container, SWT.NONE);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(chartContainer);
+        chartLayout = new StackLayout();
+        chartContainer.setLayout(chartLayout);
+        status = new Label(chartContainer, SWT.WRAP | SWT.CENTER);
+
+        chart = new CircularChart(chartContainer, SeriesType.DOUGHNUT, this::getNodeLabel);
         chart.addLabelPainter(new RenderLabelsCenteredInPie(chart, this::getNodeLabel));
-        chart.addLabelPainter(
-                        new RenderLabelsOutsidePie(chart, n -> id2nodeData.get(n.getId()).label));
-
-        // set customized tooltip builder
-        chart.getToolTip().setToolTipBuilder((container, currentNode) -> {
-
-            final Composite data = new Composite(container, SWT.NONE);
-            GridLayoutFactory.swtDefaults().numColumns(2).applyTo(data);
-
-            NodeData nodeData = id2nodeData.get(currentNode.getId());
-
-            if (nodeData == null) // center of the Pie Chart
+        chart.getPlotArea().addCustomPaintListener(new ICustomPaintListener()
+        {
+            @Override
+            public void paintControl(PaintEvent event)
             {
-                Label assetLabel = new Label(data, SWT.NONE);
-                GridDataFactory.fillDefaults().span(2, 1).applyTo(assetLabel);
-                assetLabel.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
+                paintCurrentValue(event);
+            }
 
-                if (position != null)
-                {
-                    assetLabel.setText(position);
-                }
-                else
-                {
-                    assetLabel.setText(snapshot.getJointPortfolio().getPortfolio().getName()); // $NON-NLS-1$
-                }
-
-                Label info = new Label(data, SWT.NONE);
-                GridDataFactory.fillDefaults().span(2, 1).applyTo(info);
-                info.setText(Values.Money.format(snapshot.getMonetaryAssets()));
+            @Override
+            public boolean drawBehindSeries()
+            {
+                return false;
+            }
+        });
+        chart.getToolTip().setToolTipBuilder((tooltip, node) -> {
+            var data = new Composite(tooltip, SWT.NONE);
+            GridLayoutFactory.swtDefaults().numColumns(2).applyTo(data);
+            var slice = getSlice(node);
+            if (slice != null)
+            {
+                new Label(data, SWT.NONE).setText(getSliceLabel(slice.type()));
+                new Label(data, SWT.NONE).setText(formatPercentage(slice));
+                long signedAmount = slice.type() == SliceType.LOSS ? -slice.amount() : slice.amount();
+                addTooltipLine(data, Values.Money.format(Money.of(values.currentValue().getCurrencyCode(), signedAmount)));
             }
             else
             {
-                Label assetLabel = new Label(data, SWT.NONE);
-                assetLabel.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
-                assetLabel.setText(nodeData.label);
-
-                Label right = new Label(data, SWT.NONE);
-                right.setText(nodeData.percentageString);
-
-                Label info = new Label(data, SWT.NONE);
-                GridDataFactory.fillDefaults().span(2, 1).applyTo(info);
-                info.setText(nodeData.value);
+                addTooltipLine(data, inputLabel != null ? inputLabel : Messages.LabelTotalSum);
+                addTooltipLine(data, Messages.LabelAbsolutePerformanceCurrentValue + ": " //$NON-NLS-1$
+                                + Values.Money.format(values.currentValue()));
             }
+            addTooltipLine(data, getPercentageBasisLabel());
         });
 
-        chart.getSeriesSet().createSeries(SeriesType.DOUGHNUT, Messages.ColumnAbsolutePerformance_MenuLabel);
+        var summary = new Composite(container, SWT.NONE);
+        GridLayoutFactory.fillDefaults().numColumns(2).extendedMargins(0, 20, 0, 0).applyTo(summary);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).applyTo(summary);
 
-        if (snapshot != null)
-        {
-            updateChart();
-        }
+        heading = new Label(summary, SWT.NONE);
+        GridDataFactory.fillDefaults().span(2, 1).applyTo(heading);
+        heading.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
 
-        return chart;
+        currentValueLabel = new Label(summary, SWT.NONE);
+        currentValue = addSummaryAmount(summary);
+        new Label(summary, SWT.NONE).setText(Messages.LabelAbsolutePerformanceInvestedCapital);
+        investedCapital = addSummaryAmount(summary);
+        deltaLabel = new Label(summary, SWT.NONE);
+        delta = addSummaryAmount(summary);
+
+        updateChart();
+        return container;
     }
 
-    @Override
-    public void refresh(ClientSnapshot snapshot)
+    private Label addSummaryAmount(Composite parent)
+    {
+        var amount = new Label(parent, SWT.RIGHT);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(amount);
+        return amount;
+    }
+
+    private void addTooltipLine(Composite parent, String text)
+    {
+        var label = new Label(parent, SWT.NONE);
+        GridDataFactory.fillDefaults().span(2, 1).applyTo(label);
+        label.setText(text);
+    }
+
+    public void refresh(ClientPerformanceSnapshot snapshot, String label)
     {
         this.snapshot = snapshot;
-        updateChart();
+        this.inputLabel = label;
+        this.values = snapshot != null ? calculateValues(snapshot) : null;
+        if (chart != null)
+            updateChart();
+    }
+
+    static Money calculateInvestedCapital(ClientPerformanceSnapshot snapshot)
+    {
+        return snapshot.getValue(CategoryType.INITIAL_VALUE, CategoryType.TRANSFERS);
+    }
+
+    static ChartValues calculateValues(ClientPerformanceSnapshot snapshot)
+    {
+        return new ChartValues(calculateInvestedCapital(snapshot), snapshot.getAbsoluteDelta(),
+                        snapshot.getValue(CategoryType.FINAL_VALUE));
     }
 
     private void updateChart()
     {
-        id2nodeData.clear();
+        currentValueLabel.setText(Messages.LabelAbsolutePerformanceCurrentValue);
+        deltaLabel.setText(Messages.LabelAbsolutePerformanceGainLoss);
+        for (var series : chart.getSeriesSet().getSeries())
+            chart.getSeriesSet().deleteSeries(series.getId());
 
-        position = null;
-
-        var series = chart.getSeriesSet().getSeries();
-        for (var s : series)
-            chart.getSeriesSet().deleteSeries(s.getId());
-        
-        chart.redraw();
-
-        if (snapshot == null)
-            return;
-
-        List<Double> values = new ArrayList<>();
-        List<String> labels = new ArrayList<>();
-
-        var wrapper = new InvestedWrapper();
-        var dataSeriesSet = new DataSeriesSet(client, preferences, UseCase.STATEMENT_OF_ASSETS);
-
-        countAssets(wrapper, dataSeriesSet);
-
-        countAccounts(wrapper, dataSeriesSet);
-
-        if (wrapper.invested <= 0)
-            return;
-        
-        if (wrapper.counter > 1)
+        if (values == null)
         {
-            position = null;
+            heading.setText(inputLabel != null ? inputLabel : Messages.LabelTotalSum);
+            currentValue.setText(""); //$NON-NLS-1$
+            investedCapital.setText(""); //$NON-NLS-1$
+            delta.setText(""); //$NON-NLS-1$
+            showStatus(Messages.LabelAbsolutePerformanceNoData);
+            return;
         }
 
-        wrapper.delta = Math.max(0, wrapper.delta);
+        heading.setText(String.format(Messages.LabelAbsolutePerformanceAsOf,
+                        inputLabel != null ? inputLabel : Messages.LabelTotalSum,
+                        Values.Date.format(snapshot.getEndClientSnapshot().getTime())));
+        currentValue.setText(Values.Money.format(values.currentValue()));
+        investedCapital.setText(Values.Money.format(values.investedCapital()));
+        delta.setText(Values.Money.format(values.delta()));
+        delta.setForeground(values.isLoss() ? Colors.theme().redForeground()
+                        : values.delta().isZero() ? Colors.theme().defaultForeground() : Colors.theme().greenForeground());
 
-        var total = wrapper.invested + wrapper.delta;
-
-
-        values.add(wrapper.invested / Values.Amount.divider());
-        labels.add(Messages.LabelAbsoluteInvestedCapital);
-
-        NodeData data = new NodeData();
-        data.label = Messages.LabelAbsoluteInvestedCapital;
-        data.percentageString = Values.Percent2.format((wrapper.invested / (double) total));
-        data.value = Values.Money.format(Money.of(snapshot.getCurrencyCode(), wrapper.invested));
-        id2nodeData.put(Messages.LabelAbsoluteInvestedCapital, data);
-
-
-        values.add(wrapper.delta / Values.Amount.divider());
-        labels.add(Messages.LabelAbsoluteDelta);
-
-        data = new NodeData();
-        data.label = Messages.LabelAbsoluteDelta;
-        data.percentageString = Values.Percent2.format((wrapper.delta / (double) total));
-        data.value = Values.Money.format(Money.of(snapshot.getCurrencyCode(), wrapper.delta));
-        id2nodeData.put(Messages.LabelAbsoluteDelta, data);
-
-
-        ICircularSeries<?> circularSeries = (ICircularSeries<?>) chart.getSeriesSet()
-                        .getSeries(Messages.ColumnAbsolutePerformance_MenuLabel);
-        if (circularSeries == null)
+        // SWT draws arcs counterclockwise. Reverse the slices so capital is
+        // first when reading clockwise from 12 o'clock.
+        var slices = values.slices().reversed();
+        if (slices.isEmpty())
         {
-            circularSeries = createSeries(values, labels);
+            showStatus(values.isEmpty() ? Messages.LabelAbsolutePerformanceNoData
+                            : Messages.LabelAbsolutePerformanceUnavailable);
+            return;
+        }
+
+        if (values.isLoss())
+        {
+            currentValueLabel.setText(Messages.LabelAbsolutePerformanceRemainingValue);
+            currentValue.setText(formatSummaryAmount(values.currentValue(), values.currentValue().getAmount()));
+            deltaLabel.setText(Messages.LabelAbsolutePerformanceLoss);
         }
         else
         {
-            // refresh values only for smoother update
-            ListIterator<String> iter = labels.listIterator();
-            while (iter.hasNext())
-            {
-                int idx = iter.nextIndex();
-                String label = iter.next();
-                Node node = circularSeries.getNodeById(label);
-                if (node != null)
-                {
-                    node.setValue(values.get(idx));
-                }
-            }
-
+            investedCapital.setText(formatSummaryAmount(values.investedCapital(), values.investedCapital().getAmount()));
+            deltaLabel.setText(Messages.LabelAbsolutePerformanceGain);
         }
+        delta.setText(formatSummaryAmount(values.delta(),
+                        values.isLoss() ? -values.delta().getAmount() : values.delta().getAmount()));
 
-        setColors(circularSeries, values.size(), wrapper.delta > 0);
-
-        chart.updateAngleBounds();
-        chart.redraw();
-    }
-
-    private void countAssets(InvestedWrapper wrapper, DataSeriesSet dataSeriesSet)
-    {
-        snapshot.getAssetPositions() //
-                        .filter(p -> p.getValuation().getAmount() > 0) //
-                        .forEach(p -> {
-                            String nodeId = p.getInvestmentVehicle().getUUID();
-                            
-                            var dataSeries = dataSeriesSet.getAvailableSeries().stream()
-                                            .filter(ds -> ds.getType() != Type.ACCOUNT && ds.getUUID().contains(nodeId))
-                                            .findAny().orElse(null);
-    
-                            if (dataSeries != null)
-                            {
-                                var perf = cache.lookup(dataSeries,
-                                                Interval.of(LocalDate.ofYearDay(1900, 1), LocalDate.now()));
-    
-                                long[] d = perf.calculateAbsoluteInvestedCapital();
-                                wrapper.invested += d.length > 0 ? d[d.length - 1] : 0L;
-    
-                                long[] d2 = perf.calculateAbsoluteDelta();
-                                wrapper.delta += d2.length > 0 ? d2[d2.length - 1] : 0L;
-    
-                                position = p.getDescription();
-                                wrapper.counter++;
-                            }
-                        });
-    }
-
-    private void countAccounts(InvestedWrapper wrapper, DataSeriesSet dataSeriesSet)
-    {
-        snapshot.getAccounts().stream() //
-                        .filter(p -> p.getAccount().getCurrentAmount(LocalDateTime.now()) > 0) //
-                        .forEach(p -> {
-                            Account account = p.getAccount();
-
-                            var dataSeries = dataSeriesSet.getAvailableSeries().stream()
-                                            .filter(ds -> ds.getType() == Type.ACCOUNT
-                                                            && ds.getLabel().contains(account.getName()))
-                                            .findAny().orElse(null);
-
-                            if (dataSeries != null)
-                            {
-                                var perf = cache.lookup(dataSeries,
-                                                Interval.of(LocalDate.ofYearDay(1900, 1), LocalDate.now()));
-
-                                long[] d = perf.calculateAbsoluteInvestedCapital();
-                                wrapper.invested += d.length > 0 ? d[d.length - 1] : 0L;
-
-                                long[] d2 = perf.calculateAbsoluteDelta();
-                                wrapper.delta += d2.length > 0 ? d2[d2.length - 1] : 0L;
-
-                                position = account.getName();
-                                wrapper.counter++;
-                            }
-                        });
-    }
-
-    private ICircularSeries<?> createSeries(List<Double> values, List<String> labels)
-    {
-        ICircularSeries<?> circularSeries;
-        circularSeries = (ICircularSeries<?>) chart.getSeriesSet().createSeries(SeriesType.DOUGHNUT,
+        var series = (ICircularSeries<?>) chart.getSeriesSet().createSeries(SeriesType.DOUGHNUT,
                         Messages.ColumnAbsolutePerformance_MenuLabel);
-        circularSeries.setSeries(labels.toArray(String[]::new), values.stream().mapToDouble(d -> d).toArray());
-        circularSeries.setSliceColor(Colors.WHITE);
-
-        return circularSeries;
+        series.setSeries(slices.stream().map(slice -> slice.type().name()).toArray(String[]::new),
+                        slices.stream().mapToDouble(slice -> slice.amount() / Values.Amount.divider()).toArray());
+        series.setSliceColor(Colors.WHITE);
+        series.setColor(slices.stream().map(slice -> getSliceColor(slice.type())).toArray(Color[]::new));
+        series.getRootNode().setAngleBounds(new Point(90, 360));
+        chart.updateAngleBounds();
+        chartLayout.topControl = chart;
+        chart.redraw();
+        chartContainer.layout();
+        container.layout(true, true);
     }
 
-    private void setColors(ICircularSeries<?> circularSeries, int colorCount, boolean isPositive)
+    private void showStatus(String text)
     {
-        CircularChart.PieColors wheel = new CircularChart.PieColors();
-        Color[] colors = new Color[colorCount];
+        status.setText(text);
+        chartLayout.topControl = status;
+        chartContainer.layout();
+        container.layout(true, true);
+    }
 
-        if (isPositive)
-        {
-            for (int ii = 0; ii < colors.length; ii++)
-            {
-                colors[ii] = wheel.next();
+    private String getPercentageBasisLabel()
+    {
+        return values.isLoss() ? Messages.LabelAbsolutePerformanceInvestedCapitalBasis
+                        : Messages.LabelAbsolutePerformanceCurrentValueBasis;
+    }
 
-                for (int j = 0; j < 6; j++)
-                {
-                    wheel.next();
-                }
-            }
-        }
-        else
-        {
-            for (int j = 0; j < 3; j++)
-            {
-                wheel.next();
-            }
+    private Slice getSlice(Node node)
+    {
+        if (values == null)
+            return null;
+        return values.slices().stream().filter(slice -> slice.type().name().equals(node.getId())).findFirst().orElse(null);
+    }
 
-            for (int ii = 0; ii < colors.length; ii++)
-            {
-                colors[ii] = wheel.next();
-            }
-        }
+    private String formatPercentage(Slice slice)
+    {
+        return Values.Percent2.format(slice.amount() / (double) values.percentageBasis());
+    }
 
-        circularSeries.setColor(colors);
+    private String formatSummaryAmount(Money amount, long sliceAmount)
+    {
+        return Values.Money.format(amount) + " (" //$NON-NLS-1$
+                        + Values.Percent2.format(sliceAmount / (double) values.percentageBasis()) + ")"; //$NON-NLS-1$
     }
 
     private String getNodeLabel(Node node)
     {
-        NodeData nodeData = id2nodeData.get(node.getId());
-        return nodeData != null ? nodeData.percentageString : null;
+        var slice = getSlice(node);
+        return slice != null ? formatPercentage(slice) : null;
+    }
+
+    private String getSliceLabel(SliceType type)
+    {
+        return switch (type)
+        {
+            case INVESTED_CAPITAL -> Messages.LabelAbsolutePerformanceInvestedCapital;
+            case REMAINING_VALUE -> Messages.LabelAbsolutePerformanceRemainingValue;
+            case GAIN -> Messages.LabelAbsolutePerformanceGain;
+            case LOSS -> Messages.LabelAbsolutePerformanceLoss;
+        };
+    }
+
+    private Color getSliceColor(SliceType type)
+    {
+        return switch (type)
+        {
+            case INVESTED_CAPITAL, REMAINING_VALUE -> Colors.getColor(70, 130, 180);
+            case GAIN -> Colors.getColor(88, 168, 121);
+            case LOSS -> Colors.getColor(217, 107, 107);
+        };
+    }
+
+    private void paintCurrentValue(PaintEvent event)
+    {
+        if (values == null || values.slices().isEmpty())
+            return;
+        var xAxis = chart.getAxisSet().getXAxis(0);
+        var yAxis = chart.getAxisSet().getYAxis(0);
+        int x = xAxis.getPixelCoordinate(0);
+        int y = yAxis.getPixelCoordinate(0);
+        int available = (int) (Math.min(Math.abs(xAxis.getPixelCoordinate(1) - x),
+                        Math.abs(yAxis.getPixelCoordinate(1) - y)) * Math.sqrt(2) * 0.9);
+        String text = Messages.LabelAbsolutePerformanceCurrentValue + "\n" + Values.Money.format(values.currentValue()); //$NON-NLS-1$
+        var size = event.gc.textExtent(text);
+        if (size.x > available || size.y > available)
+        {
+            text = Values.Money.format(values.currentValue());
+            size = event.gc.textExtent(text);
+        }
+        if (size.x <= available && size.y <= available)
+        {
+            var foreground = event.gc.getForeground();
+            event.gc.setForeground(Colors.theme().defaultForeground());
+            event.gc.drawText(text, x - size.x / 2, y - size.y / 2, true);
+            event.gc.setForeground(foreground);
+        }
     }
 }

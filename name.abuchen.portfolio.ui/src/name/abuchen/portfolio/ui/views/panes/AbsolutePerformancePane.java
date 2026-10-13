@@ -3,11 +3,11 @@ package name.abuchen.portfolio.ui.views.panes;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.function.Supplier;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -22,17 +22,15 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
-import name.abuchen.portfolio.snapshot.ClientSnapshot;
+import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.filter.ClientClassificationFilter;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.snapshot.filter.ClientSecurityFilter;
 import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
-import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.views.AbsolutePerformancePieChart;
-import name.abuchen.portfolio.ui.views.IPieChart;
-import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
+import name.abuchen.portfolio.util.Interval;
 
 public class AbsolutePerformancePane implements InformationPanePage
 {
@@ -43,18 +41,14 @@ public class AbsolutePerformancePane implements InformationPanePage
     @Named(UIConstants.Context.ACTIVE_CLIENT)
     private Client client;
 
-    @Inject
-    private IPreferenceStore preferences;
-
-    @Inject
-    private AbstractFinanceView view;
-
     private Security security;
     private Portfolio portfolio;
     private Account account;
     private Classification classification;
+    private Object input;
+    private Supplier<LocalDate> snapshotDateSupplier = LocalDate::now;
 
-    private IPieChart chart;
+    private AbsolutePerformancePieChart chart;
 
 
     @Override
@@ -69,9 +63,7 @@ public class AbsolutePerformancePane implements InformationPanePage
         Composite container = new Composite(parent, SWT.NONE);
         container.setLayout(new FillLayout());
 
-        var cache = view.make(DataSeriesCache.class);
-
-        chart = new AbsolutePerformancePieChart(client, preferences, cache);
+        chart = new AbsolutePerformancePieChart();
         chart.createControl(container);
         return container;
     }
@@ -79,6 +71,7 @@ public class AbsolutePerformancePane implements InformationPanePage
     @Override
     public void setInput(Object input)
     {
+        this.input = input;
         this.security = Adaptor.adapt(Security.class, input);
         this.portfolio = Adaptor.adapt(Portfolio.class, input);
         this.account = Adaptor.adapt(Account.class, input);
@@ -86,50 +79,51 @@ public class AbsolutePerformancePane implements InformationPanePage
 
         CurrencyConverter converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
         ClientFilter clientFilter = null;
+        String label = Messages.LabelTotalSum;
 
         if (security != null)
         {
             clientFilter = new ClientSecurityFilter(security);
+            label = security.getName();
         }
 
         if (portfolio != null)
         {
             clientFilter = new PortfolioClientFilter(portfolio);
+            label = portfolio.getName();
         }
 
         if (account != null)
         {
             clientFilter = new PortfolioClientFilter(Collections.emptyList(), Arrays.asList(account));
+            label = account.getName();
         }
 
         if (classification != null)
         {
             clientFilter = new ClientClassificationFilter(classification);
+            label = classification.getName();
         }
 
-        ClientSnapshot snapshot = null;
-        if (clientFilter != null)
-        {
-            snapshot = ClientSnapshot.create(clientFilter.filter(client), converter, LocalDate.now());
-        }
-        else
-        {
-            snapshot = ClientSnapshot.create(client, converter, LocalDate.now());
-        }
-
-        chart.refresh(snapshot);
+        Client filteredClient = clientFilter != null ? clientFilter.filter(client) : client;
+        var period = Interval.of(LocalDate.ofYearDay(1900, 1), getSnapshotDate());
+        var snapshot = new ClientPerformanceSnapshot(filteredClient, converter, period);
+        chart.refresh(snapshot, label);
     }
 
     @Override
     public void onRecalculationNeeded()
     {
-        if (security != null)
-            setInput(security);
-        if (portfolio != null)
-            setInput(portfolio);
-        if (account != null)
-            setInput(account);
-        if (classification != null)
-            setInput(classification);
+        setInput(input);
+    }
+
+    public void setSnapshotDateSupplier(Supplier<LocalDate> supplier)
+    {
+        this.snapshotDateSupplier = supplier;
+    }
+
+    LocalDate getSnapshotDate()
+    {
+        return snapshotDateSupplier.get();
     }
 }
