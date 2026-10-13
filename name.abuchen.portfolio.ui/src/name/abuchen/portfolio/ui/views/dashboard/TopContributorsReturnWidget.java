@@ -9,6 +9,7 @@ import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
+import name.abuchen.portfolio.ui.views.dataseries.PerformanceMetric;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class TopContributorsReturnWidget extends AbstractTopContributorsWidget<List<LazySecurityPerformanceRecord>>
@@ -19,6 +20,7 @@ public class TopContributorsReturnWidget extends AbstractTopContributorsWidget<L
 
         addConfig(new ReportingPeriodConfig(this));
         addConfig(new DataSeriesConfig(this, false));
+        addConfig(new PerformanceMetricConfig(this));
         addConfig(new CountConfig(this));
     }
 
@@ -42,13 +44,19 @@ public class TopContributorsReturnWidget extends AbstractTopContributorsWidget<L
     @Override
     protected List<DisplayRow> buildDisplayRows(List<LazySecurityPerformanceRecord> records)
     {
-        records.sort((a, b) -> Double.compare(b.getTrueTimeWeightedRateOfReturn(),
-                        a.getTrueTimeWeightedRateOfReturn()));
+        PerformanceMetric metric = get(PerformanceMetricConfig.class).getMetric();
 
-        return records.stream()
-                        .map(r -> new DisplayRow(r.getSecurity(), TextUtil.escapeHtml(r.getSecurity().getName()),
-                                        Values.Percent2.format(r.getTrueTimeWeightedRateOfReturn()),
-                                        r.getTrueTimeWeightedRateOfReturn() >= 0))
-                        .toList();
+        records.sort((a, b) -> Double.compare(getPerformance(b, metric), getPerformance(a, metric)));
+
+        return records.stream().map(r -> {
+            double performance = getPerformance(r, metric);
+            return new DisplayRow(r.getSecurity(), TextUtil.escapeHtml(r.getSecurity().getName()),
+                            Values.Percent2.format(performance), performance >= 0);
+        }).toList();
+    }
+
+    private double getPerformance(LazySecurityPerformanceRecord record, PerformanceMetric metric)
+    {
+        return metric == PerformanceMetric.IRR ? record.getIrr() : record.getTrueTimeWeightedRateOfReturn();
     }
 }
