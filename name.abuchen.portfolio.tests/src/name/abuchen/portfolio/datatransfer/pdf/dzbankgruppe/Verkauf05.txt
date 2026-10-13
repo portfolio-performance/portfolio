@@ -1,0 +1,65 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.83.2
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+   
+Volksbank in der Region eG · Herrenberger Straße 1-5· 72070 Tübingen Seite 1 von 2
+Depotnummer
+ 12345678
+ Kundennummer 12345
+Max Mustermann
+ Auftragsnummer 454146/79.00
+Max Mustermann Datum 11.03.2026
+Musterstr. 12 Ihr Berater Herr Bernd Berater
+01234 Musterstadt Telefon 07032/940-0000
+Rechnungsnummer W06746-0000006900/26
+Steuernummer 008615500609  
+ 
+Wertpapier Abrechnung Verkauf 
+Auftrag vom 06.03.2026 19:16:34 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 2.666 DWS EURO FLEXIZINS                 DE0008474230 (847423)
+INHABER-ANTEILE NC                 
+Handels-/Ausführungsplatz Außerbörslich
+Schlusstag 10.03.2026 Auftraggeber Max Mustermann
+Ausführungskurs 75,07 EUR Auftragserteilung/ -ort Online-Banking
+Girosammeldepot Sammelurkunde/-eintragung
+Kurswert 200.136,62 EUR
+Ermittlung steuerrelevante Erträge
+Veräußerungsgewinn 133,30 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 133,30 EUR
+ 
+Steuerberechnung
+Kapitalertragsteuer 24,51% auf 133,30 EUR 32,67- EUR
+Solidaritätszuschlag 5,50% auf 32,67 EUR 1,80- EUR
+Kirchensteuer 8,00% auf 32,67 EUR 2,62- EUR
+Ausmachender Betrag 200.099,53 EUR
+ 
+Den Gegenwert buchen wir mit Valuta 12.03.2026 zu Gunsten des Kontos 0012345678
+(IBAN DE99 6039 1310 0012 3456 78), BLZ 60391310 (BIC GENODES1VBH).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+6746.03111731.0000009OR07                                                             
+Seite 2 von 2
+Depotnummer 12345678
+Kundennummer 12345
+Auftragsnummer 454146/79.00
+Datum 11.03.2026
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verlustverrechnungstöpfe 2026 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 15.515,60
+Verkauf 0,00 0,00 0,00 0,00 133,30
+Nachher 0,00 0,00 0,00 0,00 15.648,90
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäft Auftragsnr. Ausführ.-tag Whr./St. Nennwert/Stück AS-Kosten Erlös Teilfrei- ant. Ergebnis
+stellung
+Kauf 3819141000 16.02.2026 Stück 1.300,0000 97.526,00- 97.591,00 0,00 65,00 (D)
+Kauf 4941771700 17.02.2026 Stück 1.300,0000 97.526,00- 97.591,00 0,00 65,00 (D)
+Kauf 4955954700 18.02.2026 Stück 66,0000 4.951,32- 4.954,62 0,00 3,30 (D)
+Summe aller Erträge nach Differenzmethode und/oder Ersatzbemessungsgrundlage 133,30
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+6746.03111731.0000010OR07

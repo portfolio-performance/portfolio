@@ -1,0 +1,36 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.83.2
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+   
+Volksbank in der Region eG · Herrenberger Straße 1-5· 72070 Tübingen
+Depotnummer 12345678
+ 
+ Kundennummer 12345
+Max Mustermann
+ Auftragsnummer 485395/44.00
+Max Mustermann Datum 18.03.2026
+Musterstr. 12 Ihr Berater Herr Bernd Berater
+01234 Musterstadt Telefon 07032/940-0000
+Rechnungsnummer W06746-0000007555/26
+Steuernummer 008615500609  
+ 
+Wertpapier Abrechnung Kauf 
+Auftrag vom 16.03.2026 18:08:03 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 12 ALLIANZ EURO CASH                  LU2575877977 (A3D4YD)
+ACT.AU PORT. AT EUR ACC. ON        
+Handels-/Ausführungsplatz Außerbörslich
+Schlusstag 17.03.2026 Auftraggeber Max Mustermann
+Ausführungskurs 109,7014 EUR Auftragserteilung/ -ort Online-Banking
+Girosammeldepot Sammelurkunde/-eintragung
+Kurswert 1.316,42- EUR
+Ausmachender Betrag 1.316,42- EUR
+ 
+Den Gegenwert buchen wir mit Valuta 19.03.2026 zu Lasten des Kontos 0012345678
+(IBAN DE99 6039 1310 0012 3456 78), BLZ 60391310 (BIC GENODES1VBH).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+6746.03181730.0000001OR07

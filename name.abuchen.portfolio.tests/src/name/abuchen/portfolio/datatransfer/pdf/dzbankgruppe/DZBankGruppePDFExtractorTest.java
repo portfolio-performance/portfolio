@@ -330,6 +330,74 @@ public class DZBankGruppePDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf09()
+    {
+        var extractor = new DZBankGruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU2575877977"), hasWkn("A3D4YD"), hasTicker(null), //
+                        hasName("ALLIANZ EURO CASH ACT.AU PORT. AT EUR ACC. ON"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-03-17T00:00"), hasShares(12.00), //
+                        hasSource("Kauf09.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1316.42), hasGrossValue("EUR", 1316.42), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierKauf10()
+    {
+        var extractor = new DZBankGruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000A0RAD42"), hasWkn("A0RAD4"), hasTicker(null), //
+                        hasName("ANTECEDO INDEPENDENT INVEST INHABER-ANTEILE A"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-07-08T00:00"), hasShares(61.00), //
+                        hasSource("Kauf10.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 10154.67), hasGrossValue("EUR", 10154.67), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         var extractor = new DZBankGruppePDFExtractor(new Client());
@@ -479,6 +547,40 @@ public class DZBankGruppePDFExtractorTest
                         hasNote("Verrechnete Aktienverluste 99,50- EUR"), //
                         hasAmount("EUR", 26.23), hasGrossValue("EUR", 26.23), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf05()
+    {
+        var extractor = new DZBankGruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0008474230"), hasWkn("847423"), hasTicker(null), //
+                        hasName("DWS EURO FLEXIZINS INHABER-ANTEILE NC"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-03-10T00:00"), hasShares(2666.00), //
+                        hasSource("Verkauf05.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 200099.53), hasGrossValue("EUR", 200136.62), //
+                        hasTaxes("EUR", 32.67 + 1.80 + 2.62), hasFees("EUR", 0.00))));
     }
 
     @Test
