@@ -1512,7 +1512,10 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .section("tax").optional() //
                         .documentContext("currency") //
                         .match("^Kapitalertrags(s)?teuer (?<tax>[\\.,\\d]+) \\-$") //
-                        .assign((t, v) -> processTaxEntries(t, v, type))
+                        .assign((t, v) -> {
+                            if (!v.getTransactionContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
 
                         // @formatter:off
                         // Kirchensteuer EUR 11,49 -
@@ -1530,10 +1533,13 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .section("tax").optional() //
                         .documentContext("currency") //
                         .match("^Kirchensteuer (?<tax>[\\.,\\d]+) \\-$") //
-                        .assign((t, v) -> processTaxEntries(t, v, type))
+                        .assign((t, v) -> {
+                            if (!v.getTransactionContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
 
                         // @formatter:off
-                        // Solidaritätszuschlag 0,02 -
+                        // Solidaritätszuschlag EUR 0,02 -
                         // @formatter:on
                         .section("tax", "currency").optional() //
                         .match("^Solidarit.tszuschlag (?<currency>[A-Z]{3}) (?<tax>[\\.,\\d]+) \\-$") //
@@ -1548,7 +1554,10 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .section("tax").optional() //
                         .documentContext("currency") //
                         .match("^Solidarit.tszuschlag (?<tax>[\\.,\\d]+) \\-$") //
-                        .assign((t, v) -> processTaxEntries(t, v, type))
+                        .assign((t, v) -> {
+                            if (!v.getTransactionContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
 
                         // @formatter:off
                         // Quellensteuer EUR 30,21 -
