@@ -26,6 +26,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 
 public class DetectDuplicatesAction implements ImportAction
 {
@@ -42,6 +43,11 @@ public class DetectDuplicatesAction implements ImportAction
      * Transactions which are compared with each other to detect duplicates
      * within the import: same kind of transaction (incl. equivalent types),
      * date, currency, amount, shares and security.
+     * <p>
+     * Amount and shares are compared exactly. The relaxed rules applied when
+     * comparing with existing transactions (dividends without number of shares,
+     * interest with and without taxes) do not apply within the import, because
+     * they do not form distinct groups of identical transactions.
      */
     private record DuplicateKey(Set<?> types, LocalDate date, String currencyCode, long amount, long shares,
                     Security security)
@@ -95,6 +101,7 @@ public class DetectDuplicatesAction implements ImportAction
      * the kept transactions can stem from different input files, and
      * occurrences in the input file with the most occurrences can be marked as
      * duplicates.</li>
+     * <li>Amount and shares are compared exactly (see {@link DuplicateKey}).</li>
      * </ul>
      */
     private static Set<Transaction> detectDuplicatesWithinImport(List<Extractor.Item> items)
@@ -338,16 +345,35 @@ public class DetectDuplicatesAction implements ImportAction
         if (!other.getCurrencyCode().equals(subject.getCurrencyCode()))
             return false;
 
-        if (other.getAmount() != subject.getAmount())
+        if (other.getAmount() != subject.getAmount() && !hasEquivalentInterestAmount(subject, other))
             return false;
 
-        if (other.getShares() != subject.getShares())
+        if (other.getShares() != subject.getShares() && !hasMissingDividendShares(subject, other))
             return false;
 
         if (!Objects.equals(other.getSecurity(), subject.getSecurity())) // NOSONAR
             return false;
 
         return true;
+    }
+
+    private boolean hasEquivalentInterestAmount(Transaction subject, Transaction other)
+    {
+        if (!(subject instanceof AccountTransaction accountTransaction)
+                        || accountTransaction.getType() != AccountTransaction.Type.INTEREST)
+            return false;
+
+        long subjectTax = subject.getUnitSum(Unit.Type.TAX).getAmount();
+        long otherTax = other.getUnitSum(Unit.Type.TAX).getAmount();
+        return (subjectTax > 0 && otherTax == 0 && subject.getGrossValue().getAmount() == other.getAmount())
+                        || (otherTax > 0 && subjectTax == 0 && other.getGrossValue().getAmount() == subject.getAmount());
+    }
+
+    private boolean hasMissingDividendShares(Transaction subject, Transaction other)
+    {
+        return subject instanceof AccountTransaction accountTransaction
+                        && accountTransaction.getType() == AccountTransaction.Type.DIVIDENDS
+                        && (subject.getShares() == 0 || other.getShares() == 0);
     }
 
     /*
