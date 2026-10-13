@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -92,6 +93,15 @@ public final class TaxonomyModel
     private Client filteredClient;
     private ClientSnapshot snapshot;
 
+    /**
+     * The date for which the {@link ClientSnapshot} - and therefore all actual
+     * values - is calculated. If empty, the current date is used. It is set via
+     * the time machine to view the portfolio composition at a past point in
+     * time. We do not store the current date here because the view can be kept
+     * open for more than 24 hours.
+     */
+    private Optional<LocalDate> snapshotDate = Optional.empty();
+
     private TaxonomyNode virtualRootNode;
     private TaxonomyNode.ClassificationNode classificationRootNode;
     private TaxonomyNode unassignedNode;
@@ -132,7 +142,7 @@ public final class TaxonomyModel
         this.amountToInvest = Money.of(getCurrencyCode(), 0);
 
         this.filteredClient = client;
-        this.snapshot = ClientSnapshot.create(client, converter, LocalDate.now());
+        this.snapshot = ClientSnapshot.create(client, converter, snapshotDate.orElse(LocalDate.now()));
 
         this.attachedModels.add(new RecalculateTargetsAttachedModel());
         this.attachedModels.add(new ExpectedReturnsAttachedModel());
@@ -311,12 +321,12 @@ public final class TaxonomyModel
     {
         this.expansionStateRebalancing = expansionStateRebalancing;
     }
-    
+
     public void setColoringStrategy(String coloringStrategy)
     {
         this.coloringStrategy = coloringStrategy;
     }
-    
+
     public String getColoringStrategy()
     {
         return coloringStrategy;
@@ -426,10 +436,29 @@ public final class TaxonomyModel
             this.converter = new CurrencyConverterImpl(factory, filteredClient.getBaseCurrency());
 
         this.filteredClient = filteredClient;
-        this.snapshot = ClientSnapshot.create(filteredClient, converter, LocalDate.now());
+        this.snapshot = ClientSnapshot.create(filteredClient, converter, snapshotDate.orElse(LocalDate.now()));
 
         recalculate();
         fireTaxonomyModelChange(getVirtualRootNode());
+    }
+
+    /**
+     * Sets the date for which the snapshot - and therefore all actual values -
+     * is calculated. An empty value resets to the current date. Used by the
+     * time machine of the taxonomy charts without a time axis.
+     */
+    public void updateSnapshotDate(Optional<LocalDate> snapshotDate)
+    {
+        this.snapshotDate = Objects.requireNonNull(snapshotDate);
+        this.snapshot = ClientSnapshot.create(filteredClient, converter, snapshotDate.orElse(LocalDate.now()));
+
+        recalculate();
+        fireTaxonomyModelChange(getVirtualRootNode());
+    }
+
+    public Optional<LocalDate> getSnapshotDate()
+    {
+        return snapshotDate;
     }
 
     public Client getFilteredClient()
