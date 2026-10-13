@@ -234,8 +234,8 @@ public class QuirinPrivatbankAGPDFExtractorTest
                         hasAmount("EUR", 75.00), hasGrossValue("EUR", 75.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // check taxes transaction
-        assertThat(results, hasItem(taxes( //
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
                         hasDate("2014-03-10T00:00"), hasShares(0.1318), //
                         hasSource("Kauf04.txt"), //
                         hasNote("Zwischengewinn 0,17 EUR | Ref.-Nr.: O:002831939:1"), //

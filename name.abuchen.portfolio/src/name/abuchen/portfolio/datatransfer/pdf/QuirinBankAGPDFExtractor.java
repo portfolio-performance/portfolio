@@ -1060,7 +1060,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
                         // @formatter:off
                         // Verrechnungstopf Sonstige  0,00 EUR Steuerbetrag  0,05 EUR
