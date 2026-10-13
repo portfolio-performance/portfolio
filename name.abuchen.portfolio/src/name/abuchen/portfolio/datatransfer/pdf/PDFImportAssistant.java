@@ -15,6 +15,7 @@ import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
+import name.abuchen.portfolio.datatransfer.actions.DetectDuplicatesAction;
 import name.abuchen.portfolio.model.Client;
 
 public class PDFImportAssistant
@@ -208,6 +209,7 @@ public class PDFImportAssistant
                     if (!items.isEmpty())
                     {
                         extracted = true;
+                        markSourceKey(items, inputFile);
                         var key = lookupExtractor(extractor, inputFile);
                         itemsByExtractor.computeIfAbsent(key, e -> new ArrayList<Item>()).addAll(items);
                         break;
@@ -226,6 +228,7 @@ public class PDFImportAssistant
                             if (!items.isEmpty())
                             {
                                 extracted = true;
+                                markSourceKey(items, inputFile);
                                 var key = lookupExtractor(extractor, inputFile);
                                 itemsByExtractor.computeIfAbsent(key, e -> new ArrayList<Item>()).addAll(items);
                                 break;
@@ -276,6 +279,18 @@ public class PDFImportAssistant
         securityCache.addMissingSecurityItems(itemsByExtractor);
 
         return itemsByExtractor;
+    }
+
+    /**
+     * Marks the items with the absolute path of the input file. The source of
+     * the transactions only contains the file name which is not unique if
+     * files with the same name from different folders or ZIP archives are
+     * imported. The path is used to detect duplicates between the files.
+     */
+    /* testing */ static void markSourceKey(List<Item> items, PDFInputFile inputFile)
+    {
+        var sourceKey = inputFile.getFile().getAbsolutePath();
+        items.forEach(item -> item.setData(DetectDuplicatesAction.SOURCE_KEY, sourceKey));
     }
 
     public Map<File, PDFInputFile> getFailedInputFiles()
