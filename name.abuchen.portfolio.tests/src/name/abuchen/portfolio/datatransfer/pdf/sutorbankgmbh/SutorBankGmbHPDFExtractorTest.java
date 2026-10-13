@@ -872,7 +872,6 @@ public class SutorBankGmbHPDFExtractorTest
         // check 1st fee transaction
         assertThat(results, hasItem(fee( //
                         hasDate("2019-07-10"), //
-                        hasShares(0), //
                         hasSource("Depotauszug01.txt"), //
                         hasNote("Verwaltungsgebühr/Vertriebskosten"), //
                         hasAmount("EUR", 19.83), hasGrossValue("EUR", 19.83), //
@@ -881,7 +880,6 @@ public class SutorBankGmbHPDFExtractorTest
         // check 2nd fee transaction
         assertThat(results, hasItem(fee( //
                         hasDate("2019-01-10"), //
-                        hasShares(0), //
                         hasSource("Depotauszug01.txt"), //
                         hasNote("Verwaltgebühr/Vertriebskosten"), //
                         hasAmount("EUR", 2.12), hasGrossValue("EUR", 2.12), //
@@ -890,7 +888,6 @@ public class SutorBankGmbHPDFExtractorTest
         // check 3rd fee transaction
         assertThat(results, hasItem(fee( //
                         hasDate("2019-01-10"), //
-                        hasShares(0), //
                         hasSource("Depotauszug01.txt"), //
                         hasNote("Kontoführungs-u.Depotgebühren"), //
                         hasAmount("EUR", 13.50), hasGrossValue("EUR", 13.50), //
@@ -982,7 +979,6 @@ public class SutorBankGmbHPDFExtractorTest
         // check 1st fee transaction
         assertThat(results, hasItem(fee( //
                         hasDate("2020-06-11"), //
-                        hasShares(0), //
                         hasSource("Depotauszug02.txt"), //
                         hasNote("Kontoführungs-u.Depotgebühren"), //
                         hasAmount("EUR", 18.00), hasGrossValue("EUR", 18.00), //
@@ -991,7 +987,6 @@ public class SutorBankGmbHPDFExtractorTest
         // check 2nd fee transaction
         assertThat(results, hasItem(fee( //
                         hasDate("2020-01-08"), //
-                        hasShares(0), //
                         hasSource("Depotauszug02.txt"), //
                         hasNote("Verwaltgebühr/Vertriebskosten"), //
                         hasAmount("EUR", 0.92), hasGrossValue("EUR", 0.92), //
@@ -1468,7 +1463,6 @@ public class SutorBankGmbHPDFExtractorTest
         // check 1th fee transaction
         assertThat(results, hasItem(fee( //
                         hasDate("2020-11-04"), //
-                        hasShares(0), //
                         hasSource("Depotauszug03.txt"), //
                         hasNote("Verwaltungsgebühr/Vertriebskosten"), //
                         hasAmount("EUR", 34.57), hasGrossValue("EUR", 34.57), //
@@ -1477,7 +1471,6 @@ public class SutorBankGmbHPDFExtractorTest
         // check 1st fee refund (Storno) transaction
         assertThat(results, hasItem(feeRefund( //
                         hasDate("2020-11-25"), //
-                        hasShares(0), //
                         hasSource("Depotauszug03.txt"), //
                         hasNote("Storno Verwaltungsgebühr/Vertriebskosten vom 04.11.2020"), //
                         hasAmount("EUR", 34.57), hasGrossValue("EUR", 34.57), //
@@ -1486,7 +1479,6 @@ public class SutorBankGmbHPDFExtractorTest
         // check 2nd fee transaction
         assertThat(results, hasItem(fee( //
                         hasDate("2020-12-03"), //
-                        hasShares(0), //
                         hasSource("Depotauszug03.txt"), //
                         hasNote("Verwaltungsgebühr/Vertriebskosten"), //
                         hasAmount("EUR", 34.39), hasGrossValue("EUR", 34.39), //
@@ -1495,7 +1487,6 @@ public class SutorBankGmbHPDFExtractorTest
         // check 3nd fee transaction
         assertThat(results, hasItem(fee( //
                         hasDate("2020-12-16"), //
-                        hasShares(0), //
                         hasSource("Depotauszug03.txt"), //
                         hasNote("Kontoführungs-u.Depotgebühren"), //
                         hasAmount("EUR", 18.00), hasGrossValue("EUR", 18.00), //
@@ -1630,7 +1621,6 @@ public class SutorBankGmbHPDFExtractorTest
         // check 1th fee transaction
         assertThat(results, hasItem(fee( //
                         hasDate("2021-05-17"), //
-                        hasShares(0), //
                         hasSource("Depotauszug04.txt"), //
                         hasNote("Depot- u. Verwaltgebühr"), //
                         hasAmount("EUR", 6.55), hasGrossValue("EUR", 6.55), //
@@ -1639,7 +1629,6 @@ public class SutorBankGmbHPDFExtractorTest
         // check 2nd fee transaction
         assertThat(results, hasItem(fee( //
                         hasDate("2021-05-17"), //
-                        hasShares(0), //
                         hasSource("Depotauszug04.txt"), //
                         hasNote("Kontoführungsgebühr"), //
                         hasAmount("EUR", 15.00), hasGrossValue("EUR", 15.00), //
@@ -1648,7 +1637,6 @@ public class SutorBankGmbHPDFExtractorTest
         // check 3rd fee transaction
         assertThat(results, hasItem(fee( //
                         hasDate("2021-06-15"), //
-                        hasShares(0), //
                         hasSource("Depotauszug04.txt"), //
                         hasNote("Umbuchung Geld"), //
                         hasAmount("EUR", 23.77), hasGrossValue("EUR", 23.77), //
@@ -2257,12 +2245,20 @@ public class SutorBankGmbHPDFExtractorTest
                         hasSource("Depotauszug06.txt"), hasNote("automatischer Lastschrifteinzug"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2024-02-01"), hasAmount("EUR", 1.54), //
-                        hasSource("Depotauszug06.txt"), hasNote("Servicegebühr"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2024-02-01"), //
+                        hasSource("Depotauszug06.txt"), //
+                        hasNote("Servicegebühr"), //
+                        hasAmount("EUR", 1.54), hasGrossValue("EUR", 1.54), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2024-02-01"), hasAmount("EUR", 1.45), //
-                        hasSource("Depotauszug06.txt"), hasNote("Vermögensverwaltungsgebühr"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2024-02-01"), //
+                        hasSource("Depotauszug06.txt"), //
+                        hasNote("Vermögensverwaltungsgebühr"), //
+                        hasAmount("EUR", 1.45), hasGrossValue("EUR", 1.45), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check buy sell transactions
         assertThat(results, hasItem(purchase( //
@@ -2505,8 +2501,12 @@ public class SutorBankGmbHPDFExtractorTest
                         hasSource("Depotauszug07.txt"), hasNote("Umbuchung Verrechnung Nachlasskapitale"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2023-12-19"), hasAmount("EUR", 19.93), //
-                        hasSource("Depotauszug07.txt"), hasNote("Kontoführungs-u.Depotgebühren"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2023-12-19"), //
+                        hasSource("Depotauszug07.txt"), //
+                        hasNote("Kontoführungs-u.Depotgebühren"), //
+                        hasAmount("EUR", 19.93), hasGrossValue("EUR", 19.93), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2023-12-19"), hasAmount("EUR", 500.00), //
