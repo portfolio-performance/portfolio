@@ -655,6 +655,14 @@ public class IBFlexStatementExtractor implements Extractor
                             ASSETKEY_WARRANTS).contains(element.getAttribute("assetCategory")))
                 return;
 
+            // Skip executions that are canceled by a separate TradeCancel row.
+            String transactionID = element.getAttribute("transactionID");
+            if (!transactionID.isEmpty() && canceledTradeTransactionIds.contains(transactionID))
+                return;
+
+            if ("TradeCancel".equals(element.getAttribute("transactionType")))
+                return;
+
             // Check if the level of detail is supported
             String lod = element.getAttribute("levelOfDetail");
             if (lod.contains("ASSET_SUMMARY")
