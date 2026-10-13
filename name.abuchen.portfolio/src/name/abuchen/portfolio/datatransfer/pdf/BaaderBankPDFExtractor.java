@@ -19,7 +19,6 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -155,7 +154,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // Is type --> "Ablauf der Optionsfrist" change from BUY to SELL
                         // Is type --> "Obligatorische Barabfindung" change from BUY to SELL
                         // Is type --> "Squeeze Out" change from BUY to SELL
-                        // @formatter:off
+                        // @formatter:on
                         .section("type").optional() //
                         .match("^(?<type>(Spitzenregulierung" //
                                         + "|Gesamtr.ckzahlung" //
@@ -427,31 +426,13 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
                         .conclude(ExtractorUtils.fixGrossValueBuySell())
 
-                        .wrap(t -> {
-                            var portfolioTransaction = t.getPortfolioTransaction();
-
+                        .wrap((t, ctx) -> {
                             // A purchase without any value (e.g. bonus shares
-                            // for new customers) is booked as delivery
-                            // inbound, because a purchase must have a value.
-                            // If fees or taxes were parsed, the document is
-                            // not a bonus and remains a purchase, so that the
-                            // inconsistency is reported by the import checks
-                            // instead of silently dropping the charges.
-                            if (portfolioTransaction.getType() == PortfolioTransaction.Type.BUY
-                                            && portfolioTransaction.getAmount() == 0L
-                                            && portfolioTransaction.getUnits().noneMatch(u -> u.getType() == Unit.Type.FEE
-                                                            || u.getType() == Unit.Type.TAX))
-                            {
-                                var delivery = new PortfolioTransaction(PortfolioTransaction.Type.DELIVERY_INBOUND);
-                                delivery.setDateTime(portfolioTransaction.getDateTime());
-                                delivery.setSecurity(portfolioTransaction.getSecurity());
-                                delivery.setShares(portfolioTransaction.getShares());
-                                delivery.setCurrencyCode(portfolioTransaction.getCurrencyCode());
-                                delivery.setAmount(portfolioTransaction.getAmount());
-                                delivery.setNote(portfolioTransaction.getNote());
-
-                                return new TransactionItem(delivery);
-                            }
+                            // for new customers) is not supported, because a
+                            // purchase must have a value.
+                            if (t.getPortfolioTransaction().getType() == PortfolioTransaction.Type.BUY
+                                            && t.getPortfolioTransaction().getAmount() == 0L)
+                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             return new BuySellEntryItem(t);
                         });
@@ -1490,8 +1471,8 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
                         .section("n").optional() //
                         .match("^Ertragsthesaurierung .*$") //
-                        .match("Steuerliquidit.t (?<n>.*)") //
-                        .assign((t, v) -> type.getCurrentContext().putBoolean("noTax", true));
+                        .match("^Steuerliquidit.t (?<n>.*)$") //
+                        .assign((t, v) -> v.getTransactionContext().putBoolean("noTax", true));
 
         transaction //
 
@@ -1501,7 +1482,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency").optional() //
                         .match("^.* Finanztransaktionssteuer (?<currency>[A-Z]{3}) (?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noTax"))
+                            if (!v.getTransactionContext().getBoolean("noTax"))
                                 processTaxEntries(t, v, type);
                         })
 
@@ -1511,7 +1492,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "tax").optional() //
                         .match("^German flat rate tax (?<currency>[A-Z]{3}) (?<tax>[\\.,\\d]+) \\-$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noTax"))
+                            if (!v.getTransactionContext().getBoolean("noTax"))
                                 processTaxEntries(t, v, type);
                         })
 
@@ -1521,7 +1502,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency").optional() //
                         .match("^Kapitalertrags(s)?teuer (?<currency>[A-Z]{3}) (?<tax>[\\.,\\d]+) \\-$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noTax"))
+                            if (!v.getTransactionContext().getBoolean("noTax"))
                                 processTaxEntries(t, v, type);
                         })
 
@@ -1539,7 +1520,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency").optional() //
                         .match("^Kirchensteuer (?<currency>[A-Z]{3}) (?<tax>[\\.,\\d]+) \\-$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noTax"))
+                            if (!v.getTransactionContext().getBoolean("noTax"))
                                 processTaxEntries(t, v, type);
                         })
 
@@ -1557,7 +1538,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency").optional() //
                         .match("^Solidarit.tszuschlag (?<currency>[A-Z]{3}) (?<tax>[\\.,\\d]+) \\-$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noTax"))
+                            if (!v.getTransactionContext().getBoolean("noTax"))
                                 processTaxEntries(t, v, type);
                         })
 
@@ -1576,7 +1557,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .section("withHoldingTax", "currency").optional() //
                         .match("^(US\\-)?Quellensteuer (?<currency>[A-Z]{3}) (?<withHoldingTax>[\\.,\\d]+) \\-$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noTax"))
+                            if (!v.getTransactionContext().getBoolean("noTax"))
                                 processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
                         })
 
@@ -1586,7 +1567,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .section("withHoldingTax", "currency").optional() //
                         .match("^US withholding tax (?<currency>[A-Z]{3}) (?<withHoldingTax>[\\.,\\d]+) \\-$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noTax"))
+                            if (!v.getTransactionContext().getBoolean("noTax"))
                                 processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
                         })
 
@@ -1596,7 +1577,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .section("withHoldingTax", "currency").optional() //
                         .match("^Withholding tax (?<currency>[A-Z]{3}) (?<withHoldingTax>[\\.,\\d]+) \\-$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noTax"))
+                            if (!v.getTransactionContext().getBoolean("noTax"))
                                 processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
                         });
     }
@@ -1666,7 +1647,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                 putRemainingDiscount(discount.subtract(fee), v);
                             }
 
-                            type.getCurrentContext().putBoolean("noFinanzkommission", true);
+                            v.getTransactionContext().putBoolean("noFinanzkommission", true);
                         })
 
                         // @formatter:off
@@ -1675,7 +1656,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "fee").optional() //
                         .match("^Finanzkommission .* (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noFinanzkommission"))
+                            if (!v.getTransactionContext().getBoolean("noFinanzkommission"))
                                 processFeeEntries(t, v, type);
                         })
 
