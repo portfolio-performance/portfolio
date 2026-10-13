@@ -37,7 +37,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(Fondsabrechnung|Steuerliche Informationen \\(Einzeltransaktion\\))");
+        final var type = new DocumentType("(Fondsabrechnung|Steuerliche Informationen \\(Einzeltransaktion\\))");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -261,7 +261,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
 
     private void addSellForAccountFeeTransaction()
     {
-        DocumentType type = new DocumentType("Entgeltbelastung");
+        final var type = new DocumentType("Entgeltbelastung");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -487,7 +487,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(Aussch.ttungsanzeige|Datum der Aussch.ttung)");
+        final var type = new DocumentType("(Aussch.ttungsanzeige|Datum der Aussch.ttung)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -514,9 +514,12 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Fondsgesellschaft iShares Anteilsbestand per 12.07.2018 0,0930 St.
                         // @formatter:on
-                        .section("shares") //
-                        .match("^.* Anteilsbestand per [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<shares>[\\.,\\d]+) St\\.\\s*$") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .section("exDate", "shares") //
+                        .match("^.* Anteilsbestand per (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<shares>[\\.,\\d]+) St\\.\\s*$") //
+                        .assign((t, v) -> {
+                            t.setExDate(asDate(v.get("exDate")));
+                            t.setShares(asShares(v.get("shares")));
+                        })
 
                         // @formatter:off
                         // Fondsname iShs S&P SmallCap 600 UCITS ET Datum der Ausschüttung 25.07.2018
