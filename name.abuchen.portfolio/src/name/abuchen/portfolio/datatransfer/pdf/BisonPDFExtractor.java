@@ -162,7 +162,7 @@ public class BisonPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date", "time", "amount", "currency") //
                         .find("(Einzahlung|Auszahlung)") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) [\\-|\\+] (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc})$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) [\\-\\+] (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc})$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date"), v.get("time")));
 
