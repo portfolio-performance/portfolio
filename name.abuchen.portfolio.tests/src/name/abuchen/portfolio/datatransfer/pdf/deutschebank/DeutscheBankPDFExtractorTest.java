@@ -84,7 +84,7 @@ public class DeutscheBankPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2014-12-15"), hasExDate("2014-12-04"), //
-                        hasShares(380), //
+                        hasShares(380.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 64.88), hasGrossValue("EUR", 87.13), //
@@ -121,7 +121,7 @@ public class DeutscheBankPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2014-12-15"), hasExDate("2014-12-04"), //
-                        hasShares(380), //
+                        hasShares(380.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 64.88), hasGrossValue("EUR", 87.13), //
@@ -156,7 +156,7 @@ public class DeutscheBankPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2014-12-15"), hasExDate(null), //
-                        hasShares(123), //
+                        hasShares(123.00), //
                         hasSource("Dividende02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 14.95), hasGrossValue("EUR", 20.22), //
@@ -191,7 +191,7 @@ public class DeutscheBankPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2015-03-24T00:00"), hasExDate(null), //
-                        hasShares(123), //
+                        hasShares(123.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 16.17), hasGrossValue("EUR", 19.51), //
@@ -228,7 +228,7 @@ public class DeutscheBankPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2015-03-24T00:00"), hasExDate(null), //
-                        hasShares(123), //
+                        hasShares(123.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 16.17), hasGrossValue("EUR", 19.51), //
@@ -270,7 +270,7 @@ public class DeutscheBankPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2019-05-31T00:00"), hasExDate(null), //
-                        hasShares(1014), //
+                        hasShares(1014.00), //
                         hasSource("Dividende04.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 297.61), hasGrossValue("EUR", 297.61), //
@@ -305,7 +305,7 @@ public class DeutscheBankPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2021-11-26T00:00"), hasExDate(null), //
-                        hasShares(175), //
+                        hasShares(175.00), //
                         hasSource("Dividende05.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 275.80), hasGrossValue("EUR", 343.00), //
@@ -340,7 +340,7 @@ public class DeutscheBankPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2021-12-31T00:00"), hasExDate(null), //
-                        hasShares(2000), //
+                        hasShares(2000.00), //
                         hasSource("Dividende06.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 544.56), hasGrossValue("EUR", 677.27), //
@@ -559,9 +559,10 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results, hasItem(dividend( //
                         hasDate("2025-12-10T00:00"), hasExDate("2025-11-19T00:00"), //
                         hasShares(100.00), //
-                        hasSource("Dividende11.txt"), hasNote(null), hasAmount("USD", 18.62), //
-                        hasGrossValue("USD", 25.00), hasTaxes("USD", 3.75 + 2.50 + 0.13), //
-                        hasFees("USD", 0.00))));
+                        hasSource("Dividende11.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 18.62), hasGrossValue("USD", 25.00), //
+                        hasTaxes("USD", 3.75 + 2.50 + 0.13), hasFees("USD", 0.00))));
     }
 
     @Test
@@ -695,8 +696,9 @@ public class DeutscheBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2015-04-02T09:04"), hasShares(36), //
-                        hasSource("Kauf02.txt"), hasNote("Belegnummer 1234567890 / 123456"), //
+                        hasDate("2015-04-02T09:04"), hasShares(36.00), //
+                        hasSource("Kauf02.txt"), //
+                        hasNote("Belegnummer 1234567890 / 123456"), //
                         hasAmount("EUR", 3524.98), hasGrossValue("EUR", 3513.60), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 8.78 + 2.00 + 0.60))));
     }
@@ -728,8 +730,9 @@ public class DeutscheBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2019-08-20"), hasShares(5.5791), //
-                        hasSource("Kauf03.txt"), hasNote("Belegnummer 1694278628 / 24281"), //
+                        hasDate("2019-08-20T00:00"), hasShares(5.5791), //
+                        hasSource("Kauf03.txt"), //
+                        hasNote("Belegnummer 1694278628 / 24281"), //
                         hasAmount("EUR", 300.00), hasGrossValue("EUR", 300.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
@@ -762,7 +765,8 @@ public class DeutscheBankPDFExtractorTest
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2021-08-20T09:04"), hasShares(1.4353), //
-                        hasSource("Kauf04.txt"), hasNote("Belegnummer 1111111111 / 1111111"), //
+                        hasSource("Kauf04.txt"), //
+                        hasNote("Belegnummer 1111111111 / 1111111"), //
                         hasAmount("EUR", 100.95), hasGrossValue("EUR", 100.95), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
@@ -795,7 +799,8 @@ public class DeutscheBankPDFExtractorTest
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2021-12-20T09:09"), hasShares(4.9672), //
-                        hasSource("Kauf05.txt"), hasNote(null), //
+                        hasSource("Kauf05.txt"), //
+                        hasNote(null), //
                         hasAmount("EUR", 250.05), hasGrossValue("EUR", 250.05), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
@@ -828,7 +833,8 @@ public class DeutscheBankPDFExtractorTest
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2021-12-20T09:04"), hasShares(4.8634), //
-                        hasSource("Kauf06.txt"), hasNote(null), //
+                        hasSource("Kauf06.txt"), //
+                        hasNote(null), //
                         hasAmount("EUR", 250.25), hasGrossValue("EUR", 250.25), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
@@ -1166,8 +1172,9 @@ public class DeutscheBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2015-04-02T09:04"), hasShares(61), //
-                        hasSource("Verkauf01.txt"), hasNote("Belegnummer 1234567890 / 123456"), //
+                        hasDate("2015-04-02T09:04"), hasShares(61.00), //
+                        hasSource("Verkauf01.txt"), //
+                        hasNote("Belegnummer 1234567890 / 123456"), //
                         hasAmount("EUR", 2074.71), hasGrossValue("EUR", 2216.14), //
                         hasTaxes("EUR", 122.94 + 6.76 + 1.23), hasFees("EUR", 7.90 + 2.00 + 0.60))));
     }
@@ -1199,7 +1206,7 @@ public class DeutscheBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2015-01-28T09:00"), hasShares(8), //
+                        hasDate("2015-01-28T09:00"), hasShares(8.00), //
                         hasSource("Verkauf02.txt"), //
                         hasNote("Belegnummer 1234567890 / 123456"), //
                         hasAmount("EUR", 453.66), hasGrossValue("EUR", 464.16), //
@@ -1233,8 +1240,9 @@ public class DeutscheBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2017-02-16T15:28"), hasShares(100), //
-                        hasSource("Verkauf03.txt"), hasNote("Belegnummer 1202359588 / 831475"), //
+                        hasDate("2017-02-16T15:28"), hasShares(100.00), //
+                        hasSource("Verkauf03.txt"), //
+                        hasNote("Belegnummer 1202359588 / 831475"), //
                         hasAmount("EUR", 4753.16), hasGrossValue("EUR", 4774.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 11.94 + 3.50 + 5.40))));
     }
@@ -1266,8 +1274,9 @@ public class DeutscheBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2022-07-07T09:05"), hasShares(1870), //
-                        hasSource("Verkauf04.txt"), hasNote(null), //
+                        hasDate("2022-07-07T09:05"), hasShares(1870.00), //
+                        hasSource("Verkauf04.txt"), //
+                        hasNote(null), //
                         hasAmount("EUR", 27613.77), hasGrossValue("EUR", 27676.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 58.90 + 2.00 + 1.33))));
     }
@@ -1299,7 +1308,7 @@ public class DeutscheBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2026-02-24T08:02:00"), hasShares(8000), //
+                        hasDate("2026-02-24T08:02:00"), hasShares(8000.00), //
                         hasSource("Verkauf05.txt"), //
                         hasNote("Belegnummer 6978580640 / 890153444"), //
                         hasAmount("EUR", 7185.60), hasGrossValue("EUR", 8200.00), //
@@ -1441,35 +1450,35 @@ public class DeutscheBankPDFExtractorTest
         
         // check transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2019-08-01"), hasShares(0.1028), //
+                        hasDate("2019-08-01T00:00"), hasShares(0.1028), //
                         hasSource("Sparplan02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 25.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.0))));
 
         assertThat(results, hasItem(purchase( //
-                        hasDate("2019-09-02"), hasShares(0.1042), //
+                        hasDate("2019-09-02T00:00"), hasShares(0.1042), //
                         hasSource("Sparplan02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 25.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.0))));
 
         assertThat(results, hasItem(purchase( //
-                        hasDate("2019-10-01"), hasShares(0.1017), //
+                        hasDate("2019-10-01T00:00"), hasShares(0.1017), //
                         hasSource("Sparplan02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 25.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.0))));
 
         assertThat(results, hasItem(purchase( //
-                        hasDate("2019-11-01"), hasShares(0.1008), //
+                        hasDate("2019-11-01T00:00"), hasShares(0.1008), //
                         hasSource("Sparplan02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 25.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.0))));
 
         assertThat(results, hasItem(purchase( //
-                        hasDate("2019-12-02"), hasShares(0.0972), //
+                        hasDate("2019-12-02T00:00"), hasShares(0.0972), //
                         hasSource("Sparplan02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 25.00), //
@@ -2373,7 +2382,7 @@ public class DeutscheBankPDFExtractorTest
 
         // check taxes transaction
         assertThat(results, hasItem(taxes( //
-                        hasDate("2026-01-02T00:00"), hasShares(300), //
+                        hasDate("2026-01-02T00:00"), hasShares(300.00), //
                         hasSource("Vorabpauschale01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 8.87), hasGrossValue("EUR", 8.87), //
@@ -2408,7 +2417,7 @@ public class DeutscheBankPDFExtractorTest
         // check skipped item
         assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, taxes( //
-                                        hasDate("2026-01-15"), hasShares(120), //
+                                        hasDate("2026-01-15"), hasShares(120.00), //
                                         hasSource("Vorabpauschale02.txt"), //
                                         hasNote(null), //
                                         hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
