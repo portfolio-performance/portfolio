@@ -55,7 +55,7 @@ public class Bank11PDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "note", "amount") //
                         .documentContext("currency", "year") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. (?<note>.*gutschr\\.?)[\\s]{1,}(?<amount>[\\.,\\d]+) [H]") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. (?<note>.*gutschr\\.?)[\\s]{1,}(?<amount>[\\.,\\d]+) [H]$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date") + v.get("year")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -81,7 +81,7 @@ public class Bank11PDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "note", "amount") //
                         .documentContext("currency", "year") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. (?<note>(Umbuchung|.*berweisungsauftrag))[\\s]{1,}(?<amount>[\\.,\\d]+) [S]") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. (?<note>(Umbuchung|.*berweisungsauftrag))[\\s]{1,}(?<amount>[\\.,\\d]+) [S]$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date") + v.get("year")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -104,7 +104,7 @@ public class Bank11PDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "amount") //
                         .documentContext("currency", "year") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. Abschluss.*[\\s]{1,}(?<amount>[\\.,\\d]+) [H]") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. Abschluss.*[\\s]{1,}(?<amount>[\\.,\\d]+) [H]$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date") + v.get("year")));
                             t.setAmount(asAmount(v.get("amount")));
