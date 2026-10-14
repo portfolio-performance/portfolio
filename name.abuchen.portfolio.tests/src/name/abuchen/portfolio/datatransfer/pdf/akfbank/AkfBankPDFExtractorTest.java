@@ -7,7 +7,6 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
@@ -68,8 +67,12 @@ public class AkfBankPDFExtractorTest
                         hasSource("Kontoauszug01.txt"), hasNote("Gutschrift"))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2011-04-30"), hasAmount("EUR", 44.20), //
-                        hasSource("Kontoauszug01.txt"), hasNote("28.03.2011 - 30.04.2011 (2,400 %)"))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2011-04-30"), //
+                        hasSource("Kontoauszug01.txt"), //
+                        hasNote("28.03.2011 - 30.04.2011 (2,400 %)"), //
+                        hasAmount("EUR", 44.20), hasGrossValue("EUR", 44.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -100,12 +103,20 @@ public class AkfBankPDFExtractorTest
                         hasSource("Kontoauszug02.txt"), hasNote("DTA Überweisung"))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2012-12-31"), hasAmount("EUR", 0.09), //
-                        hasSource("Kontoauszug02.txt"), hasNote("30.11.2012 - 01.12.2012 (2,150 %)"))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2012-12-31"), //
+                        hasSource("Kontoauszug02.txt"), //
+                        hasNote("30.11.2012 - 01.12.2012 (2,150 %)"), //
+                        hasAmount("EUR", 0.09), hasGrossValue("EUR", 0.09), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2012-12-31"), hasAmount("EUR", 0.33), //
-                        hasSource("Kontoauszug02.txt"), hasNote("01.12.2012 - 31.12.2012 (1,900 %)"))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2012-12-31"), //
+                        hasSource("Kontoauszug02.txt"), //
+                        hasNote("01.12.2012 - 31.12.2012 (1,900 %)"), //
+                        hasAmount("EUR", 0.33), hasGrossValue("EUR", 0.33), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -152,8 +163,12 @@ public class AkfBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2023-07-31"), hasAmount("EUR", 0.01), //
-                        hasSource("Kontoauszug04.txt"), hasNote("03.07.2023 - 31.07.2023 (2,000 %)"))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2023-07-31"), //
+                        hasSource("Kontoauszug04.txt"), //
+                        hasNote("03.07.2023 - 31.07.2023 (2,000 %)"), //
+                        hasAmount("EUR", 0.01), hasGrossValue("EUR", 0.01), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -176,8 +191,12 @@ public class AkfBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2023-12-31"), hasAmount("EUR", 0.01), //
-                        hasSource("Kontoauszug05.txt"), hasNote("30.11.2023 - 31.12.2023 (2,000 %)"))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2023-12-31"), //
+                        hasSource("Kontoauszug05.txt"), //
+                        hasNote("30.11.2023 - 31.12.2023 (2,000 %)"), //
+                        hasAmount("EUR", 0.01), hasGrossValue("EUR", 0.01), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -224,12 +243,20 @@ public class AkfBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2012-11-14"), hasAmount("EUR", 5.00), //
-                        hasSource("Kontoauszug07.txt"), hasNote("Einzelüberweisung"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2012-11-14"), //
+                        hasSource("Kontoauszug07.txt"), //
+                        hasNote("Einzelüberweisung"), //
+                        hasAmount("EUR", 5.00), hasGrossValue("EUR", 5.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2012-11-30"), hasAmount("EUR", 2.71), //
-                        hasSource("Kontoauszug07.txt"), hasNote("31.10.2012 - 30.11.2012 (2,150 %)"))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2012-11-30"), //
+                        hasSource("Kontoauszug07.txt"), //
+                        hasNote("31.10.2012 - 30.11.2012 (2,150 %)"), //
+                        hasAmount("EUR", 2.71), hasGrossValue("EUR", 2.71), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -252,8 +279,12 @@ public class AkfBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2021-09-12"), hasAmount("EUR", 6.66), //
-                        hasSource("Kontoauszug08.txt"), hasNote("12.03.2021 - 12.09.2021 (0,300 %)"))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2021-09-12"), //
+                        hasSource("Kontoauszug08.txt"), //
+                        hasNote("12.03.2021 - 12.09.2021 (0,300 %)"), //
+                        hasAmount("EUR", 6.66), hasGrossValue("EUR", 6.66), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2021-09-12"), hasAmount("EUR", 4446.66), //
@@ -284,8 +315,12 @@ public class AkfBankPDFExtractorTest
                         hasSource("Kontoauszug09.txt"), hasNote("Sparkonto Kündigung"))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2022-11-30"), hasAmount("EUR", 0.05), //
-                        hasSource("Kontoauszug09.txt"), hasNote("31.10.2022 - 11.11.2022 (0,300 %)"))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2022-11-30"), //
+                        hasSource("Kontoauszug09.txt"), //
+                        hasNote("31.10.2022 - 11.11.2022 (0,300 %)"), //
+                        hasAmount("EUR", 0.05), hasGrossValue("EUR", 0.05), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -316,8 +351,12 @@ public class AkfBankPDFExtractorTest
                         hasSource("Kontoauszug10.txt"), hasNote("Einzelüberweisung"))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2013-12-31"), hasAmount("EUR", 1.24), //
-                        hasSource("Kontoauszug10.txt"), hasNote("30.11.2013 - 31.12.2013 (1,300 %)"))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2013-12-31"), //
+                        hasSource("Kontoauszug10.txt"), //
+                        hasNote("30.11.2013 - 31.12.2013 (1,300 %)"), //
+                        hasAmount("EUR", 1.24), hasGrossValue("EUR", 1.24), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -344,8 +383,12 @@ public class AkfBankPDFExtractorTest
                         hasSource("Kontoauszug12.txt"), hasNote("SEPA Gutschrift"))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-02-29"), hasAmount("EUR", 0.01), //
-                        hasSource("Kontoauszug12.txt"), hasNote("31.01.2024 - 29.02.2024 (2,500 %)"))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2024-02-29"), //
+                        hasSource("Kontoauszug12.txt"), //
+                        hasNote("31.01.2024 - 29.02.2024 (2,500 %)"), //
+                        hasAmount("EUR", 0.01), hasGrossValue("EUR", 0.01), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -369,7 +412,7 @@ public class AkfBankPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2023-09-30"), hasShares(0), //
+                        hasDate("2023-09-30"), //
                         hasSource("Kontoauszug13.txt"), //
                         hasNote("31.08.2023 - 30.09.2023 (2,000 %)"), //
                         hasAmount("EUR", 0.75), hasGrossValue("EUR", 1.03), //
@@ -397,7 +440,7 @@ public class AkfBankPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2024-08-21"), hasShares(0), //
+                        hasDate("2024-08-21"), //
                         hasSource("Kontoauszug14.txt"), //
                         hasNote("30.12.2023 - 21.08.2024 (3,550 %)"), //
                         hasAmount("EUR", 2.26), hasGrossValue("EUR", 2.26), //
@@ -405,7 +448,7 @@ public class AkfBankPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2024-08-21"), hasShares(0), //
+                        hasDate("2024-08-21"), //
                         hasSource("Kontoauszug14.txt"), //
                         hasNote("21.08.2023 - 30.12.2023 (3,550 %)"), //
                         hasAmount("EUR", 0.28), hasGrossValue("EUR", 1.26), //
