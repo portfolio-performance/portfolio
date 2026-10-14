@@ -8,6 +8,8 @@ import java.time.LocalDate;
 
 import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.preference.PreferenceStore;
+import org.eclipse.swt.widgets.Display;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import name.abuchen.portfolio.junit.AccountBuilder;
@@ -27,6 +29,13 @@ import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
 @SuppressWarnings("nls")
 public class AbsolutePerformanceChartWidgetTest
 {
+    @BeforeClass
+    public static void initializeDisplay()
+    {
+        // WidgetFactory loads the image registry, which needs a current display.
+        Display.getDefault();
+    }
+
     private DashboardData dashboardData(Client client)
     {
         var factory = new ExchangeRateProviderFactory(client);
@@ -115,6 +124,42 @@ public class AbsolutePerformanceChartWidgetTest
         assertThat(snapshot.getAbsoluteDelta(), is(Money.of(CurrencyUnit.EUR, 60_00)));
         assertThat(snapshot.getValue(CategoryType.FINAL_VALUE), is(Money.of(CurrencyUnit.EUR, 100_00)));
         assertThat(snapshot.getValue(CategoryType.TRANSFERS), is(Money.of(CurrencyUnit.EUR, 40_00)));
+    }
+
+    @Test
+    public void testRestoredUnsupportedBenchmarkFallsBackToClientSeries()
+    {
+        var client = new Client();
+        new SecurityBuilder().addTo(client);
+        new AccountBuilder().deposit_("2024-01-01", 100_00).interest("2024-02-01", 20_00).addTo(client);
+        var data = dashboardData(client);
+        var benchmark = data.getDataSeriesSet().getAvailableSeries().stream().filter(DataSeries::isBenchmark)
+                        .findFirst().orElseThrow();
+        var widget = WidgetFactory.ABSOLUTE_PERFORMANCE_CHART.constructWidget();
+        widget.getConfiguration().put(Dashboard.Config.DATA_SERIES.name(), benchmark.getUUID());
+        widget.getConfiguration().put(Dashboard.Config.REPORTING_PERIOD.name(),
+                        new ReportingPeriod.FromXtoY(LocalDate.of(2023, 12, 31), LocalDate.of(2024, 3, 1)).getCode());
+
+        var delegate = new AbsolutePerformanceChartWidget(widget, data);
+        assertThat(delegate.get(DataSeriesConfig.class).getDataSeries().getType(), is(DataSeries.Type.CLIENT));
+        var snapshot = delegate.getUpdateTask().get();
+        assertThat(snapshot.getAbsoluteDelta(), is(Money.of(CurrencyUnit.EUR, 20_00)));
+        assertThat(snapshot.getValue(CategoryType.FINAL_VALUE), is(Money.of(CurrencyUnit.EUR, 120_00)));
+    }
+
+    @Test
+    public void testRestoredBenchmarkIsRetainedWhenSupported()
+    {
+        var client = new Client();
+        new SecurityBuilder().addTo(client);
+        var data = dashboardData(client);
+        var benchmark = data.getDataSeriesSet().getAvailableSeries().stream().filter(DataSeries::isBenchmark)
+                        .findFirst().orElseThrow();
+        var widget = WidgetFactory.ABSOLUTE_PERFORMANCE_CHART.constructWidget();
+        widget.getConfiguration().put(Dashboard.Config.DATA_SERIES.name(), benchmark.getUUID());
+        var delegate = new AbsolutePerformanceChartWidget(widget, data);
+
+        assertThat(new DataSeriesConfig(delegate, true).getDataSeries(), is(benchmark));
     }
 
     private AbsolutePerformanceChartWidget delegateForSeries(Client client, DataSeries.Type type, Object instance)
