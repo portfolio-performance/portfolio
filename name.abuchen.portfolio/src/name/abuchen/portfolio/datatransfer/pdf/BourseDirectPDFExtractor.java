@@ -122,7 +122,7 @@ public class BourseDirectPDFExtractor extends AbstractPDFExtractor
                         //  QUANTITE :  -45
                         // @formatter:on
                         .section("shares") //
-                        .match("^.*QUANTITE :[\\s]{1,}[\\-|\\+](?<shares>[\\d\\s]+(,[\\d]{2})?)$") //
+                        .match("^.*QUANTITE :[\\s]{1,}[\\-\\+](?<shares>[\\d\\s]+(,[\\d]{2})?)$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
@@ -153,7 +153,11 @@ public class BourseDirectPDFExtractor extends AbstractPDFExtractor
 
                             if (item.isPresent())
                             {
+                                // The financial transaction tax (TTF) is
+                                // debited in a separate line and is not
+                                // included in the amount of the purchase.
                                 var tax = Money.of(item.get().currency, item.get().tax);
+                                t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().add(tax));
                                 checkAndSetTax(tax, t, type.getCurrentContext());
                             }
                         })
@@ -281,7 +285,7 @@ public class BourseDirectPDFExtractor extends AbstractPDFExtractor
 
         this.addDocumentTyp(type);
 
-        var depositBlock = new Block("^.*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}[\\s]{1,}VIREMENT ESPECES.*$");
+        var depositBlock = new Block("^.*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}[\\s]{1,}(VIREMENT|INVESTISSEMENT) ESPECES.*$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
@@ -289,10 +293,11 @@ public class BourseDirectPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         //  24/02/2021  VIREMENT ESPECES  VIRT M. ET/OU MME  2 400,00
+                        //  05/08/2025  INVESTISSEMENT ESPECES  VIRT M XXX XXX  1 240,00
                         // @formatter:on
                         .section("date", "amount") //
                         .documentContext("currency") //
-                        .match("^.*(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4})[\\s]{1,}VIREMENT ESPECES.*[\\s]{2,}(?<amount>[\\d\\s]+,[\\d]{2})$") //
+                        .match("^.*(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4})[\\s]{1,}(VIREMENT|INVESTISSEMENT) ESPECES.*[\\s]{2,}(?<amount>[\\d\\s]+,[\\d]{2})$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(v.get("currency"));
