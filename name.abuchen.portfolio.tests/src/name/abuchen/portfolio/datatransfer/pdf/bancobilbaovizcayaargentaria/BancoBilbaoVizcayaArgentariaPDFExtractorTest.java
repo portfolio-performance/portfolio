@@ -12,6 +12,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGros
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
@@ -20,6 +21,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.skippedItem;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
@@ -36,6 +38,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
@@ -80,6 +83,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractorTest
         assertThat(results, hasItem(purchase( //
                         hasDate("2025-06-20T16:50:47"), hasShares(100), //
                         hasSource("Compra01.txt"), //
+                        hasNote(null), //
                         hasAmount("EUR", 1854.38), hasGrossValue("EUR", 1826.25), //
                         hasForexGrossValue("USD", 2090.69), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", (20.00 + 8.13)))));
@@ -114,6 +118,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractorTest
         assertThat(results, hasItem(purchase( //
                         hasDate("2025-06-20T16:50:47"), hasShares(100), //
                         hasSource("Compra01.txt"), //
+                        hasNote(null), //
                         hasAmount("EUR", 1854.38), hasGrossValue("EUR", 1826.25), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", (20.00 + 8.13)), //
                         check(tx -> {
@@ -152,6 +157,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractorTest
         assertThat(results, hasItem(purchase( //
                         hasDate("2025-01-02T00:00"), hasShares(451.5550246), //
                         hasSource("Compra02.txt"), //
+                        hasNote(null), //
                         hasAmount("EUR", 15000.00), hasGrossValue("EUR", 15000.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
@@ -184,6 +190,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractorTest
         assertThat(results, hasItem(sale( //
                         hasDate("2025-06-17T20:18:37"), hasShares(10.00), //
                         hasSource("Venta01.txt"), //
+                        hasNote(null), //
                         hasAmount("EUR", 1081.36), hasGrossValue("EUR", 1100.71), //
                         hasForexGrossValue("USD", 1270.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", (4.95 + 12.00 + 2.40)))));
@@ -218,6 +225,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractorTest
         assertThat(results, hasItem(sale( //
                         hasDate("2025-06-17T20:18:37"), hasShares(10.00), //
                         hasSource("Venta01.txt"), //
+                        hasNote(null), //
                         hasAmount("EUR", 1081.36), hasGrossValue("EUR", 1100.71), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", (4.95 + 12.00 + 2.40)), //
                         check(tx -> {
@@ -256,6 +264,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractorTest
         assertThat(results, hasItem(sale( //
                         hasDate("2025-05-28T00:00"), hasShares(483.2315919), //
                         hasSource("Venta02.txt"), //
+                        hasNote(null), //
                         hasAmount("EUR", 16000.00), hasGrossValue("EUR", 16000.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
@@ -289,6 +298,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractorTest
         assertThat(results, hasItem(dividend( //
                         hasDate("2025-05-28T00:00"), hasExDate(null), hasShares(33.00), //
                         hasSource("Dividendos01.txt"), //
+                        hasNote(null), //
                         hasAmount("EUR", 3.57), hasGrossValue("EUR", 7.83), //
                         hasTaxes("EUR", 2.44), hasFees("EUR", 1.82))));
     }
@@ -305,10 +315,10 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countSkippedItems(results), is(1L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -318,17 +328,20 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractorTest
                         hasName("ACC.ALPHABET INC CLASE-A"), //
                         hasCurrencyCode("USD"))));
 
-        // check dividend transaction
-        assertThat(results, hasItem(dividend( //
-                        hasDate("2025-06-16T00:00"), hasExDate(null), hasShares(6.00), //
-                        hasSource("Dividendos02.txt"), //
-                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 1.08), //
-                        hasForexGrossValue("USD", 1.26), //
-                        hasTaxes("EUR", 0.33), hasFees("EUR", 0.75))));
+        // check skipped dividend transaction
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2025-06-16T00:00"), hasExDate(null), hasShares(6.00), //
+                                        hasSource("Dividendos02.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 1.08), //
+                                        hasForexGrossValue("USD", 1.26), //
+                                        hasTaxes("EUR", 0.33), hasFees("EUR", 0.75)))));
     }
 
     @Test
-    public void testDividende02WithSecurityInEUR()
+    public void testDividendos02WithSecurityInEUR()
     {
         var security = new Security("ACC.ALPHABET INC CLASE-A", "EUR");
         security.setIsin("US02079K3059");
@@ -345,26 +358,29 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countSkippedItems(results), is(1L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
-        // check dividends transaction
-        assertThat(results, hasItem(dividend( //
-                        hasDate("2025-06-16T00:00"), hasExDate(null), hasShares(6.00), //
-                        hasSource("Dividendos02.txt"), //
-                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 1.08), //
-                        hasTaxes("EUR", 0.33), hasFees("EUR", 0.75), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("EUR");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+        // check skipped dividend transaction
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2025-06-16T00:00"), hasExDate(null), hasShares(6.00), //
+                                        hasSource("Dividendos02.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 1.08), //
+                                        hasTaxes("EUR", 0.33), hasFees("EUR", 0.75), //
+                                        check(tx -> {
+                                            var c = new CheckCurrenciesAction();
+                                            var account = new Account();
+                                            account.setCurrencyCode("EUR");
+                                            var s = c.process((AccountTransaction) tx, account);
+                                            assertThat(s, is(Status.OK_STATUS));
+                                        })))));
     }
 
     @Test
@@ -409,26 +425,30 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractorTest
 
         // check fees transaction
         assertThat(results, hasItem(fee( //
-                        hasDate("2025-06-30T00:00"), hasShares(0.00), //
+                        hasDate("2025-06-30T00:00"), //
                         hasSource("Comisiones01.txt"), //
+                        hasNote(null), //
                         hasAmount("EUR", 20.88 + 4.38), hasGrossValue("EUR", 20.88 + 4.38), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         assertThat(results, hasItem(fee( //
-                        hasDate("2025-06-30T00:00"), hasShares(0.00), //
+                        hasDate("2025-06-30T00:00"), //
                         hasSource("Comisiones01.txt"), //
+                        hasNote(null), //
                         hasAmount("EUR", 30.00 + 6.30), hasGrossValue("EUR", 30.00 + 6.30), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         assertThat(results, hasItem(fee( //
-                        hasDate("2025-06-30T00:00"), hasShares(0.00), //
+                        hasDate("2025-06-30T00:00"), //
                         hasSource("Comisiones01.txt"), //
+                        hasNote(null), //
                         hasAmount("EUR", 30.00 + 6.30), hasGrossValue("EUR", 30.00 + 6.30), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         assertThat(results, hasItem(fee( //
-                        hasDate("2025-06-30T00:00"), hasShares(0.00), //
+                        hasDate("2025-06-30T00:00"), //
                         hasSource("Comisiones01.txt"), //
+                        hasNote(null), //
                         hasAmount("EUR", 30.00 + 6.30), hasGrossValue("EUR", 30.00 + 6.30), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
