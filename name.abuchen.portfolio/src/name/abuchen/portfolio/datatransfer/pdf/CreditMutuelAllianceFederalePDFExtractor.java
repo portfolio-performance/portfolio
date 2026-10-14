@@ -48,7 +48,7 @@ public class CreditMutuelAllianceFederalePDFExtractor extends AbstractPDFExtract
                         // @formatter:on
                         .section("currency", "name", "isin") //
                         .match("^Montant brut \\(frais inclus\\) : [\\,\\d\\s]+ (?<currency>\\p{Sc})$") //
-                        .match("^(?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) [\\d]{2}\\/[\\d]{2}\\/[\\d]{4}.*") //
+                        .match("^(?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) [\\d]{2}\\/[\\d]{2}\\/[\\d]{4}.*$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
@@ -59,23 +59,40 @@ public class CreditMutuelAllianceFederalePDFExtractor extends AbstractPDFExtract
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
-                        // ü Date du versement : 04/06/2020
+                        // The units are purchased on the value date and not on
+                        // the payment date (Date du versement : 04/06/2020)
+                        //
+                        // LYXOR STOXX50 DR UCITS ETF DIST FR0007054358 05/06/2020 33,26 90,1984 3 000,00
                         // @formatter:on
                         .section("date") //
-                        .match("^.*Date du versement : (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4})$") //
+                        .match("^.* [A-Z]{2}[A-Z0-9]{9}[0-9] (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) [\\d\\s]+,[\\d]{2} [\\d\\s]+,[\\d]{1,} [\\d\\s]+,[\\d]{2}$") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         // @formatter:off
-                        // Montant net : 3 000,00 €
+                        // Montant brut (frais inclus) : 3 000,00 €
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^Montant net : (?<amount>[\\,\\d\\s]+) (?<currency>\\p{Sc})$") //
+                        .match("^Montant brut \\(frais inclus\\) : (?<amount>[\\,\\d\\s]+) (?<currency>\\p{Sc})$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
                         .wrap(BuySellEntryItem::new);
+
+        addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
+    {
+        transaction //
+
+                        // @formatter:off
+                        // Frais de Versement : 0,00 €
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("^Frais de Versement : (?<fee>[\\,\\d\\s]+) (?<currency>\\p{Sc})$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
     @Override
