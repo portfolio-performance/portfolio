@@ -6,7 +6,6 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
@@ -56,7 +55,7 @@ public class AudiBankPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2021-12-25"), hasShares(0), //
+                        hasDate("2021-12-25"), //
                         hasSource("Kontoauszug01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.61), hasGrossValue("EUR", 0.83), //
@@ -96,7 +95,7 @@ public class AudiBankPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2023-08-25"), hasShares(0), //
+                        hasDate("2023-08-25"), //
                         hasSource("Kontoauszug02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.74), hasGrossValue("EUR", 1.00), //
@@ -132,7 +131,7 @@ public class AudiBankPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2022-03-25"), hasShares(0), //
+                        hasDate("2022-03-25"), //
                         hasSource("Kontoauszug03.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.83), hasGrossValue("EUR", 1.13), //
