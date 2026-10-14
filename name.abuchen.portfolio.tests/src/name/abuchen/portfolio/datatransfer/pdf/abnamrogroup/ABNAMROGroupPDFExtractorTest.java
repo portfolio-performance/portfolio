@@ -44,6 +44,7 @@ import name.abuchen.portfolio.datatransfer.pdf.ABNAMROGroupPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.Client;
 
+@SuppressWarnings("nls")
 public class ABNAMROGroupPDFExtractorTest
 {
 
