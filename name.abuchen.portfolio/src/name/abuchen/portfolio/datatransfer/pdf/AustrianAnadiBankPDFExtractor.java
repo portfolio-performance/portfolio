@@ -185,7 +185,7 @@ public class AustrianAnadiBankPDFExtractor extends AbstractPDFExtractor
                         .section("date", "note", "amount") //
                         .documentContext("currency", "year") //
                         .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) ABRECHNUNG ZU KONTO (?<note>[\\d]+) [\\d]{1,2}\\.[\\d]{1,2} [\\.,\\d]+$") //
-                        .find("Habenzinsen") //
+                        .find("Habenzinsen.*") //
                         .match("^AB [\\d]{4}\\-[\\d]{2}\\-[\\d]{2} .* (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> { //
                             t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
