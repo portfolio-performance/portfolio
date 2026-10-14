@@ -21,6 +21,7 @@ public class C24BankGmbHPDFExtractor extends AbstractPDFExtractor
 {
     private static final String NOTE_HAS_NAME = "noteHasName";
     private static final String NOTE_HAS_PURPOSE = "noteHasPurpose";
+    private static final String TAX_DEDUCTED_FROM_INTEREST = "taxDeductedFromInterest";
 
     // @formatter:off
     // 17.05. 17.05. Überweisung - 1.508,42 €
@@ -28,7 +29,7 @@ public class C24BankGmbHPDFExtractor extends AbstractPDFExtractor
     // 31.05. 31.05. Zinsen + 1,93 €
     // @formatter:on
     private static final Pattern BOOKING_LINE = Pattern
-                    .compile("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. .* [\\-|\\+][\\s]?[\\.,\\d]+ \\p{Sc}.*$");
+                    .compile("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. .* [\\-\\+][\\s]?[\\.,\\d]+ \\p{Sc}.*$");
 
     // @formatter:off
     // IBAN: DE00000000000000000000 / BIC: DEFFDEFFXXX
@@ -80,11 +81,25 @@ public class C24BankGmbHPDFExtractor extends AbstractPDFExtractor
                                                         section -> section //
                                                                         .attributes("year", "taxDate", "tax", "taxCurrency") //
                                                                         .match("^(Vorl.ufiger )?Kontoauszug [\\d]{2}\\/(?<year>[\\d]{4}).*$") //
-                                                                        .match("^(?<taxDate>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. Steuern [\\-|\\+][\\s]?(?<tax>[\\.,\\d]+) (?<taxCurrency>\\p{Sc}).*$") //
+                                                                        .match("^(?<taxDate>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. Steuern \\-[\\s]?(?<tax>[\\.,\\d]+) (?<taxCurrency>\\p{Sc}).*$") //
                                                                         .assign((ctx, v) -> {
                                                                             ctx.put("taxDate", v.get("taxDate") + v.get("year"));
                                                                             ctx.put("tax", v.get("tax"));
                                                                             ctx.put("taxCurrency", asCurrencyCode(v.get("taxCurrency")));
+                                                                        }))
+
+                                        .optionalOneOf( //
+                                                        // @formatter:off
+                                                        // 31.05. 31.05. Zinsen + 1,93 €
+                                                        // 31.05. 31.05. Zinsen +1,93 €
+                                                        // @formatter:on
+                                                        section -> section //
+                                                                        .attributes("year", "interestDate", "interest") //
+                                                                        .match("^(Vorl.ufiger )?Kontoauszug [\\d]{2}\\/(?<year>[\\d]{4}).*$") //
+                                                                        .match("^(?<interestDate>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. Zinsen \\+[\\s]?(?<interest>[\\.,\\d]+) \\p{Sc}.*$") //
+                                                                        .assign((ctx, v) -> {
+                                                                            ctx.put("interestDate", v.get("interestDate") + v.get("year"));
+                                                                            ctx.put("interest", v.get("interest"));
                                                                         })));
 
         this.addDocumentTyp(type);
@@ -103,7 +118,7 @@ public class C24BankGmbHPDFExtractor extends AbstractPDFExtractor
                         createBookingSplittingStrategy(Pattern.compile("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. " //
                         + "(?!(Zinsen|Steuern))" //
                         + ".* " //
-                                        + "[\\-|\\+][\\s]?[\\.,\\d]+ \\p{Sc}.*$")));
+                                        + "[\\-\\+][\\s]?[\\.,\\d]+ \\p{Sc}.*$")));
         type.addBlock(depositRemovalBlock);
         depositRemovalBlock.set(new Transaction<AccountTransaction>()
 
@@ -114,7 +129,7 @@ public class C24BankGmbHPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. " //
                                         + "(?!(Zinsen|Steuern))" //
                                         + "(?<note>.*) " //
-                                        + "(?<type>[\\-|\\+])[\\s]?" //
+                                        + "(?<type>[\\-\\+])[\\s]?" //
                                         + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}).*$") //
                         .assign((t, v) -> {
                             // @formatter:off
@@ -171,7 +186,7 @@ public class C24BankGmbHPDFExtractor extends AbstractPDFExtractor
         // 31.05. 31.05. Zinsen +1,93 €
         // @formatter:on
         var interestBlock = new Block(createBookingSplittingStrategy(Pattern.compile(
-                        "^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. Zinsen [\\-|\\+][\\s]?[\\.,\\d]+ \\p{Sc}.*$")));
+                        "^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. Zinsen [\\-\\+][\\s]?[\\.,\\d]+ \\p{Sc}.*$")));
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
@@ -182,7 +197,7 @@ public class C24BankGmbHPDFExtractor extends AbstractPDFExtractor
                         .documentContextOptionally("taxDate", "tax", "taxCurrency") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. " //
                                         + "(?<note>Zinsen) " //
-                                        + "(?<type>[\\-|\\+])[\\s]?" //
+                                        + "(?<type>[\\-\\+])[\\s]?" //
                                         + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}).*$") //
                         .assign((t, v) -> {
                             // @formatter:off
@@ -196,10 +211,22 @@ public class C24BankGmbHPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setNote(v.get("note"));
 
-                            if (v.containsKey("tax") && v.containsKey("taxCurrency") && t.getDateTime().equals(asDate(v.get("taxDate"))))
+                            // The interest is credited gross; the taxes are
+                            // debited in a separate line. Therefore the taxes
+                            // are deducted from the credited amount. If the
+                            // taxes exceed the interest, they are imported as
+                            // a separate tax transaction.
+                            if (t.getType() == AccountTransaction.Type.INTEREST && v.containsKey("tax")
+                                            && v.containsKey("taxCurrency")
+                                            && t.getDateTime().equals(asDate(v.get("taxDate"))))
                             {
                                 var tax = Money.of(v.get("taxCurrency"), asAmount(v.get("tax")));
-                                t.addUnit(new Unit(Unit.Type.TAX, tax));
+
+                                if (!tax.isGreaterThan(t.getMonetaryAmount()))
+                                {
+                                    t.addUnit(new Unit(Unit.Type.TAX, tax));
+                                    t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
+                                }
                             }
                         })
 
@@ -213,6 +240,50 @@ public class C24BankGmbHPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
 
                         .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // 31.05. 31.05. Steuern - 2,29 €
+        // 31.05. 31.05. Steuern -2,29 €
+        // @formatter:on
+        var taxesBlock = new Block(createBookingSplittingStrategy(Pattern.compile(
+                        "^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. Steuern [\\-\\+][\\s]?[\\.,\\d]+ \\p{Sc}.*$")));
+        type.addBlock(taxesBlock);
+        taxesBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
+
+                        .section("date", "note", "type", "amount", "currency") //
+                        .documentContext("year") //
+                        .documentContextOptionally("interestDate", "interest") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. " //
+                                        + "(?<note>Steuern) " //
+                                        + "(?<type>[\\-\\+])[\\s]?" //
+                                        + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}).*$") //
+                        .assign((t, v) -> {
+                            // @formatter:off
+                            // Is type --> "+" change from TAXES to TAX_REFUND
+                            // @formatter:on
+                            if ("+".equals(v.get("type")))
+                                t.setType(AccountTransaction.Type.TAX_REFUND);
+
+                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setNote(v.get("note"));
+
+                            // The taxes are already deducted from the interest
+                            // of the same day, unless they exceed the interest
+                            if (t.getType() == AccountTransaction.Type.TAXES && v.containsKey("interest")
+                                            && t.getDateTime().equals(asDate(v.get("interestDate")))
+                                            && t.getAmount() <= asAmount(v.get("interest")))
+                                v.getTransactionContext().putBoolean(TAX_DEDUCTED_FROM_INTEREST, true);
+                        })
+
+                        .wrap((t, ctx) -> {
+                            if (ctx.getBoolean(TAX_DEDUCTED_FROM_INTEREST))
+                                return null;
+                            return new TransactionItem(t);
+                        }));
     }
 
     /**
