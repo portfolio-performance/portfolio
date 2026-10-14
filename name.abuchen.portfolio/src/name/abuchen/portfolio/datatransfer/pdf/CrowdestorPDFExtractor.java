@@ -94,11 +94,12 @@ public class CrowdestorPDFExtractor extends AbstractPDFExtractor
                                         // 17.07.2022 CRF-6-4911 Automaticithdrawal -0.03 50.00w
                                         // 23.07.2022 CRF-6-4911 Automatic -0.03 50.00
                                         // withdrawal
+                                        // 16.07.2022 CRF-6-4911 Automatic withdrawal -0.03 50.00
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "amount") //
                                                         .documentContext("currency") //
-                                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .* Automatic(ithdrawal)? \\-(?<amount>[\\.,\\d]+) [\\.,\\d]+(w)?$") //
+                                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .* Automatic( withdrawal|ithdrawal)? \\-(?<amount>[\\.,\\d]+) [\\.,\\d]+(w)?$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
