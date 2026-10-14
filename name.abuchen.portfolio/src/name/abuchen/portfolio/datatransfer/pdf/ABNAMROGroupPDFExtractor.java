@@ -13,7 +13,6 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
@@ -245,8 +244,7 @@ public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
                                                         section -> section //
                                                                         .attributes("currency") //
                                                                         .match("^Tagesgeldkonto (?<currency>.*)$") //
-                                                                        .assign((ctx, v) -> ctx.put("currency",
-                                                                                        CurrencyUnit.EUR)))
+                                                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode("EUR"))))
 
                                         .optionalOneOf( //
                                                         // @formatter:off
@@ -349,6 +347,9 @@ public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
         // 31.12.2012 01.01.2013 5000510765 Solidarita¨tszuschlag 2,73
         // 31.12.2012 01.01.2013 5000510765 Ihre Tagesgeldzinsen 198,97
         // @formatter:on
+
+        // The interest is credited gross; taxes are debited in separate lines.
+        // Therefore the taxes are deducted from the credited amount.
         var interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* (Ihre (Zinsabrechnung|Tagesgeldzinsen)|Zinszahlung Festgeld)[\\s]{1,}[\\.,\\d]+$");
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
@@ -373,6 +374,7 @@ public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
                             {
                                 var tax = Money.of(v.get("currency"), asAmount(v.get("tax1")));
                                 t.addUnit(new Unit(Unit.Type.TAX, tax));
+                                t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                             }
 
                             if (v.containsKey("taxDate2") && v.containsKey("tax2")
@@ -380,6 +382,7 @@ public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
                             {
                                 var tax = Money.of(v.get("currency"), asAmount(v.get("tax2")));
                                 t.addUnit(new Unit(Unit.Type.TAX, tax));
+                                t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                             }
 
                             if (v.containsKey("taxDate3") && v.containsKey("tax3")
@@ -387,6 +390,7 @@ public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
                             {
                                 var tax = Money.of(v.get("currency"), asAmount(v.get("tax3")));
                                 t.addUnit(new Unit(Unit.Type.TAX, tax));
+                                t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                             }
                         })
 

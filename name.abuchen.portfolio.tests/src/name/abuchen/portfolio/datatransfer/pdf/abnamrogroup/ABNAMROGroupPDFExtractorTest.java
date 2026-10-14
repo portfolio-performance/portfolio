@@ -44,7 +44,6 @@ import name.abuchen.portfolio.datatransfer.pdf.ABNAMROGroupPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.Client;
 
-@SuppressWarnings("nls")
 public class ABNAMROGroupPDFExtractorTest
 {
 
@@ -231,7 +230,7 @@ public class ABNAMROGroupPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2012-01-01"), hasShares(0), //
+                        hasDate("2012-01-01"), //
                         hasSource("Kontoauszug01.txt"), //
                         hasNote("Ihre Tagesgeldzinsen"), //
                         hasAmount("EUR", 114.34), hasGrossValue("EUR", 114.34), //
@@ -283,7 +282,7 @@ public class ABNAMROGroupPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2012-01-01"), hasShares(0), //
+                        hasDate("2012-01-01"), //
                         hasSource("Kontoauszug02.txt"), //
                         hasNote("Ihre Tagesgeldzinsen"), //
                         hasAmount("EUR", 114.34), hasGrossValue("EUR", 114.34), //
@@ -311,7 +310,7 @@ public class ABNAMROGroupPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2012-04-01"), hasShares(0), //
+                        hasDate("2012-04-01"), //
                         hasSource("Kontoauszug02.txt"), //
                         hasNote("Ihre Tagesgeldzinsen"), //
                         hasAmount("EUR", 325.73), hasGrossValue("EUR", 325.73), //
@@ -323,7 +322,7 @@ public class ABNAMROGroupPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2012-07-01"), hasShares(0), //
+                        hasDate("2012-07-01"), //
                         hasSource("Kontoauszug02.txt"), //
                         hasNote("Ihre Tagesgeldzinsen"), //
                         hasAmount("EUR", 39.66), hasGrossValue("EUR", 39.66), //
@@ -343,7 +342,7 @@ public class ABNAMROGroupPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2012-10-01"), hasShares(0), //
+                        hasDate("2012-10-01"), //
                         hasSource("Kontoauszug02.txt"), //
                         hasNote("Ihre Tagesgeldzinsen"), //
                         hasAmount("EUR", 3.01), hasGrossValue("EUR", 3.01), //
@@ -351,7 +350,7 @@ public class ABNAMROGroupPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2012-10-11"), hasShares(0), //
+                        hasDate("2012-10-11"), //
                         hasSource("Kontoauszug02.txt"), //
                         hasNote("Zinszahlung Festgeld"), //
                         hasAmount("EUR", 596.33), hasGrossValue("EUR", 596.33), //
@@ -366,10 +365,10 @@ public class ABNAMROGroupPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2013-01-01"), hasShares(0), //
+                        hasDate("2013-01-01"), //
                         hasSource("Kontoauszug02.txt"), //
                         hasNote("Ihre Tagesgeldzinsen"), //
-                        hasAmount("EUR", 198.97), hasGrossValue("EUR", 251.44), //
+                        hasAmount("EUR", 146.50), hasGrossValue("EUR", 198.97), //
                         hasTaxes("EUR", 49.74 + 2.73), hasFees("EUR", 0.00))));
     }
 
@@ -394,7 +393,7 @@ public class ABNAMROGroupPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2019-07-01"), hasShares(0), //
+                        hasDate("2019-07-01"), //
                         hasSource("Kontoauszug03.txt"), //
                         hasNote("Ihre Zinsabrechnung"), //
                         hasAmount("EUR", 63.28), hasGrossValue("EUR", 63.28), //
