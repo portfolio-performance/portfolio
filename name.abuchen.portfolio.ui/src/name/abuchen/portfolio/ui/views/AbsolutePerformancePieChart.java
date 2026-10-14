@@ -89,8 +89,14 @@ public class AbsolutePerformancePieChart
 
     public Control createControl(Composite parent)
     {
+        return createControl(parent, false);
+    }
+
+    public Control createControl(Composite parent, boolean summaryBelowChart)
+    {
         container = new Composite(parent, SWT.NONE);
-        GridLayoutFactory.fillDefaults().numColumns(2).spacing(20, 0).applyTo(container);
+        GridLayoutFactory.fillDefaults().numColumns(summaryBelowChart ? 1 : 2)
+                        .spacing(summaryBelowChart ? 0 : 20, 5).applyTo(container);
 
         chartContainer = new Composite(container, SWT.NONE);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(chartContainer);
@@ -151,6 +157,12 @@ public class AbsolutePerformancePieChart
 
         updateChart();
         return container;
+    }
+
+    public void setChartHeight(int height)
+    {
+        GridDataFactory.fillDefaults().hint(SWT.DEFAULT, height).grab(true, false).applyTo(chartContainer);
+        container.layout(true, true);
     }
 
     private Label addSummaryAmount(Composite parent)

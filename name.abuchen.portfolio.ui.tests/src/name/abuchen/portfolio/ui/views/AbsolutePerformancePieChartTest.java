@@ -216,6 +216,35 @@ public class AbsolutePerformancePieChartTest
         }
     }
 
+    @Test
+    public void testDashboardLayoutReservesConfiguredHeightAboveSummary()
+    {
+        var shell = new Shell(Display.getDefault());
+        try
+        {
+            shell.setSize(420, 480);
+            shell.setLayout(new FillLayout());
+            var chart = new AbsolutePerformancePieChart();
+            var control = (Composite) chart.createControl(shell, true);
+            chart.setChartHeight(210);
+            chart.refresh(accountSnapshot(new AccountBuilder().deposit_("2024-01-01", 100_00)
+                            .interest("2024-02-01", 20_00)), "Selected portfolio");
+            shell.layout(true, true);
+            var circularChart = controls(control).filter(CircularChart.class::isInstance)
+                            .map(CircularChart.class::cast).findFirst().orElseThrow();
+
+            // SWT can round a logical pixel when applying display scaling.
+            assertTrue(Math.abs(circularChart.getSize().y - 210) <= 1);
+            assertTrue(labelTexts(control).contains(Messages.LabelAbsolutePerformanceGain));
+            chart.setChartHeight(280);
+            assertTrue(Math.abs(circularChart.getSize().y - 280) <= 1);
+        }
+        finally
+        {
+            shell.dispose();
+        }
+    }
+
     private ClientPerformanceSnapshot accountSnapshot(AccountBuilder account)
     {
         var client = new Client();

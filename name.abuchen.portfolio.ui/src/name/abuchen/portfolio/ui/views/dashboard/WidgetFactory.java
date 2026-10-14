@@ -337,6 +337,10 @@ public enum WidgetFactory
     CHART(Messages.LabelPerformanceChart, Messages.ClientEditorLabelPerformance, Images.VIEW_LINECHART,
                     (widget, data) -> new ChartWidget(widget, data, DataSeries.UseCase.PERFORMANCE)),
 
+    ABSOLUTE_PERFORMANCE_CHART(Messages.LabelAbsolutePerformanceChart, Messages.ClientEditorLabelPerformance,
+                    Images.VIEW_PIECHART, config -> config.put(Dashboard.Config.HEIGHT.name(), "210"), //$NON-NLS-1$
+                    AbsolutePerformanceChartWidget::new),
+
     ASSET_CHART(Messages.LabelAssetChart, Messages.LabelStatementOfAssets, Images.VIEW_LINECHART,
                     (widget, data) -> new ChartWidget(widget, data, DataSeries.UseCase.STATEMENT_OF_ASSETS)),
 
