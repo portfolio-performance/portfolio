@@ -4,6 +4,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -383,7 +384,8 @@ public class GenoBrokerPDFExtractorTest
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-07-14T00:00"), hasShares(1000.00), //
+                        hasDate("2023-07-14T00:00"), hasExDate("2023-07-12"), //
+                        hasShares(1000.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Abrechnungsnr.: 60007000"), //
                         hasAmount("EUR", 445.94), hasGrossValue("EUR", 615.87), //
@@ -417,7 +419,8 @@ public class GenoBrokerPDFExtractorTest
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-07-10T00:00"), hasShares(2100.00), //
+                        hasDate("2023-07-10T00:00"), hasExDate("2023-06-21"), //
+                        hasShares(2100.00), //
                         hasSource("Dividende02.txt"), //
                         hasNote("Abrechnungsnr.: 000000000"), //
                         hasAmount("EUR", 6107.09), hasGrossValue("EUR", 9475.70), //
@@ -452,7 +455,8 @@ public class GenoBrokerPDFExtractorTest
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-08-29T00:00"), hasShares(600.00), //
+                        hasDate("2023-08-29T00:00"), hasExDate("2023-08-14"), //
+                        hasShares(600.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote("Abrechnungsnr.: 74014833940"), //
                         hasAmount("EUR", 236.34), hasGrossValue("EUR", 486.03), //
@@ -488,7 +492,8 @@ public class GenoBrokerPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-08-29T00:00"), hasShares(600.00), //
+                        hasDate("2023-08-29T00:00"), hasExDate("2023-08-14"), //
+                        hasShares(600.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote("Abrechnungsnr.: 74014833940"), //
                         hasAmount("EUR", 236.34), hasGrossValue("EUR", 486.03), //
@@ -522,7 +527,8 @@ public class GenoBrokerPDFExtractorTest
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-09-13T00:00"), hasShares(23.00), //
+                        hasDate("2023-09-13T00:00"), hasExDate("2023-08-17"), //
+                        hasShares(23.00), //
                         hasSource("Dividende04.txt"), //
                         hasNote("Abrechnungsnr.: 75555439660"), //
                         hasAmount("EUR", 24.01), hasGrossValue("EUR", 32.26), //
@@ -558,7 +564,8 @@ public class GenoBrokerPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-09-13T00:00"), //
+                        hasDate("2023-09-13T00:00"), hasExDate("2023-08-17"), //
+                        hasShares(23.00), //
                         hasSource("Dividende04.txt"), //
                         hasNote("Abrechnungsnr.: 75555439660"), //
                         hasAmount("EUR", 24.01), hasGrossValue("EUR", 32.26), //
@@ -592,7 +599,8 @@ public class GenoBrokerPDFExtractorTest
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-12-29T00:00"), hasShares(30.00), //
+                        hasDate("2023-12-29T00:00"), hasExDate("2023-12-14"), //
+                        hasShares(30.00), //
                         hasSource("Dividende05.txt"), //
                         hasNote("Abrechnungsnr.: 86249245170"), //
                         hasAmount("EUR", 6.03), hasGrossValue("EUR", 7.50), //
@@ -628,7 +636,8 @@ public class GenoBrokerPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-12-29T00:00"), hasShares(30.00), //
+                        hasDate("2023-12-29T00:00"), hasExDate("2023-12-14"), //
+                        hasShares(30.00), //
                         hasSource("Dividende05.txt"), //
                         hasNote("Abrechnungsnr.: 86249245170"), //
                         hasAmount("EUR", 6.03), hasGrossValue("EUR", 7.50), //
@@ -662,7 +671,8 @@ public class GenoBrokerPDFExtractorTest
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-04-30T00:00"), hasShares(75.00), //
+                        hasDate("2024-04-30T00:00"), hasExDate("2024-04-26"), //
+                        hasShares(75.00), //
                         hasSource("Dividende06.txt"), //
                         hasNote("Abrechnungsnr.: 08172459718"), //
                         hasAmount("EUR", 255.00), hasGrossValue("EUR", 255.00), //
@@ -696,7 +706,8 @@ public class GenoBrokerPDFExtractorTest
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-04-30T00:00"), hasShares(23.00), //
+                        hasDate("2024-04-30T00:00"), hasExDate("2024-04-26"), //
+                        hasShares(23.00), //
                         hasSource("Dividende07.txt"), //
                         hasNote("Abrechnungsnr.: 20967773045"), //
                         hasAmount("EUR", 309.07), hasGrossValue("EUR", 345.00 + 216.60), //
