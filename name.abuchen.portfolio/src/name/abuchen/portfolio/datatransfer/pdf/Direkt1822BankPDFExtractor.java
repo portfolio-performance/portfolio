@@ -84,7 +84,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("name", "isin", "wkn", "name1", "currency") //
                         .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
-                        .match("(?<name1>.*)$") //
+                        .match("^(?<name1>.*)$") //
                         .match("^Ausf.hrungskurs [\\.,\\d]+ (?<currency>[A-Z]{3}) .*$") //
                         .assign((t, v) -> {
                             if (!v.get("name1").startsWith("Börse"))
@@ -204,7 +204,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("name", "isin", "wkn", "nameContinued", "currency") //
                         .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
-                        .match("(?<nameContinued>.*)") //
+                        .match("^(?<nameContinued>.*)$") //
                         .match("^Zahlbarkeitstag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Aussch.ttung|Dividende|Ertrag) pro (St\\.|St.ck) [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -292,7 +292,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("name", "isin", "wkn", "nameContinued", "currency") //
                         .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
-                        .match("(?<nameContinued>.*)") //
+                        .match("^(?<nameContinued>.*)$") //
                         .match("^Zahlbarkeitstag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Vorabpauschale pro St\\. [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -432,7 +432,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
         // Entgelte vom 01.02.2025 bis 28.02.2025 1,90-
         // Abrechnung 28.02.2025 0,00+
         // @formatter:on
-        var feeBlock = new Block("Entgelte vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?[\\.,\\d]+\\-");
+        var feeBlock = new Block("^Entgelte vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?[\\.,\\d]+\\-$");
         type.addBlock(feeBlock);
         feeBlock.set(new Transaction<AccountTransaction>()
 
@@ -480,8 +480,8 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date", "isin", "wkn", "shares", "name", "name1") //
                         .match("^St.ck (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
-                        .match("(?<name1>.*)$") //
-                        .match("Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*") //
+                        .match("^(?<name1>.*)$") //
+                        .match("^Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> {
                             v.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
@@ -563,21 +563,21 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                         // Transaktionsentgelt Börse 0,11- EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("Transaktionsentgelt B.rse (?<fee>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
+                        .match("^Transaktionsentgelt B.rse (?<fee>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Übertragungs-/Liefergebühr 0,11- EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match(".bertragungs-\\/Liefergeb.hr (?<fee>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
+                        .match("^.bertragungs-\\/Liefergeb.hr (?<fee>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Handelsentgelt 1,00- EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("Handelsentgelt (?<fee>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
+                        .match("^Handelsentgelt (?<fee>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
