@@ -4,7 +4,6 @@ import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGros
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
-import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -35,12 +34,12 @@ public class GladbacherBankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Wertpapier Abrechnung (Kauf|Verkauf)");
+        final var type = new DocumentType("Wertpapier Abrechnung (Kauf|Verkauf)");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^Gladbacher Bank AG.*$");
+        var firstRelevantLine = new Block("^Gladbacher Bank AG.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -122,12 +121,12 @@ public class GladbacherBankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("Dividendengutschrift");
+        final var type = new DocumentType("Dividendengutschrift");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^Gladbacher Bank AG.*$");
+        var firstRelevantLine = new Block("^Gladbacher Bank AG.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -185,11 +184,11 @@ public class GladbacherBankAGPDFExtractor extends AbstractPDFExtractor
                         .match("^Devisenkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3})[\\s]{1,}(?<exchangeRate>[\\.,\\d]+)$") //
                         .match("^Dividendengutschrift (?<fxGross>[\\.,\\d]+) [\\w]{3} (?<gross>[\\.,\\d]+)\\+ [\\w]{3}$") //
                         .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
+                            var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
@@ -247,13 +246,6 @@ public class GladbacherBankAGPDFExtractor extends AbstractPDFExtractor
                         .section("withHoldingTax", "currency").optional() //
                         .match("^Einbehaltene Quellensteuer [\\.,\\d]+([\\s])?% .* (?<withHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
-
-                        // @formatter:off
-                        // Anrechenbare Quellensteuer 35,23- EUR
-                        // @formatter:on
-                        .section("creditableWithHoldingTax", "currency").optional() //
-                        .match("^Anrechenbare Quellensteuer (?<creditableWithHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
-                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type))
 
                         // @formatter:off
                         // Anrechenbare Quellensteuer 15 % auf 11,70 EUR 1,76 EUR

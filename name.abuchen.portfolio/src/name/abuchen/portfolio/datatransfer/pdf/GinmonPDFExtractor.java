@@ -20,7 +20,7 @@ public class GinmonPDFExtractor extends AbstractPDFExtractor
 
         addBankIdentifier("Ginmon Vermögensverwaltung GmbH");
 
-        addNonImportableTransaction();
+        addFeeTransaction();
     }
 
     @Override
@@ -29,14 +29,14 @@ public class GinmonPDFExtractor extends AbstractPDFExtractor
         return "Ginmon Vermögensverwaltung GmbH";
     }
 
-    private void addNonImportableTransaction()
+    private void addFeeTransaction()
     {
-        final DocumentType type = new DocumentType("Geb.hrenabrechnung", "Kontoauszug");
+        final var type = new DocumentType("Geb.hrenabrechnung", "Kontoauszug");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^Rechnungsdatum.*$");
+        var firstRelevantLine = new Block("^Rechnungsdatum.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -72,7 +72,7 @@ public class GinmonPDFExtractor extends AbstractPDFExtractor
                         // Zeitraum vom 01.10.2024 – 31.10.2024
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^Zeitraum vom (?<note>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\– [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .match("^Zeitraum vom (?<note>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} . [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         .wrap(TransactionItem::new);
