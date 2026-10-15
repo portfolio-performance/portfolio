@@ -64,7 +64,7 @@ public class ComputershareExtractorTest
                         hasName(null), //
                         hasCurrencyCode("USD"))));
 
-        // check buy sell transaction
+        // check 1st buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-01-31T00:00"), hasShares(7.50), //
                         hasSource("Depotauszug01.txt"), //
@@ -72,7 +72,7 @@ public class ComputershareExtractorTest
                         hasAmount("USD", 756.00), hasGrossValue("USD", 750.00), //
                         hasTaxes("USD", 0.00), hasFees("USD", 6.00))));
 
-        // check buy sell transaction
+        // check 2nd buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-02-28T00:00"), hasShares(7.50), //
                         hasSource("Depotauszug01.txt"), //
@@ -80,7 +80,7 @@ public class ComputershareExtractorTest
                         hasAmount("USD", 750.00), hasGrossValue("USD", 750.00), //
                         hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
 
-        // check buy sell transaction
+        // check 3rd buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-03-31T00:00"), hasShares(7.50), //
                         hasSource("Depotauszug01.txt"), //
@@ -88,7 +88,7 @@ public class ComputershareExtractorTest
                         hasAmount("USD", 750.00), hasGrossValue("USD", 750.00), //
                         hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
 
-        // check buy sell transaction
+        // check 4th buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-04-28T00:00"), hasShares(7.50), //
                         hasSource("Depotauszug01.txt"), //
@@ -96,7 +96,7 @@ public class ComputershareExtractorTest
                         hasAmount("USD", 750.00), hasGrossValue("USD", 750.00), //
                         hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
 
-        // check buy sell transaction
+        // check 5th buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-05-31T00:00"), hasShares(7.50), //
                         hasSource("Depotauszug01.txt"), //
@@ -104,7 +104,7 @@ public class ComputershareExtractorTest
                         hasAmount("USD", 750.00), hasGrossValue("USD", 750.00), //
                         hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
 
-        // check buy sell transaction
+        // check 6th buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-06-30T00:00"), hasShares(7.50), //
                         hasSource("Depotauszug01.txt"), //
@@ -112,7 +112,7 @@ public class ComputershareExtractorTest
                         hasAmount("USD", 750.00), hasGrossValue("USD", 750.00), //
                         hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
 
-        // check buy sell transaction
+        // check 7th buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-07-31T00:00"), hasShares(7.50), //
                         hasSource("Depotauszug01.txt"), //
@@ -120,7 +120,7 @@ public class ComputershareExtractorTest
                         hasAmount("USD", 756.00), hasGrossValue("USD", 750.00), //
                         hasTaxes("USD", 0.00), hasFees("USD", 6.00))));
 
-        // check buy sell transaction
+        // check 8th buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-08-31T00:00"), hasShares(7.50), //
                         hasSource("Depotauszug01.txt"), //
@@ -128,7 +128,7 @@ public class ComputershareExtractorTest
                         hasAmount("USD", 750.00), hasGrossValue("USD", 750.00), //
                         hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
 
-        // check buy sell transaction
+        // check 9th buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-09-29T00:00"), hasShares(7.50), //
                         hasSource("Depotauszug01.txt"), //
