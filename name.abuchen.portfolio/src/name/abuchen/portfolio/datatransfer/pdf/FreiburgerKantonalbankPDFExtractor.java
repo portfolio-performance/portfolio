@@ -63,18 +63,14 @@ public class FreiburgerKantonalbankPDFExtractor extends AbstractPDFExtractor
                         // 100 00:00:00 101.42 CHF -10'142.00
                         // @formatter:on
                         .section("name", "nameContinued", "wkn", "isin", "currency") //
-                        .find("Wir haben für Sie am.*") //
+                        .find("Wir haben f.r Sie am.*") //
                         .match("^[\\.'\\d]+ Anteile (?<name>.*)$") //
                         .match("^(?<nameContinued>.*)$") //
                         .match("^Valor: (?<wkn>[A-Z0-9]{5,9})$") //
                         .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                         .find("Menge Ausf.hrung Preis Wrg Betrag") //
                         .match("^.*[\\d]{2}:[\\d]{2}:[\\d]{2} [\\.'\\d]+ (?<currency>[A-Z]{3}) .*$") //
-                        .assign((t, v) -> {
-                            v.put("wkn", v.get("wkn").replace(",", ""));
-
-                            t.setSecurity(getOrCreateSecurity(v));
-                        })
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
                         // Wir haben für Sie am 07.02.2023 gezeichnet.
@@ -82,9 +78,9 @@ public class FreiburgerKantonalbankPDFExtractor extends AbstractPDFExtractor
                         // 100 00:00:00 101.42 CHF -10'142.00
                         // @formatter:on
                         .section("date", "time") //
-                        .match("^Wir haben für Sie am (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .match("^Wir haben f.r Sie am (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .find("Menge Ausf.hrung Preis Wrg Betrag") //
-                        .match("^[\\d]+ (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) .*$") //
+                        .match("^[\\.'\\d]+ (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) .*$") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
                         // @formatter:off
