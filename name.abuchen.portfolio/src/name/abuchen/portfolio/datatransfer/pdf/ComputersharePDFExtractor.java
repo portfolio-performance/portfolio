@@ -48,7 +48,7 @@ public class ComputersharePDFExtractor extends AbstractPDFExtractor
     private void addDepotStatementTransaction()
     {
 
-        final DocumentType type = new DocumentType(".*Plan Statement", (context, lines) -> {
+        final var type = new DocumentType(".*Plan Statement", (context, lines) -> {
             // currently no parsable security information identifier in
             // statement document - needs line guessing
 
@@ -104,18 +104,18 @@ public class ComputersharePDFExtractor extends AbstractPDFExtractor
         this.addDocumentTyp(type);
 
         // define first block to process
-        final Block purchaseBlocks = new Block("^[\\d]{2} [\\w]{3} [\\d]{4} Purchase.*");
+        var purchaseBlocks = new Block("^[\\d]{2} [\\w]{3} [\\d]{4} Purchase.*$");
         type.addBlock(purchaseBlocks);
 
         // create source
-        final Transaction<BuySellEntry> purchaseTransaction = new Transaction<>();
+        var purchaseTransaction = new Transaction<BuySellEntry>();
         purchaseBlocks.set(purchaseTransaction);
         purchaseTransaction.subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY));
         purchaseTransaction.oneOf(
 
                         section -> section.attributes("date", "amount", "shares", "fee") //
                                         .documentContext(TICKERSYMBOL, WKN) //
-                                        .match("^(?<date>[\\d]{2} [\\w]{3} [\\d]{4}) Purchase (?<amount>[\\.,\\d]+) (?<fee>[\\.,\\d]+) (?<netAmount>[\\.,\\d]+) (?<grantDate>[\\d]{2} [\\w]{3} [\\d]{4}) (?<fmvGrant>[\\.,\\d]+) (?<purchaseDate>[\\d]{2} [\\w]{3} [\\d]{4}) (?<fmvPurchase>[\\.,\\d]+) (?<sharePrice>[\\.,\\d]+) (?<shares>[\\.,\\d]+) (?<totalShares>[\\.,\\d]+).*") //
+                                        .match("^(?<date>[\\d]{2} [\\w]{3} [\\d]{4}) Purchase (?<amount>[\\.,\\d]+) (?<fee>[\\.,\\d]+) (?<netAmount>[\\.,\\d]+) (?<grantDate>[\\d]{2} [\\w]{3} [\\d]{4}) (?<fmvGrant>[\\.,\\d]+) (?<purchaseDate>[\\d]{2} [\\w]{3} [\\d]{4}) (?<fmvPurchase>[\\.,\\d]+) (?<sharePrice>[\\.,\\d]+) (?<shares>[\\.,\\d]+) (?<totalShares>[\\.,\\d]+).*$") //
                                         .assign((t, v) -> {
                                             v.put("currency", asCurrencyCode(USD));
                                             t.setDate(asDate(v.get("date")));
@@ -128,7 +128,7 @@ public class ComputersharePDFExtractor extends AbstractPDFExtractor
 
                         section -> section.attributes("date", "amount", "shares") //
                                         .documentContext(TICKERSYMBOL, WKN) //
-                                        .match("^(?<date>[\\d]{2} [\\w]{3} [\\d]{4}) Purchase (?<amount>[\\.,\\d]+) (?<netAmount>[\\.,\\d]+) (?<grantDate>[\\d]{2} [\\w]{3} [\\d]{4}) (?<fmvGrant>[\\.,\\d]+) (?<purchaseDate>[\\d]{2} [\\w]{3} [\\d]{4}) (?<fmvPurchase>[\\.,\\d]+) (?<sharePrice>[\\.,\\d]+) (?<shares>[\\.,\\d]+) (?<totalShares>[\\.,\\d]+).*") //
+                                        .match("^(?<date>[\\d]{2} [\\w]{3} [\\d]{4}) Purchase (?<amount>[\\.,\\d]+) (?<netAmount>[\\.,\\d]+) (?<grantDate>[\\d]{2} [\\w]{3} [\\d]{4}) (?<fmvGrant>[\\.,\\d]+) (?<purchaseDate>[\\d]{2} [\\w]{3} [\\d]{4}) (?<fmvPurchase>[\\.,\\d]+) (?<sharePrice>[\\.,\\d]+) (?<shares>[\\.,\\d]+) (?<totalShares>[\\.,\\d]+).*$") //
                                         .assign((t, v) -> {
                                             v.put("currency", asCurrencyCode(USD));
                                             t.setDate(asDate(v.get("date")));
