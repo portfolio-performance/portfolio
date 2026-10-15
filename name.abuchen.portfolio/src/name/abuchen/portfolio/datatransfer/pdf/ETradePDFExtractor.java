@@ -175,7 +175,7 @@ public class ETradePDFExtractor extends AbstractPDFExtractor
 
         // @formatter:off
         // The release is booked as delivery inbound of the released quantity at market value,
-        // followed by the sale of the withheld quantity (sell-to-cover) and the removal of the tax amount.
+        // followed by the sale of the withheld quantity (sell-to-cover) and the withheld tax amount.
         //
         // The release confirmation repeats its header on the second page, which only contains
         // the tax details in local currency. Therefore the blocks end with the cash distribution
@@ -288,11 +288,11 @@ public class ETradePDFExtractor extends AbstractPDFExtractor
                             return new BuySellEntryItem(t);
                         }));
 
-        var removalBlock = new Block("^EMPLOYEE STOCK PLAN RELEASE CONFIRMATION$", "^Total Due Participant .*$");
-        type.addBlock(removalBlock);
-        removalBlock.set(new Transaction<AccountTransaction>()
+        var taxesBlock = new Block("^EMPLOYEE STOCK PLAN RELEASE CONFIRMATION$", "^Total Due Participant .*$");
+        type.addBlock(taxesBlock);
+        taxesBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> new AccountTransaction(AccountTransaction.Type.REMOVAL))
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
                         // @formatter:off
                         // Account Number 305637505 Release Date 08-10-2025
@@ -303,13 +303,18 @@ public class ETradePDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Company Name (Symbol) noaQU ppixWWH, INC. - NEW Market Value Per Share $70.215000
+                        // (XCWE) Award Price Per Share $0.000000
                         // @formatter:on
-                        .section("currency") //
-                        .match("^Company Name \\(Symbol\\) .* Market Value Per Share (?<currency>\\p{Sc})[\\.,\\d]+$") //
-                        .assign((t, v) -> t.setCurrencyCode(asCurrencyCode(v.get("currency"))))
+                        .section("name", "currency", "tickerSymbol") //
+                        .match("^Company Name \\(Symbol\\) (?<name>.*) Market Value Per Share (?<currency>\\p{Sc})[\\.,\\d]+$") //
+                        .match("^\\((?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\) Award Price Per Share \\p{Sc}[\\.,\\d]+$") //
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
 
-                        // The withheld tax is income tax on the compensation,
-                        // not a tax on the investment. It is booked as removal.
+                        // The tax withheld on the release is booked as taxes
+                        // of the released security.
 
                         // @formatter:off
                         // Shares Issued 16.4810 Total Tax ($1,230.10)

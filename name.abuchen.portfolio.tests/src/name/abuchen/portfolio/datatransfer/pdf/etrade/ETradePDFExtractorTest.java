@@ -15,9 +15,9 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
@@ -151,10 +151,12 @@ public class ETradePDFExtractorTest
                         hasAmount("USD", 1230.10), hasGrossValue("USD", 1230.10), //
                         hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
 
-        // check removal of the withheld taxes
-        assertThat(results, hasItem(removal( //
-                        hasDate("2025-08-10"), hasAmount("USD", 1230.10), //
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2025-08-10T00:00"), hasShares(0.00), //
                         hasSource("Release01.txt"), //
-                        hasNote("Tax withheld to cover | Award Number 4414241"))));
+                        hasNote("Tax withheld to cover | Award Number 4414241"), //
+                        hasAmount("USD", 1230.10), hasGrossValue("USD", 1230.10), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
     }
 }
