@@ -7,6 +7,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
@@ -32,18 +33,25 @@ import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSe
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSkippedItems;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.TestExtractorHelper;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
+import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class TradeRepublicCSVExtractorTest
@@ -761,5 +769,197 @@ public class TradeRepublicCSVExtractorTest
                         hasNote("Tax Optimisation"), //
                         hasAmount("EUR", 4.21), hasGrossValue("EUR", 4.21), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testTransactionReport07() throws IOException
+    {
+        var client = new Client();
+        var extractor = new TradeRepublicCSVExtractor(client);
+        var errors = new ArrayList<Exception>();
+        var filename = "TransactionExport07.csv";
+
+        var results = TestExtractorHelper.runExtractor(extractor, client, getClass(), filename, errors);
+
+        assertThat(errors, empty());
+
+        // 1 BUY and 110 DIVIDEND rows: 84 dividends, 26 corrections. All 26
+        // corrections pair with an original in the same file. 22 are exact
+        // reversals, 1 reverses an original without FX data, and 3 reverse
+        // with a different tax -> the tax difference is booked separately.
+        // 84 - 26 = 58 dividends survive.
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(58L + 3L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1 + 1 + 58 + 3));
+
+        new AssertImportActions().check(results, "EUR");
+
+        // the import moves the same cash as the sum of amount + fee + tax
+        // over all CSV rows
+        assertThat(cashBalance(results), is(Values.Amount.factorize(-808.45)));
+
+        // the security is created from the first row (a BUY without
+        // original_currency), hence EUR
+        assertThat(results, hasItem(security( //
+                        hasIsin("US7561091049"), hasWkn(null), hasTicker(null), //
+                        hasName("Realty Income"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-10-25T17:34:56.741"), hasShares(20.00), //
+                        hasSource(filename), //
+                        hasAmount("EUR", 934.60), hasGrossValue("EUR", 933.60), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.00))));
+
+        // Original 2024-06-17 has no FX columns, its correction 2025-03-03 has
+        // -> paired anyway, both removed.
+        assertThat(results, not(hasItem(dividend(hasDate("2024-06-17T23:33:02.875679")))));
+
+        // Original 2024-03-20: amount=4.69, tax=-0.70 (net 3.99)
+        // Correction 2025-03-21: amount=-4.69, tax=1.21 (net -3.48)
+        // -> 3.99 - 3.48 = 0.51 booked as tax refund
+        assertThat(results, not(hasItem(dividend(hasDate("2024-03-20T01:48:56.873075")))));
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2025-03-21T09:04:16.111622"), hasShares(20.00), //
+                        hasSource(filename), //
+                        hasNote("Cash Dividend for ISIN US7561091049"), //
+                        hasAmount("EUR", 0.51), hasGrossValue("EUR", 0.51), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // Original 2024-04-16: amount=4.79, tax=-1.25 (net 3.54)
+        // Correction 2025-03-24: amount=-4.79, tax=1.24 (net -3.55)
+        // -> 3.54 - 3.55 = -0.01 booked as taxes
+        assertThat(results, not(hasItem(dividend(hasDate("2024-04-16T01:09:43.135431")))));
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2025-03-24T16:49:27.536225"), hasShares(20.00), //
+                        hasSource(filename), //
+                        hasNote("Cash Dividend for ISIN US7561091049"), //
+                        hasAmount("EUR", 0.01), hasGrossValue("EUR", 0.01), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // Original 2024-02-15: amount=4.76, tax=-0.71 (net 4.05)
+        // Correction 2025-03-25: amount=-4.76, tax=1.23 (net -3.53)
+        // -> 4.05 - 3.53 = 0.52 booked as tax refund
+        assertThat(results, not(hasItem(dividend(hasDate("2024-02-15T04:31:34.261185")))));
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2025-03-25T10:49:30.493189"), hasShares(20.00), //
+                        hasSource(filename), //
+                        hasNote("Cash Dividend for ISIN US7561091049"), //
+                        hasAmount("EUR", 0.52), hasGrossValue("EUR", 0.52), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // Exactly reversed original 2024-05-15 is removed, the rebooking of
+        // 2025-03-19 survives
+        assertThat(results, not(hasItem(dividend(hasDate("2024-05-15T04:42:47.082060")))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-03-19T16:40:06.574499"), hasShares(20.00), //
+                        hasSource(filename), //
+                        hasNote("Cash Dividend for ISIN US7561091049"), //
+                        hasAmount("EUR", 2.48), hasGrossValue("EUR", 3.36), //
+                        hasTaxes("EUR", 0.88), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testTransactionReport07WithSecurityInUSD() throws IOException
+    {
+        // same file as testTransactionReport07, but with an existing USD
+        // security, so that the dividends and corrections carry FX units
+        var security = new Security("Realty Income", "USD");
+        security.setIsin("US7561091049");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new TradeRepublicCSVExtractor(client);
+        var errors = new ArrayList<Exception>();
+        var filename = "TransactionExport07.csv";
+
+        var results = TestExtractorHelper.runExtractor(extractor, client, getClass(), filename, errors);
+
+        assertThat(errors, empty());
+
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(58L + 3L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1 + 58 + 3));
+
+        // the BUY row has no FX columns, so the purchase of a USD security
+        // legitimately lacks the exchange rate -> check everything else
+        new AssertImportActions().check(
+                        results.stream().filter(item -> !(item.getSubject() instanceof BuySellEntry)).toList(),
+                        "EUR");
+
+        assertThat(cashBalance(results), is(Values.Amount.factorize(-808.45)));
+
+        // Original 2024-06-17 has no FX columns, its correction 2025-03-03
+        // carries USD -4.54 @ 1.075900 -> paired anyway, both removed.
+        assertThat(results, not(hasItem(dividend(hasDate("2024-06-17T23:33:02.875679")))));
+        assertThat(results, not(hasItem(dividend(hasDate("2025-03-03T21:20:10.807914")))));
+
+        // Original 2024-03-20 (USD 4.29 @ 1.094300) and correction 2025-03-21
+        // (USD -4.29 @ 1.094300) mirror their FX units, but not their tax
+        assertThat(results, not(hasItem(dividend(hasDate("2024-03-20T01:48:56.873075")))));
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2025-03-21T09:04:16.111622"), hasShares(20.00), //
+                        hasSource(filename), //
+                        hasNote("Cash Dividend for ISIN US7561091049"), //
+                        hasAmount("EUR", 0.51), hasGrossValue("EUR", 0.51), //
+                        hasForexGrossValue("USD", 0.47), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // Original 2024-01-13 has the same gross and tax as 2024-03-20, but a
+        // different FX rate (1.094200) -> must not be consumed by the
+        // 2025-03-21 correction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-01-13T05:34:29.069408"), hasShares(20.00), //
+                        hasSource(filename), //
+                        hasAmount("EUR", 3.99), hasGrossValue("EUR", 4.69), //
+                        hasForexGrossValue("USD", 4.29), //
+                        hasTaxes("EUR", 0.70), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2025-03-24T16:49:27.536225"), hasShares(20.00), //
+                        hasSource(filename), //
+                        hasNote("Cash Dividend for ISIN US7561091049"), //
+                        hasAmount("EUR", 0.01), hasGrossValue("EUR", 0.01), //
+                        hasForexGrossValue("USD", 0.01), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2025-03-25T10:49:30.493189"), hasShares(20.00), //
+                        hasSource(filename), //
+                        hasNote("Cash Dividend for ISIN US7561091049"), //
+                        hasAmount("EUR", 0.52), hasGrossValue("EUR", 0.52), //
+                        hasForexGrossValue("USD", 0.48), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-03-19T16:40:06.574499"), hasShares(20.00), //
+                        hasSource(filename), //
+                        hasNote("Cash Dividend for ISIN US7561091049"), //
+                        hasAmount("EUR", 2.48), hasGrossValue("EUR", 3.36), //
+                        hasForexGrossValue("USD", 3.66), //
+                        hasTaxes("EUR", 0.88), hasFees("EUR", 0.00))));
+    }
+
+    private static long cashBalance(List<Item> results)
+    {
+        var balance = 0L;
+        for (var item : results)
+        {
+            var subject = item.getSubject();
+            if (subject instanceof BuySellEntry entry)
+                subject = entry.getAccountTransaction();
+            if (subject instanceof AccountTransaction tx)
+                balance += tx.getType().isCredit() ? tx.getAmount() : -tx.getAmount();
+        }
+        return balance;
     }
 }
