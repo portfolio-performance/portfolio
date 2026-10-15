@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.jobs;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,17 +51,50 @@ public final class CreateInvestmentPlanTxJob extends AbstractClientJob
             Map<InvestmentPlan, List<TransactionPair<?>>> tx = new HashMap<>();
 
             CurrencyConverterImpl converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
-            getClient().getPlans().stream().filter(InvestmentPlan::isAutoGenerate).forEach(plan -> {
-                try
+
+            // Generate the transactions on the UI thread. The views iterate
+            // the (unsynchronized) transaction lists of accounts and
+            // portfolios on the UI thread. Adding transactions from this
+            // background job results in a ConcurrentModificationException.
+            Display.getDefault().syncExec(() -> {
+                var isModified = false;
+
+                for (InvestmentPlan plan : getClient().getPlans())
                 {
-                    List<TransactionPair<?>> transactions = plan.generateTransactions(converter);
-                    if (!transactions.isEmpty())
-                        tx.put(plan, transactions);
+                    if (!plan.isAutoGenerate())
+                        continue;
+
+                    var sizeBefore = plan.getTransactions().size();
+
+                    try
+                    {
+                        List<TransactionPair<?>> transactions = plan.generateTransactions(converter);
+                        if (!transactions.isEmpty())
+                            tx.put(plan, transactions);
+                    }
+                    catch (IOException e)
+                    {
+                        PortfolioPlugin.log(e);
+
+                        // generateTransactions does not return the
+                        // transactions created before the exception
+                        var all = plan.getTransactions(getClient());
+                        if (all.size() > sizeBefore)
+                            tx.put(plan, new ArrayList<>(all.subList(sizeBefore, all.size())));
+                    }
+
+                    // generateTransactions keeps the transactions created
+                    // before an IOException is thrown, therefore compare the
+                    // number of transactions instead of the returned list
+                    if (plan.getTransactions().size() != sizeBefore)
+                        isModified = true;
                 }
-                catch (IOException e)
-                {
-                    PortfolioPlugin.log(e);
-                }
+
+                // mark the client dirty once after all plans have been
+                // executed so that the file is flagged as modified and all
+                // views are recalculated
+                if (isModified)
+                    getClient().markDirty();
             });
 
             if (!tx.isEmpty())
