@@ -257,6 +257,7 @@ public class Messages extends NLS
     public static String MsgCheckInvalidTransactionType;
     public static String MsgCheckMissingSecurity;
     public static String MsgCheckSecurityWithoutCurrency;
+    public static String MsgCheckSecurityWithoutIdentifier;
     public static String MsgCheckTaxAndFeesTooHigh;
     public static String MsgCheckTransactionCurrencyDoesNotMatchAccount;
     public static String MsgCheckTransactionMustNotHaveGrossAmount;
