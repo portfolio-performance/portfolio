@@ -2,7 +2,6 @@
 
 Type: grilling
 Status: resolved
-Blocked by: 05
 
 ## Question
 
@@ -15,7 +14,7 @@ Every write command (and `restore`) follows one safe-write sequence: take the lo
 - **Backup**: before every real write, copy the original to `backups/<name>.<yyyyMMdd-HHmmss>.pp-cli<ext>` next to the client file; `--backup-dir` overrides. The CLI ignores the app's backup preferences and never touches the app's `.backup` files.
 - **Retention**: keep the newest 20 CLI-created backups (matched by the `.pp-cli` name pattern), pruned only after a successful write; `--keep <n>` overrides, `0` means unlimited.
 - **Atomic write**: write to a temp file in the same directory (`.<name>.pp-cli-tmp`) with the file's existing save flags, then rename with `ATOMIC_MOVE`; fall back to a plain replace-move only if the filesystem refuses an atomic move. Delete the temp file on failure.
-- **Verification**: before committing, run core's `Checker` on the client before and after the operation; refuse the write if the operation introduces an issue that was not already there. Pre-existing issues are warnings. Ticket 05 references this check instead of redefining it.
+- **Verification**: before committing, run core's `Checker` before and after the operation, each on a scratch copy, because eight of its checks repair the model as they run and must not alter the client being saved. The before-pass runs on a fresh load of the original file; the after-pass runs on a reload of the temp file about to be renamed. Refuse the write if the operation introduces an issue (compared by check and entity) that was not already there. Pre-existing issues are warnings. Ticket 05 references this check instead of redefining it.
 - **Open-in-app guard**: record size, mtime and content hash at load and re-check immediately before the rename; a mismatch aborts the write. Best-effort `lsof` detection (macOS/Linux) warns, or refuses unless `--force`. Unsaved edits inside the app are undetectable; the docs and `describe` state this limit.
 - **Concurrent CLI runs**: writes take an exclusive lock file `.<name>.pp-cli.lock` (created atomically, holds the PID so a stale lock can be cleared deliberately); a second writer fails fast with a structured error. Reads never lock.
 - **Dry-run**: opt-in `--dry-run`; writes nothing (no file, backup or lock). Returns the usual JSON envelope with entity-level changes (`created`, `updated`, `deleted`, each with UUID, type and before/after for updated fields) and whether and where a backup would be written. No textual XML diff. Each operation emits its own change records; the exact shapes per operation are settled with ticket 05.
@@ -46,5 +45,5 @@ Rejected options:
 
 Left to other tickets:
 
-- **Per-operation change record shapes and validation rules:** write operations (05).
+- **Per-operation change record shapes and validation rules:** settled in ticket 05.
 - **Which formats the CLI can write, and password handling for encrypted files:** format and version support mechanics.
