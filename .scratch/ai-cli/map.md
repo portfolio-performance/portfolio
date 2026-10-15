@@ -34,9 +34,7 @@ A hand-off-ready spec for a CLI that lets AI agents (GitHub Copilot, Claude Code
 
 ## Not yet specified
 
-- **Packaging and distribution**: how users install and launch the CLI (jlink/jpackage, fat jar, shipped inside the PP install). Hangs on the architecture decision.
-- **Format and version support mechanics**: how non-XML formats and future file versions are handled, and the cost of tracking upstream format changes. Hangs on the architecture decision.
-- **MCP surface**: whether the spec adds an MCP server over the same operations, and at what cost once the CLI shape is known.
+<!-- empty: packaging, format/version support and MCP graduated into tickets 07 to 11 -->
 
 ## Out of scope
 
