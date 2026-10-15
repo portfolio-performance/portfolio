@@ -31,6 +31,7 @@ import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.TimeMachineDropDown;
+import name.abuchen.portfolio.ui.views.panes.AbsolutePerformancePane;
 import name.abuchen.portfolio.ui.views.panes.ChartPane;
 import name.abuchen.portfolio.ui.views.panes.HistoricalPricesDataQualityPane;
 import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
@@ -115,7 +116,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
         currencyChangeListener = e -> dropDown.setLabel(e.getNewValue().toString());
         getClient().addPropertyChangeListener("baseCurrency", currencyChangeListener); //$NON-NLS-1$
 
-        timeMachineDropDown = new TimeMachineDropDown(date -> notifyModelUpdated());
+        timeMachineDropDown = new TimeMachineDropDown(date -> onRecalculationNeeded());
         toolBar.add(timeMachineDropDown);
 
         this.clientFilter = new ClientFilterDropDown(getClient(), getPreferenceStore(),
@@ -178,6 +179,9 @@ public class StatementOfAssetsView extends AbstractFinanceView
         pages.add(make(TradesPane.class));
         pages.add(make(SecurityEventsPane.class));
         pages.add(make(HistoricalPricesDataQualityPane.class));
+        var performancePane = make(AbsolutePerformancePane.class);
+        performancePane.setSnapshotDateSupplier(() -> timeMachineDropDown.getTimeMachineDate().orElse(LocalDate.now()));
+        pages.add(performancePane);
     }
 
     @Override
