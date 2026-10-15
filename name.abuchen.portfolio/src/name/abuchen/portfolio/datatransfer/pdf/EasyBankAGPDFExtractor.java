@@ -145,14 +145,14 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^Handelszeit: (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4})$")
+                                                        .match("^Handelszeit: (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4})$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date")))),
                                         // @formatter:off
                                         // endfällig per 14.7.2024
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^endf.llig per (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4})$")
+                                                        .match("^endf.llig per (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4})$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date")))))
 
                         .oneOf( //
@@ -166,7 +166,8 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // Zugang: Stk 100
                                         // @formatter:on
-                                        section -> section.attributes("shares") //
+                                        section -> section //
+                                                        .attributes("shares") //
                                                         .match("^(Zugang|Abgang): Stk (?<shares>[\\.,\\d]+).*$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
@@ -189,7 +190,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^(Abgang|Zugang): Nom\\. (?<shares>[\\.,\\d]+)$") //
-                                                        .find("Kurs: [\\.,\\d]+[\\s]*%$") //
+                                                        .find("Kurs: [\\.,\\d]+[\\s]*%") //
                                                         .assign((t, v) -> {
                                                         // @formatter:off
                                                         // Percentage quotation, workaround for bonds
@@ -214,15 +215,15 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                         // Devisenkurs: 1,0745 (20.02.2020) -551,42 EUR
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("gross", "baseCurrency", "exchangeRate", "termCurrency") //
-                                                        .match("^Kurswert: (\\-)?(?<gross>[\\.,\\d]+) (?<baseCurrency>[A-Z]{3}).*$") //
-                                                        .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}\\) (\\-)?[\\.,\\d]+ (?<termCurrency>[A-Z]{3}).*$") //
+                                                        .attributes("fxGross", "termCurrency", "exchangeRate", "baseCurrency") //
+                                                        .match("^Kurswert: (\\-)?(?<fxGross>[\\.,\\d]+) (?<termCurrency>[A-Z]{3}).*$") //
+                                                        .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}\\) (\\-)?[\\.,\\d]+ (?<baseCurrency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> {
                                                             var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            Money gross = Money.of(rate.getTermCurrency(), asAmount(v.get("gross")));
-                                                            Money fxGross = rate.convert(rate.getBaseCurrency(), gross);
+                                                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }))
@@ -254,7 +255,9 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // Limit: 42,500000
                                         // @formatter:on
-                                        section -> section.attributes("note").match("^(?<note>Limit:.*)$")
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^(?<note>Limit:.*)$") //
                                                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | "))))
 
                         // @formatter:off
@@ -308,7 +311,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<name1>.*)$") //
                                                         .match("^(Dividende|Ertrag): [\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> {
-                                                            if (!v.get("name1").startsWith("Dividende") || !v.get("name1").startsWith("Ertrag"))
+                                                            if (!v.get("name1").startsWith("Dividende") && !v.get("name1").startsWith("Ertrag"))
                                                                 v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
 
                                                             t.setSecurity(getOrCreateSecurity(v));
@@ -538,7 +541,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<name1>.*)$") //
                                                         .match("^(Dividende|Ertrag|Kurs): [\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> {
-                                                            if (!v.get("name1").startsWith("Dividende") || !v.get("name1").startsWith("Ertrag"))
+                                                            if (!v.get("name1").startsWith("Dividende") && !v.get("name1").startsWith("Ertrag") && !v.get("name1").startsWith("Kurs"))
                                                                 v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
 
                                                             t.setSecurity(getOrCreateSecurity(v));
@@ -554,7 +557,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<name1>.*)$") //
                                                         .match("^(Dividende|Ertrag)\\/Steueranteil pro Stk\\.: [\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> {
-                                                            if (!v.get("name1").startsWith("Dividende") || !v.get("name1").startsWith("Ertrag"))
+                                                            if (!v.get("name1").startsWith("Dividende") && !v.get("name1").startsWith("Ertrag"))
                                                                 v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
 
                                                             t.setSecurity(getOrCreateSecurity(v));
@@ -627,7 +630,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares", "notation") //
                                                         .match("^(?<shares>[\\.,\\d]+) (?<notation>(Stk|[A-Z]{3})).*$") //
-                                                        .find("Titel:.*")
+                                                        .find("Titel:.*") //
                                                         .assign((t, v) -> {
                                                         // @formatter:off
                                                         // Percentage quotation, workaround for bonds
@@ -652,7 +655,8 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // Zugang: Stk 100
                                         // @formatter:on
-                                        section -> section.attributes("shares") //
+                                        section -> section //
+                                                        .attributes("shares") //
                                                         .match("^(Zugang|Abgang): Stk (?<shares>[\\.,\\d]+).*$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
@@ -794,7 +798,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("termCurrency", "exchangeRate", "gross", "baseCurrency") //
-                                                        .find("Auslands\\-KESt neu:.*")
+                                                        .find("Auslands\\-KESt neu:.*") //
                                                         .match("^\\-[\\.,\\d]+ (?<termCurrency>[A-Z]{3}).*$") //
                                                         .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}\\) (\\-)?[\\.,\\d]+ [A-Z]{3}.*$") //
                                                         .match("^Zu Lasten .* \\-(?<gross>[\\.,\\d]+) (?<baseCurrency>[A-Z]{3}).*$") //
@@ -1059,7 +1063,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                         // Auslands-KESt neu: 1,58 USD
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Auslands\\-KESt neu: (\\-)?(?<tax>[\\-\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .match("^Auslands\\-KESt neu: (\\-)?(?<tax>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
