@@ -213,4 +213,19 @@ public class BuySellEntry implements CrossEntry, Annotated
     {
         return accountTransaction;
     }
+
+    /**
+     * Returns the portfolio transaction if the given transaction is part of a
+     * purchase or sale, otherwise the transaction itself. Shares and units
+     * (fees, taxes, gross value) are stored only with the portfolio
+     * transaction, i.e. the account side of a purchase or sale does not carry
+     * them.
+     * <p>
+     * Transfers are deliberately not redirected: both sides of an account
+     * transfer carry their own amount in their own currency.
+     */
+    public static Transaction portfolioTransactionOrSelf(Transaction t)
+    {
+        return t.getCrossEntry() instanceof BuySellEntry entry ? entry.getPortfolioTransaction() : t;
+    }
 }

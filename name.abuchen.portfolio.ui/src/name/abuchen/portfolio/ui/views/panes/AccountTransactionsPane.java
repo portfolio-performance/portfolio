@@ -40,7 +40,6 @@ import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.CrossEntry;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
@@ -228,15 +227,8 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
         transactionsColumns.addColumn(column);
 
         column = new Column("fees", Messages.ColumnFees, SWT.RIGHT, 80); //$NON-NLS-1$
-        Function<AccountTransaction, Money> getFees = tx -> {
-            // fees are stored with the portfolio transaction (for example
-            // purchase and sale)
-            CrossEntry entry = tx.getCrossEntry();
-            if (entry != null && entry.getCrossTransaction(tx) instanceof PortfolioTransaction)
-                return entry.getCrossTransaction(tx).getUnitSum(Unit.Type.FEE);
-
-            return tx.getUnitSum(Unit.Type.FEE);
-        };
+        Function<AccountTransaction, Money> getFees = tx -> BuySellEntry.portfolioTransactionOrSelf(tx)
+                        .getUnitSum(Unit.Type.FEE);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -256,15 +248,8 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
         transactionsColumns.addColumn(column);
 
         column = new Column("taxes", Messages.ColumnTaxes, SWT.RIGHT, 80); //$NON-NLS-1$
-        Function<AccountTransaction, Money> getTaxes = tx -> {
-            // taxes are stored with the portfolio transaction (for example
-            // purchase and sale)
-            CrossEntry entry = tx.getCrossEntry();
-            if (entry != null && entry.getCrossTransaction(tx) instanceof PortfolioTransaction)
-                return entry.getCrossTransaction(tx).getUnitSum(Unit.Type.TAX);
-
-            return tx.getUnitSum(Unit.Type.TAX);
-        };
+        Function<AccountTransaction, Money> getTaxes = tx -> BuySellEntry.portfolioTransactionOrSelf(tx)
+                        .getUnitSum(Unit.Type.TAX);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override

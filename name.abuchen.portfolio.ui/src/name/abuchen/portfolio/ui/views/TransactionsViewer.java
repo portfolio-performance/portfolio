@@ -30,11 +30,11 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionPair;
-import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -327,7 +327,8 @@ public final class TransactionsViewer implements ModificationListener
             @Override
             public Long getValue(Object element)
             {
-                long shares = ((TransactionPair<?>) element).getTransaction().getShares();
+                long shares = BuySellEntry.portfolioTransactionOrSelf(((TransactionPair<?>) element).getTransaction())
+                                .getShares();
                 return shares != 0 ? Long.valueOf(shares) : null;
             }
 
@@ -343,7 +344,9 @@ public final class TransactionsViewer implements ModificationListener
                 return colors.getBackground(element);
             }
         });
-        ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getShares()).attachTo(column);
+        ColumnViewerSorter.create(e -> BuySellEntry
+                        .portfolioTransactionOrSelf(((TransactionPair<?>) e).getTransaction()).getShares())
+                        .attachTo(column);
         new ValueEditingSupport(Transaction.class, "shares", Values.Share) //$NON-NLS-1$
                         .setCanEditCheck(e -> ((TransactionPair<?>) e).getTransaction() instanceof PortfolioTransaction
                                         || (((TransactionPair<?>) e).getTransaction() instanceof AccountTransaction
@@ -355,8 +358,8 @@ public final class TransactionsViewer implements ModificationListener
 
         column = new Column("4", Messages.ColumnQuote, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new TransactionLabelProvider(t -> {
-            if (t instanceof PortfolioTransaction pt)
-                return t.getShares() != 0
+            if (BuySellEntry.portfolioTransactionOrSelf(t) instanceof PortfolioTransaction pt)
+                return pt.getShares() != 0
                                 ? Values.CalculatedQuote.format(pt.getGrossPricePerShare(),
                                                 owner.getClient().getBaseCurrency())
                                 : null;
@@ -364,38 +367,36 @@ public final class TransactionsViewer implements ModificationListener
                 return null;
         }));
         ColumnViewerSorter.create(e -> {
-            Transaction tx = ((TransactionPair<?>) e).getTransaction();
+            Transaction tx = BuySellEntry.portfolioTransactionOrSelf(((TransactionPair<?>) e).getTransaction());
             return tx instanceof PortfolioTransaction pt ? pt.getGrossPricePerShare() : null;
         }).attachTo(column);
         support.addColumn(column);
 
         column = new Column("5", Messages.ColumnAmount, SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setLabelProvider(new TransactionLabelProvider(t -> {
-            Money m;
-            if (t instanceof PortfolioTransaction pt)
-                m = pt.getGrossValue();
-            else
-                m = ((AccountTransaction) t).getGrossValue();
-            return Values.Money.format(m, owner.getClient().getBaseCurrency());
-        }));
-        ColumnViewerSorter.create(e -> {
-            Transaction tx = ((TransactionPair<?>) e).getTransaction();
-            return tx instanceof PortfolioTransaction pt ? pt.getGrossValue() : null;
-        }).attachTo(column);
+        column.setLabelProvider(new TransactionLabelProvider(t -> Values.Money.format(
+                        BuySellEntry.portfolioTransactionOrSelf(t).getGrossValue(),
+                        owner.getClient().getBaseCurrency())));
+        ColumnViewerSorter.create(e -> BuySellEntry
+                        .portfolioTransactionOrSelf(((TransactionPair<?>) e).getTransaction()).getGrossValue())
+                        .attachTo(column);
         support.addColumn(column);
 
         column = new Column("6", Messages.ColumnFees, SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setLabelProvider(new TransactionLabelProvider(t -> Values.Money
-                        .formatNonZero(t.getUnitSum(Transaction.Unit.Type.FEE), owner.getClient().getBaseCurrency())));
-        ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getUnitSum(Transaction.Unit.Type.FEE))
-                        .attachTo(column);
+        column.setLabelProvider(new TransactionLabelProvider(t -> Values.Money.formatNonZero(
+                        BuySellEntry.portfolioTransactionOrSelf(t).getUnitSum(Transaction.Unit.Type.FEE),
+                        owner.getClient().getBaseCurrency())));
+        ColumnViewerSorter.create(e -> BuySellEntry
+                        .portfolioTransactionOrSelf(((TransactionPair<?>) e).getTransaction())
+                        .getUnitSum(Transaction.Unit.Type.FEE)).attachTo(column);
         support.addColumn(column);
 
         column = new Column("7", Messages.ColumnTaxes, SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setLabelProvider(new TransactionLabelProvider(t -> Values.Money
-                        .formatNonZero(t.getUnitSum(Transaction.Unit.Type.TAX), owner.getClient().getBaseCurrency())));
-        ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getUnitSum(Transaction.Unit.Type.TAX))
-                        .attachTo(column);
+        column.setLabelProvider(new TransactionLabelProvider(t -> Values.Money.formatNonZero(
+                        BuySellEntry.portfolioTransactionOrSelf(t).getUnitSum(Transaction.Unit.Type.TAX),
+                        owner.getClient().getBaseCurrency())));
+        ColumnViewerSorter.create(e -> BuySellEntry
+                        .portfolioTransactionOrSelf(((TransactionPair<?>) e).getTransaction())
+                        .getUnitSum(Transaction.Unit.Type.TAX)).attachTo(column);
         support.addColumn(column);
 
         column = new Column("8", Messages.ColumnNetValue, SWT.RIGHT, 80); //$NON-NLS-1$
