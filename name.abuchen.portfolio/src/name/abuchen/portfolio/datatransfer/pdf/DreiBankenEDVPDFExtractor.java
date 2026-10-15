@@ -2,7 +2,6 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 
-import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -34,12 +33,12 @@ public class DreiBankenEDVPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        final DocumentType type = new DocumentType("(Kauf|Verkauf)");
+        final var type = new DocumentType("(Kauf|Verkauf)");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^Wertpapier\\-.* (Kauf|Verkauf)$");
+        var firstRelevantLine = new Block("^Wertpapier\\-.* (Kauf|Verkauf)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -48,8 +47,11 @@ public class DreiBankenEDVPDFExtractor extends AbstractPDFExtractor
                         .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "Verkauf" change from BUY to SELL
+                        // @formatter:off
+                        // Wertpapier-Abrechnu n g                          Verkauf
+                        // @formatter:on
                         .section("type").optional() //
-                        .match("Wertpapier\\-.* (?<type>(Kauf|Verkauf))$") //
+                        .match("^Wertpapier\\-.* (?<type>(Kauf|Verkauf))$") //
                         .assign((t, v) -> {
                             if ("Verkauf".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
@@ -98,12 +100,12 @@ public class DreiBankenEDVPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        final DocumentType type = new DocumentType("(Aussch.ttung|Dividende)");
+        final var type = new DocumentType("(Aussch.ttung|Dividende)");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^Wertpapier\\-.* (Aussch.ttung|Dividende)$");
+        var firstRelevantLine = new Block("^Wertpapier\\-.* (Aussch.ttung|Dividende)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -118,7 +120,7 @@ public class DreiBankenEDVPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("isin", "name", "nameContinued", "currency") //
                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*) Stk([\\s]+)?\\. .*$") //
-                        .match("(?<nameContinued>.*)") //
+                        .match("^(?<nameContinued>.*)$") //
                         .match("^Ertrag [\\.,\\d]+ (?<currency>[\\w]{3}) .*$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -161,11 +163,11 @@ public class DreiBankenEDVPDFExtractor extends AbstractPDFExtractor
                         .match("^.* Kurswert (?<termCurrency>[\\w]{3}) ([\\s]+)?(?<fxGross>[\\.,\\d]+).*$") //
                         .match("^.* (?<exchangeRate>[\\.,\\d]+) v\\. [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<baseCurrency>[\\w]{3}) ([\\s]+)?[\\.,\\d]+$") //
                         .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
+                            var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
-                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
+                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                            var gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
@@ -180,20 +182,13 @@ public class DreiBankenEDVPDFExtractor extends AbstractPDFExtractor
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
-        transaction
+        transaction //
 
                         // @formatter:off
                         // Auslands-KESt USD               -0,26
                         // @formatter:on
                         .section("tax", "currency").optional() //
                         .match("^Auslands\\-KESt (?<currency>[\\w]{3}) ([\\s]+)?\\-(?<tax>[\\.,\\d]+)$") //
-                        .assign((t, v) -> processTaxEntries(t, v, type))
-
-                        // @formatter:off
-                        // 0,0204 EUR KESt
-                        // @formatter:on
-                        .section("tax", "currency").optional() //
-                        .match("^(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}) KESt$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
@@ -220,7 +215,7 @@ public class DreiBankenEDVPDFExtractor extends AbstractPDFExtractor
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
-        transaction
+        transaction //
 
                         // @formatter:off
                         // Dritt- und Börsengebühr EUR                0,02
