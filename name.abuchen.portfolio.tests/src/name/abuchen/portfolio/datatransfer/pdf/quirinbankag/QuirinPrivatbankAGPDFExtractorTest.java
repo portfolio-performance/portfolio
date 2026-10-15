@@ -21,6 +21,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
@@ -37,17 +38,12 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertNull;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
-import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
-import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
@@ -55,14 +51,10 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.QuirinBankAGPDFExtractor;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class QuirinPrivatbankAGPDFExtractorTest
@@ -87,34 +79,18 @@ public class QuirinPrivatbankAGPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("LU0690964092"));
-        assertThat(security.getWkn(), is("DBX0MF"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("db x-tr.II Gl Sovereign ETF Inhaber-Anteile 1D EUR o.N."));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0690964092"), hasWkn("DBX0MF"), hasTicker(null), //
+                        hasName("db x-tr.II Gl Sovereign ETF Inhaber-Anteile 1D EUR o.N."), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-12-30T12:46:28")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(140)));
-        assertThat(entry.getSource(), is("Kauf01.txt"));
-        assertThat(entry.getNote(), is("Ref.-Nr.: 28522373"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(30090.76))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(30085.86))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(4.90))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2016-12-30T12:46:28"), hasShares(140.00), //
+                        hasSource("Kauf01.txt"), //
+                        hasNote("Ref.-Nr.: 28522373"), //
+                        hasAmount("EUR", 30090.76), hasGrossValue("EUR", 30085.86), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 4.90))));
     }
 
     @Test
@@ -137,34 +113,18 @@ public class QuirinPrivatbankAGPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE0002643889"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("iShares PLC - S&P 500 Index Fd Bearer Shares (Dt. Zert.) o.N."));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0002643889"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares PLC - S&P 500 Index Fd Bearer Shares (Dt. Zert.) o.N."), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-02-10T17:08:23")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(515)));
-        assertThat(entry.getSource(), is("Kauf02.txt"));
-        assertThat(entry.getNote(), is("Ref.-Nr.: O:000481758:1"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(3997.09))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(3996.26))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.08 + 0.02 + 0.69 + 0.04))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2010-02-10T17:08:23"), hasShares(515.00), //
+                        hasSource("Kauf02.txt"), //
+                        hasNote("Ref.-Nr.: O:000481758:1"), //
+                        hasAmount("EUR", 3997.09), hasGrossValue("EUR", 3996.26), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.08 + 0.02 + 0.69 + 0.04))));
     }
 
     @Test
@@ -187,38 +147,19 @@ public class QuirinPrivatbankAGPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("US4282361033"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("Hewlett-Packard Co. Registered Shares DL -,01"));
-        assertThat(security.getCurrencyCode(), is("USD"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("US4282361033"), hasWkn(null), hasTicker(null), //
+                        hasName("Hewlett-Packard Co. Registered Shares DL -,01"), //
+                        hasCurrencyCode("USD"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-08-20T15:46:50")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(150)));
-        assertThat(entry.getSource(), is("Kauf03.txt"));
-        assertThat(entry.getNote(), is("Ref.-Nr.: O:000745405:1"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(4749.86))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(4734.08))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(15.78))));
-
-        var grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
-                        .orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(5999.50))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2010-08-20T15:46:50"), hasShares(150.00), //
+                        hasSource("Kauf03.txt"), //
+                        hasNote("Ref.-Nr.: O:000745405:1"), //
+                        hasAmount("EUR", 4749.86), hasGrossValue("EUR", 4734.08), //
+                        hasForexGrossValue("USD", 5999.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 15.78))));
     }
 
     @Test
@@ -247,31 +188,17 @@ public class QuirinPrivatbankAGPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-08-20T15:46:50")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(150)));
-        assertThat(entry.getSource(), is("Kauf03.txt"));
-        assertThat(entry.getNote(), is("Ref.-Nr.: O:000745405:1"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(4749.86))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(4734.08))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(15.78))));
-
-        var c = new CheckCurrenciesAction();
-        var account = new Account();
-        account.setCurrencyCode("EUR");
-        var s = c.process(entry, account, entry.getPortfolio());
-        assertThat(s, is(Status.OK_STATUS));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2010-08-20T15:46:50"), hasShares(150.00), //
+                        hasSource("Kauf03.txt"), //
+                        hasNote("Ref.-Nr.: O:000745405:1"), //
+                        hasAmount("EUR", 4749.86), hasGrossValue("EUR", 4734.08), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 15.78), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
@@ -307,8 +234,8 @@ public class QuirinPrivatbankAGPDFExtractorTest
                         hasAmount("EUR", 75.00), hasGrossValue("EUR", 75.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // check taxes transaction
-        assertThat(results, hasItem(taxes( //
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
                         hasDate("2014-03-10T00:00"), hasShares(0.1318), //
                         hasSource("Kauf04.txt"), //
                         hasNote("Zwischengewinn 0,17 EUR | Ref.-Nr.: O:002831939:1"), //
@@ -370,34 +297,18 @@ public class QuirinPrivatbankAGPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("IE00B0M63177"));
-        assertThat(security.getWkn(), is("A0HGWC"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("iShs MSCI EM U.ETF USD (D) Registered Shares o.N."));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B0M63177"), hasWkn("A0HGWC"), hasTicker(null), //
+                        hasName("iShs MSCI EM U.ETF USD (D) Registered Shares o.N."), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-12-06T16:52:15")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(325)));
-        assertThat(entry.getSource(), is("Verkauf01.txt"));
-        assertThat(entry.getNote(), is("Ref.-Nr.: 123452676"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(12766.68))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(13569.40))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(752.05 + 41.36))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.81 + 8.50))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2021-12-06T16:52:15"), hasShares(325.00), //
+                        hasSource("Verkauf01.txt"), //
+                        hasNote("Ref.-Nr.: 123452676"), //
+                        hasAmount("EUR", 12766.68), hasGrossValue("EUR", 13569.40), //
+                        hasTaxes("EUR", 752.05 + 41.36), hasFees("EUR", 0.81 + 8.50))));
     }
 
     @Test
@@ -420,34 +331,18 @@ public class QuirinPrivatbankAGPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE0007873200"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("Bayer.Hypo- und Vereinsbank AG DAX Indexzert(2006/unlim.)"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0007873200"), hasWkn(null), hasTicker(null), //
+                        hasName("Bayer.Hypo- und Vereinsbank AG DAX Indexzert(2006/unlim.)"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-11-23T11:00:15")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(22)));
-        assertThat(entry.getSource(), is("Verkauf02.txt"));
-        assertThat(entry.getNote(), is("Ref.-Nr.: O:000409887:1"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1261.61))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(1265.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(3.39))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2009-11-23T11:00:15"), hasShares(22.00), //
+                        hasSource("Verkauf02.txt"), //
+                        hasNote("Ref.-Nr.: O:000409887:1"), //
+                        hasAmount("EUR", 1261.61), hasGrossValue("EUR", 1265.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.39))));
     }
 
     @Test
@@ -470,34 +365,18 @@ public class QuirinPrivatbankAGPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE0002643889"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("iShares PLC - S&P 500 Index Fd Bearer Shares (Dt. Zert.) o.N."));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0002643889"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares PLC - S&P 500 Index Fd Bearer Shares (Dt. Zert.) o.N."), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-05-07T16:20:11")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(515)));
-        assertThat(entry.getSource(), is("Verkauf03.txt"));
-        assertThat(entry.getNote(), is("Ref.-Nr.: O:000591758:1"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(4515.86 - 144.33))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(4516.55))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(127.15 + 7.00 + 10.18))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.69))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2010-05-07T16:20:11"), hasShares(515.00), //
+                        hasSource("Verkauf03.txt"), //
+                        hasNote("Ref.-Nr.: O:000591758:1"), //
+                        hasAmount("EUR", 4515.86 - 144.33), hasGrossValue("EUR", 4516.55), //
+                        hasTaxes("EUR", 127.15 + 7.00 + 10.18), hasFees("EUR", 0.69))));
     }
 
     @Test
@@ -520,38 +399,19 @@ public class QuirinPrivatbankAGPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("LU0327757729"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("F.Temp.Inv.Fds-T.Growth (EUR) Namens-Anteile A (acc.)DL o.N."));
-        assertThat(security.getCurrencyCode(), is("USD"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0327757729"), hasWkn(null), hasTicker(null), //
+                        hasName("F.Temp.Inv.Fds-T.Growth (EUR) Namens-Anteile A (acc.)DL o.N."), //
+                        hasCurrencyCode("USD"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-11-23T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(378.362)));
-        assertThat(entry.getSource(), is("Verkauf04.txt"));
-        assertThat(entry.getNote(), is("Ref.-Nr.: O:000409894:1"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(3046.43))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(3052.93))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(6.50))));
-
-        var grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
-                        .orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(4597.10))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2009-11-23T00:00"), hasShares(378.362), //
+                        hasSource("Verkauf04.txt"), //
+                        hasNote("Ref.-Nr.: O:000409894:1"), //
+                        hasAmount("EUR", 3046.43), hasGrossValue("EUR", 3052.93), //
+                        hasForexGrossValue("USD", 4597.10), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 6.50))));
     }
 
     @Test
@@ -580,31 +440,17 @@ public class QuirinPrivatbankAGPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-11-23T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(378.362)));
-        assertThat(entry.getSource(), is("Verkauf04.txt"));
-        assertThat(entry.getNote(), is("Ref.-Nr.: O:000409894:1"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(3046.43))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(3052.93))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(6.50))));
-
-        var c = new CheckCurrenciesAction();
-        var account = new Account();
-        account.setCurrencyCode("EUR");
-        var s = c.process(entry, account, entry.getPortfolio());
-        assertThat(s, is(Status.OK_STATUS));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2009-11-23T00:00"), hasShares(378.362), //
+                        hasSource("Verkauf04.txt"), //
+                        hasNote("Ref.-Nr.: O:000409894:1"), //
+                        hasAmount("EUR", 3046.43), hasGrossValue("EUR", 3052.93), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 6.50), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
@@ -1270,109 +1116,42 @@ public class QuirinPrivatbankAGPDFExtractorTest
         assertThat(results.size(), is(9));
         new AssertImportActions().check(results, "EUR");
 
-        // check transaction
-        // get transactions
-        var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(9L));
-
-        var item = iter.next();
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2019-05-28"), hasAmount("EUR", 3000.00), //
+                        hasSource("Depotauszug01.txt"), hasNote("Kontoübertrag 1197537 | Ref.-Nr.: 86991330"))));
 
         // assert transaction
-        var transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-05-28T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(3000.00)));
-        assertThat(transaction.getSource(), is("Depotauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kontoübertrag 1197537 | Ref.-Nr.: 86991330"));
-
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2019-12-19"), hasAmount("EUR", 5000.00), //
+                        hasSource("Depotauszug01.txt"), hasNote("Sammelgutschrift | Ref.-Nr.: 105892216"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-19T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(5000.00)));
-        assertThat(transaction.getSource(), is("Depotauszug01.txt"));
-        assertThat(transaction.getNote(), is("Sammelgutschrift | Ref.-Nr.: 105892216"));
-
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2020-01-31"), hasAmount("EUR", 2.84), //
+                        hasSource("Depotauszug01.txt"), hasNote("Interne Buchung | Ref.-Nr.: 110934428"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-31T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(2.84)));
-        assertThat(transaction.getSource(), is("Depotauszug01.txt"));
-        assertThat(transaction.getNote(), is("Interne Buchung | Ref.-Nr.: 110934428"));
-
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2019-12-27"), hasAmount("EUR", 2000.00), //
+                        hasSource("Depotauszug01.txt"),
+                        hasNote("Überweisungsgutschrift Inland | Ref.-Nr.: 106509889"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-27T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(2000.00)));
-        assertThat(transaction.getSource(), is("Depotauszug01.txt"));
-        assertThat(transaction.getNote(), is("Überweisungsgutschrift Inland | Ref.-Nr.: 106509889"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2019-12-19"), hasAmount("EUR", 5002.84), //
+                        hasSource("Depotauszug01.txt"), hasNote("Rücküberweisung Inland | Ref.-Nr.: 106317528"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-19T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(5002.84)));
-        assertThat(transaction.getSource(), is("Depotauszug01.txt"));
-        assertThat(transaction.getNote(), is("Rücküberweisung Inland | Ref.-Nr.: 106317528"));
-
-        item = iter.next();
+        assertThat(results, hasItem(taxRefund(hasDate("2020-06-12"), hasAmount("EUR", 36.82), //
+                        hasSource("Depotauszug01.txt"), hasNote("Steueroptimierung | Ref.-Nr.: 135435928"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-12T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(36.82)));
-        assertThat(transaction.getSource(), is("Depotauszug01.txt"));
-        assertThat(transaction.getNote(), is("Steueroptimierung | Ref.-Nr.: 135435928"));
-
-        item = iter.next();
+        assertThat(results, hasItem(taxRefund(hasDate("2020-01-03"), hasAmount("EUR", 0.40), //
+                        hasSource("Depotauszug01.txt"), hasNote("Steueroptimierung | Ref.-Nr.: 107410183"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-03T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.40)));
-        assertThat(transaction.getSource(), is("Depotauszug01.txt"));
-        assertThat(transaction.getNote(), is("Steueroptimierung | Ref.-Nr.: 107410183"));
-
-        item = iter.next();
+        assertThat(results, hasItem(fee(hasDate("2019-08-31"), hasAmount("EUR", 5.75), //
+                        hasSource("Depotauszug01.txt"), hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 94613532"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-08-31T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(5.75)));
-        assertThat(transaction.getSource(), is("Depotauszug01.txt"));
-        assertThat(transaction.getNote(), is("Vermögensverwaltungshonorar | Ref.-Nr.: 94613532"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-09-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(6.98)));
-        assertThat(transaction.getSource(), is("Depotauszug01.txt"));
-        assertThat(transaction.getNote(), is("Vermögensverwaltungshonorar | Ref.-Nr.: 97492689"));
+        assertThat(results, hasItem(fee(hasDate("2019-09-30"), hasAmount("EUR", 6.98), //
+                        hasSource("Depotauszug01.txt"), hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 97492689"))));
     }
 
     @Test
@@ -1394,21 +1173,9 @@ public class QuirinPrivatbankAGPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
-        // check transaction
-        // get transactions
-        var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(1L));
-
-        var item = iter.next();
-
         // assert transaction
-        var transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-31T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.70)));
-        assertThat(transaction.getSource(), is("Depotauszug02.txt"));
-        assertThat(transaction.getNote(), is("Vermögensverwaltungshonorar | Ref.-Nr.: 123458336"));
+        assertThat(results, hasItem(fee(hasDate("2019-12-31"), hasAmount("EUR", 1.70), //
+                        hasSource("Depotauszug02.txt"), hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 123458336"))));
     }
 
     @Test
@@ -1430,54 +1197,25 @@ public class QuirinPrivatbankAGPDFExtractorTest
         assertThat(results.size(), is(4));
         new AssertImportActions().check(results, "EUR");
 
-        // check transaction
-        // get transactions
-        var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(4L));
-
-        var item = iter.next();
+        // assert transaction
+        assertThat(results, hasItem(taxes(hasDate("2010-06-30"), hasAmount("EUR", 1.28), //
+                        hasSource("Depotauszug03.txt"),
+                        hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0139925023"))));
 
         // assert transaction
-        var transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-06-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.28)));
-        assertThat(transaction.getSource(), is("Depotauszug03.txt"));
-        assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0139925023"));
-
-        item = iter.next();
+        assertThat(results, hasItem(fee(hasDate("2010-06-30"), hasAmount("EUR", 75.00), //
+                        hasSource("Depotauszug03.txt"),
+                        hasNote("Flatrate Gebühren 01.06.2010 - 30.06.2010 | Ref.-Nr.: KA-0139816662"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-06-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(75.00)));
-        assertThat(transaction.getSource(), is("Depotauszug03.txt"));
-        assertThat(transaction.getNote(), is("Flatrate Gebühren 01.06.2010 - 30.06.2010 | Ref.-Nr.: KA-0139816662"));
-
-        item = iter.next();
+        assertThat(results, hasItem(fee(hasDate("2010-06-30"), hasAmount("EUR", 29.55), //
+                        hasSource("Depotauszug03.txt"),
+                        hasNote("Volumen Fee Gebühren 01.04.2010 - 30.06.2010 | Ref.-Nr.: KA-0139816664"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-06-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(29.55)));
-        assertThat(transaction.getSource(), is("Depotauszug03.txt"));
-        assertThat(transaction.getNote(), is("Volumen Fee Gebühren 01.04.2010 - 30.06.2010 | Ref.-Nr.: KA-0139816664"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-06-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(4.61)));
-        assertThat(transaction.getSource(), is("Depotauszug03.txt"));
-        assertThat(transaction.getNote(), is("Haben-Zinsen Kontoabschluss | Ref.-Nr.: KA-0139907281"));
+        assertThat(results, hasItem(interest(hasDate("2010-06-30"), hasAmount("EUR", 4.61), //
+                        hasSource("Depotauszug03.txt"),
+                        hasNote("Haben-Zinsen Kontoabschluss | Ref.-Nr.: KA-0139907281"))));
     }
 
     @Test
@@ -1499,483 +1237,220 @@ public class QuirinPrivatbankAGPDFExtractorTest
         assertThat(results.size(), is(43));
         new AssertImportActions().check(results, "EUR");
 
-        // check transaction
-        // get transactions
-        var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(43L));
-
-        var item = iter.next();
+        // assert transaction
+        assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 0.73), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144748177"))));
 
         // assert transaction
-        var transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.73)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144748177"));
-
-        item = iter.next();
+        assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 3.77), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144754954"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(3.77)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144754954"));
-
-        item = iter.next();
+        assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 1.59), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144767171"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.59)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144767171"));
-
-        item = iter.next();
+        assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 0.28), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144772794"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.28)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144772794"));
-
-        item = iter.next();
+        assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 0.24), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144774420"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.24)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144774420"));
-
-        item = iter.next();
+        assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 1.33), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144775628"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.33)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144775628"));
-
-        item = iter.next();
+        assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 0.19), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144776788"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.19)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144776788"));
-
-        item = iter.next();
+        assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 0.65), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144794566"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.65)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144794566"));
-
-        item = iter.next();
+        assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 0.52), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144796585"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.52)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144796585"));
-
-        item = iter.next();
+        assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 1.39), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144798144"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.39)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144798144"));
-
-        item = iter.next();
+        assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 0.19), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144802453"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.19)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144802453"));
-
-        item = iter.next();
+        assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 1.20), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144802618"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.20)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144802618"));
-
-        item = iter.next();
+        assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 10.57), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144827860"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(10.57)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144827860"));
-
-        item = iter.next();
+        assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 0.07), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144835278"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.07)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144835278"));
-
-        item = iter.next();
+        assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 2.52), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144836892"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(2.52)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144836892"));
-
-        item = iter.next();
+        assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 0.35), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144976464"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.35)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144976464"));
-
-        item = iter.next();
+        assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 0.56), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144989517"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.56)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144989517"));
-
-        item = iter.next();
+        assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 0.73), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144994720"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.73)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144994720"));
-
-        item = iter.next();
+        assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 0.24), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144996297"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.24)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144996297"));
-
-        item = iter.next();
+        assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 0.26), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144996479"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.26)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144996479"));
-
-        item = iter.next();
+        assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 0.72), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144999672"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.72)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144999672"));
-
-        item = iter.next();
+        assertThat(results, hasItem(fee(hasDate("2010-07-30"), hasAmount("EUR", 75.00), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Flatrate Gebühren 01.07.2010 - 30.07.2010 | Ref.-Nr.: KA-0144715444"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(75.00)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Flatrate Gebühren 01.07.2010 - 30.07.2010 | Ref.-Nr.: KA-0144715444"));
-
-        item = iter.next();
+        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 2.63), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Bestandsprovision LU0140363002 | Ref.-Nr.: KA -0144680022"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(2.63)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Bestandsprovision LU0140363002 | Ref.-Nr.: KA -0144680022"));
-
-        item = iter.next();
+        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 2.03), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Bestandsprovision LU0303756539 | Ref.-Nr.: KA-0144683460"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(2.03)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Bestandsprovision LU0303756539 | Ref.-Nr.: KA-0144683460"));
-
-        item = iter.next();
+        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 1.02), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Bestandsprovision LU0075056555 | Ref.-Nr.: KA-0144689194"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.02)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Bestandsprovision LU0075056555 | Ref.-Nr.: KA-0144689194"));
-
-        item = iter.next();
+        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 0.85), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Bestandsprovision LU0066902890 | Ref.-Nr.: KA-0144691722"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.85)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Bestandsprovision LU0066902890 | Ref.-Nr.: KA-0144691722"));
-
-        item = iter.next();
+        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 0.90), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Bestandsprovision LU0121747215 | Ref.-Nr.: KA-0144692430"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.90)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Bestandsprovision LU0121747215 | Ref.-Nr.: KA-0144692430"));
-
-        item = iter.next();
+        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 3.12), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Bestandsprovision DE0008490822 | Ref.-Nr.: KA-0144692886"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(3.12)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Bestandsprovision DE0008490822 | Ref.-Nr.: KA-0144692886"));
-
-        item = iter.next();
+        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 4.78), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Bestandsprovision LU0052750758 | Ref.-Nr.: KA-0144693436"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(4.78)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Bestandsprovision LU0052750758 | Ref.-Nr.: KA-0144693436"));
-
-        item = iter.next();
+        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 2.10), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Bestandsprovision LU0303756539 | Ref.-Nr.: KA-0144700356"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(2.10)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Bestandsprovision LU0303756539 | Ref.-Nr.: KA-0144700356"));
-
-        item = iter.next();
+        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 2.59), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Bestandsprovision LU0140363002 | Ref.-Nr.: KA-0144701132"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(2.59)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Bestandsprovision LU0140363002 | Ref.-Nr.: KA-0144701132"));
-
-        item = iter.next();
+        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 0.88), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Bestandsprovision LU0121747215 | Ref.-Nr.: KA-0144701836"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.88)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Bestandsprovision LU0121747215 | Ref.-Nr.: KA-0144701836"));
-
-        item = iter.next();
+        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 4.93), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Bestandsprovision LU0052750758 | Ref.-Nr.: KA-01 44703846"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(4.93)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Bestandsprovision LU0052750758 | Ref.-Nr.: KA-01 44703846"));
-
-        item = iter.next();
+        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 0.98), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Bestandsprovisio n LU0075056555 | Ref.-Nr.: KA-0144703918"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.98)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Bestandsprovisio n LU0075056555 | Ref.-Nr.: KA-0144703918"));
-
-        item = iter.next();
+        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 0.89), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Bestandsprovision LU0066902890 | Ref.-Nr.: KA-0144717889"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.89)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Bestandsprovision LU0066902890 | Ref.-Nr.: KA-0144717889"));
-
-        item = iter.next();
+        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 2.94), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Bestandsprovision DE0008490822 | Ref.-Nr.: KA-0144723419"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(2.94)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Bestandsprovision DE0008490822 | Ref.-Nr.: KA-0144723419"));
-
-        item = iter.next();
+        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 4.83), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Bestandsprovision LU0052750758 | Ref.-Nr.: KA-0144724147"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(4.83)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Bestandsprovision LU0052750758 | Ref.-Nr.: KA-0144724147"));
-
-        item = iter.next();
+        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 0.85), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Bestandsprovision LU0121747215 | Ref.-Nr.: KA-0144726719"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.85)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Bestandsprovision LU0121747215 | Ref.-Nr.: KA-0144726719"));
-
-        item = iter.next();
+        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 2.05), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Bestandsprovision LU0303756539 | Ref.-Nr.: KA-0144732844"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(2.05)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Bestandsprovision LU0303756539 | Ref.-Nr.: KA-0144732844"));
-
-        item = iter.next();
+        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 2.61), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Bestandsprovision DE0008490822 | Ref.-Nr.: KA-0144735471"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(2.61)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Bestandsprovision DE0008490822 | Ref.-Nr.: KA-0144735471"));
-
-        item = iter.next();
+        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 0.86), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Bestandsprovision LU0066902890 | Ref.-Nr.: KA-0144736296"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.86)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Bestandsprovision LU0066902890 | Ref.-Nr.: KA-0144736296"));
-
-        item = iter.next();
+        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 0.94), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Bestandsprovision LU0075056555 | Ref.-Nr.: KA-0144736391"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.94)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Bestandsprovision LU0075056555 | Ref.-Nr.: KA-0144736391"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(2.58)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Bestandsprovision LU0140363002 | Ref.-Nr.: KA-01 44738244"));
+        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 2.58), //
+                        hasSource("Depotauszug04.txt"),
+                        hasNote("Bestandsprovision LU0140363002 | Ref.-Nr.: KA-01 44738244"))));
     }
 
     @Test

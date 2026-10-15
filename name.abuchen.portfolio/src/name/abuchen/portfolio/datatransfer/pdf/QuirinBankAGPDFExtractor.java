@@ -466,7 +466,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                         // Verrechnungstopf Sonstige 0,  00 EUR Steuerbetrag -9,07 USD -6,93 EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^.* Steuerbetrag .*\\-([\s])?(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .match("^.* Steuerbetrag .*\\-([\\s])?(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> {
                             var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
 
@@ -688,7 +688,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                         + "|Interne Buchung" //
                         + "|.berweisungsgutschrift Inland) " //
                         + ".* " //
-                        + "[\\.,\\d]+[\s]{1,}[A-Z]{3}.*$");
+                        + "[\\.,\\d]+[\\s]{1,}[A-Z]{3}.*$");
         type.addBlock(depositBlock);
         depositBlock.setMaxSize(5);
         depositBlock.set(new Transaction<AccountTransaction>()
@@ -1004,7 +1004,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
         //
         // Bestand LU0303756539
         // @formatter:on
-        var feeRefundBlock = new Block("^R.ckverg.tung Bestand.*, .* [\\.,\\d]+([\s]+)?[A-Z]{3}.*$");
+        var feeRefundBlock = new Block("^R.ckverg.tung Bestand.*, .* [\\.,\\d]+([\\s]+)?[A-Z]{3}.*$");
         type.addBlock(feeRefundBlock);
         feeRefundBlock.setMaxSize(5);
         feeRefundBlock.set(new Transaction<AccountTransaction>()
@@ -1060,7 +1060,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
                         // @formatter:off
                         // Verrechnungstopf Sonstige  0,00 EUR Steuerbetrag  0,05 EUR

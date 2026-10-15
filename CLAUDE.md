@@ -7,14 +7,13 @@ Portfolio Performance is an Eclipse RCP (Rich Client Platform) application for t
 ## Build Commands
 
 ### Prerequisites
-- `JAVA_HOME` must point to Java 21 JDK
+- `JAVA_HOME` must point to a Java 21 JDK
 - Use Maven Tycho for builds
 - All commands use `-f portfolio-app/pom.xml`
 - Use `-Plocal-dev` profile for faster local development (skips coverage, checkstyle, babel translations)
 
 ### Full Build
 ```bash
-export MAVEN_OPTS="-Xmx4g"
 mvn -f portfolio-app/pom.xml clean verify -Plocal-dev
 ```
 
