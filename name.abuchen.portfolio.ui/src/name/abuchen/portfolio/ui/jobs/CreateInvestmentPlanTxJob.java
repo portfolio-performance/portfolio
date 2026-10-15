@@ -50,17 +50,30 @@ public final class CreateInvestmentPlanTxJob extends AbstractClientJob
             Map<InvestmentPlan, List<TransactionPair<?>>> tx = new HashMap<>();
 
             CurrencyConverterImpl converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
-            getClient().getPlans().stream().filter(InvestmentPlan::isAutoGenerate).forEach(plan -> {
-                try
-                {
-                    List<TransactionPair<?>> transactions = plan.generateTransactions(converter);
-                    if (!transactions.isEmpty())
-                        tx.put(plan, transactions);
-                }
-                catch (IOException e)
-                {
-                    PortfolioPlugin.log(e);
-                }
+
+            // Generate the transactions on the UI thread. The views iterate
+            // the (unsynchronized) transaction lists of accounts and
+            // portfolios on the UI thread. Adding transactions from this
+            // background job results in a ConcurrentModificationException.
+            Display.getDefault().syncExec(() -> {
+                getClient().getPlans().stream().filter(InvestmentPlan::isAutoGenerate).forEach(plan -> {
+                    try
+                    {
+                        List<TransactionPair<?>> transactions = plan.generateTransactions(converter);
+                        if (!transactions.isEmpty())
+                            tx.put(plan, transactions);
+                    }
+                    catch (IOException e)
+                    {
+                        PortfolioPlugin.log(e);
+                    }
+                });
+
+                // mark the client dirty once after all plans have been
+                // executed so that the file is flagged as modified and all
+                // views are recalculated
+                if (!tx.isEmpty())
+                    getClient().markDirty();
             });
 
             if (!tx.isEmpty())
