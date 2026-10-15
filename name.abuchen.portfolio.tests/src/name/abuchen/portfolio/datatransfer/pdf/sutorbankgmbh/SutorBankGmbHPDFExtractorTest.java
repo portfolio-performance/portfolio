@@ -53,6 +53,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
 
+@SuppressWarnings("nls")
 public class SutorBankGmbHPDFExtractorTest
 {
     SutorBankGmbHPDFExtractor extractor = new SutorBankGmbHPDFExtractor(new Client())
