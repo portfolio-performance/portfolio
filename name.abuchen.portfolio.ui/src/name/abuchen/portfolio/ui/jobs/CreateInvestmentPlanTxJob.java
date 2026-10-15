@@ -56,7 +56,15 @@ public final class CreateInvestmentPlanTxJob extends AbstractClientJob
             // portfolios on the UI thread. Adding transactions from this
             // background job results in a ConcurrentModificationException.
             Display.getDefault().syncExec(() -> {
-                getClient().getPlans().stream().filter(InvestmentPlan::isAutoGenerate).forEach(plan -> {
+                var isModified = false;
+
+                for (InvestmentPlan plan : getClient().getPlans())
+                {
+                    if (!plan.isAutoGenerate())
+                        continue;
+
+                    var sizeBefore = plan.getTransactions().size();
+
                     try
                     {
                         List<TransactionPair<?>> transactions = plan.generateTransactions(converter);
@@ -67,12 +75,18 @@ public final class CreateInvestmentPlanTxJob extends AbstractClientJob
                     {
                         PortfolioPlugin.log(e);
                     }
-                });
+
+                    // generateTransactions keeps the transactions created
+                    // before an IOException is thrown, therefore compare the
+                    // number of transactions instead of the returned list
+                    if (plan.getTransactions().size() != sizeBefore)
+                        isModified = true;
+                }
 
                 // mark the client dirty once after all plans have been
                 // executed so that the file is flagged as modified and all
                 // views are recalculated
-                if (!tx.isEmpty())
+                if (isModified)
                     getClient().markDirty();
             });
 
