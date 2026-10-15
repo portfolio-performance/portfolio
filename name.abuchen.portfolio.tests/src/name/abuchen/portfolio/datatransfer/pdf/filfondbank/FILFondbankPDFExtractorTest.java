@@ -2045,7 +2045,7 @@ public class FILFondbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2018-07-25"), hasExDate(null), //
+                        hasDate("2018-07-25"), hasExDate("2018-07-12"), //
                         hasShares(0.093), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Turnus halbjährlich"), //
@@ -2080,7 +2080,7 @@ public class FILFondbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2019-08-08"), hasExDate(null), //
+                        hasDate("2019-08-08"), hasExDate("2019-08-01"), //
                         hasShares(10.299), //
                         hasSource("Dividende02.txt"), //
                         hasNote("Turnus jährlich"), //
@@ -2115,7 +2115,7 @@ public class FILFondbankPDFExtractorTest
 
         // check dividende transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-07-08"), hasExDate(null), hasShares(427.272), //
+                        hasDate("2022-07-08"), hasExDate("2022-07-01"), hasShares(427.272), //
                         hasSource("Dividende03.txt"), hasNote("Turnus monatlich"), //
                         hasAmount("EUR", 15.46), hasGrossValue("EUR", 19.23), //
                         hasTaxes("EUR", 3.29 + 0.18 + 0.30), hasFees("EUR", 0.00))));
