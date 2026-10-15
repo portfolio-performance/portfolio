@@ -20,7 +20,6 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -535,7 +534,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .section("amount") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}[\\s]{1,}Kauf[\\s]{1,}[\\.,\\d]+[\\s]{1,}\\-(?<amount>[\\.,\\d]+)[\\s]{1,}[\\.,\\d]+.*$") //
                         .assign((t, v) -> {
-                            t.setCurrencyCode(CurrencyUnit.EUR);
+                            t.setCurrencyCode(asCurrencyCode("EUR"));
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
