@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.jobs;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +75,12 @@ public final class CreateInvestmentPlanTxJob extends AbstractClientJob
                     catch (IOException e)
                     {
                         PortfolioPlugin.log(e);
+
+                        // generateTransactions does not return the
+                        // transactions created before the exception
+                        var all = plan.getTransactions(getClient());
+                        if (all.size() > sizeBefore)
+                            tx.put(plan, new ArrayList<>(all.subList(sizeBefore, all.size())));
                     }
 
                     // generateTransactions keeps the transactions created
