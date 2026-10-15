@@ -185,7 +185,7 @@ public class DreiBankenEDVPDFExtractorTest
                         hasNote(null), //
                         hasAmount("EUR", 1.21), hasGrossValue("EUR", 1.67), //
                         hasForexGrossValue("USD", 2.04), //
-                        hasTaxes("EUR", 0.46), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", (0.31 + 0.26) / 1.224 - 0.01), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -221,7 +221,7 @@ public class DreiBankenEDVPDFExtractorTest
                         hasNote(null), //
                         hasAmount("EUR", 4.16), hasGrossValue("EUR", 5.74), //
                         hasForexGrossValue("USD", 7.00), //
-                        hasTaxes("EUR", 1.58), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", (1.05 + 0.88) / 1.2205), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -256,7 +256,7 @@ public class DreiBankenEDVPDFExtractorTest
                         hasSource("Dividende03.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 4.16), hasGrossValue("EUR", 5.74), //
-                        hasTaxes("EUR", 1.58), hasFees("EUR", 0.00), //
+                        hasTaxes("EUR", (1.05 + 0.88) / 1.2205), hasFees("EUR", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
@@ -299,7 +299,7 @@ public class DreiBankenEDVPDFExtractorTest
                         hasNote(null), //
                         hasAmount("EUR", 0.73), hasGrossValue("EUR", 1.01), //
                         hasForexGrossValue("USD", 1.23), //
-                        hasTaxes("EUR", 0.28), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", (0.18 + 0.16) / 1.2205), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -334,7 +334,7 @@ public class DreiBankenEDVPDFExtractorTest
                         hasSource("Dividende04.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.73), hasGrossValue("EUR", 1.01), //
-                        hasTaxes("EUR", 0.28), hasFees("EUR", 0.00), //
+                        hasTaxes("EUR", (0.18 + 0.16) / 1.2205), hasFees("EUR", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
@@ -377,7 +377,7 @@ public class DreiBankenEDVPDFExtractorTest
                         hasNote(null), //
                         hasAmount("EUR", 0.32), hasGrossValue("EUR", 0.44), //
                         hasForexGrossValue("USD", 0.54), //
-                        hasTaxes("EUR", 0.12), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 0.15 / 1.214), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -412,7 +412,7 @@ public class DreiBankenEDVPDFExtractorTest
                         hasSource("Dividende05.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.32), hasGrossValue("EUR", 0.44), //
-                        hasTaxes("EUR", 0.12), hasFees("EUR", 0.00), //
+                        hasTaxes("EUR", 0.15 / 1.214), hasFees("EUR", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
