@@ -76,7 +76,7 @@ public class GladbacherBankAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-12-18T18:14:20"), hasShares(28), //
+                        hasDate("2023-12-18T18:14:20"), hasShares(28.00), //
                         hasSource("Kauf01.txt"), //
                         hasNote("R.-Nr.: W07512-0000013677/23 | Limit billigst"), //
                         hasAmount("EUR", 2395.10), hasGrossValue("EUR", 2380.00), //
@@ -110,7 +110,7 @@ public class GladbacherBankAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2023-02-06T19:05:48"), hasShares(8), //
+                        hasDate("2023-02-06T19:05:48"), hasShares(8.00), //
                         hasSource("Verkauf01.txt"), //
                         hasNote("R.-Nr.: W07512-0000002019/23 | Limit bestens"), //
                         hasAmount("EUR", 3698.50), hasGrossValue("EUR", 3713.60), //
@@ -144,11 +144,11 @@ public class GladbacherBankAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2024-01-23T11:20:08"), hasShares(6), //
+                        hasDate("2024-01-23T11:20:08"), hasShares(6.00), //
                         hasSource("Verkauf02.txt"), //
                         hasNote("R.-Nr.: W07512-0000001104/24 | Limit bestens"), //
-                        hasAmount("EUR", 2092.61), hasGrossValue("EUR", 2219.83), //
-                        hasTaxes("EUR", 35.23 + 72.89 + 4.00), hasFees("EUR", 15.00 + 0.10))));
+                        hasAmount("EUR", 2092.61), hasGrossValue("EUR", 2184.60), //
+                        hasTaxes("EUR", 72.89 + 4.00), hasFees("EUR", 15.00 + 0.10))));
     }
 
     @Test
@@ -179,7 +179,7 @@ public class GladbacherBankAGPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2023-12-28T00:00"), hasExDate("2023-12-07T00:00"), //
-                        hasShares(52), //
+                        hasShares(52.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Abrechnungsnr.: 86148344230 | Quartalsdividende"), //
                         hasAmount("EUR", 8.71), hasGrossValue("EUR", 11.70), //
@@ -216,7 +216,7 @@ public class GladbacherBankAGPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2023-12-28T00:00"), hasExDate("2023-12-07T00:00"), //
-                        hasShares(52), //
+                        hasShares(52.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Abrechnungsnr.: 86148344230 | Quartalsdividende"), //
                         hasAmount("EUR", 8.71), hasGrossValue("EUR", 11.70), //
