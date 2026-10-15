@@ -21,7 +21,6 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundCash
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
@@ -3989,7 +3988,7 @@ public class IBFlexStatementExtractorTest
     }
 
     @Test
-    public void testIBFlexStatementFile30() throws IOException
+    public void testIBFlexStatementFile32() throws IOException
     {
         TimeZone.setDefault(TimeZone.getTimeZone("Europe/Berlin"));
         var client = new Client();
@@ -4003,7 +4002,7 @@ public class IBFlexStatementExtractorTest
         client.addPortfolio(portfolioA);
 
         var extractor = new IBFlexStatementExtractor(client);
-        var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile30.xml");
+        var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile32.xml");
         var tempFile = createTempFile(activityStatement);
         var errors = new ArrayList<Exception>();
 
