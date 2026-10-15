@@ -1676,11 +1676,16 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // without exchange rate
                             // with fee
                             // with stock exchange place
+                            //
+                            // Newer reports print 0,0000 as exchange rate instead of an empty
+                            // column if no currency conversion took place. This applies to all
+                            // variants without exchange rate.
                             // -------------------------------------
                             // Formatting:
-                            // DateTime | Name | ISIN | Stock Exchange | Place | Shares | Quote | Local market value | Market value | AutoFX fee | Fee | Total amount
+                            // DateTime | Name | ISIN | Stock Exchange | Place | Shares | Quote | Local market value | Market value | (Exchange rate) | AutoFX fee | Fee | Total amount
                             // -------------------------------------
                             // 04-02-2026 10:32 WISDOMTREE PHYSICAL JE00B1VS3333 EAM XAMS 30 68,3760 EUR -2.051,28 EUR -2.051,28 0,00 -3,00 -2.054,28
+                            // 05-10-2026 13:35 ISHARES CORE MSCI WORLD IE00B4L5Y983 TDG XGAT 10 100,0000 EUR -1.000,00 EUR -1.000,00 0,0000 0,00 -1,00 -1.001,00
                             // 17-12-2024 11:08 AEGON LTD BMG0112X1056 EAM XAMS -211 5,6260 EUR 1.187,09 EUR 1.187,09 0,00 -3,00 1.184,09
                             // 10-11-2023 17:30 COMPAGNIE FINANCIERE CH0210483332 SWX XSWX 3 106,7000 CHF -320,10 CHF -320,10 0,00 -6,00 -326,10
                             // @formatter:on
@@ -1696,6 +1701,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(\\-)?[\\.,'’\\d\\s]+[\\.|,][\\d]{2,6} "
                                                 + "(?<currency>[\\w]{3}) (\\-)?[\\.,'’\\d\\s]+[\\.|,][\\d]{2} "
                                                 + "[\\w]{3} (\\-)?[\\.,'’\\d\\s]+[\\.|,][\\d]{2} "
+                                                + "(0[\\.,]0000 )?"
                                                 + "0[\\.,]00 "
                                                 + "\\-(?<fee>[\\.,'’\\d\\s]+[\\.|,][\\d]{2}) "
                                                 + "(\\-)?(?<amount>[\\.,'’\\d\\s]+[\\.|,][\\d]{2})$")
@@ -1728,7 +1734,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // without stock exchange place
                             // -------------------------------------
                             // Formatting:
-                            // DateTime | Name | ISIN | Stock Exchange | Place | Shares | Quote | Local market value | Market value | AutoFX fee | Fee | Total amount
+                            // DateTime | Name | ISIN | Stock Exchange | Place | Shares | Quote | Local market value | Market value | (Exchange rate) | AutoFX fee | Fee | Total amount
                             // -------------------------------------
                             // 24-09-2020 09:05 ROYAL DUTCH SHELLA GB00B03MLX29 EAM 92 11,2200 EUR -1.032,24 EUR -1.032,24 0,00 -2,31 -1.034,55
                             // @formatter:on
@@ -1744,6 +1750,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(\\-)?[\\.,'’\\d\\s]+[\\.|,][\\d]{2,6} "
                                                 + "(?<currency>[\\w]{3}) (\\-)?[\\.,'’\\d\\s]+[\\.|,][\\d]{2} "
                                                 + "[\\w]{3} (\\-)?[\\.,'’\\d\\s]+[\\.|,][\\d]{2} "
+                                                + "(0[\\.,]0000 )?"
                                                 + "0[\\.,]00 "
                                                 + "\\-(?<fee>[\\.,'’\\d\\s]+[\\.|,][\\d]{2}) "
                                                 + "(\\-)?(?<amount>[\\.,'’\\d\\s]+[\\.|,][\\d]{2})$")
@@ -1776,7 +1783,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // with stock exchange place
                             // -------------------------------------
                             // Formatting:
-                            // DateTime | Name | ISIN | Stock Exchange | Place | Shares | Quote | Local market value | Market value | AutoFX fee | Total amount
+                            // DateTime | Name | ISIN | Stock Exchange | Place | Shares | Quote | Local market value | Market value | (Exchange rate) | AutoFX fee | Total amount
                             // -------------------------------------
                             // 28-02-2024 09:07 SBM OFFSHORE NV NL0000360618 EAM XAMS 91 12,9500 EUR -1.178,45 EUR -1.178,45 0,00 -1.178,45
                             // @formatter:on
@@ -1792,6 +1799,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(\\-)?[\\.,'’\\d\\s]+[\\.|,][\\d]{2,6} "
                                                 + "(?<currency>[\\w]{3}) (\\-)?[\\.,'’\\d\\s]+[\\.|,][\\d]{2} "
                                                 + "[\\w]{3} (\\-)?[\\.,'’\\d\\s]+[\\.|,][\\d]{2} "
+                                                + "(0[\\.,]0000 )?"
                                                 + "0[\\.,]00 "
                                                 + "(\\-)?(?<amount>[\\.,'’\\d\\s]+[\\.|,][\\d]{2})$")
                                 .assign((t, v) -> {
@@ -1820,7 +1828,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // without stock exchange place
                             // -------------------------------------
                             // Formatting:
-                            // DateTime | Name | ISIN | Stock Exchange | Place | Shares | Quote | Local market value | Market value | AutoFX fee | Total amount
+                            // DateTime | Name | ISIN | Stock Exchange | Place | Shares | Quote | Local market value | Market value | (Exchange rate) | AutoFX fee | Total amount
                             // -------------------------------------
                             // 03-04-2024 10:10 CMB TECH NV BE0003816338 EBR -145 16,4100 EUR 2.379,45 EUR 2.379,45 0,00 2.379,45
                             // 25-03-2022 00:00 ATARI DS FR0014008D33 EPA -1.412 0,0000 EUR 0,00 EUR 0,00 0,00 0,00
@@ -1837,6 +1845,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(\\-)?[\\.,'’\\d\\s]+[\\.|,][\\d]{2,6} "
                                                 + "(?<currency>[\\w]{3}) (\\-)?[\\.,'’\\d\\s]+[\\.|,][\\d]{2} "
                                                 + "[\\w]{3} (\\-)?[\\.,'’\\d\\s]+[\\.|,][\\d]{2} "
+                                                + "(0[\\.,]0000 )?"
                                                 + "0[\\.,]00 "
                                                 + "(\\-)?(?<amount>[\\.,'’\\d\\s]+[\\.|,][\\d]{2})$")
                                 .assign((t, v) -> {
