@@ -349,7 +349,7 @@ public class FILFondbankPDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2019-04-16"), hasShares(0.045), //
+                        hasDate("2019-04-16T00:00"), hasShares(0.045), //
                         hasSource("Fondabrechnung01.txt"), hasNote("Auftrags-Nr. 2536717769 | Splitkauf"), //
                         hasAmount("EUR", 1.77), hasGrossValue("EUR", 1.77), //
                         hasForexGrossValue("USD", 1.99), //
@@ -357,7 +357,7 @@ public class FILFondbankPDFExtractorTest
 
         // check 2st buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2019-05-01"), hasShares(0.009), //
+                        hasDate("2019-05-01T00:00"), hasShares(0.009), //
                         hasSource("Fondabrechnung01.txt"), hasNote("Auftrags-Nr. 2536921666 | Wiederanlage"), //
                         hasAmount("EUR", 0.96), hasGrossValue("EUR", 0.96), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -397,14 +397,14 @@ public class FILFondbankPDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2019-04-16"), hasShares(0.045), //
+                        hasDate("2019-04-16T00:00"), hasShares(0.045), //
                         hasSource("Fondabrechnung01.txt"), hasNote("Auftrags-Nr. 2536717769 | Splitkauf"), //
                         hasAmount("EUR", 1.77), hasGrossValue("EUR", 1.77), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 2st buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2019-05-01"), hasShares(0.009), //
+                        hasDate("2019-05-01T00:00"), hasShares(0.009), //
                         hasSource("Fondabrechnung01.txt"), hasNote("Auftrags-Nr. 2536921666 | Wiederanlage"), //
                         hasAmount("EUR", 0.96), hasGrossValue("EUR", 0.96), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -443,7 +443,7 @@ public class FILFondbankPDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2019-09-03"), hasShares(2.417), //
+                        hasDate("2019-09-03T00:00"), hasShares(2.417), //
                         hasSource("Fondabrechnung02.txt"), hasNote("Auftrags-Nr. 2539808855"), //
                         hasAmount("EUR", 210.00), hasGrossValue("EUR", 209.48), //
                         hasForexGrossValue("USD", 229.64), //
@@ -451,7 +451,7 @@ public class FILFondbankPDFExtractorTest
 
         // check 2st buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2019-09-03"), hasShares(7.877), //
+                        hasDate("2019-09-03T00:00"), hasShares(7.877), //
                         hasSource("Fondabrechnung02.txt"), hasNote("Auftrags-Nr. 2539808856"), //
                         hasAmount("EUR", 90.00), hasGrossValue("EUR", 89.56), //
                         hasForexGrossValue("USD", 98.18), //
@@ -459,7 +459,7 @@ public class FILFondbankPDFExtractorTest
 
         // check 3rd buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2019-10-02"), hasShares(2.409), //
+                        hasDate("2019-10-02T00:00"), hasShares(2.409), //
                         hasSource("Fondabrechnung02.txt"), hasNote("Auftrags-Nr. 2540401210"), //
                         hasAmount("EUR", 210.00), hasGrossValue("EUR", 209.48), //
                         hasForexGrossValue("USD", 228.47), //
@@ -467,7 +467,7 @@ public class FILFondbankPDFExtractorTest
 
         // check 4th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2019-10-02"), hasShares(7.728), //
+                        hasDate("2019-10-02T00:00"), hasShares(7.728), //
                         hasSource("Fondabrechnung02.txt"), hasNote("Auftrags-Nr. 2540401213"), //
                         hasAmount("EUR", 90.00), hasGrossValue("EUR", 89.56), //
                         hasForexGrossValue("USD", 97.68), //
@@ -475,7 +475,7 @@ public class FILFondbankPDFExtractorTest
 
         // check 5th buy sell transaction... its a sell with account fee
         assertThat(results, hasItem(sale( //
-                        hasDate("2019-10-15"), hasShares(0.011), //
+                        hasDate("2019-10-15T00:00"), hasShares(0.011), //
                         hasSource("Fondabrechnung02.txt"), hasNote("Auftrags-Nr. 2540818151 | Entgeltbelastung"), //
                         hasAmount("EUR", 1.00), hasGrossValue("EUR", 1.01), //
                         hasForexGrossValue("USD", 1.12), //
@@ -525,35 +525,35 @@ public class FILFondbankPDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2019-09-03"), hasShares(2.417), //
+                        hasDate("2019-09-03T00:00"), hasShares(2.417), //
                         hasSource("Fondabrechnung02.txt"), hasNote("Auftrags-Nr. 2539808855"), //
                         hasAmount("EUR", 210.00), hasGrossValue("EUR", 209.48), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.52))));
 
         // check 2st buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2019-09-03"), hasShares(7.877), //
+                        hasDate("2019-09-03T00:00"), hasShares(7.877), //
                         hasSource("Fondabrechnung02.txt"), hasNote("Auftrags-Nr. 2539808856"), //
                         hasAmount("EUR", 90.00), hasGrossValue("EUR", 89.56), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.44))));
 
         // check 3rd buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2019-10-02"), hasShares(2.409), //
+                        hasDate("2019-10-02T00:00"), hasShares(2.409), //
                         hasSource("Fondabrechnung02.txt"), hasNote("Auftrags-Nr. 2540401210"), //
                         hasAmount("EUR", 210.00), hasGrossValue("EUR", 209.48), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.52))));
 
         // check 4th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2019-10-02"), hasShares(7.728), //
+                        hasDate("2019-10-02T00:00"), hasShares(7.728), //
                         hasSource("Fondabrechnung02.txt"), hasNote("Auftrags-Nr. 2540401213"), //
                         hasAmount("EUR", 90.00), hasGrossValue("EUR", 89.56), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.44))));
 
         // check 5th buy sell transaction... its a sell with account fee
         assertThat(results, hasItem(sale( //
-                        hasDate("2019-10-15"), hasShares(0.011), //
+                        hasDate("2019-10-15T00:00"), hasShares(0.011), //
                         hasSource("Fondabrechnung02.txt"), hasNote("Auftrags-Nr. 2540818151 | Entgeltbelastung"), //
                         hasAmount("EUR", 1.00), hasGrossValue("EUR", 1.01), //
                         hasTaxes("EUR", 0.01), hasFees("EUR", 0.00))));
@@ -595,7 +595,7 @@ public class FILFondbankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-07-09"), hasShares(4), //
+                        hasDate("2021-07-09T00:00"), hasShares(4), //
                         hasSource("Fondabrechnung03.txt"), hasNote("Auftrags-Nr. 2568216341"), //
                         hasAmount("EUR", 464.00), hasGrossValue("EUR", 464.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -628,7 +628,7 @@ public class FILFondbankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2019-08-09"), hasShares(1.049), //
+                        hasDate("2019-08-09T00:00"), hasShares(1.049), //
                         hasSource("Fondabrechnung04.txt"), hasNote("Auftrags-Nr. 2539291225 | Wiederanlage"), //
                         hasAmount("EUR", 15.67), hasGrossValue("EUR", 15.67), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -661,7 +661,7 @@ public class FILFondbankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2019-01-15"), hasShares(0.266), //
+                        hasDate("2019-01-15T00:00"), hasShares(0.266), //
                         hasSource("Fondabrechnung05.txt"), hasNote("Auftrags-Nr. 2534379721 | Wiederanlage"), //
                         hasAmount("USD", 20.83), hasGrossValue("USD", 20.83), //
                         hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
@@ -694,7 +694,7 @@ public class FILFondbankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2019-01-14"), hasShares(87.557), //
+                        hasDate("2019-01-14T00:00"), hasShares(87.557), //
                         hasSource("Fondabrechnung06.txt"), hasNote("Auftrags-Nr. 2534364118"), //
                         hasAmount("EUR", 6000.00), hasGrossValue("EUR", 5980.86), //
                         hasForexGrossValue("USD", 6800.46), //
@@ -729,7 +729,7 @@ public class FILFondbankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2019-01-14"), hasShares(87.557), //
+                        hasDate("2019-01-14T00:00"), hasShares(87.557), //
                         hasSource("Fondabrechnung06.txt"), hasNote("Auftrags-Nr. 2534364118"), //
                         hasAmount("EUR", 6000.00), hasGrossValue("EUR", 5980.86), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 8.97 + 10.17), //
@@ -824,7 +824,7 @@ public class FILFondbankPDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-07-01"), hasShares(0.363), //
+                        hasDate("2021-07-01T00:00"), hasShares(0.363), //
                         hasSource("Fondabrechnung08.txt"), hasNote("Auftrags-Nr. 2567655380 | Splitkauf"), //
                         hasAmount("EUR", 20.00), hasGrossValue("EUR", 19.50), //
                         hasForexGrossValue("USD", 19.50 * 1.175902), //
@@ -832,35 +832,35 @@ public class FILFondbankPDFExtractorTest
 
         // check 2st buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-07-01"), hasShares(0.459), //
+                        hasDate("2021-07-01T00:00"), hasShares(0.459), //
                         hasSource("Fondabrechnung08.txt"), hasNote("Auftrags-Nr. 2567655380 | Splitkauf"), //
                         hasAmount("EUR", 20.00), hasGrossValue("EUR", 19.50), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.50))));
 
         // check 3rd buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-07-01"), hasShares(1.145), //
+                        hasDate("2021-07-01T00:00"), hasShares(1.145), //
                         hasSource("Fondabrechnung08.txt"), hasNote("Auftrags-Nr. 2567655380 | Splitkauf"), //
                         hasAmount("EUR", 20.00), hasGrossValue("EUR", 19.50), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.50))));
 
         // check 4th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-07-01"), hasShares(1.022), //
+                        hasDate("2021-07-01T00:00"), hasShares(1.022), //
                         hasSource("Fondabrechnung08.txt"), hasNote("Auftrags-Nr. 2567655380 | Splitkauf"), //
                         hasAmount("EUR", 20.00), hasGrossValue("EUR", 19.46), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.54))));
 
         // check 5th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-07-01"), hasShares(0.739), //
+                        hasDate("2021-07-01T00:00"), hasShares(0.739), //
                         hasSource("Fondabrechnung08.txt"), hasNote("Auftrags-Nr. 2567655380 | Splitkauf"), //
                         hasAmount("EUR", 20.00), hasGrossValue("EUR", 19.49), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.51))));
 
         // check 6th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-08-02"), hasShares(0.349), //
+                        hasDate("2021-08-02T00:00"), hasShares(0.349), //
                         hasSource("Fondabrechnung08.txt"), hasNote("Auftrags-Nr. 2568789861 | Splitkauf"), //
                         hasAmount("EUR", 20.00), hasGrossValue("EUR", 19.52), //
                         hasForexGrossValue("USD", 19.52 * 1.180651), //
@@ -868,42 +868,42 @@ public class FILFondbankPDFExtractorTest
 
         // check 7th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-08-02"), hasShares(0.459), //
+                        hasDate("2021-08-02T00:00"), hasShares(0.459), //
                         hasSource("Fondabrechnung08.txt"), hasNote("Auftrags-Nr. 2568789861 | Splitkauf"), //
                         hasAmount("EUR", 20.00), hasGrossValue("EUR", 19.53), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.47))));
 
         // check 8th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-08-02"), hasShares(1.135), //
+                        hasDate("2021-08-02T00:00"), hasShares(1.135), //
                         hasSource("Fondabrechnung08.txt"), hasNote("Auftrags-Nr. 2568789861 | Splitkauf"), //
                         hasAmount("EUR", 20.00), hasGrossValue("EUR", 19.50), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.50))));
 
         // check 9th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-08-02"), hasShares(1.031), //
+                        hasDate("2021-08-02T00:00"), hasShares(1.031), //
                         hasSource("Fondabrechnung08.txt"), hasNote("Auftrags-Nr. 2568789861 | Splitkauf"), //
                         hasAmount("EUR", 20.00), hasGrossValue("EUR", 19.47), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.53))));
 
         // check 10th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-08-02"), hasShares(0.733), //
+                        hasDate("2021-08-02T00:00"), hasShares(0.733), //
                         hasSource("Fondabrechnung08.txt"), hasNote("Auftrags-Nr. 2568789861 | Splitkauf"), //
                         hasAmount("EUR", 20.00), hasGrossValue("EUR", 19.48), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.52))));
 
         // check 11th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-08-10"), hasShares(0.307), //
+                        hasDate("2021-08-10T00:00"), hasShares(0.307), //
                         hasSource("Fondabrechnung08.txt"), hasNote("Auftrags-Nr. 2569249320 | Wiederanlage"), //
                         hasAmount("EUR", 5.37), hasGrossValue("EUR", 5.37), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 12th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-08-10"), hasShares(0.09), //
+                        hasDate("2021-08-10T00:00"), hasShares(0.09), //
                         hasSource("Fondabrechnung08.txt"), hasNote("Auftrags-Nr. 2569273184 | Wiederanlage"), //
                         hasAmount("EUR", 2.43), hasGrossValue("EUR", 2.43), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -961,84 +961,84 @@ public class FILFondbankPDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-07-01"), hasShares(0.363), //
+                        hasDate("2021-07-01T00:00"), hasShares(0.363), //
                         hasSource("Fondabrechnung08.txt"), hasNote("Auftrags-Nr. 2567655380 | Splitkauf"), //
                         hasAmount("EUR", 20.00), hasGrossValue("EUR", 19.50), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.50))));
 
         // check 2st buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-07-01"), hasShares(0.459), //
+                        hasDate("2021-07-01T00:00"), hasShares(0.459), //
                         hasSource("Fondabrechnung08.txt"), hasNote("Auftrags-Nr. 2567655380 | Splitkauf"), //
                         hasAmount("EUR", 20.00), hasGrossValue("EUR", 19.50), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.50))));
 
         // check 3rd buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-07-01"), hasShares(1.145), //
+                        hasDate("2021-07-01T00:00"), hasShares(1.145), //
                         hasSource("Fondabrechnung08.txt"), hasNote("Auftrags-Nr. 2567655380 | Splitkauf"), //
                         hasAmount("EUR", 20.00), hasGrossValue("EUR", 19.50), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.50))));
 
         // check 4th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-07-01"), hasShares(1.022), //
+                        hasDate("2021-07-01T00:00"), hasShares(1.022), //
                         hasSource("Fondabrechnung08.txt"), hasNote("Auftrags-Nr. 2567655380 | Splitkauf"), //
                         hasAmount("EUR", 20.00), hasGrossValue("EUR", 19.46), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.54))));
 
         // check 5th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-07-01"), hasShares(0.739), //
+                        hasDate("2021-07-01T00:00"), hasShares(0.739), //
                         hasSource("Fondabrechnung08.txt"), hasNote("Auftrags-Nr. 2567655380 | Splitkauf"), //
                         hasAmount("EUR", 20.00), hasGrossValue("EUR", 19.49), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.51))));
 
         // check 6th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-08-02"), hasShares(0.349), //
+                        hasDate("2021-08-02T00:00"), hasShares(0.349), //
                         hasSource("Fondabrechnung08.txt"), hasNote("Auftrags-Nr. 2568789861 | Splitkauf"), //
                         hasAmount("EUR", 20.00), hasGrossValue("EUR", 19.52), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.48))));
 
         // check 7th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-08-02"), hasShares(0.459), //
+                        hasDate("2021-08-02T00:00"), hasShares(0.459), //
                         hasSource("Fondabrechnung08.txt"), hasNote("Auftrags-Nr. 2568789861 | Splitkauf"), //
                         hasAmount("EUR", 20.00), hasGrossValue("EUR", 19.53), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.47))));
 
         // check 8th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-08-02"), hasShares(1.135), //
+                        hasDate("2021-08-02T00:00"), hasShares(1.135), //
                         hasSource("Fondabrechnung08.txt"), hasNote("Auftrags-Nr. 2568789861 | Splitkauf"), //
                         hasAmount("EUR", 20.00), hasGrossValue("EUR", 19.50), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.50))));
 
         // check 9th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-08-02"), hasShares(1.031), //
+                        hasDate("2021-08-02T00:00"), hasShares(1.031), //
                         hasSource("Fondabrechnung08.txt"), hasNote("Auftrags-Nr. 2568789861 | Splitkauf"), //
                         hasAmount("EUR", 20.00), hasGrossValue("EUR", 19.47), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.53))));
 
         // check 10th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-08-02"), hasShares(0.733), //
+                        hasDate("2021-08-02T00:00"), hasShares(0.733), //
                         hasSource("Fondabrechnung08.txt"), hasNote("Auftrags-Nr. 2568789861 | Splitkauf"), //
                         hasAmount("EUR", 20.00), hasGrossValue("EUR", 19.48), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.52))));
 
         // check 11th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-08-10"), hasShares(0.307), //
+                        hasDate("2021-08-10T00:00"), hasShares(0.307), //
                         hasSource("Fondabrechnung08.txt"), hasNote("Auftrags-Nr. 2569249320 | Wiederanlage"), //
                         hasAmount("EUR", 5.37), hasGrossValue("EUR", 5.37), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 12th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-08-10"), hasShares(0.09), //
+                        hasDate("2021-08-10T00:00"), hasShares(0.09), //
                         hasSource("Fondabrechnung08.txt"), hasNote("Auftrags-Nr. 2569273184 | Wiederanlage"), //
                         hasAmount("EUR", 2.43), hasGrossValue("EUR", 2.43), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -1095,14 +1095,14 @@ public class FILFondbankPDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2018-10-10"), hasShares(4.633), //
+                        hasDate("2018-10-10T00:00"), hasShares(4.633), //
                         hasSource("Fondabrechnung09.txt"), hasNote("Auftrags-Nr. 2526343587"), //
                         hasAmount("EUR", 897.60), hasGrossValue("EUR", 921.60), //
                         hasTaxes("EUR", 21.15 + 1.16 + 1.69), hasFees("EUR", 0.00))));
 
         // check 2st buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2018-10-10"), hasShares(22.211), //
+                        hasDate("2018-10-10T00:00"), hasShares(22.211), //
                         hasSource("Fondabrechnung09.txt"), hasNote("Auftrags-Nr. 2526343590"), //
                         hasAmount("EUR", 637.32), hasGrossValue("EUR", 650.26), //
                         hasForexGrossValue("USD", 755.62), //
@@ -1110,21 +1110,21 @@ public class FILFondbankPDFExtractorTest
 
         // check 3rd buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2018-10-11"), hasShares(3.772), //
+                        hasDate("2018-10-11T00:00"), hasShares(3.772), //
                         hasSource("Fondabrechnung09.txt"), hasNote("Auftrags-Nr. 2526343592"), //
                         hasAmount("EUR", 880.19), hasGrossValue("EUR", 888.53), //
                         hasTaxes("EUR", 7.35 + 0.40 + 0.59), hasFees("EUR", 0.00))));
 
         // check 4th buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2018-10-10"), hasShares(6.367), //
+                        hasDate("2018-10-10T00:00"), hasShares(6.367), //
                         hasSource("Fondabrechnung09.txt"), hasNote("Auftrags-Nr. 2526343593"), //
                         hasAmount("EUR", 807.73), hasGrossValue("EUR", 816.89), //
                         hasTaxes("EUR", 8.07 + 0.44 + 0.65), hasFees("EUR", 0.00))));
 
         // check 5th buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2018-10-10"), hasShares(29.419), //
+                        hasDate("2018-10-10T00:00"), hasShares(29.419), //
                         hasSource("Fondabrechnung09.txt"), hasNote("Auftrags-Nr. 2526343595"), //
                         hasAmount("EUR", 749.75), hasGrossValue("EUR", 783.40), //
                         hasTaxes("EUR", 29.65 + 1.63 + 2.37), hasFees("EUR", 0.00))));
@@ -1182,35 +1182,35 @@ public class FILFondbankPDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2018-10-10"), hasShares(4.633), //
+                        hasDate("2018-10-10T00:00"), hasShares(4.633), //
                         hasSource("Fondabrechnung09.txt"), hasNote("Auftrags-Nr. 2526343587"), //
                         hasAmount("EUR", 897.60), hasGrossValue("EUR", 921.60), //
                         hasTaxes("EUR", 21.15 + 1.16 + 1.69), hasFees("EUR", 0.00))));
 
         // check 2st buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2018-10-10"), hasShares(22.211), //
+                        hasDate("2018-10-10T00:00"), hasShares(22.211), //
                         hasSource("Fondabrechnung09.txt"), hasNote("Auftrags-Nr. 2526343590"), //
                         hasAmount("EUR", 637.32), hasGrossValue("EUR", 650.26), //
                         hasTaxes("EUR", 11.40 + 0.63 + 0.91), hasFees("EUR", 0.00))));
 
         // check 3rd buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2018-10-11"), hasShares(3.772), //
+                        hasDate("2018-10-11T00:00"), hasShares(3.772), //
                         hasSource("Fondabrechnung09.txt"), hasNote("Auftrags-Nr. 2526343592"), //
                         hasAmount("EUR", 880.19), hasGrossValue("EUR", 888.53), //
                         hasTaxes("EUR", 7.35 + 0.40 + 0.59), hasFees("EUR", 0.00))));
 
         // check 4th buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2018-10-10"), hasShares(6.367), //
+                        hasDate("2018-10-10T00:00"), hasShares(6.367), //
                         hasSource("Fondabrechnung09.txt"), hasNote("Auftrags-Nr. 2526343593"), //
                         hasAmount("EUR", 807.73), hasGrossValue("EUR", 816.89), //
                         hasTaxes("EUR", 8.07 + 0.44 + 0.65), hasFees("EUR", 0.00))));
 
         // check 5th buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2018-10-10"), hasShares(29.419), //
+                        hasDate("2018-10-10T00:00"), hasShares(29.419), //
                         hasSource("Fondabrechnung09.txt"), hasNote("Auftrags-Nr. 2526343595"), //
                         hasAmount("EUR", 749.75), hasGrossValue("EUR", 783.40), //
                         hasTaxes("EUR", 29.65 + 1.63 + 2.37), hasFees("EUR", 0.00))));
@@ -1255,21 +1255,21 @@ public class FILFondbankPDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2018-09-07"), hasShares(53.781), //
+                        hasDate("2018-09-07T00:00"), hasShares(53.781), //
                         hasSource("Fondabrechnung10.txt"), hasNote("Auftrags-Nr. 2525653390"), //
                         hasAmount("EUR", 883.62), hasGrossValue("EUR", 883.62), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 2st buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2018-09-07"), hasShares(43.326), //
+                        hasDate("2018-09-07T00:00"), hasShares(43.326), //
                         hasSource("Fondabrechnung10.txt"), hasNote("Auftrags-Nr. 2525653392"), //
                         hasAmount("EUR", 776.84), hasGrossValue("EUR", 776.84), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 3rd buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2018-09-07"), hasShares(49.436), //
+                        hasDate("2018-09-07T00:00"), hasShares(49.436), //
                         hasSource("Fondabrechnung10.txt"), hasNote("Auftrags-Nr. 2525653393"), //
                         hasAmount("EUR", 694.58), hasGrossValue("EUR", 694.58), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -1356,7 +1356,7 @@ public class FILFondbankPDFExtractorTest
 
         // check 1st security buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2019-07-01"), hasShares(0.004), //
+                        hasDate("2019-07-01T00:00"), hasShares(0.004), //
                         hasSource("Fondabrechnung11.txt"), hasNote("Auftrags-Nr. 2538422391 | Entgeltbelastung"), //
                         hasAmount("EUR", 0.43), hasGrossValue("EUR", 0.43), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -1372,7 +1372,7 @@ public class FILFondbankPDFExtractorTest
 
         // check 2st security buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2019-07-01"), hasShares(0.003), //
+                        hasDate("2019-07-01T00:00"), hasShares(0.003), //
                         hasSource("Fondabrechnung11.txt"), hasNote("Auftrags-Nr. 2538422391 | Entgeltbelastung"), //
                         hasAmount("EUR", 0.09), hasGrossValue("EUR", 0.09), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -1388,7 +1388,7 @@ public class FILFondbankPDFExtractorTest
 
         // check 3rd security buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2019-07-01"), hasShares(0.002), //
+                        hasDate("2019-07-01T00:00"), hasShares(0.002), //
                         hasSource("Fondabrechnung11.txt"), hasNote("Auftrags-Nr. 2538422391 | Entgeltbelastung"), //
                         hasAmount("EUR", 0.10), hasGrossValue("EUR", 0.10), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -1404,7 +1404,7 @@ public class FILFondbankPDFExtractorTest
 
         // check 4th security buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2019-07-01"), hasShares(0.001), //
+                        hasDate("2019-07-01T00:00"), hasShares(0.001), //
                         hasSource("Fondabrechnung11.txt"), hasNote("Auftrags-Nr. 2538422391 | Entgeltbelastung"), //
                         hasAmount("EUR", 0.08), hasGrossValue("EUR", 0.08), //
                         hasForexGrossValue("USD", 0.09), //
@@ -1422,7 +1422,7 @@ public class FILFondbankPDFExtractorTest
 
         // check 5th security buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2019-07-01"), hasShares(0.043), //
+                        hasDate("2019-07-01T00:00"), hasShares(0.043), //
                         hasSource("Fondabrechnung11.txt"), hasNote("Auftrags-Nr. 2538422391 | Entgeltbelastung"), //
                         hasAmount("EUR", 0.43), hasGrossValue("EUR", 0.43), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -1438,7 +1438,7 @@ public class FILFondbankPDFExtractorTest
 
         // check 6th security buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2019-07-01"), hasShares(0.025), //
+                        hasDate("2019-07-01T00:00"), hasShares(0.025), //
                         hasSource("Fondabrechnung11.txt"), hasNote("Auftrags-Nr. 2538422391 | Entgeltbelastung"), //
                         hasAmount("EUR", 0.26), hasGrossValue("EUR", 0.26), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -1454,7 +1454,7 @@ public class FILFondbankPDFExtractorTest
 
         // check 7th security buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2019-07-01"), hasShares(0.006), //
+                        hasDate("2019-07-01T00:00"), hasShares(0.006), //
                         hasSource("Fondabrechnung11.txt"), hasNote("Auftrags-Nr. 2538422391 | Entgeltbelastung"), //
                         hasAmount("EUR", 0.15), hasGrossValue("EUR", 0.15), //
                         hasForexGrossValue("USD", 0.17), //
@@ -1472,7 +1472,7 @@ public class FILFondbankPDFExtractorTest
 
         // check 8th security buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2019-07-01"), hasShares(0.006), //
+                        hasDate("2019-07-01T00:00"), hasShares(0.006), //
                         hasSource("Fondabrechnung11.txt"), hasNote("Auftrags-Nr. 2538422391 | Entgeltbelastung"), //
                         hasAmount("EUR", 0.17), hasGrossValue("EUR", 0.17), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -1488,7 +1488,7 @@ public class FILFondbankPDFExtractorTest
 
         // check 9th security buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2019-07-02"), hasShares(0.002), //
+                        hasDate("2019-07-02T00:00"), hasShares(0.002), //
                         hasSource("Fondabrechnung11.txt"), hasNote("Auftrags-Nr. 2538422391 | Entgeltbelastung"), //
                         hasAmount("EUR", 0.05), hasGrossValue("EUR", 0.05), //
                         hasForexGrossValue("USD", 0.06), //
@@ -1506,7 +1506,7 @@ public class FILFondbankPDFExtractorTest
 
         // check 10th security buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2019-07-02"), hasShares(0.001), //
+                        hasDate("2019-07-02T00:00"), hasShares(0.001), //
                         hasSource("Fondabrechnung11.txt"), hasNote("Auftrags-Nr. 2538422391 | Entgeltbelastung"), //
                         hasAmount("EUR", 0.11), hasGrossValue("EUR", 0.11), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -1601,7 +1601,7 @@ public class FILFondbankPDFExtractorTest
 
         // check 1st security buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2019-07-01"), hasShares(0.004), //
+                        hasDate("2019-07-01T00:00"), hasShares(0.004), //
                         hasSource("Fondabrechnung11.txt"), hasNote("Auftrags-Nr. 2538422391 | Entgeltbelastung"), //
                         hasAmount("EUR", 0.43), hasGrossValue("EUR", 0.43), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -1617,7 +1617,7 @@ public class FILFondbankPDFExtractorTest
 
         // check 2st security buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2019-07-01"), hasShares(0.003), //
+                        hasDate("2019-07-01T00:00"), hasShares(0.003), //
                         hasSource("Fondabrechnung11.txt"), hasNote("Auftrags-Nr. 2538422391 | Entgeltbelastung"), //
                         hasAmount("EUR", 0.09), hasGrossValue("EUR", 0.09), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -1633,7 +1633,7 @@ public class FILFondbankPDFExtractorTest
 
         // check 3rd security buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2019-07-01"), hasShares(0.002), //
+                        hasDate("2019-07-01T00:00"), hasShares(0.002), //
                         hasSource("Fondabrechnung11.txt"), hasNote("Auftrags-Nr. 2538422391 | Entgeltbelastung"), //
                         hasAmount("EUR", 0.10), hasGrossValue("EUR", 0.10), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -1649,7 +1649,7 @@ public class FILFondbankPDFExtractorTest
 
         // check 4th security buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2019-07-01"), hasShares(0.001), //
+                        hasDate("2019-07-01T00:00"), hasShares(0.001), //
                         hasSource("Fondabrechnung11.txt"), hasNote("Auftrags-Nr. 2538422391 | Entgeltbelastung"), //
                         hasAmount("EUR", 0.08), hasGrossValue("EUR", 0.08), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -1665,7 +1665,7 @@ public class FILFondbankPDFExtractorTest
 
         // check 5th security buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2019-07-01"), hasShares(0.043), //
+                        hasDate("2019-07-01T00:00"), hasShares(0.043), //
                         hasSource("Fondabrechnung11.txt"), hasNote("Auftrags-Nr. 2538422391 | Entgeltbelastung"), //
                         hasAmount("EUR", 0.43), hasGrossValue("EUR", 0.43), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -1681,7 +1681,7 @@ public class FILFondbankPDFExtractorTest
 
         // check 6th security buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2019-07-01"), hasShares(0.025), //
+                        hasDate("2019-07-01T00:00"), hasShares(0.025), //
                         hasSource("Fondabrechnung11.txt"), hasNote("Auftrags-Nr. 2538422391 | Entgeltbelastung"), //
                         hasAmount("EUR", 0.26), hasGrossValue("EUR", 0.26), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -1697,7 +1697,7 @@ public class FILFondbankPDFExtractorTest
 
         // check 7th security buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2019-07-01"), hasShares(0.006), //
+                        hasDate("2019-07-01T00:00"), hasShares(0.006), //
                         hasSource("Fondabrechnung11.txt"), hasNote("Auftrags-Nr. 2538422391 | Entgeltbelastung"), //
                         hasAmount("EUR", 0.15), hasGrossValue("EUR", 0.15), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -1713,7 +1713,7 @@ public class FILFondbankPDFExtractorTest
 
         // check 8th security buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2019-07-01"), hasShares(0.006), //
+                        hasDate("2019-07-01T00:00"), hasShares(0.006), //
                         hasSource("Fondabrechnung11.txt"), hasNote("Auftrags-Nr. 2538422391 | Entgeltbelastung"), //
                         hasAmount("EUR", 0.17), hasGrossValue("EUR", 0.17), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -1729,7 +1729,7 @@ public class FILFondbankPDFExtractorTest
 
         // check 9th security buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2019-07-02"), hasShares(0.002), //
+                        hasDate("2019-07-02T00:00"), hasShares(0.002), //
                         hasSource("Fondabrechnung11.txt"), hasNote("Auftrags-Nr. 2538422391 | Entgeltbelastung"), //
                         hasAmount("EUR", 0.05), hasGrossValue("EUR", 0.05), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -1745,7 +1745,7 @@ public class FILFondbankPDFExtractorTest
 
         // check 10th security buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2019-07-02"), hasShares(0.001), //
+                        hasDate("2019-07-02T00:00"), hasShares(0.001), //
                         hasSource("Fondabrechnung11.txt"), hasNote("Auftrags-Nr. 2538422391 | Entgeltbelastung"), //
                         hasAmount("EUR", 0.11), hasGrossValue("EUR", 0.11), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -1787,14 +1787,14 @@ public class FILFondbankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2019-01-02"), hasShares(0.466), //
+                        hasDate("2019-01-02T00:00"), hasShares(0.466), //
                         hasSource("Fondabrechnung12.txt"), hasNote("Auftrags-Nr. 2530389235 | Splitkauf"), //
                         hasAmount("EUR", 20.00), hasGrossValue("EUR", 19.50), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.50))));
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2019-01-02"), hasShares(0.597), //
+                        hasDate("2019-01-02T00:00"), hasShares(0.597), //
                         hasSource("Fondabrechnung12.txt"), hasNote("Auftrags-Nr. 2531092602 | Entgeltbelastung"), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 25.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -1860,7 +1860,7 @@ public class FILFondbankPDFExtractorTest
 
         // check 1st security buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2016-01-04"), hasShares(1.026), //
+                        hasDate("2016-01-04T00:00"), hasShares(1.026), //
                         hasSource("Fondabrechnung13.txt"), hasNote("Auftrags-Nr. 2490116288 | Splitkauf"), //
                         hasAmount("EUR", 20.00), hasGrossValue("EUR", 19.51), //
                         hasForexGrossValue("USD", 19.51 * 1.070478), //
@@ -1868,35 +1868,35 @@ public class FILFondbankPDFExtractorTest
 
         // check 2nd security buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2016-01-04"), hasShares(0.474), //
+                        hasDate("2016-01-04T00:00"), hasShares(0.474), //
                         hasSource("Fondabrechnung13.txt"), hasNote("Auftrags-Nr. 2490116288 | Splitkauf"), //
                         hasAmount("EUR", 20.00), hasGrossValue("EUR", 19.53), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.47))));
 
         // check 3rd security buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2016-01-04"), hasShares(1.449), //
+                        hasDate("2016-01-04T00:00"), hasShares(1.449), //
                         hasSource("Fondabrechnung13.txt"), hasNote("Auftrags-Nr. 2490116288 | Splitkauf"), //
                         hasAmount("EUR", 20.00), hasGrossValue("EUR", 19.49), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.51))));
 
         // check 4th security buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2016-01-04"), hasShares(1.272), //
+                        hasDate("2016-01-04T00:00"), hasShares(1.272), //
                         hasSource("Fondabrechnung13.txt"), hasNote("Auftrags-Nr. 2490116288 | Splitkauf"), //
                         hasAmount("EUR", 20.00), hasGrossValue("EUR", 19.46), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.54))));
 
         // check 5th security buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2016-01-04"), hasShares(0.899), //
+                        hasDate("2016-01-04T00:00"), hasShares(0.899), //
                         hasSource("Fondabrechnung13.txt"), hasNote("Auftrags-Nr. 2490116288 | Splitkauf"), //
                         hasAmount("EUR", 20.00), hasGrossValue("EUR", 19.49), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.51))));
 
         // check 6th security buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2016-01-04"), hasShares(1.634), //
+                        hasDate("2016-01-04T00:00"), hasShares(1.634), //
                         hasSource("Fondabrechnung13.txt"), hasNote("Auftrags-Nr. 2490658604 | Entgeltbelastung"), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 25.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -1963,42 +1963,42 @@ public class FILFondbankPDFExtractorTest
 
         // check 1st security buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2016-01-04"), hasShares(1.026), //
+                        hasDate("2016-01-04T00:00"), hasShares(1.026), //
                         hasSource("Fondabrechnung13.txt"), hasNote("Auftrags-Nr. 2490116288 | Splitkauf"), //
                         hasAmount("EUR", 20.00), hasGrossValue("EUR", 19.51), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.49))));
 
         // check 2nd security buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2016-01-04"), hasShares(0.474), //
+                        hasDate("2016-01-04T00:00"), hasShares(0.474), //
                         hasSource("Fondabrechnung13.txt"), hasNote("Auftrags-Nr. 2490116288 | Splitkauf"), //
                         hasAmount("EUR", 20.00), hasGrossValue("EUR", 19.53), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.47))));
 
         // check 3rd security buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2016-01-04"), hasShares(1.449), //
+                        hasDate("2016-01-04T00:00"), hasShares(1.449), //
                         hasSource("Fondabrechnung13.txt"), hasNote("Auftrags-Nr. 2490116288 | Splitkauf"), //
                         hasAmount("EUR", 20.00), hasGrossValue("EUR", 19.49), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.51))));
 
         // check 4th security buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2016-01-04"), hasShares(1.272), //
+                        hasDate("2016-01-04T00:00"), hasShares(1.272), //
                         hasSource("Fondabrechnung13.txt"), hasNote("Auftrags-Nr. 2490116288 | Splitkauf"), //
                         hasAmount("EUR", 20.00), hasGrossValue("EUR", 19.46), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.54))));
 
         // check 5th security buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2016-01-04"), hasShares(0.899), //
+                        hasDate("2016-01-04T00:00"), hasShares(0.899), //
                         hasSource("Fondabrechnung13.txt"), hasNote("Auftrags-Nr. 2490116288 | Splitkauf"), //
                         hasAmount("EUR", 20.00), hasGrossValue("EUR", 19.49), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.51))));
 
         // check 6th security buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2016-01-04"), hasShares(1.634), //
+                        hasDate("2016-01-04T00:00"), hasShares(1.634), //
                         hasSource("Fondabrechnung13.txt"), hasNote("Auftrags-Nr. 2490658604 | Entgeltbelastung"), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 25.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -2110,7 +2110,7 @@ public class FILFondbankPDFExtractorTest
 
         // check dividende transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-07-08T00:00"), hasExDate("2022-07-01T00:00"), hasShares(427.272), //
+                        hasDate("2022-07-08"), hasExDate("2022-07-01"), hasShares(427.272), //
                         hasSource("Dividende03.txt"), hasNote("Turnus monatlich"), //
                         hasAmount("EUR", 15.46), hasGrossValue("EUR", 19.23), //
                         hasTaxes("EUR", 3.29 + 0.18 + 0.30), hasFees("EUR", 0.00))));

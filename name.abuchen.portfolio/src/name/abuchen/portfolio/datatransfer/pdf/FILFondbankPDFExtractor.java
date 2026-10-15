@@ -4,7 +4,6 @@ import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGros
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
-import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -40,9 +39,9 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
         final var type = new DocumentType("(Fondsabrechnung|Steuerliche Informationen \\(Einzeltransaktion\\))");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block(
+        var firstRelevantLine = new Block(
                         "^(Splittkauf|Splitkauf|Wiederanlage|Kauf|Verkauf|Steuerliche Informationen \\(Einzeltransaktion\\)).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
@@ -58,7 +57,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                             if ("Verkauf".equals(v.get("type")))
                             {
                                 t.setType(PortfolioTransaction.Type.SELL);
-                                type.getCurrentContext().putBoolean("sale", true);
+                                v.getTransactionContext().putBoolean("sale", true);
                             }
                         })
 
@@ -69,7 +68,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                             if ("Gesamtverkauf".equals(v.get("type")))
                             {
                                 t.setType(PortfolioTransaction.Type.SELL);
-                                type.getCurrentContext().putBoolean("sale", true);
+                                v.getTransactionContext().putBoolean("sale", true);
                             }
                         })
 
@@ -123,7 +122,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("time").optional() //
                         .match("^Handelsuhrzeit (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})\\s*$") //
-                        .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
+                        .assign((t, v) -> v.getTransactionContext().putString("time", v.get("time")))
 
                         .oneOf( //
                                         // @formatter:off
@@ -133,8 +132,8 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("date") //
                                                         .match("^.*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\.,\\d]+\\s*$") //
                                                         .assign((t, v) -> {
-                                                            if (type.getCurrentContext().get("time") != null)
-                                                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                                                            if (v.getTransactionContext().getString("time") != null)
+                                                                t.setDate(asDate(v.get("date"), v.getTransactionContext().getString("time")));
                                                             else
                                                                 t.setDate(asDate(v.get("date")));
                                                         }),
@@ -178,11 +177,11 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^[\\d]+ .* \\/ .* (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+\\s*$") //
                                                         .match("^.* (?<fxGross>[\\.,\\d]+) (?<termCurrency>[\\w]{3}) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+\\s*$") //
                                                         .assign((t, v) -> {
-                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
-                                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
+                                                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }),
@@ -197,11 +196,11 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^[\\.,\\d]+ (?<termCurrency>[\\w]{3})\\s*$") //
                                                         .match("^Devisenkurs (?<exchangeRate>[\\.,\\d]+)\\s*$") //
                                                         .assign((t, v) -> {
-                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                                                            Money fxGross = rate.convert(asCurrencyCode(v.get("termCurrency")), gross);
+                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            var fxGross = rate.convert(asCurrencyCode(v.get("termCurrency")), gross);
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }))
@@ -237,23 +236,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
 
                         .conclude(ExtractorUtils.fixGrossValueBuySell())
 
-                        .wrap(t -> {
-                            // @formatter:off
-                            // If we have a sell transaction, we set a flag.
-                            // So that in the case of a possible charge by sale, (Entgeltbelastung),
-                            // taxes are not included if they are in the block.
-                            // Otherwise the flag will be removed.
-                            // @formatter:on
-                            type.getCurrentContext().remove("sale");
-
-                            // @formatter:off
-                            // Remove the trade time so that a following transaction
-                            // without its own "Handelsuhrzeit" does not inherit this one.
-                            // @formatter:on
-                            type.getCurrentContext().remove("time");
-
-                            return new BuySellEntryItem(t);
-                        });
+                        .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -264,9 +247,9 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
         final var type = new DocumentType("Entgeltbelastung");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^Entgeltbelastung .*");
+        var firstRelevantLine = new Block("^Entgeltbelastung .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -277,7 +260,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                         // We have a sell transaction, we set a flag.
                         .section("type").optional() //
                         .match("^(?<type>Entgeltbelastung) .*$") //
-                        .assign((t, v) -> type.getCurrentContext().putBoolean("sale", true))
+                        .assign((t, v) -> v.getTransactionContext().putBoolean("sale", true))
 
                         .oneOf( //
                                         // @formatter:off
@@ -287,7 +270,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "currency", "wkn", "isin") //
                                                         .match("^(?<note>Entgeltbelastung) (?<name>.*) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ (?<currency>[\\w]{3}) \\-[\\.,\\d]+\\s*$") //
-                                                        .match("^[\\d]+ (?<wkn>[A-Z0-9]{6}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*$")
+                                                        .match("^[\\d]+ (?<wkn>[A-Z0-9]{6}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Entgeltbelastung Templeton Growth (Euro) Fund 25,00 EUR 15,3000 EUR -1,634
@@ -343,11 +326,11 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                         .match("^Entgeltbelastung .* (?<gross>[\\.,\\d]+) (?<baseCurrency>[\\w]{3}) [\\.,\\d]+ [\\w]{3} \\-[\\.,\\d]+\\s*$") //
                         .match("^[\\d]+ .* \\/ .* (?<exchangeRate>[\\.,\\d]+) (?<termCurrency>[\\w]{3}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+\\s*$") //
                         .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
+                            var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
+                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
@@ -358,7 +341,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note1", "note2").optional() //
                         .match("^(?<note1>Entgeltbelastung) .* (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+ (?<fxCurrency>[\\w]{3}) \\-[\\.,\\d]+\\s*$") //
-                        .match("^(?<note2>[\\d]+) .* \\/ .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+\\s*$")
+                        .match("^(?<note2>[\\d]+) .* \\/ .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+\\s*$") //
                         .assign((t, v) -> t.setNote("Auftrags-Nr. " + v.get("note2") + " | " + v.get("note1")))
 
                         .wrap(BuySellEntryItem::new);
@@ -370,9 +353,9 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
 
     private void addFeeForAccountBlock(DocumentType type)
     {
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^Entgeltbelastung .*$");
+        var firstRelevantLine = new Block("^Entgeltbelastung .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -443,11 +426,11 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                         .match("^Entgeltbelastung .* (?<gross>[\\.,\\d]+) (?<baseCurrency>[\\w]{3}) [\\.,\\d]+ [\\w]{3} \\-[\\.,\\d]+\\s*$") //
                         .match("^[\\d]+ .* \\/ .* (?<exchangeRate>[\\.,\\d]+) (?<termCurrency>[\\w]{3}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+\\s*$") //
                         .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
+                            var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
+                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
@@ -490,9 +473,9 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
         final var type = new DocumentType("(Aussch.ttungsanzeige|Datum der Aussch.ttung)");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^Fondsname .*$");
+        var firstRelevantLine = new Block("^Fondsname .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -508,7 +491,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                         .section("name", "wkn", "isin", "currency") //
                         .match("^Fondsname (?<name>.*) Datum der Aussch.ttung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}\\s*$") //
                         .match("^WKN \\/ ISIN (?<wkn>[A-Z0-9]{6}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*$") //
-                        .match("^Aussch.ttung( vor Teilfreistellung)? ([\\s]+)?[\\.,\\d]+ [\\w]{3} [\\.,\\d]+ (?<currency>[\\w]{3})") //
+                        .match("^Aussch.ttung( vor Teilfreistellung)? ([\\s]+)?[\\.,\\d]+ [\\w]{3} [\\.,\\d]+ (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
@@ -574,7 +557,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency").optional() //
                         .match("^Kapitalertrags(s)?teuer ([\\s]+)?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})\\s*$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("sale"))
+                            if (!v.getTransactionContext().getBoolean("sale"))
                                 processTaxEntries(t, v, type);
                         })
 
@@ -585,7 +568,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency").optional() //
                         .match("^(Abgef.hrte|abgef.hrte) Kapitalertrags(s)?teuer ([\\s]+)?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})\\s*$") //
                         .assign((t, v) -> {
-                            if (type.getCurrentContext().getBoolean("sale"))
+                            if (v.getTransactionContext().getBoolean("sale"))
                                 processTaxEntries(t, v, type);
                         })
 
@@ -595,7 +578,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency").optional() //
                         .match("^Solidarit.tszuschlag ([\\s]+)?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})\\s*$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("sale"))
+                            if (!v.getTransactionContext().getBoolean("sale"))
                                 processTaxEntries(t, v, type);
                         })
 
@@ -606,7 +589,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency").optional() //
                         .match("^(Abgef.hrter|abgef.hrter) Solidarit.tszuschlag ([\\s]+)?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})\\s*$") //
                         .assign((t, v) -> {
-                            if (type.getCurrentContext().getBoolean("sale"))
+                            if (v.getTransactionContext().getBoolean("sale"))
                                 processTaxEntries(t, v, type);
                         })
 
@@ -616,7 +599,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency").optional() //
                         .match("^Kirchensteuer ([\\s]+)?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})\\s*$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("sale"))
+                            if (!v.getTransactionContext().getBoolean("sale"))
                                 processTaxEntries(t, v, type);
                         })
 
@@ -627,7 +610,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency").optional() //
                         .match("^(Abgef.hrte|abgef.hrte) Kirchensteuer ([\\s]+)?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})\\s*$") //
                         .assign((t, v) -> {
-                            if (type.getCurrentContext().getBoolean("sale"))
+                            if (v.getTransactionContext().getBoolean("sale"))
                                 processTaxEntries(t, v, type);
                         });
     }
