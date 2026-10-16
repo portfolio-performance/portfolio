@@ -26,7 +26,7 @@ final class InstrumentsCommand
                     .optionalProperty("wkn", Schema.string("WKN, if set."))
                     .optionalProperty("tickerSymbol", Schema.string("Ticker symbol, if set."))
                     .optionalProperty("note", Schema.string("Note, if set."))
-                    .property("retired", Schema.bool("Whether the instrument is retired (deactivated in the app)."))
+                    .property("retired", Schema.bool("Whether the instrument is retired."))
                     .property("attributes", Schema.array("User-defined attributes that have a value.", ATTRIBUTE));
 
     static final CommandSpec SPEC = new CommandSpec("instruments",

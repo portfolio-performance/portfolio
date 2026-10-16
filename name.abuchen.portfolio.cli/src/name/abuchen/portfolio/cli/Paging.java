@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.model.Client;
 
@@ -16,6 +17,8 @@ record Paging(int limit, long offset)
 {
     static final int DEFAULT_LIMIT = 200;
     static final int MAX_LIMIT = 1000;
+
+    private static final Pattern INTEGER = Pattern.compile("-?[0-9]+");
 
     static final OptionSpec LIMIT = OptionSpec.integer("limit", "n", "Maximum number of items to return.",
                     DEFAULT_LIMIT, 1, (long) MAX_LIMIT);
@@ -48,14 +51,18 @@ record Paging(int limit, long offset)
         if (raw.isEmpty())
             return (Long) option.defaultValue();
 
+        var text = raw.get();
+        if (!INTEGER.matcher(text).matches())
+            throw invalid(option, text);
+
         long value;
         try
         {
-            value = Long.parseLong(raw.get());
+            value = Long.parseLong(text);
         }
         catch (NumberFormatException e)
         {
-            throw invalid(option, raw.get());
+            throw invalid(option, text);
         }
 
         if (value < option.minimum() || (option.maximum() != null && value > option.maximum()))

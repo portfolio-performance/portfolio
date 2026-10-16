@@ -193,7 +193,8 @@ public class ListPagingTest
         var invalid = List.of(List.of("limit", "0"), List.of("limit", "-1"), List.of("limit", "abc"),
                         List.of("limit", "1.5"), List.of("limit", "1001"), List.of("limit", ""),
                         List.of("offset", "-1"), List.of("offset", "abc"), List.of("offset", "1.5"),
-                        List.of("offset", ""), List.of("offset", "99999999999999999999"));
+                        List.of("offset", ""), List.of("offset", "99999999999999999999"), List.of("limit", "+5"),
+                        List.of("offset", "+1"), List.of("limit", "\u0665"));
 
         for (var option : invalid)
         {

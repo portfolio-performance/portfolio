@@ -280,6 +280,24 @@ public class InstrumentAttributesTest
     }
 
     @Test
+    public void decimalsAreWrittenAsPlainNumbersNeverInScientificNotation() throws IOException
+    {
+        var quote = addType("q", "Quote", Long.class, QuoteConverter.class);
+        var shares = addType("s", "Shares", Long.class, ShareConverter.class);
+        var zero = addType("z", "Zero", Long.class, ShareConverter.class);
+        security.getAttributes().put(quote, 1L);
+        security.getAttributes().put(shares, 12L);
+        security.getAttributes().put(zero, 0L);
+
+        var run = CliRun.run("instruments", "--file", ClientFiles.xml(folder.getRoot().toPath(), client).getPath());
+
+        assertThat(run.stdout.contains("\"value\":0.00000001"), is(true));
+        assertThat(run.stdout.contains("\"value\":0.00000012"), is(true));
+        assertThat(run.stdout.contains("\"value\":0.00000000"), is(true));
+        assertThat(run.stdout.contains("E-"), is(false));
+    }
+
+    @Test
     public void attributeValuesConformToTheDescribedSchema() throws IOException
     {
         var type = addType("custom-string", "Sector", String.class, StringConverter.class);

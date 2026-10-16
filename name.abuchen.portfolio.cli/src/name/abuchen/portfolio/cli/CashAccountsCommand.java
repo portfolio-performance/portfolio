@@ -12,7 +12,7 @@ final class CashAccountsCommand
                     .property("name", Schema.string("Account name; empty if the file has none."))
                     .property("currencyCode", Schema.string("ISO currency code of the account."))
                     .optionalProperty("note", Schema.string("Note, if set."))
-                    .property("retired", Schema.bool("Whether the account is retired (deactivated in the app)."));
+                    .property("retired", Schema.bool("Whether the account is retired."));
 
     static final CommandSpec SPEC = new CommandSpec("cash-accounts",
                     "Cash accounts: UUID, name, currency, note and retired flag, ordered by name then UUID.", true,
