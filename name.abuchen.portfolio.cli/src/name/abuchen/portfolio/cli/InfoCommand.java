@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.cli;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -24,13 +23,9 @@ final class InfoCommand
                     .property("pinnedUpstreamTag",
                                     Schema.string("Upstream release the bundled core is built from."));
 
-    private static final Schema META = Schema.object("Assumptions behind the response.")
-                    .property("fileVersion", Schema.integer("Version of the file as read."))
-                    .property("asOf", Schema.string("ISO date the command ran, from the clock."));
-
     static final CommandSpec SPEC = new CommandSpec("info",
                     "File version, supported version ceiling, format, base currency and entity counts.", true,
-                    List.of(), DATA, META, InfoCommand::execute);
+                    List.of(), DATA, ResponseMeta.SCHEMA, InfoCommand::execute);
 
     private InfoCommand()
     {
@@ -56,10 +51,6 @@ final class InfoCommand
         data.put("counts", counts);
         data.put("pinnedUpstreamTag", CoreVersion.PINNED_UPSTREAM_TAG);
 
-        var meta = new LinkedHashMap<String, Object>();
-        meta.put("fileVersion", client.getFileVersionAfterRead());
-        meta.put("asOf", LocalDate.now(context.clock()).toString());
-
-        return Response.of(data, meta);
+        return Response.of(data, ResponseMeta.of(context, client));
     }
 }

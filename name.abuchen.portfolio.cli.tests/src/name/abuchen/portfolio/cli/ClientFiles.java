@@ -58,6 +58,14 @@ final class ClientFiles
         return file;
     }
 
+    /** Writes the given client as plain XML. */
+    static File xml(Path folder, Client client) throws IOException
+    {
+        var file = folder.resolve("client.xml").toFile();
+        ClientFactory.saveAs(client, file, null, EnumSet.of(SaveFlag.XML));
+        return file;
+    }
+
     static File xml(Path folder) throws IOException
     {
         return write(folder, "client.xml", EnumSet.of(SaveFlag.XML));

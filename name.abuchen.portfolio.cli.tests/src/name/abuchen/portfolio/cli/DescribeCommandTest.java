@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -109,6 +110,54 @@ public class DescribeCommandTest
             for (var option : command.getAsJsonObject().getAsJsonArray("options"))
                 assertThat(option.getAsJsonObject().get("name").getAsString().toLowerCase(),
                                 not(containsString("password")));
+    }
+
+    @Test
+    public void describePublishesOptionTypesDefaultsAndRanges()
+    {
+        var data = data(CliRun.run("describe"));
+        var options = command(data, "instruments").getAsJsonArray("options");
+
+        var byName = new HashMap<String, JsonObject>();
+        options.forEach(o -> byName.put(o.getAsJsonObject().get("name").getAsString(), o.getAsJsonObject()));
+
+        var limit = byName.get("limit");
+        assertThat(limit.get("valueName").getAsString().isBlank(), is(false));
+        assertThat(limit.get("type").getAsString(), is("integer"));
+        assertThat(limit.get("default").getAsInt(), is(200));
+        assertThat(limit.get("minimum").getAsInt(), is(1));
+        assertThat(limit.get("maximum").getAsInt(), is(1000));
+
+        var offset = byName.get("offset");
+        assertThat(offset.get("type").getAsString(), is("integer"));
+        assertThat(offset.get("default").getAsInt(), is(0));
+        assertThat(offset.get("minimum").getAsInt(), is(0));
+        assertThat(offset.has("maximum"), is(false));
+
+        var file = byName.get("file");
+        assertThat(file.keySet(), is(Set.of("name", "valueName", "description")));
+    }
+
+    @Test
+    public void describePublishesTheListShapeAndTheAttributeEncoding()
+    {
+        var data = data(CliRun.run("describe"));
+        var response = command(data, "instruments").getAsJsonObject("response");
+
+        var dataSchema = response.getAsJsonObject("data").getAsJsonObject("properties");
+        assertThat(dataSchema.keySet(), is(Set.of("items", "total", "nextOffset")));
+        assertThat(response.getAsJsonObject("data").getAsJsonArray("required").toString(),
+                        is("[\"items\",\"total\"]"));
+
+        var meta = response.getAsJsonObject("meta").getAsJsonObject("properties");
+        assertThat(meta.keySet(), is(Set.of("fileVersion", "asOf", "limit", "offset")));
+
+        var attribute = dataSchema.getAsJsonObject("items").getAsJsonObject("items").getAsJsonObject("properties")
+                        .getAsJsonObject("attributes").getAsJsonObject("items").getAsJsonObject("properties");
+        assertThat(attribute.getAsJsonObject("type").getAsJsonArray("enum").toString(), is(
+                        "[\"string\",\"boolean\",\"date\",\"amount\",\"quote\",\"shares\",\"percent\",\"number\"]"));
+        assertThat(attribute.getAsJsonObject("value").getAsJsonArray("type").toString(),
+                        is("[\"string\",\"number\",\"boolean\"]"));
     }
 
     @Test

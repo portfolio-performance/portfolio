@@ -32,6 +32,18 @@ public class SchemaValidatorTest
     }
 
     @Test
+    public void acceptsAnyOfSeveralTypes()
+    {
+        var schema = JsonParser.parseString("{\"type\":[\"string\",\"number\",\"boolean\"]}").getAsJsonObject();
+
+        assertThat(SchemaValidator.validate(JsonParser.parseString("\"a\""), schema), is(empty()));
+        assertThat(SchemaValidator.validate(JsonParser.parseString("1.5"), schema), is(empty()));
+        assertThat(SchemaValidator.validate(JsonParser.parseString("true"), schema), is(empty()));
+        assertThat(SchemaValidator.validate(JsonParser.parseString("null"), schema), not(empty()));
+        assertThat(SchemaValidator.validate(JsonParser.parseString("[]"), schema), not(empty()));
+    }
+
+    @Test
     public void rejectsMissingUndeclaredAndMistypedMembers()
     {
         assertThat(validate("{}"), hasItem("$: missing required property 'a'"));

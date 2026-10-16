@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.cli;
 
-import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +46,16 @@ final class DescribeCommand
                                     .property("options", Schema.array("Options the command accepts.",
                                                     Schema.object(null).property("name", Schema.string(null))
                                                                     .property("valueName", Schema.string(null))
-                                                                    .property("description", Schema.string(null))))
+                                                                    .property("description", Schema.string(null))
+                                                                    .optionalProperty("type",
+                                                                                    Schema.string("Value type, if declared."))
+                                                                    .optionalProperty("default",
+                                                                                    Schema.oneOfTypes("Value used when the option is absent.",
+                                                                                                    "string", "number", "boolean"))
+                                                                    .optionalProperty("minimum",
+                                                                                    Schema.integer("Smallest accepted value."))
+                                                                    .optionalProperty("maximum",
+                                                                                    Schema.integer("Largest accepted value; absent if unbounded."))))
                                     .property("response", Schema.object("Schemas of the response envelope parts.")
                                                     .property("data", jsonSchema())
                                                     .property("meta", jsonSchema()))))
@@ -56,12 +64,9 @@ final class DescribeCommand
                                     .property("summary", Schema.string("What the operation does."))
                                     .property("input", jsonSchema())));
 
-    private static final Schema META = Schema.object("Assumptions behind the response.").property("asOf",
-                    Schema.string("ISO date the command ran, from the clock."));
-
     static final CommandSpec SPEC = new CommandSpec("describe",
                     "Commands, options, write operations, response schemas and known limits of this tool.", false,
-                    List.of(), SCHEMA, META, DescribeCommand::execute);
+                    List.of(), SCHEMA, ResponseMeta.AS_OF_SCHEMA, DescribeCommand::execute);
 
     private DescribeCommand()
     {
@@ -74,10 +79,7 @@ final class DescribeCommand
 
     private static Response execute(CommandContext context)
     {
-        var meta = new LinkedHashMap<String, Object>();
-        meta.put("asOf", LocalDate.now(context.clock()).toString());
-
-        return Response.of(render(Commands.ALL, Commands.OPERATIONS), meta);
+        return Response.of(render(Commands.ALL, Commands.OPERATIONS), ResponseMeta.asOf(context));
     }
 
     static Map<String, Object> render(List<CommandSpec> commands, List<OperationSpec> operations)
@@ -121,6 +123,14 @@ final class DescribeCommand
         json.put("name", option.name());
         json.put("valueName", option.valueName());
         json.put("description", option.description());
+        if (option.type() != null)
+            json.put("type", option.type());
+        if (option.defaultValue() != null)
+            json.put("default", option.defaultValue());
+        if (option.minimum() != null)
+            json.put("minimum", option.minimum());
+        if (option.maximum() != null)
+            json.put("maximum", option.maximum());
         return json;
     }
 

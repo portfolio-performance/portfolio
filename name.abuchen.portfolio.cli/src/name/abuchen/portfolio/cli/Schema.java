@@ -7,7 +7,7 @@ import java.util.Map;
 
 /**
  * A small JSON Schema subset (type, properties, required, items, enum,
- * nullable) used to declare response shapes and write-operation inputs. The
+ * nullable, multi-type values) used to declare response shapes and write-operation inputs. The
  * same declaration is rendered by <code>describe</code> and checked against
  * real output by the consistency test.
  */
@@ -21,10 +21,20 @@ final class Schema
     private List<String> enumValues;
     private boolean nullable;
     private boolean freeform;
+    private List<String> alternativeTypes;
+
     private Schema(String type, String description)
     {
         this.type = type;
         this.description = description;
+    }
+
+    /** A value that may be any of the given scalar types, e.g. string or number. */
+    static Schema oneOfTypes(String description, String... types)
+    {
+        var schema = new Schema(types[0], description);
+        schema.alternativeTypes = List.of(types);
+        return schema;
     }
 
     static Schema string(String description)
@@ -99,7 +109,7 @@ final class Schema
     Map<String, Object> toJson()
     {
         var json = new LinkedHashMap<String, Object>();
-        json.put("type", nullable ? List.of(type, "null") : type);
+        json.put("type", alternativeTypes != null ? alternativeTypes : nullable ? List.of(type, "null") : type);
         if (description != null)
             json.put("description", description);
         if (enumValues != null)

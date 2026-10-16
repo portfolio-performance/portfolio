@@ -34,6 +34,8 @@ public class DescribeConsistencyTest
         {
             case "info" -> List.of("info", "--file", sampleFile.toString());
             case "describe" -> List.of("describe");
+            case "instruments", "investment-accounts", "cash-accounts" ->
+                List.of(command, "--file", sampleFile.toString());
             default -> throw new AssertionError("Add sample arguments for command '" + command
                             + "' to DescribeConsistencyTest.sampleArguments");
         };
