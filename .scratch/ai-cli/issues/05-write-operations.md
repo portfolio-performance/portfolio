@@ -14,9 +14,10 @@ There is one write command: `pp-cli apply --input <file|->`, JSON only. It takes
 ### Operations and fields
 
 - `transaction.add | update | delete`: `type`, `date`, `amount`, `currency`, `shares`, `instrument`, accounts (cash account, investment account, or from/to for transfers), `units` (FEE, TAX, GROSS_VALUE), `note`, `source`, `exDate` (dividends only, requires an instrument, not after `date`), `targetAmount` (cross-currency cash transfers). `type` cannot change on update.
-- `instrument.add | update`: `name`, `currency`, `isin`, `ticker`, `wkn`, `note`, `retired`.
-- `cash-account.add | update`: `name`, `currency`, `note`, `retired`.
-- `investment-account.add | update`: `name`, `referenceAccount`, `note`, `retired`.
+- `instrument.add | update`: `name`, `currencyCode`, `isin`, `tickerSymbol`, `wkn`, `note`, `retired`.
+- `cash-account.add | update`: `name`, `currencyCode`, `note`, `retired`.
+- `investment-account.add | update`: `name`, `referenceCashAccount`, `note`, `retired`.
+- Field names match the read output (ticket 15), so an agent can send back what it read. (Renamed from `currency`, `ticker` and `referenceAccount` in the ticket 15 design session.)
 - `taxonomy.assign`: replaces the complete set of assignments of one instrument in one existing taxonomy.
 
 Out of v1: any write to prices (historical or latest; only the app edits them), deleting instruments or accounts (the core removal cascades into transactions), creating taxonomies or classifications, watchlists, investment plans, attributes, events, online feed settings, assigning cash accounts to taxonomies.

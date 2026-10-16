@@ -21,6 +21,7 @@ UUIDs are canonical in all output. List commands share pagination: `--limit` (de
 - [ ] All three commands return the documented fields for a fixture built with the shared JUnit builders
 - [ ] `--limit` and `--offset` page through results, and `total` and `nextOffset` are correct, with `nextOffset` absent on the last page
 - [ ] Ordering is stable across calls: name (case-insensitive, ordinal), then UUID
+- [ ] Null and blank optional strings are omitted; `name` and `retired` are always present, and `attributes` is always present (`[]` when empty)
 - [ ] Invalid `--limit`/`--offset` values give the `invalid-option-value` usage error; an offset past the end gives an empty page
 - [ ] Attributes use the typed encoding below; unsupported, orphaned and mismatched values are skipped without failing the command
 - [ ] All three commands are declared, appear in `describe` (including option types, defaults and ranges) and pass its consistency test
@@ -42,6 +43,8 @@ Settled with the owner in a design session (2026-10-16). Implement them as writt
 - `data` is an object `{items, total, nextOffset}`, not a bare array. Upstream #5870 wraps lists in `{items}` too.
 - `nextOffset` is **omitted** on the last page.
 - `meta` echoes the resolved `limit` and `offset`, alongside `fileVersion` and `asOf` as in `info`.
+- The `fileVersion`/`asOf` meta schema, currently duplicated in `InfoCommand` and `DescribeCommand`, moves into one shared helper. Every list command uses a paging extension of it that adds `limit` and `offset`.
+- These two deviations from upstream (paging fields in `data`, and the attribute array below) are recorded in [ADR 0004](../../../docs/adr/0004-list-output-deviates-from-upstream-rest-api.md).
 
 ### Paging input
 
@@ -58,6 +61,8 @@ Settled with the owner in a design session (2026-10-16). Implement them as writt
 ### Field rules
 
 - Unset optional fields are **omitted**, never `null` (`Schema.optionalProperty`). Upstream does the same.
+- A null or blank (empty or whitespace-only) string counts as unset. This applies to `note`, `isin`, `wkn`, `tickerSymbol`, the instrument's `currencyCode` (a blank code is omitted like an index's) and string attribute values. Values that are present are emitted untrimmed.
+- Exceptions: `name` is always present on all three entities. A null name is emitted as `""`, and a blank name as stored. For ordering, null counts as `""`. The app never saves a nameless entity, so this only covers damaged or hand-edited files. The cash account's `currencyCode` is always present and emitted as stored (core defaults it to EUR).
 - `retired` is always present as a boolean on all three entities. The core getter is `isRetired()`. The UI calls it "deactivated"; we use **Retired** (see `GLOSSARY.md`). Upstream doesn't expose it.
 - `note` is included on all three entities when set.
 
@@ -78,6 +83,8 @@ Settled with the owner in a design session (2026-10-16). Implement them as writt
 ### Instrument attributes
 
 - `attributes` is an array of `{id, name, type, value}`, a deliberate deviation from upstream's id-keyed map. User-created attribute type ids are random UUIDs and there is no `attribute-types` command, so an agent needs `name` and `type` inline.
+- `attributes` is always present, `[]` when nothing is set. Upstream omits the key when it's empty.
+- Attributes are exposed on instruments only. Core also supports them on cash and investment accounts; that is deferred, because the only built-in type there (`logo`) is skipped anyway and adding the field later doesn't break anything.
 - Iterate `client.getSettings().getAttributeTypes()` filtered by `supports(Security.class)`. This gives a stable order and skips orphaned stored entries. Include only attributes with a non-null stored value.
 - Value encoding copies upstream #5870's `AttributeCodec`. It deliberately avoids core's `AttributeType.Converter.toString`, which is locale-dependent. Our pinned core has no `AttributeFieldType`, so map from `AttributeType.getConverter()`'s class:
 
@@ -101,11 +108,3 @@ Settled with the owner in a design session (2026-10-16). Implement them as writt
 - Test seam: the in-process `PpCli.execute`, with fixtures from the shared JUnit builders.
 - Each new command needs a case in `DescribeConsistencyTest.sampleArguments` and a declaration in `Commands.ALL`.
 
-## Open questions (settle with the owner before implementing)
-
-Each has a recommendation; if the owner has already answered, the answers are recorded below.
-
-- **Empty attributes**: always emit `attributes: []` (recommended), or omit when empty as upstream does?
-- **Attributes on accounts**: instruments only in this ticket (recommended), although core also supports attributes on cash and investment accounts?
-- **Shared `meta` schema**: move the duplicated `fileVersion`/`asOf` meta schema into one helper shared with `info` (recommended)?
-- **ADR**: record the deviations from upstream (attribute array, paging fields in `data`) in `docs/adr/0004-...` (recommended)?

@@ -37,6 +37,14 @@ The external name for a **Portfolio**.
 **Cash account**:
 The external name for an **Account**.
 
+**Reference cash account**:
+The **Cash account** that an **Investment account** settles its buys, sells and dividends against by default.
+_Avoid_: reference account, settlement account
+
+**Master data**:
+The **Instruments**, **Investment accounts** and **Cash accounts** in a client file, as opposed to the **Transaction records** and prices that refer to them.
+_Avoid_: reference data, static data, entities
+
 **Holding**:
 The quantity of one **Instrument** held in an **Investment account** (or across all of them) at a given date, with its market value.
 _Avoid_: position (internal core term), asset

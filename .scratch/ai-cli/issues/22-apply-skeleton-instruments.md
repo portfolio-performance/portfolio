@@ -8,7 +8,7 @@ Spec: [spec.md](../spec.md), user stories 65, 71, 76–81, 90–91, 95–97, 101
 
 ## What to build
 
-The first complete write path. `pp-cli apply --input <file|->` takes `{"operations": [...]}` and supports `instrument.add` and `instrument.update` (name, currency, ISIN, ticker, WKN, note, retired). The batch contract:
+The first complete write path. `pp-cli apply --input <file|->` takes `{"operations": [...]}` and supports `instrument.add` and `instrument.update` (name, currency, ISIN, ticker, WKN, note, retired). Input field names match the `instruments` read output: `name`, `currencyCode`, `isin`, `tickerSymbol`, `wkn`, `note`, `retired`. The batch contract:
 
 - The batch is atomic, and operations apply in order against the evolving model.
 - References must be UUIDs that existed before the batch. There are no caller-supplied IDs.

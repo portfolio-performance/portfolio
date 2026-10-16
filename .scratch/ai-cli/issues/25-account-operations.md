@@ -12,6 +12,7 @@ An agent can model new bank accounts and depots through `apply`:
 
 - `cash-account.add` and `cash-account.update`: name, currency, note, retired.
 - `investment-account.add` and `investment-account.update`: name, reference cash account, note, retired.
+- Input field names match the read output of ticket 15: `name`, `currencyCode`, `note`, `retired` for cash accounts; `name`, `referenceCashAccount`, `note`, `retired` for investment accounts.
 
 Rules:
 

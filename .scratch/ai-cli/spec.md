@@ -208,7 +208,8 @@ I need a command an agent can run from its shell against a closed client file. I
   - `--limit` (default 200, integer 1–1000) and `--offset` (integer ≥ 0). Any other value is a usage error `invalid-option-value` (exit 2) with `option` and `value` extensions.
   - Response: `data = {items, total, nextOffset}`. `nextOffset` is omitted on the last page. An offset past the end returns empty `items` with the correct `total`. `meta` echoes the resolved `limit` and `offset`.
   - Ordering: date then UUID for dated records (transactions); name (case-insensitive, ordinal, not locale-collated) then UUID for master data.
-- Master-data fields: unset optional fields are omitted, never `null`. `retired` is always present as a boolean. Instrument attributes are an always-present array of `{id, name, type, value}`, with values encoded as upstream #5870's `AttributeCodec` does (details in ticket 15).
+- Master-data fields: unset optional fields are omitted, never `null`. A null or blank string counts as unset; values that are present are emitted untrimmed. `name` is the exception: it is always present, and a null name becomes `""`. `retired` is always present as a boolean. Instrument attributes are an always-present array of `{id, name, type, value}`, with values encoded as upstream #5870's `AttributeCodec` does (details in ticket 15). Attributes on cash and investment accounts are deferred. The two deviations from upstream (attribute array, paging fields in `data`) are recorded in ADR 0004.
+- Write inputs use the same field names as the reads (`currencyCode`, `tickerSymbol`, `referenceCashAccount`, ...), so an agent can send back what it read.
 - The module owns all JSON mapping, because core has no model serializer:
   - Amounts are decimals with an ISO currency.
   - Dates are ISO 8601.
