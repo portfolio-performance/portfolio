@@ -41,6 +41,14 @@ The external name for an **Account**.
 The quantity of one **Instrument** held in an **Investment account** (or across all of them) at a given date, with its market value.
 _Avoid_: position (internal core term), asset
 
+**Retired**:
+Marks an **Instrument**, **Investment account** or **Cash account** that the user no longer actively uses but keeps for its history.
+_Avoid_: deactivated, inactive, archived
+
+**Attribute**:
+A user-defined, typed field (text, number, percent, amount, date, ...) that the user attaches to **Instruments**, such as a fund's TER or vendor.
+_Avoid_: custom field, property
+
 **Transaction record**:
 One business event as shown to and edited by agents: a buy or sell with both its **Investment account** side and its **Cash account** side, or a transfer with source and target. It is created, changed and deleted as a whole, never one side at a time.
 _Avoid_: leg, cross entry, half-transaction
