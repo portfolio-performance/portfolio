@@ -123,14 +123,15 @@ final class DescribeCommand
         json.put("name", option.name());
         json.put("valueName", option.valueName());
         json.put("description", option.description());
-        if (option.type() != null)
-            json.put("type", option.type());
-        if (option.defaultValue() != null)
-            json.put("default", option.defaultValue());
-        if (option.minimum() != null)
-            json.put("minimum", option.minimum());
-        if (option.maximum() != null)
-            json.put("maximum", option.maximum());
+        var domain = option.integerDomain();
+        if (domain != null)
+        {
+            json.put("type", "integer");
+            json.put("default", domain.defaultValue());
+            json.put("minimum", domain.minimum());
+            if (domain.maximum() != null)
+                json.put("maximum", domain.maximum());
+        }
         return json;
     }
 

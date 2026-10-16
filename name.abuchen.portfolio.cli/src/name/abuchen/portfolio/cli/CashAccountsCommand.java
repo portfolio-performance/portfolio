@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Client;
 
 final class CashAccountsCommand
 {
@@ -14,24 +15,13 @@ final class CashAccountsCommand
                     .optionalProperty("note", Schema.string("Note, if set."))
                     .property("retired", Schema.bool("Whether the account is retired."));
 
-    static final CommandSpec SPEC = new CommandSpec("cash-accounts",
-                    "Cash accounts: UUID, name, currency, note and retired flag, ordered by name then UUID.", true,
-                    Paging.OPTIONS, Paging.dataSchema("A page of cash accounts.", ITEM), ResponseMeta.PAGED_SCHEMA,
-                    CashAccountsCommand::execute);
+    static final CommandSpec SPEC = MasterDataList.command("cash-accounts",
+                    "Cash accounts: UUID, name, currency, note and retired flag", ITEM,
+                    new MasterDataList.Source<Account>(Client::getAccounts, Account::getUUID, Account::getName,
+                                    client -> CashAccountsCommand::render));
 
     private CashAccountsCommand()
     {
-    }
-
-    private static Response execute(CommandContext context) throws CliException
-    {
-        var paging = Paging.parse(context);
-
-        var client = context.loadClient().client();
-
-        return Paging.respond(context, client, paging, client.getAccounts(),
-                        MasterData.byNameThenUuid(Account::getName, Account::getUUID),
-                        CashAccountsCommand::render);
     }
 
     private static Map<String, Object> render(Account account)

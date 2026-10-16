@@ -12,22 +12,29 @@ import name.abuchen.portfolio.model.Client;
  */
 final class ResponseMeta
 {
+    private static final Schema FILE_VERSION = Schema.integer("Version of the file as read.");
+    private static final Schema AS_OF = Schema.string("ISO date the command ran, from the clock.");
+
     /** For commands that don't read a client file. */
-    static final Schema AS_OF_SCHEMA = Schema.object("Assumptions behind the response.").property("asOf",
-                    Schema.string("ISO date the command ran, from the clock."));
+    static final Schema AS_OF_SCHEMA = envelope().property("asOf", AS_OF);
 
-    static final Schema SCHEMA = Schema.object("Assumptions behind the response.")
-                    .property("fileVersion", Schema.integer("Version of the file as read."))
-                    .property("asOf", Schema.string("ISO date the command ran, from the clock."));
+    static final Schema SCHEMA = fileEnvelope();
 
-    static final Schema PAGED_SCHEMA = Schema.object("Assumptions behind the response.")
-                    .property("fileVersion", Schema.integer("Version of the file as read."))
-                    .property("asOf", Schema.string("ISO date the command ran, from the clock."))
-                    .property("limit", Schema.integer("Page size used."))
+    static final Schema PAGED_SCHEMA = fileEnvelope().property("limit", Schema.integer("Page size used."))
                     .property("offset", Schema.integer("Index of the first item returned."));
 
     private ResponseMeta()
     {
+    }
+
+    private static Schema envelope()
+    {
+        return Schema.object("Assumptions behind the response.");
+    }
+
+    private static Schema fileEnvelope()
+    {
+        return envelope().property("fileVersion", FILE_VERSION).property("asOf", AS_OF);
     }
 
     static Map<String, Object> asOf(CommandContext context)

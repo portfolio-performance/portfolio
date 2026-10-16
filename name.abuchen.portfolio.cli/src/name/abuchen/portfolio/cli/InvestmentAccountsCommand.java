@@ -3,6 +3,7 @@ package name.abuchen.portfolio.cli;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 
 final class InvestmentAccountsCommand
@@ -15,24 +16,13 @@ final class InvestmentAccountsCommand
                     .optionalProperty("note", Schema.string("Note, if set."))
                     .property("retired", Schema.bool("Whether the account is retired."));
 
-    static final CommandSpec SPEC = new CommandSpec("investment-accounts",
-                    "Investment accounts: UUID, name, reference cash account, note and retired flag, ordered by name then UUID.",
-                    true, Paging.OPTIONS, Paging.dataSchema("A page of investment accounts.", ITEM),
-                    ResponseMeta.PAGED_SCHEMA, InvestmentAccountsCommand::execute);
+    static final CommandSpec SPEC = MasterDataList.command("investment-accounts",
+                    "Investment accounts: UUID, name, reference cash account, note and retired flag", ITEM,
+                    new MasterDataList.Source<Portfolio>(Client::getPortfolios, Portfolio::getUUID,
+                                    Portfolio::getName, client -> InvestmentAccountsCommand::render));
 
     private InvestmentAccountsCommand()
     {
-    }
-
-    private static Response execute(CommandContext context) throws CliException
-    {
-        var paging = Paging.parse(context);
-
-        var client = context.loadClient().client();
-
-        return Paging.respond(context, client, paging, client.getPortfolios(),
-                        MasterData.byNameThenUuid(Portfolio::getName, Portfolio::getUUID),
-                        InvestmentAccountsCommand::render);
     }
 
     private static Map<String, Object> render(Portfolio portfolio)

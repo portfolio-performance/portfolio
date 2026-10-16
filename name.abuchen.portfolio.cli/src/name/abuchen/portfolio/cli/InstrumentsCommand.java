@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import name.abuchen.portfolio.model.AttributeType;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 
 final class InstrumentsCommand
@@ -29,26 +31,20 @@ final class InstrumentsCommand
                     .property("retired", Schema.bool("Whether the instrument is retired."))
                     .property("attributes", Schema.array("User-defined attributes that have a value.", ATTRIBUTE));
 
-    static final CommandSpec SPEC = new CommandSpec("instruments",
-                    "Instruments (securities, indices, exchange rates): UUID, name, currency, ISIN, ticker, WKN, note, retired flag and attributes, ordered by name then UUID.",
-                    true, Paging.OPTIONS, Paging.dataSchema("A page of instruments.", ITEM),
-                    ResponseMeta.PAGED_SCHEMA, InstrumentsCommand::execute);
+    static final CommandSpec SPEC = MasterDataList.command("instruments",
+                    "Instruments (securities, indices, exchange rates): UUID, name, currency, ISIN, ticker, WKN, note, retired flag and attributes",
+                    ITEM, new MasterDataList.Source<Security>(Client::getSecurities, Security::getUUID,
+                                    Security::getName, InstrumentsCommand::renderer));
 
     private InstrumentsCommand()
     {
     }
 
-    private static Response execute(CommandContext context) throws CliException
+    private static Function<Security, Map<String, Object>> renderer(Client client)
     {
-        var paging = Paging.parse(context);
-
-        var client = context.loadClient().client();
         var attributeTypes = client.getSettings().getAttributeTypes().filter(t -> t.supports(Security.class))
                         .toList();
-
-        return Paging.respond(context, client, paging, client.getSecurities(),
-                        MasterData.byNameThenUuid(Security::getName, Security::getUUID),
-                        security -> render(security, attributeTypes));
+        return security -> render(security, attributeTypes);
     }
 
     private static Map<String, Object> render(Security security, List<AttributeType> attributeTypes)
@@ -76,7 +72,7 @@ final class InstrumentsCommand
                 var attribute = new LinkedHashMap<String, Object>();
                 attribute.put("id", type.getId());
                 attribute.put("name", MasterData.orEmpty(type.getName()));
-                attribute.put("type", encoded.type());
+                attribute.put("type", encoded.type().id());
                 attribute.put("value", encoded.value());
                 answer.add(attribute);
             });

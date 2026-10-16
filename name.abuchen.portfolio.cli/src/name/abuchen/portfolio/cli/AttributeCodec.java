@@ -2,7 +2,9 @@ package name.abuchen.portfolio.cli;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import com.google.gson.JsonPrimitive;
@@ -27,13 +29,23 @@ import name.abuchen.portfolio.money.Values;
  */
 final class AttributeCodec
 {
-    record Encoded(String type, Object value)
+    /** How to read an encoded value; the ids are the values of <code>type</code> in the output. */
+    enum Type
+    {
+        STRING, BOOLEAN, DATE, AMOUNT, QUOTE, SHARES, PERCENT, NUMBER;
+
+        String id()
+        {
+            return name().toLowerCase(Locale.ROOT);
+        }
+    }
+
+    record Encoded(Type type, Object value)
     {
     }
 
-    /** The values of <code>type</code> that this codec can produce. */
-    static final List<String> TYPES = List.of("string", "boolean", "date", "amount", "quote", "shares", "percent",
-                    "number");
+    /** The ids of every type this codec can produce. */
+    static final List<String> TYPES = Arrays.stream(Type.values()).map(Type::id).toList();
 
     private AttributeCodec()
     {
@@ -55,33 +67,33 @@ final class AttributeCodec
         }
 
         if (converter instanceof StringConverter)
-            return stored instanceof String s && MasterData.isSet(s) ? encoded("string", s) : Optional.empty();
+            return stored instanceof String s && MasterData.isSet(s) ? encoded(Type.STRING, s) : Optional.empty();
         if (converter instanceof BooleanConverter)
-            return stored instanceof Boolean ? encoded("boolean", stored) : Optional.empty();
+            return stored instanceof Boolean ? encoded(Type.BOOLEAN, stored) : Optional.empty();
         if (converter instanceof DateConverter)
-            return stored instanceof LocalDate date ? encoded("date", date.toString()) : Optional.empty();
+            return stored instanceof LocalDate date ? encoded(Type.DATE, date.toString()) : Optional.empty();
         if (converter instanceof AmountConverter)
-            return decimal("amount", stored, Values.Amount);
+            return decimal(Type.AMOUNT, stored, Values.Amount);
         if (converter instanceof AmountPlainConverter)
-            return decimal("amount", stored, Values.AmountPlain);
+            return decimal(Type.AMOUNT, stored, Values.AmountPlain);
         if (converter instanceof QuoteConverter)
-            return decimal("quote", stored, Values.Quote);
+            return decimal(Type.QUOTE, stored, Values.Quote);
         if (converter instanceof ShareConverter)
-            return decimal("shares", stored, Values.Share);
+            return decimal(Type.SHARES, stored, Values.Share);
         if (converter instanceof PercentConverter)
-            return finite("percent", stored);
+            return finite(Type.PERCENT, stored);
         if (converter instanceof PercentPlainConverter)
-            return finite("number", stored);
+            return finite(Type.NUMBER, stored);
 
         return Optional.empty(); // limit price, bookmark, image, unknown
     }
 
-    private static Optional<Encoded> encoded(String type, Object value)
+    private static Optional<Encoded> encoded(Type type, Object value)
     {
         return Optional.of(new Encoded(type, value));
     }
 
-    private static Optional<Encoded> decimal(String type, Object stored, Values<Long> values)
+    private static Optional<Encoded> decimal(Type type, Object stored, Values<Long> values)
     {
         return stored instanceof Long l ? encoded(type, plain(BigDecimal.valueOf(l, values.precision())))
                         : Optional.empty();
@@ -135,7 +147,7 @@ final class AttributeCodec
         }
     }
 
-    private static Optional<Encoded> finite(String type, Object stored)
+    private static Optional<Encoded> finite(Type type, Object stored)
     {
         return stored instanceof Double d && Double.isFinite(d) ? encoded(type, d) : Optional.empty();
     }
