@@ -16,7 +16,7 @@ Spec: [spec.md](../spec.md), user stories 34–41, 51 (the `--from`/`--to` part)
 - Every side's UUID is listed.
 - `type` uses core's enum names and is documented as an open enum.
 
-Filters cover account, instrument (through the resolver), date range (`--from`/`--to`, with `--to` defaulting to today from the injected clock) and type. Results are paginated and ordered by date, then UUID.
+Filters cover account, instrument (through the resolver), date range (`--from`/`--to`, with `--to` defaulting to today from the injected clock) and type. Results are paginated and ordered by date, then UUID. Pagination reuses ticket 15's shared mechanism unchanged: `data = {items, total, nextOffset}`, `meta` echoes `limit` and `offset`, and the same validation and usage error apply (see ticket 15's "Decisions").
 
 Amounts are in the record's native currency. `--currency` adds converted fields that carry the rate and the rate date, using the transaction's own forex rate or its date's ECB rate. A fallback to the built-in ECB data produces a warning. Fees, taxes and forex units use the same shape that later `transaction.*` writes accept.
 

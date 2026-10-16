@@ -107,7 +107,7 @@ I need a command an agent can run from its shell against a closed client file. I
 59. As an AI agent, I want amounts as decimals with an ISO currency, dates in ISO 8601, and rates as unrounded fractions, so that I never decode internal scaled integers.
 60. As an AI agent, I want JSON only on stdout, with logs and warnings on stderr, so that core logging never corrupts my parse.
 61. As an AI agent, I want structured (problem+json style) errors with a stable `code` and a non-zero exit code, so that I can branch on failures.
-62. As an AI agent, I want list commands paginated with `--limit` (default 200) and `--offset`, returning `total` and `nextOffset`, ordered by date then UUID, so that large files don't flood my context.
+62. As an AI agent, I want list commands paginated with `--limit` (default 200) and `--offset`, returning `total` and `nextOffset`, ordered by date then UUID (name then UUID for master data), so that large files don't flood my context.
 63. As an AI agent, I want camelCase field names that match #5870 where an equivalent exists, so that what I know from the upstream API carries over.
 64. As the owner, I want an optional `--format table` for human reading, so that I can use the tool myself (nice-to-have).
 
@@ -204,7 +204,11 @@ I need a command an agent can run from its shell against a closed client file. I
   - Every converted amount carries the rate and rate date used.
 - Periods: `--from`/`--to` (`--to` defaults to today from the injected clock) or `--period <code>`. Passing both is a usage error, and the resolved dates are always echoed.
 - Cost method: `--cost-method fifo|moving-average`, default FIFO, always echoed in `meta`.
-- Pagination: `--limit` (default 200) and `--offset`, with `total` and `nextOffset`, ordered by date then UUID.
+- Pagination (shared by every list command):
+  - `--limit` (default 200, integer 1–1000) and `--offset` (integer ≥ 0). Any other value is a usage error `invalid-option-value` (exit 2) with `option` and `value` extensions.
+  - Response: `data = {items, total, nextOffset}`. `nextOffset` is omitted on the last page. An offset past the end returns empty `items` with the correct `total`. `meta` echoes the resolved `limit` and `offset`.
+  - Ordering: date then UUID for dated records (transactions); name (case-insensitive, ordinal, not locale-collated) then UUID for master data.
+- Master-data fields: unset optional fields are omitted, never `null`. `retired` is always present as a boolean. Instrument attributes are an always-present array of `{id, name, type, value}`, with values encoded as upstream #5870's `AttributeCodec` does (details in ticket 15).
 - The module owns all JSON mapping, because core has no model serializer:
   - Amounts are decimals with an ISO currency.
   - Dates are ISO 8601.
