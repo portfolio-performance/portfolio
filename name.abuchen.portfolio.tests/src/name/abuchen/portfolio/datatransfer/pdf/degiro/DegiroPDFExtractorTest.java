@@ -8387,6 +8387,41 @@ public class DegiroPDFExtractorTest
     }
 
     @Test
+    public void testTransacciones05()
+    {
+        var extractor = new DegiroPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Transacciones05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B4L5Y983"), hasWkn(null), hasTicker(null), //
+                        hasName("ISHARES CORE MSCI WORLD UCITS ETF USD (ACC)"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-10-05T13:35"), hasShares(5.00), //
+                        hasSource("Transacciones05.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 654.95), hasGrossValue("EUR", 653.95), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.00), //
+                        hasSecurity(hasIsin("IE00B4L5Y983")))));
+    }
+
+    @Test
     public void testTransactions_english01()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
