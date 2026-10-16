@@ -28,6 +28,9 @@ final class ClientFiles
 {
     static final int NEWER_VERSION = Client.CURRENT_VERSION + 29;
 
+    /** Core treats encrypted headers further ahead than 20 as a wrong password. */
+    static final int NEWER_ENCRYPTED_VERSION = Client.CURRENT_VERSION + 5;
+
     private static final byte[] BINARY_SIGNATURE = "PPPBV1".getBytes(StandardCharsets.US_ASCII);
 
     private ClientFiles()
@@ -73,6 +76,50 @@ final class ClientFiles
     static File binary(Path folder) throws IOException
     {
         return write(folder, "client.portfolio", EnumSet.of(SaveFlag.BINARY, SaveFlag.COMPRESSED));
+    }
+
+    static File encrypted(Path folder, String password, SaveFlag content, SaveFlag aes) throws IOException
+    {
+        var file = folder.resolve("client.portfolio").toFile();
+        ClientFactory.saveAs(sampleClient(), file, password.toCharArray(),
+                        EnumSet.of(content, SaveFlag.ENCRYPTED, aes));
+        return file;
+    }
+
+    static File xmlAes256(Path folder, String password) throws IOException
+    {
+        return encrypted(folder, password, SaveFlag.XML, SaveFlag.AES256);
+    }
+
+    static File xmlAes128(Path folder, String password) throws IOException
+    {
+        return encrypted(folder, password, SaveFlag.XML, SaveFlag.AES128);
+    }
+
+    static File binaryAes256(Path folder, String password) throws IOException
+    {
+        return encrypted(folder, password, SaveFlag.BINARY, SaveFlag.AES256);
+    }
+
+    /** Core writes the version from the client, which only core can set. */
+    static File newerEncrypted(Path folder, String password) throws IOException
+    {
+        var client = sampleClient();
+        try
+        {
+            var setVersion = Client.class.getDeclaredMethod("setVersion", int.class);
+            setVersion.setAccessible(true);
+            setVersion.invoke(client, NEWER_ENCRYPTED_VERSION);
+        }
+        catch (ReflectiveOperationException e)
+        {
+            throw new IllegalStateException("cannot set the client version", e);
+        }
+
+        var file = folder.resolve("client.portfolio").toFile();
+        ClientFactory.saveAs(client, file, password.toCharArray(),
+                        EnumSet.of(SaveFlag.XML, SaveFlag.ENCRYPTED, SaveFlag.AES256));
+        return file;
     }
 
     static File newerXml(Path folder) throws IOException

@@ -8,7 +8,6 @@ import static org.hamcrest.Matchers.not;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.EnumSet;
 import java.util.Map;
 
 import org.junit.Rule;
@@ -18,8 +17,6 @@ import org.junit.rules.TemporaryFolder;
 import com.google.gson.JsonObject;
 
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.ClientFactory;
-import name.abuchen.portfolio.model.SaveFlag;
 
 public class ErrorHandlingTest
 {
@@ -150,19 +147,6 @@ public class ErrorHandlingTest
         assertThat(problem.get("fileVersion").getAsInt(), is(ClientFiles.NEWER_VERSION));
         assertThat(problem.get("maxSupportedVersion").getAsInt(), is(Client.CURRENT_VERSION));
         assertThat(problem.get("fileVersion").getAsInt(), is(greaterThan(Client.CURRENT_VERSION)));
-    }
-
-    @Test
-    public void encryptedFileIsRefusedUntilPasswordsAreSupported() throws IOException
-    {
-        var file = dir().resolve("client.portfolio").toFile();
-        ClientFactory.saveAs(ClientFiles.sampleClient(), file, "secret".toCharArray(),
-                        EnumSet.of(SaveFlag.XML, SaveFlag.ENCRYPTED, SaveFlag.AES256));
-
-        var run = CliRun.run("info", "--file", file.getPath());
-
-        assertThat(run.exitCode, is(1));
-        assertThat(problem(run).get("code").getAsString(), is("format-unsupported"));
     }
 
     @Test

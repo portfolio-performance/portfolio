@@ -3,7 +3,9 @@ package name.abuchen.portfolio.cli;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.OptionalInt;
+import java.util.function.Supplier;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 
@@ -20,7 +22,7 @@ final class ClientLoader
     {
     }
 
-    static LoadedClient load(String path) throws CliException
+    static LoadedClient load(String path, Supplier<char[]> passwords) throws CliException
     {
         var file = new File(path);
 
@@ -28,17 +30,31 @@ final class ClientLoader
             throw CliException.failure("file-not-found", "Client file not found",
                             "No client file at " + file.getAbsolutePath(), 404);
 
+        char[] password = null;
         try
         {
-            var format = FileFormat.detect(file);
+            FileFormat format;
 
-            if (format == FileFormat.ENCRYPTED)
-                throw CliException.failure("format-unsupported", "Encrypted client files are not supported yet",
-                                "The client file is encrypted; reading encrypted files is not available.", 422);
+            if (FileFormat.isEncrypted(file))
+            {
+                password = passwords.get();
+                if (password == null || password.length == 0)
+                    throw CliException.failure("password-required", "Password required",
+                                    "The client file is encrypted. Set the PP_PASSWORD environment variable or"
+                                                    + " provide the password on stdin.",
+                                    401);
 
-            guard(FileVersionProbe.read(file, format));
+                var header = EncryptedHeader.read(file, password);
+                guard(OptionalInt.of(header.version()));
+                format = header.format();
+            }
+            else
+            {
+                format = FileFormat.detect(file);
+                guard(FileVersionProbe.read(file, format));
+            }
 
-            var client = ClientFactory.load(file, null, new NullProgressMonitor());
+            var client = ClientFactory.load(file, password, new NullProgressMonitor());
 
             guard(OptionalInt.of(client.getFileVersionAfterRead()));
 
@@ -48,6 +64,11 @@ final class ClientLoader
         {
             throw CliException.failure("file-unreadable", "Client file could not be read",
                             "The client file could not be read: " + e.getMessage(), 422, e);
+        }
+        finally
+        {
+            if (password != null)
+                Arrays.fill(password, '\0');
         }
     }
 

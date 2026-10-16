@@ -9,6 +9,8 @@ import java.util.Locale;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import name.abuchen.portfolio.model.ClientFactory;
+
 /**
  * The normalized file formats reported to agents. Core keeps the matching save
  * flags package-private, so the CLI detects the format itself from the file
@@ -16,9 +18,10 @@ import java.util.zip.ZipInputStream;
  */
 enum FileFormat
 {
-    XML("xml"), XML_ID_REFERENCES("xml-id-references"), XML_ZIP("xml-zip"), BINARY("binary"), ENCRYPTED("encrypted");
+    XML("xml"), XML_ID_REFERENCES("xml-id-references"), XML_ZIP("xml-zip"), BINARY("binary"), XML_AES256(
+                    "xml-aes256"), XML_AES128("xml-aes128"), BINARY_AES256("binary-aes256"), BINARY_AES128(
+                                    "binary-aes128");
 
-    private static final byte[] ENCRYPTED_SIGNATURE = "PORTFOLIO".getBytes(StandardCharsets.US_ASCII);
     private static final byte[] ZIP_SIGNATURE = { 'P', 'K', 3, 4 };
     private static final String ID_REFERENCES_MARKER = "<client id=";
 
@@ -34,6 +37,24 @@ enum FileFormat
         return id;
     }
 
+    /**
+     * The format of an encrypted file. Whether it holds XML or binary data is
+     * only known after decrypting the header.
+     */
+    static FileFormat encrypted(boolean binary, int keyBits)
+    {
+        if (keyBits == 256)
+            return binary ? BINARY_AES256 : XML_AES256;
+        return binary ? BINARY_AES128 : XML_AES128;
+    }
+
+    /** Delegates to core, which recognizes encrypted files by content, never by name. */
+    static boolean isEncrypted(File file)
+    {
+        return ClientFactory.isEncrypted(file);
+    }
+
+    /** @param file an unencrypted client file; see {@link #isEncrypted} */
     static FileFormat detect(File file) throws IOException
     {
         var name = file.getName().toLowerCase(Locale.US);
@@ -52,8 +73,6 @@ enum FileFormat
     {
         var head = readHead(file);
 
-        if (startsWith(head, ENCRYPTED_SIGNATURE))
-            return ENCRYPTED;
         if (startsWith(head, ZIP_SIGNATURE))
             return containsBinary(file) ? BINARY : XML_ZIP;
         if (head.length > 0 && head[0] == '<')

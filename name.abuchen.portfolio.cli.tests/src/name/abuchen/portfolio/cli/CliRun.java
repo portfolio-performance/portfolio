@@ -39,6 +39,11 @@ final class CliRun
 
     static CliRun run(Map<String, String> env, String... args)
     {
+        return runWithStdin(env, "", args);
+    }
+
+    static CliRun runWithStdin(Map<String, String> env, String stdin, String... args)
+    {
         var out = new ByteArrayOutputStream();
         var err = new ByteArrayOutputStream();
 
@@ -46,8 +51,8 @@ final class CliRun
         try (var stdout = new PrintStream(out, true, StandardCharsets.UTF_8);
                         var stderr = new PrintStream(err, true, StandardCharsets.UTF_8))
         {
-            exitCode = PpCli.execute(args, new HashMap<>(env), new ByteArrayInputStream(new byte[0]), stdout, stderr,
-                            CLOCK);
+            exitCode = PpCli.execute(args, new HashMap<>(env),
+                            new ByteArrayInputStream(stdin.getBytes(StandardCharsets.UTF_8)), stdout, stderr, CLOCK);
         }
 
         return new CliRun(exitCode, out.toString(StandardCharsets.UTF_8), err.toString(StandardCharsets.UTF_8));

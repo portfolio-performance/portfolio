@@ -3,7 +3,9 @@ package name.abuchen.portfolio.cli;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -86,6 +88,27 @@ public class DescribeCommandTest
         var describe = command(data, "describe");
         assertThat(describe.get("usesClientFile").getAsBoolean(), is(false));
         assertThat(describe.getAsJsonArray("options").size(), is(0));
+    }
+
+    @Test
+    public void describeDocumentsEnvironmentVariablesAndDeclaresNoPasswordOption()
+    {
+        var data = data(CliRun.run("describe"));
+
+        var environment = data.getAsJsonArray("environment");
+        var names = new ArrayList<String>();
+        for (var element : environment)
+        {
+            var variable = element.getAsJsonObject();
+            names.add(variable.get("name").getAsString());
+            assertThat(variable.get("description").getAsString().isBlank(), is(false));
+        }
+        assertThat(names, is(List.of("PP_FILE", "PP_PASSWORD")));
+
+        for (var command : data.getAsJsonArray("commands"))
+            for (var option : command.getAsJsonObject().getAsJsonArray("options"))
+                assertThat(option.getAsJsonObject().get("name").getAsString().toLowerCase(),
+                                not(containsString("password")));
     }
 
     @Test

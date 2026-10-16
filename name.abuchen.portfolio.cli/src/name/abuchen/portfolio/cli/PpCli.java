@@ -53,7 +53,7 @@ public final class PpCli
         try
         {
             var parsed = ArgumentParser.parse(Arrays.asList(args));
-            var context = new CommandContext(parsed.options(), env, stdin, clock);
+            var context = new CommandContext(parsed.options(), env, stdin, stderr, clock);
             var response = parsed.command().handler().execute(context);
 
             print(stdout, response.toEnvelope());

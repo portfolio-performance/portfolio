@@ -1,26 +1,35 @@
 package name.abuchen.portfolio.cli;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.util.Map;
 import java.util.Optional;
 
 /**
  * Everything a command gets from the outside world: parsed options, the
- * environment, stdin and the clock.
+ * environment, stdin, stderr and the clock.
  */
 final class CommandContext
 {
+    static final String PASSWORD_VARIABLE = "PP_PASSWORD";
+
     private final Map<String, String> options;
     private final Map<String, String> env;
     private final InputStream stdin;
+    private final PrintStream stderr;
     private final Clock clock;
 
-    CommandContext(Map<String, String> options, Map<String, String> env, InputStream stdin, Clock clock)
+    CommandContext(Map<String, String> options, Map<String, String> env, InputStream stdin, PrintStream stderr,
+                    Clock clock)
     {
         this.options = options;
         this.env = env;
         this.stdin = stdin;
+        this.stderr = stderr;
         this.clock = clock;
     }
 
@@ -52,6 +61,43 @@ final class CommandContext
                         .orElseThrow(() -> CliException.usage("file-required", "Client file required",
                                         "Pass --file <path> or set the PP_FILE environment variable."));
 
-        return ClientLoader.load(path);
+        return ClientLoader.load(path, this::password);
+    }
+
+    /**
+     * The password for an encrypted file: PP_PASSWORD, or else one line from
+     * stdin. The prompt goes to stderr so stdout stays a single JSON document.
+     *
+     * @return the password, or null if none was given
+     */
+    private char[] password()
+    {
+        var fromEnv = env(PASSWORD_VARIABLE).filter(p -> !p.isEmpty());
+        if (fromEnv.isPresent())
+            return fromEnv.get().toCharArray();
+
+        stderr.print("Password: ");
+        stderr.flush();
+        return readLine();
+    }
+
+    private char[] readLine()
+    {
+        try
+        {
+            var bytes = new ByteArrayOutputStream();
+            int b;
+            while ((b = stdin.read()) >= 0 && b != '\n')
+                bytes.write(b);
+
+            var line = bytes.toString(StandardCharsets.UTF_8);
+            if (line.endsWith("\r"))
+                line = line.substring(0, line.length() - 1);
+            return line.toCharArray();
+        }
+        catch (IOException e)
+        {
+            return null;
+        }
     }
 }

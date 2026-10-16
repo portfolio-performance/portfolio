@@ -18,12 +18,23 @@ final class DescribeCommand
                     "PDF import is not available.",
                     "Prices can't be written: there are no price writes, and quotes are neither fetched nor edited.");
 
+    private static final List<String[]> ENVIRONMENT = List.of(
+                    new String[] { "PP_FILE", "Client file to read, used when --file is not given." },
+                    new String[] { CommandContext.PASSWORD_VARIABLE,
+                                    "Password for an encrypted client file. If it is not set, the password is read as"
+                                                    + " one line from stdin (the prompt goes to stderr). There is no"
+                                                    + " password option. A missing password gives password-required;"
+                                                    + " a wrong one gives incorrect-password." });
+
     private static final Schema SCHEMA = Schema.object("Everything the tool can do.")
                     .property("pinnedUpstreamTag",
                                     Schema.string("Upstream release the bundled core is built from."))
                     .property("maxSupportedVersion",
                                     Schema.integer("Newest file version this CLI supports; newer files are refused."))
                     .property("limits", Schema.array("Known limits of the tool.", Schema.string(null)))
+                    .property("environment", Schema.array("Environment variables the tool reads.", Schema.object(null)
+                                    .property("name", Schema.string("Variable name."))
+                                    .property("description", Schema.string("What the variable does."))))
                     .property("commands", Schema.array("Every declared command.", Schema.object(null)
                                     .property("name", Schema.string("Command name."))
                                     .property("summary", Schema.string("What the command returns."))
@@ -71,6 +82,12 @@ final class DescribeCommand
         data.put("pinnedUpstreamTag", CoreVersion.PINNED_UPSTREAM_TAG);
         data.put("maxSupportedVersion", CoreVersion.MAX_SUPPORTED_FILE_VERSION);
         data.put("limits", KNOWN_LIMITS);
+        data.put("environment", ENVIRONMENT.stream().map(variable -> {
+            var json = new LinkedHashMap<String, Object>();
+            json.put("name", variable[0]);
+            json.put("description", variable[1]);
+            return json;
+        }).toList());
         data.put("commands", commands.stream().map(DescribeCommand::render).toList());
         data.put("operations", operations.stream().map(DescribeCommand::render).toList());
         return data;
