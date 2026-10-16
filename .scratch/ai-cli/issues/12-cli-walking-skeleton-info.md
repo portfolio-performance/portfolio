@@ -16,12 +16,14 @@ Every load runs the version guard, so a file newer than core's current version i
 
 ## Acceptance criteria
 
-- [ ] The new module builds in the existing Maven/Tycho reactor with no change to any existing core file
-- [ ] Its tests run through the in-process entry point only, using an injected clock and captured stdout and stderr
-- [ ] `pp-cli info --file <path>` returns the envelope with version, `maxSupportedVersion`, `format`, base currency, counts and pinned tag
-- [ ] `PP_FILE` is used when `--file` is absent; if neither is given, the result is a structured usage error
-- [ ] Format is detected from the extension and magic bytes for the unencrypted formats (`xml`, `xml-zip`, `binary`, including XML with ID references)
-- [ ] A file newer than supported, XML or binary, is refused with `file-version-unsupported`, `fileVersion` and `maxSupportedVersion`
-- [ ] A missing file, an unknown command and a bad option each give a problem+json error with a stable `code` and a non-zero exit code
-- [ ] stdout contains only JSON; core's `PortfolioLog` output and any other logs go to stderr
+- [x] The new module builds in the existing Maven/Tycho reactor with no change to any existing core file
+- [x] Its tests run through the in-process entry point only, using an injected clock and captured stdout and stderr
+- [x] `pp-cli info --file <path>` returns the envelope with version, `maxSupportedVersion`, `format`, base currency, counts and pinned tag
+- [x] `PP_FILE` is used when `--file` is absent; if neither is given, the result is a structured usage error
+- [x] Format is detected from the extension and magic bytes for the unencrypted formats (`xml`, `xml-zip`, `binary`, including XML with ID references)
+- [x] A file newer than supported, XML or binary, is refused with `file-version-unsupported`, `fileVersion` and `maxSupportedVersion`
+- [x] A missing file, an unknown command and a bad option each give a problem+json error with a stable `code` and a non-zero exit code
+- [x] stdout contains only JSON; core's `PortfolioLog` output and any other logs go to stderr
 - [ ] Exchange rates use the offline ECB data, with no online feeds, token store or persisted caches
+
+_Note: the offline-ECB criterion is not met yet. `info` never converts currencies, so nothing constrains rate sources; the converter setup arrives with the first rate-using command (ticket 16 onwards)._

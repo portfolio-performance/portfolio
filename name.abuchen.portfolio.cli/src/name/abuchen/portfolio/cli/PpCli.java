@@ -1,0 +1,87 @@
+package name.abuchen.portfolio.cli;
+
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
+import java.time.Clock;
+import java.util.Arrays;
+import java.util.Map;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+/**
+ * The AI-agent command line. {@link #execute} is the single in-process entry
+ * point; {@link #main} only adapts the process to it.
+ */
+public final class PpCli
+{
+    private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().serializeNulls().create();
+
+    private PpCli()
+    {
+    }
+
+    public static void main(String[] args)
+    {
+        var stdout = new PrintStream(System.out, false, StandardCharsets.UTF_8);
+        var stderr = new PrintStream(System.err, true, StandardCharsets.UTF_8);
+
+        int exitCode = execute(args, System.getenv(), System.in, stdout, stderr, Clock.systemDefaultZone());
+
+        stdout.flush();
+        System.exit(exitCode);
+    }
+
+    /**
+     * Runs one command. Stdout receives exactly one JSON document, either the
+     * response envelope or a problem+json error; everything else, including
+     * core's own log output, goes to stderr.
+     *
+     * @return the process exit code: 0 on success, 2 for usage errors, 1 for
+     *         other failures
+     */
+    public static int execute(String[] args, Map<String, String> env, InputStream stdin, PrintStream stdout,
+                    PrintStream stderr, Clock clock)
+    {
+        var originalOut = System.out; // NOSONAR
+        var originalErr = System.err; // NOSONAR
+
+        // core logs to the console; keep it away from the JSON on stdout
+        System.setOut(stderr);
+        System.setErr(stderr);
+        try
+        {
+            var parsed = ArgumentParser.parse(Arrays.asList(args));
+            var context = new CommandContext(parsed.options(), env, stdin, clock);
+            var response = parsed.command().handler().execute(context);
+
+            print(stdout, response.toEnvelope());
+            return 0;
+        }
+        catch (CliException e)
+        {
+            print(stdout, e.toProblem());
+            return e.getExitCode();
+        }
+        catch (RuntimeException | LinkageError e)
+        {
+            e.printStackTrace(stderr);
+            print(stdout, CliException.failure("internal-error", "Internal error", String.valueOf(e), 500)
+                            .toProblem());
+            return CliException.EXIT_FAILURE;
+        }
+        finally
+        {
+            System.setOut(originalOut);
+            System.setErr(originalErr);
+        }
+    }
+
+    private static void print(PrintStream stdout, Map<String, Object> document)
+    {
+        stdout.print(GSON.toJson(document));
+        stdout.print('\n');
+        stdout.flush();
+    }
+}
