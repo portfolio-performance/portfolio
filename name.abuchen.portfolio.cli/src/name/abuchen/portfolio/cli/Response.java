@@ -9,11 +9,17 @@ import java.util.Map;
  * The result of a successful command: the <code>{data, meta, warnings}</code>
  * envelope.
  */
-record Response(Object data, Map<String, Object> meta, List<Map<String, Object>> warnings)
+record Response(Object data, Map<String, Object> meta, List<Warning> warnings)
 {
     static Response of(Object data, Map<String, Object> meta)
     {
         return new Response(data, meta, new ArrayList<>());
+    }
+
+    Response warn(Warning warning)
+    {
+        warnings.add(warning);
+        return this;
     }
 
     Map<String, Object> toEnvelope()
@@ -21,7 +27,7 @@ record Response(Object data, Map<String, Object> meta, List<Map<String, Object>>
         var envelope = new LinkedHashMap<String, Object>();
         envelope.put("data", data);
         envelope.put("meta", meta);
-        envelope.put("warnings", warnings);
+        envelope.put("warnings", warnings.stream().map(Warning::toJson).toList());
         return envelope;
     }
 }

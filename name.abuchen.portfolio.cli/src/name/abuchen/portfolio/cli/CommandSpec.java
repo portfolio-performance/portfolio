@@ -6,15 +6,23 @@ import java.util.List;
 /**
  * Declares a command once: its parsing, dispatch and its description all
  * derive from this record. The data and meta schemas describe the two
- * variable parts of the response envelope.
+ * variable parts of the response envelope; the warnings are every code the
+ * command can emit.
  */
 record CommandSpec(String name, String summary, boolean usesClientFile, List<OptionSpec> declaredOptions,
-                Schema dataSchema, Schema metaSchema, CommandHandler handler)
+                Schema dataSchema, Schema metaSchema, List<WarningSpec> warnings, CommandHandler handler)
 {
     @FunctionalInterface
     interface CommandHandler
     {
         Response execute(CommandContext context) throws CliException;
+    }
+
+    /** A command that emits no warnings. */
+    CommandSpec(String name, String summary, boolean usesClientFile, List<OptionSpec> declaredOptions,
+                    Schema dataSchema, Schema metaSchema, CommandHandler handler)
+    {
+        this(name, summary, usesClientFile, declaredOptions, dataSchema, metaSchema, List.of(), handler);
     }
 
     /** All options the parser accepts, including the shared ones. */

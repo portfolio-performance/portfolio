@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.is;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -15,6 +16,9 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.google.gson.JsonObject;
+
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityPrice;
 
 /**
  * Every declared command and operation must show up in <code>describe</code>,
@@ -28,7 +32,7 @@ public class DescribeConsistencyTest
     public TemporaryFolder folder = new TemporaryFolder();
 
     /** Arguments that make the command succeed against a sample file. */
-    private static List<String> sampleArguments(String command, Path sampleFile)
+    private static List<String> sampleArguments(String command, Path sampleFile, Security instrument)
     {
         return switch (command)
         {
@@ -36,6 +40,7 @@ public class DescribeConsistencyTest
             case "describe" -> List.of("describe");
             case "instruments", "investment-accounts", "cash-accounts" ->
                 List.of(command, "--file", sampleFile.toString());
+            case "prices" -> List.of("prices", "--file", sampleFile.toString(), "--instrument", instrument.getUUID());
             default -> throw new AssertionError("Add sample arguments for command '" + command
                             + "' to DescribeConsistencyTest.sampleArguments");
         };
@@ -70,14 +75,18 @@ public class DescribeConsistencyTest
     @Test
     public void everyCommandsRealResponseConformsToItsDeclaredSchemas() throws IOException
     {
-        var sampleFile = ClientFiles.xml(folder.getRoot().toPath()).toPath();
+        // a stale price, so that prices emits a warning to check as well
+        var client = ClientFiles.sampleClient();
+        var instrument = client.getSecurities().get(0);
+        instrument.addPrice(new SecurityPrice(LocalDate.parse("2026-01-02"), 100_000_000L));
+        var sampleFile = ClientFiles.xml(folder.getRoot().toPath(), client).toPath();
 
         for (var element : describe().getAsJsonArray("commands"))
         {
             var command = element.getAsJsonObject();
             var name = command.get("name").getAsString();
 
-            var run = CliRun.run(sampleArguments(name, sampleFile).toArray(String[]::new));
+            var run = CliRun.run(sampleArguments(name, sampleFile, instrument).toArray(String[]::new));
             assertThat(name + " exit code, stdout: " + run.stdout, run.exitCode, is(0));
 
             var envelope = run.json().getAsJsonObject();
@@ -88,6 +97,17 @@ public class DescribeConsistencyTest
                             is(empty()));
             assertThat(name + " meta", SchemaValidator.validate(envelope.get("meta"), response.getAsJsonObject("meta")),
                             is(empty()));
+
+            var declaredWarnings = new TreeSet<String>();
+            command.getAsJsonArray("warnings")
+                            .forEach(w -> declaredWarnings.add(w.getAsJsonObject().get("code").getAsString()));
+            for (var warning : envelope.getAsJsonArray("warnings"))
+            {
+                var object = warning.getAsJsonObject();
+                assertThat(name + " warning members", object.has("code") && object.has("detail"), is(true));
+                assertThat(name + " warning " + object, declaredWarnings.contains(object.get("code").getAsString()),
+                                is(true));
+            }
         }
     }
 

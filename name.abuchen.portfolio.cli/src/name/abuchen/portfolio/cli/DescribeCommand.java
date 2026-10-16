@@ -48,7 +48,9 @@ final class DescribeCommand
                                                                     .property("valueName", Schema.string(null))
                                                                     .property("description", Schema.string(null))
                                                                     .optionalProperty("type",
-                                                                                    Schema.string("Value type, if declared."))
+                                                                                    Schema.string("Value type, if declared: integer or date (ISO yyyy-MM-dd, inclusive when used as a bound)."))
+                                                                    .optionalProperty("required",
+                                                                                    Schema.bool("True if the command fails without this option; absent otherwise."))
                                                                     .optionalProperty("default",
                                                                                     Schema.oneOfTypes("Value used when the option is absent.",
                                                                                                     "string", "number", "boolean"))
@@ -56,6 +58,9 @@ final class DescribeCommand
                                                                                     Schema.integer("Smallest accepted value."))
                                                                     .optionalProperty("maximum",
                                                                                     Schema.integer("Largest accepted value; absent if unbounded."))))
+                                    .property("warnings", Schema.array("Warning codes the command can emit in the warnings of its response.",
+                                                    Schema.object(null).property("code", Schema.string("Warning code."))
+                                                                    .property("description", Schema.string("When the warning is emitted."))))
                                     .property("response", Schema.object("Schemas of the response envelope parts.")
                                                     .property("data", jsonSchema())
                                                     .property("meta", jsonSchema()))))
@@ -101,6 +106,7 @@ final class DescribeCommand
         json.put("summary", command.summary());
         json.put("usesClientFile", command.usesClientFile());
         json.put("options", command.options().stream().map(DescribeCommand::render).toList());
+        json.put("warnings", command.warnings().stream().map(DescribeCommand::render).toList());
 
         var response = new LinkedHashMap<String, Object>();
         response.put("data", command.dataSchema().toJson());
@@ -132,6 +138,18 @@ final class DescribeCommand
             if (domain.maximum() != null)
                 json.put("maximum", domain.maximum());
         }
+        if (option.date())
+            json.put("type", "date");
+        if (option.required())
+            json.put("required", true);
+        return json;
+    }
+
+    private static Map<String, Object> render(WarningSpec warning)
+    {
+        var json = new LinkedHashMap<String, Object>();
+        json.put("code", warning.code());
+        json.put("description", warning.description());
         return json;
     }
 

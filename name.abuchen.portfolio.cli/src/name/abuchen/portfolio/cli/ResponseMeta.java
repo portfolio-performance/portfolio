@@ -20,11 +20,17 @@ final class ResponseMeta
 
     static final Schema SCHEMA = fileEnvelope();
 
-    static final Schema PAGED_SCHEMA = fileEnvelope().property("limit", Schema.integer("Page size used."))
-                    .property("offset", Schema.integer("Index of the first item returned."));
+    static final Schema PAGED_SCHEMA = pagedSchema();
 
     private ResponseMeta()
     {
+    }
+
+    /** A fresh copy, for a command that adds members of its own. */
+    static Schema pagedSchema()
+    {
+        return fileEnvelope().property("limit", Schema.integer("Page size used."))
+                        .property("offset", Schema.integer("Index of the first item returned."));
     }
 
     private static Schema envelope()

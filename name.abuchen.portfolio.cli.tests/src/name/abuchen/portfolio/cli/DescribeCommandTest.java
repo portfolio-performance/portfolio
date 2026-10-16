@@ -161,6 +161,55 @@ public class DescribeCommandTest
     }
 
     @Test
+    public void describePublishesRequiredFlagDateOptionsAndWarningCodesOfPrices()
+    {
+        var data = data(CliRun.run("describe"));
+        var prices = command(data, "prices");
+
+        var byName = new HashMap<String, JsonObject>();
+        prices.getAsJsonArray("options")
+                        .forEach(o -> byName.put(o.getAsJsonObject().get("name").getAsString(), o.getAsJsonObject()));
+        assertThat(byName.keySet(), is(Set.of("file", "instrument", "from", "to", "limit", "offset")));
+
+        var instrument = byName.get("instrument");
+        assertThat(instrument.get("required").getAsBoolean(), is(true));
+        assertThat(instrument.get("description").getAsString().toLowerCase(), containsString("reads only"));
+        assertThat(instrument.has("type"), is(false));
+
+        for (var date : List.of("from", "to"))
+        {
+            assertThat(byName.get(date).get("type").getAsString(), is("date"));
+            assertThat(byName.get(date).has("required"), is(false));
+        }
+        assertThat(byName.get("file").has("required"), is(false));
+
+        var warnings = prices.getAsJsonArray("warnings");
+        assertThat(warnings.size(), is(1));
+        assertThat(warnings.get(0).getAsJsonObject().get("code").getAsString(), is("stale-price"));
+        assertThat(warnings.get(0).getAsJsonObject().get("description").getAsString().isBlank(), is(false));
+
+        var meta = prices.getAsJsonObject("response").getAsJsonObject("meta");
+        assertThat(meta.getAsJsonArray("required").toString(),
+                        is("[\"fileVersion\",\"asOf\",\"limit\",\"offset\",\"to\"]"));
+        assertThat(meta.getAsJsonObject("properties").has("from"), is(true));
+
+        var response = prices.getAsJsonObject("response").getAsJsonObject("data");
+        assertThat(response.getAsJsonObject("properties").keySet(),
+                        is(Set.of("items", "total", "nextOffset", "instrument", "latest")));
+        assertThat(response.getAsJsonArray("required").toString(),
+                        is("[\"items\",\"total\",\"instrument\"]"));
+    }
+
+    @Test
+    public void commandsWithoutWarningsDescribeAnEmptyList()
+    {
+        var data = data(CliRun.run("describe"));
+
+        for (var name : List.of("info", "describe", "instruments", "investment-accounts", "cash-accounts"))
+            assertThat(name, command(data, name).getAsJsonArray("warnings").size(), is(0));
+    }
+
+    @Test
     public void describeWorksWithoutFileAndReturnsEnvelope()
     {
         var run = CliRun.run("describe");

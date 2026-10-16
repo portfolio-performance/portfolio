@@ -1,7 +1,9 @@
 package name.abuchen.portfolio.cli;
 
 import java.util.List;
+import java.util.Map;
 import java.util.OptionalInt;
+import java.util.function.Function;
 
 /** The page requested by <code>--limit</code> and <code>--offset</code>. */
 record Paging(int limit, long offset)
@@ -21,6 +23,22 @@ record Paging(int limit, long offset)
     /** One page of a list, and where the next one starts. */
     record Page<T>(List<T> items, int total, OptionalInt nextOffset)
     {
+        /** Adds <code>items</code>, <code>total</code> and, unless this is the last page, <code>nextOffset</code>. */
+        void putInto(Map<String, Object> data, Function<T, ?> renderer)
+        {
+            data.put("items", items.stream().map(renderer).toList());
+            data.put("total", total);
+            nextOffset.ifPresent(next -> data.put("nextOffset", next));
+        }
+    }
+
+    /** The members {@link Page#putInto} adds, for a command to extend with its own. */
+    static Schema pageSchema(String description, Schema item)
+    {
+        return Schema.object(description).property("items", Schema.array("The items of this page.", item))
+                        .property("total", Schema.integer("Number of items in the whole list."))
+                        .optionalProperty("nextOffset",
+                                        Schema.integer("Offset of the next page. Absent on the last page."));
     }
 
     static Paging parse(CommandContext context) throws CliException

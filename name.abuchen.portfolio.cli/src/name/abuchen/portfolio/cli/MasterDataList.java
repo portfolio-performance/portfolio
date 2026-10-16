@@ -51,16 +51,9 @@ final class MasterDataList
      */
     static <T> CommandSpec command(String name, String summary, Schema item, Source<T> source)
     {
-        return new CommandSpec(name, summary + ", ordered by name then UUID.", true, Paging.OPTIONS, dataSchema(item),
-                        ResponseMeta.PAGED_SCHEMA, context -> respond(context, source));
-    }
-
-    private static Schema dataSchema(Schema item)
-    {
-        return Schema.object("A page of the list.").property("items", Schema.array("The items of this page.", item))
-                        .property("total", Schema.integer("Number of items in the whole list."))
-                        .optionalProperty("nextOffset",
-                                        Schema.integer("Offset of the next page. Absent on the last page."));
+        return new CommandSpec(name, summary + ", ordered by name then UUID.", true, Paging.OPTIONS,
+                        Paging.pageSchema("A page of the list.", item), ResponseMeta.PAGED_SCHEMA,
+                        context -> respond(context, source));
     }
 
     private static <T> Response respond(CommandContext context, Source<T> source) throws CliException
@@ -70,12 +63,9 @@ final class MasterDataList
 
         var ordered = source.entities().apply(client).stream().sorted(source.ordering()).toList();
         var page = paging.of(ordered);
-        var renderer = source.renderer().apply(client);
 
         var data = new LinkedHashMap<String, Object>();
-        data.put("items", page.items().stream().map(renderer).toList());
-        data.put("total", page.total());
-        page.nextOffset().ifPresent(next -> data.put("nextOffset", next));
+        page.putInto(data, source.renderer().apply(client));
 
         return Response.of(data, ResponseMeta.paged(context, client, paging));
     }

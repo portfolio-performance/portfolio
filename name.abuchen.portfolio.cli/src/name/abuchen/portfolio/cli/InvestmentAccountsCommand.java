@@ -16,10 +16,11 @@ final class InvestmentAccountsCommand
                     .optionalProperty("note", Schema.string("Note, if set."))
                     .property("retired", Schema.bool("Whether the account is retired."));
 
+    static final MasterDataList.Source<Portfolio> SOURCE = new MasterDataList.Source<Portfolio>(Client::getPortfolios,
+                    Portfolio::getUUID, Portfolio::getName, client -> InvestmentAccountsCommand::render);
+
     static final CommandSpec SPEC = MasterDataList.command("investment-accounts",
-                    "Investment accounts: UUID, name, reference cash account, note and retired flag", ITEM,
-                    new MasterDataList.Source<Portfolio>(Client::getPortfolios, Portfolio::getUUID,
-                                    Portfolio::getName, client -> InvestmentAccountsCommand::render));
+                    "Investment accounts: UUID, name, reference cash account, note and retired flag", ITEM, SOURCE);
 
     private InvestmentAccountsCommand()
     {

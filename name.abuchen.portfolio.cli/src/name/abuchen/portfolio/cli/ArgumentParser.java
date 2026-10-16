@@ -59,6 +59,14 @@ final class ArgumentParser
             options.put(optionName, value);
         }
 
+        for (var option : command.options())
+        {
+            if (option.required() && !options.containsKey(option.name()))
+                throw CliException.usage("option-required", "Option required",
+                                "Command '" + name + "' needs the option '--" + option.name() + " <"
+                                                + option.valueName() + ">'.").with("option", option.name());
+        }
+
         return new Parsed(command, options);
     }
 

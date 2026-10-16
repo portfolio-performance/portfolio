@@ -31,10 +31,12 @@ final class InstrumentsCommand
                     .property("retired", Schema.bool("Whether the instrument is retired."))
                     .property("attributes", Schema.array("User-defined attributes that have a value.", ATTRIBUTE));
 
+    static final MasterDataList.Source<Security> SOURCE = new MasterDataList.Source<Security>(Client::getSecurities,
+                    Security::getUUID, Security::getName, InstrumentsCommand::renderer);
+
     static final CommandSpec SPEC = MasterDataList.command("instruments",
                     "Instruments (securities, indices, exchange rates): UUID, name, currency, ISIN, ticker, WKN, note, retired flag and attributes",
-                    ITEM, new MasterDataList.Source<Security>(Client::getSecurities, Security::getUUID,
-                                    Security::getName, InstrumentsCommand::renderer));
+                    ITEM, SOURCE);
 
     private InstrumentsCommand()
     {

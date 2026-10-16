@@ -15,10 +15,11 @@ final class CashAccountsCommand
                     .optionalProperty("note", Schema.string("Note, if set."))
                     .property("retired", Schema.bool("Whether the account is retired."));
 
+    static final MasterDataList.Source<Account> SOURCE = new MasterDataList.Source<Account>(Client::getAccounts,
+                    Account::getUUID, Account::getName, client -> CashAccountsCommand::render);
+
     static final CommandSpec SPEC = MasterDataList.command("cash-accounts",
-                    "Cash accounts: UUID, name, currency, note and retired flag", ITEM,
-                    new MasterDataList.Source<Account>(Client::getAccounts, Account::getUUID, Account::getName,
-                                    client -> CashAccountsCommand::render));
+                    "Cash accounts: UUID, name, currency, note and retired flag", ITEM, SOURCE);
 
     private CashAccountsCommand()
     {

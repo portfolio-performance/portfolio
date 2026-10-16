@@ -14,14 +14,14 @@ The first consumer is `pp-cli prices --instrument <ref>`. It returns the instrum
 
 ## Acceptance criteria
 
-- [ ] The resolver resolves instruments by UUID, ISIN, ticker and exact name, and investment and cash accounts by UUID and name, each kind searching only its own entities
-- [ ] `prices --instrument` resolves through it
-- [ ] An ambiguous reference gives `reference-ambiguous` listing every candidate; an unknown reference gives `reference-not-found`
-- [ ] A missing `--instrument` gives `option-required`; malformed dates give `invalid-option-value`; `--from` after `--to` gives `invalid-date-range`
-- [ ] The date range filters the history, which is paged with ticket 15's mechanism; `latest` is included whenever a price exists on or before the as-of date
-- [ ] A stale latest price produces a `stale-price` warning in `warnings`; retired and manual-feed instruments don't
-- [ ] Prices are decimals and dates are ISO 8601
-- [ ] `prices` is declared, appears in `describe` (including the required flag, the date option type and the warning codes) and passes its consistency test
+- [x] The resolver resolves instruments by UUID, ISIN, ticker and exact name, and investment and cash accounts by UUID and name, each kind searching only its own entities
+- [x] `prices --instrument` resolves through it
+- [x] An ambiguous reference gives `reference-ambiguous` listing every candidate; an unknown reference gives `reference-not-found`
+- [x] A missing `--instrument` gives `option-required`; malformed dates give `invalid-option-value`; `--from` after `--to` gives `invalid-date-range`
+- [x] The date range filters the history, which is paged with ticket 15's mechanism; `latest` is included whenever a price exists on or before the as-of date
+- [x] A stale latest price produces a `stale-price` warning in `warnings`; retired and manual-feed instruments don't
+- [x] Prices are decimals and dates are ISO 8601
+- [x] `prices` is declared, appears in `describe` (including the required flag, the date option type and the warning codes) and passes its consistency test
 
 ## Decisions
 

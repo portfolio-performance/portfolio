@@ -1,15 +1,19 @@
 package name.abuchen.portfolio.cli;
 
+import java.time.DateTimeException;
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
 /**
  * Declares one option that takes a value, e.g. <code>--file &lt;path&gt;</code>.
- * An integer option also declares its default and range; <code>describe</code>
- * publishes them and {@link #parseInteger} enforces them, so the two can't
- * drift.
+ * An integer option also declares its default and range, a date option its
+ * ISO format; <code>describe</code> publishes them and {@link #parseInteger}
+ * and {@link #parseDate} enforce them, so the two can't drift. A required
+ * option is checked by the argument parser.
  */
-record OptionSpec(String name, String valueName, String description, IntegerDomain integerDomain)
+record OptionSpec(String name, String valueName, String description, IntegerDomain integerDomain, boolean date,
+                boolean required)
 {
     /** The default and inclusive range of an integer option. The maximum may be null (unbounded). */
     record IntegerDomain(long defaultValue, long minimum, Long maximum)
@@ -31,15 +35,64 @@ record OptionSpec(String name, String valueName, String description, IntegerDoma
     // Long.parseLong alone would accept a leading '+' and non-ASCII digits
     private static final Pattern INTEGER = Pattern.compile("-?[0-9]+");
 
+    private static final Pattern ISO_DATE = Pattern.compile("[0-9]{4}-[0-9]{2}-[0-9]{2}");
+
     OptionSpec(String name, String valueName, String description)
     {
-        this(name, valueName, description, null);
+        this(name, valueName, description, null, false, false);
     }
 
     static OptionSpec integer(String name, String valueName, String description, long defaultValue, long minimum,
                     Long maximum)
     {
-        return new OptionSpec(name, valueName, description, new IntegerDomain(defaultValue, minimum, maximum));
+        return new OptionSpec(name, valueName, description, new IntegerDomain(defaultValue, minimum, maximum), false,
+                        false);
+    }
+
+    /** An ISO <code>yyyy-MM-dd</code> date. */
+    static OptionSpec date(String name, String description)
+    {
+        return new OptionSpec(name, "yyyy-MM-dd", description, null, true, false);
+    }
+
+    /** The same option, but the parser rejects a command line without it. */
+    OptionSpec asRequired()
+    {
+        return new OptionSpec(name, valueName, description, integerDomain, date, true);
+    }
+
+    private CliException invalid(String text, String expected)
+    {
+        return CliException.usage("invalid-option-value", "Invalid option value",
+                        "Option '--" + name + "' must be " + expected + ".").with("option", name).with("value",
+                                        text);
+    }
+
+    /**
+     * The value of this date option, or empty if the option is absent.
+     *
+     * @throws CliException
+     *             a usage error if the value is not a valid ISO date
+     */
+    Optional<LocalDate> parseDate(Optional<String> raw) throws CliException
+    {
+        if (raw.isEmpty())
+            return Optional.empty();
+
+        var text = raw.get();
+        if (ISO_DATE.matcher(text).matches())
+        {
+            try
+            {
+                return Optional.of(LocalDate.parse(text));
+            }
+            catch (DateTimeException e)
+            {
+                // a well-formed but impossible date, e.g. 2026-02-30: reported below
+            }
+        }
+
+        throw invalid(text, "a date in the form yyyy-MM-dd");
     }
 
     /**
@@ -68,8 +121,6 @@ record OptionSpec(String name, String valueName, String description, IntegerDoma
             }
         }
 
-        throw CliException.usage("invalid-option-value", "Invalid option value",
-                        "Option '--" + name + "' must be an integer " + integerDomain.rangeDescription() + ".")
-                        .with("option", name).with("value", text);
+        throw invalid(text, "an integer " + integerDomain.rangeDescription());
     }
 }
