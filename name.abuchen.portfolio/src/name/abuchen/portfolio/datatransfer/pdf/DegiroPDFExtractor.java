@@ -3115,4 +3115,4 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
     {
         return value == null ? null : value.replace('\u2019', '\'');
     }
-}
+}
