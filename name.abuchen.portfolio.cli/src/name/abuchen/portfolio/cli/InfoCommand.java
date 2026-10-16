@@ -1,22 +1,36 @@
 package name.abuchen.portfolio.cli;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import name.abuchen.portfolio.model.Client;
-
 final class InfoCommand
 {
-    /**
-     * The upstream release the bundled core is built from. Bump it together
-     * with the core when updating the CLI.
-     */
-    static final String PINNED_UPSTREAM_TAG = "0.88.0";
+    private static final Schema DATA = Schema.object("Facts about the client file.")
+                    .property("fileVersion", Schema.integer("Version of the file as read."))
+                    .property("maxSupportedVersion",
+                                    Schema.integer("Newest file version this CLI supports; newer files are refused."))
+                    .property("format",
+                                    Schema.enumOf("Detected file format.",
+                                                    Arrays.stream(FileFormat.values()).map(FileFormat::id).toList()))
+                    .property("baseCurrency", Schema.string("ISO currency code of the file's base currency."))
+                    .property("counts", Schema.object("Number of entities in the file.")
+                                    .property("instruments", Schema.integer("Instruments."))
+                                    .property("investmentAccounts", Schema.integer("Investment accounts."))
+                                    .property("cashAccounts", Schema.integer("Cash accounts."))
+                                    .property("transactions", Schema.integer("Transaction records."))
+                                    .property("taxonomies", Schema.integer("Taxonomies.")))
+                    .property("pinnedUpstreamTag",
+                                    Schema.string("Upstream release the bundled core is built from."));
+
+    private static final Schema META = Schema.object("Assumptions behind the response.")
+                    .property("fileVersion", Schema.integer("Version of the file as read."))
+                    .property("asOf", Schema.string("ISO date the command ran, from the clock."));
 
     static final CommandSpec SPEC = new CommandSpec("info",
                     "File version, supported version ceiling, format, base currency and entity counts.", true,
-                    List.of(), InfoCommand::execute);
+                    List.of(), DATA, META, InfoCommand::execute);
 
     private InfoCommand()
     {
@@ -36,11 +50,11 @@ final class InfoCommand
 
         var data = new LinkedHashMap<String, Object>();
         data.put("fileVersion", client.getFileVersionAfterRead());
-        data.put("maxSupportedVersion", Client.CURRENT_VERSION);
+        data.put("maxSupportedVersion", CoreVersion.MAX_SUPPORTED_FILE_VERSION);
         data.put("format", loaded.format().id());
         data.put("baseCurrency", client.getBaseCurrency());
         data.put("counts", counts);
-        data.put("pinnedUpstreamTag", PINNED_UPSTREAM_TAG);
+        data.put("pinnedUpstreamTag", CoreVersion.PINNED_UPSTREAM_TAG);
 
         var meta = new LinkedHashMap<String, Object>();
         meta.put("fileVersion", client.getFileVersionAfterRead());

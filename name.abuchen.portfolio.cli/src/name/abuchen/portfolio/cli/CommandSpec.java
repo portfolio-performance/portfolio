@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Declares a command once: its parsing, dispatch and (later) its description
- * all derive from this record.
+ * Declares a command once: its parsing, dispatch and its description all
+ * derive from this record. The data and meta schemas describe the two
+ * variable parts of the response envelope.
  */
 record CommandSpec(String name, String summary, boolean usesClientFile, List<OptionSpec> declaredOptions,
-                CommandHandler handler)
+                Schema dataSchema, Schema metaSchema, CommandHandler handler)
 {
     @FunctionalInterface
     interface CommandHandler
