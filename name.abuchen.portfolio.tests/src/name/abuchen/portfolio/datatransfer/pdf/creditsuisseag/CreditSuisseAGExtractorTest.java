@@ -73,8 +73,8 @@ public class CreditSuisseAGExtractorTest
                         hasDate("2020-06-08T18:32:46"), hasShares(900.00), //
                         hasSource("Kauf01.txt"), //
                         hasNote(null), //
-                        hasAmount("USD", 27776.51), hasGrossValue("USD", 27272.00), //
-                        hasTaxes("USD", 40.91), hasFees("USD", 463.60))));
+                        hasAmount("USD", 27776.51), hasGrossValue("USD", 27270.00), //
+                        hasTaxes("USD", 40.91), hasFees("USD", 463.60 + 2.00))));
 
         // check fee refund transaction
         assertThat(results, hasItem(feeRefund( //
@@ -114,7 +114,7 @@ public class CreditSuisseAGExtractorTest
         assertThat(results, hasItem(purchase( //
                         hasDate("2019-09-16T09:31:35"), hasShares(2000.00), //
                         hasSource("Kauf02.txt"), //
-                        hasNote(null), //
+                        hasNote("Stückzins 158 Tage USD 5,486.11"), //
                         hasAmount("USD", 190182.49), hasGrossValue("USD", 188486.11), //
                         hasTaxes("USD", 282.73), hasFees("USD", 1413.65))));
 
@@ -190,8 +190,8 @@ public class CreditSuisseAGExtractorTest
         assertThat(results, hasItem(sale( //
                         hasDate("2021-02-22T09:00:55"), hasShares(1000.00), //
                         hasSource("Verkauf02.txt"), //
-                        hasNote(null), //
-                        hasAmount("USD", 111718.52), hasGrossValue("USD", 112732.30), //
+                        hasNote("Stückzins 23 Tage USD 392.92"), //
+                        hasAmount("USD", 111629.14), hasGrossValue("USD", 112642.92), //
                         hasTaxes("USD", 168.96), hasFees("USD", 844.82))));
 
         // check fee refund transaction
