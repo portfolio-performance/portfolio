@@ -20,13 +20,11 @@ final class ResponseMeta
 
     static final Schema SCHEMA = fileEnvelope();
 
-    static final Schema PAGED_SCHEMA = pagedSchema();
-
     private ResponseMeta()
     {
     }
 
-    /** A fresh copy, for a command that adds members of its own. */
+    /** A fresh copy each call, so a command can add members of its own. */
     static Schema pagedSchema()
     {
         return fileEnvelope().property("limit", Schema.integer("Page size used."))

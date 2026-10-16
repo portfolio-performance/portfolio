@@ -12,11 +12,25 @@ import java.util.regex.Pattern;
  * and {@link #parseDate} enforce them, so the two can't drift. A required
  * option is checked by the argument parser.
  */
-record OptionSpec(String name, String valueName, String description, IntegerDomain integerDomain, boolean date,
-                boolean required)
+record OptionSpec(String name, String valueName, String description, Type type, boolean required)
 {
+    /** How the value of an option is read. */
+    sealed interface Type permits Text, IsoDate, IntegerDomain
+    {
+    }
+
+    /** A free-form value. */
+    record Text() implements Type
+    {
+    }
+
+    /** An ISO <code>yyyy-MM-dd</code> date. */
+    record IsoDate() implements Type
+    {
+    }
+
     /** The default and inclusive range of an integer option. The maximum may be null (unbounded). */
-    record IntegerDomain(long defaultValue, long minimum, Long maximum)
+    record IntegerDomain(long defaultValue, long minimum, Long maximum) implements Type
     {
         boolean contains(long value)
         {
@@ -39,26 +53,24 @@ record OptionSpec(String name, String valueName, String description, IntegerDoma
 
     OptionSpec(String name, String valueName, String description)
     {
-        this(name, valueName, description, null, false, false);
+        this(name, valueName, description, new Text(), false);
     }
 
     static OptionSpec integer(String name, String valueName, String description, long defaultValue, long minimum,
                     Long maximum)
     {
-        return new OptionSpec(name, valueName, description, new IntegerDomain(defaultValue, minimum, maximum), false,
-                        false);
+        return new OptionSpec(name, valueName, description, new IntegerDomain(defaultValue, minimum, maximum), false);
     }
 
-    /** An ISO <code>yyyy-MM-dd</code> date. */
     static OptionSpec date(String name, String description)
     {
-        return new OptionSpec(name, "yyyy-MM-dd", description, null, true, false);
+        return new OptionSpec(name, "yyyy-MM-dd", description, new IsoDate(), false);
     }
 
     /** The same option, but the parser rejects a command line without it. */
     OptionSpec asRequired()
     {
-        return new OptionSpec(name, valueName, description, integerDomain, date, true);
+        return new OptionSpec(name, valueName, description, type, true);
     }
 
     private CliException invalid(String text, String expected)
@@ -103,6 +115,7 @@ record OptionSpec(String name, String valueName, String description, IntegerDoma
      */
     long parseInteger(Optional<String> raw) throws CliException
     {
+        var integerDomain = (IntegerDomain) type;
         if (raw.isEmpty())
             return integerDomain.defaultValue();
 

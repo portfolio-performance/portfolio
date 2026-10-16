@@ -52,7 +52,7 @@ final class MasterDataList
     static <T> CommandSpec command(String name, String summary, Schema item, Source<T> source)
     {
         return new CommandSpec(name, summary + ", ordered by name then UUID.", true, Paging.OPTIONS,
-                        Paging.pageSchema("A page of the list.", item), ResponseMeta.PAGED_SCHEMA,
+                        Paging.pageSchema("A page of the list.", item), ResponseMeta.pagedSchema(),
                         context -> respond(context, source));
     }
 
