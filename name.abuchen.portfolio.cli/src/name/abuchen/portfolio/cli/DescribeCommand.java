@@ -18,13 +18,17 @@ final class DescribeCommand
                     "PDF import is not available.",
                     "Prices can't be written: there are no price writes, and quotes are neither fetched nor edited.");
 
-    private static final List<String[]> ENVIRONMENT = List.of(
-                    new String[] { "PP_FILE", "Client file to read, used when --file is not given." },
-                    new String[] { CommandContext.PASSWORD_VARIABLE,
+    private record EnvironmentVariable(String name, String description)
+    {
+    }
+
+    private static final List<EnvironmentVariable> ENVIRONMENT = List.of(
+                    new EnvironmentVariable("PP_FILE", "Client file to read, used when --file is not given."),
+                    new EnvironmentVariable(CommandContext.PASSWORD_VARIABLE,
                                     "Password for an encrypted client file. If it is not set, the password is read as"
                                                     + " one line from stdin (the prompt goes to stderr). There is no"
                                                     + " password option. A missing password gives password-required;"
-                                                    + " a wrong one gives incorrect-password." });
+                                                    + " a wrong one gives incorrect-password."));
 
     private static final Schema SCHEMA = Schema.object("Everything the tool can do.")
                     .property("pinnedUpstreamTag",
@@ -82,12 +86,7 @@ final class DescribeCommand
         data.put("pinnedUpstreamTag", CoreVersion.PINNED_UPSTREAM_TAG);
         data.put("maxSupportedVersion", CoreVersion.MAX_SUPPORTED_FILE_VERSION);
         data.put("limits", KNOWN_LIMITS);
-        data.put("environment", ENVIRONMENT.stream().map(variable -> {
-            var json = new LinkedHashMap<String, Object>();
-            json.put("name", variable[0]);
-            json.put("description", variable[1]);
-            return json;
-        }).toList());
+        data.put("environment", ENVIRONMENT.stream().map(DescribeCommand::render).toList());
         data.put("commands", commands.stream().map(DescribeCommand::render).toList());
         data.put("operations", operations.stream().map(DescribeCommand::render).toList());
         return data;
@@ -105,6 +104,14 @@ final class DescribeCommand
         response.put("data", command.dataSchema().toJson());
         response.put("meta", command.metaSchema().toJson());
         json.put("response", response);
+        return json;
+    }
+
+    private static Map<String, Object> render(EnvironmentVariable variable)
+    {
+        var json = new LinkedHashMap<String, Object>();
+        json.put("name", variable.name());
+        json.put("description", variable.description());
         return json;
     }
 
