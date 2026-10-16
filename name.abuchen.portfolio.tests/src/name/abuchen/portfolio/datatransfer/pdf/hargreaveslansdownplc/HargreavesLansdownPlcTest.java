@@ -1,34 +1,41 @@
 package name.abuchen.portfolio.datatransfer.pdf.hargreaveslansdownplc;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSkippedItems;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertNull;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
-import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.HargreavesLansdownPlcExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
-import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class HargreavesLansdownPlcTest
@@ -53,34 +60,18 @@ public class HargreavesLansdownPlcTest
         new AssertImportActions().check(results, "GBP");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("IE00B4X9L533"));
-        assertNull(security.getWkn());
-        assertThat(security.getTickerSymbol(), is("HMWO"));
-        assertThat(security.getName(), is("HSBC ETFs Plc MSCI World ETF GBP"));
-        assertThat(security.getCurrencyCode(), is("GBP"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B4X9L533"), hasWkn(null), hasTicker("HMWO"), //
+                        hasName("HSBC ETFs Plc MSCI World ETF GBP"), //
+                        hasCurrencyCode("GBP"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-10-15T09:47")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2539)));
-        assertThat(entry.getSource(), is("Kauf01.txt"));
-        assertThat(entry.getNote(), is("Ref.: B105372223-01000000"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("GBP", Values.Amount.factorize(57581.69))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("GBP", Values.Amount.factorize(57569.74))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("GBP", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("GBP", Values.Amount.factorize(11.95))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-10-15T09:47"), hasShares(2539.00), //
+                        hasSource("Kauf01.txt"), //
+                        hasNote("Ref.: B105372223-01000000"), //
+                        hasAmount("GBP", 57581.69), hasGrossValue("GBP", 57569.74), //
+                        hasTaxes("GBP", 0.00), hasFees("GBP", 11.95))));
     }
 
     @Test
@@ -103,34 +94,18 @@ public class HargreavesLansdownPlcTest
         new AssertImportActions().check(results, "GBP");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("GB00BG0QPJ30"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("Legal & General UK Index Class C - Accumulation (GBP)"));
-        assertThat(security.getCurrencyCode(), is("GBP"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("GB00BG0QPJ30"), hasWkn(null), hasTicker(null), //
+                        hasName("Legal & General UK Index Class C - Accumulation (GBP)"), //
+                        hasCurrencyCode("GBP"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-04-03T08:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1043.478)));
-        assertThat(entry.getSource(), is("Kauf02.txt"));
-        assertThat(entry.getNote(), is("Ref.: B918390061-01000000"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("GBP", Values.Amount.factorize(3000.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("GBP", Values.Amount.factorize(3000.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("GBP", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("GBP", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2017-04-03T08:00"), hasShares(1043.478), //
+                        hasSource("Kauf02.txt"), //
+                        hasNote("Ref.: B918390061-01000000"), //
+                        hasAmount("GBP", 3000.00), hasGrossValue("GBP", 3000.00), //
+                        hasTaxes("GBP", 0.00), hasFees("GBP", 0.00))));
     }
 
     @Test
@@ -153,34 +128,18 @@ public class HargreavesLansdownPlcTest
         new AssertImportActions().check(results, "GBP");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("GB00BKX5CN86"));
-        assertNull(security.getWkn());
-        assertThat(security.getTickerSymbol(), is("JE"));
-        assertThat(security.getName(), is("Just Eat plc Ordinary Shares 1p"));
-        assertThat(security.getCurrencyCode(), is("GBP"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("GB00BKX5CN86"), hasWkn(null), hasTicker("JE"), //
+                        hasName("Just Eat plc Ordinary Shares 1p"), //
+                        hasCurrencyCode("GBP"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-03-27T11:46")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(132)));
-        assertThat(entry.getSource(), is("Verkauf01.txt"));
-        assertThat(entry.getNote(), is("Ref.: S362136892-01000000"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("GBP", Values.Amount.factorize(981.87))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("GBP", Values.Amount.factorize(993.82))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("GBP", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("GBP", Values.Amount.factorize(11.95))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2019-03-27T11:46"), hasShares(132.00), //
+                        hasSource("Verkauf01.txt"), //
+                        hasNote("Ref.: S362136892-01000000"), //
+                        hasAmount("GBP", 981.87), hasGrossValue("GBP", 993.82), //
+                        hasTaxes("GBP", 0.00), hasFees("GBP", 11.95))));
     }
 
     @Test
@@ -203,33 +162,17 @@ public class HargreavesLansdownPlcTest
         new AssertImportActions().check(results, "GBP");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("IE00BKX55S42"));
-        assertNull(security.getWkn());
-        assertThat(security.getTickerSymbol(), is("VERX"));
-        assertThat(security.getName(), is("Vanguard Funds plc FTSE Developed Europe ex-UK UCITS ETF"));
-        assertThat(security.getCurrencyCode(), is("GBP"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BKX55S42"), hasWkn(null), hasTicker("VERX"), //
+                        hasName("Vanguard Funds plc FTSE Developed Europe ex-UK UCITS ETF"), //
+                        hasCurrencyCode("GBP"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-01-25T09:35")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5700)));
-        assertThat(entry.getSource(), is("Verkauf02.txt"));
-        assertThat(entry.getNote(), is("Ref.: S186039383-01000000"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("GBP", Values.Amount.factorize(172287.66))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("GBP", Values.Amount.factorize(172299.61))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("GBP", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("GBP", Values.Amount.factorize(11.95))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-01-25T09:35"), hasShares(5700.00), //
+                        hasSource("Verkauf02.txt"), //
+                        hasNote("Ref.: S186039383-01000000"), //
+                        hasAmount("GBP", 172287.66), hasGrossValue("GBP", 172299.61), //
+                        hasTaxes("GBP", 0.00), hasFees("GBP", 11.95))));
     }
 }
