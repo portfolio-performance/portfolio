@@ -35,12 +35,15 @@ A hand-off-ready spec for a CLI that lets AI agents (GitHub Copilot, Claude Code
 - [Which client file formats can core read and write headlessly, and what does tracking upstream format changes cost?](issues/07-format-support-facts.md): all seven formats load and save headlessly with format preserved; unencrypted binary skips the newer-version check, so the CLI must guard it; about 3.4 version bumps a year, so the CLI's core must match the installed desktop release.
 - [What are the options for packaging a headless Java 21 CLI built from this Tycho repo?](issues/09-packaging-options.md): about 0.4 to 0.5 s per call; pdfbox 1.8/3.x clash on any flat classpath; Tycho `list-dependencies` collects jars; jlink only for the runtime; reusing the installed app's JRE and jars is possible from outside the `.app`.
 - [How is the CLI packaged, installed and launched?](issues/10-packaging-distribution.md): self-contained per-platform bundle (collected jars + bundled jlink runtime + thin launcher), built locally for macOS arm64 and Windows x64; no pdfbox/PDF import; one idempotent install/update script per platform wires `pp-cli` onto PATH, AppCDS at install time; per-platform build/install/launch docs are a required deliverable. See [ADR 0003](../../docs/adr/0003-package-cli-as-self-contained-per-platform-bundle.md).
+- [Does the spec include an MCP server over the CLI operations?](issues/11-mcp-surface.md): no. MCP is ruled out of v1; both required clients shell out to `pp-cli` on PATH and `describe` covers tool discovery. Upstream #5870's MCP is an in-app HTTP endpoint needing the running app with the file open, so it neither replaces the headless CLI nor supplies a reusable headless MCP; a future effort would re-grill it.
 
 ## Not yet specified
 
-<!-- empty: packaging, format/version support and MCP graduated into tickets 07 to 11; 11 (MCP) remains open -->
+<!-- empty: every ticket (01-11) is resolved; the spec is hand-off-ready -->
 
 ## Out of scope
+
+- An MCP server over the CLI (ticket 11): ruled out of v1; a possible later effort, re-grilled from scratch.
 
 - AI skills that teach agents to use the CLI: to be written later, possibly in an external repository.
 - Live sync with a running desktop app (e.g. an MCP server inside PP): a possible later effort.
