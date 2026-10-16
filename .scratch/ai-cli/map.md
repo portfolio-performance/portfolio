@@ -19,6 +19,7 @@ A hand-off-ready spec for a CLI that lets AI agents (GitHub Copilot, Claude Code
 - Plain XML is required; compressed, binary and encrypted formats are nice-to-have, added gradually.
 - Must handle current and future file versions, refusing cleanly on a newer-than-supported file.
 - A Java runtime (or bundled JRE) is acceptable.
+- Ship per-platform build, install and launch instructions (macOS arm64 and Windows x64) with the CLI.
 - Skills to consult: `grilling` + `domain-modeling` for grilling tickets; `research` for research tickets.
 
 ## Decisions so far
@@ -33,10 +34,11 @@ A hand-off-ready spec for a CLI that lets AI agents (GitHub Copilot, Claude Code
 - [How do backup and dry-run behave on writes?](issues/06-write-safety.md): one safe-write sequence (lock, `Checker` no-new-issues check, timestamped backup in `backups/`, temp file plus atomic rename, hash/mtime re-check, `lsof` warning); writes applied by default with opt-in `--dry-run` reporting entity-level changes; format kept, newer files refused; minimal `restore`.
 - [Which client file formats can core read and write headlessly, and what does tracking upstream format changes cost?](issues/07-format-support-facts.md): all seven formats load and save headlessly with format preserved; unencrypted binary skips the newer-version check, so the CLI must guard it; about 3.4 version bumps a year, so the CLI's core must match the installed desktop release.
 - [What are the options for packaging a headless Java 21 CLI built from this Tycho repo?](issues/09-packaging-options.md): about 0.4 to 0.5 s per call; pdfbox 1.8/3.x clash on any flat classpath; Tycho `list-dependencies` collects jars; jlink only for the runtime; reusing the installed app's JRE and jars is possible from outside the `.app`.
+- [How is the CLI packaged, installed and launched?](issues/10-packaging-distribution.md): self-contained per-platform bundle (collected jars + bundled jlink runtime + thin launcher), built locally for macOS arm64 and Windows x64; no pdfbox/PDF import; one idempotent install/update script per platform wires `pp-cli` onto PATH, AppCDS at install time; per-platform build/install/launch docs are a required deliverable. See [ADR 0003](../../docs/adr/0003-package-cli-as-self-contained-per-platform-bundle.md).
 
 ## Not yet specified
 
-<!-- empty: packaging, format/version support and MCP graduated into tickets 07 to 11 -->
+<!-- empty: packaging, format/version support and MCP graduated into tickets 07 to 11; 11 (MCP) remains open -->
 
 ## Out of scope
 
