@@ -57,6 +57,22 @@ _Avoid_: deactivated, inactive, archived
 A user-defined, typed field (text, number, percent, amount, date, ...) that the user attaches to **Instruments**, such as a fund's TER or vendor.
 _Avoid_: custom field, property
 
+**Reference**:
+A string an agent uses to name one **Master data** entity: its UUID (canonical), or as a read-only convenience an ISIN, ticker or exact name. Unrelated to **Reference cash account**.
+_Avoid_: identifier, selector, lookup key
+
+**Price**:
+The value of one unit of an **Instrument** on a date, in the instrument's currency.
+_Avoid_: quote, rate
+
+**Latest price**:
+The **Price** that valuation uses as of a given date.
+_Avoid_: current quote, last quote
+
+**Stale price**:
+A **Latest price** old enough that figures based on it need a caveat.
+_Avoid_: outdated quote, old price
+
 **Transaction record**:
 One business event as shown to and edited by agents: a buy or sell with both its **Investment account** side and its **Cash account** side, or a transfer with source and target. It is created, changed and deleted as a whole, never one side at a time.
 _Avoid_: leg, cross entry, half-transaction
