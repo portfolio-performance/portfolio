@@ -18,13 +18,13 @@ UUIDs are canonical in all output. List commands share pagination: `--limit` (de
 
 ## Acceptance criteria
 
-- [ ] All three commands return the documented fields for a fixture built with the shared JUnit builders
-- [ ] `--limit` and `--offset` page through results, and `total` and `nextOffset` are correct, with `nextOffset` absent on the last page
-- [ ] Ordering is stable across calls: name (case-insensitive, ordinal), then UUID
-- [ ] Null and blank optional strings are omitted; `name` and `retired` are always present, and `attributes` is always present (`[]` when empty)
-- [ ] Invalid `--limit`/`--offset` values give the `invalid-option-value` usage error; an offset past the end gives an empty page
-- [ ] Attributes use the typed encoding below; unsupported, orphaned and mismatched values are skipped without failing the command
-- [ ] All three commands are declared, appear in `describe` (including option types, defaults and ranges) and pass its consistency test
+- [x] All three commands return the documented fields for a fixture built with the shared JUnit builders
+- [x] `--limit` and `--offset` page through results, and `total` and `nextOffset` are correct, with `nextOffset` absent on the last page
+- [x] Ordering is stable across calls: name (case-insensitive, ordinal), then UUID
+- [x] Null and blank optional strings are omitted; `name` and `retired` are always present, and `attributes` is always present (`[]` when empty)
+- [x] Invalid `--limit`/`--offset` values give the `invalid-option-value` usage error; an offset past the end gives an empty page
+- [x] Attributes use the typed encoding below; unsupported, orphaned and mismatched values are skipped without failing the command
+- [x] All three commands are declared, appear in `describe` (including option types, defaults and ranges) and pass its consistency test
 
 ## Decisions
 
