@@ -24,6 +24,6 @@ Every load runs the version guard, so a file newer than core's current version i
 - [x] A file newer than supported, XML or binary, is refused with `file-version-unsupported`, `fileVersion` and `maxSupportedVersion`
 - [x] A missing file, an unknown command and a bad option each give a problem+json error with a stable `code` and a non-zero exit code
 - [x] stdout contains only JSON; core's `PortfolioLog` output and any other logs go to stderr
-- [ ] Exchange rates use the offline ECB data, with no online feeds, token store or persisted caches
+- [ ] Exchange rates come from the transaction, exchange-rate instruments and the desktop app's ECB cache, read-only, never from core's built-in data, with no online feeds or token store (ADR 0005)
 
-_Note: the offline-ECB criterion is not met yet. `info` never converts currencies, so nothing constrains rate sources; the converter setup arrives with the first rate-using command (ticket 16 onwards)._
+_Note: the exchange-rate criterion is not met yet. `info` never converts currencies, so nothing constrains rate sources; ticket 17 delivers the rate setup with the first converting command and closes this criterion._

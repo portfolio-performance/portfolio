@@ -18,5 +18,5 @@ A separate `cash` section lists cash account balances. Totals are in the base cu
 - [ ] `--investment-account`, `--by-account` and `--include-zero` behave as described
 - [ ] The `cash` section lists cash account balances at the date
 - [ ] Totals are in the base currency or `--currency`, rows carry native amounts, and converted amounts carry the rate and rate date
-- [ ] Stale prices and ECB fallback produce warnings
+- [ ] Stale prices and stale, missing or unavailable exchange rates produce warnings, using ticket 17's rate rules (ADR 0005); this ticket decides how a total behaves when one of its parts has no rate
 - [ ] `holdings` is declared, appears in `describe` and passes its consistency test

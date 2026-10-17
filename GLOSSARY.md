@@ -24,6 +24,10 @@ _Avoid_: cash account, bank account
 A tradable instrument (stock, fund, bond, crypto, ...) that portfolios hold and transactions refer to.
 _Avoid_: stock, asset
 
+**Exchange-rate instrument**:
+A **Security** with a target currency, whose prices are the exchange rates between its currency and that target currency. Users create them to supply rates the built-in sources lack.
+_Avoid_: currency pair, FX security
+
 ## AI/CLI vocabulary
 
 Terms used on the external surface for AI agents, aligned with the upstream REST API proposal (PR #5870). They name the same things as the entries above.
@@ -74,5 +78,13 @@ A **Latest price** old enough that figures based on it need a caveat.
 _Avoid_: outdated quote, old price
 
 **Transaction record**:
-One business event as shown to and edited by agents: a buy or sell with both its **Investment account** side and its **Cash account** side, or a transfer with source and target. It is created, changed and deleted as a whole, never one side at a time.
+One business event as shown to and edited by agents: a buy or sell with both its **Investment account** side and its **Cash account** side, or a transfer with its from and to accounts. It is created, changed and deleted as a whole, never one side at a time.
 _Avoid_: leg, cross entry, half-transaction
+
+**Side**:
+One stored transaction within a **Transaction record**. A buy or sell has an **Investment account** side and a **Cash account** side, a transfer has an outgoing and an incoming side, and every other record has exactly one side. Any side's UUID identifies the whole record.
+_Avoid_: leg, half, booking
+
+**Transfer kind**:
+Whether a transfer moves money between **Cash accounts** (cash) or **Instruments** between **Investment accounts** (security).
+_Avoid_: transfer type (type is the record's type, which is TRANSFER for both kinds)

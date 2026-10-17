@@ -74,7 +74,7 @@ I need a command an agent can run from its shell against a closed client file. I
 ### Reading transactions
 
 34. As an AI agent, I want each business event returned as one **transaction record**, so that a buy shows both its investment-account side and its cash-account side together.
-35. As an AI agent, I want transfers returned as one record with source, target and a `kind`, so that I don't double-count them.
+35. As an AI agent, I want transfers returned as one record with its from and to accounts and a `kind`, so that I don't double-count them.
 36. As an AI agent, I want to filter transactions by account, instrument, date range and type, so that I fetch only what I need.
 37. As an AI agent, I want `type` to use the core enum names and to be documented as an open enum, so that a new upstream type doesn't break my parsing.
 38. As an AI agent, I want each record to carry its `id` and the UUIDs of all its sides, so that I can address it in later writes using either side.
@@ -103,7 +103,7 @@ I need a command an agent can run from its shell against a closed client file. I
 
 56. As an AI agent, I want every response in the `{data, meta, warnings}` envelope, so that I parse one shape everywhere.
 57. As an AI agent, I want `meta` to carry the file version, as-of date, reporting currency, resolved period and cost method, so that I can state my assumptions to the user.
-58. As an AI agent, I want warnings for stale prices and for exchange rates that fell back to the built-in ECB data, so that I can qualify my figures.
+58. As an AI agent, I want warnings for stale prices and for exchange rates that are stale, missing or unavailable, so that I can qualify my figures.
 59. As an AI agent, I want amounts as decimals with an ISO currency, dates in ISO 8601, and rates as unrounded fractions, so that I never decode internal scaled integers.
 60. As an AI agent, I want JSON only on stdout, with logs and warnings on stderr, so that core logging never corrupts my parse.
 61. As an AI agent, I want structured (problem+json style) errors with a stable `code` and a non-zero exit code, so that I can branch on failures.
@@ -173,8 +173,8 @@ I need a command an agent can run from its shell against a closed client file. I
 - One JVM per command, no daemon. No code dependency on PR #5870. The external vocabulary (*instrument*, *investment account*, *cash account*, *holding*, *transaction record*) and the camelCase JSON shapes follow #5870 where cheap, with no compatibility promise. Internal code keeps the core terms (Security, Portfolio, Account).
 - The CLI module handles the core caveats itself:
   - It redirects `PortfolioLog`'s stdout output to stderr.
-  - It uses the offline ECB rates; a fallback to the built-in 2015 data is reported as a warning.
-  - It doesn't use online feeds, the login token store or persisted ECB caches.
+  - It takes exchange rates from the transaction itself, then from exchange-rate instruments in the client file, then from the desktop app's ECB cache, read-only (`PP_ECB_RATES`, or core's own location under the default workspace). It never uses core's built-in 2015 data or its silent 1.0 fallback (ADR 0005).
+  - It doesn't use online feeds or the login token store, and never writes the ECB cache.
 
 ### Command layer: a single in-process entry point
 
@@ -195,7 +195,7 @@ I need a command an agent can run from its shell against a closed client file. I
   - `allocation --taxonomy --date`.
   - `describe`.
 - Core building blocks: the client snapshot (holdings and grouping by taxonomy), the performance index (TTWROR, IRR), the lazy per-security performance snapshot (per-instrument records), reporting-period parsing from a code string, and the exchange-rate provider factory with the currency converter.
-- Transaction records: a buy or sell joins its investment-account and cash-account sides. A transfer carries its source, target and a `kind`. The record `id` is the investment-account side for buys and sells, the outgoing side for transfers, and the transaction itself otherwise. Every side's UUID is listed.
+- Transaction records: a buy or sell joins its investment-account and cash-account sides. A transfer carries its `from` and `to` accounts and a `kind` (`cash` or `security`). The record `id` is the investment-account side for buys and sells, the outgoing side for transfers, and the transaction itself otherwise. Every side's UUID is listed (details in ticket 17).
 - Reference resolution: the module adds its own resolver, because core has none. It accepts a UUID (canonical) or an ISIN, ticker or exact name. It never guesses: an ambiguous match is an error that lists the candidates. Name, ISIN and ticker lookups are allowed only on reads. A UUID match wins outright. Otherwise ISIN, ticker and name matches are pooled with no precedence. Matching is case-insensitive and includes retired entities. The errors are `reference-not-found` and `reference-ambiguous` (details in ticket 16).
 - Prices: `latest` is the price valuation uses as of today, and is omitted when there is none. The history is paged like the lists. A latest price more than 7 days old produces a `stale-price` warning, unless the instrument is retired or priced manually. Warnings are `{code, detail, …}` objects, and `describe` lists each command's warning codes (details in ticket 16).
 - Currency rules:
@@ -203,6 +203,7 @@ I need a command an agent can run from its shell against a closed client file. I
   - Aggregates are in the base currency or `--currency`, and holding rows also carry the native amount.
   - Rate date: the transaction date (or the transaction's own forex rate) for transactions, the as-of date for holdings and allocation, and the engine's own behavior for performance.
   - Every converted amount carries the rate and rate date used.
+  - Rate sources, in order: the transaction's own rate, exchange-rate instruments, the desktop app's ECB cache. A rate step counts only if dated on or before the day needed; the rate date is the oldest step's date. A missing rate is never guessed (the figure is left out, with an `exchange-rate-missing` warning); a rate more than 7 days old is used with a `stale-exchange-rate` warning; a missing or unreadable cache gives `exchange-rate-cache-unavailable`. `meta.exchangeRates` names the cache and its latest rate date (ADR 0005).
 - Periods: `--from`/`--to` (`--to` defaults to today from the injected clock) or `--period <code>`. Passing both is a usage error, and the resolved dates are always echoed.
 - Cost method: `--cost-method fifo|moving-average`, default FIFO, always echoed in `meta`.
 - Pagination (shared by every list command):
