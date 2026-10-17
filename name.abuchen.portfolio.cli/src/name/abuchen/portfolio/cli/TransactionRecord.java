@@ -44,6 +44,20 @@ record TransactionRecord(String id, String type, Optional<String> kind, Transact
     static final String CASH = "cash";
     static final String SECURITY = "security";
 
+    /** The incoming side of a cash transfer between accounts of different currencies. */
+    Optional<Transaction> crossCurrencyIncoming()
+    {
+        return incoming.filter(side -> kind.filter(CASH::equals).isPresent() && side.getCurrencyCode() != null
+                        && !side.getCurrencyCode().equals(primary.getCurrencyCode()));
+    }
+
+    /** Portfolio sides always have shares; of the cash sides only a dividend, and only when it states them. */
+    boolean hasShares()
+    {
+        return primary instanceof PortfolioTransaction || primary instanceof AccountTransaction account
+                        && account.getType() == AccountTransaction.Type.DIVIDENDS && account.getShares() != 0;
+    }
+
     /** Whether any side is in the given investment account. */
     boolean touchesInvestmentAccount(String uuid)
     {

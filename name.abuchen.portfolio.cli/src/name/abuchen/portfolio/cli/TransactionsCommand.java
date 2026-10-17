@@ -15,6 +15,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -174,20 +175,9 @@ final class TransactionsCommand
 
         var client = context.loadClient().client();
 
-        var investmentAccount = Optional.<Portfolio>empty();
-        if (context.option(INVESTMENT_ACCOUNT.name()).isPresent())
-            investmentAccount = Optional.of(References.investmentAccount(client, INVESTMENT_ACCOUNT.name(),
-                            context.option(INVESTMENT_ACCOUNT.name()).get()));
-
-        var cashAccount = Optional.<Account>empty();
-        if (context.option(CASH_ACCOUNT.name()).isPresent())
-            cashAccount = Optional.of(References.cashAccount(client, CASH_ACCOUNT.name(),
-                            context.option(CASH_ACCOUNT.name()).get()));
-
-        var instrument = Optional.<Security>empty();
-        if (context.option(INSTRUMENT.name()).isPresent())
-            instrument = Optional.of(References.instrument(client, INSTRUMENT.name(),
-                            context.option(INSTRUMENT.name()).get()));
+        var investmentAccount = resolve(context, INVESTMENT_ACCOUNT, client, References::investmentAccount);
+        var cashAccount = resolve(context, CASH_ACCOUNT, client, References::cashAccount);
+        var instrument = resolve(context, INSTRUMENT, client, References::instrument);
 
         var filter = new Filter(range, investmentAccount, cashAccount, instrument, types);
         var records = TransactionRecord.allOf(client).stream().filter(filter::test)
@@ -213,6 +203,21 @@ final class TransactionsCommand
         var response = Response.of(data, meta);
         rates.warnings().forEach(response::warn);
         return response;
+    }
+
+    @FunctionalInterface
+    private interface Resolver<T>
+    {
+        T resolve(Client client, String option, String value) throws CliException;
+    }
+
+    /** What the option refers to, or empty if the option is absent. */
+    private static <T> Optional<T> resolve(CommandContext context, OptionSpec option, Client client,
+                    Resolver<T> resolver) throws CliException
+    {
+        var value = context.option(option.name());
+        return value.isPresent() ? Optional.of(resolver.resolve(client, option.name(), value.get()))
+                        : Optional.empty();
     }
 
     /** The upper-cased types of the comma-separated list; empty if the option is absent. */
@@ -262,7 +267,7 @@ final class TransactionsCommand
         json.put("amount", Decimals.of(primary.getAmount(), Values.Amount));
         json.put("currencyCode", currencyCode);
 
-        var crossCurrency = crossCurrencyTransfer(record);
+        var crossCurrency = record.crossCurrencyIncoming();
         var transferRate = crossCurrency.flatMap(incoming -> primary.getUnit(Transaction.Unit.Type.GROSS_VALUE)
                         .filter(unit -> unit.getForex().getCurrencyCode().equals(incoming.getCurrencyCode())));
         crossCurrency.ifPresent(incoming -> {
@@ -273,7 +278,7 @@ final class TransactionsCommand
 
         if (primary.getSecurity() != null)
             json.put("instrument", primary.getSecurity().getUUID());
-        if (hasShares(primary))
+        if (record.hasShares())
             json.put("shares", Decimals.of(primary.getShares(), Values.Share));
         record.investmentAccount().ifPresent(uuid -> json.put("investmentAccount", uuid));
         record.cashAccount().ifPresent(uuid -> json.put("cashAccount", uuid));
@@ -292,21 +297,6 @@ final class TransactionsCommand
                         .ifPresent(converted -> json.put("converted", converted));
 
         return json;
-    }
-
-    /** Portfolio sides always have shares; of the cash sides only a dividend, and only when it states them. */
-    private static boolean hasShares(Transaction primary)
-    {
-        return primary instanceof PortfolioTransaction || primary instanceof AccountTransaction account
-                        && account.getType() == AccountTransaction.Type.DIVIDENDS && account.getShares() != 0;
-    }
-
-    /** The incoming side of a cash transfer between accounts of different currencies. */
-    private static Optional<Transaction> crossCurrencyTransfer(TransactionRecord record)
-    {
-        return record.incoming().filter(incoming -> record.kind().filter(TransactionRecord.CASH::equals).isPresent()
-                        && incoming.getCurrencyCode() != null
-                        && !incoming.getCurrencyCode().equals(record.primary().getCurrencyCode()));
     }
 
     private static Map<String, Object> render(Transaction.Unit unit)
@@ -366,7 +356,7 @@ final class TransactionsCommand
                         .filter(unit -> unit.getForex() != null && target.equals(unit.getForex().getCurrencyCode()))
                         .map(Transaction.Unit::getExchangeRate);
 
-        var transfer = crossCurrencyTransfer(record).filter(incoming -> target.equals(incoming.getCurrencyCode()))
+        var transfer = record.crossCurrencyIncoming().filter(incoming -> target.equals(incoming.getCurrencyCode()))
                         .flatMap(incoming -> record.primary().getUnit(Transaction.Unit.Type.GROSS_VALUE))
                         .map(Transaction.Unit::getExchangeRate);
 
