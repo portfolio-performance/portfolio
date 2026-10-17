@@ -1,11 +1,14 @@
 package name.abuchen.portfolio.online.impl;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 import name.abuchen.portfolio.model.LatestSecurityPrice;
@@ -57,44 +60,53 @@ public class MoexISSCommon
             var idxLow = findColumnIndex(columns, "LOW"); //$NON-NLS-1$
             var idxHigh = findColumnIndex(columns, "HIGH"); //$NON-NLS-1$
             var idxVolume = findColumnIndex(columns, "VOLUME"); //$NON-NLS-1$
+            var idxFaceValue = findColumnIndex(columns, "FACEVALUE"); //$NON-NLS-1$
             if (idxDate == -1 || idxPrice == -1) return result;
+            if (Boolean.TRUE.equals(isBond) && idxFaceValue == -1) return result;
 
             for (var rowEl : data) 
             {
-                var row = rowEl.getAsJsonArray();
-                var dateEl = row.get(idxDate);
-                var priceEl = row.get(idxPrice);
-                var lowEl = row.get(idxLow);
-                var highEl = row.get(idxHigh);
-                var volumeEl = row.get(idxVolume);
-
-                if (!dateEl.isJsonNull() && !priceEl.isJsonNull()) 
+                try
                 {
-                    // bond prices return by api as percentage so multiple to 10
-                    var bondMultiplier = Boolean.TRUE.equals(isBond) ? 10 : 1;
+                    var row = rowEl.getAsJsonArray();
+                    var dateEl = getCell(row, idxDate);
+                    var priceEl = getCell(row, idxPrice);
+                    if (dateEl == null || priceEl == null) continue;
+
+                    var faceValue = Boolean.TRUE.equals(isBond) ? getDecimal(getCell(row, idxFaceValue)) : null;
+                    if (Boolean.TRUE.equals(isBond) && (faceValue == null || faceValue.signum() <= 0)) continue;
+
                     var date = LocalDate.parse(dateEl.getAsString(), DATE_FMT);
-                    var price = priceEl.getAsDouble(); 
-                    long priceValue = asPrice(price) * bondMultiplier;
-                    var lst = new LatestSecurityPrice(date, priceValue);
-                    if(!lowEl.isJsonNull())
+                    var price = getDecimal(priceEl);
+                    if (price == null) continue;
+
+                    // Bond CLOSE/LOW/HIGH are percentages of FACEVALUE. The resulting clean quote is in FACEUNIT
+                    // currency, which must match the security's currency. ACCINT is intentionally not included.
+                    var lst = new LatestSecurityPrice(date, asPrice(price, faceValue),
+                                    LatestSecurityPrice.NOT_AVAILABLE, LatestSecurityPrice.NOT_AVAILABLE,
+                                    LatestSecurityPrice.NOT_AVAILABLE);
+                    var low = getDecimal(getCell(row, idxLow));
+                    if (low != null)
                     {
-                        var low = lowEl.getAsDouble();
-                        var lowValue = asPrice(low) * bondMultiplier;
-                        lst.setLow(lowValue);
+                        lst.setLow(asPrice(low, faceValue));
                     }
-                    if(!highEl.isJsonNull())
+                    var high = getDecimal(getCell(row, idxHigh));
+                    if (high != null)
                     {
-                        var high = highEl.getAsDouble();
-                        var highValue = asPrice(high) * bondMultiplier;
-                        lst.setHigh(highValue);
+                        lst.setHigh(asPrice(high, faceValue));
                     }
-                    if(!volumeEl.isJsonNull())
+                    var volumeEl = getCell(row, idxVolume);
+                    if (volumeEl != null)
                     {
                         var volume = volumeEl.getAsLong();
                         var volumeValue = asVolume(volume);
                         lst.setVolume(volumeValue);
                     }
                     result.add(lst);
+                }
+                catch (Exception ignored)
+                {
+                    // Ignore malformed rows while continuing to parse subsequent history entries.
                 }
             }
         } 
@@ -104,15 +116,22 @@ public class MoexISSCommon
         return result;
     }
 
-    private long asPrice(Object number)
+    private long asPrice(BigDecimal price, BigDecimal faceValue)
     {
-        if (number == null)
-            return LatestSecurityPrice.NOT_AVAILABLE;
+        var amount = faceValue == null ? price : price.multiply(faceValue).movePointLeft(2);
+        return amount.movePointRight(Values.Quote.precision()).setScale(0, RoundingMode.HALF_UP).longValueExact();
+    }
 
-        if (number instanceof Number n)
-            return Values.Quote.factorize(Math.round(n.doubleValue() * 10000) / 10000d);
+    private BigDecimal getDecimal(JsonElement element)
+    {
+        return element == null || element.isJsonNull() ? null : element.getAsBigDecimal();
+    }
 
-        throw new IllegalArgumentException(number.getClass().toString());
+    private JsonElement getCell(JsonArray row, int index)
+    {
+        if (index < 0 || index >= row.size()) return null;
+        var cell = row.get(index);
+        return cell.isJsonNull() ? null : cell;
     }
    
     
