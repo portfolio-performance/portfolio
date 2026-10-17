@@ -40,6 +40,12 @@ final class CommandContext
         return Optional.ofNullable(options.get(name));
     }
 
+    /** Whether the switch was given. */
+    boolean flag(OptionSpec option)
+    {
+        return options.containsKey(option.name());
+    }
+
     Optional<String> env(String name)
     {
         return Optional.ofNullable(env.get(name));

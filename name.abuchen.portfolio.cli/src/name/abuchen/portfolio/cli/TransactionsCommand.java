@@ -21,7 +21,6 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 
 /**
@@ -79,18 +78,6 @@ final class TransactionsCommand
                                         "Unrounded as stored: forexAmount times exchangeRate is approximately amount."));
     }
 
-    private static Schema converted()
-    {
-        return Schema.object("The amount in the currency asked for with --currency. Absent if no rate was found.")
-                        .property("currencyCode", Schema.string("The ISO currency code asked for."))
-                        .property("amount", Schema.number("The amount converted, rounded to minor units like core does."))
-                        .property("rate", Schema.number("Unrounded factor from the record's currency into the converted currency."))
-                        .property("rateDate", Schema.string("ISO date of the rate; of the oldest rate if several were chained."))
-                        .property("rateSource", Schema.enumOf(
-                                        "Where the rate comes from: identity (same currency), transaction (the record's own forex unit or transfer rate), instrument (exchange-rate instruments of the file), ecb (the ECB cache of the desktop app, alone or chained) or fixed (core's fixed pairs such as GBX to GBP).",
-                                        ExchangeRates.Source.ids()));
-    }
-
     private static Schema recordSchema()
     {
         return Schema.object("One business event.")
@@ -124,7 +111,8 @@ final class TransactionsCommand
                         .optionalProperty("note", Schema.string("The note."))
                         .optionalProperty("source", Schema.string("Where the record was imported from."))
                         .property("units", Schema.array("Fees, taxes and forex of the record; empty if none.", unit()))
-                        .optionalProperty("converted", converted());
+                        .optionalProperty("converted", ExchangeRates.convertedSchema(
+                                        "The amount in the currency asked for with --currency. Absent if no rate was found."));
     }
 
     private static final Schema DATA = Paging.pageSchema("A page of the transaction records.", recordSchema());
@@ -169,7 +157,7 @@ final class TransactionsCommand
         var paging = Paging.parse(context);
         var range = DateRange.parse(context, FROM, TO);
         var types = parseTypes(context.option(TYPE.name()));
-        var currency = parseCurrency(context.option(CURRENCY.name()));
+        var currency = ExchangeRates.parseCurrency(CURRENCY, context.option(CURRENCY.name()));
 
         var client = context.loadClient().client();
 
@@ -236,15 +224,6 @@ final class TransactionsCommand
             types.add(type);
         }
         return types;
-    }
-
-    private static Optional<String> parseCurrency(Optional<String> raw) throws CliException
-    {
-        if (raw.isPresent() && CurrencyUnit.getInstance(raw.get()) == null)
-            throw CliException.usage("invalid-option-value", "Invalid option value",
-                            "Option '--" + CURRENCY.name() + "' must be an ISO currency code known to core.")
-                            .with("option", CURRENCY.name()).with("value", raw.get());
-        return raw;
     }
 
     private static Map<String, Object> render(TransactionRecord record, Optional<String> currency,
@@ -322,25 +301,9 @@ final class TransactionsCommand
     {
         var day = record.primary().getDateTime().toLocalDate();
 
-        var rate = ownRate(record, currencyCode, target, day).or(() -> {
-            var found = rates.find(day, currencyCode, target);
-            found.ifPresentOrElse(r -> rates.noteUsed(currencyCode, target, r, day),
-                            () -> rates.noteMissing(currencyCode, target));
-            return found;
-        });
+        var rate = ownRate(record, currencyCode, target, day).or(() -> rates.series(day, currencyCode, target));
 
-        return rate.map(r -> {
-            var amount = BigDecimal.valueOf(record.primary().getAmount()).multiply(r.value()).setScale(0,
-                            RoundingMode.HALF_DOWN);
-
-            var json = new LinkedHashMap<String, Object>();
-            json.put("currencyCode", target);
-            json.put("amount", Decimals.of(amount.longValue(), Values.Amount));
-            json.put("rate", Decimals.of(r.value()));
-            json.put("rateDate", r.date().toString());
-            json.put("rateSource", r.source().id());
-            return json;
-        });
+        return rate.map(r -> ExchangeRates.converted(target, r.convert(record.primary().getAmount()), r));
     }
 
     /** The rate that needs no series: same currency, or the record's own forex unit or transfer rate. */

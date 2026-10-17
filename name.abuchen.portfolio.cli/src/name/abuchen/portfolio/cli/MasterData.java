@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.cli;
 
+import java.util.Comparator;
 import java.util.Map;
+import java.util.function.Function;
 
 /** Field rules shared by the master-data list commands. */
 final class MasterData
@@ -13,6 +15,13 @@ final class MasterData
     static String orEmpty(String value)
     {
         return value == null ? "" : value;
+    }
+
+    /** The comparator of the lists: name (case-insensitive, ordinal), then UUID. */
+    static <T> Comparator<T> byNameThenUuid(Function<T, String> name, Function<T, String> uuid)
+    {
+        return Comparator.comparing((T entity) -> orEmpty(name.apply(entity)), String.CASE_INSENSITIVE_ORDER)
+                        .thenComparing(entity -> orEmpty(uuid.apply(entity)));
     }
 
     static boolean isSet(String value)

@@ -39,4 +39,10 @@ record CommandSpec(String name, String summary, boolean usesClientFile, List<Opt
     {
         return options().stream().anyMatch(o -> o.name().equals(optionName));
     }
+
+    /** The accepted option of that name. */
+    OptionSpec option(String optionName)
+    {
+        return options().stream().filter(o -> o.name().equals(optionName)).findFirst().orElseThrow();
+    }
 }

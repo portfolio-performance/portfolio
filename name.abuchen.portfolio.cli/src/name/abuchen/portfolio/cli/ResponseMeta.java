@@ -25,6 +25,12 @@ final class ResponseMeta
     }
 
     /** A fresh copy each call, so a command can add members of its own. */
+    static Schema fileSchema()
+    {
+        return fileEnvelope();
+    }
+
+    /** A fresh copy each call, so a command can add members of its own. */
     static Schema pagedSchema()
     {
         return fileEnvelope().property("limit", Schema.integer("Page size used."))

@@ -14,9 +14,13 @@ import java.util.Map;
 import java.util.Optional;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.CurrencyConverterImpl;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 import name.abuchen.portfolio.money.FixedExchangeRateTimeSeries;
+import name.abuchen.portfolio.money.Values;
 
 /**
  * The CLI's exchange-rate source for one command run (ADR 0005). Beside the
@@ -54,7 +58,7 @@ final class ExchangeRates
     }
 
     static final WarningSpec MISSING = new WarningSpec("exchange-rate-missing",
-                    "No usable exchange rate was found for a currency pair; the figures that need it are left out. Carries baseCurrency, termCurrency and the count of affected records on the page.");
+                    "No usable exchange rate was found for a currency pair; the figures that need it are left out. Carries baseCurrency, termCurrency and the count of affected records (or holdings and cash accounts) on the page.");
 
     static final WarningSpec STALE = new WarningSpec("stale-exchange-rate",
                     "An exchange rate more than " + Prices.STALE_AFTER_DAYS
@@ -88,6 +92,12 @@ final class ExchangeRates
         long ageDays(LocalDate day)
         {
             return ChronoUnit.DAYS.between(date, day);
+        }
+
+        /** The amount in minor units in the term currency, rounded like core's currency converter. */
+        long convert(long amount)
+        {
+            return BigDecimal.valueOf(amount).multiply(value).setScale(0, RoundingMode.HALF_DOWN).longValue();
         }
     }
 
@@ -153,6 +163,79 @@ final class ExchangeRates
                         .property("path", Schema.string("The cache file."))
                         .optionalProperty("latestRateDate",
                                         Schema.string("ISO date of the newest rate in the cache; open the desktop app to refresh it."));
+    }
+
+    /** The schema of the <code>converted</code> member of a converting command's figures. */
+    static Schema convertedSchema(String description)
+    {
+        return Schema.object(description)
+                        .property("currencyCode", Schema.string("The ISO currency code asked for."))
+                        .property("amount", Schema.number("The amount converted, rounded to minor units like core does."))
+                        .property("rate", Schema.number("Unrounded factor from the native currency into the converted currency."))
+                        .property("rateDate", Schema.string("ISO date of the rate; of the oldest rate if several were chained."))
+                        .property("rateSource", Schema.enumOf(
+                                        "Where the rate comes from: identity (same currency), transaction (the record's own forex unit or transfer rate), instrument (exchange-rate instruments of the file), ecb (the ECB cache of the desktop app, alone or chained) or fixed (core's fixed pairs such as GBX to GBP).",
+                                        Source.ids()));
+    }
+
+    /** The <code>converted</code> member for an amount converted with a rate. */
+    static Map<String, Object> converted(String targetCurrency, long convertedAmount, Rate rate)
+    {
+        var json = new LinkedHashMap<String, Object>();
+        json.put("currencyCode", targetCurrency);
+        json.put("amount", Decimals.of(convertedAmount, Values.Amount));
+        json.put("rate", Decimals.of(rate.value()));
+        json.put("rateDate", rate.date().toString());
+        json.put("rateSource", rate.source().id());
+        return json;
+    }
+
+    /**
+     * The value of a <code>--currency</code> option, if given.
+     *
+     * @throws CliException
+     *             <code>invalid-option-value</code> if core doesn't know the currency
+     */
+    static Optional<String> parseCurrency(OptionSpec option, Optional<String> raw) throws CliException
+    {
+        if (raw.isPresent() && CurrencyUnit.getInstance(raw.get()) == null)
+            throw CliException.usage("invalid-option-value", "Invalid option value",
+                            "Option '--" + option.name() + "' must be an ISO currency code known to core.")
+                            .with("option", option.name()).with("value", raw.get());
+        return raw;
+    }
+
+    /**
+     * Core's own converter over the CLI's rate source, for the figures core
+     * calculates itself. Core falls back to a rate of 1.0 where it finds none,
+     * so callers use it only where the currencies match or a rate is certain.
+     */
+    CurrencyConverter converter(String termCurrency)
+    {
+        if (factory == null)
+            factory = new Factory(client);
+        return new CurrencyConverterImpl(factory, termCurrency);
+    }
+
+    /**
+     * The rate for a day: the identity for the same currency, otherwise the
+     * rate series. Notes a missing rate, or a stale one, for the warnings.
+     */
+    Optional<Rate> lookup(LocalDate day, String fromCurrency, String toCurrency)
+    {
+        if (fromCurrency.equals(toCurrency))
+            return Optional.of(new Rate(BigDecimal.ONE, day, Source.IDENTITY));
+
+        return series(day, fromCurrency, toCurrency);
+    }
+
+    /** The rate from the rate series alone, noting a missing or stale one. */
+    Optional<Rate> series(LocalDate day, String fromCurrency, String toCurrency)
+    {
+        var found = find(day, fromCurrency, toCurrency);
+        found.ifPresentOrElse(rate -> noteUsed(fromCurrency, toCurrency, rate, day),
+                        () -> noteMissing(fromCurrency, toCurrency));
+        return found;
     }
 
     private List<ExchangeRateTimeSeries> cacheSeries()
@@ -259,13 +342,13 @@ final class ExchangeRates
     }
 
     /** Records that no rate was found for a record of the given pair. */
-    void noteMissing(String baseCurrency, String termCurrency)
+    private void noteMissing(String baseCurrency, String termCurrency)
     {
         missing.computeIfAbsent(new Pair(baseCurrency, termCurrency), p -> new Affected()).count++;
     }
 
     /** Records that a rate was used, and warns if it is stale for the day it was needed. */
-    void noteUsed(String baseCurrency, String termCurrency, Rate rate, LocalDate day)
+    private void noteUsed(String baseCurrency, String termCurrency, Rate rate, LocalDate day)
     {
         if (!rate.isStale(day))
             return;

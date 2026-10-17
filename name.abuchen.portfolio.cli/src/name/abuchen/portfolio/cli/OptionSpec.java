@@ -15,7 +15,12 @@ import java.util.regex.Pattern;
 record OptionSpec(String name, String valueName, String description, Type type, boolean required)
 {
     /** How the value of an option is read. */
-    sealed interface Type permits Text, IsoDate, IntegerDomain
+    sealed interface Type permits Text, IsoDate, IntegerDomain, Flag
+    {
+    }
+
+    /** A switch that takes no value: present or absent. */
+    record Flag() implements Type
     {
     }
 
@@ -65,6 +70,17 @@ record OptionSpec(String name, String valueName, String description, Type type, 
     static OptionSpec date(String name, String description)
     {
         return new OptionSpec(name, "yyyy-MM-dd", description, new IsoDate(), false);
+    }
+
+    /** A switch such as <code>--include-zero</code>, given without a value. */
+    static OptionSpec flag(String name, String description)
+    {
+        return new OptionSpec(name, "", description, new Flag(), false);
+    }
+
+    boolean isFlag()
+    {
+        return type instanceof Flag;
     }
 
     /** The same option, but the parser rejects a command line without it. */

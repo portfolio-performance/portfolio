@@ -42,6 +42,8 @@ public class DescribeConsistencyTest
                 List.of(command, "--file", sampleFile.toString());
             case "prices" -> List.of("prices", "--file", sampleFile.toString(), "--instrument", instrument.getUUID());
             case "transactions" -> List.of("transactions", "--file", sampleFile.toString(), "--currency", "USD");
+            case "holdings" -> List.of("holdings", "--file", sampleFile.toString(), "--date", "2026-10-01",
+                            "--currency", "USD", "--include-zero");
             default -> throw new AssertionError("Add sample arguments for command '" + command
                             + "' to DescribeConsistencyTest.sampleArguments");
         };

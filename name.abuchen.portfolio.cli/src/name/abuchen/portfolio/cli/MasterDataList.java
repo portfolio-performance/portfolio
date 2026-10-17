@@ -33,9 +33,7 @@ final class MasterDataList
         /** Name (case-insensitive, ordinal), then UUID. */
         Comparator<T> ordering()
         {
-            return Comparator.comparing((T entity) -> MasterData.orEmpty(name.apply(entity)),
-                            String.CASE_INSENSITIVE_ORDER)
-                            .thenComparing(entity -> MasterData.orEmpty(uuid.apply(entity)));
+            return MasterData.byNameThenUuid(name, uuid);
         }
     }
 

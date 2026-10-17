@@ -240,6 +240,33 @@ public class DescribeCommandTest
                         containsInAnyOrder("id", "type", "date", "sides", "amount", "currencyCode", "units"));
     }
 
+    @Test
+    public void describePublishesTheSwitchesAndWarningsOfHoldings()
+    {
+        var data = data(CliRun.run("describe"));
+        var holdings = command(data, "holdings");
+
+        var byName = new HashMap<String, JsonObject>();
+        holdings.getAsJsonArray("options")
+                        .forEach(o -> byName.put(o.getAsJsonObject().get("name").getAsString(), o.getAsJsonObject()));
+        assertThat(byName.keySet(), is(Set.of("file", "date", "investment-account", "by-account", "include-zero",
+                        "currency")));
+        assertThat(byName.get("date").get("type").getAsString(), is("date"));
+
+        for (var flag : List.of("by-account", "include-zero"))
+        {
+            assertThat(byName.get(flag).get("type").getAsString(), is("flag"));
+            assertThat(byName.get(flag).get("default").getAsBoolean(), is(false));
+            assertThat(byName.get(flag).has("valueName"), is(false));
+        }
+        assertThat(byName.get("currency").get("valueName").getAsString().isBlank(), is(false));
+
+        var codes = new ArrayList<String>();
+        holdings.getAsJsonArray("warnings").forEach(w -> codes.add(w.getAsJsonObject().get("code").getAsString()));
+        assertThat(codes, is(List.of("stale-price", "exchange-rate-missing", "stale-exchange-rate",
+                        "exchange-rate-cache-unavailable")));
+    }
+
     /** What the filters must keep up with: every type core knows, so that a new one is noticed. */
     private static List<String> coreTypeNames()
     {

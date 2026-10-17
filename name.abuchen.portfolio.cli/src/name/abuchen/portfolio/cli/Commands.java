@@ -7,7 +7,7 @@ import java.util.Optional;
 final class Commands
 {
     static final List<CommandSpec> ALL = List.of(InfoCommand.SPEC, DescribeCommand.SPEC, InstrumentsCommand.SPEC,
-                    InvestmentAccountsCommand.SPEC, CashAccountsCommand.SPEC, PricesCommand.SPEC, TransactionsCommand.SPEC);
+                    InvestmentAccountsCommand.SPEC, CashAccountsCommand.SPEC, PricesCommand.SPEC, TransactionsCommand.SPEC, HoldingsCommand.SPEC);
 
     /** Write operations; filled in by the apply tickets. */
     static final List<OperationSpec> OPERATIONS = List.of();

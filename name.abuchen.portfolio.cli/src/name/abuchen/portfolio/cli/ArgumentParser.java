@@ -41,6 +41,16 @@ final class ArgumentParser
                 throw CliException.usage("unknown-option", "Unknown option",
                                 "Command '" + name + "' has no option '--" + optionName + "'.");
 
+            if (command.option(optionName).isFlag())
+            {
+                if (equals >= 0)
+                    throw CliException.usage("invalid-option-value", "Invalid option value",
+                                    "Option '--" + optionName + "' is a switch and takes no value.")
+                                    .with("option", optionName).with("value", arg.substring(equals + 1));
+
+                options.put(optionName, "true");
+                continue;
+            }
             String value;
             if (equals >= 0)
             {

@@ -53,10 +53,10 @@ final class DescribeCommand
                                                     Schema.bool("Whether the command reads a client file."))
                                     .property("options", Schema.array("Options the command accepts.",
                                                     Schema.object(null).property("name", Schema.string(null))
-                                                                    .property("valueName", Schema.string(null))
+                                                                    .optionalProperty("valueName", Schema.string("Placeholder for the value; absent for a switch."))
                                                                     .property("description", Schema.string(null))
                                                                     .optionalProperty("type",
-                                                                                    Schema.string("Value type, if declared: integer or date (ISO yyyy-MM-dd, inclusive when used as a bound)."))
+                                                                                    Schema.string("Value type, if declared: integer, date (ISO yyyy-MM-dd, inclusive when used as a bound) or flag (a switch given without a value)."))
                                                                     .optionalProperty("required",
                                                                                     Schema.bool("True if the command fails without this option; absent otherwise."))
                                                                     .optionalProperty("default",
@@ -135,7 +135,8 @@ final class DescribeCommand
     {
         var json = new LinkedHashMap<String, Object>();
         json.put("name", option.name());
-        json.put("valueName", option.valueName());
+        if (!option.isFlag())
+            json.put("valueName", option.valueName());
         json.put("description", option.description());
         switch (option.type())
         {
@@ -148,6 +149,11 @@ final class DescribeCommand
                     json.put("maximum", domain.maximum());
             }
             case OptionSpec.IsoDate date -> json.put("type", "date");
+            case OptionSpec.Flag flag ->
+            {
+                json.put("type", "flag");
+                json.put("default", false);
+            }
             case OptionSpec.Text text ->
             {
             }
