@@ -89,7 +89,8 @@ record OptionSpec(String name, String valueName, String description, Type type, 
         return new OptionSpec(name, valueName, description, type, true);
     }
 
-    private CliException invalid(String text, String expected)
+    /** The usage error for a value of this option that is not <code>expected</code>. */
+    CliException invalid(String text, String expected)
     {
         return CliException.usage("invalid-option-value", "Invalid option value",
                         "Option '--" + name + "' must be " + expected + ".").with("option", name).with("value",
