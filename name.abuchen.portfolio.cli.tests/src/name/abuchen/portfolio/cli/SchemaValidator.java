@@ -10,8 +10,9 @@ import com.google.gson.JsonObject;
 /**
  * Validates a JSON value against the schema subset that {@link Schema}
  * renders: type (or a list of types), enum, properties, required,
- * additionalProperties and items. Anything else in a schema is ignored, so
- * extending {@link Schema} means extending this too.
+ * additionalProperties and items. Anything else in a schema is ignored; the
+ * known values (<code>examples</code>) of an open enum are deliberately not
+ * enforced. Extending {@link Schema} means extending this too.
  */
 final class SchemaValidator
 {

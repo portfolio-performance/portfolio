@@ -23,6 +23,14 @@ final class DescribeCommand
 
     private static final List<EnvironmentVariable> ENVIRONMENT = List.of(
                     new EnvironmentVariable("PP_FILE", "Client file to read, used when --file is not given."),
+                    new EnvironmentVariable(EcbCache.VARIABLE,
+                                    "Path of the ECB exchange-rate cache (ecb_exchange_rates.pb) of the desktop app,"
+                                                    + " read-only, used by commands that convert currencies. If it is not set, the app's"
+                                                    + " default workspace is searched: %LOCALAPPDATA%\\PortfolioPerformance\\workspace on Windows,"
+                                                    + " ~/Library/Application Support/name.abuchen.portfolio.product/workspace on macOS and"
+                                                    + " ~/.PortfolioPerformance/workspace on Linux. A custom workspace needs this variable."
+                                                    + " Core's built-in exchange rates are never used. Without a cache, rates still come from"
+                                                    + " the transaction and from exchange-rate instruments in the file."),
                     new EnvironmentVariable(CommandContext.PASSWORD_VARIABLE,
                                     "Password for an encrypted client file. If it is not set, the password is read as"
                                                     + " one line from stdin (the prompt goes to stderr). There is no"

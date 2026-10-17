@@ -7,7 +7,7 @@ import java.util.Map;
 
 /**
  * A small JSON Schema subset (type, properties, required, items, enum,
- * nullable, multi-type values) used to declare response shapes and write-operation inputs. The
+ * nullable, multi-type values, open enum) used to declare response shapes and write-operation inputs. The
  * same declaration is rendered by <code>describe</code> and checked against
  * real output by the consistency test.
  */
@@ -19,6 +19,7 @@ final class Schema
     private final List<String> required = new ArrayList<>();
     private Schema items;
     private List<String> enumValues;
+    private List<String> knownValues;
     private boolean nullable;
     private boolean freeform;
     private List<String> alternativeTypes;
@@ -61,6 +62,18 @@ final class Schema
     {
         var schema = new Schema("string", description);
         schema.enumValues = List.copyOf(values);
+        return schema;
+    }
+
+    /**
+     * A string with known values that is deliberately not a closed enum, so
+     * that a value added upstream still conforms. Rendered as the standard
+     * <code>examples</code> annotation, which no validator enforces.
+     */
+    static Schema openEnumOf(String description, List<String> knownValues)
+    {
+        var schema = new Schema("string", description);
+        schema.knownValues = List.copyOf(knownValues);
         return schema;
     }
 
@@ -114,6 +127,8 @@ final class Schema
             json.put("description", description);
         if (enumValues != null)
             json.put("enum", enumValues);
+        if (knownValues != null)
+            json.put("examples", knownValues);
         if (items != null)
             json.put("items", items.toJson());
         if ("object".equals(type) && !freeform)

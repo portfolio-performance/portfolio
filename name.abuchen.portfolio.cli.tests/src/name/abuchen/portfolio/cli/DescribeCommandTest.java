@@ -104,7 +104,7 @@ public class DescribeCommandTest
             names.add(variable.get("name").getAsString());
             assertThat(variable.get("description").getAsString().isBlank(), is(false));
         }
-        assertThat(names, is(List.of("PP_FILE", "PP_PASSWORD")));
+        assertThat(names, is(List.of("PP_FILE", "PP_ECB_RATES", "PP_PASSWORD")));
 
         for (var command : data.getAsJsonArray("commands"))
             for (var option : command.getAsJsonObject().getAsJsonArray("options"))
@@ -198,6 +198,40 @@ public class DescribeCommandTest
                         is(Set.of("items", "total", "nextOffset", "instrument", "latest")));
         assertThat(response.getAsJsonArray("required").toString(),
                         is("[\"items\",\"total\",\"instrument\"]"));
+    }
+
+    @Test
+    public void describePublishesTheOpenTypeEnumTheFiltersAndTheExchangeRateWarningsOfTransactions()
+    {
+        var data = data(CliRun.run("describe"));
+        var transactions = command(data, "transactions");
+
+        var byName = new HashMap<String, JsonObject>();
+        transactions.getAsJsonArray("options")
+                        .forEach(o -> byName.put(o.getAsJsonObject().get("name").getAsString(), o.getAsJsonObject()));
+        assertThat(byName.keySet(), is(Set.of("file", "investment-account", "cash-account", "instrument", "type",
+                        "from", "to", "currency", "limit", "offset")));
+        assertThat(byName.get("from").get("type").getAsString(), is("date"));
+        assertThat(byName.get("to").get("type").getAsString(), is("date"));
+        assertThat(byName.get("to").get("description").getAsString().toLowerCase(), containsString("future"));
+        assertThat(byName.get("limit").get("default").getAsInt(), is(200));
+
+        var codes = new ArrayList<String>();
+        transactions.getAsJsonArray("warnings").forEach(w -> codes.add(w.getAsJsonObject().get("code").getAsString()));
+        assertThat(codes, is(List.of("exchange-rate-missing", "stale-exchange-rate",
+                        "exchange-rate-cache-unavailable")));
+
+        var item = transactions.getAsJsonObject("response").getAsJsonObject("data").getAsJsonObject("properties")
+                        .getAsJsonObject("items").getAsJsonObject("items");
+        var type = item.getAsJsonObject("properties").getAsJsonObject("type");
+        assertThat(type.get("type").getAsString(), is("string"));
+        assertThat(type.has("enum"), is(false));
+        assertThat(type.getAsJsonArray("examples").toString(),
+                        is("[\"BUY\",\"SELL\",\"DEPOSIT\",\"REMOVAL\",\"INTEREST\",\"INTEREST_CHARGE\",\"DIVIDENDS\","
+                                        + "\"FEES\",\"FEES_REFUND\",\"TAXES\",\"TAX_REFUND\",\"DELIVERY_INBOUND\","
+                                        + "\"DELIVERY_OUTBOUND\",\"TRANSFER\",\"TRANSFER_IN\",\"TRANSFER_OUT\"]"));
+        assertThat(item.getAsJsonArray("required").toString(),
+                        is("[\"id\",\"type\",\"date\",\"sides\",\"amount\",\"currencyCode\",\"units\"]"));
     }
 
     @Test

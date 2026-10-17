@@ -22,6 +22,12 @@ final class Decimals
         return plain(BigDecimal.valueOf(stored, values.precision()));
     }
 
+    /** The value as it is, e.g. an exchange rate: unrounded, never in exponent form. */
+    static JsonPrimitive of(BigDecimal value)
+    {
+        return plain(value);
+    }
+
     /** Wrapped so that Gson writes 0.00000001 rather than BigDecimal's 1E-8. */
     private static JsonPrimitive plain(BigDecimal value)
     {

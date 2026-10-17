@@ -44,6 +44,16 @@ public class SchemaValidatorTest
     }
 
     @Test
+    public void anOpenEnumAcceptsAnyStringButNotOtherTypes()
+    {
+        var schema = JsonParser.parseString("{\"type\":\"string\",\"examples\":[\"BUY\"]}").getAsJsonObject();
+
+        assertThat(SchemaValidator.validate(JsonParser.parseString("\"BUY\""), schema), is(empty()));
+        assertThat(SchemaValidator.validate(JsonParser.parseString("\"SOMETHING_NEW\""), schema), is(empty()));
+        assertThat(SchemaValidator.validate(JsonParser.parseString("1"), schema), not(empty()));
+    }
+
+    @Test
     public void rejectsMissingUndeclaredAndMistypedMembers()
     {
         assertThat(validate("{}"), hasItem("$: missing required property 'a'"));

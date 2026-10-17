@@ -36,9 +36,7 @@ final class PricesCommand
                     .optionalProperty("latest", price(
                                     "The price valuation uses today: the feed's latest price when it is current, otherwise the last stored price. Absent if no price is dated on or before today. Independent of from and to."));
 
-    private static final Schema META = ResponseMeta.pagedSchema()
-                    .optionalProperty("from", Schema.string("First day of the range, as given. Absent if not given."))
-                    .property("to", Schema.string("Last day of the range: as given, otherwise today."));
+    private static final Schema META = DateRange.declareIn(ResponseMeta.pagedSchema());
 
     static final CommandSpec SPEC = new CommandSpec("prices",
                     "Price history of one instrument by date ascending, within an optional date range, with its latest price.",
@@ -52,21 +50,14 @@ final class PricesCommand
     private static Response execute(CommandContext context) throws CliException
     {
         var paging = Paging.parse(context);
-        var from = FROM.parseDate(context.option(FROM.name()));
+        var range = DateRange.parse(context, FROM, TO);
         var asOf = LocalDate.now(context.clock());
-        var to = TO.parseDate(context.option(TO.name())).orElse(asOf);
-
-        if (from.isPresent() && from.get().isAfter(to))
-            throw CliException.usage("invalid-date-range", "Invalid date range",
-                            "Option '--from' (" + from.get() + ") must not be after '--to' (" + to + ").")
-                            .with("from", from.get().toString()).with("to", to.toString());
 
         var client = context.loadClient().client();
         var security = References.instrument(client, INSTRUMENT.name(), context.option(INSTRUMENT.name()).orElseThrow());
 
-        var history = security.getPricesIncludingLatest().stream()
-                        .filter(price -> from.isEmpty() || !price.getDate().isBefore(from.get()))
-                        .filter(price -> !price.getDate().isAfter(to)).toList();
+        var history = security.getPricesIncludingLatest().stream().filter(price -> range.contains(price.getDate()))
+                        .toList();
         var page = paging.of(history);
         var latest = Prices.latest(security, asOf);
 
@@ -76,8 +67,7 @@ final class PricesCommand
         page.putInto(data, PricesCommand::render);
 
         var meta = ResponseMeta.paged(context, client, paging);
-        from.ifPresent(date -> meta.put("from", date.toString()));
-        meta.put("to", to.toString());
+        range.putInto(meta);
 
         var response = Response.of(data, meta);
         latest.flatMap(price -> Prices.staleWarning(security, price, asOf)).ifPresent(response::warn);
