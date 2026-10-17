@@ -1,8 +1,10 @@
 package name.abuchen.portfolio.cli;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import name.abuchen.portfolio.model.Account;
@@ -36,18 +38,38 @@ import name.abuchen.portfolio.model.Transaction;
  * @param incoming
  *            the incoming side of a transfer
  */
-record TransactionRecord(String id, String type, Optional<String> kind, Transaction primary, List<String> sides,
-                Optional<String> investmentAccount, Optional<String> cashAccount, Optional<String> from,
-                Optional<String> to, Optional<Transaction> incoming)
+record TransactionRecord(String id, String type, Optional<TransferKind> kind, Transaction primary,
+                List<String> sides, Optional<String> investmentAccount, Optional<String> cashAccount,
+                Optional<String> from, Optional<String> to, Optional<Transaction> incoming)
 {
     static final String TRANSFER = "TRANSFER";
-    static final String CASH = "cash";
-    static final String SECURITY = "security";
+
+    /** What a transfer moves. */
+    enum TransferKind
+    {
+        CASH, SECURITY;
+
+        /** The name published in the output. */
+        String id()
+        {
+            return name().toLowerCase(Locale.ROOT);
+        }
+
+        static List<String> ids()
+        {
+            return Arrays.stream(values()).map(TransferKind::id).toList();
+        }
+    }
+
+    private boolean isTransferOf(TransferKind expected)
+    {
+        return kind.filter(expected::equals).isPresent();
+    }
 
     /** The incoming side of a cash transfer between accounts of different currencies. */
     Optional<Transaction> crossCurrencyIncoming()
     {
-        return incoming.filter(side -> kind.filter(CASH::equals).isPresent() && side.getCurrencyCode() != null
+        return incoming.filter(side -> isTransferOf(TransferKind.CASH) && side.getCurrencyCode() != null
                         && !side.getCurrencyCode().equals(primary.getCurrencyCode()));
     }
 
@@ -62,16 +84,18 @@ record TransactionRecord(String id, String type, Optional<String> kind, Transact
     boolean touchesInvestmentAccount(String uuid)
     {
         return investmentAccount.filter(uuid::equals).isPresent()
-                        || kind.filter(SECURITY::equals).isPresent() && (from.filter(uuid::equals).isPresent()
-                                        || to.filter(uuid::equals).isPresent());
+                        || isTransferOf(TransferKind.SECURITY) && transfersBetween(uuid);
     }
 
     /** Whether any side is in the given cash account. */
     boolean touchesCashAccount(String uuid)
     {
-        return cashAccount.filter(uuid::equals).isPresent()
-                        || kind.filter(CASH::equals).isPresent() && (from.filter(uuid::equals).isPresent()
-                                        || to.filter(uuid::equals).isPresent());
+        return cashAccount.filter(uuid::equals).isPresent() || isTransferOf(TransferKind.CASH) && transfersBetween(uuid);
+    }
+
+    private boolean transfersBetween(String accountUuid)
+    {
+        return from.filter(accountUuid::equals).isPresent() || to.filter(accountUuid::equals).isPresent();
     }
 
     /** All records of the client, in no particular order. */
@@ -149,7 +173,7 @@ record TransactionRecord(String id, String type, Optional<String> kind, Transact
 
         private TransactionRecord cashTransfer(AccountTransaction outgoing, AccountTransaction incoming)
         {
-            return new TransactionRecord(outgoing.getUUID(), TRANSFER, Optional.of(CASH), outgoing,
+            return new TransactionRecord(outgoing.getUUID(), TRANSFER, Optional.of(TransferKind.CASH), outgoing,
                             List.of(outgoing.getUUID(), incoming.getUUID()), Optional.empty(), Optional.empty(),
                             uuid(accountOwners.get(outgoing)), uuid(accountOwners.get(incoming)),
                             Optional.of(incoming));
@@ -157,7 +181,7 @@ record TransactionRecord(String id, String type, Optional<String> kind, Transact
 
         private TransactionRecord securityTransfer(PortfolioTransaction outgoing, PortfolioTransaction incoming)
         {
-            return new TransactionRecord(outgoing.getUUID(), TRANSFER, Optional.of(SECURITY), outgoing,
+            return new TransactionRecord(outgoing.getUUID(), TRANSFER, Optional.of(TransferKind.SECURITY), outgoing,
                             List.of(outgoing.getUUID(), incoming.getUUID()), Optional.empty(), Optional.empty(),
                             uuid(portfolioOwners.get(outgoing)), uuid(portfolioOwners.get(incoming)),
                             Optional.of(incoming));

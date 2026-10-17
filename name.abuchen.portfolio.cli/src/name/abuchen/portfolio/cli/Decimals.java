@@ -19,17 +19,15 @@ final class Decimals
     /** The stored value scaled by the precision of the given values, e.g. a quote. */
     static JsonPrimitive of(long stored, Values<Long> values)
     {
-        return plain(BigDecimal.valueOf(stored, values.precision()));
+        return of(BigDecimal.valueOf(stored, values.precision()));
     }
 
-    /** The value as it is, e.g. an exchange rate: unrounded, never in exponent form. */
+    /**
+     * The value as it is, e.g. an exchange rate: unrounded, never in exponent
+     * form. Wrapped so that Gson writes 0.00000001 rather than BigDecimal's
+     * 1E-8.
+     */
     static JsonPrimitive of(BigDecimal value)
-    {
-        return plain(value);
-    }
-
-    /** Wrapped so that Gson writes 0.00000001 rather than BigDecimal's 1E-8. */
-    private static JsonPrimitive plain(BigDecimal value)
     {
         return new JsonPrimitive(new PlainDecimal(value));
     }

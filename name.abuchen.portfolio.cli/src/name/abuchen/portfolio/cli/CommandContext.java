@@ -11,7 +11,7 @@ import java.util.Optional;
 
 /**
  * Everything a command gets from the outside world: parsed options, the
- * environment, stdin, stderr and the clock.
+ * environment, stdin, stderr, the clock and the name of the operating system.
  */
 final class CommandContext
 {
@@ -22,15 +22,17 @@ final class CommandContext
     private final InputStream stdin;
     private final PrintStream stderr;
     private final Clock clock;
+    private final String osName;
 
     CommandContext(Map<String, String> options, Map<String, String> env, InputStream stdin, PrintStream stderr,
-                    Clock clock)
+                    Clock clock, String osName)
     {
         this.options = options;
         this.env = env;
         this.stdin = stdin;
         this.stderr = stderr;
         this.clock = clock;
+        this.osName = osName;
     }
 
     Optional<String> option(String name)
@@ -51,6 +53,12 @@ final class CommandContext
     Clock clock()
     {
         return clock;
+    }
+
+    /** The <code>os.name</code> of the running system. */
+    String osName()
+    {
+        return osName;
     }
 
     /** Loads the client file named by <code>--file</code> or PP_FILE. */

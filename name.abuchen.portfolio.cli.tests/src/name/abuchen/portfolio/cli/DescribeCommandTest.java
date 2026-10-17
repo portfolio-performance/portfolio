@@ -1,21 +1,29 @@
 package name.abuchen.portfolio.cli;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.junit.Test;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 
 public class DescribeCommandTest
 {
@@ -226,12 +234,24 @@ public class DescribeCommandTest
         var type = item.getAsJsonObject("properties").getAsJsonObject("type");
         assertThat(type.get("type").getAsString(), is("string"));
         assertThat(type.has("enum"), is(false));
-        assertThat(type.getAsJsonArray("examples").toString(),
-                        is("[\"BUY\",\"SELL\",\"DEPOSIT\",\"REMOVAL\",\"INTEREST\",\"INTEREST_CHARGE\",\"DIVIDENDS\","
-                                        + "\"FEES\",\"FEES_REFUND\",\"TAXES\",\"TAX_REFUND\",\"DELIVERY_INBOUND\","
-                                        + "\"DELIVERY_OUTBOUND\",\"TRANSFER\",\"TRANSFER_IN\",\"TRANSFER_OUT\"]"));
-        assertThat(item.getAsJsonArray("required").toString(),
-                        is("[\"id\",\"type\",\"date\",\"sides\",\"amount\",\"currencyCode\",\"units\"]"));
+        assertThat(strings(type.getAsJsonArray("examples")), hasItems(coreTypeNames().toArray(String[]::new)));
+        assertThat(strings(type.getAsJsonArray("examples")), hasItem("TRANSFER"));
+        assertThat(strings(item.getAsJsonArray("required")),
+                        containsInAnyOrder("id", "type", "date", "sides", "amount", "currencyCode", "units"));
+    }
+
+    /** What the filters must keep up with: every type core knows, so that a new one is noticed. */
+    private static List<String> coreTypeNames()
+    {
+        return Stream.concat(Arrays.stream(AccountTransaction.Type.values()),
+                        Arrays.stream(PortfolioTransaction.Type.values())).map(Enum::name).distinct().toList();
+    }
+
+    private static List<String> strings(JsonArray array)
+    {
+        var strings = new ArrayList<String>();
+        array.forEach(element -> strings.add(element.getAsString()));
+        return strings;
     }
 
     @Test

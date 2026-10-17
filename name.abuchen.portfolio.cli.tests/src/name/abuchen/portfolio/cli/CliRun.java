@@ -44,6 +44,17 @@ final class CliRun
 
     static CliRun runWithStdin(Map<String, String> env, String stdin, String... args)
     {
+        return execute(System.getProperty("os.name", ""), env, stdin, args);
+    }
+
+    /** Runs as if on the operating system with the given <code>os.name</code>. */
+    static CliRun runOn(String osName, Map<String, String> env, String... args)
+    {
+        return execute(osName, env, "", args);
+    }
+
+    private static CliRun execute(String osName, Map<String, String> env, String stdin, String... args)
+    {
         var out = new ByteArrayOutputStream();
         var err = new ByteArrayOutputStream();
 
@@ -52,7 +63,8 @@ final class CliRun
                         var stderr = new PrintStream(err, true, StandardCharsets.UTF_8))
         {
             exitCode = PpCli.execute(args, new HashMap<>(env),
-                            new ByteArrayInputStream(stdin.getBytes(StandardCharsets.UTF_8)), stdout, stderr, CLOCK);
+                            new ByteArrayInputStream(stdin.getBytes(StandardCharsets.UTF_8)), stdout, stderr, CLOCK,
+                            osName);
         }
 
         return new CliRun(exitCode, out.toString(StandardCharsets.UTF_8), err.toString(StandardCharsets.UTF_8));

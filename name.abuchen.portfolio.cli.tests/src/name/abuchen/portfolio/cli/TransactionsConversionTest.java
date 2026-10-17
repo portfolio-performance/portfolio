@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -67,11 +68,16 @@ public class TransactionsConversionTest
 
     private CliRun run(Map<String, String> env, String... options) throws IOException
     {
+        return runOn("Linux", env, options);
+    }
+
+    private CliRun runOn(String osName, Map<String, String> env, String... options) throws IOException
+    {
         var file = ClientFiles.xml(folder.getRoot().toPath(), client);
 
         var args = new ArrayList<String>(List.of("transactions", "--file", file.getPath()));
         args.addAll(List.of(options));
-        return CliRun.run(env, args.toArray(String[]::new));
+        return CliRun.runOn(osName, env, args.toArray(String[]::new));
     }
 
     /** With the cache file of this test. */
@@ -475,48 +481,57 @@ public class TransactionsConversionTest
         deposit(euro, "2026-10-12", 100_000);
 
         var home = folder.newFolder("home").toPath();
-        var osName = System.getProperty("os.name");
-        var windows = osName.toLowerCase().startsWith("windows");
-        var workspace = windows ? home.resolve("PortfolioPerformance").resolve("workspace")
-                        : osName.toLowerCase().startsWith("mac")
-                                        ? home.resolve("Library").resolve("Application Support")
-                                                        .resolve("name.abuchen.portfolio.product")
-                                                        .resolve("workspace")
-                                        : home.resolve(".PortfolioPerformance").resolve("workspace");
-        var defaultFile = workspace.resolve(".metadata").resolve(".plugins").resolve("name.abuchen.portfolio")
-                        .resolve("ecb_exchange_rates.pb");
+        var defaultFile = defaultCacheFile(home.resolve(".PortfolioPerformance").resolve("workspace"));
         EcbCacheFiles.write(defaultFile, EcbCacheFiles.series("EUR", "USD").rate("2026-10-01", "2.0000"));
 
-        var env = Map.of(windows ? "LOCALAPPDATA" : "HOME", home.toString());
-
-        var viaDefault = run(env, "--currency", "USD");
+        var viaDefault = run(Map.of("HOME", home.toString()), "--currency", "USD");
         assertThat(viaDefault.stdout, viaDefault.exitCode, is(0));
         assertThat(decimal(converted(viaDefault, 0), "rate"), is("2.0000"));
         assertThat(text(meta(viaDefault).getAsJsonObject("exchangeRates"), "path"), is(defaultFile.toString()));
 
-        var overridden = run(Map.of(windows ? "LOCALAPPDATA" : "HOME", home.toString(), "PP_ECB_RATES",
-                        cache.toString()), "--currency", "USD");
+        var overridden = run(Map.of("HOME", home.toString(), "PP_ECB_RATES", cache.toString()), "--currency", "USD");
         assertThat(decimal(converted(overridden, 0), "rate"), is("1.0850"));
         assertThat(text(meta(overridden).getAsJsonObject("exchangeRates"), "path"), is(cache.toString()));
 
-        var blankOverride = run(Map.of(windows ? "LOCALAPPDATA" : "HOME", home.toString(), "PP_ECB_RATES", "  "),
-                        "--currency", "USD");
+        var blankOverride = run(Map.of("HOME", home.toString(), "PP_ECB_RATES", "  "), "--currency", "USD");
         assertThat(decimal(converted(blankOverride, 0), "rate"), is("2.0000"));
     }
 
     @Test
-    public void theDefaultWorkspaceOfEachOperatingSystem() throws EcbCache.Unavailable
+    public void theDefaultWorkspaceOfEachOperatingSystem() throws IOException
     {
-        var tail = Path.of(".metadata", ".plugins", "name.abuchen.portfolio", "ecb_exchange_rates.pb");
+        deposit(euro, "2026-10-12", 100_000);
 
-        assertThat(EcbCache.locate(name -> Optional.ofNullable(Map.of("LOCALAPPDATA", "C:\\Users\\me\\AppData\\Local")
-                        .get(name)), "Windows 11"),
-                        is(Path.of("C:\\Users\\me\\AppData\\Local", "PortfolioPerformance", "workspace").resolve(tail)));
-        assertThat(EcbCache.locate(name -> Optional.ofNullable(Map.of("HOME", "/Users/me").get(name)), "Mac OS X"),
-                        is(Path.of("/Users/me", "Library", "Application Support", "name.abuchen.portfolio.product",
-                                        "workspace").resolve(tail)));
-        assertThat(EcbCache.locate(name -> Optional.ofNullable(Map.of("HOME", "/home/me").get(name)), "Linux"),
-                        is(Path.of("/home/me", ".PortfolioPerformance", "workspace").resolve(tail)));
+        var home = folder.newFolder("home").toPath();
+        var workspaces = Map.of( //
+                        "Windows 11", Map.entry("LOCALAPPDATA", home.resolve("PortfolioPerformance").resolve("workspace")),
+                        "Mac OS X", Map.entry("HOME", home.resolve("Library").resolve("Application Support")
+                                        .resolve("name.abuchen.portfolio.product").resolve("workspace")),
+                        "Linux", Map.entry("HOME", home.resolve(".PortfolioPerformance").resolve("workspace")));
+
+        workspaces.forEach((osName, location) -> {
+            try
+            {
+                var file = defaultCacheFile(location.getValue());
+                EcbCacheFiles.write(file, EcbCacheFiles.series("EUR", "USD").rate("2026-10-01", "1.0850"));
+
+                var run = runOn(osName, Map.of(location.getKey(), home.toString()), "--currency", "USD");
+
+                assertThat(osName + " " + run.stdout, run.exitCode, is(0));
+                assertThat(osName, text(meta(run).getAsJsonObject("exchangeRates"), "path"), is(file.toString()));
+                Files.delete(file);
+            }
+            catch (IOException e)
+            {
+                throw new UncheckedIOException(e);
+            }
+        });
+    }
+
+    private static Path defaultCacheFile(Path workspace)
+    {
+        return workspace.resolve(".metadata").resolve(".plugins").resolve("name.abuchen.portfolio")
+                        .resolve("ecb_exchange_rates.pb");
     }
 
     @Test

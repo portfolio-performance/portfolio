@@ -88,9 +88,7 @@ final class TransactionsCommand
                         .property("rateDate", Schema.string("ISO date of the rate; of the oldest rate if several were chained."))
                         .property("rateSource", Schema.enumOf(
                                         "Where the rate comes from: identity (same currency), transaction (the record's own forex unit or transfer rate), instrument (exchange-rate instruments of the file), ecb (the ECB cache of the desktop app, alone or chained) or fixed (core's fixed pairs such as GBX to GBP).",
-                                        List.of(ExchangeRates.IDENTITY, ExchangeRates.TRANSACTION,
-                                                        ExchangeRates.INSTRUMENT, ExchangeRates.ECB,
-                                                        ExchangeRates.FIXED)));
+                                        ExchangeRates.Source.ids()));
     }
 
     private static Schema recordSchema()
@@ -102,7 +100,7 @@ final class TransactionsCommand
                                         "Core's transaction type. An open enum: new values may appear. An intact transfer is TRANSFER; a side whose partner is missing keeps its raw core type, e.g. TRANSFER_OUT.",
                                         FILTERABLE_TYPES))
                         .optionalProperty("kind", Schema.enumOf("Of a TRANSFER: cash or security.",
-                                        List.of(TransactionRecord.CASH, TransactionRecord.SECURITY)))
+                                        TransactionRecord.TransferKind.ids()))
                         .property("date", Schema.string("ISO date."))
                         .optionalProperty("time", Schema.string("HH:mm; absent if the stored time is midnight."))
                         .property("sides", Schema.array("UUIDs of every side of the event, id first.",
@@ -259,7 +257,7 @@ final class TransactionsCommand
         var json = new LinkedHashMap<String, Object>();
         json.put("id", record.id());
         json.put("type", record.type());
-        record.kind().ifPresent(kind -> json.put("kind", kind));
+        record.kind().ifPresent(kind -> json.put("kind", kind.id()));
         json.put("date", dateTime.toLocalDate().toString());
         if (!dateTime.toLocalTime().equals(LocalTime.MIDNIGHT))
             json.put("time", dateTime.format(TIME));
@@ -324,7 +322,7 @@ final class TransactionsCommand
     {
         var day = record.primary().getDateTime().toLocalDate();
 
-        var rate = rateOf(record, currencyCode, target, day).or(() -> {
+        var rate = ownRate(record, currencyCode, target, day).or(() -> {
             var found = rates.find(day, currencyCode, target);
             found.ifPresentOrElse(r -> rates.noteUsed(currencyCode, target, r, day),
                             () -> rates.noteMissing(currencyCode, target));
@@ -340,17 +338,17 @@ final class TransactionsCommand
             json.put("amount", Decimals.of(amount.longValue(), Values.Amount));
             json.put("rate", Decimals.of(r.value()));
             json.put("rateDate", r.date().toString());
-            json.put("rateSource", r.source());
+            json.put("rateSource", r.source().id());
             return json;
         });
     }
 
     /** The rate that needs no series: same currency, or the record's own forex unit or transfer rate. */
-    private static Optional<ExchangeRates.Rate> rateOf(TransactionRecord record, String currencyCode, String target,
+    private static Optional<ExchangeRates.Rate> ownRate(TransactionRecord record, String currencyCode, String target,
                     LocalDate day)
     {
         if (currencyCode.equals(target))
-            return Optional.of(new ExchangeRates.Rate(BigDecimal.ONE, day, ExchangeRates.IDENTITY));
+            return Optional.of(new ExchangeRates.Rate(BigDecimal.ONE, day, ExchangeRates.Source.IDENTITY));
 
         var forex = record.primary().getUnits().filter(unit -> unit.getType() == Transaction.Unit.Type.GROSS_VALUE)
                         .filter(unit -> unit.getForex() != null && target.equals(unit.getForex().getCurrencyCode()))
@@ -362,6 +360,6 @@ final class TransactionsCommand
 
         return forex.findFirst().or(() -> transfer).filter(stored -> stored.signum() != 0)
                         .map(stored -> new ExchangeRates.Rate(BigDecimal.ONE.divide(stored, 10, RoundingMode.HALF_DOWN),
-                                        day, ExchangeRates.TRANSACTION));
+                                        day, ExchangeRates.Source.TRANSACTION));
     }
 }

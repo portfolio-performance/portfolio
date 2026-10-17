@@ -27,7 +27,8 @@ public final class PpCli
         var stdout = new PrintStream(System.out, false, StandardCharsets.UTF_8);
         var stderr = new PrintStream(System.err, true, StandardCharsets.UTF_8);
 
-        int exitCode = execute(args, System.getenv(), System.in, stdout, stderr, Clock.systemDefaultZone());
+        int exitCode = execute(args, System.getenv(), System.in, stdout, stderr, Clock.systemDefaultZone(),
+                        System.getProperty("os.name", ""));
 
         stdout.flush();
         System.exit(exitCode);
@@ -42,7 +43,7 @@ public final class PpCli
      *         other failures
      */
     public static int execute(String[] args, Map<String, String> env, InputStream stdin, PrintStream stdout,
-                    PrintStream stderr, Clock clock)
+                    PrintStream stderr, Clock clock, String osName)
     {
         var originalOut = System.out; // NOSONAR
         var originalErr = System.err; // NOSONAR
@@ -53,7 +54,7 @@ public final class PpCli
         try
         {
             var parsed = ArgumentParser.parse(Arrays.asList(args));
-            var context = new CommandContext(parsed.options(), env, stdin, stderr, clock);
+            var context = new CommandContext(parsed.options(), env, stdin, stderr, clock, osName);
             var response = parsed.command().handler().execute(context);
 
             print(stdout, response.toEnvelope());

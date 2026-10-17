@@ -5,9 +5,11 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -35,11 +37,21 @@ import name.abuchen.portfolio.money.FixedExchangeRateTimeSeries;
 final class ExchangeRates
 {
     /** Where a rate comes from. */
-    static final String IDENTITY = "identity";
-    static final String TRANSACTION = "transaction";
-    static final String INSTRUMENT = "instrument";
-    static final String ECB = "ecb";
-    static final String FIXED = "fixed";
+    enum Source
+    {
+        IDENTITY, TRANSACTION, INSTRUMENT, ECB, FIXED;
+
+        /** The name published in the output. */
+        String id()
+        {
+            return name().toLowerCase(Locale.ROOT);
+        }
+
+        static List<String> ids()
+        {
+            return Arrays.stream(values()).map(Source::id).toList();
+        }
+    }
 
     static final WarningSpec MISSING = new WarningSpec("exchange-rate-missing",
                     "No usable exchange rate was found for a currency pair; the figures that need it are left out. Carries baseCurrency, termCurrency and the count of affected records on the page.");
@@ -63,9 +75,9 @@ final class ExchangeRates
      * @param date
      *            the oldest date of the rates behind the value
      * @param source
-     *            one of the source constants
+     *            where the rate comes from
      */
-    record Rate(BigDecimal value, LocalDate date, String source)
+    record Rate(BigDecimal value, LocalDate date, Source source)
     {
         /** Whether the rate is more than the stale threshold older than the day it was needed. */
         boolean isStale(LocalDate day)
@@ -87,7 +99,8 @@ final class ExchangeRates
     {
     }
 
-    private static final class Tally
+    /** The records of one currency pair that a warning is about, and the greatest age of the rate used for them. */
+    private static final class Affected
     {
         private int count;
         private long maxAgeDays;
@@ -124,8 +137,8 @@ final class ExchangeRates
     private EcbCache.Loaded cache;
     private EcbCache.Unavailable cacheFailure;
 
-    private final Map<Pair, Tally> missing = new LinkedHashMap<>();
-    private final Map<Pair, Tally> stale = new LinkedHashMap<>();
+    private final Map<Pair, Affected> missing = new LinkedHashMap<>();
+    private final Map<Pair, Affected> stale = new LinkedHashMap<>();
 
     ExchangeRates(CommandContext context, Client client)
     {
@@ -156,7 +169,7 @@ final class ExchangeRates
 
         try
         {
-            var path = EcbCache.locate(context::env, System.getProperty("os.name", ""));
+            var path = EcbCache.locate(context::env, context.osName());
             cache = EcbCache.read(path);
         }
         catch (EcbCache.Unavailable e)
@@ -210,7 +223,7 @@ final class ExchangeRates
                 fromInstrument = true;
         }
 
-        return Optional.of(new Rate(value, oldest, fromCache ? ECB : fromInstrument ? INSTRUMENT : FIXED));
+        return Optional.of(new Rate(value, oldest, fromCache ? Source.ECB : fromInstrument ? Source.INSTRUMENT : Source.FIXED));
     }
 
     /**
@@ -248,7 +261,7 @@ final class ExchangeRates
     /** Records that no rate was found for a record of the given pair. */
     void noteMissing(String baseCurrency, String termCurrency)
     {
-        missing.computeIfAbsent(new Pair(baseCurrency, termCurrency), p -> new Tally()).count++;
+        missing.computeIfAbsent(new Pair(baseCurrency, termCurrency), p -> new Affected()).count++;
     }
 
     /** Records that a rate was used, and warns if it is stale for the day it was needed. */
@@ -257,9 +270,9 @@ final class ExchangeRates
         if (!rate.isStale(day))
             return;
 
-        var tally = stale.computeIfAbsent(new Pair(baseCurrency, termCurrency), p -> new Tally());
-        tally.count++;
-        tally.maxAgeDays = Math.max(tally.maxAgeDays, rate.ageDays(day));
+        var affected = stale.computeIfAbsent(new Pair(baseCurrency, termCurrency), p -> new Affected());
+        affected.count++;
+        affected.maxAgeDays = Math.max(affected.maxAgeDays, rate.ageDays(day));
     }
 
     /** The meta member <code>exchangeRates</code>, if the cache was read. */
@@ -290,16 +303,16 @@ final class ExchangeRates
             warnings.add(warning.with("reason", cacheFailure.reason()));
         }
 
-        missing.forEach((pair, tally) -> warnings.add(new Warning(MISSING.code(),
+        missing.forEach((pair, affected) -> warnings.add(new Warning(MISSING.code(),
                         "No exchange rate " + pair.base() + " to " + pair.term() + " on or before the day needed.")
                                         .with("baseCurrency", pair.base()).with("termCurrency", pair.term())
-                                        .with("count", tally.count)));
+                                        .with("count", affected.count)));
 
-        stale.forEach((pair, tally) -> warnings.add(new Warning(STALE.code(),
+        stale.forEach((pair, affected) -> warnings.add(new Warning(STALE.code(),
                         "The exchange rate " + pair.base() + " to " + pair.term() + " used is up to "
-                                        + tally.maxAgeDays + " days old.").with("baseCurrency", pair.base())
-                                                        .with("termCurrency", pair.term()).with("count", tally.count)
-                                                        .with("maxAgeDays", tally.maxAgeDays)));
+                                        + affected.maxAgeDays + " days old.").with("baseCurrency", pair.base())
+                                                        .with("termCurrency", pair.term()).with("count", affected.count)
+                                                        .with("maxAgeDays", affected.maxAgeDays)));
 
         return warnings;
     }
