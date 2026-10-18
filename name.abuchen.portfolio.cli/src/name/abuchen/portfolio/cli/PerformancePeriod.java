@@ -113,10 +113,21 @@ record PerformancePeriod(LocalDate firstDay, LocalDate lastDay, Optional<String>
         return period;
     }
 
+    /** The opening value is taken at the end of the day before the first day. */
+    LocalDate openingDay()
+    {
+        return firstDay.minusDays(1);
+    }
+
+    boolean contains(LocalDate day)
+    {
+        return !day.isBefore(firstDay) && !day.isAfter(lastDay);
+    }
+
     /** The interval core's performance engine takes. */
     Interval interval()
     {
-        return Interval.of(firstDay.minusDays(1), lastDay);
+        return Interval.of(openingDay(), lastDay);
     }
 
     /** Adds the resolved first and last day and, if given, the code. */

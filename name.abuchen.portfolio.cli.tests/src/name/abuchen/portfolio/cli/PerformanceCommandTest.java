@@ -402,6 +402,53 @@ public class PerformanceCommandTest
     }
 
     @Test
+    public void aForeignCurrencyThatWasClosedBeforeThePeriodRaisesNoWarning() throws IOException
+    {
+        new AccountBuilder("USD").deposit_("2025-01-01", PortfolioBuilder.amountOf(1_000))
+                        .withdraw("2025-02-01", PortfolioBuilder.amountOf(1_000)).addTo(client).setName("Old Dollars");
+        var missingCache = folder.getRoot().toPath().resolve("missing").resolve("ecb_exchange_rates.pb");
+
+        var run = run(Map.of("PP_ECB_RATES", missingCache.toString()), "--from", "2026-01-01", "--to",
+                        "2026-09-30");
+
+        assertThat(run.stdout, run.exitCode, is(0));
+        assertThat(warnings(run, "exchange-rate-missing").size(), is(0));
+    }
+
+    @Test
+    public void aPeriodEndingInTheFutureChecksTheRateAgainstTodayNotItsLastDay() throws IOException
+    {
+        addDollarAccount();
+        var cache = folder.getRoot().toPath().resolve("cache").resolve("ecb_exchange_rates.pb");
+        EcbCacheFiles.write(cache, EcbCacheFiles.series("EUR", "USD").rate("2026-10-16", "1.2000"));
+
+        var run = run(Map.of("PP_ECB_RATES", cache.toString()), "--period", "Y2026");
+
+        assertThat(run.stdout, run.exitCode, is(0));
+        assertThat(meta(run).get("to").getAsString(), is("2026-12-31"));
+        assertThat(warnings(run, "stale-exchange-rate").size(), is(0));
+        assertThat(warnings(run, "exchange-rate-missing").size(), is(0));
+    }
+
+    @Test
+    public void aForeignCurrencyHeldAtTheStartIsCheckedAtTheStartToo() throws IOException
+    {
+        new AccountBuilder("USD").deposit_("2025-06-01", PortfolioBuilder.amountOf(1_000)).addTo(client)
+                        .setName("Dollars");
+        var cache = folder.getRoot().toPath().resolve("cache").resolve("ecb_exchange_rates.pb");
+        EcbCacheFiles.write(cache, EcbCacheFiles.series("EUR", "USD").rate("2026-03-01", "1.2000")
+                        .rate("2026-09-30", "1.3000"));
+
+        var run = run(Map.of("PP_ECB_RATES", cache.toString()), "--from", "2026-01-01", "--to", "2026-09-30");
+
+        assertThat(run.stdout, run.exitCode, is(0));
+        var missing = warnings(run, "exchange-rate-missing");
+        assertThat(missing.size(), is(1));
+        assertThat(missing.get(0).get("baseCurrency").getAsString(), is("USD"));
+        assertThat(warnings(run, "stale-exchange-rate").size(), is(0));
+    }
+
+    @Test
     public void figuresAreInTheBaseCurrencyOrTheRequestedOneAsCoreConvertsThem() throws IOException
     {
         var cache = folder.getRoot().toPath().resolve("cache").resolve("ecb_exchange_rates.pb");

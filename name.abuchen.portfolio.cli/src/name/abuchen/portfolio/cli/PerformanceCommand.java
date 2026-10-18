@@ -1,19 +1,12 @@
 package name.abuchen.portfolio.cli;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 
@@ -24,9 +17,8 @@ import name.abuchen.portfolio.snapshot.PerformanceIndex;
  * source; core decides which rate it uses on which day. Where the source has
  * no rate for a pair, core's converter falls back to 1.0: the spec has
  * <code>performance</code> follow the engine's own behavior, unlike
- * <code>holdings</code>. The command therefore looks up the rate of every
- * foreign currency the client uses for the last day of the period, and warns
- * if it is missing or stale (ADR 0005).
+ * <code>holdings</code>. {@link PerformanceRateCheck} therefore looks up the
+ * rates the figures depend on and warns if one is missing or stale (ADR 0005).
  */
 final class PerformanceCommand
 {
@@ -83,7 +75,7 @@ final class PerformanceCommand
 
     static final CommandSpec SPEC = new CommandSpec("performance",
                     "IRR, TTWROR and gains of the whole client over a period, given as --from and --to or as a reporting-period --period code, by FIFO or moving-average cost, in the base currency or --currency.",
-                    true, options(), DATA, META, ExchangeRates.WARNINGS, PerformanceCommand::execute);
+                    true, options(), DATA, META, PerformanceRateCheck.WARNINGS, PerformanceCommand::execute);
 
     private PerformanceCommand()
     {
@@ -106,7 +98,7 @@ final class PerformanceCommand
 
         var currency = requested.orElse(client.getBaseCurrency());
         var rates = new ExchangeRates(context, client);
-        checkRates(client, rates, period, currency);
+        PerformanceRateCheck.run(client, rates, period, currency, LocalDate.now(context.clock()));
 
         var index = PerformanceIndex.forClient(client, rates.converter(currency), period.interval(), new ArrayList<>());
         var snapshot = index.getClientPerformanceSnapshot(costMethod == CostMethod.FIFO).orElseThrow();
@@ -127,30 +119,6 @@ final class PerformanceCommand
         var response = Response.of(data, meta);
         rates.warnings().forEach(response::warn);
         return response;
-    }
-
-    /**
-     * Core's converter never says that it found no rate, so the rate of each
-     * foreign currency the client uses is looked up here for the last day of
-     * the period. That notes a missing or stale one for the warnings.
-     */
-    private static void checkRates(Client client, ExchangeRates rates, PerformancePeriod period, String currency)
-    {
-        var foreign = new TreeSet<>(currenciesUsedBy(client));
-        foreign.remove(currency);
-        foreign.forEach(code -> rates.lookup(period.lastDay(), code, currency));
-    }
-
-    private static Set<String> currenciesUsedBy(Client client)
-    {
-        var accounts = client.getAccounts();
-        var transactions = Stream.concat(client.getPortfolios().stream().flatMap(p -> p.getTransactions().stream()),
-                        accounts.stream().flatMap(a -> a.getTransactions().stream()));
-
-        return Stream.concat(accounts.stream().map(a -> a.getCurrencyCode()),
-                        transactions.map(Transaction::getSecurity).filter(Objects::nonNull)
-                                        .map(Security::getCurrencyCode))
-                        .filter(Objects::nonNull).collect(Collectors.toSet());
     }
 
     private static Optional<Object> finiteFraction(double value)
