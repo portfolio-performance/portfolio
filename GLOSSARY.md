@@ -57,6 +57,10 @@ _Avoid_: position (internal core term), asset
 Marks an **Instrument**, **Investment account** or **Cash account** that the user no longer actively uses but keeps for its history.
 _Avoid_: deactivated, inactive, archived
 
+**Active in the period**:
+An **Instrument** that was held at the start or end of a period, or had any transaction in it (a buy, sell, dividend, ...). An instrument that is not active in the period is _quiet_. Unrelated to **Retired**: a retired instrument can be active in a past period.
+_Avoid_: active (alone), used, traded
+
 **Attribute**:
 A user-defined, typed field (text, number, percent, amount, date, ...) that the user attaches to **Instruments**, such as a fund's TER or vendor.
 _Avoid_: custom field, property
