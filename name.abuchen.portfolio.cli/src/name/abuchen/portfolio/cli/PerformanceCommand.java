@@ -1,153 +1,128 @@
 package name.abuchen.portfolio.cli;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
-import name.abuchen.portfolio.util.Interval;
 
 /**
  * <code>performance</code>: how the whole client did over a period. The
  * figures are core's performance index (IRR, TTWROR) and its performance
  * snapshot (gains), converted by core's own converter over the CLI's rate
  * source; core decides which rate it uses on which day. Where the source has
- * no rate for a pair, core's converter falls back to 1.0 and no warning is
- * raised: the spec has <code>performance</code> follow the engine's own
- * behavior, unlike <code>holdings</code>.
+ * no rate for a pair, core's converter falls back to 1.0: the spec has
+ * <code>performance</code> follow the engine's own behavior, unlike
+ * <code>holdings</code>. The command therefore looks up the rate of every
+ * foreign currency the client uses for the last day of the period, and warns
+ * if it is missing or stale (ADR 0005).
  */
 final class PerformanceCommand
 {
-    /** Core's code for "year to date"; agents also say <code>YTD</code>. */
-    private static final String YEAR_TO_DATE_CODE = "X";
-    private static final String YEAR_TO_DATE_ALIAS = "YTD";
-
-    private static final OptionSpec FROM = OptionSpec.date("from",
-                    "Day the opening value is taken at, the end of that day: activity after it counts. With --to; not with --period.");
-
-    private static final OptionSpec TO = OptionSpec.date("to",
-                    "Last day of the period, inclusive. Defaults to today. Not with --period.");
-
-    private static final OptionSpec PERIOD = new OptionSpec("period", "code",
-                    "A reporting-period code of the desktop app, resolved by core relative to today: for example L1Y0 (last year), X or YTD (year to date), Y2025 (the year 2025), L0Y6 (last six months), S2025-01-15 (since a day). Instead of --from and --to.");
-
-    private static final OptionSpec COST_METHOD = new OptionSpec("cost-method", "method",
-                    "How capital gains are costed: fifo (the default) or moving-average. Echoed in meta.");
-
     private static final OptionSpec CURRENCY = new OptionSpec("currency", "code",
                     "ISO currency of the figures. Defaults to the base currency of the file.");
 
-    /** A cost method of the <code>--cost-method</code> option, by the name it has there. */
-    private enum CostMethodOption
+    /** A value or gain of the performance snapshot, as the output names it. */
+    private record Figure(String key, CategoryType category, String description)
     {
-        FIFO("fifo"), MOVING_AVERAGE("moving-average");
-
-        private final String id;
-
-        CostMethodOption(String id)
-        {
-            this.id = id;
-        }
-
-        static List<String> ids()
-        {
-            return Arrays.stream(values()).map(m -> m.id).toList();
-        }
     }
+
+    private static final List<Figure> FIGURES = List.of(
+                    new Figure("initialValue", CategoryType.INITIAL_VALUE,
+                                    "Value of the client at the start of the period."),
+                    new Figure("finalValue", CategoryType.FINAL_VALUE,
+                                    "Value of the client at the end of the period."),
+                    new Figure("capitalGains", CategoryType.CAPITAL_GAINS,
+                                    "Unrealized capital gains of the period, by the cost method."),
+                    new Figure("realizedCapitalGains", CategoryType.REALIZED_CAPITAL_GAINS,
+                                    "Realized capital gains of the period, by the cost method."),
+                    new Figure("earnings", CategoryType.EARNINGS, "Dividends and interest, net of interest charges."),
+                    new Figure("fees", CategoryType.FEES, "Fees paid."),
+                    new Figure("taxes", CategoryType.TAXES, "Taxes paid."),
+                    new Figure("currencyGains", CategoryType.CURRENCY_GAINS,
+                                    "Gains and losses from changes of exchange rates."),
+                    new Figure("transfers", CategoryType.TRANSFERS,
+                                    "Deposits less removals, and deliveries in less deliveries out."));
 
     private static Schema reportingAmount(String description)
     {
         return Schema.number(description + " In the reporting currency.");
     }
 
-    private static final Schema DATA = Schema.object("How the client performed over the period.")
-                    .property("currencyCode", Schema.string("The reporting currency of every amount."))
-                    .optionalProperty("irr", Schema.number(
-                                    "Internal rate of return over the period, annualized, as a fraction: 0.05 is 5 %. Absent if core finds none."))
-                    .optionalProperty("ttwror", Schema.number(
-                                    "True time-weighted rate of return over the period, not annualized, as a fraction: 0.05 is 5 %."))
-                    .property("absoluteGain", reportingAmount(
-                                    "Capital gains, realized capital gains, earnings and currency gains, less fees and taxes."))
-                    .property("initialValue", reportingAmount("Value of the client at the start of the period."))
-                    .property("finalValue", reportingAmount("Value of the client at the end of the period."))
-                    .property("capitalGains",
-                                    reportingAmount("Unrealized capital gains of the period, by the cost method."))
-                    .property("realizedCapitalGains",
-                                    reportingAmount("Realized capital gains of the period, by the cost method."))
-                    .property("earnings", reportingAmount("Dividends and interest, net of interest charges."))
-                    .property("fees", reportingAmount("Fees paid."))
-                    .property("taxes", reportingAmount("Taxes paid."))
-                    .property("currencyGains", reportingAmount("Gains and losses from changes of exchange rates."))
-                    .property("transfers",
-                                    reportingAmount("Deposits less removals, and deliveries in less deliveries out."));
+    private static Schema dataSchema()
+    {
+        var data = Schema.object("How the client performed over the period.")
+                        .property("currencyCode", Schema.string("The reporting currency of every amount."))
+                        .optionalProperty("irr", Schema.number(
+                                        "Internal rate of return over the period, annualized, as a fraction: 0.05 is 5 %. Absent if core finds none."))
+                        .optionalProperty("ttwror", Schema.number(
+                                        "True time-weighted rate of return over the period, not annualized, as a fraction: 0.05 is 5 %."))
+                        .property("absoluteGain", reportingAmount(
+                                        "Capital gains, realized capital gains, earnings and currency gains, less fees and taxes."));
+        FIGURES.forEach(figure -> data.property(figure.key(), reportingAmount(figure.description())));
+        return data;
+    }
 
-    private static final Schema META = ResponseMeta.fileSchema()
-                    .property("from", Schema.string(
-                                    "The day the opening value is taken at, as resolved: as given with --from, or the start of the --period code."))
-                    .property("to", Schema.string("The last day of the period, as resolved."))
-                    .optionalProperty("period", Schema.string("The reporting-period code, as given. Absent with --from."))
-                    .property("costMethod", Schema.enumOf("The cost method used: as given, otherwise fifo.",
-                                    CostMethodOption.ids()))
+    private static final Schema DATA = dataSchema();
+
+    private static final Schema META = PerformancePeriod.declareIn(ResponseMeta.fileSchema())
+                    .property("costMethod", CostMethod.schema())
                     .property("currency", Schema.string("The reporting currency: as given, otherwise the base currency."))
                     .optionalProperty("exchangeRates", ExchangeRates.metaSchema());
 
     static final CommandSpec SPEC = new CommandSpec("performance",
                     "IRR, TTWROR and gains of the whole client over a period, given as --from and --to or as a reporting-period --period code, by FIFO or moving-average cost, in the base currency or --currency.",
-                    true, List.of(FROM, TO, PERIOD, COST_METHOD, CURRENCY), DATA, META, List.of(ExchangeRates.CACHE_UNAVAILABLE),
-                    PerformanceCommand::execute);
+                    true, options(), DATA, META, ExchangeRates.WARNINGS, PerformanceCommand::execute);
 
     private PerformanceCommand()
     {
     }
 
-    /** The resolved interval of a run, and the code it came from, if any. */
-    private record Period(Interval interval, Optional<String> code)
+    private static List<OptionSpec> options()
     {
+        var options = new ArrayList<>(PerformancePeriod.OPTIONS);
+        options.add(CostMethod.OPTION);
+        options.add(CURRENCY);
+        return options;
     }
 
     private static Response execute(CommandContext context) throws CliException
     {
-        var period = resolvePeriod(context);
-        var costMethod = parseCostMethod(context);
+        var period = PerformancePeriod.resolve(context);
+        var costMethod = CostMethod.parse(context);
         var requested = ExchangeRates.parseCurrency(CURRENCY, context.option(CURRENCY.name()));
         var client = context.loadClient().client();
 
         var currency = requested.orElse(client.getBaseCurrency());
         var rates = new ExchangeRates(context, client);
+        checkRates(client, rates, period, currency);
 
         var index = PerformanceIndex.forClient(client, rates.converter(currency), period.interval(), new ArrayList<>());
-        var snapshot = index.getClientPerformanceSnapshot(costMethod == CostMethodOption.FIFO).orElseThrow();
+        var snapshot = index.getClientPerformanceSnapshot(costMethod == CostMethod.FIFO).orElseThrow();
 
         var data = new LinkedHashMap<String, Object>();
         data.put("currencyCode", currency);
-        rate(snapshot.getPerformanceIRR()).ifPresent(irr -> data.put("irr", irr));
-        rate(index.getFinalAccumulatedPercentage()).ifPresent(ttwror -> data.put("ttwror", ttwror));
-        data.put("absoluteGain", amount(snapshot.getAbsoluteDelta()));
-        data.put("initialValue", amount(snapshot.getValue(CategoryType.INITIAL_VALUE)));
-        data.put("finalValue", amount(snapshot.getValue(CategoryType.FINAL_VALUE)));
-        data.put("capitalGains", amount(snapshot.getValue(CategoryType.CAPITAL_GAINS)));
-        data.put("realizedCapitalGains", amount(snapshot.getValue(CategoryType.REALIZED_CAPITAL_GAINS)));
-        data.put("earnings", amount(snapshot.getValue(CategoryType.EARNINGS)));
-        data.put("fees", amount(snapshot.getValue(CategoryType.FEES)));
-        data.put("taxes", amount(snapshot.getValue(CategoryType.TAXES)));
-        data.put("currencyGains", amount(snapshot.getValue(CategoryType.CURRENCY_GAINS)));
-        data.put("transfers", amount(snapshot.getValue(CategoryType.TRANSFERS)));
+        finiteFraction(snapshot.getPerformanceIRR()).ifPresent(irr -> data.put("irr", irr));
+        finiteFraction(index.getFinalAccumulatedPercentage()).ifPresent(ttwror -> data.put("ttwror", ttwror));
+        data.put("absoluteGain", Decimals.amount(snapshot.getAbsoluteDelta()));
+        FIGURES.forEach(figure -> data.put(figure.key(), Decimals.amount(snapshot.getValue(figure.category()))));
 
         var meta = ResponseMeta.of(context, client);
-        meta.put("from", period.interval().getStart().toString());
-        meta.put("to", period.interval().getEnd().toString());
-        period.code().ifPresent(code -> meta.put("period", code));
-        meta.put("costMethod", costMethod.id);
+        period.putInto(meta);
+        meta.put("costMethod", costMethod.id());
         meta.put("currency", currency);
-        rates.cacheMeta().ifPresent(cache -> meta.put("exchangeRates", cache));
+        rates.putCacheInto(meta);
 
         var response = Response.of(data, meta);
         rates.warnings().forEach(response::warn);
@@ -155,103 +130,33 @@ final class PerformanceCommand
     }
 
     /**
-     * The period of the run: <code>--from</code> and <code>--to</code>, or a
-     * reporting-period code.
-     *
-     * @throws CliException
-     *             a usage error if the options are missing, conflict or are
-     *             invalid
+     * Core's converter never says that it found no rate, so the rate of each
+     * foreign currency the client uses is looked up here for the last day of
+     * the period. That notes a missing or stale one for the warnings.
      */
-    private static Period resolvePeriod(CommandContext context) throws CliException
+    private static void checkRates(Client client, ExchangeRates rates, PerformancePeriod period, String currency)
     {
-        var code = context.option(PERIOD.name());
-
-        Interval interval;
-        if (code.isPresent())
-        {
-            if (context.option(FROM.name()).isPresent() || context.option(TO.name()).isPresent())
-                throw CliException.usage("conflicting-options", "Conflicting options",
-                                "Option '--" + PERIOD.name() + "' cannot be combined with '--" + FROM.name()
-                                                + "' or '--" + TO.name() + "'.")
-                                .with("option", PERIOD.name());
-
-            var today = LocalDate.now(context.clock());
-            interval = parseReportingPeriod(code.get(), today).toInterval(today);
-        }
-        else
-        {
-            var range = DateRange.parse(context, FROM, TO);
-            var from = range.from().orElseThrow(() -> CliException.usage("period-required", "Period required",
-                            "Pass --" + FROM.name() + " <date> (with an optional --" + TO.name() + "), or --"
-                                            + PERIOD.name() + " <code>."));
-            interval = Interval.of(from, range.to());
-        }
-
-        // core answers a period that ends on its start day (e.g. "since" a future day) with an empty interval
-        if (!interval.getStart().isBefore(interval.getEnd()))
-            throw CliException.usage("invalid-date-range", "Invalid date range",
-                            "The period must start before it ends, but it runs from " + interval.getStart() + " to "
-                                            + interval.getEnd() + ".")
-                            .with("from", interval.getStart().toString()).with("to", interval.getEnd().toString());
-
-        return new Period(interval, code);
+        var foreign = new TreeSet<>(currenciesUsedBy(client));
+        foreign.remove(currency);
+        foreign.forEach(code -> rates.lookup(period.lastDay(), code, currency));
     }
 
-    private static ReportingPeriod parseReportingPeriod(String code, LocalDate today) throws CliException
+    private static Set<String> currenciesUsedBy(Client client)
     {
-        var normalized = YEAR_TO_DATE_ALIAS.equals(code) ? YEAR_TO_DATE_CODE : code;
+        var accounts = client.getAccounts();
+        var transactions = Stream.concat(client.getPortfolios().stream().flatMap(p -> p.getTransactions().stream()),
+                        accounts.stream().flatMap(a -> a.getTransactions().stream()));
 
-        Optional<ReportingPeriod> period = Optional.empty();
-        try
-        {
-            if (!normalized.isBlank())
-                period = ReportingPeriod.tryFrom(normalized);
-        }
-        catch (RuntimeException e)
-        {
-            // core does not guard every malformed code: reported below like any other
-        }
-
-        return period.map(p -> independentOfTheWallClock(p, today))
-                        .orElseThrow(() -> PERIOD.invalid(code,
-                                        "a reporting-period code such as L1Y0, YTD or Y2025"));
+        return Stream.concat(accounts.stream().map(a -> a.getCurrencyCode()),
+                        transactions.map(Transaction::getSecurity).filter(Objects::nonNull)
+                                        .map(Security::getCurrencyCode))
+                        .filter(Objects::nonNull).collect(Collectors.toSet());
     }
 
-    /**
-     * Core's year-to-date and current-month periods take their start from the
-     * system clock, not from the day they are resolved for. The same periods
-     * are expressed as "since" the day before the start, from the injected
-     * clock, so that the period is deterministic.
-     */
-    private static ReportingPeriod independentOfTheWallClock(ReportingPeriod period, LocalDate today)
-    {
-        if (period instanceof ReportingPeriod.YearToDate)
-            return new ReportingPeriod.SinceX(today.withDayOfMonth(1).withMonth(1).minusDays(1));
-        if (period instanceof ReportingPeriod.CurrentMonth)
-            return new ReportingPeriod.SinceX(today.withDayOfMonth(1).minusDays(1));
-        return period;
-    }
-
-    private static CostMethodOption parseCostMethod(CommandContext context) throws CliException
-    {
-        var raw = context.option(COST_METHOD.name());
-        if (raw.isEmpty())
-            return CostMethodOption.FIFO;
-
-        return Arrays.stream(CostMethodOption.values()).filter(m -> m.id.equals(raw.get())).findFirst()
-                        .orElseThrow(() -> COST_METHOD.invalid(raw.get(),
-                                        "one of: " + String.join(", ", CostMethodOption.ids())));
-    }
-
-    private static Optional<Object> rate(double value)
+    private static Optional<Object> finiteFraction(double value)
     {
         if (!Double.isFinite(value))
             return Optional.empty();
         return Optional.of(Decimals.of(BigDecimal.valueOf(value)));
-    }
-
-    private static Object amount(Money money)
-    {
-        return Decimals.of(money.getAmount(), Values.Amount);
     }
 }

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import com.google.gson.JsonPrimitive;
 
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 /**
@@ -14,6 +15,12 @@ final class Decimals
 {
     private Decimals()
     {
+    }
+
+    /** The stored amount of the money, scaled by the precision of amounts. */
+    static JsonPrimitive amount(Money money)
+    {
+        return of(money.getAmount(), Values.Amount);
     }
 
     /** The stored value scaled by the precision of the given values, e.g. a quote. */

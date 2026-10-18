@@ -184,7 +184,7 @@ final class TransactionsCommand
         instrument.ifPresent(security -> meta.put("instrument", security.getUUID()));
         if (!types.isEmpty())
             meta.put("types", FILTERABLE_TYPES.stream().filter(types::contains).toList());
-        rates.cacheMeta().ifPresent(cache -> meta.put("exchangeRates", cache));
+        rates.putCacheInto(meta);
 
         var response = Response.of(data, meta);
         rates.warnings().forEach(response::warn);
@@ -280,11 +280,11 @@ final class TransactionsCommand
     {
         var json = new LinkedHashMap<String, Object>();
         json.put("type", unit.getType().name());
-        json.put("amount", Decimals.of(unit.getAmount().getAmount(), Values.Amount));
+        json.put("amount", Decimals.amount(unit.getAmount()));
         json.put("currencyCode", unit.getAmount().getCurrencyCode());
         if (unit.getForex() != null)
         {
-            json.put("forexAmount", Decimals.of(unit.getForex().getAmount(), Values.Amount));
+            json.put("forexAmount", Decimals.amount(unit.getForex()));
             json.put("forexCurrencyCode", unit.getForex().getCurrencyCode());
             json.put("exchangeRate", Decimals.of(unit.getExchangeRate()));
         }

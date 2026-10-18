@@ -98,9 +98,14 @@ public class PerformanceCommandTest
         return run.json().getAsJsonObject().getAsJsonObject("meta");
     }
 
-    private PerformanceIndex core(String from, String to)
+    /**
+     * Core's performance index over the days from the first to the last day,
+     * both counted. Core's interval is open at its start, so it begins on the
+     * day before the first day.
+     */
+    private PerformanceIndex coreOverDays(String firstDay, String lastDay)
     {
-        return core(Interval.of(LocalDate.parse(from), LocalDate.parse(to)));
+        return core(Interval.of(LocalDate.parse(firstDay).minusDays(1), LocalDate.parse(lastDay)));
     }
 
     private PerformanceIndex core(Interval interval)
@@ -136,24 +141,45 @@ public class PerformanceCommandTest
     @Test
     public void irrTtwrorAndGainsMatchCoresPerformanceIndexForFromAndTo() throws IOException
     {
-        var run = run("--from", "2025-12-31", "--to", "2026-09-30");
+        var run = run("--from", "2026-01-01", "--to", "2026-09-30");
 
-        assertMatchesCore(run, core("2025-12-31", "2026-09-30"), true);
+        assertMatchesCore(run, coreOverDays("2026-01-01", "2026-09-30"), true);
+    }
+
+    @Test
+    public void fromIsTheFirstDayOfThePeriodSoActivityOnItCounts() throws IOException
+    {
+        // the first purchase is on 2026-01-02: it is the opening of the period, not a part of the value before it
+        var run = run("--from", "2026-01-02", "--to", "2026-09-30");
+
+        assertMatchesCore(run, coreOverDays("2026-01-02", "2026-09-30"), true);
+        assertThat(data(run).get("initialValue").getAsBigDecimal().signum(), is(1));
+        assertThat(meta(run).get("from").getAsString(), is("2026-01-02"));
+    }
+
+    @Test
+    public void aSingleDayPeriodIsValid() throws IOException
+    {
+        var run = run("--from", "2026-09-30", "--to", "2026-09-30");
+
+        assertMatchesCore(run, coreOverDays("2026-09-30", "2026-09-30"), true);
+        assertThat(meta(run).get("from").getAsString(), is("2026-09-30"));
+        assertThat(meta(run).get("to").getAsString(), is("2026-09-30"));
     }
 
     @Test
     public void toDefaultsToTodayFromTheClockAndTheResolvedDatesAreEchoed() throws IOException
     {
-        var run = run("--from", "2025-12-31");
+        var run = run("--from", "2026-01-01");
 
-        assertMatchesCore(run, core("2025-12-31", "2026-10-16"), true);
-        assertThat(meta(run).get("from").getAsString(), is("2025-12-31"));
+        assertMatchesCore(run, coreOverDays("2026-01-01", "2026-10-16"), true);
+        assertThat(meta(run).get("from").getAsString(), is("2026-01-01"));
         assertThat(meta(run).get("to").getAsString(), is("2026-10-16"));
         assertThat(meta(run).has("period"), is(false));
     }
 
     @Test
-    public void periodCodesResolveThroughCoreAndTheResolvedDatesAreEchoed() throws IOException
+    public void periodCodesResolveThroughCoreAndTheResolvedDatesAreEchoedAsFirstAndLastDay() throws IOException
     {
         var today = LocalDate.parse("2026-10-16");
 
@@ -164,10 +190,30 @@ public class PerformanceCommandTest
             var run = run("--period", code);
 
             assertMatchesCore(run, core(interval), true);
-            assertThat(code, meta(run).get("from").getAsString(), is(interval.getStart().toString()));
+            assertThat(code, meta(run).get("from").getAsString(), is(interval.getStart().plusDays(1).toString()));
             assertThat(code, meta(run).get("to").getAsString(), is(interval.getEnd().toString()));
             assertThat(code, meta(run).get("period").getAsString(), is(code));
         }
+    }
+
+    @Test
+    public void aCalendarYearIsEchoedFromItsFirstToItsLastDay() throws IOException
+    {
+        var run = run("--period", "Y2025");
+
+        assertThat(meta(run).get("from").getAsString(), is("2025-01-01"));
+        assertThat(meta(run).get("to").getAsString(), is("2025-12-31"));
+    }
+
+    @Test
+    public void aPeriodCodeAndTheEquivalentFromAndToGiveTheSameFiguresAndEcho() throws IOException
+    {
+        var byCode = run("--period", "Y2025");
+        var byDates = run("--from", "2025-01-01", "--to", "2025-12-31");
+
+        assertThat(data(byCode), is(data(byDates)));
+        assertThat(meta(byCode).get("from"), is(meta(byDates).get("from")));
+        assertThat(meta(byCode).get("to"), is(meta(byDates).get("to")));
     }
 
     @Test
@@ -175,8 +221,8 @@ public class PerformanceCommandTest
     {
         var run = run("--period", "M");
 
-        assertMatchesCore(run, core("2026-09-30", "2026-10-16"), true);
-        assertThat(meta(run).get("from").getAsString(), is("2026-09-30"));
+        assertMatchesCore(run, coreOverDays("2026-10-01", "2026-10-16"), true);
+        assertThat(meta(run).get("from").getAsString(), is("2026-10-01"));
     }
 
     @Test
@@ -184,7 +230,8 @@ public class PerformanceCommandTest
     {
         var run = run("--period", "YTD");
 
-        assertMatchesCore(run, core("2025-12-31", "2026-10-16"), true);
+        assertMatchesCore(run, coreOverDays("2026-01-01", "2026-10-16"), true);
+        assertThat(meta(run).get("from").getAsString(), is("2026-01-01"));
         assertThat(meta(run).get("period").getAsString(), is("YTD"));
     }
 
@@ -228,16 +275,16 @@ public class PerformanceCommandTest
     }
 
     @Test
-    public void aFromNotBeforeToIsAUsageError() throws IOException
+    public void aFromAfterToIsAUsageError() throws IOException
     {
-        var run = run("--from", "2026-06-30", "--to", "2026-06-30");
+        var run = run("--from", "2026-06-30", "--to", "2026-06-29");
 
         assertThat(run.stdout, run.exitCode, is(2));
         assertThat(run.json().getAsJsonObject().get("code").getAsString(), is("invalid-date-range"));
     }
 
     @Test
-    public void aPeriodCodeThatEndsOnItsStartDayIsAUsageError() throws IOException
+    public void aPeriodCodeThatStartsAfterItEndsIsAUsageError() throws IOException
     {
         var run = run("--period", "S2026-10-16");
 
@@ -248,19 +295,19 @@ public class PerformanceCommandTest
     @Test
     public void costMethodDefaultsToFifoAndIsEchoed() throws IOException
     {
-        var run = run("--from", "2025-12-31", "--to", "2026-09-30");
+        var run = run("--from", "2026-01-01", "--to", "2026-09-30");
 
         assertThat(meta(run).get("costMethod").getAsString(), is("fifo"));
-        assertMatchesCore(run, core("2025-12-31", "2026-09-30"), true);
+        assertMatchesCore(run, coreOverDays("2026-01-01", "2026-09-30"), true);
     }
 
     @Test
     public void movingAverageChangesTheGainsAsCoreDoesAndIsEchoed() throws IOException
     {
-        var fifo = run("--from", "2025-12-31", "--to", "2026-09-30", "--cost-method", "fifo");
-        var movingAverage = run("--from", "2025-12-31", "--to", "2026-09-30", "--cost-method", "moving-average");
+        var fifo = run("--from", "2026-01-01", "--to", "2026-09-30", "--cost-method", "fifo");
+        var movingAverage = run("--from", "2026-01-01", "--to", "2026-09-30", "--cost-method", "moving-average");
 
-        var index = core("2025-12-31", "2026-09-30");
+        var index = coreOverDays("2026-01-01", "2026-09-30");
         assertMatchesCore(fifo, index, true);
         assertMatchesCore(movingAverage, index, false);
 
@@ -274,10 +321,84 @@ public class PerformanceCommandTest
     @Test
     public void anUnknownCostMethodIsAUsageError() throws IOException
     {
-        var run = run("--from", "2025-12-31", "--cost-method", "lifo");
+        var run = run("--from", "2026-01-01", "--cost-method", "lifo");
 
         assertThat(run.stdout, run.exitCode, is(2));
         assertThat(run.json().getAsJsonObject().get("code").getAsString(), is("invalid-option-value"));
+    }
+
+    private static List<JsonObject> warnings(CliRun run, String code)
+    {
+        var all = run.json().getAsJsonObject().getAsJsonArray("warnings");
+        var found = new ArrayList<JsonObject>();
+        if (all != null)
+            all.forEach(w -> {
+                if (w.getAsJsonObject().get("code").getAsString().equals(code))
+                    found.add(w.getAsJsonObject());
+            });
+        return found;
+    }
+
+    private void addDollarAccount()
+    {
+        new AccountBuilder("USD").deposit_("2026-02-01", PortfolioBuilder.amountOf(1_000)).addTo(client)
+                        .setName("Dollars");
+    }
+
+    @Test
+    public void aClientInItsBaseCurrencyRaisesNoWarnings() throws IOException
+    {
+        var run = run("--from", "2026-01-01", "--to", "2026-09-30");
+
+        assertThat(run.stdout, run.exitCode, is(0));
+        assertThat(run.json().getAsJsonObject().getAsJsonArray("warnings").size(), is(0));
+    }
+
+    @Test
+    public void aForeignCurrencyWithoutARateIsWarnedAboutAndTheFiguresAreStillReported() throws IOException
+    {
+        addDollarAccount();
+        var missingCache = folder.getRoot().toPath().resolve("missing").resolve("ecb_exchange_rates.pb");
+
+        var run = run(Map.of("PP_ECB_RATES", missingCache.toString()), "--from", "2026-01-01", "--to",
+                        "2026-09-30");
+
+        assertThat(run.stdout, run.exitCode, is(0));
+        assertThat(data(run).has("absoluteGain"), is(true));
+        var missing = warnings(run, "exchange-rate-missing");
+        assertThat(missing.size(), is(1));
+        assertThat(missing.get(0).get("baseCurrency").getAsString(), is("USD"));
+        assertThat(missing.get(0).get("termCurrency").getAsString(), is("EUR"));
+        assertThat(warnings(run, "exchange-rate-cache-unavailable").size(), is(1));
+    }
+
+    @Test
+    public void aStaleRateIsWarnedAbout() throws IOException
+    {
+        addDollarAccount();
+        var cache = folder.getRoot().toPath().resolve("cache").resolve("ecb_exchange_rates.pb");
+        EcbCacheFiles.write(cache, EcbCacheFiles.series("EUR", "USD").rate("2026-03-01", "1.2000"));
+
+        var run = run(Map.of("PP_ECB_RATES", cache.toString()), "--from", "2026-01-01", "--to", "2026-09-30");
+
+        assertThat(run.stdout, run.exitCode, is(0));
+        var stale = warnings(run, "stale-exchange-rate");
+        assertThat(stale.size(), is(1));
+        assertThat(stale.get(0).get("baseCurrency").getAsString(), is("USD"));
+        assertThat(warnings(run, "exchange-rate-missing").size(), is(0));
+    }
+
+    @Test
+    public void aFreshRateRaisesNoWarning() throws IOException
+    {
+        addDollarAccount();
+        var cache = folder.getRoot().toPath().resolve("cache").resolve("ecb_exchange_rates.pb");
+        EcbCacheFiles.write(cache, EcbCacheFiles.series("EUR", "USD").rate("2026-09-30", "1.2000"));
+
+        var run = run(Map.of("PP_ECB_RATES", cache.toString()), "--from", "2026-01-01", "--to", "2026-09-30");
+
+        assertThat(run.stdout, run.exitCode, is(0));
+        assertThat(run.json().getAsJsonObject().getAsJsonArray("warnings").size(), is(0));
     }
 
     @Test
@@ -288,7 +409,7 @@ public class PerformanceCommandTest
                         .rate("2026-09-30", "1.3000");
         EcbCacheFiles.write(cache, usd);
 
-        var run = run(Map.of("PP_ECB_RATES", cache.toString()), "--from", "2025-12-31", "--to", "2026-09-30",
+        var run = run(Map.of("PP_ECB_RATES", cache.toString()), "--from", "2026-01-01", "--to", "2026-09-30",
                         "--currency", "USD");
         assertThat(run.stdout, run.exitCode, is(0));
 

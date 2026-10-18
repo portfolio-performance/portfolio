@@ -234,7 +234,7 @@ final class HoldingsCommand
         meta.put("date", date.toString());
         meta.put("currency", currency);
         filter.ifPresent(account -> meta.put("investmentAccount", account.getUUID()));
-        rates.cacheMeta().ifPresent(cache -> meta.put("exchangeRates", cache));
+        rates.putCacheInto(meta);
 
         var response = Response.of(data, meta);
         stalePrices.values().forEach(response::warn);
@@ -296,7 +296,7 @@ final class HoldingsCommand
             priceJson.put("value", Decimals.of(price.getValue(), Values.Quote));
             json.put("price", priceJson);
         });
-        json.put("amount", Decimals.of(row.value().getAmount(), Values.Amount));
+        json.put("amount", Decimals.amount(row.value()));
         json.put("currencyCode", row.value().getCurrencyCode());
         valuation.putConverted(json, figure);
         return json;
@@ -318,7 +318,7 @@ final class HoldingsCommand
             var json = new LinkedHashMap<String, Object>();
             json.put("cashAccount", account.getUUID());
             json.put("name", MasterData.orEmpty(account.getName()));
-            json.put("amount", Decimals.of(figure.value().getAmount(), Values.Amount));
+            json.put("amount", Decimals.amount(figure.value()));
             json.put("currencyCode", figure.value().getCurrencyCode());
             valuation.putConverted(json, figure);
             items.add(json);

@@ -58,7 +58,7 @@ final class ExchangeRates
     }
 
     static final WarningSpec MISSING = new WarningSpec("exchange-rate-missing",
-                    "No usable exchange rate was found for a currency pair; the figures that need it are left out. Carries baseCurrency, termCurrency and the count of affected records (or holdings and cash accounts) on the page.");
+                    "No usable exchange rate was found for a currency pair; the figures that need it are left out. For performance, whose figures core calculates, they are reported with core's rate of 1.0 for the pair and are unreliable. Carries baseCurrency, termCurrency and the count of affected records (or holdings and cash accounts) on the page.");
 
     static final WarningSpec STALE = new WarningSpec("stale-exchange-rate",
                     "An exchange rate more than " + Prices.STALE_AFTER_DAYS
@@ -358,16 +358,16 @@ final class ExchangeRates
         affected.maxAgeDays = Math.max(affected.maxAgeDays, rate.ageDays(day));
     }
 
-    /** The meta member <code>exchangeRates</code>, if the cache was read. */
-    Optional<Map<String, Object>> cacheMeta()
+    /** Adds the meta member <code>exchangeRates</code>, if the cache was read. */
+    void putCacheInto(Map<String, Object> meta)
     {
         if (cache == null)
-            return Optional.empty();
+            return;
 
         var json = new LinkedHashMap<String, Object>();
         json.put("path", cache.path().toString());
         cache.latestRateDate().ifPresent(date -> json.put("latestRateDate", date.toString()));
-        return Optional.of(json);
+        meta.put("exchangeRates", json);
     }
 
     /**
