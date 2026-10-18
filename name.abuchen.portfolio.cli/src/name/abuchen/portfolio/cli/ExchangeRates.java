@@ -208,7 +208,8 @@ final class ExchangeRates
     /**
      * Core's own converter over the CLI's rate source, for the figures core
      * calculates itself. Core falls back to a rate of 1.0 where it finds none,
-     * so callers use it only where the currencies match or a rate is certain.
+     * so callers use it only where the currencies match or a rate is certain,
+     * or wrap it in a {@link StrictConverter}.
      */
     CurrencyConverter converter(String termCurrency)
     {

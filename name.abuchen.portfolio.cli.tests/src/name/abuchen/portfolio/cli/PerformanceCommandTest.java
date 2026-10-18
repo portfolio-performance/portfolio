@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -354,8 +355,22 @@ public class PerformanceCommandTest
         assertThat(run.json().getAsJsonObject().getAsJsonArray("warnings").size(), is(0));
     }
 
+    /** A rate every five days, so that no day is more than the stale threshold after one. */
+    private static EcbCacheFiles.Series ratesEveryFiveDays(String first, String last)
+    {
+        var series = EcbCacheFiles.series("EUR", "USD");
+        for (var day = LocalDate.parse(first); !day.isAfter(LocalDate.parse(last)); day = day.plusDays(5))
+            series.rate(day.toString(), "1.2000");
+        return series;
+    }
+
+    private static void assertFiguresAreLeftOut(CliRun run)
+    {
+        assertThat(data(run).keySet(), is(Set.of("currencyCode")));
+    }
+
     @Test
-    public void aForeignCurrencyWithoutARateIsWarnedAboutAndTheFiguresAreStillReported() throws IOException
+    public void aForeignCurrencyWithoutAnyRateLeavesTheFiguresOutAndWarns() throws IOException
     {
         addDollarAccount();
         var missingCache = folder.getRoot().toPath().resolve("missing").resolve("ecb_exchange_rates.pb");
@@ -364,7 +379,8 @@ public class PerformanceCommandTest
                         "2026-09-30");
 
         assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(data(run).has("absoluteGain"), is(true));
+        assertFiguresAreLeftOut(run);
+        assertThat(data(run).get("currencyCode").getAsString(), is("EUR"));
         var missing = warnings(run, "exchange-rate-missing");
         assertThat(missing.size(), is(1));
         assertThat(missing.get(0).get("baseCurrency").getAsString(), is("USD"));
@@ -373,15 +389,32 @@ public class PerformanceCommandTest
     }
 
     @Test
-    public void aStaleRateIsWarnedAbout() throws IOException
+    public void aRateThatStartsAfterTheCurrencyIsUsedLeavesTheFiguresOut() throws IOException
     {
         addDollarAccount();
         var cache = folder.getRoot().toPath().resolve("cache").resolve("ecb_exchange_rates.pb");
-        EcbCacheFiles.write(cache, EcbCacheFiles.series("EUR", "USD").rate("2026-03-01", "1.2000"));
+        EcbCacheFiles.write(cache, ratesEveryFiveDays("2026-03-01", "2026-09-30"));
 
         var run = run(Map.of("PP_ECB_RATES", cache.toString()), "--from", "2026-01-01", "--to", "2026-09-30");
 
         assertThat(run.stdout, run.exitCode, is(0));
+        assertFiguresAreLeftOut(run);
+        var missing = warnings(run, "exchange-rate-missing");
+        assertThat(missing.size(), is(1));
+        assertThat(missing.get(0).get("count").getAsInt(), is(28));
+    }
+
+    @Test
+    public void aStaleRateIsUsedAndWarnedAbout() throws IOException
+    {
+        addDollarAccount();
+        var cache = folder.getRoot().toPath().resolve("cache").resolve("ecb_exchange_rates.pb");
+        EcbCacheFiles.write(cache, EcbCacheFiles.series("EUR", "USD").rate("2026-01-15", "1.2000"));
+
+        var run = run(Map.of("PP_ECB_RATES", cache.toString()), "--from", "2026-01-01", "--to", "2026-09-30");
+
+        assertThat(run.stdout, run.exitCode, is(0));
+        assertThat(data(run).has("absoluteGain"), is(true));
         var stale = warnings(run, "stale-exchange-rate");
         assertThat(stale.size(), is(1));
         assertThat(stale.get(0).get("baseCurrency").getAsString(), is("USD"));
@@ -389,15 +422,16 @@ public class PerformanceCommandTest
     }
 
     @Test
-    public void aFreshRateRaisesNoWarning() throws IOException
+    public void freshRatesRaiseNoWarningAndTheFiguresAreReported() throws IOException
     {
         addDollarAccount();
         var cache = folder.getRoot().toPath().resolve("cache").resolve("ecb_exchange_rates.pb");
-        EcbCacheFiles.write(cache, EcbCacheFiles.series("EUR", "USD").rate("2026-09-30", "1.2000"));
+        EcbCacheFiles.write(cache, ratesEveryFiveDays("2026-01-01", "2026-09-30"));
 
         var run = run(Map.of("PP_ECB_RATES", cache.toString()), "--from", "2026-01-01", "--to", "2026-09-30");
 
         assertThat(run.stdout, run.exitCode, is(0));
+        assertThat(data(run).has("absoluteGain"), is(true));
         assertThat(run.json().getAsJsonObject().getAsJsonArray("warnings").size(), is(0));
     }
 
@@ -420,28 +454,29 @@ public class PerformanceCommandTest
     {
         addDollarAccount();
         var cache = folder.getRoot().toPath().resolve("cache").resolve("ecb_exchange_rates.pb");
-        EcbCacheFiles.write(cache, EcbCacheFiles.series("EUR", "USD").rate("2026-10-16", "1.2000"));
+        EcbCacheFiles.write(cache, ratesEveryFiveDays("2026-01-01", "2026-10-16"));
 
         var run = run(Map.of("PP_ECB_RATES", cache.toString()), "--period", "Y2026");
 
         assertThat(run.stdout, run.exitCode, is(0));
         assertThat(meta(run).get("to").getAsString(), is("2026-12-31"));
+        assertThat(data(run).has("absoluteGain"), is(true));
         assertThat(warnings(run, "stale-exchange-rate").size(), is(0));
         assertThat(warnings(run, "exchange-rate-missing").size(), is(0));
     }
 
     @Test
-    public void aForeignCurrencyHeldAtTheStartIsCheckedAtTheStartToo() throws IOException
+    public void aForeignCurrencyHeldAtTheStartNeedsARateAtTheStartToo() throws IOException
     {
         new AccountBuilder("USD").deposit_("2025-06-01", PortfolioBuilder.amountOf(1_000)).addTo(client)
                         .setName("Dollars");
         var cache = folder.getRoot().toPath().resolve("cache").resolve("ecb_exchange_rates.pb");
-        EcbCacheFiles.write(cache, EcbCacheFiles.series("EUR", "USD").rate("2026-03-01", "1.2000")
-                        .rate("2026-09-30", "1.3000"));
+        EcbCacheFiles.write(cache, ratesEveryFiveDays("2026-03-01", "2026-09-30"));
 
         var run = run(Map.of("PP_ECB_RATES", cache.toString()), "--from", "2026-01-01", "--to", "2026-09-30");
 
         assertThat(run.stdout, run.exitCode, is(0));
+        assertFiguresAreLeftOut(run);
         var missing = warnings(run, "exchange-rate-missing");
         assertThat(missing.size(), is(1));
         assertThat(missing.get(0).get("baseCurrency").getAsString(), is("USD"));

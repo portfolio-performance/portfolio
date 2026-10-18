@@ -6,7 +6,7 @@
 2. **Exchange-rate instruments** in the client file, which core already prefers;
 3. the desktop app's ECB cache, read-only.
 
-The built-in data and core's silent fallback rate of 1.0 are never used, with one exception: `performance` has core itself calculate its figures through core's converter, so a pair without a rate is calculated with 1.0 there. It looks up the rate of every foreign currency the client uses for the last day of the period and issues the same warnings, so the figures are never silently wrong.
+The built-in data and core's silent fallback rate of 1.0 are never used.
 
 **Locating the cache.** The `PP_ECB_RATES` environment variable names the file and wins outright. Otherwise the CLI mirrors core's own rule, `<instance area>/.metadata/.plugins/name.abuchen.portfolio/ecb_exchange_rates.pb`, with the product's default instance area for each OS:
 
@@ -38,5 +38,5 @@ Home directories come only from the CLI's injected environment, never from the r
 - CLI figures match the desktop app's, but are only as fresh as the app's last start. `meta.exchangeRates.latestRateDate` makes that visible, so an agent can suggest opening PP to refresh.
 - The cache format is internal to core (it moved from XML to protobuf in 2026). If it changes, the cache reads as unavailable rather than producing wrong figures; the parser then needs updating alongside the pinned core.
 - Desktop releases older than upstream `86b6eb860` keep the cache elsewhere; users of those need `PP_ECB_RATES` or an upgrade.
-- Commands that aggregate (`holdings`, `performance`, `allocation`) inherit the never-guess rule; each of those tickets decides how a total behaves when one of its parts has no rate. `holdings` leaves the total out. `performance` reports core's figures and warns.
+- Commands that aggregate (`holdings`, `performance`, `allocation`) inherit the never-guess rule; each of those tickets decides how a total behaves when one of its parts has no rate.
 - `describe` lists `PP_ECB_RATES` among the environment variables, and each converting command lists `exchange-rate-cache-unavailable`, `exchange-rate-missing` and `stale-exchange-rate` among its warning codes.
