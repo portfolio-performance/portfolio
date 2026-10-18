@@ -14,8 +14,8 @@ Spec: [spec.md](../spec.md), user stories 48 (client scope), 51–53 and 57, and
 
 ## Acceptance criteria
 
-- [ ] IRR, TTWROR and absolute gain match core's performance index for the same fixture and period
-- [ ] `--period` codes resolve through core, and the resolved dates are echoed
-- [ ] `--period` together with `--from` or `--to` is a usage error
-- [ ] `--cost-method` changes the gain figures as core does, and the method is always echoed in `meta`
-- [ ] `performance` is declared, appears in `describe` and passes its consistency test
+- [x] IRR, TTWROR and absolute gain match core's performance index for the same fixture and period
+- [x] `--period` codes resolve through core, and the resolved dates are echoed
+- [x] `--period` together with `--from` or `--to` is a usage error
+- [x] `--cost-method` changes the gain figures as core does, and the method is always echoed in `meta`
+- [x] `performance` is declared, appears in `describe` and passes its consistency test
