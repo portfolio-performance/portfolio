@@ -101,7 +101,7 @@ final class PerformanceCommand
 
     static final CommandSpec SPEC = new CommandSpec("performance",
                     "IRR, TTWROR and gains of the whole client over a period, given as --from and --to or as a reporting-period --period code, by FIFO or moving-average cost, in the base currency or --currency.",
-                    true, List.of(FROM, TO, PERIOD, COST_METHOD, CURRENCY), DATA, META, ExchangeRates.WARNINGS,
+                    true, List.of(FROM, TO, PERIOD, COST_METHOD, CURRENCY), DATA, META, List.of(ExchangeRates.CACHE_UNAVAILABLE),
                     PerformanceCommand::execute);
 
     private PerformanceCommand()
