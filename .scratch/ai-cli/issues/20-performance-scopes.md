@@ -38,11 +38,11 @@ Each scope is selected through the resolver. `performance --by instrument` retur
 
 ## Acceptance criteria
 
-- [ ] Each scope's figures match core's performance APIs for the same fixture and period
-- [ ] The investment-account scope works with and without its reference cash account, and asking for a missing reference cash account fails with `no-reference-cash-account`
-- [ ] Combining scope options, `--with-reference-cash-account` without `--investment-account`, and `--by` with `--cash-account` or `--instrument` are usage errors
-- [ ] `--by instrument` records match core's per-security performance snapshot, both for the client and for an investment account
-- [ ] A quiet instrument at `--instrument` scope produces `no-activity-in-period` in `warnings`, not an error, and its figures are left out; quiet instruments are absent from `--by instrument`
-- [ ] A record that needs a missing exchange rate loses only its own figures
-- [ ] `meta.scope` echoes the resolved scope
-- [ ] The new options are declared, appear in `describe` and pass its consistency test
+- [x] Each scope's figures match core's performance APIs for the same fixture and period
+- [x] The investment-account scope works with and without its reference cash account, and asking for a missing reference cash account fails with `no-reference-cash-account`
+- [x] Combining scope options, `--with-reference-cash-account` without `--investment-account`, and `--by` with `--cash-account` or `--instrument` are usage errors
+- [x] `--by instrument` records match core's per-security performance snapshot, both for the client and for an investment account
+- [x] A quiet instrument at `--instrument` scope produces `no-activity-in-period` in `warnings`, not an error, and its figures are left out; quiet instruments are absent from `--by instrument`
+- [x] A record that needs a missing exchange rate loses only its own figures
+- [x] `meta.scope` echoes the resolved scope
+- [x] The new options are declared, appear in `describe` and pass its consistency test

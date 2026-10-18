@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.is;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -17,6 +18,7 @@ import org.junit.rules.TemporaryFolder;
 
 import com.google.gson.JsonObject;
 
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 
@@ -91,28 +93,62 @@ public class DescribeConsistencyTest
             var command = element.getAsJsonObject();
             var name = command.get("name").getAsString();
 
-            var run = CliRun.run(sampleArguments(name, sampleFile, instrument).toArray(String[]::new));
-            assertThat(name + " exit code, stdout: " + run.stdout, run.exitCode, is(0));
+            assertConforms(command, sampleArguments(name, sampleFile, instrument));
+            for (var arguments : furtherArguments(name, sampleFile, client))
+                assertConforms(command, arguments);
+        }
+    }
 
-            var envelope = run.json().getAsJsonObject();
-            assertThat(name + " envelope", envelope.keySet(), is(Set.of("data", "meta", "warnings")));
+    /** More ways to call a command whose response differs in shape. */
+    private static List<List<String>> furtherArguments(String command, Path sampleFile, Client client)
+    {
+        if (!command.equals("performance"))
+            return List.of();
 
-            var response = command.getAsJsonObject("response");
-            assertThat(name + " data", SchemaValidator.validate(envelope.get("data"), response.getAsJsonObject("data")),
-                            is(empty()));
-            assertThat(name + " meta", SchemaValidator.validate(envelope.get("meta"), response.getAsJsonObject("meta")),
-                            is(empty()));
+        var base = List.of("performance", "--file", sampleFile.toString(), "--from", "2019-12-31", "--to",
+                        "2026-10-01");
+        var portfolio = client.getPortfolios().get(0);
+        return List.of(with(base, "--by", "instrument"),
+                        with(base, "--investment-account", portfolio.getUUID(), "--with-reference-cash-account"),
+                        with(base, "--investment-account", portfolio.getUUID(), "--by", "instrument"),
+                        with(base, "--cash-account", portfolio.getReferenceAccount().getUUID()),
+                        with(base, "--instrument", client.getSecurities().get(0).getUUID()),
+                        // the second instrument is quiet
+                        with(base, "--instrument", client.getSecurities().get(1).getUUID()));
+    }
 
-            var declaredWarnings = new TreeSet<String>();
-            command.getAsJsonArray("warnings")
-                            .forEach(w -> declaredWarnings.add(w.getAsJsonObject().get("code").getAsString()));
-            for (var warning : envelope.getAsJsonArray("warnings"))
-            {
-                var object = warning.getAsJsonObject();
-                assertThat(name + " warning members", object.has("code") && object.has("detail"), is(true));
-                assertThat(name + " warning " + object, declaredWarnings.contains(object.get("code").getAsString()),
-                                is(true));
-            }
+    private static List<String> with(List<String> base, String... more)
+    {
+        var all = new ArrayList<>(base);
+        all.addAll(List.of(more));
+        return all;
+    }
+
+    private void assertConforms(JsonObject command, List<String> arguments)
+    {
+        var name = command.get("name").getAsString();
+
+        var run = CliRun.run(arguments.toArray(String[]::new));
+        assertThat(name + " exit code, stdout: " + run.stdout, run.exitCode, is(0));
+
+        var envelope = run.json().getAsJsonObject();
+        assertThat(name + " envelope", envelope.keySet(), is(Set.of("data", "meta", "warnings")));
+
+        var response = command.getAsJsonObject("response");
+        assertThat(name + " data", SchemaValidator.validate(envelope.get("data"), response.getAsJsonObject("data")),
+                        is(empty()));
+        assertThat(name + " meta", SchemaValidator.validate(envelope.get("meta"), response.getAsJsonObject("meta")),
+                        is(empty()));
+
+        var declaredWarnings = new TreeSet<String>();
+        command.getAsJsonArray("warnings")
+                        .forEach(w -> declaredWarnings.add(w.getAsJsonObject().get("code").getAsString()));
+        for (var warning : envelope.getAsJsonArray("warnings"))
+        {
+            var object = warning.getAsJsonObject();
+            assertThat(name + " warning members", object.has("code") && object.has("detail"), is(true));
+            assertThat(name + " warning " + object, declaredWarnings.contains(object.get("code").getAsString()),
+                            is(true));
         }
     }
 

@@ -6,22 +6,31 @@ import java.util.List;
 /** How capital gains are costed: the value of the <code>--cost-method</code> option. */
 enum CostMethod
 {
-    FIFO("fifo"), MOVING_AVERAGE("moving-average");
+    FIFO("fifo", name.abuchen.portfolio.model.CostMethod.FIFO),
+    MOVING_AVERAGE("moving-average", name.abuchen.portfolio.model.CostMethod.MOVING_AVERAGE);
 
     static final OptionSpec OPTION = new OptionSpec("cost-method", "method",
                     "How capital gains are costed: fifo (the default) or moving-average. Echoed in meta.");
 
     private final String id;
+    private final name.abuchen.portfolio.model.CostMethod core;
 
-    CostMethod(String id)
+    CostMethod(String id, name.abuchen.portfolio.model.CostMethod core)
     {
         this.id = id;
+        this.core = core;
     }
 
     /** The name the option and <code>meta</code> have for it. */
     String id()
     {
         return id;
+    }
+
+    /** The same method in core. */
+    name.abuchen.portfolio.model.CostMethod core()
+    {
+        return core;
     }
 
     static List<String> ids()

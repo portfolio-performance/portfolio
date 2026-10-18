@@ -1,7 +1,9 @@
 package name.abuchen.portfolio.cli;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -28,28 +30,38 @@ final class StrictConverter implements CurrencyConverter
     private final LocalDate today;
 
     // shared with the converters derived by with(), so that one answer covers them all
-    private final Set<Need> checked;
+    private final Map<Need, Boolean> found;
     private final Set<Need> unrated;
 
     StrictConverter(ExchangeRates rates, CurrencyConverter core, LocalDate today)
     {
-        this(rates, core, today, new HashSet<>(), new HashSet<>());
+        this(rates, core, today, new HashMap<>(), new HashSet<>());
     }
 
-    private StrictConverter(ExchangeRates rates, CurrencyConverter core, LocalDate today, Set<Need> checked,
+    private StrictConverter(ExchangeRates rates, CurrencyConverter core, LocalDate today, Map<Need, Boolean> found,
                     Set<Need> unrated)
     {
         this.rates = rates;
         this.core = core;
         this.today = today;
-        this.checked = checked;
+        this.found = found;
         this.unrated = unrated;
     }
 
-    /** Whether core found a rate for everything it converted so far. */
+    /** Whether core found a rate for everything it converted since the start or the last {@link #reset()}. */
     boolean isComplete()
     {
         return unrated.isEmpty();
+    }
+
+    /**
+     * Starts judging a new calculation on its own: the figures of one record
+     * do not depend on the rates another record lacked. A rate already looked
+     * up is not looked up, and so not warned about, again.
+     */
+    void reset()
+    {
+        unrated.clear();
     }
 
     @Override
@@ -66,7 +78,7 @@ final class StrictConverter implements CurrencyConverter
         if (!term.equals(currencyCode))
         {
             var need = new Need(date.isAfter(today) ? today : date, currencyCode, term);
-            if (checked.add(need) && rates.series(need.day(), currencyCode, term).isEmpty())
+            if (!found.computeIfAbsent(need, n -> rates.series(n.day(), currencyCode, term).isPresent()))
                 unrated.add(need);
         }
         return core.getRate(date, currencyCode);
@@ -77,6 +89,6 @@ final class StrictConverter implements CurrencyConverter
     {
         if (currencyCode.equals(getTermCurrency()))
             return this;
-        return new StrictConverter(rates, core.with(currencyCode), today, checked, unrated);
+        return new StrictConverter(rates, core.with(currencyCode), today, found, unrated);
     }
 }
