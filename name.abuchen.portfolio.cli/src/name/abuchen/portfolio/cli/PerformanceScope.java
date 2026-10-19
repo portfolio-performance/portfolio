@@ -13,6 +13,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
 import name.abuchen.portfolio.util.Interval;
 
 /**
@@ -36,18 +37,132 @@ final class PerformanceScope
     static final List<OptionSpec> OPTIONS = List.of(INVESTMENT_ACCOUNT, CASH_ACCOUNT, INSTRUMENT,
                     WITH_REFERENCE_CASH_ACCOUNT);
 
-    private final Optional<Portfolio> investmentAccount;
-    private final Optional<Account> cashAccount;
-    private final Optional<Security> instrument;
-    private final boolean withReferenceCashAccount;
-
-    private PerformanceScope(Optional<Portfolio> investmentAccount, Optional<Account> cashAccount,
-                    Optional<Security> instrument, boolean withReferenceCashAccount)
+    /** What the figures are about: each kind of scope knows how core reports it. */
+    private sealed interface Target
     {
-        this.investmentAccount = investmentAccount;
-        this.cashAccount = cashAccount;
-        this.instrument = instrument;
-        this.withReferenceCashAccount = withReferenceCashAccount;
+        String kind();
+
+        PerformanceIndex index(Client client, CurrencyConverter converter, Interval interval);
+
+        /** The client as far as the target covers it, if it can be broken down by instrument. */
+        default Optional<Client> narrowed(Client client)
+        {
+            return Optional.empty();
+        }
+
+        /** Adds what the target resolved to. */
+        default void putInto(Map<String, Object> scope)
+        {
+        }
+    }
+
+    private record WholeClient() implements Target
+    {
+        @Override
+        public String kind()
+        {
+            return "client";
+        }
+
+        @Override
+        public PerformanceIndex index(Client client, CurrencyConverter converter, Interval interval)
+        {
+            return PerformanceIndex.forClient(client, converter, interval, new ArrayList<>());
+        }
+
+        @Override
+        public Optional<Client> narrowed(Client client)
+        {
+            return Optional.of(client);
+        }
+    }
+
+    private record OneInvestmentAccount(Portfolio account, boolean withReferenceCashAccount) implements Target
+    {
+        @Override
+        public String kind()
+        {
+            return "investment-account";
+        }
+
+        @Override
+        public PerformanceIndex index(Client client, CurrencyConverter converter, Interval interval)
+        {
+            return withReferenceCashAccount
+                            ? PerformanceIndex.forPortfolioPlusAccount(client, converter, account, interval,
+                                            new ArrayList<>())
+                            : PerformanceIndex.forPortfolio(client, converter, account, interval, new ArrayList<>());
+        }
+
+        @Override
+        public Optional<Client> narrowed(Client client)
+        {
+            return Optional.of((withReferenceCashAccount
+                            ? new PortfolioClientFilter(account, account.getReferenceAccount())
+                            : new PortfolioClientFilter(account)).filter(client));
+        }
+
+        @Override
+        public void putInto(Map<String, Object> scope)
+        {
+            MasterData.putIdentity(scope, account.getUUID(), account.getName());
+            if (withReferenceCashAccount)
+            {
+                var reference = account.getReferenceAccount();
+                var json = new LinkedHashMap<String, Object>();
+                MasterData.putIdentity(json, reference.getUUID(), reference.getName());
+                scope.put("referenceCashAccount", json);
+            }
+        }
+    }
+
+    private record OneCashAccount(Account account) implements Target
+    {
+        @Override
+        public String kind()
+        {
+            return "cash-account";
+        }
+
+        @Override
+        public PerformanceIndex index(Client client, CurrencyConverter converter, Interval interval)
+        {
+            return PerformanceIndex.forAccount(client, converter, account, interval, new ArrayList<>());
+        }
+
+        @Override
+        public void putInto(Map<String, Object> scope)
+        {
+            MasterData.putIdentity(scope, account.getUUID(), account.getName());
+        }
+    }
+
+    private record OneInstrument(Security security) implements Target
+    {
+        @Override
+        public String kind()
+        {
+            return "instrument";
+        }
+
+        @Override
+        public PerformanceIndex index(Client client, CurrencyConverter converter, Interval interval)
+        {
+            return PerformanceIndex.forInvestment(client, converter, security, interval, new ArrayList<>());
+        }
+
+        @Override
+        public void putInto(Map<String, Object> scope)
+        {
+            MasterData.putIdentity(scope, security.getUUID(), security.getName());
+        }
+    }
+
+    private final Target target;
+
+    private PerformanceScope(Target target)
+    {
+        this.target = target;
     }
 
     /**
@@ -72,14 +187,13 @@ final class PerformanceScope
                             .with("options", given);
 
         var withReferenceCashAccount = context.flag(WITH_REFERENCE_CASH_ACCOUNT);
-        if (withReferenceCashAccount && context.option(INVESTMENT_ACCOUNT.name()).isEmpty())
-            throw CliException.usage("conflicting-options", "Conflicting options",
-                            "Option '--" + WITH_REFERENCE_CASH_ACCOUNT.name() + "' needs '--"
-                                            + INVESTMENT_ACCOUNT.name() + "'.")
-                            .with("option", WITH_REFERENCE_CASH_ACCOUNT.name());
-
-        Optional<Portfolio> investmentAccount = Optional.empty();
         var accountValue = context.option(INVESTMENT_ACCOUNT.name());
+        if (withReferenceCashAccount && accountValue.isEmpty())
+            throw CliException.usage("option-required", "Option required",
+                            "Option '--" + WITH_REFERENCE_CASH_ACCOUNT.name() + "' needs the option '--"
+                                            + INVESTMENT_ACCOUNT.name() + " <" + INVESTMENT_ACCOUNT.valueName() + ">'.")
+                            .with("option", INVESTMENT_ACCOUNT.name());
+
         if (accountValue.isPresent())
         {
             var account = References.investmentAccount(client, INVESTMENT_ACCOUNT.name(), accountValue.get());
@@ -88,96 +202,59 @@ final class PerformanceScope
                                 "The investment account '" + MasterData.orEmpty(account.getName())
                                                 + "' has no reference cash account.",
                                 422).with("uuid", account.getUUID());
-            investmentAccount = Optional.of(account);
+            return new PerformanceScope(new OneInvestmentAccount(account, withReferenceCashAccount));
         }
 
-        Optional<Account> cashAccount = Optional.empty();
         var cashValue = context.option(CASH_ACCOUNT.name());
         if (cashValue.isPresent())
-            cashAccount = Optional.of(References.cashAccount(client, CASH_ACCOUNT.name(), cashValue.get()));
+            return new PerformanceScope(
+                            new OneCashAccount(References.cashAccount(client, CASH_ACCOUNT.name(), cashValue.get())));
 
-        Optional<Security> instrument = Optional.empty();
         var instrumentValue = context.option(INSTRUMENT.name());
         if (instrumentValue.isPresent())
-            instrument = Optional.of(References.instrument(client, INSTRUMENT.name(), instrumentValue.get()));
+            return new PerformanceScope(new OneInstrument(
+                            References.instrument(client, INSTRUMENT.name(), instrumentValue.get())));
 
-        return new PerformanceScope(investmentAccount, cashAccount, instrument, withReferenceCashAccount);
+        return new PerformanceScope(new WholeClient());
     }
 
-    /** The instrument of an instrument scope. */
-    Optional<Security> instrument()
+    /**
+     * @return the instrument of an instrument scope that core's per-security
+     *         snapshot has no record for, i.e. that was not active in the
+     *         period
+     */
+    Optional<Security> quietInstrument(Client client, CurrencyConverter converter, Interval interval)
     {
-        return instrument;
+        if (!(target instanceof OneInstrument(var security)))
+            return Optional.empty();
+
+        var active = LazySecurityPerformanceSnapshot.create(client, converter, interval).getRecord(security)
+                        .isPresent();
+        return active ? Optional.empty() : Optional.of(security);
     }
 
-    /** Whether the scope can be broken down by instrument: the client or an investment account. */
-    boolean canBreakDownByInstrument()
+    /**
+     * The client as far as the scope covers it, on which per-instrument figures
+     * are calculated; empty if the scope cannot be broken down by instrument.
+     */
+    Optional<Client> narrowed(Client client)
     {
-        return cashAccount.isEmpty() && instrument.isEmpty();
-    }
-
-    /** The client as far as the scope covers it, on which per-instrument figures are calculated. */
-    Client narrowed(Client client)
-    {
-        if (investmentAccount.isEmpty())
-            return client;
-
-        var account = investmentAccount.get();
-        return (withReferenceCashAccount ? new PortfolioClientFilter(account, account.getReferenceAccount())
-                        : new PortfolioClientFilter(account)).filter(client);
+        return target.narrowed(client);
     }
 
     /** Core's performance index for the scope. */
     PerformanceIndex index(Client client, CurrencyConverter converter, Interval interval)
     {
-        if (investmentAccount.isPresent())
-        {
-            var account = investmentAccount.get();
-            return withReferenceCashAccount
-                            ? PerformanceIndex.forPortfolioPlusAccount(client, converter, account, interval,
-                                            new ArrayList<>())
-                            : PerformanceIndex.forPortfolio(client, converter, account, interval, new ArrayList<>());
-        }
-        if (cashAccount.isPresent())
-            return PerformanceIndex.forAccount(client, converter, cashAccount.get(), interval, new ArrayList<>());
-        if (instrument.isPresent())
-            return PerformanceIndex.forInvestment(client, converter, instrument.get(), interval, new ArrayList<>());
-        return PerformanceIndex.forClient(client, converter, interval, new ArrayList<>());
+        return target.index(client, converter, interval);
     }
 
     /** Adds <code>scope</code>: the kind and what it resolved to. */
     void putInto(Map<String, Object> meta)
     {
         var scope = new LinkedHashMap<String, Object>();
-        scope.put("kind", kind());
-        investmentAccount.ifPresent(account -> {
-            putIdentity(scope, account.getUUID(), account.getName());
-            if (withReferenceCashAccount)
-            {
-                var reference = account.getReferenceAccount();
-                var json = new LinkedHashMap<String, Object>();
-                putIdentity(json, reference.getUUID(), reference.getName());
-                scope.put("referenceCashAccount", json);
-            }
-        });
-        cashAccount.ifPresent(account -> putIdentity(scope, account.getUUID(), account.getName()));
-        instrument.ifPresent(security -> putIdentity(scope, security.getUUID(), security.getName()));
+        scope.put("kind", target.kind());
+        target.putInto(scope);
         meta.put("scope", scope);
-    }
-
-    private String kind()
-    {
-        if (investmentAccount.isPresent())
-            return "investment-account";
-        if (cashAccount.isPresent())
-            return "cash-account";
-        return instrument.isPresent() ? "instrument" : "client";
-    }
-
-    private static void putIdentity(Map<String, Object> scope, String uuid, String name)
-    {
-        scope.put("uuid", uuid);
-        scope.put("name", MasterData.orEmpty(name));
     }
 
     /** Declares the members {@link #putInto} adds. */

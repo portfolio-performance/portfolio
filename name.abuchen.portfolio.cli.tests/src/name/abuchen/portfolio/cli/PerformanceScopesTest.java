@@ -232,7 +232,7 @@ public class PerformanceScopesTest
         var run = runOverTheYear("--with-reference-cash-account");
 
         assertThat(run.stdout, run.exitCode, is(2));
-        assertThat(run.json().getAsJsonObject().get("code").getAsString(), is("conflicting-options"));
+        assertThat(run.json().getAsJsonObject().get("code").getAsString(), is("option-required"));
     }
 
     @Test

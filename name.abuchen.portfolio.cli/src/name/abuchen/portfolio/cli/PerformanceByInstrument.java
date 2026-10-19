@@ -43,6 +43,17 @@ final class PerformanceByInstrument
         return value.isPresent();
     }
 
+    /**
+     * @return a usage error: the scope cannot be broken down by instrument
+     */
+    static CliException unsupportedScope()
+    {
+        return CliException.usage("conflicting-options", "Conflicting options",
+                        "Option '--" + BY.name()
+                                        + "' works with the whole client or an investment account, not with '--cash-account' or '--instrument'.")
+                        .with("option", BY.name());
+    }
+
     static Schema itemSchema()
     {
         return Schema.object("How one instrument performed over the period, as core's per-security snapshot has it.")
@@ -110,8 +121,7 @@ final class PerformanceByInstrument
         var security = record.getSecurity();
 
         var json = new LinkedHashMap<String, Object>();
-        json.put("uuid", security.getUUID());
-        json.put("name", MasterData.orEmpty(security.getName()));
+        MasterData.putIdentity(json, security.getUUID(), security.getName());
         json.put("retired", security.isRetired());
         MasterData.putIfSet(json, "isin", security.getIsin());
         MasterData.putIfSet(json, "tickerSymbol", security.getTickerSymbol());

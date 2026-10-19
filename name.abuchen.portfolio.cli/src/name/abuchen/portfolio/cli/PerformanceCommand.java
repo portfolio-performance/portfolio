@@ -10,11 +10,9 @@ import java.util.Optional;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
-import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
 
 /**
  * <code>performance</code>: how the client, or one of its investment accounts,
@@ -125,12 +123,9 @@ final class PerformanceCommand
         var requested = ExchangeRates.parseCurrency(CURRENCY, context.option(CURRENCY.name()));
         var client = context.loadClient().client();
         var scope = PerformanceScope.resolve(context, client);
-        var byInstrument = PerformanceByInstrument.requested(context);
-        if (byInstrument && !scope.canBreakDownByInstrument())
-            throw CliException.usage("conflicting-options", "Conflicting options",
-                            "Option '--" + PerformanceByInstrument.BY.name()
-                                            + "' works with the whole client or an investment account, not with '--cash-account' or '--instrument'.")
-                            .with("option", PerformanceByInstrument.BY.name());
+        Optional<Client> breakdown = Optional.empty();
+        if (PerformanceByInstrument.requested(context))
+            breakdown = Optional.of(scope.narrowed(client).orElseThrow(PerformanceByInstrument::unsupportedScope));
 
         var currency = requested.orElse(client.getBaseCurrency());
         var rates = new ExchangeRates(context, client);
@@ -140,14 +135,13 @@ final class PerformanceCommand
         data.put("currencyCode", currency);
 
         Optional<Security> quiet = Optional.empty();
-        if (byInstrument)
+        if (breakdown.isPresent())
         {
-            data.put("items", PerformanceByInstrument.items(scope.narrowed(client), converter, period, costMethod));
+            data.put("items", PerformanceByInstrument.items(breakdown.get(), converter, period, costMethod));
         }
         else
         {
-            quiet = scope.instrument().filter(
-                            security -> !isActive(security, client, rates.converter(currency), period));
+            quiet = scope.quietInstrument(client, rates.converter(currency), period.interval());
             if (quiet.isEmpty())
             {
                 var index = scope.index(client, converter, period.interval());
@@ -175,14 +169,6 @@ final class PerformanceCommand
                                                         .with("name", MasterData.orEmpty(security.getName()))));
         rates.warnings().forEach(response::warn);
         return response;
-    }
-
-    /** Whether core's per-security snapshot has a record for the instrument: see "active in the period". */
-    private static boolean isActive(Security security, Client client, CurrencyConverter converter,
-                    PerformancePeriod period)
-    {
-        return LazySecurityPerformanceSnapshot.create(client, converter, period.interval()).getRecord(security)
-                        .isPresent();
     }
 
     private static Map<String, Object> figures(PerformanceIndex index, ClientPerformanceSnapshot snapshot)

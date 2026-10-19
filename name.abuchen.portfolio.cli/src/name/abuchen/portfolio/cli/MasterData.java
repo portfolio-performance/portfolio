@@ -24,6 +24,13 @@ final class MasterData
                         .thenComparing(entity -> orEmpty(uuid.apply(entity)));
     }
 
+    /** The uuid and name every reference to an entity carries. */
+    static void putIdentity(Map<String, Object> json, String uuid, String name)
+    {
+        json.put("uuid", uuid);
+        json.put("name", orEmpty(name));
+    }
+
     static boolean isSet(String value)
     {
         return value != null && !value.isBlank();
