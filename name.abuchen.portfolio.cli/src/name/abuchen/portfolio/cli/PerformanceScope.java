@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.cli;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,15 +38,35 @@ final class PerformanceScope
     static final List<OptionSpec> OPTIONS = List.of(INVESTMENT_ACCOUNT, CASH_ACCOUNT, INSTRUMENT,
                     WITH_REFERENCE_CASH_ACCOUNT);
 
+    /** The kinds of scope, as <code>meta.scope.kind</code> names them. */
+    private enum Kind
+    {
+        CLIENT("client"), INVESTMENT_ACCOUNT("investment-account"), CASH_ACCOUNT("cash-account"), INSTRUMENT(
+                        "instrument");
+
+        private final String id;
+
+        Kind(String id)
+        {
+            this.id = id;
+        }
+    }
+
     /** What the figures are about: each kind of scope knows how core reports it. */
     private sealed interface Target
     {
-        String kind();
+        Kind kind();
 
         PerformanceIndex index(Client client, CurrencyConverter converter, Interval interval);
 
         /** The client as far as the target covers it, if it can be broken down by instrument. */
         default Optional<Client> narrowed(Client client)
+        {
+            return Optional.empty();
+        }
+
+        /** The instrument the target is about, if it was not active in the period. */
+        default Optional<Security> quietInstrument(Client client, CurrencyConverter converter, Interval interval)
         {
             return Optional.empty();
         }
@@ -59,9 +80,9 @@ final class PerformanceScope
     private record WholeClient() implements Target
     {
         @Override
-        public String kind()
+        public Kind kind()
         {
-            return "client";
+            return Kind.CLIENT;
         }
 
         @Override
@@ -80,9 +101,9 @@ final class PerformanceScope
     private record OneInvestmentAccount(Portfolio account, boolean withReferenceCashAccount) implements Target
     {
         @Override
-        public String kind()
+        public Kind kind()
         {
-            return "investment-account";
+            return Kind.INVESTMENT_ACCOUNT;
         }
 
         @Override
@@ -119,9 +140,9 @@ final class PerformanceScope
     private record OneCashAccount(Account account) implements Target
     {
         @Override
-        public String kind()
+        public Kind kind()
         {
-            return "cash-account";
+            return Kind.CASH_ACCOUNT;
         }
 
         @Override
@@ -140,9 +161,17 @@ final class PerformanceScope
     private record OneInstrument(Security security) implements Target
     {
         @Override
-        public String kind()
+        public Kind kind()
         {
-            return "instrument";
+            return Kind.INSTRUMENT;
+        }
+
+        @Override
+        public Optional<Security> quietInstrument(Client client, CurrencyConverter converter, Interval interval)
+        {
+            var active = LazySecurityPerformanceSnapshot.create(client, converter, interval).getRecord(security)
+                            .isPresent();
+            return active ? Optional.empty() : Optional.of(security);
         }
 
         @Override
@@ -225,12 +254,7 @@ final class PerformanceScope
      */
     Optional<Security> quietInstrument(Client client, CurrencyConverter converter, Interval interval)
     {
-        if (!(target instanceof OneInstrument(var security)))
-            return Optional.empty();
-
-        var active = LazySecurityPerformanceSnapshot.create(client, converter, interval).getRecord(security)
-                        .isPresent();
-        return active ? Optional.empty() : Optional.of(security);
+        return target.quietInstrument(client, converter, interval);
     }
 
     /**
@@ -252,7 +276,7 @@ final class PerformanceScope
     void putInto(Map<String, Object> meta)
     {
         var scope = new LinkedHashMap<String, Object>();
-        scope.put("kind", target.kind());
+        scope.put("kind", target.kind().id);
         target.putInto(scope);
         meta.put("scope", scope);
     }
@@ -262,7 +286,7 @@ final class PerformanceScope
     {
         return meta.property("scope", Schema.object("What the figures are about.")
                         .property("kind", Schema.enumOf("The kind of scope.",
-                                        List.of("client", "investment-account", "cash-account", "instrument")))
+                                        Arrays.stream(Kind.values()).map(kind -> kind.id).toList()))
                         .optionalProperty("uuid", Schema.string("UUID of the account or instrument."))
                         .optionalProperty("name", Schema.string("Its name."))
                         .optionalProperty("referenceCashAccount", Schema.object(
