@@ -10,6 +10,8 @@ Spec: [spec.md](../spec.md), user stories 74–75 and 93.
 
 An agent can classify an instrument. `taxonomy.assign` replaces the instrument's complete assignment within one existing taxonomy with a list of classification UUIDs and weights. An empty list removes the instrument from that taxonomy. Weights must be positive and at most 100% in total, classifications must not repeat, and only leaf classifications may be used. Creating taxonomies or classifications, and assigning cash accounts, are out of scope.
 
+An agent reads the instrument's current assignment from `taxonomies` (ticket 21), where each classification lists its direct `assignments` with `weight` as a fraction. Input uses the same field names and units, so an agent can send back what it read. A leaf classification is one that no other classification names as its `parent`.
+
 ## Acceptance criteria
 
 - [ ] Assigning, reassigning and removing (with an empty list) works, and `allocation` reflects the change

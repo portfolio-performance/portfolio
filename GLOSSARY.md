@@ -24,6 +24,30 @@ _Avoid_: cash account, bank account
 A tradable instrument (stock, fund, bond, crypto, ...) that portfolios hold and transactions refer to.
 _Avoid_: stock, asset
 
+**Taxonomy**:
+A user-defined tree of **Classifications** for grouping securities and accounts along one dimension, such as asset class, region or industry.
+_Avoid_: category scheme, classification (for the whole tree)
+
+**Classification**:
+One node of a **Taxonomy**, such as "Equity" or "Europe". It can have child classifications.
+_Avoid_: category, class, bucket
+
+**Assignment**:
+The placement of a share of one security or account in one **Classification**, given as an assignment weight. A security's assignment weights within one taxonomy add up to at most 100%.
+_Avoid_: mapping, tag
+
+**Target weight**:
+The share of its parent that the user wants a **Classification** to hold, used for rebalancing. Unrelated to an assignment weight.
+_Avoid_: weight (alone), target allocation
+
+**Allocation**:
+How the market value of a client's securities and cash splits across the **Classifications** of one **Taxonomy** at a date, with the unclassified rest shown as **Unassigned**.
+_Avoid_: asset allocation (it is not limited to asset classes), breakdown
+
+**Unassigned**:
+The part of an **Allocation** that no **Assignment** covers: securities and accounts not classified in the taxonomy, or only partly classified.
+_Avoid_: unclassified, other, without classification
+
 **Exchange-rate instrument**:
 A **Security** with a target currency, whose prices are the exchange rates between its currency and that target currency. Users create them to supply rates the built-in sources lack.
 _Avoid_: currency pair, FX security
@@ -66,7 +90,7 @@ A user-defined, typed field (text, number, percent, amount, date, ...) that the 
 _Avoid_: custom field, property
 
 **Reference**:
-A string an agent uses to name one **Master data** entity: its UUID (canonical), or as a read-only convenience an ISIN, ticker or exact name. Unrelated to **Reference cash account**.
+A string an agent uses to name one **Master data** entity or **Taxonomy**: its UUID (canonical), or as a read-only convenience an ISIN, ticker or exact name. Unrelated to **Reference cash account**.
 _Avoid_: identifier, selector, lookup key
 
 **Price**:
