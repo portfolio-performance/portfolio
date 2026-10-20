@@ -77,7 +77,8 @@ public class DescribeCommandTest
 
         var warnings = new ArrayList<String>();
         apply.getAsJsonArray("warnings").forEach(w -> warnings.add(w.getAsJsonObject().get("code").getAsString()));
-        assertThat(warnings, containsInAnyOrder("consistency-issues-preexisting", "file-open-in-app"));
+        assertThat(warnings,
+                        containsInAnyOrder("file-migrated", "consistency-issues-preexisting", "file-open-in-app"));
 
         var operations = new HashMap<String, JsonObject>();
         data.getAsJsonArray("operations").forEach(

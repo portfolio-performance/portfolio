@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.cli;
 
+import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,6 +79,8 @@ final class InstrumentOperations
 
         var security = new Security();
         values.forEach((field, value) -> set(security, field, value));
+        // setName leaves it unset, and the binary format cannot store an instrument without it
+        security.setUpdatedAt(Instant.now());
         context.client().addSecurity(security);
 
         var after = new LinkedHashMap<String, Object>();

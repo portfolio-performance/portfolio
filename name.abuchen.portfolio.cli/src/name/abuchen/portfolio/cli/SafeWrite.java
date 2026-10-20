@@ -47,11 +47,14 @@ final class SafeWrite
     static final WarningSpec OPEN_IN_APP = new WarningSpec("file-open-in-app",
                     "The file seemed to be open in another program, probably the app, and was written because of --force.");
 
+    static final WarningSpec MIGRATED = new WarningSpec("file-migrated",
+                    "The file was written by an older version and is saved at the current file version, which an older desktop app can no longer open. With --dry-run this is what a write would do.");
+
     /** The options every command that writes the client file declares. */
     static final List<OptionSpec> OPTIONS = List.of(BACKUP_DIR, KEEP, FORCE);
 
     /** The warnings every command that writes the client file can emit. */
-    static final List<WarningSpec> WARNINGS = List.of(ConsistencyCheck.PRE_EXISTING, OPEN_IN_APP);
+    static final List<WarningSpec> WARNINGS = List.of(MIGRATED, ConsistencyCheck.PRE_EXISTING, OPEN_IN_APP);
 
     /**
      * @param backupDir
@@ -150,10 +153,11 @@ final class SafeWrite
             var result = change.apply(loaded.client());
 
             // nothing is written, so the changed model itself stands in for the written file
-            var warnings = ConsistencyCheck.verify(ConsistencyCheck.run(opened.load().client()),
-                            ConsistencyCheck.run(loaded.client()));
+            var warnings = new ArrayList<>(migration(loaded.client(), true));
+            warnings.addAll(ConsistencyCheck.verify(ConsistencyCheck.run(opened.load().client()),
+                            ConsistencyCheck.run(loaded.client())));
             return new Outcome<>(result, backupPath(file, settings), loaded.client().getFileVersionAfterRead(),
-                            Client.CURRENT_VERSION, true, new ArrayList<>(warnings));
+                            Client.CURRENT_VERSION, true, warnings);
         }
 
         try (var lock = Lock.acquire(file))
@@ -173,6 +177,7 @@ final class SafeWrite
 
             var loaded = opened.load();
             var client = loaded.client();
+            warnings.addAll(migration(client, false));
             var result = change.apply(client);
 
             var backup = backupPath(file, settings);
@@ -232,6 +237,22 @@ final class SafeWrite
     {
         return CliException.failure("write-failed", "Client file could not be written",
                         "The client file was not changed: " + e.getMessage(), 500, e);
+    }
+
+    /** The warning for a file saved at an older version than core's current one. */
+    private static List<Warning> migration(Client client, boolean pending)
+    {
+        var before = client.getFileVersionAfterRead();
+        if (before >= Client.CURRENT_VERSION)
+            return List.of();
+
+        var detail = pending
+                        ? "The file has version " + before + " and a write would save it at version "
+                                        + Client.CURRENT_VERSION + ", which an older desktop app can no longer open."
+                        : "The file had version " + before + " and was saved at version " + Client.CURRENT_VERSION
+                                        + ", which an older desktop app can no longer open.";
+        return List.of(new Warning(MIGRATED.code(), detail).with("fileVersionBefore", before)
+                        .with("fileVersionAfter", Client.CURRENT_VERSION));
     }
 
     /** Loads what was written, to check it is what the model says. */
