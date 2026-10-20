@@ -133,21 +133,17 @@ final class AllocationCommand
 
         var nodes = TaxonomyTree.preOrder(taxonomy);
         var items = new ArrayList<Map<String, Object>>();
-        OptionalLong total = OptionalLong.empty();
 
-        if (ratesFound)
+        // without every rate no value can be trusted, so rows keep only their identity
+        var total = ratesFound ? OptionalLong.of(snapshot.getMonetaryAssets().getAmount()) : OptionalLong.empty();
+        for (var node : nodes)
         {
-            total = OptionalLong.of(snapshot.getMonetaryAssets().getAmount());
-            for (var node : nodes)
-                items.add(row(node, OptionalLong.of(subtreeValue(snapshot, node.classification())), total));
-            items.add(unassignedRow(OptionalLong.of(unassignedValue(snapshot, taxonomy)), total));
+            var value = ratesFound ? OptionalLong.of(subtreeValue(snapshot, node.classification()))
+                            : OptionalLong.empty();
+            items.add(row(node, value, total));
         }
-        else
-        {
-            for (var node : nodes)
-                items.add(row(node, OptionalLong.empty(), total));
-            items.add(unassignedRow(OptionalLong.empty(), total));
-        }
+        items.add(unassignedRow(ratesFound ? OptionalLong.of(unassignedValue(snapshot, taxonomy)) : OptionalLong.empty(),
+                        total));
 
         var data = new LinkedHashMap<String, Object>();
         data.put("items", items);
