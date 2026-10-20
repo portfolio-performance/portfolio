@@ -2018,6 +2018,59 @@ public class ScalableCapitalPDFExtractorTest
     }
 
     @Test
+    public void testKontoauszug04()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(7L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(7));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(taxRefund(hasDate("2026-08-31"), hasAmount("EUR", 9.06), //
+                        hasSource("Kontoauszug04.txt"), hasNote("Kapitalertragssteuer"))));
+
+        // assert transaction
+        assertThat(results, hasItem(taxRefund(hasDate("2026-08-31"), hasAmount("EUR", 7.17), //
+                        hasSource("Kontoauszug04.txt"), hasNote("Solidaritätszuschlag"))));
+
+        // assert transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionAlternativeDocumentRequired, //
+                        interest( //
+                                        hasDate("2026-08-31"), //
+                                        hasSource("Kontoauszug04.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 51.53)))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2026-09-10"), hasAmount("EUR", 410.18), //
+                        hasSource("Kontoauszug04.txt"), hasNote("Abhebung vom Geldkonto"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2026-09-19"), hasAmount("EUR", 775.76), //
+                        hasSource("Kontoauszug04.txt"), hasNote("Abhebung vom Geldkonto"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-09-25"), hasAmount("EUR", 896.93), //
+                        hasSource("Kontoauszug04.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-09-25"), hasAmount("EUR", 308.95), //
+                        hasSource("Kontoauszug04.txt"), hasNote("Überweisung"))));
+    }
+
+    @Test
     public void testAccountStatement01()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
