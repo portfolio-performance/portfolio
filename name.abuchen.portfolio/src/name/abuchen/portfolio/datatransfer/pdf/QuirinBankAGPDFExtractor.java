@@ -1048,6 +1048,154 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // Wertpapier Kauf, Ref.: 774207833 13.04.2026 15.04.2026 -1.479,90 EUR
+        // iShsIV-Edge MSCI Wo.Qu.F.U.ETF Registered Shares USD (Acc)o.N
+        // IE00BP3QZ601, ST 21,2844
+        //
+        // Wertpapier Verkauf, Ref.: 771874858 15.04.2026 16.04.2026 1.768,47 EUR
+        // AIS-Amundi Core Glbl Gov.Bond Act.Nom.UCITS ETF DR EUR Hd
+        // oN
+        // LU1708330235, ST -37,9328
+        //
+        // Wertpapier Verkauf, Ref.: 771874839 13.04.2026 15.04.2026 2.490,50 EUR
+        // SPDR MSCI World UCITS ETF Reg.Shares USD Unhgd Acc. o.N.
+        // IE00BFY0GT14, ST -63,972
+        // KEST: EUR -128,49, SOLI: EUR -7,06
+        // @formatter:on
+        var buySellBlock = new Block("^Wertpapier (Kauf|Verkauf), Ref\\.: .*$");
+        type.addBlock(buySellBlock);
+        buySellBlock.setMaxSize(5);
+        buySellBlock.set(new Transaction<BuySellEntry>()
+
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
+
+                        // Is type --> "Verkauf" change from BUY to SELL
+                        .section("type", "note", "date", "amount", "currency") //
+                        .match("^Wertpapier (?<type>(Kauf|Verkauf)), Ref\\.: (?<note>[\\d]+) " //
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                        + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                                        + "(\\-)?(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> {
+                            if ("Verkauf".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.SELL);
+
+                            t.setDate(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote("Ref.-Nr.: " + trim(v.get("note")));
+                        })
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Wertpapier Verkauf, Ref.: 771874858 15.04.2026 16.04.2026 1.768,47 EUR
+                                        // AIS-Amundi Core Glbl Gov.Bond Act.Nom.UCITS ETF DR EUR Hd
+                                        // oN
+                                        // LU1708330235, ST -37,9328
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "name", "nameContinued", "isin") //
+                                                        .match("^Wertpapier (Kauf|Verkauf), Ref\\.: .* (?<currency>[A-Z]{3})$") //
+                                                        .match("^(?<name>.*)$") //
+                                                        .match("^(?<nameContinued>(?![A-Z]{2}[A-Z0-9]{9}[0-9], ST ).*)$") //
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]), ST .*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Wertpapier Kauf, Ref.: 774207833 13.04.2026 15.04.2026 -1.479,90 EUR
+                                        // iShsIV-Edge MSCI Wo.Qu.F.U.ETF Registered Shares USD (Acc)o.N
+                                        // IE00BP3QZ601, ST 21,2844
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "name", "isin") //
+                                                        .match("^Wertpapier (Kauf|Verkauf), Ref\\.: .* (?<currency>[A-Z]{3})$") //
+                                                        .match("^(?<name>.*)$") //
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]), ST .*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
+
+                        // @formatter:off
+                        // IE00BFY0GT14, ST -63,972
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9], ST (\\-)?(?<shares>[\\.,\\d]+)$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // KEST: EUR -128,49, SOLI: EUR -7,06
+                        // KEST: EUR -0,51
+                        // @formatter:on
+                        .section("currency", "tax").optional() //
+                        .match("^KEST: (?<currency>[A-Z]{3}) \\-(?<tax>[\\.,\\d]+).*$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // KEST: EUR -128,49, SOLI: EUR -7,06
+                        // @formatter:on
+                        .section("currency", "tax").optional() //
+                        .match("^KEST: .*, SOLI: (?<currency>[A-Z]{3}) \\-(?<tax>[\\.,\\d]+).*$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        .wrap(BuySellEntryItem::new));
+
+        // @formatter:off
+        // Thesaurierung, Ref.: 708470513 02.02.2026 02.01.2026 -1,40 EUR
+        // iShs Core MSCI EM IMI U.ETF Registered Shares o.N.
+        // IE00BKM4GZ66, ST 14,8228
+        // KEST: EUR -1,33, SOLI: EUR -0,07
+        // @formatter:on
+        var advanceTaxBlock = new Block("^Thesaurierung, Ref\\.: .*$");
+        type.addBlock(advanceTaxBlock);
+        advanceTaxBlock.setMaxSize(5);
+        advanceTaxBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
+
+                        .section("note1", "note2", "date", "amount", "currency") //
+                        .match("^(?<note1>Thesaurierung), Ref\\.: (?<note2>[\\d]+) " //
+                                        + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                        + "\\-(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(v.get("note1") + " | Ref.-Nr.: " + trim(v.get("note2")));
+                        })
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Thesaurierung, Ref.: 708990003 02.02.2026 02.01.2026 -3,74 EUR
+                                        // AIS-Amundi Core Glbl Gov.Bond Act.Nom.UCITS ETF DR EUR Hd
+                                        // oN
+                                        // LU1708330235, ST 37,9328
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "name", "nameContinued", "isin") //
+                                                        .match("^Thesaurierung, Ref\\.: .* (?<currency>[A-Z]{3})$") //
+                                                        .match("^(?<name>.*)$") //
+                                                        .match("^(?<nameContinued>(?![A-Z]{2}[A-Z0-9]{9}[0-9], ST ).*)$") //
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]), ST .*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Thesaurierung, Ref.: 708470513 02.02.2026 02.01.2026 -1,40 EUR
+                                        // iShs Core MSCI EM IMI U.ETF Registered Shares o.N.
+                                        // IE00BKM4GZ66, ST 14,8228
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "name", "isin") //
+                                                        .match("^Thesaurierung, Ref\\.: .* (?<currency>[A-Z]{3})$") //
+                                                        .match("^(?<name>.*)$") //
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]), ST .*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
+
+                        // @formatter:off
+                        // IE00BKM4GZ66, ST 14,8228
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9], ST (?<shares>[\\.,\\d]+)$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        .wrap(TransactionItem::new));
     }
 
     private void addTaxLostAdjustmentTransaction(Map<String, String> context, DocumentType type)
