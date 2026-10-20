@@ -39,7 +39,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        final DocumentType type = new DocumentType("(Kauf" //
+        final var type = new DocumentType("(Kauf" //
                         + "|Achat" //
                         + "|Aankoop" //
                         + "|Verkauf" //
@@ -47,9 +47,9 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                         + "|Verkoop)");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^(Num.ro.*)?(Kauf" //
+        var firstRelevantLine = new Block("^(Num.ro.*)?(Kauf" //
                         + "|Achat" //
                         + "|Aankoop" //
                         + "|Vente" //
@@ -218,14 +218,14 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        final DocumentType type = new DocumentType("(Einkommensart" //
+        final var type = new DocumentType("(Einkommensart" //
                         + "|Nature des revenus" //
                         + "|Coupon)");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^(Betrag:|Montant:|Coupon).*$");
+        var firstRelevantLine = new Block("^(Betrag:|Montant:|Coupon).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -297,6 +297,16 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("date") //
                                                         .match("^(Date valeur|Valuta datum): (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}).*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+
+                        // @formatter:off
+                        // Guthaben Kupons Ex-Kupon 29/06/2020
+                        // CREDIT COUPONS Ex-coupon 01/02/2021
+                        // Ex-coupon: 04/01/2021
+                        // Ex-coupon: 15/11/2021 I
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^(.* )?Ex\\-(Kupon|coupon)(:)? (?<exDate>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
 
                         .oneOf( //
                                         // @formatter:off
