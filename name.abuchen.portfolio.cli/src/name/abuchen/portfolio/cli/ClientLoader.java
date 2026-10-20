@@ -46,9 +46,18 @@ final class ClientLoader
 
         LoadedClient load() throws CliException
         {
+            return load(file);
+        }
+
+        /**
+         * Loads another file as this one: same format, same password. For
+         * reading back what was written.
+         */
+        LoadedClient load(File other) throws CliException
+        {
             try
             {
-                var client = ClientFactory.load(file, password, new NullProgressMonitor());
+                var client = ClientFactory.load(other, password, new NullProgressMonitor());
 
                 guard(OptionalInt.of(client.getFileVersionAfterRead()));
 

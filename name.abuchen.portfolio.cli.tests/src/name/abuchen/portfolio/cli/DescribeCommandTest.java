@@ -67,9 +67,17 @@ public class DescribeCommandTest
         var data = data(CliRun.run("describe"));
 
         var apply = command(data, "apply");
-        var options = new ArrayList<String>();
-        apply.getAsJsonArray("options").forEach(o -> options.add(o.getAsJsonObject().get("name").getAsString()));
-        assertThat(options, containsInAnyOrder("file", "input", "dry-run"));
+        var byName = new HashMap<String, JsonObject>();
+        apply.getAsJsonArray("options")
+                        .forEach(o -> byName.put(o.getAsJsonObject().get("name").getAsString(), o.getAsJsonObject()));
+        assertThat(byName.keySet(), containsInAnyOrder("file", "input", "dry-run", "backup-dir", "keep", "force"));
+        assertThat(byName.get("keep").get("default").getAsInt(), is(20));
+        assertThat(byName.get("keep").get("minimum").getAsInt(), is(0));
+        assertThat(byName.get("force").get("type").getAsString(), is("flag"));
+
+        var warnings = new ArrayList<String>();
+        apply.getAsJsonArray("warnings").forEach(w -> warnings.add(w.getAsJsonObject().get("code").getAsString()));
+        assertThat(warnings, containsInAnyOrder("consistency-issues-preexisting", "file-open-in-app"));
 
         var operations = new HashMap<String, JsonObject>();
         data.getAsJsonArray("operations").forEach(

@@ -18,11 +18,11 @@ The full safe-write sequence that `apply` and, later, `restore` share:
 
 ## Acceptance criteria
 
-- [ ] A change that introduces a new consistency issue is refused; pre-existing issues show up as warnings and don't block the write
-- [ ] The original client file is never modified by the checker's repairs
-- [ ] A file changed between load and rename (simulated through the hook) aborts the write, leaves the original intact and removes the temp file
-- [ ] A refused atomic move (simulated) falls back to a plain replace and the write succeeds
-- [ ] A simulated open-file probe warns, or refuses without `--force`, and `--force` overrides
-- [ ] `--backup-dir` and `--keep` work; with the injected clock, pruning removes the oldest CLI backups only after success and never touches other files
-- [ ] No lock or temp file remains after any success, failure or dry-run
-- [ ] New options are declared, appear in `describe` and pass its consistency test
+- [x] A change that introduces a new consistency issue is refused; pre-existing issues show up as warnings and don't block the write
+- [x] The original client file is never modified by the checker's repairs
+- [x] A file changed between load and rename (simulated through the hook) aborts the write, leaves the original intact and removes the temp file
+- [x] A refused atomic move (simulated) falls back to a plain replace and the write succeeds
+- [x] A simulated open-file probe warns, or refuses without `--force`, and `--force` overrides
+- [x] `--backup-dir` and `--keep` work; with the injected clock, pruning removes the oldest CLI backups only after success and never touches other files
+- [x] No lock or temp file remains after any success, failure or dry-run
+- [x] New options are declared, appear in `describe` and pass its consistency test

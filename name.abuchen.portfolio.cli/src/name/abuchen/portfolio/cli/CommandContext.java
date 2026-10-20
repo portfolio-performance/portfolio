@@ -23,9 +23,10 @@ final class CommandContext
     private final PrintStream stderr;
     private final Clock clock;
     private final String osName;
+    private final WriteEnvironment writeEnvironment;
 
     CommandContext(Map<String, String> options, Map<String, String> env, InputStream stdin, PrintStream stderr,
-                    Clock clock, String osName)
+                    Clock clock, String osName, WriteEnvironment writeEnvironment)
     {
         this.options = options;
         this.env = env;
@@ -33,6 +34,7 @@ final class CommandContext
         this.stderr = stderr;
         this.clock = clock;
         this.osName = osName;
+        this.writeEnvironment = writeEnvironment;
     }
 
     Optional<String> option(String name)
@@ -65,6 +67,11 @@ final class CommandContext
     String osName()
     {
         return osName;
+    }
+
+    WriteEnvironment writeEnvironment()
+    {
+        return writeEnvironment;
     }
 
     /** Loads the client file named by <code>--file</code> or PP_FILE. */

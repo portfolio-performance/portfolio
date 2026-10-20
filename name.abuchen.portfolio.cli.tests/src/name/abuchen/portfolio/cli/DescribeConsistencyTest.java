@@ -125,7 +125,10 @@ public class DescribeConsistencyTest
     private static List<List<String>> furtherArguments(String command, Path sampleFile, Client client, Path batch)
     {
         if (command.equals("apply"))
-            return List.of(List.of("apply", "--file", sampleFile.toString(), "--input", batch.toString()));
+            return List.of(List.of("apply", "--file", sampleFile.toString(), "--input", batch.toString()),
+                            List.of("apply", "--file", sampleFile.toString(), "--input", batch.toString(),
+                                            "--backup-dir", batch.resolveSibling("elsewhere").toString(), "--keep",
+                                            "1", "--force"));
 
         if (command.equals("allocation"))
             return List.of(List.of("allocation", "--file", sampleFile.toString(), "--taxonomy", "Classes", "--date",

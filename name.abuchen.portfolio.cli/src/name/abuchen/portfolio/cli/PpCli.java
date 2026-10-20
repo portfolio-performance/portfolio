@@ -45,6 +45,13 @@ public final class PpCli
     public static int execute(String[] args, Map<String, String> env, InputStream stdin, PrintStream stdout,
                     PrintStream stderr, Clock clock, String osName)
     {
+        return execute(args, env, stdin, stdout, stderr, clock, osName, WriteEnvironment.SYSTEM);
+    }
+
+    /** As above, with a file system and process probe other than the real ones; for tests. */
+    static int execute(String[] args, Map<String, String> env, InputStream stdin, PrintStream stdout,
+                    PrintStream stderr, Clock clock, String osName, WriteEnvironment writeEnvironment)
+    {
         var originalOut = System.out; // NOSONAR
         var originalErr = System.err; // NOSONAR
 
@@ -54,7 +61,7 @@ public final class PpCli
         try
         {
             var parsed = ArgumentParser.parse(Arrays.asList(args));
-            var context = new CommandContext(parsed.options(), env, stdin, stderr, clock, osName);
+            var context = new CommandContext(parsed.options(), env, stdin, stderr, clock, osName, writeEnvironment);
             var response = parsed.command().handler().execute(context);
 
             print(stdout, response.toEnvelope());

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -41,11 +42,19 @@ final class ApplyCommand
                                     .property("deleted", Schema.array("Entities the operation deleted.", CHANGE))));
 
     static final CommandSpec SPEC = new CommandSpec("apply",
-                    "Applies a batch of write operations atomically; see the operations list. Writes by default, keeping the file's format, after saving a backup in a backups folder next to it. On any validation failure nothing is written and every failure is reported with operationIndex, field, code and message.",
-                    true, List.of(INPUT, DRY_RUN), DATA, ResponseMeta.writeSchema(), ApplyCommand::execute);
+                    "Applies a batch of write operations atomically; see the operations list. Writes by default, keeping the file's format, after saving a backup in a backups folder next to it (--backup-dir, --keep). A write is refused, with nothing changed, if it would introduce a consistency issue that core's checker did not already find, if the file changed on disk since it was read, or on macOS if the file is open in another program (unless --force). On any validation failure nothing is written and every failure is reported with operationIndex, field, code and message.",
+                    true, applyOptions(), DATA, ResponseMeta.writeSchema(), SafeWrite.WARNINGS,
+                    ApplyCommand::execute);
 
     private ApplyCommand()
     {
+    }
+
+    private static List<OptionSpec> applyOptions()
+    {
+        var options = new ArrayList<>(List.of(INPUT, DRY_RUN));
+        options.addAll(SafeWrite.OPTIONS);
+        return options;
     }
 
     private static Response execute(CommandContext context) throws CliException
@@ -55,13 +64,15 @@ final class ApplyCommand
 
         try (var opened = context.openClient())
         {
-            var outcome = SafeWrite.run(opened, context.clock(), dryRun,
+            var outcome = SafeWrite.run(opened, SafeWrite.settings(context, dryRun),
                             client -> ApplyBatch.run(client, operations, Commands.OPERATIONS));
 
             var data = new LinkedHashMap<String, Object>();
             data.put("results", outcome.result());
 
-            return Response.of(data, ResponseMeta.written(context, outcome));
+            var response = Response.of(data, ResponseMeta.written(context, outcome));
+            outcome.warnings().forEach(response::warn);
+            return response;
         }
     }
 

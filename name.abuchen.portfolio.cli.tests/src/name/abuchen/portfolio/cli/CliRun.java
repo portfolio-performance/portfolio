@@ -44,16 +44,23 @@ final class CliRun
 
     static CliRun runWithStdin(Map<String, String> env, String stdin, String... args)
     {
-        return execute(System.getProperty("os.name", ""), env, stdin, args);
+        return execute(System.getProperty("os.name", ""), WriteEnvironment.SYSTEM, env, stdin, args);
     }
 
     /** Runs as if on the operating system with the given <code>os.name</code>. */
     static CliRun runOn(String osName, Map<String, String> env, String... args)
     {
-        return execute(osName, env, "", args);
+        return execute(osName, WriteEnvironment.SYSTEM, env, "", args);
     }
 
-    private static CliRun execute(String osName, Map<String, String> env, String stdin, String... args)
+    /** Runs with a file system and process probe the test controls. */
+    static CliRun runWith(WriteEnvironment environment, String osName, String... args)
+    {
+        return execute(osName, environment, Map.of(), "", args);
+    }
+
+    private static CliRun execute(String osName, WriteEnvironment environment, Map<String, String> env, String stdin,
+                    String... args)
     {
         var out = new ByteArrayOutputStream();
         var err = new ByteArrayOutputStream();
@@ -64,7 +71,7 @@ final class CliRun
         {
             exitCode = PpCli.execute(args, new HashMap<>(env),
                             new ByteArrayInputStream(stdin.getBytes(StandardCharsets.UTF_8)), stdout, stderr, CLOCK,
-                            osName);
+                            osName, environment);
         }
 
         return new CliRun(exitCode, out.toString(StandardCharsets.UTF_8), err.toString(StandardCharsets.UTF_8));
