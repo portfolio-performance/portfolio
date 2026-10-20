@@ -8,12 +8,10 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.Money;
-
 
 @SuppressWarnings("nls")
 public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
@@ -56,7 +54,7 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
                         // Is type --> "Verkauf" change from BUY to SELL
                         // @formatter:on
                         .section("type").optional() //
-                        .match("^Wertpapier Abrechnung (?<type>(Kauf|Verkauf)).*") //
+                        .match("^Wertpapier Abrechnung (?<type>(Kauf|Verkauf)).*$") //
                         .assign((t, v) -> {
                             if ("Verkauf".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
@@ -88,7 +86,7 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
                         // Schlusstag/-Zeit 09.05.2023 09:26:37 Auftraggeber jvDDiy QfmZL LloZHJy
                         // @formatter:on
                         .section("date", "time") //
-                        .match("^Schlusstag\\/\\-Zeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$") //
+                        .match("^Schlusstag\\/\\-Zeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}).*$") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
                         // @formatter:off
@@ -112,7 +110,6 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
 
         addFeesSectionsTransaction(pdfTransaction, type);
         addTaxesSectionsTransaction(pdfTransaction, type);
-
     }
 
     private void addDividendeTransaction()
@@ -234,7 +231,7 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
         this.addDocumentTyp(type);
 
-        var depositRemovalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. .* PN:\\d+[\\s]{1,}[\\.,\\d]+ [H|S]$");
+        var depositRemovalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. .* PN\\:[\\d]+[\\s]{1,}[\\.,\\d]+ [HS]$");
         type.addBlock(depositRemovalBlock);
         depositRemovalBlock.set(new Transaction<AccountTransaction>()
 
@@ -242,11 +239,11 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "note", "amount", "type") //
                         .documentContext("currency", "year") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. (?<note>.*) PN:\\d+[\\s]{1,}(?<amount>[\\.,\\d]+) (?<type>[H|S])$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. (?<note>.*) PN\\:[\\d]+[\\s]{1,}(?<amount>[\\.,\\d]+) (?<type>[HS])$") //
                         .assign((t, v) -> {
                             // Is type is "S" change from DEPOSIT to REMOVAL
                             if ("S".equals(v.get("type")))
-                                t.setType(Type.REMOVAL);
+                                t.setType(AccountTransaction.Type.REMOVAL);
 
                             t.setDateTime(asDate(v.get("date") + v.get("year")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -340,16 +337,16 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
                         // Einbehaltene Quellensteuer 15 % auf 914,50 EUR
                         // Einbehaltene Quellensteuer 25 % auf 0,87 CAD 0,13- EUR
                         // @formatter:on
-                        .section("withHoldingTax", "currency").optional()
-                        .match("^Einbehaltene Quellensteuer [\\.,\\d]+[\\s]*% .* (?<withHoldingTax>[\\.,\\d]+)(\\-)? (?<currency>[A-Z]{3})$")
+                        .section("withHoldingTax", "currency").optional() //
+                        .match("^Einbehaltene Quellensteuer [\\.,\\d]+[\\s]*% .* (?<withHoldingTax>[\\.,\\d]+)(\\-)? (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                         // @formatter:off
                         // Anrechenbare Quellensteuer pro Stück 0,0465 EUR 137,18 EUR
                         // Anrechenbare Quellensteuer 15 % auf 0,53 EUR 0,08 EUR
                         // @formatter:on
-                        .section("creditableWithHoldingTax", "currency").optional()
-                        .match("^Anrechenbare Quellensteuer pro St.ck [\\.,\\d]+ [A-Z]{3} (?<creditableWithHoldingTax>[\\.,\\d]+) (?<currency>[A-Z]{3})$")
+                        .section("creditableWithHoldingTax", "currency").optional() //
+                        .match("^Anrechenbare Quellensteuer pro St.ck [\\.,\\d]+ [A-Z]{3} (?<creditableWithHoldingTax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type));
     }
 
@@ -360,15 +357,15 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Provision 25,00- EUR
                         // @formatter:on
-                        .section("fee", "currency").optional()
-                        .match("^Provision (?<fee>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$")
+                        .section("fee", "currency").optional() //
+                        .match("^Provision (?<fee>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Übertragungs-/Liefergebühr 0,06- EUR
                         // @formatter:on
-                        .section("fee", "currency").optional()
-                        .match("^.bertragungs-\\/Liefergeb.hr (?<fee>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$")
+                        .section("fee", "currency").optional() //
+                        .match("^.bertragungs-\\/Liefergeb.hr (?<fee>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }
