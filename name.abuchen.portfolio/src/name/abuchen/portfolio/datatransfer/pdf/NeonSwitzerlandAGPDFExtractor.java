@@ -72,7 +72,7 @@ public class NeonSwitzerlandAGPDFExtractor extends AbstractPDFExtractor
                         .section("type").optional() //
                         .match("^.* Fund (?<type>(buy|sell)) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*$") //
                         .assign((t, v) -> {
-                            if ("sell".equals(v.get("type"))) //
+                            if ("sell".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
@@ -82,11 +82,13 @@ public class NeonSwitzerlandAGPDFExtractor extends AbstractPDFExtractor
                         // Secur.Nr. 1/011,704,497 Secur. Cur CHF
                         // @formatter:on
                         .section("name", "wkn", "currency") //
-                        .find("[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Fund (buy|sell).*$") //
+                        .find("[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Fund (buy|sell).*") //
                         .match("^(?<name>.*)$") //
-                        .match("^Secur\\.Nr\\. 1\\/0(?<wkn>[\\d]{2},[\\d]{3},[\\d]{3}) Secur\\. Cur (?<currency>[A-Z]{3})$") //
+                        .match("^Secur\\.Nr\\. 1\\/(?<wkn>[\\d]{1,3}(,[\\d]{3})*) Secur\\. Cur (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
-                            v.put("wkn", v.get("wkn").replace(",", ""));
+                            // The VALOR number is reported with leading zeros
+                            // and thousand separators, e.g. 011,704,497
+                            v.put("wkn", v.get("wkn").replace(",", "").replaceFirst("^0+(?=[\\d])", ""));
 
                             t.setSecurity(getOrCreateSecurity(v));
                         })
@@ -204,7 +206,6 @@ public class NeonSwitzerlandAGPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new);
     }
-
 
     @Override
     protected long asAmount(String value)
