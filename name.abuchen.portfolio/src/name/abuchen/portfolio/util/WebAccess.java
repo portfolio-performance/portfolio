@@ -16,13 +16,19 @@ import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
 import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.cookie.BasicCookieStore;
 import org.apache.hc.client5.http.cookie.StandardCookieSpec;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.routing.SystemDefaultRoutePlanner;
+import org.apache.hc.client5.http.protocol.HttpClientContext;
 import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.EntityDetails;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.HttpHeaders;
+import org.apache.hc.core5.http.HttpRequest;
 import org.apache.hc.core5.http.HttpStatus;
 import org.apache.hc.core5.http.ParseException;
 import org.apache.hc.core5.http.impl.EnglishReasonPhraseCatalog;
@@ -30,7 +36,9 @@ import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.http.message.BasicHeader;
+import org.apache.hc.core5.http.protocol.HttpContext;
 import org.apache.hc.core5.net.URIBuilder;
+import org.apache.hc.core5.util.TimeValue;
 import org.apache.hc.core5.util.Timeout;
 
 //@formatter:off
@@ -193,6 +201,85 @@ public class WebAccess
                     .setConnectTimeout(Timeout.ofSeconds(5)) //
                     .build();
 
+    /**
+     * Headers and user agent of one request. They are passed to the shared
+     * client via the request context and applied to every request of the
+     * exchange (including redirects) in the same way as the default headers
+     * and the user agent of a separate client.
+     */
+    private record RequestSettings(List<Header> headers, String userAgent)
+    {
+        private static final String CONTEXT_ATTRIBUTE = WebAccess.class.getName() + ".settings"; //$NON-NLS-1$
+    }
+
+    /**
+     * HTTP client shared by all requests. Connections are kept alive and
+     * reused for further requests to the same host instead of a new TCP and
+     * TLS handshake per request.
+     */
+    private static final class SharedClient
+    {
+        private static final int MAX_CONNECTIONS_TOTAL = 100;
+        private static final int MAX_CONNECTIONS_PER_ROUTE = 20;
+
+        /** idle connections are closed after this time */
+        private static final TimeValue MAX_IDLE_TIME = TimeValue.ofSeconds(30);
+
+        /** reused connections are checked if idle for longer than this time */
+        private static final TimeValue VALIDATE_AFTER_INACTIVITY = TimeValue.ofSeconds(2);
+
+        private static final CloseableHttpClient INSTANCE = create();
+
+        private SharedClient()
+        {
+        }
+
+        private static CloseableHttpClient create()
+        {
+            var connectionManager = new PoolingHttpClientConnectionManager();
+            connectionManager.setDefaultConnectionConfig(ConnectionConfig.copy(defaultConnectionConfig) //
+                            .setValidateAfterInactivity(VALIDATE_AFTER_INACTIVITY) //
+                            .build());
+            connectionManager.setMaxTotal(MAX_CONNECTIONS_TOTAL);
+            connectionManager.setDefaultMaxPerRoute(MAX_CONNECTIONS_PER_ROUTE);
+
+            return HttpClientBuilder.create() //
+                            .setConnectionManager(connectionManager) //
+                            .setDefaultRequestConfig(defaultRequestConfig) //
+                            .addRequestInterceptorFirst(SharedClient::applyRequestSettings) //
+                            .setUserAgent(OnlineHelper.getUserAgent()) //
+                            // null = look up ProxySelector.getDefault() per
+                            // request so that changed proxy settings apply
+                            .setRoutePlanner(new SystemDefaultRoutePlanner(null)) //
+                            .evictIdleConnections(MAX_IDLE_TIME) //
+                            .useSystemProperties() //
+                            .build();
+        }
+
+        /**
+         * Applies headers and user agent of the request. Same logic as
+         * RequestDefaultHeaders and RequestUserAgent of the HttpClient: values
+         * are only added if the request does not contain the header yet.
+         * <p>
+         * The CONNECT request to a proxy does not pass this interceptor; the
+         * HttpClient sends it with the client-wide user agent.
+         */
+        private static void applyRequestSettings(HttpRequest request, EntityDetails entity, HttpContext context)
+        {
+            if (!(context.getAttribute(RequestSettings.CONTEXT_ATTRIBUTE) instanceof RequestSettings settings))
+                return;
+
+            for (Header header : settings.headers())
+            {
+                if (!request.containsHeader(header.getName()))
+                    request.addHeader(header);
+            }
+
+            if (settings.userAgent() != null && !request.containsHeader(HttpHeaders.USER_AGENT))
+                request.addHeader(HttpHeaders.USER_AGENT, settings.userAgent());
+        }
+    }
+
     private final URIBuilder builder;
     private List<Header> headers = new ArrayList<>();
     private String userAgent = OnlineHelper.getUserAgent();
@@ -277,21 +364,17 @@ public class WebAccess
     {
         try
         {
-            var connectionManager = new PoolingHttpClientConnectionManager();
-            connectionManager.setDefaultConnectionConfig(defaultConnectionConfig);
-
-            CloseableHttpClient client = HttpClientBuilder.create() //
-                            .setConnectionManager(connectionManager) //
-                            .setDefaultRequestConfig(defaultRequestConfig) //
-                            .setDefaultHeaders(this.headers) //
-                            .setUserAgent(this.userAgent) //
-                            .useSystemProperties() //
-                            .build();
-
             URI uri = builder.build();
             HttpUriRequestBase request = function.create(uri);
 
-            return client.execute(request, new CustomResponseHandler(uri.toString()));
+            // new cookie store per request: cookies are kept within one request
+            // (including redirects), but not shared between requests
+            var context = HttpClientContext.create();
+            context.setCookieStore(new BasicCookieStore());
+            context.setAttribute(RequestSettings.CONTEXT_ATTRIBUTE,
+                            new RequestSettings(List.copyOf(this.headers), this.userAgent));
+
+            return SharedClient.INSTANCE.execute(request, context, new CustomResponseHandler(uri.toString()));
         }
         catch (HttpResponseException e)
         {
