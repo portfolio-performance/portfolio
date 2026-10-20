@@ -62,7 +62,7 @@ public class DescribeCommandTest
     }
 
     @Test
-    public void describePublishesApplyAndTheInstrumentOperationsWithTheirInputs()
+    public void describePublishesApplyAndItsOperationsWithTheirInputs()
     {
         var data = data(CliRun.run("describe"));
 
@@ -83,7 +83,8 @@ public class DescribeCommandTest
         var operations = new HashMap<String, JsonObject>();
         data.getAsJsonArray("operations").forEach(
                         o -> operations.put(o.getAsJsonObject().get("name").getAsString(), o.getAsJsonObject()));
-        assertThat(operations.keySet(), containsInAnyOrder("instrument.add", "instrument.update"));
+        assertThat(operations.keySet(), containsInAnyOrder("instrument.add", "instrument.update", "cash-account.add",
+                        "cash-account.update", "investment-account.add", "investment-account.update"));
 
         var addInput = operations.get("instrument.add").getAsJsonObject("input");
         assertThat(addInput.getAsJsonObject("properties").keySet(), containsInAnyOrder("operation", "name",
@@ -92,6 +93,22 @@ public class DescribeCommandTest
 
         var updateInput = operations.get("instrument.update").getAsJsonObject("input");
         assertThat(updateInput.getAsJsonArray("required").toString(), is("[\"operation\",\"uuid\"]"));
+
+        var cashAdd = operations.get("cash-account.add").getAsJsonObject("input");
+        assertThat(cashAdd.getAsJsonObject("properties").keySet(),
+                        containsInAnyOrder("operation", "name", "currencyCode", "note", "retired"));
+        assertThat(cashAdd.getAsJsonArray("required").toString(),
+                        is("[\"operation\",\"name\",\"currencyCode\"]"));
+        assertThat(operations.get("cash-account.update").getAsJsonObject("input").getAsJsonArray("required")
+                        .toString(), is("[\"operation\",\"uuid\"]"));
+
+        var investmentAdd = operations.get("investment-account.add").getAsJsonObject("input");
+        assertThat(investmentAdd.getAsJsonObject("properties").keySet(),
+                        containsInAnyOrder("operation", "name", "referenceCashAccount", "note", "retired"));
+        assertThat(investmentAdd.getAsJsonArray("required").toString(),
+                        is("[\"operation\",\"name\",\"referenceCashAccount\"]"));
+        assertThat(operations.get("investment-account.update").getAsJsonObject("input").getAsJsonArray("required")
+                        .toString(), is("[\"operation\",\"uuid\"]"));
     }
 
     private static JsonObject data(CliRun run)

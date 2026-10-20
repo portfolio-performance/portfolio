@@ -2,6 +2,7 @@ package name.abuchen.portfolio.cli;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /** The single list of declared commands. */
 final class Commands
@@ -12,7 +13,8 @@ final class Commands
                     AllocationCommand.SPEC, ApplyCommand.SPEC);
 
     /** Write operations, applied by the <code>apply</code> command. */
-    static final List<OperationSpec> OPERATIONS = InstrumentOperations.ALL;
+    static final List<OperationSpec> OPERATIONS = Stream
+                    .concat(InstrumentOperations.ALL.stream(), AccountOperations.ALL.stream()).toList();
 
     private Commands()
     {

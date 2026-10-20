@@ -33,6 +33,8 @@ final class ApplyBatch
     {
         this.client = client;
         existedBeforeBatch.addAll(client.getSecurities());
+        existedBeforeBatch.addAll(client.getAccounts());
+        existedBeforeBatch.addAll(client.getPortfolios());
     }
 
     /**

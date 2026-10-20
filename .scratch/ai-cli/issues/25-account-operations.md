@@ -22,7 +22,7 @@ Rules:
 
 ## Acceptance criteria
 
-- [ ] Each of the four operations works, and the reloaded client file matches the reported change records
-- [ ] A missing name or currency, and an unknown or in-batch reference cash account, are refused with field-level errors
-- [ ] A currency change on a cash account with transactions is refused
-- [ ] The operations are declared with input schemas, appear in `describe` and pass its consistency test
+- [x] Each of the four operations works, and the reloaded client file matches the reported change records
+- [x] A missing name or currency, and an unknown or in-batch reference cash account, are refused with field-level errors
+- [x] A currency change on a cash account with transactions is refused
+- [x] The operations are declared with input schemas, appear in `describe` and pass its consistency test

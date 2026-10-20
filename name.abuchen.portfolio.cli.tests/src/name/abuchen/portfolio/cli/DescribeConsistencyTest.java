@@ -104,11 +104,20 @@ public class DescribeConsistencyTest
         TaxonomyFixtures.child(taxonomy.getRoot(), "Bonds");
         var sampleFile = ClientFiles.xml(folder.getRoot().toPath(), client).toPath();
 
-        // one add and one update, so that both kinds of change record are checked
+        // one add and one update per entity kind, so that every kind of change record is checked
+        var cash = client.getAccounts().get(0);
+        var depot = client.getPortfolios().get(0);
         var batch = folder.newFile("batch.json").toPath();
         Files.writeString(batch, "{\"operations\":[{\"operation\":\"instrument.add\",\"name\":\"New\"},"
                         + "{\"operation\":\"instrument.update\",\"uuid\":\"" + instrument.getUUID()
-                        + "\",\"note\":null,\"retired\":true}]}");
+                        + "\",\"note\":null,\"retired\":true},"
+                        + "{\"operation\":\"cash-account.add\",\"name\":\"Savings\",\"currencyCode\":\"USD\"},"
+                        + "{\"operation\":\"cash-account.update\",\"uuid\":\"" + cash.getUUID()
+                        + "\",\"note\":\"main\"},"
+                        + "{\"operation\":\"investment-account.add\",\"name\":\"Second depot\","
+                        + "\"referenceCashAccount\":\"" + cash.getUUID() + "\"},"
+                        + "{\"operation\":\"investment-account.update\",\"uuid\":\"" + depot.getUUID()
+                        + "\",\"retired\":true}]}");
 
         for (var element : describe().getAsJsonArray("commands"))
         {
