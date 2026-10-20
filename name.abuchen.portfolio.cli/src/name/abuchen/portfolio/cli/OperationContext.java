@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import name.abuchen.portfolio.model.Client;
@@ -64,14 +65,15 @@ final class OperationContext
         this.input = input;
     }
 
+    /** Whether the JSON value is a string. */
+    static boolean isText(JsonElement element)
+    {
+        return element.isJsonPrimitive() && element.getAsJsonPrimitive().isString();
+    }
+
     Client client()
     {
         return batch.client();
-    }
-
-    int index()
-    {
-        return index;
     }
 
     JsonObject input()

@@ -87,9 +87,7 @@ final class ApplyBatch
     private static String operationName(JsonObject input)
     {
         var member = input.get(OPERATION_MEMBER);
-        return member != null && member.isJsonPrimitive() && member.getAsJsonPrimitive().isString()
-                        ? member.getAsString()
-                        : null;
+        return member != null && OperationContext.isText(member) ? member.getAsString() : null;
     }
 
     Client client()

@@ -25,7 +25,7 @@ final class SafeWrite
 
     /** The change to make to the loaded model; it fails with a {@link CliException} to refuse the write. */
     @FunctionalInterface
-    interface Change<R>
+    interface Mutation<R>
     {
         R apply(Client client) throws CliException;
     }
@@ -47,7 +47,7 @@ final class SafeWrite
      * @param opened
      *            a file that passed the version guard
      */
-    static <R> Outcome<R> run(ClientLoader.OpenedFile opened, Clock clock, boolean dryRun, Change<R> change)
+    static <R> Outcome<R> run(ClientLoader.OpenedFile opened, Clock clock, boolean dryRun, Mutation<R> change)
                     throws CliException
     {
         var file = opened.file().toPath().toAbsolutePath();

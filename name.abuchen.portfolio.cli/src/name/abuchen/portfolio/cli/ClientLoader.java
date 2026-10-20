@@ -63,8 +63,7 @@ final class ClientLoader
         @Override
         public void close()
         {
-            if (password != null)
-                Arrays.fill(password, '\0');
+            wipe(password);
         }
     }
 
@@ -89,6 +88,7 @@ final class ClientLoader
                             "No client file at " + file.getAbsolutePath(), 404);
 
         char[] password = null;
+        var handedOver = false;
         try
         {
             FileFormat format;
@@ -112,20 +112,24 @@ final class ClientLoader
                 guard(FileVersionProbe.read(file, format));
             }
 
+            handedOver = true;
             return new OpenedFile(file, format, password);
         }
         catch (IOException | RuntimeException e)
         {
-            if (password != null)
-                Arrays.fill(password, '\0');
             throw unreadable(e);
         }
-        catch (CliException e)
+        finally
         {
-            if (password != null)
-                Arrays.fill(password, '\0');
-            throw e;
+            if (!handedOver)
+                wipe(password);
         }
+    }
+
+    private static void wipe(char[] password)
+    {
+        if (password != null)
+            Arrays.fill(password, '\0');
     }
 
     private static CliException unreadable(Exception e)

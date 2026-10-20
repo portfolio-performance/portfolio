@@ -7,7 +7,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import com.google.gson.JsonObject;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
@@ -134,7 +133,7 @@ final class InstrumentOperations
             context.fail("uuid", "required", "An update needs the UUID of the instrument.");
             return null;
         }
-        if (!member.isJsonPrimitive() || !member.getAsJsonPrimitive().isString())
+        if (!OperationContext.isText(member))
         {
             context.fail("uuid", "invalid-type", "The UUID must be a string.");
             return null;
@@ -159,7 +158,7 @@ final class InstrumentOperations
     private static Map<String, Object> read(OperationContext context)
     {
         var values = new LinkedHashMap<String, Object>();
-        JsonObject input = context.input();
+        var input = context.input();
 
         for (var field : TEXT_FIELDS)
         {
@@ -169,7 +168,7 @@ final class InstrumentOperations
 
             if (member.isJsonNull())
                 values.put(field, null);
-            else if (member.isJsonPrimitive() && member.getAsJsonPrimitive().isString())
+            else if (OperationContext.isText(member))
                 values.put(field, member.getAsString().isBlank() ? null : member.getAsString());
             else
                 context.fail(field, "invalid-type", "Must be a string or null.");
