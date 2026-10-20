@@ -210,6 +210,7 @@ public class GladbacherBankAGPDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
+        addCreditableWithHoldingTaxSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
@@ -245,7 +246,14 @@ public class GladbacherBankAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("withHoldingTax", "currency").optional() //
                         .match("^Einbehaltene Quellensteuer [\\.,\\d]+([\\s])?% .* (?<withHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
-                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
+                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type));
+    }
+
+    // The creditable withholding tax only applies to dividends. In sale
+    // documents it is reported for information only and must not be booked.
+    private <T extends Transaction<?>> void addCreditableWithHoldingTaxSectionsTransaction(T transaction, DocumentType type)
+    {
+        transaction //
 
                         // @formatter:off
                         // Anrechenbare Quellensteuer 15 % auf 11,70 EUR 1,76 EUR
