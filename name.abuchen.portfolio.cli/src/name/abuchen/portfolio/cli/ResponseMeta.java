@@ -69,4 +69,26 @@ final class ResponseMeta
         meta.put("offset", paging.offset());
         return meta;
     }
+
+    /** The meta of a write: file versions, backup and whether it was only a preview. */
+    static Schema writeSchema()
+    {
+        return envelope().property("fileVersionBefore", Schema.integer("Version of the file as read."))
+                        .property("fileVersionAfter", Schema.integer("Version the file has after the write."))
+                        .property("asOf", AS_OF)
+                        .property("dryRun", Schema.bool("True if nothing was written, backup included."))
+                        .property("backupPath", Schema.string(
+                                        "Where the backup of the original file is, or with a dry run would be, written."));
+    }
+
+    static Map<String, Object> written(CommandContext context, SafeWrite.Outcome<?> outcome)
+    {
+        var meta = new LinkedHashMap<String, Object>();
+        meta.put("fileVersionBefore", outcome.fileVersionBefore());
+        meta.put("fileVersionAfter", outcome.fileVersionAfter());
+        meta.putAll(asOf(context));
+        meta.put("dryRun", outcome.dryRun());
+        meta.put("backupPath", outcome.backup().toString());
+        return meta;
+    }
 }

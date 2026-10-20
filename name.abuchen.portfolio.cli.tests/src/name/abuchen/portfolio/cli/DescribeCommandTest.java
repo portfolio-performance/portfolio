@@ -46,7 +46,9 @@ public class DescribeCommandTest
     {
         var operation = new OperationSpec("instrument.create", "Creates an instrument.",
                         Schema.object("Instrument to create.").property("name", Schema.string("Display name."))
-                                        .optionalProperty("isin", Schema.string("ISIN, if known.")));
+                                        .optionalProperty("isin", Schema.string("ISIN, if known.")),
+                        context -> {
+                        });
 
         var data = new Gson().toJsonTree(DescribeCommand.render(List.of(), List.of(operation))).getAsJsonObject();
 
@@ -57,6 +59,30 @@ public class DescribeCommandTest
         var input = described.getAsJsonObject("input");
         assertThat(input.getAsJsonObject("properties").keySet(), is(Set.of("name", "isin")));
         assertThat(input.getAsJsonArray("required").toString(), is("[\"name\"]"));
+    }
+
+    @Test
+    public void describePublishesApplyAndTheInstrumentOperationsWithTheirInputs()
+    {
+        var data = data(CliRun.run("describe"));
+
+        var apply = command(data, "apply");
+        var options = new ArrayList<String>();
+        apply.getAsJsonArray("options").forEach(o -> options.add(o.getAsJsonObject().get("name").getAsString()));
+        assertThat(options, containsInAnyOrder("file", "input", "dry-run"));
+
+        var operations = new HashMap<String, JsonObject>();
+        data.getAsJsonArray("operations").forEach(
+                        o -> operations.put(o.getAsJsonObject().get("name").getAsString(), o.getAsJsonObject()));
+        assertThat(operations.keySet(), containsInAnyOrder("instrument.add", "instrument.update"));
+
+        var addInput = operations.get("instrument.add").getAsJsonObject("input");
+        assertThat(addInput.getAsJsonObject("properties").keySet(), containsInAnyOrder("operation", "name",
+                        "currencyCode", "isin", "tickerSymbol", "wkn", "note", "retired"));
+        assertThat(addInput.getAsJsonArray("required").toString(), is("[\"operation\",\"name\"]"));
+
+        var updateInput = operations.get("instrument.update").getAsJsonObject("input");
+        assertThat(updateInput.getAsJsonArray("required").toString(), is("[\"operation\",\"uuid\"]"));
     }
 
     private static JsonObject data(CliRun run)

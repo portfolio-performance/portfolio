@@ -70,12 +70,24 @@ final class CommandContext
     /** Loads the client file named by <code>--file</code> or PP_FILE. */
     LoadedClient loadClient() throws CliException
     {
-        var path = option(OptionSpec.FILE.name()).filter(p -> !p.isBlank())
+        return ClientLoader.load(clientPath(), this::password);
+    }
+
+    /**
+     * Checks the client file named by <code>--file</code> or PP_FILE without
+     * loading it; the caller closes it.
+     */
+    ClientLoader.OpenedFile openClient() throws CliException
+    {
+        return ClientLoader.open(clientPath(), this::password);
+    }
+
+    private String clientPath() throws CliException
+    {
+        return option(OptionSpec.FILE.name()).filter(p -> !p.isBlank())
                         .or(() -> env("PP_FILE").filter(p -> !p.isBlank()))
                         .orElseThrow(() -> CliException.usage("file-required", "Client file required",
                                         "Pass --file <path> or set the PP_FILE environment variable."));
-
-        return ClientLoader.load(path, this::password);
     }
 
     /**

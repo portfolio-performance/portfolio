@@ -33,13 +33,20 @@ Ticket 23 hardens this sequence; ticket 24 extends it to every format and adds m
 
 ## Acceptance criteria
 
-- [ ] Adding and updating instruments works, and the reloaded client file reflects exactly the reported change records
-- [ ] An invalid or duplicate ISIN (including one added earlier in the batch) and a currency change on an instrument with transactions are refused with field-level errors
-- [ ] A batch with several invalid operations reports every failure at once and leaves the file byte-identical
-- [ ] A batch where a later operation fails applies nothing
-- [ ] Two operations on the same existing instrument are refused
-- [ ] A successful write leaves a correctly named backup in `backups/` and no lock or temp file; `meta` has the backup path and before and after versions
-- [ ] `--dry-run` returns the same change records and the would-be backup path, and creates no file, backup or lock
-- [ ] A pre-created lock file makes `apply` fail fast with a structured error, while reads still succeed
-- [ ] A newer-than-supported file is refused before any lock, backup or temp file exists
-- [ ] `apply` and both operations are declared (with input schemas), appear in `describe` and pass its consistency test
+- [x] Adding and updating instruments works, and the reloaded client file reflects exactly the reported change records
+- [x] An invalid or duplicate ISIN (including one added earlier in the batch) and a currency change on an instrument with transactions are refused with field-level errors
+- [x] A batch with several invalid operations reports every failure at once and leaves the file byte-identical
+- [x] A batch where a later operation fails applies nothing
+- [x] Two operations on the same existing instrument are refused
+- [x] A successful write leaves a correctly named backup in `backups/` and no lock or temp file; `meta` has the backup path and before and after versions
+- [x] `--dry-run` returns the same change records and the would-be backup path, and creates no file, backup or lock
+- [x] A pre-created lock file makes `apply` fail fast with a structured error, while reads still succeed
+- [x] A newer-than-supported file is refused before any lock, backup or temp file exists
+- [x] `apply` and both operations are declared (with input schemas), appear in `describe` and pass its consistency test
+
+## Settled while implementing
+
+- An operation is a flat object with an `operation` member naming it (`{"operation": "instrument.add", "name": ...}`); `instrument.update` also takes the target `uuid`. Fields that are absent stay unchanged on update; `null` or a blank string clears an optional field.
+- A failed batch is a problem+json `validation-failed` with a `failures` array of `{operationIndex, field, code, message, check?}`. Malformed input is a usage error (`invalid-input`, `input-unreadable`).
+- `meta` has `fileVersionBefore`, `fileVersionAfter`, `dryRun` and `backupPath`. Two backups in the same second get a `-2`, `-3`, ... counter before `.pp-cli`.
+- A lock file that already exists always fails with `file-locked` (409), with `lockFile` and `pid`; stale locks are not detected.

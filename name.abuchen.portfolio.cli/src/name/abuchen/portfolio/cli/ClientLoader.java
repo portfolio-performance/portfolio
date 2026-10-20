@@ -22,7 +22,65 @@ final class ClientLoader
     {
     }
 
+    /**
+     * A client file that passed the version guard but is not loaded yet, so a
+     * writer can take its lock in between. Holds the password until closed.
+     */
+    static final class OpenedFile implements AutoCloseable
+    {
+        private final File file;
+        private final FileFormat format;
+        private final char[] password;
+
+        private OpenedFile(File file, FileFormat format, char[] password)
+        {
+            this.file = file;
+            this.format = format;
+            this.password = password;
+        }
+
+        File file()
+        {
+            return file;
+        }
+
+        LoadedClient load() throws CliException
+        {
+            try
+            {
+                var client = ClientFactory.load(file, password, new NullProgressMonitor());
+
+                guard(OptionalInt.of(client.getFileVersionAfterRead()));
+
+                return new LoadedClient(client, format);
+            }
+            catch (IOException | RuntimeException e)
+            {
+                throw unreadable(e);
+            }
+        }
+
+        @Override
+        public void close()
+        {
+            if (password != null)
+                Arrays.fill(password, '\0');
+        }
+    }
+
     static LoadedClient load(String path, Supplier<char[]> passwords) throws CliException
+    {
+        try (var opened = open(path, passwords))
+        {
+            return opened.load();
+        }
+    }
+
+    /**
+     * Runs the checks that need no loading: the file exists, the password is
+     * given and the version stored in the file is supported.
+     */
+    static OpenedFile open(String path, Supplier<char[]> passwords) throws CliException
     {
         var file = new File(path);
 
@@ -54,22 +112,26 @@ final class ClientLoader
                 guard(FileVersionProbe.read(file, format));
             }
 
-            var client = ClientFactory.load(file, password, new NullProgressMonitor());
-
-            guard(OptionalInt.of(client.getFileVersionAfterRead()));
-
-            return new LoadedClient(client, format);
+            return new OpenedFile(file, format, password);
         }
         catch (IOException | RuntimeException e)
         {
-            throw CliException.failure("file-unreadable", "Client file could not be read",
-                            "The client file could not be read: " + e.getMessage(), 422, e);
+            if (password != null)
+                Arrays.fill(password, '\0');
+            throw unreadable(e);
         }
-        finally
+        catch (CliException e)
         {
             if (password != null)
                 Arrays.fill(password, '\0');
+            throw e;
         }
+    }
+
+    private static CliException unreadable(Exception e)
+    {
+        return CliException.failure("file-unreadable", "Client file could not be read",
+                        "The client file could not be read: " + e.getMessage(), 422, e);
     }
 
     /**

@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public class DescribeConsistencyTest
     public TemporaryFolder folder = new TemporaryFolder();
 
     /** Arguments that make the command succeed against a sample file. */
-    private static List<String> sampleArguments(String command, Path sampleFile, Security instrument)
+    private static List<String> sampleArguments(String command, Path sampleFile, Security instrument, Path batch)
     {
         return switch (command)
         {
@@ -51,6 +52,8 @@ public class DescribeConsistencyTest
             case "taxonomies" -> List.of("taxonomies", "--file", sampleFile.toString());
             case "allocation" -> List.of("allocation", "--file", sampleFile.toString(), "--taxonomy", "Classes",
                             "--date", "2026-10-01", "--currency", "USD");
+            case "apply" -> List.of("apply", "--file", sampleFile.toString(), "--input", batch.toString(),
+                            "--dry-run");
             default -> throw new AssertionError("Add sample arguments for command '" + command
                             + "' to DescribeConsistencyTest.sampleArguments");
         };
@@ -101,20 +104,29 @@ public class DescribeConsistencyTest
         TaxonomyFixtures.child(taxonomy.getRoot(), "Bonds");
         var sampleFile = ClientFiles.xml(folder.getRoot().toPath(), client).toPath();
 
+        // one add and one update, so that both kinds of change record are checked
+        var batch = folder.newFile("batch.json").toPath();
+        Files.writeString(batch, "{\"operations\":[{\"operation\":\"instrument.add\",\"name\":\"New\"},"
+                        + "{\"operation\":\"instrument.update\",\"uuid\":\"" + instrument.getUUID()
+                        + "\",\"note\":null,\"retired\":true}]}");
+
         for (var element : describe().getAsJsonArray("commands"))
         {
             var command = element.getAsJsonObject();
             var name = command.get("name").getAsString();
 
-            assertConforms(command, sampleArguments(name, sampleFile, instrument));
-            for (var arguments : furtherArguments(name, sampleFile, client))
+            assertConforms(command, sampleArguments(name, sampleFile, instrument, batch));
+            for (var arguments : furtherArguments(name, sampleFile, client, batch))
                 assertConforms(command, arguments);
         }
     }
 
     /** More ways to call a command whose response differs in shape. */
-    private static List<List<String>> furtherArguments(String command, Path sampleFile, Client client)
+    private static List<List<String>> furtherArguments(String command, Path sampleFile, Client client, Path batch)
     {
+        if (command.equals("apply"))
+            return List.of(List.of("apply", "--file", sampleFile.toString(), "--input", batch.toString()));
+
         if (command.equals("allocation"))
             return List.of(List.of("allocation", "--file", sampleFile.toString(), "--taxonomy", "Classes", "--date",
                             "2026-10-01"));
