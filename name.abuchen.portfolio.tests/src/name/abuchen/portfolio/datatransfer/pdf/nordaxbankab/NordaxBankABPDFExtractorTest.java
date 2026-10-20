@@ -193,8 +193,12 @@ public class NordaxBankABPDFExtractorTest
                         hasSource("AccountStatement03.txt"), hasNote("DE22513900000075401501 xyz PKW Abschlag"))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2026-01-01"), hasAmount("EUR", 129.70), //
-                        hasSource("AccountStatement03.txt"), hasNote(null))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2026-01-01"), //
+                        hasSource("AccountStatement03.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 129.70), hasGrossValue("EUR", 129.70), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -222,9 +226,12 @@ public class NordaxBankABPDFExtractorTest
                         hasNote("DE22513900000075401501 Einzahlung 01 BankNorwegian"))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2026-01-01"), hasAmount("EUR", 34.77), //
-                        hasSource("AccountStatement04.txt"), hasNote(null))));
-
+        assertThat(results, hasItem(interest( //
+                        hasDate("2026-01-01"), //
+                        hasSource("AccountStatement04.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 34.77), hasGrossValue("EUR", 34.77), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test

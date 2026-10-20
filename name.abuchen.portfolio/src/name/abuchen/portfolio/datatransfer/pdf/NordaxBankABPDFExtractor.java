@@ -50,8 +50,7 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
-                        .oneOf(
-                                        //
+                        .oneOf( //
                                         // @formatter:off
                                         // 24.08.2024 Zinsbuchung 403,39 10.403,39
                                         // @formatter:on
@@ -64,7 +63,6 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
-                                        //
                                         // @formatter:off
                                         // 31.12.2024 01.01.2025 Interest 24,40
                                         // @formatter:on
@@ -76,8 +74,7 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount")));
-                                                        })
-                     )
+                                                        }))
 
                         .wrap(TransactionItem::new));
 
@@ -134,8 +131,8 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
                         // 17290216 Übertrag Tagesgeld
                         // @formatter:on
                         .section("note").optional() //
-                        .find("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*$") //
-                        .match("^(?<note>.*)$")
+                        .find("[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*") //
+                        .match("^(?<note>.*)$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         .optionalOneOf( //
@@ -150,12 +147,12 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
-                                                        .find("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*$") //
+                                                        .find("[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*") //
                                                         .match("^.*$") //
                                                         .match("^(?<note>.*)$") //
                                                         .assign((t, v) -> {
                                                             if (!v.get("note").startsWith("Bank Norwegian"))
-                                                                t.setNote(concatenate(t.getNote(), v.get("note")," "));
+                                                                t.setNote(concatenate(t.getNote(), v.get("note"), " "));
                                                         }))
 
                         .wrap(TransactionItem::new));
@@ -192,7 +189,7 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
                         // PxvraKLvt
                         // @formatter:on
                         .section("note").optional() //
-                        .find("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Von|An) .* [\\.,\\d]+$") //
+                        .find("[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Von|An) .* [\\.,\\d]+") //
                         .match("^(?<note>(?!Bank Norwegian)(?!NOBA Bank Group)(?![\\d]{2}\\.[\\d]{2}\\.[\\d]{4} ).*)$") //
                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " ")))
 
