@@ -40,8 +40,6 @@ public class MeDirectBankPlcPDFExtractor extends AbstractPDFExtractor
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
-        type.getCurrentContext();
-
         pdfTransaction //
 
                         .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
@@ -61,7 +59,7 @@ public class MeDirectBankPlcPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("name", "isin", "currency", "nameContinued") //
                         .match("^(Koop|Verkoop) .* (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*) [\\.,\\d]+ (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc} [\\.,\\d]+$") //
-                        .match("(?<nameContinued>.*)$") //
+                        .match("^(?<nameContinued>.*)$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
@@ -76,7 +74,7 @@ public class MeDirectBankPlcPDFExtractor extends AbstractPDFExtractor
                         // 18-02-2020 - 09:06:19.000000 (UTC) XOFF N/A
                         // @formatter:on
                         .section("date", "time") //
-                        .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4}) \\- (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*") //
+                        .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4}) \\- (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}).*$") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
                         // @formatter:off
@@ -109,15 +107,15 @@ public class MeDirectBankPlcPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // MeDirect Commissie € 0,00
                         // @formatter:on
-                        .section("currency", "fee").optional()
-                        .match("^MeDirect Commissie (?<currency>\\p{Sc}) (?<fee>[\\.,\\d]+)$")
+                        .section("currency", "fee").optional() //
+                        .match("^MeDirect Commissie (?<currency>\\p{Sc}) (?<fee>[\\.,\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Wisselkosten en belastingen € 2,71
                         // @formatter:on
-                        .section("currency", "fee").optional()
-                        .match("^Wisselkosten en belastingen (?<currency>\\p{Sc}) (?<fee>[\\.,\\d]+)$")
+                        .section("currency", "fee").optional() //
+                        .match("^Wisselkosten en belastingen (?<currency>\\p{Sc}) (?<fee>[\\.,\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
