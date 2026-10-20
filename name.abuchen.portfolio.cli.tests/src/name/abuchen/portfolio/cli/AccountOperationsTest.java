@@ -350,6 +350,17 @@ public class AccountOperationsTest
     }
 
     @Test
+    public void refusesTwoUpdatesOfTheSameInvestmentAccountInOneBatch() throws IOException
+    {
+        var uuid = reload().getPortfolios().get(0).getUUID();
+
+        var run = apply(investmentUpdate(uuid, "\"note\":\"one\""), investmentUpdate(uuid, "\"note\":\"two\""));
+
+        assertThat(run.exitCode, is(1));
+        assertThat(failureKeys(run), containsInAnyOrder("1:uuid:duplicate-target"));
+    }
+
+    @Test
     public void refusesBadInvestmentAccountUpdates() throws IOException
     {
         var depot = reload().getPortfolios().get(0);
