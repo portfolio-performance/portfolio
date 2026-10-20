@@ -18,6 +18,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.skippedItem;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
@@ -775,6 +776,86 @@ public class PostbankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.17 + 0.01))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf05()
+    {
+        var extractor = new PostbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("GB00BWNPZS82"), hasWkn("A42KQC"), hasTicker(null), //
+                        hasName("ANR.A.PENNON GROUP PLC 26. 10.26"), //
+                        hasCurrencyCode("GBP"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-10-20T11:33:30"), hasShares(93.00), //
+                        hasSource("Verkauf05.txt"), //
+                        hasNote("Belegnummer 8695653127 / 338317982"), //
+                        hasAmount("EUR", 78.10), hasGrossValue("EUR", 88.05), //
+                        hasForexGrossValue("GBP", 74.35), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 9.95))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf05WithSecurityInEUR()
+    {
+        var security = new Security("ANR.A.PENNON GROUP PLC 26. 10.26", "EUR");
+        security.setIsin("GB00BWNPZS82");
+        security.setWkn("A42KQC");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new PostbankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-10-20T11:33:30"), hasShares(93.00), //
+                        hasSource("Verkauf05.txt"), //
+                        hasNote("Belegnummer 8695653127 / 338317982"), //
+                        hasAmount("EUR", 78.10), hasGrossValue("EUR", 88.05), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 9.95))));
+
+        // check currency compatibility
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        var c = new CheckCurrenciesAction();
+        var account = new Account();
+        account.setCurrencyCode("EUR");
+        var s = c.process(entry, account, entry.getPortfolio());
+        assertThat(s, is(Status.OK_STATUS));
     }
 
     @Test

@@ -87,6 +87,16 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
+                        // @formatter:off
+                        // Abrechnung: Verkauf von Wertpapieren
+                        // @formatter:on
+                        .section("type").optional() //
+                        .match("^Abrechnung: (?<type>(Kauf|Verkauf|Zeichnung)) von Wertpapieren.*$") //
+                        .assign((t, v) -> {
+                            if ("Verkauf".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.SELL);
+                        })
+
                         .oneOf( //
                                         // @formatter:off
                                         // Stück 158 XTR.(IE) - MSCI WORLD              IE00BJ0KDQ92 (A1XB5U)
@@ -235,23 +245,42 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                         }))
 
-                        // @formatter:off
-                        // Abrech.-Preis 196,00 USD
-                        // Devisenkurs (EUR/USD) 1,06386 vom 12.12.2016
-                        // Kurswert 1.289,64 EUR
-                        // @formatter:on
-                        .section("baseCurrency", "termCurrency", "exchangeRate", "gross").optional() //
-                        .match("^Devisenkurs \\((?<baseCurrency>[A-Z]{3})\\/(?<termCurrency>[A-Z]{3})\\) (?<exchangeRate>[\\.,\\d]+).*$") //
-                        .match("^Kurswert (?<gross>[\\.,\\d]+)(\\-)? [A-Z]{3}$") //
-                        .assign((t, v) -> {
-                            var rate = asExchangeRate(v);
-                            type.getCurrentContext().putType(rate);
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Abrech.-Preis 196,00 USD
+                                        // Devisenkurs (EUR/USD) 1,06386 vom 12.12.2016
+                                        // Kurswert 1.289,64 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "gross") //
+                                                        .match("^Devisenkurs \\((?<baseCurrency>[A-Z]{3})\\/(?<termCurrency>[A-Z]{3})\\) (?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .match("^Kurswert (?<gross>[\\.,\\d]+)(\\-)? [A-Z]{3}$") //
+                                                        .assign((t, v) -> {
+                                                            var rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
 
-                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
+                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
 
-                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                        })
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }),
+                                        // @formatter:off
+                                        // Kurswert GBP 74,35
+                                        // Devisenkurs zur Handelswährung (EUR/GBP) 0,8444
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("fxGross", "baseCurrency", "termCurrency", "exchangeRate") //
+                                                        .match("^Kurswert [A-Z]{3} (?<fxGross>[\\.,\\d]+)$") //
+                                                        .match("^Devisenkurs zur Handelsw.hrung \\((?<baseCurrency>[A-Z]{3})\\/(?<termCurrency>[A-Z]{3})\\) (?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .assign((t, v) -> {
+                                                            var rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = rate.convert(rate.getBaseCurrency(), fxGross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }))
 
                         .optionalOneOf( //
                                         // @formatter:off
@@ -901,7 +930,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "fee", "discountCurrency", "discount") //
-                                                        .match("^Provision (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)$") //
+                                                        .match("^Provision (?<currency>[A-Z]{3}) (\\-)?(?<fee>[\\.,\\d]+)$") //
                                                         .match("^Provisions\\-Rabatt (?<discountCurrency>[A-Z]{3}) \\-(?<discount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             var fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
@@ -918,10 +947,11 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                                         }),
                                         // @formatter:off
                                         // Provision EUR 39,95
+                                        // Provision GBP -8,40
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "fee") //
-                                                        .match("^Provision (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)$") //
+                                                        .match("^Provision (?<currency>[A-Z]{3}) (\\-)?(?<fee>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> processFeeEntries(t, v, type)))
 
                         // @formatter:off
