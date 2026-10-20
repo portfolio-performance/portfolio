@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.preferences;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -43,6 +44,15 @@ public class HistoricalPricesPreferencePage extends FieldEditorPreferencePage
                         Messages.PrefUpdateQuotesPeriodically, getFieldEditorParent());
         addField(updateQuotesPeriodically);
 
+        Label separator = new Label(getFieldEditorParent(), SWT.SEPARATOR | SWT.HORIZONTAL);
+        GridDataFactory.fillDefaults().span(2, 1).indent(0, 20).applyTo(separator);
+
+        new DescriptionFieldEditor(Messages.PrefUpdateQuotesRecalculationIntervalInfo, getFieldEditorParent());
+
+        addField(new ComboFieldEditor(UIConstants.Preferences.UPDATE_QUOTES_RECALCULATION_INTERVAL,
+                        Messages.PrefUpdateQuotesRecalculationInterval, createRecalculationIntervalOptions(),
+                        getFieldEditorParent()));
+
         if (clientInput.isPresent())
         {
             Label label = new Label(getFieldEditorParent(), SWT.SEPARATOR | SWT.HORIZONTAL);
@@ -75,6 +85,25 @@ public class HistoricalPricesPreferencePage extends FieldEditorPreferencePage
             addField(fieldEditor);
 
         }
+    }
+
+    private static String[][] createRecalculationIntervalOptions()
+    {
+        var format = NumberFormat.getNumberInstance();
+
+        return new String[][] { //
+                        { seconds(format, 0.3), "300" }, //$NON-NLS-1$
+                        { seconds(format, 1), "1000" }, //$NON-NLS-1$
+                        { seconds(format, 3), "3000" }, //$NON-NLS-1$
+                        { seconds(format, 5), "5000" }, //$NON-NLS-1$
+                        { seconds(format, 10), "10000" }, //$NON-NLS-1$
+                        { seconds(format, 30), "30000" }, //$NON-NLS-1$
+                        { Messages.PrefUpdateQuotesRecalculationIntervalOnlyAfterUpdate, "0" } }; //$NON-NLS-1$
+    }
+
+    private static String seconds(NumberFormat format, double seconds)
+    {
+        return format.format(seconds) + " s"; //$NON-NLS-1$
     }
 
     @Override
