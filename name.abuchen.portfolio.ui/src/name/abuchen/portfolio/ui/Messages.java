@@ -1372,6 +1372,9 @@ public class Messages extends NLS
     public static String PrefTwelveDataAPIKey;
     public static String PrefUpdateQuotesAfterFileOpen;
     public static String PrefUpdateQuotesPeriodically;
+    public static String PrefUpdateQuotesRecalculationInterval;
+    public static String PrefUpdateQuotesRecalculationIntervalInfo;
+    public static String PrefUpdateQuotesRecalculationIntervalOnlyAfterUpdate;
     public static String PrefUpdateSite;
     public static String PrefUpdateSiteBetaChannel;
     public static String PrefUpdateSiteStableChannel;
