@@ -154,11 +154,28 @@ public class UpdatePricesJob extends AbstractClientJob
         var jobs = groups.stream().map(group -> new RunTaskGroupJob(group.getKey(), group.getValue(), request))
                         .toList();
 
+        // recalculating the views is expensive: mark the client dirty at most
+        // once per adaptive throttle interval. The dirty flag of the request is
+        // kept until then. After the update, the client is always marked dirty
+        // (see finally block).
+        var throttle = new RecalculationThrottle(currentMillis());
+
         // start periodic UI updates
         ScheduledFuture<?> periodicUpdate = scheduler.scheduleAtFixedRate(() -> {
             fireSnapshot(request);
-            if (request.getAndResetDirty())
+
+            long now = currentMillis();
+            if (throttle.isDue(now) && request.getAndResetDirty())
+            {
                 request.getClient().markDirty();
+                throttle.recalculationStarted(now);
+
+                // the recalculation runs synchronously on the UI thread
+                // (ClientInput.scheduleDirty -> applyPendingDirty): an asyncExec
+                // posted right after markDirty() runs once the recalculation
+                // has finished and provides its duration to the throttle
+                Display.getDefault().asyncExec(() -> throttle.recalculationFinished(currentMillis()));
+            }
         }, 0, UI_PROGRESS_UPDATE_INTERVAL, TimeUnit.MILLISECONDS);
 
         JobGroup jobGroup = new JobGroup(Messages.JobLabelUpdating, 10, jobs.size());
@@ -185,6 +202,11 @@ public class UpdatePricesJob extends AbstractClientJob
         }
 
         return Status.OK_STATUS;
+    }
+
+    private static long currentMillis()
+    {
+        return TimeUnit.NANOSECONDS.toMillis(System.nanoTime());
     }
 
     private List<Task> prepareHistoricalTasks(PriceUpdateRequest request, List<Security> securities)
