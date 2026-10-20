@@ -48,6 +48,9 @@ public class DescribeConsistencyTest
                             "--currency", "USD", "--include-zero");
             case "performance" -> List.of("performance", "--file", sampleFile.toString(), "--from", "2019-12-31",
                             "--to", "2026-10-01", "--currency", "USD", "--cost-method", "moving-average");
+            case "taxonomies" -> List.of("taxonomies", "--file", sampleFile.toString());
+            case "allocation" -> List.of("allocation", "--file", sampleFile.toString(), "--taxonomy", "Classes",
+                            "--date", "2026-10-01", "--currency", "USD");
             default -> throw new AssertionError("Add sample arguments for command '" + command
                             + "' to DescribeConsistencyTest.sampleArguments");
         };
@@ -86,6 +89,16 @@ public class DescribeConsistencyTest
         var client = ClientFiles.sampleClient();
         var instrument = client.getSecurities().get(0);
         instrument.addPrice(new SecurityPrice(LocalDate.parse("2026-01-02"), 100_000_000L));
+
+        // a taxonomy with a nested classification and both kinds of assignment
+        var taxonomy = TaxonomyFixtures.taxonomy(client, "Classes");
+        var equity = TaxonomyFixtures.child(taxonomy.getRoot(), "Equity");
+        equity.setKey("EQ");
+        equity.setNote("Shares");
+        var europe = TaxonomyFixtures.child(equity, "Europe");
+        TaxonomyFixtures.assign(europe, instrument, 60);
+        TaxonomyFixtures.assign(equity, client.getPortfolios().get(0).getReferenceAccount(), 100);
+        TaxonomyFixtures.child(taxonomy.getRoot(), "Bonds");
         var sampleFile = ClientFiles.xml(folder.getRoot().toPath(), client).toPath();
 
         for (var element : describe().getAsJsonArray("commands"))
@@ -102,6 +115,10 @@ public class DescribeConsistencyTest
     /** More ways to call a command whose response differs in shape. */
     private static List<List<String>> furtherArguments(String command, Path sampleFile, Client client)
     {
+        if (command.equals("allocation"))
+            return List.of(List.of("allocation", "--file", sampleFile.toString(), "--taxonomy", "Classes", "--date",
+                            "2026-10-01"));
+
         if (!command.equals("performance"))
             return List.of();
 

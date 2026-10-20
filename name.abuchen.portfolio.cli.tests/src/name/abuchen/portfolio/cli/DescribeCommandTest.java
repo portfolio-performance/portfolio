@@ -267,6 +267,24 @@ public class DescribeCommandTest
                         "exchange-rate-cache-unavailable")));
     }
 
+    @Test
+    public void describePublishesTheOptionsAndWarningsOfAllocation()
+    {
+        var allocation = command(data(CliRun.run("describe")), "allocation");
+
+        var byName = new HashMap<String, JsonObject>();
+        allocation.getAsJsonArray("options")
+                        .forEach(o -> byName.put(o.getAsJsonObject().get("name").getAsString(), o.getAsJsonObject()));
+        assertThat(byName.keySet(), is(Set.of("file", "taxonomy", "date", "currency")));
+        assertThat(byName.get("taxonomy").get("required").getAsBoolean(), is(true));
+        assertThat(byName.get("date").get("type").getAsString(), is("date"));
+
+        var codes = new ArrayList<String>();
+        allocation.getAsJsonArray("warnings").forEach(w -> codes.add(w.getAsJsonObject().get("code").getAsString()));
+        assertThat(codes, is(List.of("stale-price", "over-assigned", "exchange-rate-missing", "stale-exchange-rate",
+                        "exchange-rate-cache-unavailable")));
+    }
+
     /** What the filters must keep up with: every type core knows, so that a new one is noticed. */
     private static List<String> coreTypeNames()
     {

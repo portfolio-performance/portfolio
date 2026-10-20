@@ -34,11 +34,11 @@ Settled in a grilling session. See `GLOSSARY.md` for **Taxonomy**, **Classificat
 
 ## Acceptance criteria
 
-- [ ] `taxonomies` lists every taxonomy with its classification tree flattened in pre-order, with `parent`, `path`, `targetWeight` and direct `assignments`
-- [ ] `--taxonomy` resolves by UUID or exact name, with `reference-not-found` and `reference-ambiguous`
-- [ ] `allocation` has a row for every classification at every depth, empty ones included, plus an always-present, last unassigned row
-- [ ] Top-level and unassigned row values equal core's grouping of the client snapshot by taxonomy; deeper rows equal their subtree's value
-- [ ] Top-level and unassigned shares sum to 1 up to floating-point error, except with a negative cash balance or an over-assignment
-- [ ] A missing exchange rate leaves out every `value`, `share` and the `total`; a zero total leaves out every `share`
-- [ ] `over-assigned` and `stale-price` warnings are raised as described
-- [ ] Both commands are declared, appear in `describe` and pass its consistency test
+- [x] `taxonomies` lists every taxonomy with its classification tree flattened in pre-order, with `parent`, `path`, `targetWeight` and direct `assignments`
+- [x] `--taxonomy` resolves by UUID or exact name, with `reference-not-found` and `reference-ambiguous`
+- [x] `allocation` has a row for every classification at every depth, empty ones included, plus an always-present, last unassigned row
+- [x] Top-level and unassigned row values equal core's grouping of the client snapshot by taxonomy; deeper rows equal their subtree's value
+- [x] Top-level and unassigned shares sum to 1 up to floating-point error, except with a negative cash balance or an over-assignment
+- [x] A missing exchange rate leaves out every `value`, `share` and the `total`; a zero total leaves out every `share`
+- [x] `over-assigned` and `stale-price` warnings are raised as described
+- [x] Both commands are declared, appear in `describe` and pass its consistency test

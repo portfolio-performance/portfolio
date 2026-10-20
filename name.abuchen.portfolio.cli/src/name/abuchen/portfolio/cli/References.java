@@ -12,6 +12,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Taxonomy;
 
 /**
  * Resolves what an agent typed on a read to the one entity it means. A UUID is
@@ -72,6 +73,10 @@ final class References
                     List.of(new Field<>("name", Account::getName)), Account::isRetired,
                     (account, json) -> MasterData.putIfSet(json, "currencyCode", account.getCurrencyCode()));
 
+    /** Taxonomies are never retired, so their candidates carry no such flag. */
+    private static final Kind<Taxonomy> TAXONOMY = new Kind<>(TaxonomiesCommand.SOURCE, "taxonomy",
+                    List.of(new Field<>("name", Taxonomy::getName)), null);
+
     private References()
     {
     }
@@ -92,6 +97,12 @@ final class References
     static Account cashAccount(Client client, String option, String value) throws CliException
     {
         return resolve(CASH_ACCOUNT, client, option, value);
+    }
+
+    /** By UUID or name. */
+    static Taxonomy taxonomy(Client client, String option, String value) throws CliException
+    {
+        return resolve(TAXONOMY, client, option, value);
     }
 
     private static <T> T resolve(Kind<T> kind, Client client, String option, String value) throws CliException
@@ -142,7 +153,8 @@ final class References
         var json = new LinkedHashMap<String, Object>();
         json.put("uuid", kind.uuid(entity));
         json.put("name", MasterData.orEmpty(kind.name(entity)));
-        json.put("retired", kind.retired().test(entity));
+        if (kind.retired() != null)
+            json.put("retired", kind.retired().test(entity));
         json.put("matchedBy", matchedBy(kind, entity, value));
         kind.details().accept(entity, json);
         return json;
