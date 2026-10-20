@@ -14,7 +14,7 @@ An older file is migrated and saved at core's current version. The result carrie
 
 ## Acceptance criteria
 
-- [ ] An `apply` against each of the seven formats leaves the file in the same format, verified by reloading through core and by format detection
-- [ ] An encrypted file is written with the load-time password and reopens with it; the password is prompted at most once
-- [ ] An older historic sample file is migrated on write, with a migration warning and correct `fileVersionBefore`/`fileVersionAfter`
-- [ ] `--dry-run` on an older file reports the pending migration without writing anything
+- [x] An `apply` against each of the seven formats leaves the file in the same format, verified by reloading through core and by format detection
+- [x] An encrypted file is written with the load-time password and reopens with it; the password is prompted at most once
+- [x] An older historic sample file is migrated on write, with a migration warning and correct `fileVersionBefore`/`fileVersionAfter`
+- [x] `--dry-run` on an older file reports the pending migration without writing anything

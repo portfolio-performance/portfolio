@@ -153,7 +153,7 @@ final class SafeWrite
             var result = change.apply(loaded.client());
 
             // nothing is written, so the changed model itself stands in for the written file
-            var warnings = new ArrayList<>(migration(loaded.client(), true));
+            var warnings = new ArrayList<>(migrationWarnings(loaded.client()));
             warnings.addAll(ConsistencyCheck.verify(ConsistencyCheck.run(opened.load().client()),
                             ConsistencyCheck.run(loaded.client())));
             return new Outcome<>(result, backupPath(file, settings), loaded.client().getFileVersionAfterRead(),
@@ -177,7 +177,7 @@ final class SafeWrite
 
             var loaded = opened.load();
             var client = loaded.client();
-            warnings.addAll(migration(client, false));
+            warnings.addAll(migrationWarnings(client));
             var result = change.apply(client);
 
             var backup = backupPath(file, settings);
@@ -239,18 +239,15 @@ final class SafeWrite
                         "The client file was not changed: " + e.getMessage(), 500, e);
     }
 
-    /** The warning for a file saved at an older version than core's current one. */
-    private static List<Warning> migration(Client client, boolean pending)
+    /** The warning for a file that is saved at a newer version than it was read at. */
+    private static List<Warning> migrationWarnings(Client client)
     {
         var before = client.getFileVersionAfterRead();
         if (before >= Client.CURRENT_VERSION)
             return List.of();
 
-        var detail = pending
-                        ? "The file has version " + before + " and a write would save it at version "
-                                        + Client.CURRENT_VERSION + ", which an older desktop app can no longer open."
-                        : "The file had version " + before + " and was saved at version " + Client.CURRENT_VERSION
-                                        + ", which an older desktop app can no longer open.";
+        var detail = "The file has version " + before + " and is saved at version " + Client.CURRENT_VERSION
+                        + ", which an older desktop app can no longer open.";
         return List.of(new Warning(MIGRATED.code(), detail).with("fileVersionBefore", before)
                         .with("fileVersionAfter", Client.CURRENT_VERSION));
     }

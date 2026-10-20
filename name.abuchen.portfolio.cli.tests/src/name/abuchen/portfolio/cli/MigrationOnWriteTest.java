@@ -28,8 +28,6 @@ import name.abuchen.portfolio.model.ClientFactory;
 /** Older files are migrated and saved at core's current version. */
 public class MigrationOnWriteTest
 {
-    private static final String PASSWORD = "s3cr3t-Pa55word";
-
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
@@ -91,19 +89,6 @@ public class MigrationOnWriteTest
         {
             return paths.map(p -> clientFolder.relativize(p).toString().replace('\\', '/')).sorted().toList();
         }
-    }
-
-    @Test
-    public void passwordOnStdinIsReadOnceForAWrite() throws IOException
-    {
-        var file = ClientFiles.xmlAes256(clientFolder, PASSWORD);
-
-        var run = CliRun.runWithStdin(Map.of(), PASSWORD + "\n", "apply", "--file", file.getPath(), "--input",
-                        input.getPath());
-
-        assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(names(ClientFactory.load(file, PASSWORD.toCharArray(), new NullProgressMonitor())),
-                        hasItem("ACME"));
     }
 
     @Test

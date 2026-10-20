@@ -2,6 +2,7 @@ package name.abuchen.portfolio.cli;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
@@ -12,6 +13,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Map;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -19,6 +21,7 @@ import org.junit.rules.TemporaryFolder;
 import com.google.gson.JsonObject;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.ClientFactory;
 
 public class EncryptedFilesTest
 {
@@ -94,6 +97,40 @@ public class EncryptedFilesTest
 
         assertFormat(run, "xml-aes256");
         assertPasswordHidden(run);
+    }
+
+    // stdin holds the password once, so a second read would find it empty and fail the command
+    @Test
+    public void aWriteReadsThePasswordFromStdinOnlyOnce() throws IOException
+    {
+        var file = ClientFiles.xmlAes256(dir(), PASSWORD);
+
+        var run = CliRun.runWithStdin(Map.of(), PASSWORD + "\n", "apply", "--file", file.getPath(), "--input",
+                        addAcme().getPath());
+
+        assertThat(run.stdout, run.exitCode, is(0));
+        var reloaded = ClientFactory.load(file, PASSWORD.toCharArray(), new NullProgressMonitor());
+        assertThat(reloaded.getSecurities().stream().map(s -> s.getName()).toList(), hasItem("ACME"));
+    }
+
+    @Test
+    public void aDryRunReadsThePasswordFromStdinOnlyOnce() throws IOException
+    {
+        var file = ClientFiles.xmlAes256(dir(), PASSWORD);
+        var before = Files.readAllBytes(file.toPath());
+
+        var run = CliRun.runWithStdin(Map.of(), PASSWORD + "\n", "apply", "--file", file.getPath(), "--input",
+                        addAcme().getPath(), "--dry-run");
+
+        assertThat(run.stdout, run.exitCode, is(0));
+        assertThat(Files.readAllBytes(file.toPath()), is(before));
+    }
+
+    private File addAcme() throws IOException
+    {
+        var input = folder.newFile();
+        Files.writeString(input.toPath(), WriteFormatsTest.ADD_ACME);
+        return input;
     }
 
     @Test
