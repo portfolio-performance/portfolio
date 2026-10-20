@@ -3,8 +3,10 @@ package name.abuchen.portfolio.model;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import name.abuchen.portfolio.model.Classification.Assignment;
@@ -129,6 +131,28 @@ public class Taxonomy
             {
                 if (vehicle.equals(assignment.getInvestmentVehicle()))
                     answer.add(classification);
+            }
+        });
+
+        return answer;
+    }
+
+    /**
+     * Returns the classifications of all assigned investment vehicles,
+     * collected in a single pass over the taxonomy. The order of the
+     * classifications per investment vehicle is identical to
+     * {@link #getClassifications(InvestmentVehicle)}.
+     */
+    public Map<InvestmentVehicle, List<Classification>> getClassificationsByInvestmentVehicle()
+    {
+        final Map<InvestmentVehicle, List<Classification>> answer = new HashMap<>();
+
+        foreach(new Visitor()
+        {
+            @Override
+            public void visit(Classification classification, Assignment assignment)
+            {
+                answer.computeIfAbsent(assignment.getInvestmentVehicle(), v -> new ArrayList<>()).add(classification);
             }
         });
 
