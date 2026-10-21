@@ -1,13 +1,16 @@
 package name.abuchen.portfolio.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -206,5 +209,21 @@ public class ClientFactoryTest
         var flags = ClientFactory.getFlags(file);
         assertTrue(flags.contains(SaveFlag.XML));
         assertTrue(flags.contains(SaveFlag.ID_REFERENCES));
+    }
+
+    @Test
+    public void testSaveBinaryWithoutUpdatedAt() throws IOException
+    {
+        var client = new Client();
+        var security = new Security();
+        security.setName("Security");
+        security.setUpdatedAt(null);
+        client.addSecurity(security);
+
+        var file = new File(tempFolder.getRoot(), "client.portfolio");
+        ClientFactory.saveAs(client, file, null, EnumSet.of(SaveFlag.BINARY, SaveFlag.COMPRESSED));
+
+        var reloaded = ClientFactory.load(file, null, new NullProgressMonitor());
+        assertNull(reloaded.getSecurities().get(0).getUpdatedAt());
     }
 }
