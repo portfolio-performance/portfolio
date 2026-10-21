@@ -148,6 +148,21 @@ public class ParallelZipOutputStreamTest
     }
 
     @Test
+    public void testCloseClosesUnderlyingStreamIfArchiveCannotBeCompleted() throws IOException
+    {
+        var target = new ClosingAwareOutputStream();
+
+        var out = new ParallelZipOutputStream(target, "data", Deflater.BEST_COMPRESSION, 2);
+        out.write(sampleData(BLOCK + 1));
+
+        target.failWrites = true;
+
+        var exception = assertThrows(IOException.class, out::close);
+        assertThat(exception.getMessage(), is("disk full"));
+        assertThat(target.closed, is(true));
+    }
+
+    @Test
     public void testWriteAfterCloseFails() throws IOException
     {
         var out = new ParallelZipOutputStream(new ByteArrayOutputStream(), "data", Deflater.BEST_COMPRESSION, 2);
@@ -222,16 +237,21 @@ public class ParallelZipOutputStreamTest
     {
         private final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         private boolean closed = false;
+        private boolean failWrites = false;
 
         @Override
-        public void write(int b)
+        public void write(int b) throws IOException
         {
+            if (failWrites)
+                throw new IOException("disk full");
             buffer.write(b);
         }
 
         @Override
-        public void write(byte[] b, int off, int len)
+        public void write(byte[] b, int off, int len) throws IOException
         {
+            if (failWrites)
+                throw new IOException("disk full");
             buffer.write(b, off, len);
         }
 

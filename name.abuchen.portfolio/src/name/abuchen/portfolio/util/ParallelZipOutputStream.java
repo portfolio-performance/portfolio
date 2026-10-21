@@ -175,6 +175,20 @@ public class ParallelZipOutputStream extends OutputStream
             writeDataDescriptor();
             writeCentralDirectory();
         }
+        catch (IOException | RuntimeException e)
+        {
+            // close the underlying stream also if the archive could not be
+            // completed
+            try
+            {
+                out.close();
+            }
+            catch (IOException | RuntimeException closeException)
+            {
+                e.addSuppressed(closeException);
+            }
+            throw e;
+        }
         finally
         {
             pending.forEach(f -> f.cancel(true));
@@ -298,6 +312,11 @@ public class ParallelZipOutputStream extends OutputStream
         compressedSize += data.length;
     }
 
+    /**
+     * Returns true if the central directory must use the ZIP64 extra field.
+     * The value 0xFFFFFFFF itself already signals that the size is stored in
+     * the extra field.
+     */
     private boolean isZip64Entry()
     {
         return compressedSize >= ZIP64_MAGIC || uncompressedSize >= ZIP64_MAGIC;
@@ -323,7 +342,11 @@ public class ParallelZipOutputStream extends OutputStream
     {
         writeInt(DATA_DESCRIPTOR_SIGNATURE);
         writeInt(crc.getValue());
-        if (isZip64Entry())
+
+        // ZipInputStream expects 8 byte sizes only if the sizes are larger
+        // than 0xFFFFFFFF (unlike ZipOutputStream which writes them already for
+        // equal values)
+        if (compressedSize > ZIP64_MAGIC || uncompressedSize > ZIP64_MAGIC)
         {
             writeLong(compressedSize);
             writeLong(uncompressedSize);
