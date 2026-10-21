@@ -1,11 +1,16 @@
 package name.abuchen.portfolio.datatransfer.csv;
 
+import static org.junit.Assert.assertNotNull;
+
+import java.io.File;
 import java.nio.charset.UnsupportedCharsetException;
 
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.ParseException;
 import org.junit.Test;
+
+import name.abuchen.portfolio.model.Client;
 
 @SuppressWarnings("nls")
 public class CSVConfigTest
@@ -24,5 +29,14 @@ public class CSVConfigTest
     public void testUnknownEncodingIsRejected() throws ParseException
     {
         config("NO-SUCH-CHARSET", "[]");
+    }
+
+    @Test
+    public void testColumnWithoutFormatGetsGuessedFormat() throws ParseException
+    {
+        var importer = new CSVImporter(new Client(), new File("unused.csv"));
+        config("UTF-8", "[{\"label\": \"Date\", \"field\": \"date\"}]").writeTo(importer);
+
+        assertNotNull(importer.getColumns()[0].getFormat());
     }
 }

@@ -155,7 +155,7 @@ public class CSVConfig
                     copy.setFormat(field.get().textToFormat(format));
 
                 if (copy.getFormat() == null)
-                    field.get().guessFormat(importer.getClient(), null);
+                    copy.setFormat(field.get().guessFormat(importer.getClient(), null));
             }
 
             setup.add(copy);
