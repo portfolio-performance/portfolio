@@ -1110,6 +1110,9 @@ public final class CSVImporter
         int index = column.getColumnIndex();
         for (String[] rawValues : values)
         {
+            if (index >= rawValues.length)
+                continue;
+
             String value = rawValues[index];
             // check if value is set and is not empty (ignore whitespace)
             if ((value != null) && (!value.trim().isEmpty()))
