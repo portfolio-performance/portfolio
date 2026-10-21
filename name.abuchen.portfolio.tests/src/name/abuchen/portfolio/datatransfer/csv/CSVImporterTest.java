@@ -45,6 +45,6 @@ public class CSVImporterTest
         importer.setEncoding(StandardCharsets.UTF_8);
         importer.processFile(true);
 
-        assertThat(importer.getFirstNonEmptyValue(importer.getColumns()[1]), is("100.00"));
+        assertThat(importer.getNonEmptyValues(importer.getColumns()[1]).findFirst().orElse(null), is("100.00"));
     }
 }

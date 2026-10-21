@@ -3,6 +3,8 @@ package name.abuchen.portfolio.datatransfer.csv;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.util.stream.Stream;
+
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.AmountField;
@@ -28,6 +30,17 @@ public class AmountFieldTest
         assertThat(guess("1,234.56"), is(DOT));
         assertThat(guess("1.234.567"), is(COMMA));
         assertThat(guess("1,234,567"), is(DOT));
+        assertThat(guess("2.12e-6"), is(DOT));
+        assertThat(guess("1.5E10"), is(DOT));
+        assertThat(guess("1.234,56. "), is(COMMA));
+        assertThat(guess("100,00 EUR."), is(COMMA));
+    }
+
+    @Test
+    public void testLaterValueDecidesAnAmbiguousFirstValue()
+    {
+        var format = new AmountField("value", "Value").guessFormatOf(null, Stream.of("1,000", "1,000.50"));
+        assertThat(format.getCode(), is(DOT));
     }
 
     @Test
@@ -36,6 +49,7 @@ public class AmountFieldTest
         var locale = TextUtil.DECIMAL_SEPARATOR == '.' ? DOT : COMMA;
 
         assertThat(guess("1,234"), is(locale));
+        assertThat(guess("1.234 (2024)"), is(locale));
         assertThat(guess("1234"), is(locale));
         assertThat(guess(null), is(locale));
     }

@@ -28,7 +28,7 @@ public class CSVConfigTest
     @Test(expected = UnsupportedCharsetException.class)
     public void testUnknownEncodingIsRejected() throws ParseException
     {
-        config("NO-SUCH-CHARSET", "[]");
+        config("NO-SUCH-CHARSET", "[{\"label\": \"Date\", \"field\": \"date\"}]");
     }
 
     @Test

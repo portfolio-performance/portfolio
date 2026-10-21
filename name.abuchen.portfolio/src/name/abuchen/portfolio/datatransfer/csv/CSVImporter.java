@@ -48,6 +48,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -231,6 +232,15 @@ public final class CSVImporter
         public FieldFormat guessFormat(Client client, String value) // NOSONAR
         {
             return null;
+        }
+
+        /**
+         * Same as {@link #guessFormat(Client, String)}, but may look at
+         * several example values to decide
+         */
+        public FieldFormat guessFormatOf(Client client, Stream<String> values)
+        {
+            return guessFormat(client, values.findFirst().orElse(null));
         }
 
         public String formatToText(FieldFormat fieldFormat)
@@ -558,31 +568,53 @@ public final class CSVImporter
         @Override
         public FieldFormat guessFormat(Client client, String value)
         {
-            var decimalIsDot = TextUtil.DECIMAL_SEPARATOR == '.';
+            return guessFormatOf(client, Stream.ofNullable(value));
+        }
 
-            if (value != null)
-            {
-                var dot = value.lastIndexOf('.');
-                var comma = value.lastIndexOf(',');
-
-                if (dot >= 0 && comma >= 0)
-                {
-                    decimalIsDot = dot > comma;
-                }
-                else if (dot >= 0 || comma >= 0)
-                {
-                    var separator = dot >= 0 ? '.' : ',';
-                    var last = Math.max(dot, comma);
-                    var digitsAfter = value.substring(last + 1).replaceAll("\\D", "").length(); //$NON-NLS-1$ //$NON-NLS-2$
-
-                    if (value.indexOf(separator) != last)
-                        decimalIsDot = separator == ','; // repeated, so it only groups
-                    else if (digitsAfter != 3) // "1,234" could be 1234 or 1.234
-                        decimalIsDot = separator == '.';
-                }
-            }
+        @Override
+        public FieldFormat guessFormatOf(Client client, Stream<String> values)
+        {
+            var decimalIsDot = values.map(AmountField::isDecimalDot).flatMap(Optional::stream).findFirst()
+                            .orElse(TextUtil.DECIMAL_SEPARATOR == '.');
 
             return FORMATS.get(decimalIsDot ? 1 : 0);
+        }
+
+        private static final Pattern NUMBER = Pattern.compile("\\d(?:[\\d.,'\\u00A0 ]*\\d)?"); //$NON-NLS-1$
+
+        /**
+         * Reads the decimal separator from the first number in the value.
+         * Empty if the value does not decide it, e.g. "1,234".
+         */
+        /* package */ static Optional<Boolean> isDecimalDot(String value)
+        {
+            if (value == null)
+                return Optional.empty();
+
+            var matcher = NUMBER.matcher(value);
+            if (!matcher.find())
+                return Optional.empty();
+
+            var number = matcher.group();
+            var dot = number.lastIndexOf('.');
+            var comma = number.lastIndexOf(',');
+
+            if (dot >= 0 && comma >= 0)
+                return Optional.of(dot > comma);
+            if (dot < 0 && comma < 0)
+                return Optional.empty();
+
+            var separator = dot >= 0 ? '.' : ',';
+            var last = Math.max(dot, comma);
+
+            if (number.indexOf(separator) != last) // repeated, so it only groups
+                return Optional.of(separator == ',');
+
+            var digitsAfter = 0;
+            while (last + 1 + digitsAfter < number.length() && Character.isDigit(number.charAt(last + 1 + digitsAfter)))
+                digitsAfter++;
+
+            return digitsAfter == 3 ? Optional.empty() : Optional.of(separator == '.'); // "1,234" could be 1234 or 1.234
         }
 
         @Override
@@ -738,7 +770,7 @@ public final class CSVImporter
                 }
             }
 
-            // second: try as pattern
+            // third: try as pattern
 
             for (Map.Entry<M, String> entry : enumMap.entrySet())
             {
@@ -1076,8 +1108,7 @@ public final class CSVImporter
                 {
                     column.setField(field);
 
-                    String value = getFirstNonEmptyValue(column);
-                    column.setFormat(field.guessFormat(client, value));
+                    column.setFormat(field.guessFormatOf(client, getNonEmptyValues(column)));
 
                     iter.remove();
                     break;
@@ -1099,26 +1130,13 @@ public final class CSVImporter
     }
 
     /**
-     * Finds the first value that is not empty for the given column.
-     * 
-     * @param column
-     *            {@link Column}
-     * @return value on success, else null
+     * Returns the values of the given column that are not empty.
      */
-    public String getFirstNonEmptyValue(Column column)
+    public Stream<String> getNonEmptyValues(Column column)
     {
         int index = column.getColumnIndex();
-        for (String[] rawValues : values)
-        {
-            if (index >= rawValues.length)
-                continue;
-
-            String value = rawValues[index];
-            // check if value is set and is not empty (ignore whitespace)
-            if ((value != null) && (!value.trim().isEmpty()))
-                return value;
-        }
-        return null;
+        return values.stream().filter(row -> index < row.length).map(row -> row[index])
+                        .filter(value -> value != null && !value.trim().isEmpty());
     }
 
     /**

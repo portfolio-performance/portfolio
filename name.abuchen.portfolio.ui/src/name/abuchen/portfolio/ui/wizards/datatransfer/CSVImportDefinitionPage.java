@@ -519,7 +519,8 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
 
             onConfigSelected(config);
         }
-        catch (IOException | org.json.simple.parser.ParseException e)
+        catch (IOException | org.json.simple.parser.ParseException | IllegalArgumentException | NullPointerException
+                        | ClassCastException e)
         {
             PortfolioPlugin.log(e);
             MessageDialog.openError(getControl().getShell(), Messages.ExportWizardErrorExporting, e.getMessage());
@@ -888,7 +889,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
                             dateFormats.setSelection(new StructuredSelection(column.getFormat()));
                         else
                             dateFormats.setSelection(new StructuredSelection(
-                                            field.guessFormat(client, importer.getFirstNonEmptyValue(column))));
+                                            field.guessFormatOf(client, importer.getNonEmptyValues(column))));
                     }
                     else if (field instanceof AmountField)
                     {
@@ -898,11 +899,11 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
                             valueFormats.setSelection(new StructuredSelection(column.getFormat()));
                         else
                             valueFormats.setSelection(new StructuredSelection(
-                                            field.guessFormat(client, importer.getFirstNonEmptyValue(column))));
+                                            field.guessFormatOf(client, importer.getNonEmptyValues(column))));
                     }
                     else if (field instanceof ISINField)
                     {
-                        column.setFormat(field.guessFormat(client, importer.getFirstNonEmptyValue(column)));
+                        column.setFormat(field.guessFormatOf(client, importer.getNonEmptyValues(column)));
                     }
                     else if (field instanceof EnumField)
                     {
