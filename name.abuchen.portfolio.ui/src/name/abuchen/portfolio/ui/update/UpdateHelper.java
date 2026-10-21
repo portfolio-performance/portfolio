@@ -85,7 +85,7 @@ public final class UpdateHelper
 
     public void runUpdateWithUIMonitor()
     {
-        runWithUIMonitor(monitor -> resolveAndInstall(monitor, this::confirmUpdate));
+        runWithUIMonitor(monitor -> resolveAndInstall(monitor, this::confirmUpdate, true));
     }
 
     /**
@@ -137,7 +137,35 @@ public final class UpdateHelper
 
         var outcome = new Outcome[] { Outcome.FAILED };
 
-        runWithUIMonitor(monitor -> outcome[0] = resolveAndInstall(monitor, this::isUpdateAllowed));
+        runWithUIMonitor(monitor -> outcome[0] = resolveAndInstall(monitor, this::isUpdateAllowed, true));
+
+        return outcome[0];
+    }
+
+    /**
+     * Same as {@link #promptAndInstallLatest} but used while the application
+     * is closing. Messages that only make sense while the application keeps
+     * running - that a restart is required, or that the update site does not
+     * offer an update anymore - are not shown. An error is reported before
+     * this method returns because a dialog opened asynchronously would not be
+     * shown anymore once the application has been closed.
+     */
+    public Outcome promptAndInstallLatestOnExit(NewVersion newVersion)
+    {
+        if (!confirmUpdate(newVersion))
+            return Outcome.CANCELED;
+
+        var outcome = new Outcome[] { Outcome.FAILED };
+
+        var error = runWithUIMonitorAndReturnError(
+                        monitor -> outcome[0] = resolveAndInstall(monitor, this::isUpdateAllowed, false));
+
+        if (error != null)
+        {
+            PortfolioPlugin.log(error);
+            Display.getDefault().syncExec(() -> ErrorDialog.openError(Display.getDefault().getActiveShell(),
+                            Messages.LabelError, Messages.MsgErrorUpdating, error.getStatus()));
+        }
 
         return outcome[0];
     }
@@ -145,9 +173,14 @@ public final class UpdateHelper
     /**
      * Resolves the update again and installs it if the given check confirms
      * that it may be installed.
+     *
+     * @param notifyUser
+     *            if true, tells the user that a restart is required after the
+     *            installation and that there is no update if the update site
+     *            does not offer one anymore
      */
-    private Outcome resolveAndInstall(IProgressMonitor monitor, Predicate<NewVersion> isConfirmed)
-                    throws CoreException
+    private Outcome resolveAndInstall(IProgressMonitor monitor, Predicate<NewVersion> isConfirmed,
+                    boolean notifyUser) throws CoreException
     {
         if (!isInAppUpdateEnabled())
             return Outcome.NOTHING_TO_UPDATE;
@@ -162,8 +195,10 @@ public final class UpdateHelper
 
         if (latest == null)
         {
-            Display.getDefault().asyncExec(() -> MessageDialog.openInformation(Display.getDefault().getActiveShell(),
-                            Messages.LabelInfo, Messages.MsgNoUpdatesAvailable));
+            if (notifyUser)
+                Display.getDefault()
+                                .asyncExec(() -> MessageDialog.openInformation(Display.getDefault().getActiveShell(),
+                                                Messages.LabelInfo, Messages.MsgNoUpdatesAvailable));
             return Outcome.NOTHING_TO_UPDATE;
         }
 
@@ -171,7 +206,9 @@ public final class UpdateHelper
             return Outcome.CANCELED;
 
         runUpdateOperation(sub.newChild(100));
-        promptForRestart();
+
+        if (notifyUser)
+            promptForRestart();
 
         return Outcome.INSTALLED;
     }
@@ -420,6 +457,24 @@ public final class UpdateHelper
 
     private void runWithUIMonitor(Task task)
     {
+        var error = runWithUIMonitorAndReturnError(task);
+
+        if (error != null)
+        {
+            PortfolioPlugin.log(error);
+            Display.getDefault().asyncExec(() -> ErrorDialog.openError(Display.getDefault().getActiveShell(),
+                            Messages.LabelError, Messages.MsgErrorUpdating, error.getStatus()));
+        }
+    }
+
+    /**
+     * Runs the task with a progress monitor dialog and returns the error the
+     * task has failed with - or null. The caller decides how to report it.
+     */
+    private CoreException runWithUIMonitorAndReturnError(Task task)
+    {
+        var error = new CoreException[1];
+
         Display.getDefault().syncExec(() -> {
             try
             {
@@ -430,10 +485,7 @@ public final class UpdateHelper
                     }
                     catch (CoreException e)
                     {
-                        PortfolioPlugin.log(e);
-                        Display.getDefault()
-                                        .asyncExec(() -> ErrorDialog.openError(Display.getDefault().getActiveShell(),
-                                                        Messages.LabelError, Messages.MsgErrorUpdating, e.getStatus()));
+                        error[0] = e;
                     }
                 });
             }
@@ -447,5 +499,7 @@ public final class UpdateHelper
                 Thread.currentThread().interrupt();
             }
         });
+
+        return error[0];
     }
 }
