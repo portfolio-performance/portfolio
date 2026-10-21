@@ -558,13 +558,31 @@ public final class CSVImporter
         @Override
         public FieldFormat guessFormat(Client client, String value)
         {
-            if (TextUtil.DECIMAL_SEPARATOR == ',')
-                return FORMATS.get(0);
-            if (TextUtil.DECIMAL_SEPARATOR == '.')
-                return FORMATS.get(1);
+            var decimalIsDot = TextUtil.DECIMAL_SEPARATOR == '.';
 
-            // fallback
-            return FORMATS.get(0);
+            if (value != null)
+            {
+                var dot = value.lastIndexOf('.');
+                var comma = value.lastIndexOf(',');
+
+                if (dot >= 0 && comma >= 0)
+                {
+                    decimalIsDot = dot > comma;
+                }
+                else if (dot >= 0 || comma >= 0)
+                {
+                    var separator = dot >= 0 ? '.' : ',';
+                    var last = Math.max(dot, comma);
+                    var digitsAfter = value.substring(last + 1).replaceAll("\\D", "").length(); //$NON-NLS-1$ //$NON-NLS-2$
+
+                    if (value.indexOf(separator) != last)
+                        decimalIsDot = separator == ','; // repeated, so it only groups
+                    else if (digitsAfter != 3) // "1,234" could be 1234 or 1.234
+                        decimalIsDot = separator == '.';
+                }
+            }
+
+            return FORMATS.get(decimalIsDot ? 1 : 0);
         }
 
         @Override
