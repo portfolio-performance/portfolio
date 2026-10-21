@@ -22,6 +22,11 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.security.AlgorithmParameters;
 import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
@@ -712,6 +717,63 @@ public class ClientFactory
     }
 
     private static void writeFile(final Client client, final File file, char[] password, Set<SaveFlag> flags,
+                    boolean updateFlags) throws IOException
+    {
+        // write to a sibling and rename it, so a failed save keeps the old file
+        var target = file.getCanonicalFile();
+        if (target.exists() && !target.canWrite())
+            throw new IOException(target + " (Permission denied)"); //$NON-NLS-1$
+
+        if (!target.getParentFile().canWrite())
+        {
+            writeInto(client, target, password, flags, updateFlags);
+            return;
+        }
+
+        var temp = new File(target.getPath() + ".part"); //$NON-NLS-1$
+        try
+        {
+            // created with the target's permissions, so the data is never more readable than the file it replaces
+            try
+            {
+                var permissions = Files.getPosixFilePermissions(target.toPath());
+                Files.createFile(temp.toPath(), PosixFilePermissions.asFileAttribute(permissions));
+                Files.setPosixFilePermissions(temp.toPath(), permissions); // createFile applies the umask
+            }
+            catch (IOException | UnsupportedOperationException e)
+            {
+                // new file, or no POSIX permissions: keep the default ones
+            }
+
+            writeInto(client, temp, password, flags, false);
+
+            try (var channel = FileChannel.open(temp.toPath(), StandardOpenOption.WRITE))
+            {
+                channel.force(true);
+            }
+
+            try
+            {
+                Files.move(temp.toPath(), target.toPath(), StandardCopyOption.ATOMIC_MOVE);
+            }
+            catch (AtomicMoveNotSupportedException e)
+            {
+                Files.move(temp.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            }
+
+            if (updateFlags)
+            {
+                client.getSaveFlags().clear();
+                client.getSaveFlags().addAll(flags);
+            }
+        }
+        finally
+        {
+            Files.deleteIfExists(temp.toPath());
+        }
+    }
+
+    private static void writeInto(final Client client, final File file, char[] password, Set<SaveFlag> flags,
                     boolean updateFlags) throws IOException
     {
         PortfolioLog.info(String.format("Saving %s with %s", file.getName(), flags.toString())); //$NON-NLS-1$

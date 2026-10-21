@@ -1,11 +1,18 @@
 package name.abuchen.portfolio.model;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.attribute.PosixFileAttributeView;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.EnumSet;
 
 import org.junit.Rule;
@@ -206,5 +213,42 @@ public class ClientFactoryTest
         var flags = ClientFactory.getFlags(file);
         assertTrue(flags.contains(SaveFlag.XML));
         assertTrue(flags.contains(SaveFlag.ID_REFERENCES));
+    }
+
+    @Test
+    public void testFailedSaveKeepsExistingFile() throws IOException
+    {
+        var file = tempFolder.newFile("portfolio.xml");
+        ClientFactory.save(new Client(), file);
+        var before = Files.readAllBytes(file.toPath());
+
+        // occupy the name of the temporary file so that the save fails
+        assertTrue(new File(tempFolder.getRoot(), "portfolio.xml.part").mkdir());
+
+        assertThrows(IOException.class, () -> ClientFactory.save(new Client(), file));
+        assertArrayEquals(before, Files.readAllBytes(file.toPath()));
+    }
+
+    @Test
+    public void testSaveKeepsFilePermissions() throws IOException
+    {
+        var file = tempFolder.newFile("portfolio.xml");
+        assumeTrue(Files.getFileAttributeView(file.toPath(), PosixFileAttributeView.class) != null);
+
+        var permissions = PosixFilePermissions.fromString("rw-rw-r--");
+        Files.setPosixFilePermissions(file.toPath(), permissions);
+
+        ClientFactory.save(new Client(), file);
+
+        assertEquals(permissions, Files.getPosixFilePermissions(file.toPath()));
+    }
+
+    @Test
+    public void testSaveRefusesReadOnlyFile() throws IOException
+    {
+        var file = tempFolder.newFile("portfolio.xml");
+        assumeTrue(file.setWritable(false) && !file.canWrite());
+
+        assertThrows(IOException.class, () -> ClientFactory.save(new Client(), file));
     }
 }
