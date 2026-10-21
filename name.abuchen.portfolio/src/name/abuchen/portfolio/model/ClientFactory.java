@@ -50,7 +50,6 @@ import java.util.stream.Collectors;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -84,6 +83,7 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
+import name.abuchen.portfolio.util.ParallelZipOutputStream;
 import name.abuchen.portfolio.util.ProgressMonitorInputStream;
 import name.abuchen.portfolio.util.TextUtil;
 import name.abuchen.portfolio.util.XStreamArrayListConverter;
@@ -248,16 +248,12 @@ public class ClientFactory
         @Override
         public void save(Client client, OutputStream output) throws IOException
         {
-            // wrap with zip output stream
-            try (ZipOutputStream zipout = new ZipOutputStream(output))
+            String name = body instanceof ProtobufWriter ? "data.portfolio" : "data.xml"; //$NON-NLS-1$ //$NON-NLS-2$
+
+            // wrap with zip output stream (compressed on multiple cores)
+            try (var zipout = new ParallelZipOutputStream(output, name, Deflater.BEST_COMPRESSION))
             {
-                zipout.setLevel(Deflater.BEST_COMPRESSION);
-
-                String name = body instanceof ProtobufWriter ? "data.portfolio" : "data.xml"; //$NON-NLS-1$ //$NON-NLS-2$
-
-                zipout.putNextEntry(new ZipEntry(name));
                 body.save(client, zipout);
-                zipout.closeEntry();
             }
         }
     }
@@ -450,14 +446,12 @@ public class ClientFactory
                     encrypted.write(ByteBuffer.allocate(4).putInt(contentType).array());
                     encrypted.write(ByteBuffer.allocate(4).putInt(client.getVersion()).array());
 
-                    // wrap with zip output stream
-                    try (ZipOutputStream zipout = new ZipOutputStream(encrypted))
+                    // wrap with zip output stream (compressed on multiple
+                    // cores)
+                    try (var zipout = new ParallelZipOutputStream(encrypted, "data", //$NON-NLS-1$
+                                    Deflater.BEST_COMPRESSION))
                     {
-                        zipout.setLevel(Deflater.BEST_COMPRESSION);
-                        zipout.putNextEntry(new ZipEntry("data")); //$NON-NLS-1$
-
                         body.save(client, zipout);
-                        zipout.closeEntry();
                     }
                 }
             }
