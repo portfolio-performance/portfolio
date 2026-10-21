@@ -1,8 +1,6 @@
 package name.abuchen.portfolio.datatransfer.csv;
 
 import java.nio.charset.Charset;
-import java.nio.charset.IllegalCharsetNameException;
-import java.nio.charset.UnsupportedCharsetException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +11,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.FieldFormat;
@@ -222,17 +219,9 @@ public class CSVConfig
                         MessageFormat.format(Messages.MsgErrorMissingKeyValueInJSON, Key.DELIMITER)).charAt(0);
         this.delimiter = ",;\t".indexOf(d) >= 0 ? d : ';'; //$NON-NLS-1$
 
-        try
-        {
-            String charsetName = (String) json.get(Key.ENCODING);
-            if (charsetName != null)
-                this.encoding = Charset.forName(charsetName);
-        }
-        catch (IllegalCharsetNameException | UnsupportedCharsetException e)
-        {
-            PortfolioLog.error(e);
-            this.encoding = Charset.defaultCharset();
-        }
+        String charsetName = (String) json.get(Key.ENCODING);
+        if (charsetName != null)
+            this.encoding = Charset.forName(charsetName);
 
         this.skipLines = Objects
                         .requireNonNull((Long) json.get(Key.SKIP_LINES),
