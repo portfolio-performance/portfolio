@@ -69,6 +69,19 @@ public class Taxonomy
         propertyChangeSupport.firePropertyChange("name", this.name, this.name = name); // NOSONAR //$NON-NLS-1$
     }
 
+    /**
+     * Renames the taxonomy and its root node. The root node is shown as top
+     * row of the taxonomy tree and gets the taxonomy name when a taxonomy is
+     * created.
+     */
+    public void rename(String name)
+    {
+        setName(name);
+
+        if (root != null)
+            root.setName(name);
+    }
+
     public void setSource(String source)
     {
         this.source = source;
