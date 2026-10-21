@@ -1556,7 +1556,7 @@ public class OnvistaPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2019-03-26"), hasExDate("2019-03-22"), //
-                        hasShares(6), //
+                        hasShares(6.00), //
                         hasSource("Dividende04.txt"), //
                         hasNote("Abrechnungs-Nr. 29013705"), //
                         hasAmount("EUR", 3.02), hasGrossValue("EUR", 4.13), //
@@ -1592,7 +1592,7 @@ public class OnvistaPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2019-03-26"), hasExDate("2019-03-22"), //
-                        hasShares(6), //
+                        hasShares(6.00), //
                         hasSource("Dividende04.txt"), //
                         hasNote("Abrechnungs-Nr. 29013705"), //
                         hasAmount("EUR", 3.02), hasGrossValue("EUR", 4.13), //
@@ -2565,7 +2565,7 @@ public class OnvistaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-05-25T00:00"), hasExDate("2022-05-23"), hasShares(6.00), //
+                        hasDate("2022-05-25T00:00"), hasExDate(null), hasShares(6.00), //
                         hasSource("DividendeWithOutbondDelivery01.txt"), //
                         hasNote("Abrechnungs-Nr. 12134880"), //
                         hasAmount("EUR", 9.96), hasGrossValue("EUR", 9.96), //
@@ -3129,7 +3129,7 @@ public class OnvistaPDFExtractorTest
         // check fee transaction
         assertThat(results, hasItem(fee( //
                         hasDate("2017-07-24"), //
-                        hasShares(6), //
+                        hasShares(6.00), //
                         hasSource("Registrierungsgebuehr01.txt"), //
                         hasNote("Abrechnungs-Nr. 63550522 | Registrierung der Namens-Aktien"), //
                         hasAmount("EUR", 0.89), hasGrossValue("EUR", 0.89), //
@@ -3923,8 +3923,12 @@ public class OnvistaPDFExtractorTest
                         hasSource("Kontoauszug13.txt"), hasNote("Überweisungseingang SEPA"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2024-05-02"), hasAmount("EUR", 7.50), //
-                        hasSource("Kontoauszug13.txt"), hasNote("Geb. Back Office extern"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2024-05-02"), //
+                        hasSource("Kontoauszug13.txt"), //
+                        hasNote("Geb. Back Office extern"), //
+                        hasAmount("EUR", 7.50), hasGrossValue("EUR", 7.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2024-05-22"), hasAmount("EUR", 60000.00), //
@@ -3951,8 +3955,12 @@ public class OnvistaPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2023-07-06"), hasAmount("EUR", 1.29), //
-                        hasSource("Kontoauszug14.txt"), hasNote("Geb. Back Office extern"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2023-07-06"), //
+                        hasSource("Kontoauszug14.txt"), //
+                        hasNote("Geb. Back Office extern"), //
+                        hasAmount("EUR", 1.29), hasGrossValue("EUR", 1.29), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2023-08-23"), hasAmount("EUR", 1000.00), //
@@ -3987,12 +3995,20 @@ public class OnvistaPDFExtractorTest
                         hasSource("Kontoauszug15.txt"), hasNote("Überweisungseingang SEPA"))));
 
         // assert transaction
-        assertThat(results, hasItem(interestCharge(hasDate("2016-08-31"), hasAmount("EUR", 0.03), //
-                        hasSource("Kontoauszug15.txt"), hasNote("Überziehungszinsen"))));
+        assertThat(results, hasItem(interestCharge( //
+                        hasDate("2016-08-31"), //
+                        hasSource("Kontoauszug15.txt"), //
+                        hasNote("Überziehungszinsen"), //
+                        hasAmount("EUR", 0.03), hasGrossValue("EUR", 0.03), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
-        assertThat(results, hasItem(interestCharge(hasDate("2016-09-30"), hasAmount("EUR", 0.03), //
-                        hasSource("Kontoauszug15.txt"), hasNote("Überziehungszinsen"))));
+        assertThat(results, hasItem(interestCharge( //
+                        hasDate("2016-09-30"), //
+                        hasSource("Kontoauszug15.txt"), //
+                        hasNote("Überziehungszinsen"), //
+                        hasAmount("EUR", 0.03), hasGrossValue("EUR", 0.03), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4018,8 +4034,12 @@ public class OnvistaPDFExtractorTest
         assertThat(results, hasItem(deposit(hasDate("2023-08-23"), hasAmount("EUR", 1000.00), //
                         hasSource("Kontoauszug16.txt"), hasNote("Überweisungseingang SEPA"))));
 
-        assertThat(results, hasItem(fee(hasDate("2023-07-06"), hasAmount("EUR", 1.29), //
-                        hasSource("Kontoauszug16.txt"), hasNote("Geb. Back Office extern"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2023-07-06"), //
+                        hasSource("Kontoauszug16.txt"), //
+                        hasNote("Geb. Back Office extern"), //
+                        hasAmount("EUR", 1.29), hasGrossValue("EUR", 1.29), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4042,13 +4062,25 @@ public class OnvistaPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check transaction
-        assertThat(results, hasItem(fee(hasDate("2018-04-04"), hasAmount("EUR", 0.70), //
-                        hasSource("Kontoauszug17.txt"), hasNote("Portogebühren 03/18"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2018-04-04"), //
+                        hasSource("Kontoauszug17.txt"), //
+                        hasNote("Portogebühren 03/18"), //
+                        hasAmount("EUR", 0.70), hasGrossValue("EUR", 0.70), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        assertThat(results, hasItem(fee(hasDate("2018-05-03"), hasAmount("EUR", 0.70), //
-                        hasSource("Kontoauszug17.txt"), hasNote("Portogebühren 04/18"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2018-05-03"), //
+                        hasSource("Kontoauszug17.txt"), //
+                        hasNote("Portogebühren 04/18"), //
+                        hasAmount("EUR", 0.70), hasGrossValue("EUR", 0.70), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        assertThat(results, hasItem(feeRefund(hasDate("2018-05-11"), hasAmount("EUR", 0.70), //
-                        hasSource("Kontoauszug17.txt"), hasNote("Storno: Portogebühren 04/18"))));
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2018-05-11"), //
+                        hasSource("Kontoauszug17.txt"), //
+                        hasNote("Storno: Portogebühren 04/18"), //
+                        hasAmount("EUR", 0.70), hasGrossValue("EUR", 0.70), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 }
