@@ -29,12 +29,12 @@ public class OpenBankSAPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("TRANSAKTIONSABRECHNUNG");
+        final var type = new DocumentType("TRANSAKTIONSABRECHNUNG");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^TRANSAKTIONSABRECHNUNG$");
+        var firstRelevantLine = new Block("^TRANSAKTIONSABRECHNUNG$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -42,12 +42,11 @@ public class OpenBankSAPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
-                        // Is type --> "Verkauf" change from BUY to SELL
+                        // Is type --> "Rückerstattung" or "Maximal verfügbare Erstattung" change from BUY to SELL
                         .section("type").optional() //
                         .match("^.* TRANSAKTION .* (?<type>(ZEICHNUNG|R.CKERSTATTUNG|MAXIMAL VERF.GBARE ERSTATTUNG))$") //
                         .assign((t, v) -> {
-                            if ("RÜCKERSTATTUNG".equals(v.get("type")) //
-                                            || "MAXIMAL VERFÜGBARE ERSTATTUNG".equals(v.get("type")))
+                            if (!"ZEICHNUNG".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
@@ -59,8 +58,8 @@ public class OpenBankSAPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("currency", "name", "isin") //
                         .match("^.*A([\\s]+)?N([\\s]+)?G([\\s]+)?E([\\s]+)?G([\\s]+)?E([\\s]+)?B([\\s]+)?E([\\s]+)?N[\\s]{1,}I([\\s]+)?N[\\s]{1,}:[\\s]{1,}" //
-                                        + "(?<currency>[\\w]{3})$") //
-                        .match("^.*D([\\s]+)?A([\\s]+)?T([\\s]+)?U([\\s]+)?M([\\s]+)?:[\\s]{1,}[\\d]{2}\\-[\\d]{2}-[\\d]{4}[\\s]{1,}" //
+                                        + "(?<currency>[A-Z]{3})$") //
+                        .match("^.*D([\\s]+)?A([\\s]+)?T([\\s]+)?U([\\s]+)?M([\\s]+)?:[\\s]{1,}[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}[\\s]{1,}" //
                                         + "(?<name>.*)[\\s]{1,}" //
                                         + "W([\\s]+)?E([\\s]+)?C([\\s]+)?H([\\s]+)?S([\\s]+)?E([\\s]+)?L([\\s]+)?K([\\s]+)?U([\\s]+)?R([\\s]+)?S([\\s]+)?:[\\s]{1,}[\\.,\\d]+$") //
                         .match("^.*I([\\s]+)?S([\\s]+)?I([\\s]+)?N([\\s]+)?:[\\s]{1,}" //
@@ -85,7 +84,7 @@ public class OpenBankSAPDFExtractor extends AbstractPDFExtractor
                         //     NETTOBETRAG                             10,00 EUR
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^.*NETTOBETRAG[\\s]{1,}(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^.*NETTOBETRAG[\\s]{1,}(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
