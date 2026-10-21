@@ -709,6 +709,17 @@ public final class CSVImporter
                 }
             }
 
+            // then: the enum constant's name, which does not depend on the locale
+
+            for (Map.Entry<M, String> entry : enumMap.entrySet())
+            {
+                if (source.equalsIgnoreCase(entry.getKey().name()))
+                {
+                    pos.setIndex(source.length());
+                    return entry.getKey();
+                }
+            }
+
             // second: try as pattern
 
             for (Map.Entry<M, String> entry : enumMap.entrySet())
