@@ -13,6 +13,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.contexts.RunAndTrack;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -20,11 +22,13 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
+import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.e4.ui.model.application.ui.menu.MDirectToolItem;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.workbench.modeling.IWindowCloseHandler;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.widgets.Display;
@@ -40,11 +44,43 @@ import name.abuchen.portfolio.ui.util.Colors;
 /**
  * Checks for updates in the background and, instead of interrupting the user
  * with a dialog, shows an unobtrusive button in the top right corner of the tab
- * folder. The version history is shown only if the user clicks that button.
+ * folder. The version history is shown only if the user clicks that button -
+ * or, if the update is still pending, when the user closes the application.
  */
 public class UpdateIndicatorAddon
 {
+    /**
+     * Wraps the close handler of a top-level window: once the window may be
+     * closed - i.e. the user has been asked to save the files - and it is the
+     * last window, the application is about to exit. Offer to install the
+     * pending update before that happens.
+     */
+    private final class PromptForUpdateCloseHandler implements IWindowCloseHandler
+    {
+        private final IWindowCloseHandler delegate;
+
+        private PromptForUpdateCloseHandler(IWindowCloseHandler delegate)
+        {
+            this.delegate = delegate;
+        }
+
+        @Override
+        public boolean close(MWindow window)
+        {
+            if (!delegate.close(window))
+                return false;
+
+            if (isLastWindow(window))
+                promptToInstallPendingUpdate(application);
+
+            return true;
+        }
+    }
+
     private static final String TAG_UPDATE_AVAILABLE = "UPDATE_AVAILABLE"; //$NON-NLS-1$
+
+    private static final String CLOSE_HANDLER_TRACKED = UpdateIndicatorAddon.class.getName()
+                    + ".closeHandlerTracked"; //$NON-NLS-1$
 
     private static final String ITEM_ID = "name.abuchen.portfolio.ui.toolitem.updateAvailable"; //$NON-NLS-1$
 
@@ -76,6 +112,13 @@ public class UpdateIndicatorAddon
 
         eventBroker.subscribe(UIEvents.UIElement.TOPIC_WIDGET, event -> {
             var element = event.getProperty(UIEvents.EventTags.ELEMENT);
+
+            if (element instanceof MWindow mWindow)
+            {
+                // offer the pending update when the last window is closed
+                trackCloseHandler(mWindow);
+                return;
+            }
 
             if (element instanceof MDirectToolItem mItem && mItem.getTags().contains(TAG_UPDATE_AVAILABLE))
             {
@@ -220,6 +263,73 @@ public class UpdateIndicatorAddon
         findIndicatorItems(modelService, application).forEach(item -> item.setVisible(false));
     }
 
+    /**
+     * Offers to install the update that the background check has found - if
+     * it is still pending - because the application is about to exit. Called
+     * after the user has been asked to save the files, either by the quit
+     * handler or when the last window is closed. The update is removed from
+     * the context before the dialog opens: the user is asked only once even if
+     * both run while the application is closing. The application exits in any
+     * case, no matter whether the update has been installed.
+     */
+    public static void promptToInstallPendingUpdate(MApplication application)
+    {
+        if (!isIndicatorEnabled())
+            return;
+
+        var context = application.getContext();
+        if (context == null)
+            return;
+
+        var update = context.get(AvailableUpdate.class);
+        if (update == null)
+            return;
+
+        context.remove(AvailableUpdate.class);
+
+        update.promptAndInstallLatestOnExit();
+    }
+
+    private void trackCloseHandler(MWindow window)
+    {
+        // only closing the last top-level window ends the application
+
+        if (!(modelService.getContainer(window) instanceof MApplication))
+            return;
+
+        var context = window.getContext();
+        if (context == null || context.getLocal(CLOSE_HANDLER_TRACKED) != null)
+            return;
+
+        context.set(CLOSE_HANDLER_TRACKED, Boolean.TRUE);
+
+        // the renderer sets its default close handler - which asks the user
+        // to save the files - while creating the window. Track the context to
+        // wrap whichever handler is set, also if it is replaced later on.
+
+        context.runAndTrack(new RunAndTrack()
+        {
+            @Override
+            public boolean changed(IEclipseContext trackedContext)
+            {
+                var handler = trackedContext.get(IWindowCloseHandler.class);
+
+                if (handler != null && !(handler instanceof PromptForUpdateCloseHandler))
+                    trackedContext.set(IWindowCloseHandler.class, new PromptForUpdateCloseHandler(handler));
+
+                return true;
+            }
+        });
+    }
+
+    private boolean isLastWindow(MWindow window)
+    {
+        // same condition the renderer uses to decide whether it only removes
+        // the window from the model or whether the application ends
+
+        return modelService.getContainer(window) instanceof MApplication app && app.getChildren().size() <= 1;
+    }
+
     private static List<MDirectToolItem> findIndicatorItems(EModelService modelService, MApplication application)
     {
         return modelService.findElements(application, MDirectToolItem.class, EModelService.IN_PART,
@@ -281,7 +391,7 @@ public class UpdateIndicatorAddon
             toolItem.setText(Messages.LabelUpdateAvailableShort);
     }
 
-    private boolean isIndicatorEnabled()
+    private static boolean isIndicatorEnabled()
     {
         return new Experiments().isEnabled(Experiments.Feature.AUG26_UNOBTRUSIVE_UPDATE_NOTIFICATION);
     }
