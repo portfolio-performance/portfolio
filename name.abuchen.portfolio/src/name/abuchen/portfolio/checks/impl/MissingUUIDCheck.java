@@ -16,7 +16,12 @@ public class MissingUUIDCheck implements Check
     @Override
     public List<Issue> execute(Client client)
     {
-        client.getSecurities().stream().filter(s -> s.getUUID() == null).forEach(s -> s.fixMissingUUID());
+        var securities = client.getSecurities().stream().filter(s -> s.getUUID() == null).toList();
+        securities.forEach(s -> s.fixMissingUUID());
+
+        if (!securities.isEmpty())
+            client.markDirty();
+
         return Collections.emptyList();
     }
 

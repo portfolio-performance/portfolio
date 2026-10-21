@@ -20,6 +20,8 @@ public class NullSecurityPricesCheck implements Check
     @Override
     public List<Issue> execute(Client client)
     {
+        boolean isDirty = false;
+
         for (Security security : client.getSecurities())
         {
             for (SecurityPrice price : security.getPrices())
@@ -27,6 +29,7 @@ public class NullSecurityPricesCheck implements Check
                 if (price == null)
                 {
                     security.removePrice(null);
+                    isDirty = true;
 
                     // multiple null values cannot exist due to the binary
                     // search / replacement logic that fails when adding the
@@ -36,6 +39,9 @@ public class NullSecurityPricesCheck implements Check
                 }
             }
         }
+
+        if (isDirty)
+            client.markDirty();
 
         return Collections.emptyList();
     }
