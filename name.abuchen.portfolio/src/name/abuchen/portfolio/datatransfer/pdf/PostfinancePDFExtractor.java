@@ -79,7 +79,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         .section("type").optional() //
                         .match("^(B.rsentransaktion|Transaktionsabrechnung): (?<type>(Kauf|Verkauf|Zeichnung|Fondssparplan|R.cknahme)).*$") //
                         .assign((t, v) -> {
-                            if (!"Kauf".equals(v.get("type")) && !"Zeichnung".equals(v.get("type")) && !"Fondssparplan".equals(v.get("type")))
+                            if (v.get("type").matches("^(Verkauf|R.cknahme)$"))
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
