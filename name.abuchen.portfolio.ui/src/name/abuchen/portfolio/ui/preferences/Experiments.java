@@ -13,7 +13,8 @@ public class Experiments
     public enum Feature
     {
         JULY26_PREVENT_UPDATE_WHILE_EDITING_CELLS, //
-        AUG26_UNOBTRUSIVE_UPDATE_NOTIFICATION
+        AUG26_UNOBTRUSIVE_UPDATE_NOTIFICATION, //
+        SEP26_IMPORT_PDF_TEXT_FILES
     }
 
     public boolean isEnabled(Feature feature)

@@ -56,10 +56,12 @@ public class DebitumPDFExtractorTest
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
-        assertThat(results, hasItem(deposit(hasDate("2025-11-30"), hasAmount("EUR", 4170.00),
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-11-30"), hasAmount("EUR", 4170.00), //
                         hasSource("AccountStatement01.txt"), hasNote(null))));
 
-        assertThat(results, hasItem(removal(hasDate("2025-11-30"), hasAmount("EUR", 2.00),
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-11-30"), hasAmount("EUR", 2.00), //
                         hasSource("AccountStatement01.txt"), hasNote(null))));
 
         // assert transaction

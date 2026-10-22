@@ -1,0 +1,47 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.82.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Deutsche Bank AG
+Zentrale Frankfurt 
+60262 Frankfurt
+ydYENY KGbAcMaUHRM 
+kTKgeLRBNJErk 01 Geschäftskundenberatung Süd 
+ A 
+45298 LvhgHE Telefon 06131 203-771
+24/7-Kundenservice (069) 910-10000
+20. März 2026
+Abrechnung: Kauf von Wertpapieren 
+Depotinhaber: GFjmGJ iPhmZPcQLXT
+Filialnummer Depotnummer Wertpapierbezeichnung Seite
+203 7761327 30 BIG YELLOW GROUP PLC RG.SH. LS 0,10 1/2
+WKN 539971 Nominal ST 400
+ISIN GB0002869419 Kurs EUR 10,60
+Verwahrart Wertpapierrechnung Großbritannien
+Geschäft Kommissionsgeschäft
+Börse Frankfurt - Deutsche Börse - Frankfurter Wertpapierbörse
+Belegnummer 6555923701 / 601948906 Schlusstag/-zeit MEZ 20.03.2026 / 12:53:58
+Auftragsart Limitauftrag
+Abrechnung Währung Betrag
+Kurswert EUR 4.240,00
+Provision EUR 10,60
+Weitere Provision der Bank bei der börslichen Orderausführung EUR 4,50
+Fremde Spesen und Auslagen EUR 3,12
+Belastung
+Buchung auf Kontonummer 8798962 59 mit Wertstellung 24.03.2026 EUR 4.258,22
+Summe der in der Abrechnung enthaltenen Provisionen und Auslagen EUR 18,22
+Zu dem abgerechneten Geschäft haben wir keine Empfehlung gegeben. Daher liegt keine entsprechende 
+Beratungsdokumentation vor.
+Vorsitzender des Aufsichtsrats: Alexander R. Wynaendts
+Vorstand: Christian Sewing (Vorsitzender), James von Moltke, Raja Akram, Fabrizio Campelli, Marcus Chromik, Bernd Leukert, Alexander von zur Mühlen, Laura Padovani, 
+Claudio de Sanctis, Rebecca Short
+Deutsche Bank Aktiengesellschaft mit Sitz in Frankfurt am Main; Amtsgericht Frankfurt am Main, HRB Nr. 30 000; Umsatzsteuer-Id.-Nr. DE114103379; www.db.com/de
+TR00000001 20077461 741_681_
+  
+Die Wertpapiere haben wir entsprechend der Abrechnung gebucht. Unser Geschäftsverkehr mit Ihnen wird durch unsere Allgemeinen Geschäftsbedingungen 
+und die Sonderbedingungen für Wertpapiergeschäfte geregelt. Bitte überprüfen Sie diese Abrechnung schnellstmöglich und richten Sie etwaige Einwendungen 
+in den Geschäftsräumen der Bank oder schriftlich an Deutsche Bank AG, QM - Support, 04082 Leipzig. Andernfalls gilt diese Abrechnung als genehmigt. 
+Die unter § 4 Nr. 8 UStG im Inland fallenden Bank- und Finanzdienstleistungen sind von der Umsatzsteuer befreit, sofern Umsatzsteuer nicht gesondert 
+ausgewiesen ist. Soweit der Leistungsempfänger umsatzsteuerlicher Unternehmer ist und seinen Sitz in einem anderen EU-Mitgliedstaat hat und die Bank 
+und Finanzdienstleistungen nach dortigem Recht umsatzsteuerpflichtig sind, gilt die Steuerschuldnerschaft des Leistungsempfängers. Umsatzsteuer ID Nr.: 
+Deutsche Bank AG, 60262 Frankfurt DE114103379

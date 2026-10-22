@@ -1,0 +1,29 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.82.1
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 1234567
+IBAN: PL0000000000000000000
+Herrn XGZda FgaCoJ
+RBtMgH lJK. 97
+DE-12758 QIpCnQKosAXz
+Gland, 17.03.2026
+Titelumbuchung Unsere Referenz: 9876543210 
+Wir haben folgende Transaktion auf Ihrem Konto vorgenommen, Valutadatum 17.03.2026:
+Titel
+Original Original Anzahl
+ROCHE GS ISIN: CH0012032048 8.493
+NKN: 1203204
+Bewegung Ratio Anzahl
+ROCHE GS ISIN: CH0012032048 - -8.493
+NKN: 1203204
+ROCHE PS ISIN: CH1499059983 1 : 1 8.493
+NKN: 
+Dieser Transaktionsbeleg sowie die aufgeführte Transaktion unterliegen unseren Allgemeinen Geschäftsbedingungen für Yuh Accounts und
+jeglichen Vereinbarungen, die Sie mit Swissquote Bank AG in Bezug auf Ihren Yuh Account abgeschlossen haben.
+Die Bankdienstleistungen für Yuh werden von Swissquote Bank AG erbracht, einer Bank,  Formular ohne Unterschrift | SE&O.
+die von der Eidgenössischen Finanzmarktaufsicht (FINMA) reguliert wird.
+Swissquote Bank AG, chemin de la Crétaux 33, CH-1196 Gland | Customer Care: +41 44 825 87 89
+MwSt n° CHE-116.310.079
+

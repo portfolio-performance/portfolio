@@ -54,12 +54,18 @@ public final class KrakenQuoteFeed implements QuoteFeed
     @Override
     public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse)
     {
-        LocalDate quoteStartDate = LocalDate.MIN;
+        return getHistoricalQuotes(security, collectRawResponse, startDate(security));
+    }
 
-        if (!security.getPrices().isEmpty())
-            quoteStartDate = security.getPrices().get(security.getPrices().size() - 1).getDate();
-
-        return getHistoricalQuotes(security, collectRawResponse, quoteStartDate);
+    /**
+     * The last stored price's day, or 1970-01-01 without prices: Kraken
+     * rejects a "since" before the epoch (LocalDate.MIN gave "EGeneral:Invalid
+     * arguments", so a security without prices never got any).
+     */
+    /* package */ static LocalDate startDate(Security security)
+    {
+        var prices = security.getPrices();
+        return prices.isEmpty() ? LocalDate.EPOCH : prices.get(prices.size() - 1).getDate();
     }
 
     @Override

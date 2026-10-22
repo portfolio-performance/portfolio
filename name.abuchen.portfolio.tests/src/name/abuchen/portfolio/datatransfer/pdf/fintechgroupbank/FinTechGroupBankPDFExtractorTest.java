@@ -23,6 +23,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interestCharge;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
@@ -41,9 +42,7 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertNull;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +50,6 @@ import org.junit.Test;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
-import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
@@ -63,19 +61,14 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
 
 @SuppressWarnings("nls")
 public class FinTechGroupBankPDFExtractorTest
 {
-    FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client())
+    FinTechGroupBankPDFExtractor cryptoExtractor = new FinTechGroupBankPDFExtractor(new Client())
     {
         @Override
         protected List<SecuritySearchProvider> lookupCryptoProvider()
@@ -104,92 +97,45 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE0005194062"));
-        assertThat(security.getWkn(), is("519406"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("BAYWA AG VINK.NA. O.N."));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0005194062"), hasWkn("519406"), hasTicker(null), //
+                        hasName("BAYWA AG VINK.NA. O.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0008402215"), hasWkn("840221"), hasTicker(null), //
+                        hasName("HANN.RUECK SE NA O.N."), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2014-01-28T12:50"), hasShares(150.00), //
+                        hasSource("FinTechSammelabrechnung01.txt"), //
+                        hasNote("Transaktion-Nr.: 678984193"), //
+                        hasAmount("EUR", 5893.10), hasGrossValue("EUR", 5887.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.90 + 1.00 + 1.00))));
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2014-01-28T12:58"), hasShares(100.00), //
+                        hasSource("FinTechSammelabrechnung01.txt"), //
+                        hasNote("Transaktion-Nr.: 678985130"), //
+                        hasAmount("EUR", 5954.80), hasGrossValue("EUR", 5948.90), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.90 + 1.00 + 1.00))));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2014-01-28T12:50")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(150)));
-        assertThat(entry.getSource(), is("FinTechSammelabrechnung01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 678984193"));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2014-01-28T12:58"), hasShares(100.00), //
+                        hasSource("FinTechSammelabrechnung01.txt"), //
+                        hasNote("Transaktion-Nr.: 678985130"), //
+                        hasAmount("EUR", 5943.00), hasGrossValue("EUR", 5948.90), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.90 + 1.00 + 1.00))));
 
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(5893.10))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(5887.20))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(3.90 + 1.00 + 1.00))));
-
-        // check 2st buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2014-01-28T12:58")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
-        assertThat(entry.getSource(), is("FinTechSammelabrechnung01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 678985130"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(5954.80))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(5948.90))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
-
-        // check 3rd buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(2).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2014-01-28T12:58")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
-        assertThat(entry.getSource(), is("FinTechSammelabrechnung01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 678985130"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(5943.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(5948.90))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
-
-        // check tax-refund in 3rd buy sell transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-01-28T12:58")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
-        assertThat(transaction.getSource(), is("FinTechSammelabrechnung01.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 678985130"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(100.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(100.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2014-01-28T12:58"), hasShares(100.00), //
+                        hasSource("FinTechSammelabrechnung01.txt"), //
+                        hasNote("Transaktion-Nr.: 678985130"), //
+                        hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -212,223 +158,126 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE000CQ0U7Z4"));
-        assertThat(security.getWkn(), is("CQ0U7Z"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("CITI.GL.M. CALL19 MGA"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000CQ0U7Z4"), hasWkn("CQ0U7Z"), hasTicker(null), //
+                        hasName("CITI.GL.M. CALL19 MGA"), //
+                        hasCurrencyCode("EUR"))));
 
-        // check 1st buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000CY1SEV5"), hasWkn("CY1SEV"), hasTicker(null), //
+                        hasName("CITI.GL.M. CALL19 NVD"), //
+                        hasCurrencyCode("EUR"))));
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000CY49224"), hasWkn("CY4922"), hasTicker(null), //
+                        hasName("CITI.GL.M. CALL19 AZ5"), //
+                        hasCurrencyCode("EUR"))));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-11-01T14:41")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4550.00)));
-        assertThat(entry.getSource(), is("FinTechSammelabrechnung02.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1301138113"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000CQ0J2E5"), hasWkn("CQ0J2E"), hasTicker(null), //
+                        hasName("CITI.GL.M. CALL19 XIX"), //
+                        hasCurrencyCode("EUR"))));
 
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(3008.90))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(3003.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000CQ0L8X8"), hasWkn("CQ0L8X"), hasTicker(null), //
+                        hasName("CITI.GL.M. CALL19 IUI1"), //
+                        hasCurrencyCode("EUR"))));
 
-        // check 2st buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000TD53H52"), hasWkn("TD53H5"), hasTicker(null), //
+                        hasName("HSBC T+B CALL19 HDI"), //
+                        hasCurrencyCode("EUR"))));
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000DM6DCB5"), hasWkn("DM6DCB"), hasTicker(null), //
+                        hasName("DEUT.BANK CALL19 MSF"), //
+                        hasCurrencyCode("EUR"))));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-11-01T14:46")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(745)));
-        assertThat(entry.getSource(), is("FinTechSammelabrechnung02.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1301140879"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000CQ0LAL1"), hasWkn("CQ0LAL"), hasTicker(null), //
+                        hasName("CITI.GL.M. CALL19 MCP"), //
+                        hasCurrencyCode("EUR"))));
 
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(3000.80))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(2994.90))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000TD53FP5"), hasWkn("TD53FP"), hasTicker(null), //
+                        hasName("HSBC T+B CALL19 FB2A"), //
+                        hasCurrencyCode("EUR"))));
 
-        // check 3rd buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(2).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000TD752U9"), hasWkn("TD752U"), hasTicker(null), //
+                        hasName("HSBC T+B CALL19 TL0"), //
+                        hasCurrencyCode("EUR"))));
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2017-11-01T14:41"), hasShares(4550.00), //
+                        hasSource("FinTechSammelabrechnung02.txt"), //
+                        hasNote("Transaktion-Nr.: 1301138113"), //
+                        hasAmount("EUR", 3008.90), hasGrossValue("EUR", 3003.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90))));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-11-01T14:46")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4100)));
-        assertThat(entry.getSource(), is("FinTechSammelabrechnung02.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1301141388"));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2017-11-01T14:46"), hasShares(745.00), //
+                        hasSource("FinTechSammelabrechnung02.txt"), //
+                        hasNote("Transaktion-Nr.: 1301140879"), //
+                        hasAmount("EUR", 3000.80), hasGrossValue("EUR", 2994.90), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90))));
 
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(3039.90))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(3034.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2017-11-01T14:46"), hasShares(4100.00), //
+                        hasSource("FinTechSammelabrechnung02.txt"), //
+                        hasNote("Transaktion-Nr.: 1301141388"), //
+                        hasAmount("EUR", 3039.90), hasGrossValue("EUR", 3034.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90))));
 
-        // check 4rd buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(3).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2017-11-01T14:48"), hasShares(2870.00), //
+                        hasSource("FinTechSammelabrechnung02.txt"), //
+                        hasNote("Transaktion-Nr.: 1301141655"), //
+                        hasAmount("EUR", 3019.40), hasGrossValue("EUR", 3013.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90))));
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2017-11-01T14:51"), hasShares(4300.00), //
+                        hasSource("FinTechSammelabrechnung02.txt"), //
+                        hasNote("Transaktion-Nr.: 1301143554"), //
+                        hasAmount("EUR", 3015.90), hasGrossValue("EUR", 3010.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90))));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-11-01T14:48")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2870)));
-        assertThat(entry.getSource(), is("FinTechSammelabrechnung02.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1301141655"));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2017-11-01T14:53"), hasShares(2050.00), //
+                        hasSource("FinTechSammelabrechnung02.txt"), //
+                        hasNote("Transaktion-Nr.: 1301143813"), //
+                        hasAmount("EUR", 3019.40), hasGrossValue("EUR", 3013.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90))));
 
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(3019.40))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(3013.50))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2017-11-01T15:09"), hasShares(2470.00), //
+                        hasSource("FinTechSammelabrechnung02.txt"), //
+                        hasNote("Transaktion-Nr.: 1301160198"), //
+                        hasAmount("EUR", 2992.60), hasGrossValue("EUR", 2988.70), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.90))));
 
-        // check 5th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(4).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2017-11-01T15:30"), hasShares(2280.00), //
+                        hasSource("FinTechSammelabrechnung02.txt"), //
+                        hasNote("Transaktion-Nr.: 1301175761"), //
+                        hasAmount("EUR", 3015.50), hasGrossValue("EUR", 3009.60), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90))));
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2017-11-01T15:31"), hasShares(1145.00), //
+                        hasSource("FinTechSammelabrechnung02.txt"), //
+                        hasNote("Transaktion-Nr.: 1301175892"), //
+                        hasAmount("EUR", 3017.25), hasGrossValue("EUR", 3011.35), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90))));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-11-01T14:51")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4300)));
-        assertThat(entry.getSource(), is("FinTechSammelabrechnung02.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1301143554"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(3015.90))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(3010.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
-
-        // check 6th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(5).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-11-01T14:53")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2050)));
-        assertThat(entry.getSource(), is("FinTechSammelabrechnung02.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1301143813"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(3019.40))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(3013.50))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
-
-        // check 7th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(6).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-11-01T15:09")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2470)));
-        assertThat(entry.getSource(), is("FinTechSammelabrechnung02.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1301160198"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(2992.60))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(2988.70))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(3.90))));
-
-        // check 8th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(7).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-11-01T15:30")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2280)));
-        assertThat(entry.getSource(), is("FinTechSammelabrechnung02.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1301175761"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(3015.50))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(3009.60))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
-
-        // check 9th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(8).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-11-01T15:31")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1145)));
-        assertThat(entry.getSource(), is("FinTechSammelabrechnung02.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1301175892"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(3017.25))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(3011.35))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
-
-        // check 10th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(9).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-11-01T15:52")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1247)));
-        assertThat(entry.getSource(), is("FinTechSammelabrechnung02.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1301188569"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(5417.88))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(5411.98))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2017-11-01T15:52"), hasShares(1247.00), //
+                        hasSource("FinTechSammelabrechnung02.txt"), //
+                        hasNote("Transaktion-Nr.: 1301188569"), //
+                        hasAmount("EUR", 5417.88), hasGrossValue("EUR", 5411.98), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90))));
     }
 
     @Test
@@ -451,33 +300,18 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE000A1MECS1"));
-        assertThat(security.getWkn(), is("A1MECS"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("SOURCE PHY.MRKT.ETC00 XAU"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000A1MECS1"), hasWkn("A1MECS"), hasTicker(null), //
+                        hasName("SOURCE PHY.MRKT.ETC00 XAU"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-01-09T15:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.025361)));
-        assertThat(entry.getSource(), is("FinTechSammelabrechnung03.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1344625752"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(2.72))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(2.72))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2018-01-09T15:00"), hasShares(0.025361), //
+                        hasSource("FinTechSammelabrechnung03.txt"), //
+                        hasNote("Transaktion-Nr.: 1344625752"), //
+                        hasAmount("EUR", 2.72), hasGrossValue("EUR", 2.72), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -500,34 +334,18 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE0001234567"));
-        assertThat(security.getWkn(), is("DS5WKN"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("DEUT.BANK CALL20 BBB"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0001234567"), hasWkn("DS5WKN"), hasTicker(null), //
+                        hasName("DEUT.BANK CALL20 BBB"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-08-13T16:20")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2000)));
-        assertThat(entry.getSource(), is("FinTechSammelabrechnung04.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1234567895"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1023.90))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(1020.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(3.90))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2018-08-13T16:20"), hasShares(2000.00), //
+                        hasSource("FinTechSammelabrechnung04.txt"), //
+                        hasNote("Transaktion-Nr.: 1234567895"), //
+                        hasAmount("EUR", 1023.90), hasGrossValue("EUR", 1020.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.90))));
     }
 
     @Test
@@ -550,113 +368,52 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE000VN4LAU4"));
-        assertThat(security.getWkn(), is("VN4LAU"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("VONT.FINL PR CALL17 DAX"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000VN4LAU4"), hasWkn("VN4LAU"), hasTicker(null), //
+                        hasName("VONT.FINL PR CALL17 DAX"), //
+                        hasCurrencyCode("EUR"))));
 
-        // check 1st buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000VN547F8"), hasWkn("VN547F"), hasTicker(null), //
+                        hasName("VONT.FINL PR PUT17 DAX"), //
+                        hasCurrencyCode("EUR"))));
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2017-01-02T13:15"), hasShares(1750.00), //
+                        hasSource("FinTechSammelabrechnung05.txt"), //
+                        hasNote("Transaktion-Nr.: 1147218952"), //
+                        hasAmount("EUR", 1036.40), hasGrossValue("EUR", 1032.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.90))));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-01-02T13:15")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1750)));
-        assertThat(entry.getSource(), is("FinTechSammelabrechnung05.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1147218952"));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2017-01-02T14:55"), hasShares(1250.00), //
+                        hasSource("FinTechSammelabrechnung05.txt"), //
+                        hasNote("Transaktion-Nr.: 1147259184"), //
+                        hasAmount("EUR", 1003.90), hasGrossValue("EUR", 1000.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.90))));
 
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1036.40))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(1032.50))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(3.90))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2017-01-02T16:00"), hasShares(1750.00), //
+                        hasSource("FinTechSammelabrechnung05.txt"), //
+                        hasNote("Transaktion-Nr.: 1147293642"), //
+                        hasAmount("EUR", 1232.40), hasGrossValue("EUR", 1312.50), //
+                        hasTaxes("EUR", 76.20), hasFees("EUR", 3.90))));
 
-        // check 2st buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(results, hasItem(sale( //
+                        hasDate("2017-01-02T16:07"), hasShares(1250.00), //
+                        hasSource("FinTechSammelabrechnung05.txt"), //
+                        hasNote("Transaktion-Nr.: 1147294899"), //
+                        hasAmount("EUR", 844.10), hasGrossValue("EUR", 850.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90))));
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-01-02T14:55")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1250)));
-        assertThat(entry.getSource(), is("FinTechSammelabrechnung05.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1147259184"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1003.90))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(1000.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(3.90))));
-
-        // check 3rd buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(2).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-01-02T16:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1750)));
-        assertThat(entry.getSource(), is("FinTechSammelabrechnung05.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1147293642"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1232.40))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(1312.50))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(76.20))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(3.90))));
-
-        // check 4rd buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(3).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-01-02T16:07")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1250)));
-        assertThat(entry.getSource(), is("FinTechSammelabrechnung05.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1147294899"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(844.10))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(850.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
-
-        // check tax-refund in 4rd buy sell transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-01-02T16:07")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(1250)));
-        assertThat(transaction.getSource(), is("FinTechSammelabrechnung05.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 1147294899"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(44.72))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(44.72))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2017-01-02T16:07"), hasShares(1250.00), //
+                        hasSource("FinTechSammelabrechnung05.txt"), //
+                        hasNote("Transaktion-Nr.: 1147294899"), //
+                        hasAmount("EUR", 44.72), hasGrossValue("EUR", 44.72), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -679,50 +436,26 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE000SKWM021"));
-        assertThat(security.getWkn(), is("SKWM02"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("SKW STAHL-METAL.HLDG.NA"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000SKWM021"), hasWkn("SKWM02"), hasTicker(null), //
+                        hasName("SKW STAHL-METAL.HLDG.NA"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(results, hasItem(sale( //
+                        hasDate("2016-09-08T08:32"), hasShares(460.00), //
+                        hasSource("FinTechSammelabrechnung06.txt"), //
+                        hasNote("Transaktion-Nr.: 1087224318"), //
+                        hasAmount("EUR", 1253.15), hasGrossValue("EUR", 1265.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.00 + 6.85))));
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-09-08T08:32")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(460)));
-        assertThat(entry.getSource(), is("FinTechSammelabrechnung06.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1087224318"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1253.15))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(1265.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(5.00 + 6.85))));
-
-        // check tax-refund buy sell transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-09-08T08:32")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(460)));
-        assertThat(transaction.getSource(), is("FinTechSammelabrechnung06.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 1087224318"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(463.04))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(463.04))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2016-09-08T08:32"), hasShares(460.00), //
+                        hasSource("FinTechSammelabrechnung06.txt"), //
+                        hasNote("Transaktion-Nr.: 1087224318"), //
+                        hasAmount("EUR", 463.04), hasGrossValue("EUR", 463.04), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -815,34 +548,18 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("LU0392495023"));
-        assertThat(security.getWkn(), is("ETF114"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("C.S.-MSCI PACIF.T.U.ETF I"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0392495023"), hasWkn("ETF114"), hasTicker(null), //
+                        hasName("C.S.-MSCI PACIF.T.U.ETF I"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-12-03T13:59")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10)));
-        assertThat(entry.getSource(), is("biwAGKauf01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 999999999"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(50.30))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(44.40))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2015-12-03T13:59"), hasShares(10.00), //
+                        hasSource("biwAGKauf01.txt"), //
+                        hasNote("Transaktion-Nr.: 999999999"), //
+                        hasAmount("EUR", 50.30), hasGrossValue("EUR", 44.40), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90))));
     }
 
     @Test
@@ -865,34 +582,18 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("LU0378438732"));
-        assertThat(security.getWkn(), is("ETF001"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("COMST.-DAX TR UCITS ETF I"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0378438732"), hasWkn("ETF001"), hasTicker(null), //
+                        hasName("COMST.-DAX TR UCITS ETF I"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-08-01T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.460378)));
-        assertThat(entry.getSource(), is("biwAGKauf02.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1071613216"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(250.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(250.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2016-08-01T00:00"), hasShares(2.460378), //
+                        hasSource("biwAGKauf02.txt"), //
+                        hasNote("Transaktion-Nr.: 1071613216"), //
+                        hasAmount("EUR", 250.00), hasGrossValue("EUR", 250.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -915,29 +616,18 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE000US9RGR9"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("UBS AG LONDON 14/16 RWE"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000US9RGR9"), hasWkn(null), hasTicker(null), //
+                        hasName("UBS AG LONDON 14/16 RWE"), //
+                        hasCurrencyCode("EUR"))));
 
         // check delivery inbound (Einlieferung) transaction
-        var entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-
-        assertThat(entry.getDateTime(), is(LocalDateTime.parse("2015-11-24T00:00")));
-        assertThat(entry.getShares(), is(Values.Share.factorize(250)));
-        assertThat(entry.getSource(), is("biwAGWertpapierEingang01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 952921288"));
-
-        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(7517.50))));
-        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(7517.50))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(inboundDelivery( //
+                        hasDate("2015-11-24T00:00"), hasShares(250.00), //
+                        hasSource("biwAGWertpapierEingang01.txt"), //
+                        hasNote("Transaktion-Nr.: 952921288"), //
+                        hasAmount("EUR", 7517.50), hasGrossValue("EUR", 7517.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1015,29 +705,21 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
-        // check transaction
-        var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(2L));
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2014-11-12"), //
+                        hasSource("biwAGKontoauszug01.txt"), //
+                        hasNote("Gebühr Kapitaltransaktion Ausland ISIN12345678"), //
+                        hasAmount("EUR", 4.56), hasGrossValue("EUR", 4.56), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        var item = iter.next();
-
-        // assert transaction
-        var transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-11-12T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(4.56))));
-        assertThat(transaction.getSource(), is("biwAGKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Gebühr Kapitaltransaktion Ausland ISIN12345678"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-12-31T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(7.89))));
-        assertThat(transaction.getSource(), is("biwAGKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Zinsabschluss 01.10.2014 - 31.12.2014"));
+        // check interest transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2014-12-31"), //
+                        hasSource("biwAGKontoauszug01.txt"), //
+                        hasNote("Zinsabschluss 01.10.2014 - 31.12.2014"), //
+                        hasAmount("EUR", 7.89), hasGrossValue("EUR", 7.89), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1084,21 +766,36 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2013-01-28"), hasAmount("EUR", 10.00), //
-                        hasSource("biwAGKontoauszug03.txt"), hasNote("flatex trader 2.0 Basis"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2013-01-28"), //
+                        hasSource("biwAGKontoauszug03.txt"), //
+                        hasNote("flatex trader 2.0 Basis"), //
+                        hasAmount("EUR", 10.00), hasGrossValue("EUR", 10.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2013-02-14"), hasAmount("EUR", 1.50), //
-                        hasSource("biwAGKontoauszug03.txt"),
-                        hasNote("Gebühr Kapitaltransaktion Ausland US0378331005"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2013-02-14"), //
+                        hasSource("biwAGKontoauszug03.txt"), //
+                        hasNote("Gebühr Kapitaltransaktion Ausland US0378331005"), //
+                        hasAmount("EUR", 1.50), hasGrossValue("EUR", 1.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2013-03-01"), hasAmount("EUR", 10.00), //
-                        hasSource("biwAGKontoauszug03.txt"), hasNote("flatex trader 2.0 Basis"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2013-03-01"), //
+                        hasSource("biwAGKontoauszug03.txt"), //
+                        hasNote("flatex trader 2.0 Basis"), //
+                        hasAmount("EUR", 10.00), hasGrossValue("EUR", 10.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2013-03-28"), hasAmount("EUR", 10.00), //
-                        hasSource("biwAGKontoauszug03.txt"), hasNote("flatex trader 2.0 Basis"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2013-03-28"), //
+                        hasSource("biwAGKontoauszug03.txt"), //
+                        hasNote("flatex trader 2.0 Basis"), //
+                        hasAmount("EUR", 10.00), hasGrossValue("EUR", 10.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check skipped item
         assertThat(results, hasItem(skippedItem( //
@@ -1131,34 +828,18 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("IE00B2QWCY14"));
-        assertThat(security.getWkn(), is("A0Q1YY"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("ISHSIII-S+P SM.CAP600 DLD"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B2QWCY14"), hasWkn("A0Q1YY"), hasTicker(null), //
+                        hasName("ISHSIII-S+P SM.CAP600 DLD"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-12-15T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(19.334524)));
-        assertThat(entry.getSource(), is("FinTechKauf01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1137201681"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1050.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(1050.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2016-12-15T00:00"), hasShares(19.334524), //
+                        hasSource("FinTechKauf01.txt"), //
+                        hasNote("Transaktion-Nr.: 1137201681"), //
+                        hasAmount("EUR", 1050.00), hasGrossValue("EUR", 1050.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1181,34 +862,18 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("LU0392494992"));
-        assertThat(security.getWkn(), is("ETF113"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("C.-MSCI NO.AM.TRN U.ETF I"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0392494992"), hasWkn("ETF113"), hasTicker(null), //
+                        hasName("C.-MSCI NO.AM.TRN U.ETF I"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-06-16T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(13.268957)));
-        assertThat(entry.getSource(), is("FinTechKauf02.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1234211246"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(800.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(800.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2017-06-16T00:00"), hasShares(13.268957), //
+                        hasSource("FinTechKauf02.txt"), //
+                        hasNote("Transaktion-Nr.: 1234211246"), //
+                        hasAmount("EUR", 800.00), hasGrossValue("EUR", 800.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1231,34 +896,18 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("LU0328475792"));
-        assertThat(security.getWkn(), is("DBX1A7"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("DB X-TR.S.E.600U.E.(DR)1C"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0328475792"), hasWkn("DBX1A7"), hasTicker(null), //
+                        hasName("DB X-TR.S.E.600U.E.(DR)1C"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-06-15T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5.082011)));
-        assertThat(entry.getSource(), is("FinTechKauf03.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1233799247"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(400.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(400.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2017-06-15T00:00"), hasShares(5.082011), //
+                        hasSource("FinTechKauf03.txt"), //
+                        hasNote("Transaktion-Nr.: 1233799247"), //
+                        hasAmount("EUR", 400.00), hasGrossValue("EUR", 400.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1281,34 +930,18 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("IE00B2NPKV68"));
-        assertThat(security.getWkn(), is("A0NECU"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("ISHSII-JPM DL EM BD DLDIS"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B2NPKV68"), hasWkn("A0NECU"), hasTicker(null), //
+                        hasName("ISHSII-JPM DL EM BD DLDIS"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-06-15T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(9.703363)));
-        assertThat(entry.getSource(), is("FinTechKauf04.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1234387912"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1000.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(999.10))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.90))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2017-06-15T00:00"), hasShares(9.703363), //
+                        hasSource("FinTechKauf04.txt"), //
+                        hasNote("Transaktion-Nr.: 1234387912"), //
+                        hasAmount("EUR", 1000.00), hasGrossValue("EUR", 999.10), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.90))));
     }
 
     @Test
@@ -1331,33 +964,18 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("IE00B3S5XW04"));
-        assertThat(security.getWkn(), is("A1JJTP"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("SPDR BARC.EO.GOV.BD ETF"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B3S5XW04"), hasWkn("A1JJTP"), hasTicker(null), //
+                        hasName("SPDR BARC.EO.GOV.BD ETF"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-01-09T15:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.099044)));
-        assertThat(entry.getSource(), is("FinTechKauf05.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1344974056"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(6.16))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(6.16))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2018-01-09T15:00"), hasShares(0.099044), //
+                        hasSource("FinTechKauf05.txt"), //
+                        hasNote("Transaktion-Nr.: 1344974056"), //
+                        hasAmount("EUR", 6.16), hasGrossValue("EUR", 6.16), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1380,34 +998,18 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("LU0274211480"));
-        assertThat(security.getWkn(), is("DBX1DA"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("DB X-TRACK.DAX ETF(DR)1C"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0274211480"), hasWkn("DBX1DA"), hasTicker(null), //
+                        hasName("DB X-TRACK.DAX ETF(DR)1C"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-01-02T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7.979324)));
-        assertThat(entry.getSource(), is("FinTechKauf06.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1342424242"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1000.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(1000.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2018-01-02T00:00"), hasShares(7.979324), //
+                        hasSource("FinTechKauf06.txt"), //
+                        hasNote("Transaktion-Nr.: 1342424242"), //
+                        hasAmount("EUR", 1000.00), hasGrossValue("EUR", 1000.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1430,34 +1032,18 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("IE00B6YX5D40"));
-        assertThat(security.getWkn(), is("A1JKS0"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("SPDR S+P US DIV.ARIST.ETF"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B6YX5D40"), hasWkn("A1JKS0"), hasTicker(null), //
+                        hasName("SPDR S+P US DIV.ARIST.ETF"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-01-02T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(22.973458)));
-        assertThat(entry.getSource(), is("FinTechKauf07.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1340886542"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1000.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(998.50))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(1.50))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2018-01-02T00:00"), hasShares(22.973458), //
+                        hasSource("FinTechKauf07.txt"), //
+                        hasNote("Transaktion-Nr.: 1340886542"), //
+                        hasAmount("EUR", 1000.00), hasGrossValue("EUR", 998.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.50))));
     }
 
     @Test
@@ -1480,34 +1066,18 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("LU0635178014"));
-        assertThat(security.getWkn(), is("ETF127"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("COMS.-MSCI EM.M.T.U.ETF I"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0635178014"), hasWkn("ETF127"), hasTicker(null), //
+                        hasName("COMS.-MSCI EM.M.T.U.ETF I"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-01-03T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.43414)));
-        assertThat(entry.getSource(), is("FinTechKauf08.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1555928306"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(52.50))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(52.50))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2019-01-03T00:00"), hasShares(1.43414), //
+                        hasSource("FinTechKauf08.txt"), //
+                        hasNote("Transaktion-Nr.: 1555928306"), //
+                        hasAmount("EUR", 52.50), hasGrossValue("EUR", 52.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1530,34 +1100,18 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("IE00BF2B0K52"));
-        assertThat(security.getWkn(), is("A2DTF1"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("FRAN.LIB.Q EM EQ.UC.DLA"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BF2B0K52"), hasWkn("A2DTF1"), hasTicker(null), //
+                        hasName("FRAN.LIB.Q EM EQ.UC.DLA"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-01-17T17:52")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(61)));
-        assertThat(entry.getSource(), is("FinTechKauf09.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1111111111"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1279.55))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(1270.94))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(5.90 + 2.71))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2019-01-17T17:52"), hasShares(61.00), //
+                        hasSource("FinTechKauf09.txt"), //
+                        hasNote("Transaktion-Nr.: 1111111111"), //
+                        hasAmount("EUR", 1279.55), hasGrossValue("EUR", 1270.94), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.71))));
     }
 
     @Test
@@ -1580,50 +1134,26 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("LU0392494562"));
-        assertThat(security.getWkn(), is("ETF110"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("COMS.-MSCI WORL.T.U.ETF I"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0392494562"), hasWkn("ETF110"), hasTicker(null), //
+                        hasName("COMS.-MSCI WORL.T.U.ETF I"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-04T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(8.205431)));
-        assertThat(entry.getSource(), is("FinTechKauf10.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1321692761"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(400.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(400.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2017-12-04T00:00"), hasShares(8.205431), //
+                        hasSource("FinTechKauf10.txt"), //
+                        hasNote("Transaktion-Nr.: 1321692761"), //
+                        hasAmount("EUR", 400.00), hasGrossValue("EUR", 400.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check tax refund transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-04T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(8.205431)));
-        assertThat(transaction.getSource(), is("FinTechKauf10.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 1321692761"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.01))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.01))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2017-12-04T00:00"), hasShares(8.205431), //
+                        hasSource("FinTechKauf10.txt"), //
+                        hasNote("Transaktion-Nr.: 1321692761"), //
+                        hasAmount("EUR", 0.01), hasGrossValue("EUR", 0.01), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1684,34 +1214,18 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE000US9RGR9"));
-        assertThat(security.getWkn(), is("US9RGR"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("UBS AG LONDON 14/16 RWE"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000US9RGR9"), hasWkn("US9RGR"), hasTicker(null), //
+                        hasName("UBS AG LONDON 14/16 RWE"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-01-22T16:14")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(250)));
-        assertThat(entry.getSource(), is("FinTechVerkauf01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 980001189"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(16508.16))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(16514.06))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2016-01-22T16:14"), hasShares(250.00), //
+                        hasSource("FinTechVerkauf01.txt"), //
+                        hasNote("Transaktion-Nr.: 980001189 | Zinsbetrag 9.264,06 EUR"), //
+                        hasAmount("EUR", 16508.16), hasGrossValue("EUR", 16514.06), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90))));
     }
 
     @Test
@@ -1734,34 +1248,18 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE0009807008"));
-        assertThat(security.getWkn(), is("980700"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("GRUNDBESITZ EUROPA RC"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0009807008"), hasWkn("980700"), hasTicker(null), //
+                        hasName("GRUNDBESITZ EUROPA RC"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-07-04T14:23")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(121)));
-        assertThat(entry.getSource(), is("FinTechVerkauf02.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1242877942"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(4840.15))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(4846.05))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2017-07-04T14:23"), hasShares(121.00), //
+                        hasSource("FinTechVerkauf02.txt"), //
+                        hasNote("Transaktion-Nr.: 1242877942"), //
+                        hasAmount("EUR", 4840.15), hasGrossValue("EUR", 4846.05), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90))));
     }
 
     @Test
@@ -1784,33 +1282,18 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("IE00B53HP851"));
-        assertThat(security.getWkn(), is("A0YEDM"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("ISHSVII-FTSE 100 LS ACC"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B53HP851"), hasWkn("A0YEDM"), hasTicker(null), //
+                        hasName("ISHSVII-FTSE 100 LS ACC"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-01-09T15:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.007229)));
-        assertThat(entry.getSource(), is("FinTechVerkauf03.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1344971210"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.95))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.95))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2018-01-09T15:00"), hasShares(0.007229), //
+                        hasSource("FinTechVerkauf03.txt"), //
+                        hasNote("Transaktion-Nr.: 1344971210"), //
+                        hasAmount("EUR", 0.95), hasGrossValue("EUR", 0.95), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1833,34 +1316,18 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("IE00BKWQ0D84"));
-        assertThat(security.getWkn(), is("A1191N"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("SSGA S.E.E.II-M.EU.CON.S."));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BKWQ0D84"), hasWkn("A1191N"), hasTicker(null), //
+                        hasName("SSGA S.E.E.II-M.EU.CON.S."), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-02-06T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.089051)));
-        assertThat(entry.getSource(), is("FinTechVerkauf04.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1574141471"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(9.48))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(15.38))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2019-02-06T00:00"), hasShares(0.089051), //
+                        hasSource("FinTechVerkauf04.txt"), //
+                        hasNote("Transaktion-Nr.: 1574141471"), //
+                        hasAmount("EUR", 9.48), hasGrossValue("EUR", 15.38), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90))));
     }
 
     @Test
@@ -1883,30 +1350,19 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE0008402215"));
-        assertThat(security.getWkn(), is("840221"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("HANN.RUECK SE NA O.N."));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0008402215"), hasWkn("840221"), hasTicker(null), //
+                        hasName("HANN.RUECK SE NA O.N."), //
+                        hasCurrencyCode("EUR"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-05-08T00:00")));
-        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2014-05-08T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(360)));
-        assertThat(transaction.getSource(), is("FinTechDividende01.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 716759781"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(795.15))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(1080.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(284.85))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2014-05-08T00:00"), hasExDate("2014-05-08"), //
+                        hasShares(360.00), //
+                        hasSource("FinTechDividende01.txt"), //
+                        hasNote("Transaktion-Nr.: 716759781"), //
+                        hasAmount("EUR", 795.15), hasGrossValue("EUR", 1080.00), //
+                        hasTaxes("EUR", 284.85), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1929,30 +1385,19 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE1234567890"));
-        assertThat(security.getWkn(), is("AB1234"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("ISH.FOOBAR 12345666 x.EFT"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE1234567890"), hasWkn("AB1234"), hasTicker(null), //
+                        hasName("ISH.FOOBAR 12345666 x.EFT"), //
+                        hasCurrencyCode("EUR"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-01-15T00:00")));
-        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2014-01-15T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(99)));
-        assertThat(transaction.getSource(), is("FinTechDividende02.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 111111111"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(55.55))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(77.77))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(22.22))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2014-01-15T00:00"), hasExDate("2014-01-15"), //
+                        hasShares(99.00), //
+                        hasSource("FinTechDividende02.txt"), //
+                        hasNote("Transaktion-Nr.: 111111111"), //
+                        hasAmount("EUR", 55.55), hasGrossValue("EUR", 77.77), //
+                        hasTaxes("EUR", 22.22), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1975,30 +1420,19 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE0006335003"));
-        assertThat(security.getWkn(), is("633500"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("KRONES AG O.N."));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0006335003"), hasWkn("633500"), hasTicker(null), //
+                        hasName("KRONES AG O.N."), //
+                        hasCurrencyCode("EUR"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-06-23T00:00")));
-        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2017-06-21T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(15)));
-        assertThat(transaction.getSource(), is("FinTechDividende03.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 1236644834"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(17.13))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(23.25))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(6.12))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2017-06-23T00:00"), hasExDate("2017-06-21"), //
+                        hasShares(15.00), //
+                        hasSource("FinTechDividende03.txt"), //
+                        hasNote("Transaktion-Nr.: 1236644834"), //
+                        hasAmount("EUR", 17.13), hasGrossValue("EUR", 23.25), //
+                        hasTaxes("EUR", 6.12), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -2021,34 +1455,20 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("US8552441094"));
-        assertThat(security.getWkn(), is("884437"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("STARBUCKS CORP."));
-        assertThat(security.getCurrencyCode(), is("USD"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("US8552441094"), hasWkn("884437"), hasTicker(null), //
+                        hasName("STARBUCKS CORP."), //
+                        hasCurrencyCode("USD"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-08-25T00:00")));
-        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2017-08-08T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(105)));
-        assertThat(transaction.getSource(), is("FinTechDividende04.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(14.45))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(22.23))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(1.11 + (7.88 / 1.1808)))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(26.25))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2017-08-25T00:00"), hasExDate("2017-08-08"), //
+                        hasShares(105.00), //
+                        hasSource("FinTechDividende04.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 14.45), hasGrossValue("EUR", 22.23), //
+                        hasForexGrossValue("USD", 26.25), //
+                        hasTaxes("EUR", 1.11 + (7.88 / 1.1808)), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -2078,22 +1498,17 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2017-08-25T00:00"), hasExDate("2017-08-08"), //
+                        hasShares(105.00), //
+                        hasSource("FinTechDividende04.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 14.45), hasGrossValue("EUR", 22.23), //
+                        hasTaxes("EUR", 1.11 + (7.88 / 1.1808)), hasFees("EUR", 0.00))));
+
+        // check currency compatibility
         var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-08-25T00:00")));
-        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2017-08-08T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(105)));
-        assertThat(transaction.getSource(), is("FinTechDividende04.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(14.45))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(22.23))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(1.11 + (7.88 / 1.1808)))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var c = new CheckCurrenciesAction();
         var account = new Account();
@@ -2122,29 +1537,19 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("GB00B03MLX29"));
-        assertThat(security.getWkn(), is("A0D94M"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("ROYAL DUTCH SHELL A EO-07"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("GB00B03MLX29"), hasWkn("A0D94M"), hasTicker(null), //
+                        hasName("ROYAL DUTCH SHELL A EO-07"), //
+                        hasCurrencyCode("EUR"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-20T00:00")));
-        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2017-11-16T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(180)));
-        assertThat(transaction.getSource(), is("FinTechDividende05.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 0000000000"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(60.97))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(71.73))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(10.76))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2017-12-20T00:00"), hasExDate("2017-11-16"), //
+                        hasShares(180.00), //
+                        hasSource("FinTechDividende05.txt"), //
+                        hasNote("Transaktion-Nr.: 0000000000"), //
+                        hasAmount("EUR", 60.97), hasGrossValue("EUR", 71.73), //
+                        hasTaxes("EUR", 10.76), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -2167,30 +1572,19 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE1234567890"));
-        assertThat(security.getWkn(), is("AB1234"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("ISH.FOOBAR 12345666 x.EFT"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE1234567890"), hasWkn("AB1234"), hasTicker(null), //
+                        hasName("ISH.FOOBAR 12345666 x.EFT"), //
+                        hasCurrencyCode("EUR"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-04-28T00:00")));
-        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2016-04-28T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(10)));
-        assertThat(transaction.getSource(), is("FinTechDividende06.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 111111111"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(73.75))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(73.75))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2016-04-28T00:00"), hasExDate("2016-04-28"), //
+                        hasShares(10.00), //
+                        hasSource("FinTechDividende06.txt"), //
+                        hasNote("Transaktion-Nr.: 111111111"), //
+                        hasAmount("EUR", 73.75), hasGrossValue("EUR", 73.75), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -2214,34 +1608,18 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE000CM31SV9"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("COMMERZBANK INLINE09EO/SF"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000CM31SV9"), hasWkn(null), hasTicker(null), //
+                        hasName("COMMERZBANK INLINE09EO/SF"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-12-02T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(325)));
-        assertThat(entry.getSource(), is("FinTechWertpapierAusgang01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 197409035"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(2867.88))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(3250.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(382.12))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2009-12-02T00:00"), hasShares(325.00), //
+                        hasSource("FinTechWertpapierAusgang01.txt"), //
+                        hasNote("Transaktion-Nr.: 197409035"), //
+                        hasAmount("EUR", 2867.88), hasGrossValue("EUR", 3250.00), //
+                        hasTaxes("EUR", 382.12), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -2265,33 +1643,18 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE000CK1Q3N7"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("COMMERZBANK INLINE11EO/SF"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000CK1Q3N7"), hasWkn(null), hasTicker(null), //
+                        hasName("COMMERZBANK INLINE11EO/SF"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2011-07-18T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(200)));
-        assertThat(entry.getSource(), is("FinTechWertpapierAusgang02.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 376762270"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.20))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.20))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2011-07-18T00:00"), hasShares(200.00), //
+                        hasSource("FinTechWertpapierAusgang02.txt"), //
+                        hasNote("Transaktion-Nr.: 376762270"), //
+                        hasAmount("EUR", 0.20), hasGrossValue("EUR", 0.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -2315,61 +1678,42 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE000CB81KN1"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("COMMERZBANK PUT10 EOLS"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000CB81KN1"), hasWkn(null), hasTicker(null), //
+                        hasName("COMMERZBANK PUT10 EOLS"), //
+                        hasCurrencyCode("EUR"))));
 
-        // check 1st delivery outbound (Auslieferung) transaction
-        var deliveryTransaction = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000CM3C8A3"), hasWkn(null), hasTicker(null), //
+                        hasName("COMMERZBANK CALL10 EO/DL"), //
+                        hasCurrencyCode("EUR"))));
 
-        assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000CM3C896"), hasWkn(null), hasTicker(null), //
+                        hasName("COMMERZBANK CALL10 EO/DL"), //
+                        hasCurrencyCode("EUR"))));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2010-03-16T00:00")));
-        assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(2000)));
-        assertThat(deliveryTransaction.getSource(), is("FinTechWertpapierAusgang03.txt"));
-        assertThat(deliveryTransaction.getNote(), is("Transaktion-Nr.: 223770199"));
+        // check delivery outbound (Auslieferung) transaction
+        assertThat(results, hasItem(outboundDelivery( //
+                        hasDate("2010-03-16T00:00"), hasShares(2000.00), //
+                        hasSource("FinTechWertpapierAusgang03.txt"), //
+                        hasNote("Transaktion-Nr.: 223770199"), //
+                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        assertThat(deliveryTransaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(outboundDelivery( //
+                        hasDate("2010-03-16T00:00"), hasShares(1250.00), //
+                        hasSource("FinTechWertpapierAusgang03.txt"), //
+                        hasNote("Transaktion-Nr.: 223770243"), //
+                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // check 2nd delivery outbound (Auslieferung) transaction
-        deliveryTransaction = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2010-03-16T00:00")));
-        assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(1250)));
-        assertThat(deliveryTransaction.getSource(), is("FinTechWertpapierAusgang03.txt"));
-        assertThat(deliveryTransaction.getNote(), is("Transaktion-Nr.: 223770243"));
-
-        assertThat(deliveryTransaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 3rd delivery outbound (Auslieferung) transaction
-        deliveryTransaction = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(2)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2010-03-16T00:00")));
-        assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(750)));
-        assertThat(deliveryTransaction.getSource(), is("FinTechWertpapierAusgang03.txt"));
-        assertThat(deliveryTransaction.getNote(), is("Transaktion-Nr.: 223770249"));
-
-        assertThat(deliveryTransaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(outboundDelivery( //
+                        hasDate("2010-03-16T00:00"), hasShares(750.00), //
+                        hasSource("FinTechWertpapierAusgang03.txt"), //
+                        hasNote("Transaktion-Nr.: 223770249"), //
+                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -2393,34 +1737,18 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE000SG0WRD3"));
-        assertThat(security.getWkn(), is("SG0WRD"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("SG EFF. TURBOL ZS"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000SG0WRD3"), hasWkn("SG0WRD"), hasTicker(null), //
+                        hasName("SG EFF. TURBOL ZS"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-09-28T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(83)));
-        assertThat(entry.getSource(), is("FinTechWertpapierAusgang04.txt"));
-        assertThat(entry.getNote(), is("Transaktionsnummer: 921414163"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(111.22))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(111.22))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2015-09-28T00:00"), hasShares(83.00), //
+                        hasSource("FinTechWertpapierAusgang04.txt"), //
+                        hasNote("Transaktionsnummer: 921414163"), //
+                        hasAmount("EUR", 111.22), hasGrossValue("EUR", 111.22), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -2444,50 +1772,26 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("CH0585795898"));
-        assertThat(security.getWkn(), is("UE5KPQ"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("UBS LDN CALL21 SQ3"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0585795898"), hasWkn("UE5KPQ"), hasTicker(null), //
+                        hasName("UBS LDN CALL21 SQ3"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-25T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(400)));
-        assertThat(entry.getSource(), is("FinTechWertpapierAusgang05.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1234567890"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(305.20))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(305.20))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2021-06-25T00:00"), hasShares(400.00), //
+                        hasSource("FinTechWertpapierAusgang05.txt"), //
+                        hasNote("Transaktion-Nr.: 1234567890"), //
+                        hasAmount("EUR", 305.20), hasGrossValue("EUR", 305.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check tax refund transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-25T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(400)));
-        assertThat(transaction.getSource(), is("FinTechWertpapierAusgang05.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 1234567890"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(88.53))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(88.53))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2021-06-25T00:00"), hasShares(400.00), //
+                        hasSource("FinTechWertpapierAusgang05.txt"), //
+                        hasNote("Transaktion-Nr.: 1234567890"), //
+                        hasAmount("EUR", 88.53), hasGrossValue("EUR", 88.53), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -2511,61 +1815,30 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security1.getIsin(), is("LU0392494562"));
-        assertNull(security1.getWkn());
-        assertNull(security1.getTickerSymbol());
-        assertThat(security1.getName(), is("COMS.-MSCI WORL.T.U.ETF I"));
-        assertThat(security1.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0392494562"), hasWkn(null), hasTicker(null), //
+                        hasName("COMS.-MSCI WORL.T.U.ETF I"), //
+                        hasCurrencyCode("EUR"))));
 
-        var security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security2.getIsin(), is("LU0444605645"));
-        assertNull(security2.getWkn());
-        assertNull(security2.getTickerSymbol());
-        assertThat(security2.getName(), is("C-IBO.E.L.S.D.O.T.U.ETF I"));
-        assertThat(security2.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0444605645"), hasWkn(null), hasTicker(null), //
+                        hasName("C-IBO.E.L.S.D.O.T.U.ETF I"), //
+                        hasCurrencyCode("EUR"))));
 
-        // check 1st buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-09-18T00:00"), hasShares(310.00), //
+                        hasSource("FinTechWertpapierAusgang06.txt"), //
+                        hasNote("Transaktion-Nr.: 9876543211"), //
+                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-09-18T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(310)));
-        assertThat(entry.getSource(), is("FinTechWertpapierAusgang06.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 9876543211"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 2nd buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-09-18T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(118)));
-        assertThat(entry.getSource(), is("FinTechWertpapierAusgang06.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 9876543210"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-09-18T00:00"), hasShares(118.00), //
+                        hasSource("FinTechWertpapierAusgang06.txt"), //
+                        hasNote("Transaktion-Nr.: 9876543210"), //
+                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -2589,316 +1862,144 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE0008474503"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("DEKAFONDS CF"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
-
-        // check 1st delivery inbound (Einlieferung) transaction
-        var entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-
-        assertThat(entry.getDateTime(), is(LocalDateTime.parse("2015-02-16T00:00")));
-        assertThat(entry.getShares(), is(Values.Share.factorize(0.052)));
-        assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461796"));
-
-        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(5.50))));
-        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(5.50))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 2nd delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-
-        assertThat(entry.getDateTime(), is(LocalDateTime.parse("2015-02-20T00:00")));
-        assertThat(entry.getShares(), is(Values.Share.factorize(0.003)));
-        assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461797"));
-
-        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.30))));
-        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.30))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 3rd delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(2).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-
-        assertThat(entry.getDateTime(), is(LocalDateTime.parse("2015-03-16T00:00")));
-        assertThat(entry.getShares(), is(Values.Share.factorize(0.432)));
-        assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461798"));
-
-        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(49.99))));
-        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(49.99))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 4th delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(3).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-
-        assertThat(entry.getDateTime(), is(LocalDateTime.parse("2015-04-15T00:00")));
-        assertThat(entry.getShares(), is(Values.Share.factorize(0.424)));
-        assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461799"));
-
-        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(49.98))));
-        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(49.98))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 5th delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(4).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-
-        assertThat(entry.getDateTime(), is(LocalDateTime.parse("2015-05-15T00:00")));
-        assertThat(entry.getShares(), is(Values.Share.factorize(0.446)));
-        assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461800"));
-
-        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(49.99))));
-        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(49.99))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 6th delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(5).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-
-        assertThat(entry.getDateTime(), is(LocalDateTime.parse("2015-06-15T00:00")));
-        assertThat(entry.getShares(), is(Values.Share.factorize(0.467)));
-        assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461801"));
-
-        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(49.98))));
-        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(49.98))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 7th delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(6).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-
-        assertThat(entry.getDateTime(), is(LocalDateTime.parse("2015-07-15T00:00")));
-        assertThat(entry.getShares(), is(Values.Share.factorize(0.447)));
-        assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461802"));
-
-        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(49.98))));
-        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(49.98))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 8th delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(7).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-
-        assertThat(entry.getDateTime(), is(LocalDateTime.parse("2015-08-17T00:00")));
-        assertThat(entry.getShares(), is(Values.Share.factorize(0.462)));
-        assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461803"));
-
-        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(49.98))));
-        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(49.98))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 9th delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(8).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-
-        assertThat(entry.getDateTime(), is(LocalDateTime.parse("2015-09-15T00:00")));
-        assertThat(entry.getShares(), is(Values.Share.factorize(0.504)));
-        assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461804"));
-
-        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(49.99))));
-        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(49.99))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 10th delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(9).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-
-        assertThat(entry.getDateTime(), is(LocalDateTime.parse("2015-10-15T00:00")));
-        assertThat(entry.getShares(), is(Values.Share.factorize(0.504)));
-        assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461805"));
-
-        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(49.99))));
-        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(49.99))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 11th delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(10).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-
-        assertThat(entry.getDateTime(), is(LocalDateTime.parse("2015-11-16T00:00")));
-        assertThat(entry.getShares(), is(Values.Share.factorize(0.474)));
-        assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461806"));
-
-        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(49.98))));
-        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(49.98))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 12th delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(11).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-
-        assertThat(entry.getDateTime(), is(LocalDateTime.parse("2015-12-15T00:00")));
-        assertThat(entry.getShares(), is(Values.Share.factorize(0.49)));
-        assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461807"));
-
-        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(49.98))));
-        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(49.98))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 13th delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(12).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-
-        assertThat(entry.getDateTime(), is(LocalDateTime.parse("2016-01-15T00:00")));
-        assertThat(entry.getShares(), is(Values.Share.factorize(0.525)));
-        assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461808"));
-
-        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(49.99))));
-        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(49.99))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 14th delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(13).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-
-        assertThat(entry.getDateTime(), is(LocalDateTime.parse("2016-02-15T00:00")));
-        assertThat(entry.getShares(), is(Values.Share.factorize(0.551)));
-        assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461809"));
-
-        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(49.99))));
-        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(49.99))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 15th delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(14).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-
-        assertThat(entry.getDateTime(), is(LocalDateTime.parse("2016-02-19T00:00")));
-        assertThat(entry.getShares(), is(Values.Share.factorize(0.117)));
-        assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461810"));
-
-        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.12))));
-        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(10.12))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 16th delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(15).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-
-        assertThat(entry.getDateTime(), is(LocalDateTime.parse("2016-03-15T00:00")));
-        assertThat(entry.getShares(), is(Values.Share.factorize(0.523)));
-        assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461811"));
-
-        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(49.98))));
-        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(49.98))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 17th delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(16).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-
-        assertThat(entry.getDateTime(), is(LocalDateTime.parse("2016-04-15T00:00")));
-        assertThat(entry.getShares(), is(Values.Share.factorize(0.517)));
-        assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461812"));
-
-        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(49.99))));
-        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(49.99))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 18th delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(17).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-
-        assertThat(entry.getDateTime(), is(LocalDateTime.parse("2016-05-17T00:00")));
-        assertThat(entry.getShares(), is(Values.Share.factorize(0.521)));
-        assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461813"));
-
-        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(50.00))));
-        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(50.00))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 19th delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(18).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-        assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-
-        assertThat(entry.getDateTime(), is(LocalDateTime.parse("2016-06-15T00:00")));
-        assertThat(entry.getShares(), is(Values.Share.factorize(0.541)));
-        assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461814"));
-
-        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(49.99))));
-        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(49.99))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0008474503"), hasWkn(null), hasTicker(null), //
+                        hasName("DEKAFONDS CF"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check delivery inbound (Einlieferung) transaction
+        assertThat(results, hasItem(inboundDelivery( //
+                        hasDate("2015-02-16T00:00"), hasShares(0.052), //
+                        hasSource("FinTechWertpapierEingang01.txt"), //
+                        hasNote("Transaktion-Nr.: 1127461796"), //
+                        hasAmount("EUR", 5.50), hasGrossValue("EUR", 5.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(inboundDelivery( //
+                        hasDate("2015-02-20T00:00"), hasShares(0.003), //
+                        hasSource("FinTechWertpapierEingang01.txt"), //
+                        hasNote("Transaktion-Nr.: 1127461797"), //
+                        hasAmount("EUR", 0.30), hasGrossValue("EUR", 0.30), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(inboundDelivery( //
+                        hasDate("2015-03-16T00:00"), hasShares(0.432), //
+                        hasSource("FinTechWertpapierEingang01.txt"), //
+                        hasNote("Transaktion-Nr.: 1127461798"), //
+                        hasAmount("EUR", 49.99), hasGrossValue("EUR", 49.99), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(inboundDelivery( //
+                        hasDate("2015-04-15T00:00"), hasShares(0.424), //
+                        hasSource("FinTechWertpapierEingang01.txt"), //
+                        hasNote("Transaktion-Nr.: 1127461799"), //
+                        hasAmount("EUR", 49.98), hasGrossValue("EUR", 49.98), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(inboundDelivery( //
+                        hasDate("2015-05-15T00:00"), hasShares(0.446), //
+                        hasSource("FinTechWertpapierEingang01.txt"), //
+                        hasNote("Transaktion-Nr.: 1127461800"), //
+                        hasAmount("EUR", 49.99), hasGrossValue("EUR", 49.99), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(inboundDelivery( //
+                        hasDate("2015-06-15T00:00"), hasShares(0.467), //
+                        hasSource("FinTechWertpapierEingang01.txt"), //
+                        hasNote("Transaktion-Nr.: 1127461801"), //
+                        hasAmount("EUR", 49.98), hasGrossValue("EUR", 49.98), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(inboundDelivery( //
+                        hasDate("2015-07-15T00:00"), hasShares(0.447), //
+                        hasSource("FinTechWertpapierEingang01.txt"), //
+                        hasNote("Transaktion-Nr.: 1127461802"), //
+                        hasAmount("EUR", 49.98), hasGrossValue("EUR", 49.98), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(inboundDelivery( //
+                        hasDate("2015-08-17T00:00"), hasShares(0.462), //
+                        hasSource("FinTechWertpapierEingang01.txt"), //
+                        hasNote("Transaktion-Nr.: 1127461803"), //
+                        hasAmount("EUR", 49.98), hasGrossValue("EUR", 49.98), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(inboundDelivery( //
+                        hasDate("2015-09-15T00:00"), hasShares(0.504), //
+                        hasSource("FinTechWertpapierEingang01.txt"), //
+                        hasNote("Transaktion-Nr.: 1127461804"), //
+                        hasAmount("EUR", 49.99), hasGrossValue("EUR", 49.99), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(inboundDelivery( //
+                        hasDate("2015-10-15T00:00"), hasShares(0.504), //
+                        hasSource("FinTechWertpapierEingang01.txt"), //
+                        hasNote("Transaktion-Nr.: 1127461805"), //
+                        hasAmount("EUR", 49.99), hasGrossValue("EUR", 49.99), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(inboundDelivery( //
+                        hasDate("2015-11-16T00:00"), hasShares(0.474), //
+                        hasSource("FinTechWertpapierEingang01.txt"), //
+                        hasNote("Transaktion-Nr.: 1127461806"), //
+                        hasAmount("EUR", 49.98), hasGrossValue("EUR", 49.98), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(inboundDelivery( //
+                        hasDate("2015-12-15T00:00"), hasShares(0.49), //
+                        hasSource("FinTechWertpapierEingang01.txt"), //
+                        hasNote("Transaktion-Nr.: 1127461807"), //
+                        hasAmount("EUR", 49.98), hasGrossValue("EUR", 49.98), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(inboundDelivery( //
+                        hasDate("2016-01-15T00:00"), hasShares(0.525), //
+                        hasSource("FinTechWertpapierEingang01.txt"), //
+                        hasNote("Transaktion-Nr.: 1127461808"), //
+                        hasAmount("EUR", 49.99), hasGrossValue("EUR", 49.99), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(inboundDelivery( //
+                        hasDate("2016-02-15T00:00"), hasShares(0.551), //
+                        hasSource("FinTechWertpapierEingang01.txt"), //
+                        hasNote("Transaktion-Nr.: 1127461809"), //
+                        hasAmount("EUR", 49.99), hasGrossValue("EUR", 49.99), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(inboundDelivery( //
+                        hasDate("2016-02-19T00:00"), hasShares(0.117), //
+                        hasSource("FinTechWertpapierEingang01.txt"), //
+                        hasNote("Transaktion-Nr.: 1127461810"), //
+                        hasAmount("EUR", 10.12), hasGrossValue("EUR", 10.12), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(inboundDelivery( //
+                        hasDate("2016-03-15T00:00"), hasShares(0.523), //
+                        hasSource("FinTechWertpapierEingang01.txt"), //
+                        hasNote("Transaktion-Nr.: 1127461811"), //
+                        hasAmount("EUR", 49.98), hasGrossValue("EUR", 49.98), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(inboundDelivery( //
+                        hasDate("2016-04-15T00:00"), hasShares(0.517), //
+                        hasSource("FinTechWertpapierEingang01.txt"), //
+                        hasNote("Transaktion-Nr.: 1127461812"), //
+                        hasAmount("EUR", 49.99), hasGrossValue("EUR", 49.99), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(inboundDelivery( //
+                        hasDate("2016-05-17T00:00"), hasShares(0.521), //
+                        hasSource("FinTechWertpapierEingang01.txt"), //
+                        hasNote("Transaktion-Nr.: 1127461813"), //
+                        hasAmount("EUR", 50.00), hasGrossValue("EUR", 50.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(inboundDelivery( //
+                        hasDate("2016-06-15T00:00"), hasShares(0.541), //
+                        hasSource("FinTechWertpapierEingang01.txt"), //
+                        hasNote("Transaktion-Nr.: 1127461814"), //
+                        hasAmount("EUR", 49.99), hasGrossValue("EUR", 49.99), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3047,8 +2148,12 @@ public class FinTechGroupBankPDFExtractorTest
                                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // assert transaction
-        assertThat(results, hasItem(interestCharge(hasDate("2010-12-31T00:00"), hasAmount("EUR", 0.20), //
-                        hasSource("FinTechKontoauszug04.txt"), hasNote("Zinsabschluss 01.10.2010 - 31.12.2010"))));
+        assertThat(results, hasItem(interestCharge( //
+                        hasDate("2010-12-31T00:00"), //
+                        hasSource("FinTechKontoauszug04.txt"), //
+                        hasNote("Zinsabschluss 01.10.2010 - 31.12.2010"), //
+                        hasAmount("EUR", 0.20), hasGrossValue("EUR", 0.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3071,8 +2176,12 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-        assertThat(results, hasItem(interestCharge(hasDate("2017-03-31"), hasAmount("EUR", 0.48), //
-                        hasSource("FinTechKontoauszug05.txt"), hasNote("Zinsabschluss 01.01.2017 - 31.03.2017"))));
+        assertThat(results, hasItem(interestCharge( //
+                        hasDate("2017-03-31"), //
+                        hasSource("FinTechKontoauszug05.txt"), //
+                        hasNote("Zinsabschluss 01.01.2017 - 31.03.2017"), //
+                        hasAmount("EUR", 0.48), hasGrossValue("EUR", 0.48), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2017-06-14"), hasAmount("EUR", 3500.00), //
@@ -3108,8 +2217,12 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-        assertThat(results, hasItem(interestCharge(hasDate("2018-09-30"), hasAmount("EUR", 1.59), //
-                        hasSource("FinTechKontoauszug06.txt"), hasNote("Zinsabschluss 01.07.2018 - 30.09.2018"))));
+        assertThat(results, hasItem(interestCharge( //
+                        hasDate("2018-09-30"), //
+                        hasSource("FinTechKontoauszug06.txt"), //
+                        hasNote("Zinsabschluss 01.07.2018 - 30.09.2018"), //
+                        hasAmount("EUR", 1.59), hasGrossValue("EUR", 1.59), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2018-10-08"), hasAmount("EUR", 11350.00), //
@@ -3168,34 +2281,18 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("IE00BKM4GZ66"));
-        assertThat(security.getWkn(), is("A111X9"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("IS C.MSCI EMIMI U.ETF DLA"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BKM4GZ66"), hasWkn("A111X9"), hasTicker(null), //
+                        hasName("IS C.MSCI EMIMI U.ETF DLA"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-04-10T17:30")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(29)));
-        assertThat(entry.getSource(), is("FlatExKauf01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1609519682"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(760.09))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(751.68))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(5.90 + 2.51))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2019-04-10T17:30"), hasShares(29.00), //
+                        hasSource("FlatExKauf01.txt"), //
+                        hasNote("Transaktion-Nr.: 1609519682"), //
+                        hasAmount("EUR", 760.09), hasGrossValue("EUR", 751.68), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.51))));
     }
 
     @Test
@@ -3218,34 +2315,18 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("US0382221051"));
-        assertThat(security.getWkn(), is("865177"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("APPLIED MATERIALS INC."));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("US0382221051"), hasWkn("865177"), hasTicker(null), //
+                        hasName("APPLIED MATERIALS INC."), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-09-01T21:59")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(66)));
-        assertThat(entry.getSource(), is("FlatExKauf02.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 2008664208"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(3437.43))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(3430.68))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(5.90 + 0.85))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-09-01T21:59"), hasShares(66.00), //
+                        hasSource("FlatExKauf02.txt"), //
+                        hasNote("Transaktion-Nr.: 2008664208"), //
+                        hasAmount("EUR", 3437.43), hasGrossValue("EUR", 3430.68), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 0.85))));
     }
 
     @Test
@@ -3268,34 +2349,18 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("IE00B41RYL63"));
-        assertThat(security.getWkn(), is("A1JJTM"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("SPDR BL.BA.EO AG.BD U.ETF"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B41RYL63"), hasWkn("A1JJTM"), hasTicker(null), //
+                        hasName("SPDR BL.BA.EO AG.BD U.ETF"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-06-20T09:08")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(151)));
-        assertThat(entry.getSource(), is("FlatExVerkauf01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1234140149"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(9529.81))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(9538.22))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(5.90 + 2.51))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2019-06-20T09:08"), hasShares(151.00), //
+                        hasSource("FlatExVerkauf01.txt"), //
+                        hasNote("Transaktion-Nr.: 1234140149"), //
+                        hasAmount("EUR", 9529.81), hasGrossValue("EUR", 9538.22), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.51))));
     }
 
     @Test
@@ -3318,34 +2383,18 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("IE00B3WJKG14"));
-        assertThat(security.getWkn(), is("A142N1"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("ISHSV-S+500INF.T.SECT.DLA"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B3WJKG14"), hasWkn("A142N1"), hasTicker(null), //
+                        hasName("ISHSV-S+500INF.T.SECT.DLA"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-19T09:22")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(425)));
-        assertThat(entry.getSource(), is("FlatExVerkauf02.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(5681.04))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(5999.30))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(305.85))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(9.90 + 2.51))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2021-02-19T09:22"), hasShares(425.00), //
+                        hasSource("FlatExVerkauf02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 5681.04), hasGrossValue("EUR", 5999.30), //
+                        hasTaxes("EUR", 305.85), hasFees("EUR", 9.90 + 2.51))));
     }
 
     @Test
@@ -3368,50 +2417,26 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE0009848119"));
-        assertThat(security.getWkn(), is("984811"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("DWS TOP DIVIDENDE LD"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0009848119"), hasWkn("984811"), hasTicker(null), //
+                        hasName("DWS TOP DIVIDENDE LD"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-10T17:55")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(91)));
-        assertThat(entry.getSource(), is("FlatExVerkauf03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(10746.30))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(10756.20))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(9.90))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-10T17:55"), hasShares(91.00), //
+                        hasSource("FlatExVerkauf03.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 10746.30), hasGrossValue("EUR", 10756.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 9.90))));
 
         // check tax refund transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-10T17:55")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(91)));
-        assertThat(transaction.getSource(), is("FlatExVerkauf03.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(18.87))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(18.87))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2020-11-10T17:55"), hasShares(91.00), //
+                        hasSource("FlatExVerkauf03.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 18.87), hasGrossValue("EUR", 18.87), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3434,33 +2459,18 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("CA05156X1087"));
-        assertThat(security.getWkn(), is("A12GS7"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("AURORA CANNABIS"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("CA05156X1087"), hasWkn("A12GS7"), hasTicker(null), //
+                        hasName("AURORA CANNABIS"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-06-22T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.5)));
-        assertThat(entry.getSource(), is("FlatExVerkauf04.txt"));
-        assertThat(entry.getNote(), is("Spitzenregulierung in CA05156X1087 | Transaktions-Nr. 1942669999"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(5.86))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(5.86))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-06-22T00:00"), hasShares(0.50), //
+                        hasSource("FlatExVerkauf04.txt"), //
+                        hasNote("Spitzenregulierung in CA05156X1087 | Transaktions-Nr. 1942669999"), //
+                        hasAmount("EUR", 5.86), hasGrossValue("EUR", 5.86), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3483,29 +2493,18 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("IE00BKM4GZ66"));
-        assertThat(security.getWkn(), is("A111X9"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("ISHS MSCI EM USD-AC"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BKM4GZ66"), hasWkn("A111X9"), hasTicker(null), //
+                        hasName("ISHS MSCI EM USD-AC"), //
+                        hasCurrencyCode("EUR"))));
 
-        // check tax transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-11T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(476)));
-        assertThat(transaction.getSource(), is("FlatExVorabpauschale01.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 1776319005"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(4.69))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(4.69))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2020-01-11T00:00"), hasShares(476.00), //
+                        hasSource("FlatExVorabpauschale01.txt"), //
+                        hasNote("Transaktion-Nr.: 1776319005"), //
+                        hasAmount("EUR", 4.69), hasGrossValue("EUR", 4.69), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3564,30 +2563,19 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("IE00B945VV12"));
-        assertThat(security.getWkn(), is("A1T8FS"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("VANG.FTSE DEV.EU.UETF EOD"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B945VV12"), hasWkn("A1T8FS"), hasTicker(null), //
+                        hasName("VANG.FTSE DEV.EU.UETF EOD"), //
+                        hasCurrencyCode("EUR"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-04-10T00:00")));
-        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2019-03-28T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(197)));
-        assertThat(transaction.getSource(), is("FlatExDividende01.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 1234567890"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(36.07))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(36.07))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2019-04-10T00:00"), hasExDate("2019-03-28"), //
+                        hasShares(197.00), //
+                        hasSource("FlatExDividende01.txt"), //
+                        hasNote("Transaktion-Nr.: 1234567890"), //
+                        hasAmount("EUR", 36.07), hasGrossValue("EUR", 36.07), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3610,34 +2598,20 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("US5949181045"));
-        assertThat(security.getWkn(), is("870747"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("MICROSOFT    DL-,00000625"));
-        assertThat(security.getCurrencyCode(), is("USD"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("US5949181045"), hasWkn("870747"), hasTicker(null), //
+                        hasName("MICROSOFT    DL-,00000625"), //
+                        hasCurrencyCode("USD"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-12T00:00")));
-        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2019-11-20T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(15)));
-        assertThat(transaction.getSource(), is("FlatExDividende02.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 1757281127"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(4.98))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(6.87))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.86 + (1.15 / 1.1137)))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(7.65))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2019-12-12T00:00"), hasExDate("2019-11-20"), //
+                        hasShares(15.00), //
+                        hasSource("FlatExDividende02.txt"), //
+                        hasNote("Transaktion-Nr.: 1757281127"), //
+                        hasAmount("EUR", 4.98), hasGrossValue("EUR", 6.87), //
+                        hasForexGrossValue("USD", 7.65), //
+                        hasTaxes("EUR", 0.86 + (1.15 / 1.1137)), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3667,22 +2641,17 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2019-12-12T00:00"), hasExDate("2019-11-20"), //
+                        hasShares(15.00), //
+                        hasSource("FlatExDividende02.txt"), //
+                        hasNote("Transaktion-Nr.: 1757281127"), //
+                        hasAmount("EUR", 4.98), hasGrossValue("EUR", 6.87), //
+                        hasTaxes("EUR", 0.86 + (1.15 / 1.1137)), hasFees("EUR", 0.00))));
+
+        // check currency compatibility
         var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-12T00:00")));
-        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2019-11-20T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(15)));
-        assertThat(transaction.getSource(), is("FlatExDividende02.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 1757281127"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(4.98))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(6.87))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.86 + (1.15 / 1.1137)))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var c = new CheckCurrenciesAction();
         var account = new Account();
@@ -3711,33 +2680,20 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("IE00B8GKDB10"));
-        assertThat(security.getWkn(), is("A1T8FV"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("VA.FTSE A.W.H.D.Y.UETFDLD"));
-        assertThat(security.getCurrencyCode(), is("USD"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B8GKDB10"), hasWkn("A1T8FV"), hasTicker(null), //
+                        hasName("VA.FTSE A.W.H.D.Y.UETFDLD"), //
+                        hasCurrencyCode("USD"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-24T00:00")));
-        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2020-06-11T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(31.89)));
-        assertThat(transaction.getSource(), is("FlatExDividende03.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 2222222222"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(11.42))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(11.42))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(12.88))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2020-06-24T00:00"), hasExDate("2020-06-11"), //
+                        hasShares(31.89), //
+                        hasSource("FlatExDividende03.txt"), //
+                        hasNote("Transaktion-Nr.: 2222222222"), //
+                        hasAmount("EUR", 11.42), hasGrossValue("EUR", 11.42), //
+                        hasForexGrossValue("USD", 12.88), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3767,21 +2723,17 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2020-06-24T00:00"), hasExDate("2020-06-11"), //
+                        hasShares(31.89), //
+                        hasSource("FlatExDividende03.txt"), //
+                        hasNote("Transaktion-Nr.: 2222222222"), //
+                        hasAmount("EUR", 11.42), hasGrossValue("EUR", 11.42), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check currency compatibility
         var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-24T00:00")));
-        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2020-06-11T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(31.89)));
-        assertThat(transaction.getSource(), is("FlatExDividende03.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 2222222222"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(11.42))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(11.42))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var c = new CheckCurrenciesAction();
         var account = new Account();
@@ -3810,34 +2762,20 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("US46284V1017"));
-        assertThat(security.getWkn(), is("A14MS9"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("IRON MOUNTAIN (NEW)DL-,01"));
-        assertThat(security.getCurrencyCode(), is("USD"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("US46284V1017"), hasWkn("A14MS9"), hasTicker(null), //
+                        hasName("IRON MOUNTAIN (NEW)DL-,01"), //
+                        hasCurrencyCode("USD"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-10-02T00:00")));
-        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2020-09-14T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(197)));
-        assertThat(transaction.getSource(), is("FlatExDividende04.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 2041157988"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(75.30))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(103.87))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(12.99 + (18.28 / 1.173)))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(121.84))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2020-10-02T00:00"), hasExDate("2020-09-14"), //
+                        hasShares(197.00), //
+                        hasSource("FlatExDividende04.txt"), //
+                        hasNote("Transaktion-Nr.: 2041157988"), //
+                        hasAmount("EUR", 75.30), hasGrossValue("EUR", 103.87), //
+                        hasForexGrossValue("USD", 121.84), //
+                        hasTaxes("EUR", 12.99 + (18.28 / 1.173)), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3867,22 +2805,17 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2020-10-02T00:00"), hasExDate("2020-09-14"), //
+                        hasShares(197.00), //
+                        hasSource("FlatExDividende04.txt"), //
+                        hasNote("Transaktion-Nr.: 2041157988"), //
+                        hasAmount("EUR", 75.30), hasGrossValue("EUR", 103.87), //
+                        hasTaxes("EUR", 12.99 + (18.28 / 1.173)), hasFees("EUR", 0.00))));
+
+        // check currency compatibility
         var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-10-02T00:00")));
-        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2020-09-14T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(197)));
-        assertThat(transaction.getSource(), is("FlatExDividende04.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 2041157988"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(75.30))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(103.87))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(12.99 + (18.28 / 1.173)))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var c = new CheckCurrenciesAction();
         var account = new Account();
@@ -3911,34 +2844,20 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("US5949181045"));
-        assertThat(security.getWkn(), is("870747"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("MICROSOFT    DL-,00000625"));
-        assertThat(security.getCurrencyCode(), is("USD"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("US5949181045"), hasWkn("870747"), hasTicker(null), //
+                        hasName("MICROSOFT    DL-,00000625"), //
+                        hasCurrencyCode("USD"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-11T00:00")));
-        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2020-05-20T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(50)));
-        assertThat(transaction.getSource(), is("FlatExDividende05.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr. : 1111111111"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(16.73))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(22.47))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(2.37 + (3.82 / 1.1348)))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(25.50))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2020-06-11T00:00"), hasExDate("2020-05-20"), //
+                        hasShares(50.00), //
+                        hasSource("FlatExDividende05.txt"), //
+                        hasNote("Transaktion-Nr. : 1111111111"), //
+                        hasAmount("EUR", 16.73), hasGrossValue("EUR", 22.47), //
+                        hasForexGrossValue("USD", 25.50), //
+                        hasTaxes("EUR", 2.37 + (3.82 / 1.1348)), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3968,22 +2887,17 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2020-06-11T00:00"), hasExDate("2020-05-20"), //
+                        hasShares(50.00), //
+                        hasSource("FlatExDividende05.txt"), //
+                        hasNote("Transaktion-Nr. : 1111111111"), //
+                        hasAmount("EUR", 16.73), hasGrossValue("EUR", 22.47), //
+                        hasTaxes("EUR", 2.37 + (3.82 / 1.1348)), hasFees("EUR", 0.00))));
+
+        // check currency compatibility
         var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-11T00:00")));
-        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2020-05-20T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(50)));
-        assertThat(transaction.getSource(), is("FlatExDividende05.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr. : 1111111111"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(16.73))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(22.47))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(2.37 + (3.82 / 1.1348)))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var c = new CheckCurrenciesAction();
         var account = new Account();
@@ -4012,31 +2926,19 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "USD");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("US5949181045"));
-        assertThat(security.getWkn(), is("870747"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("MICROSOFT    DL-,00000625"));
-        assertThat(security.getCurrencyCode(), is("USD"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("US5949181045"), hasWkn("870747"), hasTicker(null), //
+                        hasName("MICROSOFT    DL-,00000625"), //
+                        hasCurrencyCode("USD"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-11T00:00")));
-        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2020-05-20T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(50)));
-        assertThat(transaction.getSource(), is("FlatExDividende06.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr. : 1111111111"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("USD", Values.Amount.factorize(18.99))));
-        assertThat(transaction.getGrossValue(), is(Money.of("USD", Values.Amount.factorize(25.50))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("USD", Values.Amount.factorize((2.37 * 1.1348) + 3.82))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("USD", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2020-06-11T00:00"), hasExDate("2020-05-20"), //
+                        hasShares(50.00), //
+                        hasSource("FlatExDividende06.txt"), //
+                        hasNote("Transaktion-Nr. : 1111111111"), //
+                        hasAmount("USD", 18.99), hasGrossValue("USD", 25.50), //
+                        hasTaxes("USD", (2.37 * 1.1348) + 3.82), hasFees("USD", 0.00))));
     }
 
     @Test
@@ -4064,29 +2966,18 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("LU0386882277"));
-        assertThat(security.getWkn(), is("A0RLJD"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("PICTET-GL.MEGAT.SEL.P EO"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0386882277"), hasWkn("A0RLJD"), hasTicker(null), //
+                        hasName("PICTET-GL.MEGAT.SEL.P EO"), //
+                        hasCurrencyCode("EUR"))));
 
-        // check dividends tax transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-21T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(10)));
-        assertThat(transaction.getSource(), is("FlatExDividende07.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 1784953069 | Bruttothesaurierung 23,19 EUR"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(8.26))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(8.26))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2020-01-21T00:00"), hasShares(10.00), //
+                        hasSource("FlatExDividende07.txt"), //
+                        hasNote("Transaktion-Nr.: 1784953069 | Bruttothesaurierung 23,19 EUR"), //
+                        hasAmount("EUR", 8.26), hasGrossValue("EUR", 8.26), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4121,22 +3012,26 @@ public class FinTechGroupBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2021-04-01"), hasShares(178), //
-                        hasSource("FlatExStockDividende01.txt"), hasNote("Transaktion-Nr.: 2289444861"), //
+                        hasDate("2021-04-01"), hasExDate(null), //
+                        hasShares(178.00), //
+                        hasSource("FlatExStockDividende01.txt"), //
+                        hasNote("Transaktion-Nr.: 2289444861"), //
                         hasAmount("EUR", 135.00), hasGrossValue("EUR", 135.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-04-01"), hasShares(3), //
-                        hasSource("FlatExStockDividende01.txt"), hasNote("Transaktion-Nr.: 2289444861"), //
+                        hasDate("2021-04-01"), hasShares(3.00), //
+                        hasSource("FlatExStockDividende01.txt"), //
+                        hasNote("Transaktion-Nr.: 2289444861"), //
                         hasAmount("EUR", 135.00), hasGrossValue("EUR", 135.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check taxes transaction
         assertThat(results, hasItem(taxes( //
-                        hasDate("2021-04-01"), hasShares(178), //
-                        hasSource("FlatExStockDividende01.txt"), hasNote("Transaktion-Nr.: 2289444861"), //
+                        hasDate("2021-04-01"), hasShares(178.00), //
+                        hasSource("FlatExStockDividende01.txt"), //
+                        hasNote("Transaktion-Nr.: 2289444861"), //
                         hasAmount("EUR", 37.54), hasGrossValue("EUR", 37.54), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
@@ -4161,34 +3056,18 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("XS2198879145"));
-        assertThat(security.getWkn(), is("A3E444"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("FRAPORT AG 20/27"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("XS2198879145"), hasWkn("A3E444"), hasTicker(null), //
+                        hasName("FRAPORT AG 20/27"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-03-27T17:34")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10)));
-        assertThat(entry.getSource(), is("FlatExDegiroKauf01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 1225591278"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1704.15))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(1690.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(2.00 + 5.90 + 6.25))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-03-27T17:34"), hasShares(10.00), //
+                        hasSource("FlatExDegiroKauf01.txt"), //
+                        hasNote("Transaktion-Nr.: 1225591278 | Zinsbetrag 6,25 EUR"), //
+                        hasAmount("EUR", 1704.15), hasGrossValue("EUR", 1696.25), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 2.00 + 5.90))));
     }
 
     @Test
@@ -4220,10 +3099,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-09-04T09:53"), hasShares(20.00), //
                         hasSource("FlatExDegiroKauf02.txt"), //
-                        hasNote("Transaktion-Nr.: 3409315621"), //
-                        hasAmount("EUR", 1138.15), hasGrossValue("EUR", 1126.29), //
-                        hasForexGrossValue("USD", 1213.80), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 4.71 + 1.25))));
+                        hasNote("Transaktion-Nr.: 3409315621 | Zinsbetrag 1,25 EUR"), //
+                        hasAmount("EUR", 1138.15), hasGrossValue("EUR", 1127.54), //
+                        hasForexGrossValue("USD", 1215.15), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 4.71))));
     }
 
     @Test
@@ -4256,9 +3135,9 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-09-04T09:53"), hasShares(20.00), //
                         hasSource("FlatExDegiroKauf02.txt"), //
-                        hasNote("Transaktion-Nr.: 3409315621"), //
-                        hasAmount("EUR", 1138.15), hasGrossValue("EUR", 1126.29), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 4.71 + 1.25))));
+                        hasNote("Transaktion-Nr.: 3409315621 | Zinsbetrag 1,25 EUR"), //
+                        hasAmount("EUR", 1138.15), hasGrossValue("EUR", 1127.54), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 4.71))));
     }
 
     @Test
@@ -4290,10 +3169,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-12-18T15:19"), hasShares(20.00), //
                         hasSource("FlatExDegiroKauf03.txt"), //
-                        hasNote("Transaktion-Nr.: 3527408249"), //
-                        hasAmount("EUR", 1172.56 + 0.87), hasGrossValue("EUR", 1159.52), //
-                        hasForexGrossValue("USD", 1264.80), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 4.70 + 3.31))));
+                        hasNote("Transaktion-Nr.: 3527408249 | Zinsbetrag 3,31 EUR"), //
+                        hasAmount("EUR", 1172.56 + 0.87), hasGrossValue("EUR", 1162.83), //
+                        hasForexGrossValue("USD", 1268.41), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 4.70))));
 
         // check tax refund transaction
         assertThat(results, hasItem(taxRefund( //
@@ -4335,9 +3214,9 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-12-18T15:19"), hasShares(20.00), //
                         hasSource("FlatExDegiroKauf03.txt"), //
-                        hasNote("Transaktion-Nr.: 3527408249"), //
-                        hasAmount("EUR", 1172.56 + 0.87), hasGrossValue("EUR", 1159.52), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 4.70 + 3.31))));
+                        hasNote("Transaktion-Nr.: 3527408249 | Zinsbetrag 3,31 EUR"), //
+                        hasAmount("EUR", 1172.56 + 0.87), hasGrossValue("EUR", 1162.83), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 4.70))));
 
         // check tax refund transaction
         assertThat(results, hasItem(taxRefund( //
@@ -4479,9 +3358,9 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results, hasItem(purchase( //
                         hasDate("2025-12-23T10:00"), hasShares(20.00), //
                         hasSource("FlatExDegiroKauf07.txt"), //
-                        hasNote("Transaktion-Nr.: 1234567890"), //
-                        hasAmount("EUR", 1902.31), hasGrossValue("EUR", 1868.10), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.07 + 33.14))));
+                        hasNote("Transaktion-Nr.: 1234567890 | Zinsbetrag 33,14 EUR"), //
+                        hasAmount("EUR", 1902.31), hasGrossValue("EUR", 1901.24), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.07))));
     }
 
     @Test
@@ -4659,7 +3538,7 @@ public class FinTechGroupBankPDFExtractorTest
     {
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroCryptoKauf01.txt"), errors);
+        var results = cryptoExtractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroCryptoKauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -4708,38 +3587,19 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("IE00BQ3D6V05"));
-        assertThat(security.getWkn(), is("A12GPB"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("COMGEST GROWTH ASIA"));
-        assertThat(security.getCurrencyCode(), is("USD"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BQ3D6V05"), hasWkn("A12GPB"), hasTicker(null), //
+                        hasName("COMGEST GROWTH ASIA"), //
+                        hasCurrencyCode("USD"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-05-12T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(80)));
-        assertThat(entry.getSource(), is("FlatExDegiroVerkauf01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 2831966689"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(4199.73))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(4216.61))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(16.88))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        var grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
-                        .orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(4216.61 * 1.045010))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-05-12T00:00"), hasShares(80.00), //
+                        hasSource("FlatExDegiroVerkauf01.txt"), //
+                        hasNote("Transaktion-Nr.: 2831966689"), //
+                        hasAmount("EUR", 4199.73), hasGrossValue("EUR", 4216.61), //
+                        hasForexGrossValue("USD", 4406.40), //
+                        hasTaxes("EUR", 16.88), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4769,25 +3629,16 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-05-12T00:00"), hasShares(80.00), //
+                        hasSource("FlatExDegiroVerkauf01.txt"), //
+                        hasNote("Transaktion-Nr.: 2831966689"), //
+                        hasAmount("EUR", 4199.73), hasGrossValue("EUR", 4216.61), //
+                        hasTaxes("EUR", 16.88), hasFees("EUR", 0.00))));
+
+        // check currency compatibility
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-05-12T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(80)));
-        assertThat(entry.getSource(), is("FlatExDegiroVerkauf01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 2831966689"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(4199.73))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(4216.61))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(16.88))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var c = new CheckCurrenciesAction();
         var account = new Account();
@@ -5101,11 +3952,98 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testFlatExDegiroVerkauf10()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroVerkauf10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US7479066000"), hasWkn("A40M9N"), hasTicker(null), //
+                        hasName("QUANTUM CORP."), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-08-14T15:30"), hasShares(60.00), //
+                        hasSource("FlatExDegiroVerkauf10.txt"), //
+                        hasNote("Transaktion-Nr.: 5164291571"), //
+                        hasAmount("EUR", 1326.94 - 58.02), hasGrossValue("EUR", 1274.85), //
+                        hasForexGrossValue("USD", 1480.79), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 0.03))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2026-08-14T15:30"), hasShares(60.00), //
+                        hasSource("FlatExDegiroVerkauf10.txt"), //
+                        hasNote("Transaktion-Nr.: 5164291571"), //
+                        hasAmount("EUR", 58.02), hasGrossValue("EUR", 58.02), //
+                        hasForexGrossValue("USD", 67.39), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testFlatExDegiroVerkauf10WithSecurityInEUR()
+    {
+        var security = new Security("QUANTUM CORP.", "EUR");
+        security.setIsin("US7479066000");
+        security.setWkn("A40M9N");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new FinTechGroupBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroVerkauf10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-08-14T15:30"), hasShares(60.00), //
+                        hasSource("FlatExDegiroVerkauf10.txt"), //
+                        hasNote("Transaktion-Nr.: 5164291571"), //
+                        hasAmount("EUR", 1326.94 - 58.02), hasGrossValue("EUR", 1274.85), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 0.03))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2026-08-14T15:30"), hasShares(60.00), //
+                        hasSource("FlatExDegiroVerkauf10.txt"), //
+                        hasNote("Transaktion-Nr.: 5164291571"), //
+                        hasAmount("EUR", 58.02), hasGrossValue("EUR", 58.02), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testCryptoVerkauf01()
     {
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroCryptoVerkauf01.txt"),
+        var results = cryptoExtractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroCryptoVerkauf01.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -5140,7 +4078,7 @@ public class FinTechGroupBankPDFExtractorTest
     {
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(
+        var results = cryptoExtractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "FlatExDegiroSammelabrechnungCrypto01.txt"), errors);
 
         assertThat(errors, empty());
@@ -5211,32 +4149,19 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("IE00BFY0GT14"));
-        assertThat(security.getWkn(), is("A2N6CW"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("SPDR MSCI WORLD ETF"));
-        assertThat(security.getCurrencyCode(), is("USD"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BFY0GT14"), hasWkn("A2N6CW"), hasTicker(null), //
+                        hasName("SPDR MSCI WORLD ETF"), //
+                        hasCurrencyCode("USD"))));
 
-        // check dividends tax transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-10-08T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(168.90)));
-        assertThat(transaction.getSource(), is("FlatExDegiroDividende01.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 123456789 | Bruttothesaurierung 78,81 USD"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(15.24))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(15.24))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(17.62))));
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2021-10-08T00:00"), hasShares(168.90), //
+                        hasSource("FlatExDegiroDividende01.txt"), //
+                        hasNote("Transaktion-Nr.: 123456789 | Bruttothesaurierung 78,81 USD"), //
+                        hasAmount("EUR", 15.24), hasGrossValue("EUR", 15.24), //
+                        hasForexGrossValue("USD", 17.62), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -5270,21 +4195,17 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
-        // check dividends tax transaction
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2021-10-08T00:00"), hasShares(168.90), //
+                        hasSource("FlatExDegiroDividende01.txt"), //
+                        hasNote("Transaktion-Nr.: 123456789 | Bruttothesaurierung 78,81 USD"), //
+                        hasAmount("EUR", 15.24), hasGrossValue("EUR", 15.24), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check currency compatibility
         var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-10-08T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(168.90)));
-        assertThat(transaction.getSource(), is("FlatExDegiroDividende01.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 123456789 | Bruttothesaurierung 78,81 USD"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(15.24))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(15.24))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var c = new CheckCurrenciesAction();
         var account = new Account();
@@ -5313,50 +4234,29 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("IE00BK1PV551"));
-        assertThat(security.getWkn(), is("A1XEY2"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("XTRACKERS MSCI WORLD ETF"));
-        assertThat(security.getCurrencyCode(), is("USD"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BK1PV551"), hasWkn("A1XEY2"), hasTicker(null), //
+                        hasName("XTRACKERS MSCI WORLD ETF"), //
+                        hasCurrencyCode("USD"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2022-03-02T00:00"), hasExDate("2022-02-17"), //
+                        hasShares(162.19), //
+                        hasSource("FlatExDegiroDividende02.txt"), //
+                        hasNote("Transaktion-Nr.: 1234567891"), //
+                        hasAmount("EUR", 31.21), hasGrossValue("EUR", 31.21), //
+                        hasForexGrossValue("USD", 34.66), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-02T00:00")));
-        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2022-02-17T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(162.19)));
-        assertThat(transaction.getSource(), is("FlatExDegiroDividende02.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 1234567891"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(34.66 / 1.110600))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(34.66 / 1.110600))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(34.66))));
-
-        // check dividends tax transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-02T00:00")));
-        assertNull(transaction.getExDate());
-        assertThat(transaction.getShares(), is(Values.Share.factorize(162.19)));
-        assertThat(transaction.getSource(), is("FlatExDegiroDividende02.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 1234567891 | Bruttoausschüttung 34,66 USD"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(99.39))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(99.39))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2022-03-02T00:00"), hasShares(162.19), //
+                        hasSource("FlatExDegiroDividende02.txt"), //
+                        hasNote("Transaktion-Nr.: 1234567891 | Bruttoausschüttung 34,66 USD"), //
+                        hasAmount("EUR", 99.39), hasGrossValue("EUR", 99.39), //
+                        hasForexGrossValue("USD", 110.38), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -5386,38 +4286,25 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2022-03-02T00:00"), hasExDate("2022-02-17"), //
+                        hasShares(162.19), //
+                        hasSource("FlatExDegiroDividende02.txt"), //
+                        hasNote("Transaktion-Nr.: 1234567891"), //
+                        hasAmount("EUR", 31.21), hasGrossValue("EUR", 31.21), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2022-03-02T00:00"), hasShares(162.19), //
+                        hasSource("FlatExDegiroDividende02.txt"), //
+                        hasNote("Transaktion-Nr.: 1234567891 | Bruttoausschüttung 34,66 USD"), //
+                        hasAmount("EUR", 99.39), hasGrossValue("EUR", 99.39), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check currency compatibility
         var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-02T00:00")));
-        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2022-02-17T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(162.19)));
-        assertThat(transaction.getSource(), is("FlatExDegiroDividende02.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 1234567891"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(34.66 / 1.110600))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(34.66 / 1.110600))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check dividends tax transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-02T00:00")));
-        assertNull(transaction.getExDate());
-        assertThat(transaction.getShares(), is(Values.Share.factorize(162.19)));
-        assertThat(transaction.getSource(), is("FlatExDegiroDividende02.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 1234567891 | Bruttoausschüttung 34,66 USD"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(99.39))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(99.39))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var c = new CheckCurrenciesAction();
         var account = new Account();
@@ -5446,35 +4333,20 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("US09075V1026"));
-        assertThat(security.getWkn(), is("A2PSR2"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("BIONTECH SE SPON. ADRS 1"));
-        assertThat(security.getCurrencyCode(), is("USD"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("US09075V1026"), hasWkn("A2PSR2"), hasTicker(null), //
+                        hasName("BIONTECH SE SPON. ADRS 1"), //
+                        hasCurrencyCode("USD"))));
 
-        // check dividends tax transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-17T00:00")));
-        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2022-06-02T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(5)));
-        assertThat(transaction.getSource(), is("FlatExDegiroDividende03.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr. : 2877924522"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(7.37))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(10.66 / 1.051700))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(2.81 / 1.051700))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.10 / 1.051700))));
-
-        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(10.66))));
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2022-06-17T00:00"), hasExDate("2022-06-02"), //
+                        hasShares(5.00), //
+                        hasSource("FlatExDegiroDividende03.txt"), //
+                        hasNote("Transaktion-Nr. : 2877924522"), //
+                        hasAmount("EUR", 7.37), hasGrossValue("EUR", 10.14), //
+                        hasForexGrossValue("USD", 10.66), //
+                        hasTaxes("EUR", 2.81 / 1.051700), hasFees("EUR", 0.10 / 1.051700))));
     }
 
     @Test
@@ -5504,23 +4376,17 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2022-06-17T00:00"), hasExDate("2022-06-02"), //
+                        hasShares(5.00), //
+                        hasSource("FlatExDegiroDividende03.txt"), //
+                        hasNote("Transaktion-Nr. : 2877924522"), //
+                        hasAmount("EUR", 7.37), hasGrossValue("EUR", 10.14), //
+                        hasTaxes("EUR", 2.81 / 1.051700), hasFees("EUR", 0.10 / 1.051700))));
+
+        // check currency compatibility
         var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-17T00:00")));
-        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2022-06-02T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(5)));
-        assertThat(transaction.getSource(), is("FlatExDegiroDividende03.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr. : 2877924522"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(7.37))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(10.66 / 1.051700))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(2.81 / 1.051700))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.10 / 1.051700))));
 
         var c = new CheckCurrenciesAction();
         var account = new Account();
@@ -5549,30 +4415,19 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "USD");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("US09075V1026"));
-        assertThat(security.getWkn(), is("A2PSR2"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("BIONTECH SE SPON. ADRS 1"));
-        assertThat(security.getCurrencyCode(), is("USD"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("US09075V1026"), hasWkn("A2PSR2"), hasTicker(null), //
+                        hasName("BIONTECH SE SPON. ADRS 1"), //
+                        hasCurrencyCode("USD"))));
 
-        // check dividends tax transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-17T00:00")));
-        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2022-06-02T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(10)));
-        assertThat(transaction.getSource(), is("FlatExDegiroDividende04.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr. : 2877924406"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("USD", Values.Amount.factorize(15.49))));
-        assertThat(transaction.getGrossValue(), is(Money.of("USD", Values.Amount.factorize(21.32))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("USD", Values.Amount.factorize(5.63))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("USD", Values.Amount.factorize(0.20))));
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2022-06-17T00:00"), hasExDate("2022-06-02"), //
+                        hasShares(10.00), //
+                        hasSource("FlatExDegiroDividende04.txt"), //
+                        hasNote("Transaktion-Nr. : 2877924406"), //
+                        hasAmount("USD", 15.49), hasGrossValue("USD", 21.32), //
+                        hasTaxes("USD", 5.63), hasFees("USD", 0.20))));
     }
 
     @Test
@@ -6037,8 +4892,8 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testFlatExDegiroDividende13()
     {
-        // Gross Value is wrong, because we missing fx rate for the german taxes
-        // 2,99 EUR
+        // The document does not contain an exchange rate, it is derived from
+        // the amounts: (33,00 USD - 4,95 USD - 24,57 USD) / 2,99 EUR
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
@@ -6050,9 +4905,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "USD");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -6060,17 +4916,51 @@ public class FinTechGroupBankPDFExtractorTest
                         hasName("J.M. SMUCKER CO."), //
                         hasCurrencyCode("USD"))));
 
-        // check dividends transaction has failure message because of missing
-        // exchange rate for EUR taxes
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionMissingExchangeRateIfInForex, //
-                        dividend( //
-                                        hasDate("2025-12-01T00:00"), hasExDate("2025-11-14"), //
-                                        hasShares(30.00), //
-                                        hasSource("FlatExDegiroDividende13.txt"), //
-                                        hasNote("Transaktion-Nr. : 6155515228"), //
-                                        hasAmount("USD", 24.57), hasGrossValue("USD", 29.52), // Wrong gross value, is 33.00 USD
-                                        hasTaxes("USD", 4.95), hasFees("USD", 0.00))))); // Missing 2.99 EUR tax conversion
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-12-01T00:00"), hasExDate("2025-11-14"), //
+                        hasShares(30.00), //
+                        hasSource("FlatExDegiroDividende13.txt"), //
+                        hasNote("Transaktion-Nr. : 6155515228"), //
+                        hasAmount("USD", 24.57), hasGrossValue("USD", 33.00), //
+                        hasTaxes("USD", 4.95 + 3.48), hasFees("USD", 0.00))));
+    }
+
+    @Test
+    public void testFlatExDegiroDividende13WithSecurityInEUR()
+    {
+        var security = new Security("J.M. SMUCKER CO.", "EUR");
+        security.setIsin("US8326964058");
+        security.setWkn("633835");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new FinTechGroupBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroDividende13.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "USD");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-12-01T00:00"), hasExDate("2025-11-14"), //
+                        hasShares(30.00), //
+                        hasSource("FlatExDegiroDividende13.txt"), //
+                        hasNote("Transaktion-Nr. : 6155515228"), //
+                        hasAmount("USD", 24.57), hasGrossValue("USD", 33.00), //
+                        hasForexGrossValue("EUR", 28.35), //
+                        hasTaxes("USD", 4.95 + 3.48), hasFees("USD", 0.00))));
     }
 
     @Test
@@ -6101,7 +4991,7 @@ public class FinTechGroupBankPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2026-01-23"), hasExDate("2026-01-02"), //
-                        hasShares(100), //
+                        hasShares(100.00), //
                         hasSource("FlatExDegiroDividende14.txt"), //
                         hasNote("Transaktion-Nr. : 4741404453"), //
                         hasAmount("EUR", 12.68), hasGrossValue("EUR", 17.03), //
@@ -6145,6 +5035,8 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testFlatExDegiroDividende16()
     {
+        // The document does not contain an exchange rate, it is derived from
+        // the amounts: (2,61 USD - 0,39 USD - 1,95 USD) / 0,23 EUR
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
@@ -6156,10 +5048,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, "EUR");
+        new AssertImportActions().check(results, "USD");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -6167,17 +5059,14 @@ public class FinTechGroupBankPDFExtractorTest
                         hasName("MASTERCARD INC. A"), //
                         hasCurrencyCode("USD"))));
 
-        // check dividends transaction has failure message because of missing
-        // exchange rate for EUR taxes
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionMissingExchangeRateIfInForex, //
-                        dividend( //
-                                        hasDate("2026-02-09T00:00"), hasExDate("2026-01-09"), //
-                                        hasShares(3.00), //
-                                        hasSource("FlatExDegiroDividende16.txt"), //
-                                        hasNote("Transaktion-Nr. : 4773716165"), //
-                                        hasAmount("USD", 1.95), hasGrossValue("USD", 2.34), //
-                                        hasTaxes("USD", 0.39), hasFees("USD", 0.00)))));
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-02-09T00:00"), hasExDate("2026-01-09"), //
+                        hasShares(3.00), //
+                        hasSource("FlatExDegiroDividende16.txt"), //
+                        hasNote("Transaktion-Nr. : 4773716165"), //
+                        hasAmount("USD", 1.95), hasGrossValue("USD", 2.61), //
+                        hasTaxes("USD", 0.39 + 0.27), hasFees("USD", 0.00))));
     }
 
     @Test
@@ -6455,34 +5344,18 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("CA03765K1049"));
-        assertThat(security.getWkn(), is("A12HM0"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("APHRIA INC."));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("CA03765K1049"), hasWkn("A12HM0"), hasTicker(null), //
+                        hasName("APHRIA INC."), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-04-09T16:52")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(540)));
-        assertThat(entry.getSource(), is("FlatExSammelabrechnung01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 123456789"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(4416.52))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(4573.80))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(148.87))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(5.90 + 2.51))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2019-04-09T16:52"), hasShares(540.00), //
+                        hasSource("FlatExSammelabrechnung01.txt"), //
+                        hasNote("Transaktion-Nr.: 123456789"), //
+                        hasAmount("EUR", 4416.52), hasGrossValue("EUR", 4573.80), //
+                        hasTaxes("EUR", 148.87), hasFees("EUR", 5.90 + 2.51))));
     }
 
     @Test
@@ -6505,55 +5378,84 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "USD");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("US4581401001"));
-        assertThat(security.getWkn(), is("855681"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("INTEL CORP.       DL-,001"));
-        assertThat(security.getCurrencyCode(), is("USD"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("US4581401001"), hasWkn("855681"), hasTicker(null), //
+                        hasName("INTEL CORP.       DL-,001"), //
+                        hasCurrencyCode("USD"))));
 
-        // check 1st buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-30T18:09"), hasShares(100.00), //
+                        hasSource("FlatExSammelabrechnung02.txt"), //
+                        hasNote("Transaktion-Nr.: 2101694078"), //
+                        hasAmount("USD", 4773.36), hasGrossValue("USD", 4780.50), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 7.03 + 0.11))));
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-30T18:09"), hasShares(20.00), //
+                        hasSource("FlatExSammelabrechnung02.txt"), //
+                        hasNote("Transaktion-Nr.: 2101694102"), //
+                        hasAmount("USD", 955.98), hasGrossValue("USD", 956.00), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.02))));
+    }
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-30T18:09")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
-        assertThat(entry.getSource(), is("FlatExSammelabrechnung02.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 2101694078"));
+    @Test
+    public void testFlatExSammelabrechnung02TaxRefund_synthetic()
+    {
+        // Based on FlatExSammelabrechnung02: each sale has an EUR 0.84 tax refund
+        // instead of zero tax, and its USD settlement amount is increased by USD 1.00.
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("USD", Values.Amount.factorize(4773.36))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("USD", Values.Amount.factorize(4780.50))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("USD", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("USD", Values.Amount.factorize(7.03 + 0.11))));
+        List<Exception> errors = new ArrayList<>();
 
-        // check 2nd buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExSammelabrechnung02TaxRefund_synthetic.txt"),
+                        errors);
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(2L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(5));
+        new AssertImportActions().check(results, "USD");
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-30T18:09")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20)));
-        assertThat(entry.getSource(), is("FlatExSammelabrechnung02.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 2101694102"));
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US4581401001"), hasWkn("855681"), hasTicker(null), //
+                        hasName("INTEL CORP.       DL-,001"), //
+                        hasCurrencyCode("USD"))));
 
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("USD", Values.Amount.factorize(955.98))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("USD", Values.Amount.factorize(956.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("USD", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("USD", Values.Amount.factorize(0.02))));
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-30T18:09"), hasShares(100.00), //
+                        hasSource("FlatExSammelabrechnung02TaxRefund_synthetic.txt"), //
+                        hasNote("Transaktion-Nr.: 2101694078"), //
+                        hasAmount("USD", 4773.36), hasGrossValue("USD", 4780.50), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 7.03 + 0.11))));
+
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-30T18:09"), hasShares(20.00), //
+                        hasSource("FlatExSammelabrechnung02TaxRefund_synthetic.txt"), //
+                        hasNote("Transaktion-Nr.: 2101694102"), //
+                        hasAmount("USD", 955.98), hasGrossValue("USD", 956.00), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.02))));
+
+        // check tax refund transactions
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2020-11-30T18:09"), hasShares(100.00), //
+                        hasSource("FlatExSammelabrechnung02TaxRefund_synthetic.txt"), //
+                        hasNote("Transaktion-Nr.: 2101694078"), //
+                        hasAmount("USD", 1.00), hasGrossValue("USD", 1.00), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2020-11-30T18:09"), hasShares(20.00), //
+                        hasSource("FlatExSammelabrechnung02TaxRefund_synthetic.txt"), //
+                        hasNote("Transaktion-Nr.: 2101694102"), //
+                        hasAmount("USD", 1.00), hasGrossValue("USD", 1.00), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
     }
 
     @Test
@@ -6582,47 +5484,26 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "USD");
 
-        // check 1st buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US4581401001"), hasWkn("855681"), hasTicker(null), //
+                        hasName("INTEL CORP.       DL-,001"), //
+                        hasCurrencyCode("USD"))));
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-30T18:09"), hasShares(100.00), //
+                        hasSource("FlatExSammelabrechnung02.txt"), //
+                        hasNote("Transaktion-Nr.: 2101694078"), //
+                        hasAmount("USD", 4773.36), hasGrossValue("USD", 4780.50), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 7.03 + 0.11))));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-30T18:09")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
-        assertThat(entry.getSource(), is("FlatExSammelabrechnung02.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 2101694078"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("USD", Values.Amount.factorize(4773.36))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("USD", Values.Amount.factorize(4780.50))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("USD", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("USD", Values.Amount.factorize(7.03 + 0.11))));
-
-        // check 2st buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-30T18:09")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20)));
-        assertThat(entry.getSource(), is("FlatExSammelabrechnung02.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 2101694102"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("USD", Values.Amount.factorize(955.98))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("USD", Values.Amount.factorize(956.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("USD", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("USD", Values.Amount.factorize(0.02))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-30T18:09"), hasShares(20.00), //
+                        hasSource("FlatExSammelabrechnung02.txt"), //
+                        hasNote("Transaktion-Nr.: 2101694102"), //
+                        hasAmount("USD", 955.98), hasGrossValue("USD", 956.00), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.02))));
     }
 
     @Test
@@ -6645,63 +5526,57 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security1.getIsin(), is("DE000A0S9GB0"));
-        assertThat(security1.getWkn(), is("A0S9GB"));
-        assertNull(security1.getTickerSymbol());
-        assertThat(security1.getName(), is("DT.BOERSE COM. XETRA-GOLD"));
-        assertThat(security1.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000A0S9GB0"), hasWkn("A0S9GB"), hasTicker(null), //
+                        hasName("DT.BOERSE COM. XETRA-GOLD"), //
+                        hasCurrencyCode("EUR"))));
 
-        var security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security2.getIsin(), is("KYG9830T1067"));
-        assertThat(security2.getWkn(), is("A2JNY1"));
-        assertNull(security2.getTickerSymbol());
-        assertThat(security2.getName(), is("XIAOMI CORP. CL.B"));
-        assertThat(security2.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("KYG9830T1067"), hasWkn("A2JNY1"), hasTicker(null), //
+                        hasName("XIAOMI CORP. CL.B"), //
+                        hasCurrencyCode("EUR"))));
 
-        // check 1st buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2019-07-25T09:04"), hasShares(38.00), //
+                        hasSource("FlatExSammelabrechnung03.txt"), //
+                        hasNote("Transaktion-Nr.: 0000000000"), //
+                        hasAmount("EUR", 1558.05), hasGrossValue("EUR", 1564.23), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.80 + 2.38))));
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2019-07-25T09:09"), hasShares(1470.00), //
+                        hasSource("FlatExSammelabrechnung03.txt"), //
+                        hasNote("Transaktion-Nr.: 0000000000"), //
+                        hasAmount("EUR", 1581.52), hasGrossValue("EUR", 1572.17), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.80 + 5.55))));
+    }
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-25T09:04")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(38)));
-        assertThat(entry.getSource(), is("FlatExSammelabrechnung03.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 0000000000"));
+    @Test
+    public void testFlatExSammelabrechnungDevisen01()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1558.05))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(1564.23))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(3.80 + 2.38))));
+        List<Exception> errors = new ArrayList<>();
 
-        // check 2nd buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExSammelabrechnungDevisen01.txt"), errors);
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-25T09:09")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1470)));
-        assertThat(entry.getSource(), is("FlatExSammelabrechnung03.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 0000000000"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1581.52))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(1572.17))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(3.80 + 5.55))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        deposit(hasDate("2021-03-05T00:00"), hasAmount("EUR", 1840.17), //
+                                        hasSource("FlatExSammelabrechnungDevisen01.txt"), //
+                                        hasNote("Auftrag Nr. 5122608575")))));
     }
 
     @Test
@@ -6723,39 +5598,25 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
-        // check transaction
-        var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(3L));
-
-        var item = iter.next();
-
         // assert transaction
-        var transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-07-07T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(250.00))));
-        assertThat(transaction.getSource(), is("FlatExKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Überweisung"));
+        assertThat(results, hasItem(deposit(hasDate("2020-07-07"), hasAmount("EUR", 250.00), //
+                        hasSource("FlatExKontoauszug01.txt"), hasNote("Überweisung"))));
 
-        item = iter.next();
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2020-07-20"), //
+                        hasSource("FlatExKontoauszug01.txt"), //
+                        hasNote("Depotgebühren 01.04.2020 - 30.04.2020"), //
+                        hasAmount("EUR", 0.26), hasGrossValue("EUR", 0.26), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-07-20T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.26))));
-        assertThat(transaction.getSource(), is("FlatExKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Depotgebühren 01.04.2020 - 30.04.2020"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-30T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.05))));
-        assertThat(transaction.getSource(), is("FlatExKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Zinsabschluss 01.04.2020 - 30.06.2020"));
+        // check interest transaction
+        assertThat(results, hasItem(interestCharge( //
+                        hasDate("2020-06-30"), //
+                        hasSource("FlatExKontoauszug01.txt"), //
+                        hasNote("Zinsabschluss 01.04.2020 - 30.06.2020"), //
+                        hasAmount("EUR", 0.05), hasGrossValue("EUR", 0.05), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -6777,139 +5638,50 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results.size(), is(13));
         new AssertImportActions().check(results, "EUR");
 
-        // check transaction
-        var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(13L));
-
-        var item = iter.next();
-
         // assert transaction
-        var transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-18T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1000.00))));
-        assertThat(transaction.getSource(), is("FlatExKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Überweisung"));
+        assertThat(results, hasItem(deposit(hasDate("2019-11-18"), hasAmount("EUR", 1000.00), //
+                        hasSource("FlatExKontoauszug02.txt"), hasNote("Überweisung"))));
 
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2019-11-19"), hasAmount("EUR", 50.00), //
+                        hasSource("FlatExKontoauszug02.txt"), hasNote("Lastschrift"))));
 
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-19T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(50.00))));
-        assertThat(transaction.getSource(), is("FlatExKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Lastschrift"));
+        assertThat(results, hasItem(deposit(hasDate("2019-11-19"), hasAmount("EUR", 50.00), //
+                        hasSource("FlatExKontoauszug02.txt"), hasNote("Lastschrift"))));
 
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2019-11-19"), hasAmount("EUR", 50.00), //
+                        hasSource("FlatExKontoauszug02.txt"), hasNote("Lastschrift"))));
 
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-19T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(50.00))));
-        assertThat(transaction.getSource(), is("FlatExKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Lastschrift"));
+        assertThat(results, hasItem(deposit(hasDate("2019-11-19"), hasAmount("EUR", 400.00), //
+                        hasSource("FlatExKontoauszug02.txt"), hasNote("Überweisung"))));
 
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2019-11-19"), hasAmount("EUR", 53.00), //
+                        hasSource("FlatExKontoauszug02.txt"), hasNote("R-Transaktion"))));
 
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-19T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(50.00))));
-        assertThat(transaction.getSource(), is("FlatExKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Lastschrift"));
+        assertThat(results, hasItem(removal(hasDate("2019-11-19"), hasAmount("EUR", 53.00), //
+                        hasSource("FlatExKontoauszug02.txt"), hasNote("R-Transaktion"))));
 
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2019-11-19"), hasAmount("EUR", 53.00), //
+                        hasSource("FlatExKontoauszug02.txt"), hasNote("R-Transaktion"))));
 
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-19T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(400.00))));
-        assertThat(transaction.getSource(), is("FlatExKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Überweisung"));
+        assertThat(results, hasItem(deposit(hasDate("2019-11-25"), hasAmount("EUR", 50.00), //
+                        hasSource("FlatExKontoauszug02.txt"), hasNote("Überweisung"))));
 
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2019-11-25"), hasAmount("EUR", 150.00), //
+                        hasSource("FlatExKontoauszug02.txt"), hasNote("Überweisung"))));
 
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-19T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(53.00))));
-        assertThat(transaction.getSource(), is("FlatExKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("R-Transaktion"));
+        assertThat(results, hasItem(deposit(hasDate("2019-11-25"), hasAmount("EUR", 159.00), //
+                        hasSource("FlatExKontoauszug02.txt"), hasNote("Überweisung"))));
 
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2019-12-10"), hasAmount("EUR", 160.00), //
+                        hasSource("FlatExKontoauszug02.txt"), hasNote("Überweisung"))));
 
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-19T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(53.00))));
-        assertThat(transaction.getSource(), is("FlatExKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("R-Transaktion"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-19T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(53.00))));
-        assertThat(transaction.getSource(), is("FlatExKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("R-Transaktion"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-25T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(50.00))));
-        assertThat(transaction.getSource(), is("FlatExKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Überweisung"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-25T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(150.00))));
-        assertThat(transaction.getSource(), is("FlatExKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Überweisung"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-25T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(159.00))));
-        assertThat(transaction.getSource(), is("FlatExKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Überweisung"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-10T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(160.00))));
-        assertThat(transaction.getSource(), is("FlatExKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Überweisung"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-31T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.07))));
-        assertThat(transaction.getSource(), is("FlatExKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Zinsabschluss 01.10.2019 - 31.12.2019"));
+        // check interest transaction
+        assertThat(results, hasItem(interestCharge( //
+                        hasDate("2019-12-31"), //
+                        hasSource("FlatExKontoauszug02.txt"), //
+                        hasNote("Zinsabschluss 01.10.2019 - 31.12.2019"), //
+                        hasAmount("EUR", 0.07), hasGrossValue("EUR", 0.07), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -6931,39 +5703,25 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
-        // check transaction
-        var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(3L));
-
-        var item = iter.next();
-
         // assert transaction
-        var transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-07-07T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(250.00))));
-        assertThat(transaction.getSource(), is("FlatExKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Überweisung"));
+        assertThat(results, hasItem(deposit(hasDate("2020-07-07"), hasAmount("EUR", 250.00), //
+                        hasSource("FlatExKontoauszug03.txt"), hasNote("Überweisung"))));
 
-        item = iter.next();
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2020-07-20"), //
+                        hasSource("FlatExKontoauszug03.txt"), //
+                        hasNote("Depotgebühren 01.04.2020 - 30.04.2020"), //
+                        hasAmount("EUR", 0.26), hasGrossValue("EUR", 0.26), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-07-20T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.26))));
-        assertThat(transaction.getSource(), is("FlatExKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Depotgebühren 01.04.2020 - 30.04.2020"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-30T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.05))));
-        assertThat(transaction.getSource(), is("FlatExKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Zinsabschluss 01.04.2020 - 30.06.2020"));
+        // check interest transaction
+        assertThat(results, hasItem(interestCharge( //
+                        hasDate("2020-06-30"), //
+                        hasSource("FlatExKontoauszug03.txt"), //
+                        hasNote("Zinsabschluss 01.04.2020 - 30.06.2020"), //
+                        hasAmount("EUR", 0.05), hasGrossValue("EUR", 0.05), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -6986,28 +5744,48 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-        assertThat(results, hasItem(interestCharge(hasDate("2019-06-30"), hasAmount("EUR", 0.50), //
-                        hasSource("FlatExKontoauszug04.txt"), hasNote("Zinsabschluss 01.04.2019 - 30.06.2019"))));
+        assertThat(results, hasItem(interestCharge( //
+                        hasDate("2019-06-30"), //
+                        hasSource("FlatExKontoauszug04.txt"), //
+                        hasNote("Zinsabschluss 01.04.2019 - 30.06.2019"), //
+                        hasAmount("EUR", 0.50), hasGrossValue("EUR", 0.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2019-07-02"), hasAmount("EUR", 495.05), //
                         hasSource("FlatExKontoauszug04.txt"), hasNote("Überweisung"))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2019-08-01"), hasAmount("EUR", 0.11), //
-                        hasSource("FlatExKontoauszug04.txt"), hasNote("ZINSPILOT Auszahlung FIMBank p.l.c."))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2019-08-01"), //
+                        hasSource("FlatExKontoauszug04.txt"), //
+                        hasNote("ZINSPILOT Auszahlung FIMBank p.l.c."), //
+                        hasAmount("EUR", 0.11), hasGrossValue("EUR", 0.11), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2019-08-16"), hasAmount("EUR", 0.09), //
-                        hasSource("FlatExKontoauszug04.txt"), hasNote("ZINSPILOT Auszahlung FIMBank p.l.c."))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2019-08-16"), //
+                        hasSource("FlatExKontoauszug04.txt"), //
+                        hasNote("ZINSPILOT Auszahlung FIMBank p.l.c."), //
+                        hasAmount("EUR", 0.09), hasGrossValue("EUR", 0.09), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2019-09-02"), hasAmount("EUR", 0.11), //
-                        hasSource("FlatExKontoauszug04.txt"), hasNote("ZINSPILOT Auszahlung FIMBank p.l.c."))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2019-09-02"), //
+                        hasSource("FlatExKontoauszug04.txt"), //
+                        hasNote("ZINSPILOT Auszahlung FIMBank p.l.c."), //
+                        hasAmount("EUR", 0.11), hasGrossValue("EUR", 0.11), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2019-09-16"), hasAmount("EUR", 0.09), //
-                        hasSource("FlatExKontoauszug04.txt"), hasNote("ZINSPILOT Auszahlung FIMBank p.l.c."))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2019-09-16"), //
+                        hasSource("FlatExKontoauszug04.txt"), //
+                        hasNote("ZINSPILOT Auszahlung FIMBank p.l.c."), //
+                        hasAmount("EUR", 0.09), hasGrossValue("EUR", 0.09), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -7072,8 +5850,12 @@ public class FinTechGroupBankPDFExtractorTest
                                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // assert transaction
-        assertThat(results, hasItem(interestCharge(hasDate("2021-06-30T00:00"), hasAmount("EUR", 2.73), //
-                        hasSource("FlatExDegiroKontoauszug01.txt"), hasNote("Zinsabschluss 01.04.2021 - 30.06.2021"))));
+        assertThat(results, hasItem(interestCharge( //
+                        hasDate("2021-06-30T00:00"), //
+                        hasSource("FlatExDegiroKontoauszug01.txt"), //
+                        hasNote("Zinsabschluss 01.04.2021 - 30.06.2021"), //
+                        hasAmount("EUR", 2.73), hasGrossValue("EUR", 2.73), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -7095,249 +5877,108 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results.size(), is(24));
         new AssertImportActions().check(results, "EUR");
 
-        // check transaction
-        var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(24L));
-
-        var item = iter.next();
-
         // assert transaction
-        var transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-04T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(2000.00))));
-        assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Überweisung"));
+        assertThat(results, hasItem(deposit(hasDate("2022-04-04"), hasAmount("EUR", 2000.00), //
+                        hasSource("FlatExDegiroKontoauszug02.txt"), hasNote("Überweisung"))));
 
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2022-04-06"), hasAmount("EUR", 1800.00), //
+                        hasSource("FlatExDegiroKontoauszug02.txt"), hasNote("Überweisung"))));
 
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-06T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1800.00))));
-        assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Überweisung"));
+        assertThat(results, hasItem(deposit(hasDate("2022-04-20"), hasAmount("EUR", 1000.00), //
+                        hasSource("FlatExDegiroKontoauszug02.txt"), hasNote("Überweisung"))));
 
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2022-04-26"), hasAmount("EUR", 1250.00), //
+                        hasSource("FlatExDegiroKontoauszug02.txt"), hasNote("Überweisung"))));
 
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-20T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1000.00))));
-        assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Überweisung"));
+        assertThat(results, hasItem(deposit(hasDate("2022-04-29"), hasAmount("EUR", 1000.00), //
+                        hasSource("FlatExDegiroKontoauszug02.txt"), hasNote("Überweisung"))));
 
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2022-05-02"), hasAmount("EUR", 1000.00), //
+                        hasSource("FlatExDegiroKontoauszug02.txt"), hasNote("Überweisung"))));
 
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-26T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1250.00))));
-        assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Überweisung"));
+        assertThat(results, hasItem(deposit(hasDate("2022-05-03"), hasAmount("EUR", 1500.00), //
+                        hasSource("FlatExDegiroKontoauszug02.txt"), hasNote("Überweisung"))));
 
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2022-05-03"), hasAmount("EUR", 600.00), //
+                        hasSource("FlatExDegiroKontoauszug02.txt"), hasNote("Überweisung"))));
 
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-29T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1000.00))));
-        assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Überweisung"));
+        assertThat(results, hasItem(deposit(hasDate("2022-05-10"), hasAmount("EUR", 2500.00), //
+                        hasSource("FlatExDegiroKontoauszug02.txt"), hasNote("Überweisung"))));
 
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2022-05-13"), hasAmount("EUR", 1000.00), //
+                        hasSource("FlatExDegiroKontoauszug02.txt"), hasNote("Überweisung"))));
 
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-02T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1000.00))));
-        assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Überweisung"));
+        assertThat(results, hasItem(deposit(hasDate("2022-05-17"), hasAmount("EUR", 1000.00), //
+                        hasSource("FlatExDegiroKontoauszug02.txt"), hasNote("Überweisung"))));
 
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2022-05-27"), hasAmount("EUR", 1500.00), //
+                        hasSource("FlatExDegiroKontoauszug02.txt"), hasNote("Überweisung"))));
 
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-03T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1500.00))));
-        assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Überweisung"));
+        assertThat(results, hasItem(deposit(hasDate("2022-05-31"), hasAmount("EUR", 600.00), //
+                        hasSource("FlatExDegiroKontoauszug02.txt"), hasNote("Überweisung"))));
 
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2022-06-02"), hasAmount("EUR", 1000.00), //
+                        hasSource("FlatExDegiroKontoauszug02.txt"), hasNote("Überweisung"))));
 
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-03T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(600.00))));
-        assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Überweisung"));
+        assertThat(results, hasItem(deposit(hasDate("2022-06-14"), hasAmount("EUR", 1000.00), //
+                        hasSource("FlatExDegiroKontoauszug02.txt"), hasNote("Überweisung"))));
 
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2022-06-17"), hasAmount("EUR", 1000.00), //
+                        hasSource("FlatExDegiroKontoauszug02.txt"), hasNote("Überweisung"))));
 
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-10T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(2500.00))));
-        assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Überweisung"));
+        assertThat(results, hasItem(deposit(hasDate("2022-07-01"), hasAmount("EUR", 600.00), //
+                        hasSource("FlatExDegiroKontoauszug02.txt"), hasNote("Überweisung"))));
 
-        item = iter.next();
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2022-03-04"), //
+                        hasSource("FlatExDegiroKontoauszug02.txt"), //
+                        hasNote("Depotservicegebühr US09075V1026"), //
+                        hasAmount("EUR", 0.09), hasGrossValue("EUR", 0.09), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-13T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1000.00))));
-        assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Überweisung"));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2022-04-19"), //
+                        hasSource("FlatExDegiroKontoauszug02.txt"), //
+                        hasNote("Depotgebühren 01.01.2022 - 31.01.2022"), //
+                        hasAmount("EUR", 10.84), hasGrossValue("EUR", 10.84), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        item = iter.next();
+        assertThat(results, hasItem(fee( //
+                        hasDate("2022-04-19"), //
+                        hasSource("FlatExDegiroKontoauszug02.txt"), //
+                        hasNote("Depotgebühren 01.02.2022 - 28.02.2022"), //
+                        hasAmount("EUR", 9.99), hasGrossValue("EUR", 9.99), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-17T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1000.00))));
-        assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Überweisung"));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2022-04-19"), //
+                        hasSource("FlatExDegiroKontoauszug02.txt"), //
+                        hasNote("Depotgebühren 01.03.2022 - 31.03.2022"), //
+                        hasAmount("EUR", 9.85), hasGrossValue("EUR", 9.85), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        item = iter.next();
+        assertThat(results, hasItem(fee( //
+                        hasDate("2022-04-22"), //
+                        hasSource("FlatExDegiroKontoauszug02.txt"), //
+                        hasNote("Depotservicegebühr US47215P1066"), //
+                        hasAmount("EUR", 1.34), hasGrossValue("EUR", 1.34), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-27T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1500.00))));
-        assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Überweisung"));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2022-06-21"), //
+                        hasSource("FlatExDegiroKontoauszug02.txt"), //
+                        hasNote("Gebühr Tax Voucher WKN A0NFN3"), //
+                        hasAmount("EUR", 5.90), hasGrossValue("EUR", 5.90), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-31T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(600.00))));
-        assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Überweisung"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-02T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1000.00))));
-        assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Überweisung"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-14T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1000.00))));
-        assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Überweisung"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-17T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1000.00))));
-        assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Überweisung"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-07-01T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(600.00))));
-        assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Überweisung"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-04T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.09))));
-        assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Depotservicegebühr US09075V1026"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-19T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.84))));
-        assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Depotgebühren 01.01.2022 - 31.01.2022"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-19T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(9.99))));
-        assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Depotgebühren 01.02.2022 - 28.02.2022"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-19T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(9.85))));
-        assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Depotgebühren 01.03.2022 - 31.03.2022"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-22T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1.34))));
-        assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Depotservicegebühr US47215P1066"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-21T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(5.90))));
-        assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Gebühr Tax Voucher WKN A0NFN3"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-31T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1.16))));
-        assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Zinsabschluss 01.01.2022 - 31.03.2022"));
+        // check interest transaction
+        assertThat(results, hasItem(interestCharge( //
+                        hasDate("2022-03-31"), //
+                        hasSource("FlatExDegiroKontoauszug02.txt"), //
+                        hasNote("Zinsabschluss 01.01.2022 - 31.03.2022"), //
+                        hasAmount("EUR", 1.16), hasGrossValue("EUR", 1.16), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -7360,8 +6001,12 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-        assertThat(results, hasItem(interestCharge(hasDate("2021-03-31"), hasAmount("EUR", 5.60), //
-                        hasSource("FlatExDegiroKontoauszug03.txt"), hasNote("Zinsabschluss 01.01.2021 - 31.03.2021"))));
+        assertThat(results, hasItem(interestCharge( //
+                        hasDate("2021-03-31"), //
+                        hasSource("FlatExDegiroKontoauszug03.txt"), //
+                        hasNote("Zinsabschluss 01.01.2021 - 31.03.2021"), //
+                        hasAmount("EUR", 5.60), hasGrossValue("EUR", 5.60), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2021-04-06"), hasAmount("EUR", 300.00), //
@@ -7380,16 +6025,28 @@ public class FinTechGroupBankPDFExtractorTest
                         hasSource("FlatExDegiroKontoauszug03.txt"), hasNote("Überweisung"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2021-04-19"), hasAmount("EUR", 3.17), //
-                        hasSource("FlatExDegiroKontoauszug03.txt"), hasNote("Depotgebühren 01.01.2021 - 31.01.2021"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2021-04-19"), //
+                        hasSource("FlatExDegiroKontoauszug03.txt"), //
+                        hasNote("Depotgebühren 01.01.2021 - 31.01.2021"), //
+                        hasAmount("EUR", 3.17), hasGrossValue("EUR", 3.17), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2021-04-19"), hasAmount("EUR", 3.13), //
-                        hasSource("FlatExDegiroKontoauszug03.txt"), hasNote("Depotgebühren 01.02.2021 - 28.02.2021"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2021-04-19"), //
+                        hasSource("FlatExDegiroKontoauszug03.txt"), //
+                        hasNote("Depotgebühren 01.02.2021 - 28.02.2021"), //
+                        hasAmount("EUR", 3.13), hasGrossValue("EUR", 3.13), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2021-04-19"), hasAmount("EUR", 3.25), //
-                        hasSource("FlatExDegiroKontoauszug03.txt"), hasNote("Depotgebühren 01.03.2021 - 31.03.2021"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2021-04-19"), //
+                        hasSource("FlatExDegiroKontoauszug03.txt"), //
+                        hasNote("Depotgebühren 01.03.2021 - 31.03.2021"), //
+                        hasAmount("EUR", 3.25), hasGrossValue("EUR", 3.25), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -7413,10 +6070,13 @@ public class FinTechGroupBankPDFExtractorTest
 
         // assert cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        Messages.MsgErrorTransactionOrderCancellationUnsupported, //
                         interest( //
-                                        hasDate("2023-09-30"), hasAmount("EUR", 0.68), //
-                                        hasSource("FlatExDegiroKontoauszug04.txt"), hasNote("Zinsabschluss")))));
+                                        hasDate("2023-09-30"), //
+                                        hasSource("FlatExDegiroKontoauszug04.txt"), //
+                                        hasNote("Zinsabschluss"), //
+                                        hasAmount("EUR", 0.68), hasGrossValue("EUR", 0.68), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -7439,9 +6099,12 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2023-10-25"), hasAmount("EUR", 5.90), //
-                        hasSource("FlatExDegiroKontoauszug05.txt"),
-                        hasNote("Gebühr Kapitaltransaktion Ausland US17275R1023"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2023-10-25"), //
+                        hasSource("FlatExDegiroKontoauszug05.txt"), //
+                        hasNote("Gebühr Kapitaltransaktion Ausland US17275R1023"), //
+                        hasAmount("EUR", 5.90), hasGrossValue("EUR", 5.90), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2023-11-09"), hasAmount("EUR", 10000.00), //
@@ -7452,9 +6115,12 @@ public class FinTechGroupBankPDFExtractorTest
                         hasSource("FlatExDegiroKontoauszug05.txt"), hasNote("Überweisung"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2023-12-01"), hasAmount("EUR", 5.90), //
-                        hasSource("FlatExDegiroKontoauszug05.txt"),
-                        hasNote("Gebühr Kapitaltransaktion Ausland JP3756600007"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2023-12-01"), //
+                        hasSource("FlatExDegiroKontoauszug05.txt"), //
+                        hasNote("Gebühr Kapitaltransaktion Ausland JP3756600007"), //
+                        hasAmount("EUR", 5.90), hasGrossValue("EUR", 5.90), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -7543,13 +6209,20 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2025-04-25"), hasAmount("EUR", 15.90), //
-                        hasSource("FlatExDegiroKontoauszug08.txt"),
-                        hasNote("Bearbeitungsgebühr - Erträgnisaufstellung"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2025-04-25"), //
+                        hasSource("FlatExDegiroKontoauszug08.txt"), //
+                        hasNote("Bearbeitungsgebühr - Erträgnisaufstellung"), //
+                        hasAmount("EUR", 15.90), hasGrossValue("EUR", 15.90), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2025-04-30"), hasAmount("EUR", 5.90), //
-                        hasSource("FlatExDegiroKontoauszug08.txt"), hasNote("Portokosten - Versand Kundenformular"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2025-04-30"), //
+                        hasSource("FlatExDegiroKontoauszug08.txt"), //
+                        hasNote("Portokosten - Versand Kundenformular"), //
+                        hasAmount("EUR", 5.90), hasGrossValue("EUR", 5.90), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -7615,9 +6288,11 @@ public class FinTechGroupBankPDFExtractorTest
 
         // assert cancellation transaction
         assertThat(results, hasItem(interestCharge( //
-                        hasDate("2025-09-30"), hasAmount("EUR", 3.39), //
+                        hasDate("2025-09-30"), //
                         hasSource("FlatExDegiroKontoauszug10.txt"), //
-                        hasNote("Zinsabschluss 01.07.2025 - 30.09.2025"))));
+                        hasNote("Zinsabschluss 01.07.2025 - 30.09.2025"), //
+                        hasAmount("EUR", 3.39), hasGrossValue("EUR", 3.39), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2025-10-01"), hasAmount("EUR", 3000.00), //
@@ -7649,9 +6324,65 @@ public class FinTechGroupBankPDFExtractorTest
 
         // assert cancellation transaction
         assertThat(results, hasItem(interestCharge( //
-                        hasDate("2025-12-31"), hasAmount("EUR", 0.23), //
+                        hasDate("2025-12-31"), //
                         hasSource("FlatExDegiroKontoauszug10.txt"), //
-                        hasNote("Zinsabschluss 01.10.2025 - 31.12.2025"))));
+                        hasNote("Zinsabschluss 01.10.2025 - 31.12.2025"), //
+                        hasAmount("EUR", 0.23), hasGrossValue("EUR", 0.23), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testFlatExDegiroKontoauszug11()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroKontoauszug11.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(6L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(1L));
+        assertThat(results.size(), is(7));
+        new AssertImportActions().check(results, "EUR");
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        interest( //
+                                        hasDate("2026-03-31"), //
+                                        hasSource("FlatExDegiroKontoauszug11.txt"), //
+                                        hasNote("Zinsabschluss 01.01.2026 - 31.03.2026"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-04-17"), hasAmount("EUR", 250.00), //
+                        hasSource("FlatExDegiroKontoauszug11.txt"), hasNote("Er752174888515904584"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-04-17"), hasAmount("EUR", 150.00), //
+                        hasSource("FlatExDegiroKontoauszug11.txt"), hasNote("Go232073202152738067"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-05-19"), hasAmount("EUR", 250.00), //
+                        hasSource("FlatExDegiroKontoauszug11.txt"), hasNote("eJ978910244859480755"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-05-19"), hasAmount("EUR", 1800.00), //
+                        hasSource("FlatExDegiroKontoauszug11.txt"), hasNote("Wd391247229262193081"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2026-06-10"), hasAmount("EUR", 8000.00), //
+                        hasSource("FlatExDegiroKontoauszug11.txt"), hasNote("XC023307750674965771"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-06-17"), hasAmount("EUR", 250.00), //
+                        hasSource("FlatExDegiroKontoauszug11.txt"), hasNote("Oc723230964070762008"))));
     }
 
     @Test
@@ -7675,55 +6406,30 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("US88339J1051"));
-        assertThat(security.getWkn(), is("A2ARCV"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("THE TRA.DESK A DL-,000001"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("US88339J1051"), hasWkn("A2ARCV"), hasTicker(null), //
+                        hasName("THE TRA.DESK A DL-,000001"), //
+                        hasCurrencyCode("EUR"))));
 
-        // check 1st buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(results, hasItem(security( //
+                        hasIsin("US17275R1023"), hasWkn("878841"), hasTicker(null), //
+                        hasName("CISCO SYSTEMS    DL-,001"), //
+                        hasCurrencyCode("EUR"))));
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2021-04-09T17:37"), hasShares(3.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung01.txt"), //
+                        hasNote("Transaktion-Nr.: 229"), //
+                        hasAmount("EUR", 1737.50), hasGrossValue("EUR", 1745.40), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.00))));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-09T17:37")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3)));
-        assertThat(entry.getSource(), is("FlatExDeGiroSammelabrechnung01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 229"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1737.50))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(1745.40))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(5.90 + 2.00))));
-
-        // check 2st buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-09T17:40")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(41)));
-        assertThat(entry.getSource(), is("FlatExDeGiroSammelabrechnung01.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 229"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1796.12))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(1788.22))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(5.90 + 2.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-04-09T17:40"), hasShares(41.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung01.txt"), //
+                        hasNote("Transaktion-Nr.: 229"), //
+                        hasAmount("EUR", 1796.12), hasGrossValue("EUR", 1788.22), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.00))));
     }
 
     @Test
@@ -7747,34 +6453,18 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("US2561631068"));
-        assertThat(security.getWkn(), is("A2JHLZ"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("DOCUSIGN INC    DL-,0001"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("US2561631068"), hasWkn("A2JHLZ"), hasTicker(null), //
+                        hasName("DOCUSIGN INC    DL-,0001"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-12-09T14:14")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25)));
-        assertThat(entry.getSource(), is("FlatExDeGiroSammelabrechnung02.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 2592937917"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(3456.41))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(3448.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(5.90 + 2.51))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-12-09T14:14"), hasShares(25.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung02.txt"), //
+                        hasNote("Transaktion-Nr.: 2592937917"), //
+                        hasAmount("EUR", 3456.41), hasGrossValue("EUR", 3448.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.51))));
     }
 
     @Test
@@ -7798,49 +6488,26 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE000MA5GEG8"));
-        assertThat(security.getWkn(), is("MA5GEG"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("MS CI.I. CALL23 ABL"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000MA5GEG8"), hasWkn("MA5GEG"), hasTicker(null), //
+                        hasName("MS CI.I. CALL23 ABL"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-11-07T17:21")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1190)));
-        assertThat(entry.getSource(), is("FlatExDeGiroSammelabrechnung03.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 2512347917"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1.19))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(1.19))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-11-07T17:21"), hasShares(1190.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung03.txt"), //
+                        hasNote("Transaktion-Nr.: 2512347917"), //
+                        hasAmount("EUR", 1.19), hasGrossValue("EUR", 1.19), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check fee transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-11-07T17:21")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(1190)));
-        assertThat(transaction.getSource(), is("FlatExDeGiroSammelabrechnung03.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 2512347917"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(5.90))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(5.90))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2022-11-07T17:21"), hasShares(1190.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung03.txt"), //
+                        hasNote("Transaktion-Nr.: 2512347917"), //
+                        hasAmount("EUR", 5.90), hasGrossValue("EUR", 5.90), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -7864,38 +6531,19 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("US88579Y1010"));
-        assertThat(security.getWkn(), is("851745"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("3M CO.             DL-,01"));
-        assertThat(security.getCurrencyCode(), is("USD"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("US88579Y1010"), hasWkn("851745"), hasTicker(null), //
+                        hasName("3M CO.             DL-,01"), //
+                        hasCurrencyCode("USD"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-01-30T15:30")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5)));
-        assertThat(entry.getSource(), is("FlatExDeGiroSammelabrechnung04.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 3157457617"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(534.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(528.10))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
-
-        var grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
-                        .orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(572.35))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-01-30T15:30"), hasShares(5.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung04.txt"), //
+                        hasNote("Transaktion-Nr.: 3157457617"), //
+                        hasAmount("EUR", 534.00), hasGrossValue("EUR", 528.10), //
+                        hasForexGrossValue("USD", 572.35), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90))));
     }
 
     @Test
@@ -7926,25 +6574,16 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-01-30T15:30"), hasShares(5.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung04.txt"), //
+                        hasNote("Transaktion-Nr.: 3157457617"), //
+                        hasAmount("EUR", 534.00), hasGrossValue("EUR", 528.10), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90))));
+
+        // check currency compatibility
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-01-30T15:30")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5)));
-        assertThat(entry.getSource(), is("FlatExDeGiroSammelabrechnung04.txt"));
-        assertThat(entry.getNote(), is("Transaktion-Nr.: 3157457617"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(534.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(528.10))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
 
         var c = new CheckCurrenciesAction();
         var account = new Account();
@@ -8519,6 +7158,180 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testFlatExDeGiroSammelabrechnung12()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroSammelabrechnung12.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(3L));
+        assertThat(countBuySell(results), is(4L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(10));
+        new AssertImportActions().check(results, "EUR");
+
+        // check securities
+        assertThat(results, hasItem(security( //
+                        hasIsin("US0152711091"), hasWkn("907179"), hasTicker(null), //
+                        hasName("ALEXANDRIA REAL EST. EQU."), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US0389231087"), hasWkn("A0CAPU"), hasTicker(null), //
+                        hasName("ARBOR REALTY TRUST INC."), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US92936U1097"), hasWkn("A1J5SB"), hasTicker(null), //
+                        hasName("W.P. CAREY INC."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-09-29T15:53"), hasShares(40.00), //
+                        hasSource("FlatExDegiroSammelabrechnung12.txt"), //
+                        hasNote("Transaktion-Nr.: 5244678367"), //
+                        hasAmount("EUR", 1937.30 - 230.20), hasGrossValue("EUR", 1715.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-09-29T15:58"), hasShares(272.00), //
+                        hasSource("FlatExDegiroSammelabrechnung12.txt"), //
+                        hasNote("Transaktion-Nr.: 5244689219"), //
+                        hasAmount("EUR", 1545.15 - 605.20), hasGrossValue("EUR", 945.87), //
+                        hasForexGrossValue("USD", 1077.12), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 0.02))));
+
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-09-29T15:58"), hasShares(28.00), //
+                        hasSource("FlatExDegiroSammelabrechnung12.txt"), //
+                        hasNote("Transaktion-Nr.: 5244689238"), //
+                        hasAmount("EUR", 161.59 - 64.22), hasGrossValue("EUR", 97.37), //
+                        hasForexGrossValue("USD", 110.88), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-09-29T18:42"), hasShares(20.00), //
+                        hasSource("FlatExDegiroSammelabrechnung12.txt"), //
+                        hasNote("Transaktion-Nr.: 5244967808"), //
+                        hasAmount("EUR", 1167.90), hasGrossValue("EUR", 1160.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.00))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2026-09-29T15:53"), hasShares(40.00), //
+                        hasSource("FlatExDegiroSammelabrechnung12.txt"), //
+                        hasNote("Transaktion-Nr.: 5244678367"), //
+                        hasAmount("EUR", 230.20), hasGrossValue("EUR", 230.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2026-09-29T15:58"), hasShares(272.00), //
+                        hasSource("FlatExDegiroSammelabrechnung12.txt"), //
+                        hasNote("Transaktion-Nr.: 5244689219"), //
+                        hasAmount("EUR", 605.20), hasGrossValue("EUR", 605.20), //
+                        hasForexGrossValue("USD", 689.18), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2026-09-29T15:58"), hasShares(28.00), //
+                        hasSource("FlatExDegiroSammelabrechnung12.txt"), //
+                        hasNote("Transaktion-Nr.: 5244689238"), //
+                        hasAmount("EUR", 64.22), hasGrossValue("EUR", 64.22), //
+                        hasForexGrossValue("USD", 73.13), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testFlatExDeGiroSammelabrechnung12WithSecurityInEUR()
+    {
+        var security = new Security("ARBOR REALTY TRUST INC.", "EUR");
+        security.setIsin("US0389231087");
+        security.setWkn("A0CAPU");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new FinTechGroupBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroSammelabrechnung12.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(2L));
+        assertThat(countBuySell(results), is(4L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(9));
+        new AssertImportActions().check(results, "EUR");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-09-29T15:58"), hasShares(272.00), //
+                        hasSource("FlatExDegiroSammelabrechnung12.txt"), //
+                        hasNote("Transaktion-Nr.: 5244689219"), //
+                        hasAmount("EUR", 1545.15 - 605.20), hasGrossValue("EUR", 945.87), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 0.02))));
+
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-09-29T15:58"), hasShares(28.00), //
+                        hasSource("FlatExDegiroSammelabrechnung12.txt"), //
+                        hasNote("Transaktion-Nr.: 5244689238"), //
+                        hasAmount("EUR", 161.59 - 64.22), hasGrossValue("EUR", 97.37), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2026-09-29T15:58"), hasShares(272.00), //
+                        hasSource("FlatExDegiroSammelabrechnung12.txt"), //
+                        hasNote("Transaktion-Nr.: 5244689219"), //
+                        hasAmount("EUR", 605.20), hasGrossValue("EUR", 605.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2026-09-29T15:58"), hasShares(28.00), //
+                        hasSource("FlatExDegiroSammelabrechnung12.txt"), //
+                        hasNote("Transaktion-Nr.: 5244689238"), //
+                        hasAmount("EUR", 64.22), hasGrossValue("EUR", 64.22), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testFlatExDeGiroRechnungsabschluss01()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroRechnungsabschluss01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        assertThat(results, hasItem(interestCharge(hasDate("2026-06-30"), hasAmount("EUR", 8.21), //
+                        hasSource("FlatExDegiroRechnungsabschluss01.txt"), hasNote(null))));
+    }
+
+    @Test
     public void testFlatExDeGiroDepotServiceGebuehr01()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
@@ -8538,46 +7351,15 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
-        // check fee transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-23T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
-        assertThat(transaction.getSource(), is("FlatExDeGiroDepotServiceGebuehr01.txt"));
-        assertThat(transaction.getNote(), is("Depotservicegebühr US09075V1026"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.18))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.18))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation (Import by deposit statement transaction)
-        // transaction
-        var cancellation = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.FEES));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionMissingExchangeRateIfInForex));
-
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2023-03-23T00:00")));
-        assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(0)));
-        assertThat(((Transaction) cancellation.getSubject()).getSource(), is("FlatExDeGiroDepotServiceGebuehr01.txt"));
-        assertThat(((Transaction) cancellation.getSubject()).getNote(), is("Depotservicegebühr US09075V1026"));
-
-        assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.18))));
-        assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.18))));
-        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionMissingExchangeRateIfInForex, //
+                        fee( //
+                                        hasDate("2023-03-23"), //
+                                        hasSource("FlatExDeGiroDepotServiceGebuehr01.txt"), //
+                                        hasNote("Depotservicegebühr US09075V1026"), //
+                                        hasAmount("EUR", 0.18), hasGrossValue("EUR", 0.18), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test

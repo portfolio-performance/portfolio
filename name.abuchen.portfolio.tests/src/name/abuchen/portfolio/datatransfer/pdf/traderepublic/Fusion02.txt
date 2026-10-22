@@ -1,0 +1,29 @@
+PDFBox Version: 3.0.8
+Portfolio Performance Version: 0.88.0
+System: linux | x86_64 | 25.0.4.1+1-LTS | Eclipse Adoptium
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+fPuiL WUcpNOGx SEITE 1 von 1
+IcvGDHuI 17 DATUM 08.10.2026
+32333 yJcqOFdtcd DEPOT 3365318639
+FUSION
+ÜBERSICHT
+NR. BUCHUNG WERTPAPIER BETRAG
+Warner Bros Discovery
+1 Ausbuchung 48 Stücke
+US9344231041
+ABRECHNUNG
+Zwischensumme 1488.80 USD
+Zwischensumme 1.126900 USD/EUR 1321.15 EUR
+1321.15 EUR
+BUCHUNG
+VERRECHNUNGSKONTO DATUM DER ZAHLUNG
+xk59289785863764889484 07.10.2026 1321.15 EUR
+US9344231041 in Girosammelverwahrung in Deutschland
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Wird keine Umsatzsteuer ausgewiesen, handelt es sich um eine umsatzsteuerfreie Leistung gemäß § 4 Nr. 8 UStG
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke

@@ -1,0 +1,156 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.4
+System: linux | x86_64 | 21.0.8+9-Ubuntu-0ubuntu124.04.1 | Ubuntu
+-----------------------------------------
+TARGOBANK AG
+Targostr. 3
+10001 Musterhausen
+Geschäftszeiten:
+MO-FR 10.00-13.00 UHR
+MODI 14.00-18.00 UHR
+TARGOBANK AG - Postfach 10 02 30 - 47002 Duisburg
+Telefon-Banking 0211 - 900 20 111
+7 x 24 Stunden
+Kundennummer: 123456789
+Herr
+Max Mustermann
+Musterstr. 1
+10002 Musterhausen
+Sehr geehrter Herr Mustermann,
+mehr Informationen zu unseren Produkten und Services erhalten Sie unter www.targobank.de.
+Mit freundlichen Grüßen
+Ihre TARGOBANK
+F I N A N Z S T A T U S vom 01.10.2025 - 31.10.2025
+Informationen über Ihre Konten auf einen Blick
+Alle Beträge sind, soweit nicht anders ausgewiesen, in Euro angegeben.
+Girokonten
+Kontotyp Kontonummer Währung Guthaben/Kredit
+ONLINE-KONTO 5555555555 EUR 4.623,10
+Summe EUR 4.623,10
+Geldanlage & Investments
+Kontotyp Kontonummer Währung Sparguthaben
+EUR TAGESGELDKONTO 4444444444 EUR 0,00
+Zinssatz p.a.:
+0,60 %
+Kontotyp Depotnummer Währung Kurswert
+DEPOT 555555555510 EUR 8.857,55
+Summe Geldanlagen & Investments EUR 8.857,55
+Gesamtguthaben EUR 7.480,65
+TARGOBANK AG I Vorstand: Isabelle Chevelard (Vorsitzende); Christophe Jéhan (stellv. Vorsitzender); Berthold Rüsing; Maria Topaler; Marco Voosen
+Vorsitzender des Aufsichtsrates: René Dangel I Sitz der Gesellschaft: Düsseldorf
+Handelsregister Amtsgericht Düsseldorf HRB 83351  I  USt-ID-Nr.: DE 811 285 485
+USt-ID-Nr. des umsatzsteuerlichen Organträgers: DE 811 623 326
+Bitte beachten Sie die Rückseite
+bzw. die Hinweise auf dem gesonderten Beileger.
+DEY2SP01/P424242/C123456789
+KH.20251103.444444.5000.1111.7777 X 0 2
+EBSCS (CS)  * 0000 * 1 * 4 * 01.11.2025   9:22  00310
+Seite 2/4
+31.10.2025 Max Mustermann C123456789
+Monatsübersicht
+Alle Transaktionen Ihres Girokontos des letzten Monates in einer Übersicht
+ONLINE-KONTO 5555555555 EUR
+Herr  Max Mustermann
+Für Girokonten erfolgt jeweils am letzten Bankgeschäftstag der Monate März, Juni, September und Dezember ein Rechnungsabschluss. Dieser gilt gemäß Ziff.
+7 Abs. 2 unserer AGB als genehmigt, wenn Einwendungen nicht vor Ablauf von sechs Wochen nach dessen Zugang geltend gemacht werden. Bei
+textförmlichen Einwendungen oder Erstattungsansprüchen genügt die Absendung innerhalb der jeweils genannten Frist. Sie können bei einer
+Belastungsbuchung aufgrund einer von Ihnen autorisierten SEPA-Basislastschrift innerhalb von acht Wochen nach Belastungsbuchung ohne Angabe von
+Gründen die Erstattung des belasteten Lastschriftbetrages verlangen.
+IBAN: DE37 3002 0900 5555 5555 55 BIC CODE: CMCIDEDD
+Transaktionen
+Datum Tag Buchungstext Ausgaben Einnahmen Guthaben/Kredit
+30.09 DI ANFANGSSALDO 1.111,11
+02.10 DO Grundgebühr für September 2025 3,95 1.111,11
+KONTOFüHRUNG
+13.10 MO INTERNE UMBUCHUNG HABEN TARGOBANK KONTO 1.111,11 1.111,11
+30020900/000000004444444444
+Wertstellung: 12.10.2025
+13.10 MO INTERNE UMBUCHUNG HABEN TARGOBANK KONTO 0,03 1.111,11
+30020900/000000004444444444
+Wertstellung: 12.10.2025
+16.10 DO WERTPAPIERKAUF AUFTRAGSNUMMER 0000003 1.111,11 1.111,11
+US0846707026 14.10.2025 555555555510
+16.10.2025
+20.10 MO WERTPAPIERKAUF AUFTRAGSNUMMER 0000002 1.111,11 1.111,11
+LU0776414087 14.10.2025 555555555510
+20.10.2025
+20.10 MO WERTPAPIERKAUF AUFTRAGSNUMMER 0000001 1.111,11 1.111,11
+LU0360863863 14.10.2025 555555555510
+20.10.2025
+31.10 FR ENDSALDO 1.111,11
+Summe 1.111,11 1.111,11
+Frei verfügbar 1.111,11
+Dieser Finanzstatus ist gleichzeitig Ihr Kontoauszug Nr. 10
+TARGOBANK AG I Vorstand: Isabelle Chevelard (Vorsitzende); Christophe Jéhan (stellv. Vorsitzender); Berthold Rüsing; Maria Topaler; Marco Voosen
+Vorsitzender des Aufsichtsrates: René Dangel I Sitz der Gesellschaft: Düsseldorf
+Handelsregister Amtsgericht Düsseldorf HRB 83351  I  USt-ID-Nr.: DE 811 285 485
+USt-ID-Nr. des umsatzsteuerlichen Organträgers: DE 811 623 326
+DEY2SP01/P424242/C123456789
+KH.20251103.444444.5000.1111.7777 X 0 V EBSCS (CS)  * 0000 * 2 * 4 * 01.11.2025   9:22  00310
+Seite 3/4
+31.10.2025 Max Mustermann C123456789
+Monatsübersicht Fortsetzung
+EUR TAGESGELDKONTO 4444444444 EUR
+Herr  Max Mustermann
+IBAN: DE96 3002 0900 4444 4444 44 BIC CODE: CMCIDEDD
+Transaktionen
+Datum Tag Buchungstext Ausgaben Einnahmen Guthaben/Kredit
+01.10 MI ANFANGSSALDO 4.436,73
+13.10 MO INTERNE UMBUCHUNG SOLL TARGO OLB 4.436,70 0,03
+AM 12.10.2025 UM 00.06
+TARGOBANK KONTO 30020900/000000005555555555
+Wertstellung: 12.10.2025
+13.10 MO INTERNE UMBUCHUNG SOLL TARGO OLB 0,03 0,00
+AM 12.10.2025 UM 00.07
+TARGOBANK KONTO 30020900/000000005555555555
+Wertstellung: 12.10.2025
+31.10 FR ENDSALDO 0,00
+Summe 4.436,73 0,00
+Frei verfügbar 0,00
+Ihre Geldanlagen & Investment Details
+DEPOT 555555555510
+Herr  Max Mustermann
+Für alle im Depot befindlichen Wertpapiere wird der Wert zu dem Monatsultimo letztbekannten Kurs angegeben. Sollte zu einem Wertpapier kein Kurs
+vorliegen, erfolgt keine Bewertung.
+Whr/Stk/Zins Nominale/Fällig Wertpapierbezeichnung/ISIN Kurs Whr Börse Datum Kurswert in EUR
+% p.a.
+STK 3,0000 ARERO - Der Weltfonds Inhaber-Anteile 2.222,22
+o.N.
+LU0360863863 309,81000 EUR XXH 30.10.2025
+STK 4,0000 Berkshire Hathaway Inc. Reg.Shares B New 2.222,22
+DL -,00333
+US0846707026 411,25000 EUR EDF 31.10.2025
+STK 6,0000 Schroder ISF-Gl.Multi-Ass.Bal.Namensant. A 2.222,22
+Acc EUR o.N.
+LU0776414087 167,47520 EUR XXH 31.10.2025
+Summe 6.666,66
+Sämtliche der in diesem Depotauszug aufgeführten Wertpapiere unterliegen der Richtlinie 2014/65/EU (MiFID II) sowie deren ergänzenden
+Durchführungsmaßnahmen. Sofern für in diesem Depotauszug aufgeführte Wertpapiere kein Kurs ermittelt werden konnte, kann dies auf
+mangelnde Liquidität hindeuten. Die hier aufgeführten Kundenbestände waren nicht Gegenstand von Wertpapierfinanzierungsgeschäften.
+TARGOBANK AG I Vorstand: Isabelle Chevelard (Vorsitzende); Christophe Jéhan (stellv. Vorsitzender); Berthold Rüsing; Maria Topaler; Marco Voosen
+Vorsitzender des Aufsichtsrates: René Dangel I Sitz der Gesellschaft: Düsseldorf
+Handelsregister Amtsgericht Düsseldorf HRB 83351  I  USt-ID-Nr.: DE 811 285 485
+USt-ID-Nr. des umsatzsteuerlichen Organträgers: DE 811 623 326
+DEY2SP01/P424242/C123456789
+KH.20251103.444444.5000.1111.7777 X 0 2
+EBSCS (CS)  * 0000 * 3 * 4 * 01.11.2025   9:22  00310
+Seite 4/4
+31.10.2025 Max Mustermann C123456789
+Allgemeine Hinweise
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können Sie dem "Informationsbogen für
+den Einleger" entnehmen.
+Haben Sie Fragen oder Anmerkungen zu Ihrem Finanzstatus?
+Bitte prüfen Sie die Kontobewegungen und Berechnungen dieses Konto- bzw. Monatsauszugs unverzüglich auf die Richtigkeit. Zusätzlich zu unseren
+Filialmitarbeitern sind auch die Mitarbeiter unseres Telefon-Bankings rund um die Uhr für Sie da. Bei Unstimmigkeiten wenden Sie sich bitte an die TARGOBANK
+Innenrevision, Postfach 101818, 40009 Düsseldorf.
+Der Schutz Ihrer Privatsphäre ist uns wichtig.
+Unsere Datenschutzhinweise einschließlich Informationen zur Datenschutzgrundverordnung (DSGVO) finden Sie auch im Internet (www.targobank.de).
+Sollten Ihre Daten unrichtig sein, Sie von uns keine Werbung oder Befragung zu Zwecken der Markt- und Meinungsforschung wünschen oder allgemeine Fragen
+zum Datenschutz bestehen, wenden Sie sich bitte an unsere Mitarbeiter oder unmittelbar an unseren Datenschutzbeauftragten, Postfach 21 04 53,
+47026 Duisburg.
+TARGOBANK AG I Vorstand: Isabelle Chevelard (Vorsitzende); Christophe Jéhan (stellv. Vorsitzender); Berthold Rüsing; Maria Topaler; Marco Voosen
+Vorsitzender des Aufsichtsrates: René Dangel I Sitz der Gesellschaft: Düsseldorf
+Handelsregister Amtsgericht Düsseldorf HRB 83351  I  USt-ID-Nr.: DE 811 285 485
+USt-ID-Nr. des umsatzsteuerlichen Organträgers: DE 811 623 326
+DEY2SP01/P424242/C123456789
+KH.20251103.44444.5000.1111.7777 X 0 V EBSCS (CS)  * 0000 * 4 * 4 * 01.11.2025   9:22  00310

@@ -29,20 +29,23 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
 
         addBankIdentifier("Swissquote Bank AG");
         addBankIdentifier("Swissquote Bank Ltd");
+        addBankIdentifier("Swissquote Bank Europe SA");
 
         addBuySellTransaction();
         addBuySellCryptoTransaction();
         addDividendsTransaction();
         addPaymentTransaction();
         addInterestTransaction();
-        addAccountStatementTransaction();
+        addAccountStatementTransaction_Format01();
+        addAccountStatementTransaction_Format02();
+        addDeliveryInOutBoundTransaction();
         addNonImportableTransaction();
     }
 
     @Override
     public String getLabel()
     {
-        return "Swissquote Bank AG / Yuh (powerd by Swissquote Bank AG)";
+        return "Swissquote Bank AG / Swissquote Bank Europe SA / Yuh (powered by Swissquote Bank AG)";
     }
 
     record Data(String currency) {
@@ -90,6 +93,17 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "currency") //
                                                         .find("Bezeichnung Anzahl Kontraktw.hrung Preis")
                                                         .match("^(?<name>.*) [\\.'\\d]+ (?<currency>[A-Z]{3}) [\\.'\\d]+$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // GLOBAL X NASDAQ 100 COVERED CALL ETF ISIN: IE00BM8R0J59 XETR
+                                        // Auftragsart Zeit Anzahl Preis Betrag
+                                        // Limit 16:38:31 700 14.16 EUR 9'912.00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "currency") //
+                                                        .match("^(?<name>.*) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .find("Auftragsart Zeit Anzahl Preis Betrag") //
+                                                        .match("^.* [\\d]{2}\\:[\\d]{2}\\:[\\d]{2} [\\.'\\d]+ [\\.'\\d]+ (?<currency>[A-Z]{3}) [\\.'\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         .oneOf( //
@@ -119,9 +133,29 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                                                                                             RoundingMode.HALF_UP)
                                                                             .movePointRight(Values.Share.precision())
                                                                             .longValue());
-                                                        }))
+                                                        }),
+                                        // @formatter:off
+                                        // Auftragsart Zeit Anzahl Preis Betrag
+                                        // Limit 16:38:31 700 14.16 EUR 9'912.00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .find("Auftragsart Zeit Anzahl Preis Betrag") //
+                                                        .match("^.* [\\d]{2}\\:[\\d]{2}\\:[\\d]{2} (?<shares>[\\.'\\d]+) [\\.'\\d]+ [A-Z]{3} [\\.'\\d]+$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
                         .oneOf( //
+                                        // @formatter:off
+                                        // Gemäss Ihrem Kaufauftrag vom 05.12.2025 haben wir folgende Transaktionen vorgenommen:
+                                        // Auftragsart Zeit Anzahl Preis Betrag
+                                        // Limit 16:38:31 700 14.16 EUR 9'912.00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "time") //
+                                                        .match("^Gem.ss Ihrem (Kauf|Verkaufs)auftrag vom (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .find("Auftragsart Zeit Anzahl Preis Betrag") //
+                                                        .match("^.* (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}) [\\.'\\d]+ [\\.'\\d]+ [A-Z]{3} [\\.'\\d]+$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
                                         // @formatter:off
                                         // Gemäss Ihrem Kaufauftrag vom 05.08.2019 haben wir folgende Transaktionen vorgenommen:
                                         // Gemäss Ihrem Verkaufsauftrag vom 05.02.2018 haben wir folgende Transaktionen vorgenommen:
@@ -593,7 +627,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new);
     }
 
-    private void addAccountStatementTransaction()
+    private void addAccountStatementTransaction_Format01()
     {
         var baseCurrencyRange = new Block("^KONTOAUSZUG in (?<baseCurrency>[A-Z]{3})$") //
                         .asRange(section -> section //
@@ -661,6 +695,138 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                                 return new TransactionItem(t);
                             return null;
                         }));
+    }
+
+    private void addAccountStatementTransaction_Format02()
+    {
+        final var type = new DocumentType("Transaction statement in [A-Z]{3}");
+        this.addDocumentTyp(type);
+
+        // @formatter:off
+        // 08.04.2026 1075394350 Incoming payment +40’000.00 CHF 08.04.2026 40’001.00 CHF
+        // @formatter:on
+        var depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ Incoming payment \\+[\\.'’\\d]+ [A-Z]{3} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .*$");
+        type.addBlock(depositBlock);
+        depositBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
+
+                        .section("amount", "currency", "date") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                                        + "[\\d]+ " //
+                                        + "Incoming payment " //
+                                        + "\\+(?<amount>[\\.'’\\d]+) " //
+                                        + "(?<currency>[A-Z]{3}) " //
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                        + ".*$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .wrap(TransactionItem::new));
+    }
+
+    private void addDeliveryInOutBoundTransaction()
+    {
+        final var type = new DocumentType("Titelumbuchung", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // Wir haben folgende Transaktion auf Ihrem Konto vorgenommen, Valutadatum 17.03.2026:
+                                        // @formatter:on
+                                        .section("date") //
+                                        .match("^Wir haben folgende Transaktion auf Ihrem Konto vorgenommen, Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                        .assign((ctx, v) -> ctx.put("date", v.get("date")))
+
+                                        // @formatter:off
+                                        // Titelumbuchung Unsere Referenz: 9876543210
+                                        // @formatter:on
+                                        .section("note").optional() //
+                                        .match("^Titelumbuchung .* (?<note>Referenz: .*)$") //
+                                        .assign((ctx, v) -> ctx.put("note", trim(v.get("note")))));
+        this.addDocumentTyp(type);
+
+        // @formatter:off
+        // Bewegung Ratio Anzahl
+        // ROCHE GS ISIN: CH0012032048 - -8.493
+        // NKN: 1203204
+        // @formatter:on
+        var outboundBlock = new Block("^.* ISIN: [A-Z]{2}[A-Z0-9]{9}[0-9] \\- \\-[\\.'\\d]+$", "^NKN:.*$");
+        type.addBlock(outboundBlock);
+        outboundBlock.set(new Transaction<PortfolioTransaction>()
+
+                        .subject(() -> new PortfolioTransaction(PortfolioTransaction.Type.DELIVERY_OUTBOUND))
+
+                        // @formatter:off
+                        // ROCHE GS ISIN: CH0012032048 - -8.493
+                        // NKN: 1203204
+                        // @formatter:on
+                        .section("name", "isin", "wkn") //
+                        .match("^(?<name>.*) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\- \\-[\\.'\\d]+$") //
+                        .match("^NKN: (?<wkn>[A-Z0-9]{5,9})$") //
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+
+                            t.setCurrencyCode(asCurrencyCode(t.getSecurity().getCurrencyCode()));
+                            t.setAmount(0L);
+                        })
+
+                        // @formatter:off
+                        // ROCHE GS ISIN: CH0012032048 - -8.493
+                        // @formatter:on
+                        .section("shares") //
+                        .documentContext("date") //
+                        .documentContextOptionally("note") //
+                        .match("^.* ISIN: [A-Z]{2}[A-Z0-9]{9}[0-9] \\- \\-(?<shares>[\\.'\\d]+)$") //
+                        .assign((t, v) -> {
+                            v.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setShares(asShares(v.get("shares")));
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // ROCHE PS ISIN: CH1499059983 1 : 1 8.493
+        // NKN:
+        // @formatter:on
+        var inboundBlock = new Block("^.* ISIN: [A-Z]{2}[A-Z0-9]{9}[0-9] [\\.'\\d]+ : [\\.'\\d]+ [\\.'\\d]+$", "^NKN:.*$");
+        type.addBlock(inboundBlock);
+        inboundBlock.set(new Transaction<PortfolioTransaction>()
+
+                        .subject(() -> new PortfolioTransaction(PortfolioTransaction.Type.DELIVERY_INBOUND))
+
+                        // @formatter:off
+                        // ROCHE PS ISIN: CH1499059983 1 : 1 8.493
+                        // @formatter:on
+                        .section("name", "isin") //
+                        .match("^(?<name>.*) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) [\\.'\\d]+ : [\\.'\\d]+ [\\.'\\d]+$") //
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+
+                            t.setCurrencyCode(asCurrencyCode(t.getSecurity().getCurrencyCode()));
+                            t.setAmount(0L);
+                        })
+
+                        // @formatter:off
+                        // ROCHE PS ISIN: CH1499059983 1 : 1 8.493
+                        // @formatter:on
+                        .section("shares") //
+                        .documentContext("date") //
+                        .documentContextOptionally("note") //
+                        .match("^.* ISIN: [A-Z]{2}[A-Z0-9]{9}[0-9] [\\.'\\d]+ : [\\.'\\d]+ (?<shares>[\\.'\\d]+)$") //
+                        .assign((t, v) -> {
+                            v.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setShares(asShares(v.get("shares")));
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 
     private void addNonImportableTransaction()
@@ -803,13 +969,22 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("currency", "fee").optional() //
                         .match("^Stock exchange fee (?<currency>[A-Z]{3}) (?<fee>[\\.'\\d]+).*$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Our commission EUR 14.95
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^Our commission (?<currency>[A-Z]{3}) (?<fee>[\\.'\\d]+).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
     @Override
     protected long asAmount(String value)
     {
-        return ExtractorUtils.convertToNumberLong(value, Values.Amount, "de", "CH");
+        // Depending on the document, the Swiss grouping separator is extracted
+        // either as apostrophe (') or as right single quotation mark (’).
+        return ExtractorUtils.convertToNumberLong(value.replace('’', '\''), Values.Amount, "de", "CH");
     }
 
     @Override

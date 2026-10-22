@@ -397,6 +397,13 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
+                        // Ursprungsland USA Ex-Tag 04.12.2014
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Ursprungsland .* Ex\\-Tag (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
+                        // @formatter:off
                         // Gutschrift mit Wert 15.12.2014 64,88 EUR
                         // @formatter:on
                         .section("amount", "currency") //
@@ -521,7 +528,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                         // 15. Januar 2026
                                         // @formatter:on
                                         section -> section.attributes("date") //
-                                                        .match("^(?<date>[\\d]{2}\\. \\p{L}+ [\\d]{4})$") //
+                                                        .match("^(?<date>[\\d]{1,2}\\. \\p{L}+ [\\d]{4})$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))                          
                         )
 
@@ -862,6 +869,21 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency").optional() //
                         .match("^Kirchensteuer auf KESt[\\s]{1,}\\- [\\.,\\d]+ [A-Z]{3} \\- (?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // 15,0000000 % Ausländische Quellensteuer - 33,00 CAD - 20,63 EUR
+                        // @formatter:on
+                        .section("withHoldingTax", "currency").optional() //
+                        .match("^[\\.,\\d]+ % Ausl.ndische Quellensteuer( \\([A-Z]{2}\\))?[\\s]{1,}\\- [\\.,\\d]+ [A-Z]{3} \\- (?<withHoldingTax>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
+                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
+
+                        // @formatter:off
+                        // 15,0000000 % Ausländische Quellensteuer - 11,73 USD
+                        // 20,0000000 % Ausländische Quellensteuer (GB) - 4,28 EUR
+                        // @formatter:on
+                        .section("withHoldingTax", "currency").optional() //
+                        .match("^[\\.,\\d]+ % Ausl.ndische Quellensteuer( \\([A-Z]{2}\\))?[\\s]{1,}\\- (?<withHoldingTax>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
+                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                         // @formatter:off
                         // Anrechenbare ausländische Quellensteuer 13,07 EUR

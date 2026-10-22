@@ -20,6 +20,7 @@ import name.abuchen.portfolio.online.impl.FinnhubSearchProvider;
 import name.abuchen.portfolio.online.impl.LeewayQuoteFeed;
 import name.abuchen.portfolio.online.impl.LeewaySearchProvider;
 import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
+import name.abuchen.portfolio.online.impl.SiftingQuoteFeed;
 import name.abuchen.portfolio.online.impl.TwelveDataQuoteFeed;
 import name.abuchen.portfolio.online.impl.TwelveDataSearchProvider;
 import name.abuchen.portfolio.ui.UIConstants;
@@ -93,6 +94,13 @@ public class Preference2EnvAddon
     {
         Factory.getQuoteFeed(LeewayQuoteFeed.class).setApiKey(leewayApiKey);
         Factory.getSearchProvider(LeewaySearchProvider.class).setApiKey(leewayApiKey);
+    }
+
+    @Inject
+    @Optional
+    public void setSiftingApiKey(@Preference(value = UIConstants.Preferences.SIFTING_API_KEY) String siftingApiKey)
+    {
+        Factory.getQuoteFeed(SiftingQuoteFeed.class).setApiKey(siftingApiKey);
     }
 
     @Inject

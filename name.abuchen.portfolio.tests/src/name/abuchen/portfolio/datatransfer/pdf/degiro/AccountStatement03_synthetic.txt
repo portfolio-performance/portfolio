@@ -1,0 +1,19 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.72.2
+-----------------------------------------
+Ms Name Surname
+Surname2
+Address1
+Address2
+User name: *********
+Account statement from 29-01-2008 until 27-12-2024
+Date Time Value date Product ISIN Description FX Change Balance
+28-06-2024 08:17 27-06-2024 FX Credit EUR 1.87 EUR 12.76
+28-06-2024 08:17 27-06-2024 FX Debit 4.3211 PLN -8.10 PLN 0.00
+28-06-2024 04:42 27-06-2024 CD PROJEKT SA PLOPTTC00011 Dividend Tax PLN -1.90 PLN 8.10
+28-06-2024 04:43 27-06-2024 CD PROJEKT SA PLOPTTC00011 Dividend PLN 10.00 PLN 10.00
+flatexDEGIRO Bank Dutch Branch, trading under the name DEGIRO, www.degiro.ie Account statement
+is the Dutch branch of flatexDEGIRO Bank AG. flatexDEGIRO Bank clients@degiro.ie
+AG is primarily supervised by the German financial regulator (BaFin).
+In the Netherlands, flatexDEGIRO Bank Dutch Branch is registered Amstelplein 1 1096 HA 2024-12-27
+with DNB and supervised by AFM and DNB. Page 1 /1

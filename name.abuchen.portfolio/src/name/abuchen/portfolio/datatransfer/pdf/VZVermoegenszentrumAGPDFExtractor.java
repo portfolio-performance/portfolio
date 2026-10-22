@@ -179,6 +179,14 @@ public class VZVermoegenszentrumAGPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
+                        // Anteile -(CHF) A-dis- Ex Datum: 08.09.2023
+                        // Namen-Aktie Ex Datum: 25.04.2023
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^.*Ex Datum: (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
+                        // @formatter:off
                         // Netto CHF 147.95
                         // @formatter:on
                         .section("currency", "amount") //
