@@ -113,6 +113,10 @@ _Avoid_: leg, cross entry, half-transaction
 One stored transaction within a **Transaction record**. A buy or sell has an **Investment account** side and a **Cash account** side, a transfer has an outgoing and an incoming side, and every other record has exactly one side. Any side's UUID identifies the whole record.
 _Avoid_: leg, half, booking
 
+**Delivery**:
+A one-sided **Transaction record** that moves shares of an **Instrument** into (inbound) or out of (outbound) an **Investment account** with no **Cash account** side, such as shares arriving from another broker. Unlike a transfer, the other end is outside the **Client file**.
+_Avoid_: security transfer (a transfer has both ends in the file), deposit (cash only)
+
 **Transfer kind**:
 Whether a transfer moves money between **Cash accounts** (cash) or **Instruments** between **Investment accounts** (security).
 _Avoid_: transfer type (type is the record's type, which is TRANSFER for both kinds)
