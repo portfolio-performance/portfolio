@@ -83,7 +83,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         .section("type").optional() //
                         .match("^Wertpapier Abrechnung (?<type>(Kauf|Verkauf|Ausgabe Investmentfonds|R.cknahme Investmentfonds)).*$") //
                         .assign((t, v) -> {
-                            if (!"Kauf".equals(v.get("type")) && !"Ausgabe Investmentfonds".equals(v.get("type")))
+                            if (v.get("type").matches("^(Verkauf|R.cknahme Investmentfonds)$"))
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
