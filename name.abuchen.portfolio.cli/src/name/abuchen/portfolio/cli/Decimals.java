@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.cli;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 import com.google.gson.JsonPrimitive;
 
@@ -21,6 +22,22 @@ final class Decimals
     static JsonPrimitive amount(Money money)
     {
         return of(money.getAmount(), Values.Amount);
+    }
+
+    /**
+     * The decimal read back as the stored minor units of the given values, e.g.
+     * cents, or empty if it carries more decimal places than those values keep.
+     */
+    static Optional<Long> toStored(BigDecimal value, Values<Long> values)
+    {
+        try
+        {
+            return Optional.of(value.movePointRight(values.precision()).toBigIntegerExact().longValueExact());
+        }
+        catch (ArithmeticException e)
+        {
+            return Optional.empty();
+        }
     }
 
     /** The stored value scaled by the precision of the given values, e.g. a quote. */

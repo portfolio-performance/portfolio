@@ -229,6 +229,16 @@ final class TransactionsCommand
     private static Map<String, Object> render(TransactionRecord record, Optional<String> currency,
                     ExchangeRates rates)
     {
+        var currencyCode = MasterData.orEmpty(record.primary().getCurrencyCode());
+        var json = render(record);
+        currency.flatMap(target -> convert(record, currencyCode, target, rates))
+                        .ifPresent(converted -> json.put("converted", converted));
+        return json;
+    }
+
+    /** The record's fields as written, without the {@code --currency} conversion; also the shape writes return. */
+    static Map<String, Object> render(TransactionRecord record)
+    {
         var primary = record.primary();
         var dateTime = primary.getDateTime();
         var currencyCode = MasterData.orEmpty(primary.getCurrencyCode());
@@ -269,9 +279,6 @@ final class TransactionsCommand
 
         json.put("units", primary.getUnits().filter(unit -> transferRate.isEmpty() || unit != transferRate.get())
                         .map(TransactionsCommand::render).toList());
-
-        currency.flatMap(target -> convert(record, currencyCode, target, rates))
-                        .ifPresent(converted -> json.put("converted", converted));
 
         return json;
     }

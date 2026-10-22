@@ -25,7 +25,7 @@ final class ApplyCommand
                     "Validate the batch and report the changes and the would-be backup path without writing any file, backup or lock.");
 
     private static final Schema CHANGE = Schema.object("What an operation did to one entity.")
-                    .property("entity", Schema.string("Kind of entity: instrument, cash-account or investment-account."))
+                    .property("entity", Schema.string("Kind of entity: instrument, cash-account, investment-account or transaction."))
                     .property("uuid", Schema.string("UUID of the entity."))
                     .optionalProperty("before", Schema.anyObject(
                                     "The changed fields as they were; absent for a created entity. A field that was unset is null."))

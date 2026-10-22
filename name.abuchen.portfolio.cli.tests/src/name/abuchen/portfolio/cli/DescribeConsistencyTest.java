@@ -117,7 +117,10 @@ public class DescribeConsistencyTest
                         + "{\"operation\":\"investment-account.add\",\"name\":\"Second depot\","
                         + "\"referenceCashAccount\":\"" + cash.getUUID() + "\"},"
                         + "{\"operation\":\"investment-account.update\",\"uuid\":\"" + depot.getUUID()
-                        + "\",\"retired\":true}]}");
+                        + "\",\"retired\":true},"
+                        + "{\"operation\":\"transaction.add\",\"type\":\"DEPOSIT\",\"cashAccount\":\""
+                        + cash.getUUID() + "\",\"date\":\"2026-05-01\",\"amount\":250.00,\"currencyCode\":\""
+                        + cash.getCurrencyCode() + "\"}]}");
 
         for (var element : describe().getAsJsonArray("commands"))
         {

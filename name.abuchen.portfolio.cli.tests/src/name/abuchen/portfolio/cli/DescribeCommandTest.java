@@ -84,7 +84,8 @@ public class DescribeCommandTest
         data.getAsJsonArray("operations").forEach(
                         o -> operations.put(o.getAsJsonObject().get("name").getAsString(), o.getAsJsonObject()));
         assertThat(operations.keySet(), containsInAnyOrder("instrument.add", "instrument.update", "cash-account.add",
-                        "cash-account.update", "investment-account.add", "investment-account.update"));
+                        "cash-account.update", "investment-account.add", "investment-account.update",
+                        "transaction.add"));
 
         var addInput = operations.get("instrument.add").getAsJsonObject("input");
         assertThat(addInput.getAsJsonObject("properties").keySet(), containsInAnyOrder("operation", "name",

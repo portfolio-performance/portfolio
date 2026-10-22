@@ -111,6 +111,16 @@ final class OperationContext
         }
     }
 
+    /** Reports every member of a nested object that is not known, under the given field prefix. */
+    void rejectUnknownFields(JsonObject object, String prefix, Set<String> known)
+    {
+        for (var member : object.keySet())
+        {
+            if (!known.contains(member))
+                fail(prefix + "." + member, "unknown-field", "The object has no field '" + member + "'.");
+        }
+    }
+
     /**
      * Claims an entity that existed before the batch for this operation; a
      * second operation on it is refused.

@@ -22,7 +22,7 @@ Validation, all reported together:
 
 ## Acceptance criteria
 
-- [ ] Each supported cash-account type can be added, and reading it back through `transactions` returns the same record
-- [ ] Each rule above has a refusal test with the expected `field` path and `code`
-- [ ] A forex dividend with a correct gross-value unit is accepted; one without the unit is refused
-- [ ] `transaction.add` is declared with its input schema, appears in `describe` and passes its consistency test
+- [x] Each supported cash-account type can be added, and reading it back through `transactions` returns the same record
+- [x] Each rule above has a refusal test with the expected `field` path and `code`
+- [x] A forex dividend with a correct gross-value unit is accepted; one without the unit is refused
+- [x] `transaction.add` is declared with its input schema, appears in `describe` and passes its consistency test

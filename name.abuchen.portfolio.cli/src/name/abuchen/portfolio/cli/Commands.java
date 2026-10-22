@@ -14,7 +14,9 @@ final class Commands
 
     /** Write operations, applied by the <code>apply</code> command. */
     static final List<OperationSpec> OPERATIONS = Stream
-                    .concat(InstrumentOperations.ALL.stream(), AccountOperations.ALL.stream()).toList();
+                    .concat(Stream.concat(InstrumentOperations.ALL.stream(), AccountOperations.ALL.stream()),
+                                    TransactionOperations.ALL.stream())
+                    .toList();
 
     private Commands()
     {
