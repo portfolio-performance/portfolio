@@ -93,7 +93,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                         // Handelstag / Zeit 30.12.2016 12:46:28
                         // @formatter:on
                         .section("date", "time").optional() //
-                        .match("^Handelstag \\/ Zeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})$") //
+                        .match("^Handelstag \\/ Zeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2})$") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
                         // @formatter:off
@@ -190,7 +190,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time") //
-                                                        .match("^(Urspr.ngl\\. )?Handelstag(\\/\\-zeit)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})[\\s]{1,}(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$") //
+                                                        .match("^(Urspr.ngl\\. )?Handelstag(\\/\\-zeit)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})[\\s]{1,}(?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}).*$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
                                         // @formatter:off
                                         // Handelstag/-zeit 23.11.2009 Bank-Provision  0,00 EUR
@@ -681,12 +681,16 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
         // Kontoübertrag 1197537 28.05.2019 28.05.2019 3.000,00 EUR
         // Sammelgutschrift 19.12.2019 19.12.2019 5.000,00 EUR
         // Überweisungsgutschrift Inland 27.12.2019 27.12.2019 2.000,00 EUR
+        // Überweisungsgutschrift aus dem Ausland 02.12.2019 02.12.2019 500,00 EUR
         // Interne Buchung 31.01.2020 31.01.2020 2,84 EUR
+        // Überweisungsgutschrift, Ref: EU-0384051229  03.03.2014 03.03.2014 75,00 EUR
         // @formatter:on
         var depositBlock = new Block("^(Konto.bertrag [\\d]+" //
                         + "|Sammelgutschrift" //
                         + "|Interne Buchung" //
-                        + "|.berweisungsgutschrift Inland) " //
+                        + "|.berweisungsgutschrift Inland" //
+                        + "|.berweisungsgutschrift aus dem Ausland" //
+                        + "|.berweisungsgutschrift,) " //
                         + ".* " //
                         + "[\\.,\\d]+[\\s]{1,}[A-Z]{3}.*$");
         type.addBlock(depositBlock);
@@ -695,21 +699,45 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
-                        .section("note1", "note2", "date", "amount", "currency") //
-                        .match("^(?<note1>(Konto.bertrag [\\d]+" //
-                                        + "|Sammelgutschrift" //
-                                        + "|Interne Buchung" //
-                                        + "|.berweisungsgutschrift Inland)) " //
-                                        + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
-                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d\\s]+)[\\s]{1,}" //
-                                        + "(?<amount>[\\.,\\d]+)[\\s]{1,}(?<currency>[A-Z]{3}).*$") //
-                        .match("^Ref\\.: (?<note2>.*)$") //
-                        .assign((t, v) -> {
-                            t.setDateTime(asDate(stripBlanks(v.get("date"))));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setNote(v.get("note1") + " | Ref.-Nr.: " + trim(v.get("note2")));
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Kontoübertrag 1197537 28.05.2019 28.05.2019 3.000,00 EUR
+                                        // Ref.: 86991330
+                                        //
+                                        // Überweisungsgutschrift aus dem Ausland 02.12.2019 02.12.2019 500,00 EUR
+                                        // Ref.: 123453609
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note1", "note2", "date", "amount", "currency") //
+                                                        .match("^(?<note1>(Konto.bertrag [\\d]+" //
+                                                                        + "|Sammelgutschrift" //
+                                                                        + "|Interne Buchung" //
+                                                                        + "|.berweisungsgutschrift Inland" //
+                                                                        + "|.berweisungsgutschrift aus dem Ausland)) " //
+                                                                        + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d\\s]+)[\\s]{1,}" //
+                                                                        + "(?<amount>[\\.,\\d]+)[\\s]{1,}(?<currency>[A-Z]{3}).*$") //
+                                                        .match("^Ref\\.: (?<note2>.*)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(stripBlanks(v.get("date"))));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setNote(v.get("note1") + " | Ref.-Nr.: " + trim(v.get("note2")));
+                                                        }),
+                                        // @formatter:off
+                                        // Überweisungsgutschrift, Ref: EU-0384051229  03.03.2014 03.03.2014 75,00 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note1", "note2", "date", "amount", "currency") //
+                                                        .match("^(?<note1>.berweisungsgutschrift),[\\s]{1,}.*: (?<note2>.*) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d\\s]+)[\\s]{1,}" //
+                                                                        + "(?<amount>[\\.,\\d]+)[\\s]{1,}(?<currency>[A-Z]{3}).*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(stripBlanks(v.get("date"))));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setNote(v.get("note1") + " | Ref.-Nr.: " + trim(v.get("note2")));
+                                                        }))
 
                         .wrap(TransactionItem::new));
 
