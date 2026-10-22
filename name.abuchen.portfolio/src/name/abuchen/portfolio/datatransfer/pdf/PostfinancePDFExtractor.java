@@ -79,7 +79,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         .section("type").optional() //
                         .match("^(B.rsentransaktion|Transaktionsabrechnung): (?<type>(Kauf|Verkauf|Zeichnung|Fondssparplan|R.cknahme)).*$") //
                         .assign((t, v) -> {
-                            if ("Verkauf".equals(v.get("type")) || "Rücknahme".equals(v.get("type")))
+                            if (!"Kauf".equals(v.get("type")) && !"Zeichnung".equals(v.get("type")) && !"Fondssparplan".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
@@ -321,7 +321,6 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
-
                         // @formatter:off
                         // Kurswert in Handelswährung USD 596.33
                         // Total in Kontowährung zum Kurs von USD/CHF 0.8949 538.73
@@ -434,8 +433,16 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match(".* Valuta[\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*") //
+                                                        .match("^.* Valuta[\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+
+                        // @formatter:off
+                        // Ausführungsdatum 02.05.2019
+                        // Ausführung 12.10.2023
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Ausf.hrung(sdatum)? (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
 
                         // @formatter:off
                         // Total EUR 20.93
@@ -446,7 +453,6 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
-
 
                         .optionalOneOf( //
                                         // @formatter:off
@@ -597,7 +603,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount", "date") //
-                                                        .match("^.* (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d\\s]+) .* Valuta[\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*") //
+                                                        .match("^.* (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d\\s]+) .* Valuta[\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -626,7 +632,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note1", "note2") //
-                                                        .match("^Abrechnung vom[\\s]{1,}(?<note1>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*(?<note2>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //)
+                                                        .match("^Abrechnung vom[\\s]{1,}(?<note1>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*(?<note2>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                                                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note1") + " - " + v.get("note2"), " | "))))
 
                         .wrap(TransactionItem::new);
@@ -833,7 +839,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                                             // Formatting some notes
                                                             v.put("note", trim(v.get("note")));
 
-                                                            if ("ÜBERTRAG".equals(v.get("note")))
+                                                            if (v.get("note").matches("^.BERTRAG$"))
                                                                 v.put("note", "Übertrag auf Konto");
 
                                                             t.setNote(v.get("note"));
@@ -857,7 +863,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                                                         + "|AUFTRAG DEBIT DIRECT" //
                                                                         + "|.BERWEISUNG AUF KONTO)) " //
                                                                         + "(?<amount>[\\.'\\d\\s]+) " //
-                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}).*$")
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}).*$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -873,7 +879,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                                             }
                                                             else if ("LASTSCHRIFT".equals(note))
                                                                 note = "Lastschrift";
-                                                            else if ("ÜBERWEISUNG AUF KONTO".equals(note))
+                                                            else if (note.matches("^.BERWEISUNG AUF KONTO$"))
                                                                 note = "Überweisung";
                                                             else if ("AUFTRAG DEBIT DIRECT".equals(note))
                                                                 note = "Auftrag DEBIT DIRECT";
@@ -881,7 +887,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                                                 note = "Online-Shopping";
                                                             else if ("ESR".equals(note))
                                                                 note = "Oranger Einzahlungsschein";
-                                                            else if (note.contains("ÜBERTRAG") && note.matches("^.*NTO$"))
+                                                            else if (note.matches("^.BERTRAG .*NTO$"))
                                                                 note = "Übertrag auf Konto";
                                                             else if (note.contains("GIRO"))
                                                             {
@@ -981,7 +987,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                             // Formatting some notes
                             var note = trim(v.get("note"));
 
-                            if ("ÜBERTRAG".equals(note))
+                            if (note.matches("^.BERTRAG$"))
                                 note = "Übertrag aus Konto";
 
                             t.setNote(note);
@@ -1034,7 +1040,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                             if (note.contains("EINZAHLUNGSSCHEIN"))
                                 note = "Einzahlschein/QR-Zahlteil";
 
-                            if (note.contains("ÜBERTRAG") && note.matches("^.*NTO$"))
+                            if (note.matches("^.BERTRAG .*NTO$"))
                                 note = "Übertrag aus Konto";
 
                             t.setNote(note);
@@ -1090,7 +1096,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                             if ("JAHRESPREIS LOGIN".equals(note))
                                 note = "Jahrespreis Login";
 
-                            if ("FÜR GIRO INTERNATIONAL (SEPA)".equals(note))
+                            if (note.matches("^F.R GIRO INTERNATIONAL \\(SEPA\\)$"))
                                 note = "Überweisungsgebühr (SEPA)";
 
                             if (note.contains("KONTOAUSZUG PAPIER"))
@@ -1106,12 +1112,12 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                     note = "";
                             }
 
-                            if (note.contains("KONTOFÜHRUNG"))
+                            if (note.matches("^.*KONTOF.HRUNG.*$"))
                                 note = "Kontoführungsgebühr";
 
-                            if (note.contains("GUTHABENGEBÜHR"))
+                            if (note.matches("^GUTHABENGEB.HR F.R .*$"))
                             {
-                                var parts = note.split("FÜR");
+                                var parts = note.split(" F.R ");
                                 note = "Guthabengebühr für " + stripBlanks(parts[1]);
                             }
 
