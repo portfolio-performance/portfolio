@@ -27,10 +27,10 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 {
     private static final String IS_JOINT_ACCOUNT = "isJointAccount";
 
-    BiConsumer<DocumentContext, String[]> jointAccount = (context, lines) -> {
+    private final BiConsumer<DocumentContext, String[]> jointAccount = (context, lines) -> {
         var pJointAccount = Pattern.compile("Anteilige Berechnungsgrundlage .* \\([\\d]{2},[\\d]{2} %\\).*");
 
-        for (String line : lines)
+        for (var line : lines)
         {
             if (pJointAccount.matcher(line).matches())
             {
@@ -83,7 +83,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         .section("type").optional() //
                         .match("^Wertpapier Abrechnung (?<type>(Kauf|Verkauf|Ausgabe Investmentfonds|R.cknahme Investmentfonds)).*$") //
                         .assign((t, v) -> {
-                            if ("Verkauf".equals(v.get("type")) || "Rücknahme Investmentfonds".equals(v.get("type")))
+                            if (!"Kauf".equals(v.get("type")) && !"Ausgabe Investmentfonds".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
@@ -109,7 +109,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<name1>.*)$") //
                                                         .match("^(Ausf.hrungskurs|Abrech\\.\\-Preis) [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
-                                                            if (!v.get("name1").startsWith("Handels-/Ausführungsplatz"))
+                                                            if (!v.get("name1").startsWith("Handels-/Ausf"))
                                                                 v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
 
                                                             t.setSecurity(getOrCreateSecurity(v));
@@ -124,7 +124,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^[\\d]{3} [\\d]+ [\\d]+ (?<name>.*) [\\d]\\/[\\d]$") //
                                                         .match("^WKN (?<wkn>[A-Z0-9]{6}).*$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Kurs (?<currency>[A-Z]{3}) [\\.,\\d]+$") //
-                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))), //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // 123 9876543 05 3,1% DT.BANK FESTZINSANL.V.26 9.10. 28 1/1
                                         // WKN DB9WSZ Nominal EUR 3.000,00
@@ -133,8 +133,8 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "wkn", "isin", "currency") //
                                                         .match("^[\\d]{3} [\\d]+ [\\d]+ (?<name>.*) [\\d]\\/[\\d]$") //
-                                                        .match("^WKN (?<wkn>[A-Z0-9]{6})\\s+Nominal\\s+(?<currency>[A-Z]{3})\\s+[.,\\d]+.*$") //
-                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Kurs [\\.,\\d]+\\s*%$") //
+                                                        .match("^WKN (?<wkn>[A-Z0-9]{6})\\s+Nominal[\\s]+(?<currency>[A-Z]{3})[\\s]+[\\.,\\d]+.*$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Kurs [\\.,\\d]+[\\s]*%$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         .oneOf( //
@@ -146,7 +146,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<notation>(St.ck|[A-Z]{3})) (?<shares>[\\.,\\d]+) .* [A-Z]{2}[A-Z0-9]{9}[0-9] \\([A-Z0-9]{6}\\)$") //
                                                         .assign((t, v) -> {
                                                             // Percentage quotation, workaround for bonds
-                                                            if (v.get("notation") != null && !"Stück".equalsIgnoreCase(v.get("notation")))
+                                                            if (v.get("notation").matches("^[A-Z]{3}$"))
                                                             {
                                                                 t.setShares(asBondNominal(v.get("shares")));
                                                             }
@@ -184,7 +184,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time") //
-                                                        .match("^Schlusstag\\/\\-Zeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$") //
+                                                        .match("^Schlusstag\\/\\-Zeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}).*$") //
                                                         .assign((t, v) -> t
                                                                         .setDate(asDate(v.get("date"), v.get("time")))),
                                         // @formatter:off
@@ -192,7 +192,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time") //
-                                                        .match("^.*Schlusstag\\/\\-zeit ... (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}).*$") //
+                                                        .match("^.*Schlusstag\\/\\-zeit ... (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}).*$") //
                                                         .assign((t, v) -> t
                                                                         .setDate(asDate(v.get("date"), v.get("time")))),
                                         // @formatter:off
@@ -200,7 +200,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time") //
-                                                        .match("^.*Schlusstag\\/\\-zeit ... (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\/ (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$") //
+                                                        .match("^.*Schlusstag\\/\\-zeit ... (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\/ (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}).*$") //
                                                         .assign((t, v) -> t
                                                                         .setDate(asDate(v.get("date"), v.get("time")))),
                                         // @formatter:off
@@ -211,7 +211,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Den Gegenwert buchen wir mit Valuta ([\\s]+)?(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date")))))
 
-                        .oneOf(
+                        .oneOf( //
                                         // @formatter:off
                                         // Ausmachender Betrag 9.978,18- EUR
                                         // @formatter:on
@@ -231,14 +231,14 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                                        }), //
+                                                        }),
                                         // @formatter:off
                                         // Buchung ,00
                                         // auf Kontonummer 9876543 00 mit Wertstellung 09.10.2026 EUR 3.015
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount1", "amount2") //
-                                                        .match("^Buchung (?<amount2>[.,\\d]+).*$") //
+                                                        .match("^Buchung (?<amount2>[\\.,\\d]+).*$") //
                                                         .match("^.*auf Kontonummer [\\s\\d]+ mit Wertstellung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[A-Z]{3}) (?<amount1>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount1") + v.get("amount2")));
@@ -286,15 +286,15 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         //  Auftragsnummer 69123/22.01
                                         // @formatter:on
-                                        section -> section
-                                                        .attributes("note")
+                                        section -> section //
+                                                        .attributes("note") //
                                                         .match("^.*(?<note>Auftragsnummer [\\d]+\\/[\\.\\d]+)$") //
                                                         .assign((t, v) -> t.setNote(trim(v.get("note")))),
                                         // @formatter:off
                                         // Belegnummer 1481234555 / 987123 Schlusstag 24.07.2023
                                         // @formatter:on
-                                        section -> section
-                                                        .attributes("note")
+                                        section -> section //
+                                                        .attributes("note") //
                                                         .match("^(?<note>Belegnummer [\\d]+([\\s])?\\/([\\s])?[\\d]+).*$") //
                                                         .assign((t, v) -> t.setNote(trim(v.get("note")))))
 
@@ -358,7 +358,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("wkn", "isin", "name", "currency") //
                                                         .find("St.ck WKN ISIN") //
                                                         .match("^[\\.,\\d]+ (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                                                        .match("(?<name>.*)") //
+                                                        .match("^(?<name>.*)$") //
                                                         .match("^(Aussch.ttung|Dividende|Ertrag) pro (St\\.|St.ck) [\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -369,7 +369,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "isin", "wkn", "name1", "currency") //
                                                         .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
-                                                        .match("(?<name1>.*)") //
+                                                        .match("^(?<name1>.*)$") //
                                                         .match("^.* (Aussch.ttung|Dividende|Ertrag)[\\s]{1,}pro (St\\.|St.ck) [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             if (!v.get("name1").startsWith("Zahlbarkeitstag"))
@@ -384,7 +384,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("currency", "name", "isin", "wkn", "name1") //
                                                         .match("^(?<currency>[A-Z]{3}) [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
-                                                        .match("(?<name1>.*)") //
+                                                        .match("^(?<name1>.*)$") //
                                                         .assign((t, v) -> {
                                                             if (!v.get("name1").startsWith("Zahlbarkeitstag"))
                                                                 v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
@@ -401,7 +401,6 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<name>.*)$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
-
                         .oneOf( //
                                         // @formatter:off
                                         // Stück WKN ISIN
@@ -409,7 +408,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .find("St.ck WKN ISIN")
+                                                        .find("St.ck WKN ISIN") //
                                                         .match("^(?<shares>[\\.,\\d]+) [A-Z0-9]{6} [A-Z]{2}[A-Z0-9]{9}[0-9]$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
@@ -469,13 +468,21 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Gutschrift mit Wert (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
+                        // @formatter:off
+                        // Ex-Tag 22.02.2021 Art der Dividende Quartalsdividende
+                        // Ursprungsland DEUTSCHLAND Ex-Tag 16.01.2023
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^.*Ex\\-Tag (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
                         .oneOf( //
                                         // @formatter:off
                                         // Belastung mit Wert 17.05.2024 31,42 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount", "currency") //
-                                                        .match("^Belastung mit Wert [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<amount>[\\.,\\d]+) (?<currency>\\w{3})$") //
+                                                        .match("^Belastung mit Wert [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -485,7 +492,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount", "currency") //
-                                                        .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)\\+ (?<currency>\\w{3})$") //
+                                                        .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)\\+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -495,7 +502,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount", "currency") //
-                                                        .match("^Wir überweisen den Betrag von (?<amount>[\\.,\\d]+) (?<currency>\\w{3}).*$") //
+                                                        .match("^Wir .berweisen den Betrag von (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -549,19 +556,14 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
                         .optionalOneOf( //
                                         // @formatter:off
-                                        // Devisenkurs EUR / USD 1,1920
-                                        // Dividendengutschrift 12,12 USD 10,17+ EUR
-                                        //
-                                        // Devisenkurs EUR / USD  0,9997
-                                        // Zinsertrag 166,25 USD 166,30+ EUR
+                                        // Ex-Tag 22.02.2021 Art der Dividende Quartalsdividende
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.* Art der Dividende (?<note>.*)$") //
                                                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | "))),
                                         // @formatter:off
-                                        // Bruttoertrag 312,50 USD 285,83 EUR
-                                        // Umrechnungskurs USD zu EUR 1,0933000000
+                                        // Bestandsstichtag 13.09.2022 Laufzeit Zinsschein 180 Tag(e)
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
@@ -598,9 +600,9 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         // Vorabpauschale Jahreswert (p.St.) 3,2556615000 EUR Kalenderjahr 2023
                         // @formatter:on
                         .section("wkn", "isin", "name", "currency") //
-                        .find("St.ck WKN ISIN")
+                        .find("St.ck WKN ISIN") //
                         .match("^[\\.,\\d]+ (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                        .match("(?<name>.*)") //
+                        .match("^(?<name>.*)$") //
                         .match("^Vorabpauschale Jahreswert .* [\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -609,7 +611,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         // 88,000000 976976 DE0009769760
                         // @formatter:on
                         .section("shares") //
-                        .find("St.ck WKN ISIN")
+                        .find("St.ck WKN ISIN") //
                         .match("^(?<shares>[\\.,\\d]+) [A-Z0-9]{6} [A-Z]{2}[A-Z0-9]{9}[0-9]$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
@@ -657,7 +659,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         )
 
                         .wrap(t -> {
-                            if (t.getCurrencyCode() == null || t.getAmount() == 0)
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
                                 return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             return new TransactionItem(t);
@@ -672,7 +674,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         // 001 2019 1 3 DE00 0000 0000 0000 0000 00 EUR  0,00
                                         // @formatter:on
                                         .section("currency") //
-                                        .match("^.*[A-Za-z]{2}(?:[\\s]?[0-9]){18,20} (?<currency>[A-Z]{3}) ([\\-|\\+])? [\\.,\\d]+$") //
+                                        .match("^.*[A-Za-z]{2}(?:[\\s]?[0-9]){18,20} (?<currency>[A-Z]{3}) ([\\-\\+])? [\\.,\\d]+$") //
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency"))))
 
                                         // @formatter:off
@@ -696,7 +698,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
-                        .section("date", "note", "amount").optional() //
+                        .section("date", "note", "amount") //
                         .documentContext("currency", "year") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.)(\\/|[\\s]*)[\\d]{2}\\.[\\d]{2}\\. (?<note>(SEPA .berweisung|D Gut SEPA|Gutschr\\.SEPA)).* \\+ (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
@@ -715,11 +717,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                             t.setNote(v.get("note"));
                         })
 
-                        .wrap(t -> {
-                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return new TransactionItem(t);
-                            return null;
-                        }));
+                        .wrap(TransactionItem::new));
 
         // @formatter:off
         // 06.08./07.08. SEPA Überw. Einzel - 250,00
@@ -731,7 +729,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.REMOVAL))
 
-                        .section("date", "note", "amount").optional() //
+                        .section("date", "note", "amount") //
                         .documentContext("currency", "year") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.)(\\/|[\\s]*)[\\d]{2}\\.[\\d]{2}\\. (?<note>SEPA (.berw\\. Einzel|Lastschrifteinzug|.berweisung)).* \\- (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
@@ -746,11 +744,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                             t.setNote(v.get("note"));
                         })
 
-                        .wrap(t -> {
-                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return new TransactionItem(t);
-                            return null;
-                        }));
+                        .wrap(TransactionItem::new));
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
