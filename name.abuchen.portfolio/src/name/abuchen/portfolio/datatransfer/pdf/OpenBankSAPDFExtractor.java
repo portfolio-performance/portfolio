@@ -46,7 +46,7 @@ public class OpenBankSAPDFExtractor extends AbstractPDFExtractor
                         .section("type").optional() //
                         .match("^.* TRANSAKTION .* (?<type>(ZEICHNUNG|R.CKERSTATTUNG|MAXIMAL VERF.GBARE ERSTATTUNG))$") //
                         .assign((t, v) -> {
-                            if (!"ZEICHNUNG".equals(v.get("type")))
+                            if (v.get("type").matches("^(R.CKERSTATTUNG|MAXIMAL VERF.GBARE ERSTATTUNG)$"))
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
