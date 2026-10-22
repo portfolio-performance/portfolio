@@ -505,6 +505,18 @@ public class IBFlexStatementExtractor implements Extractor
                     else
                         accountTransaction.setType(AccountTransaction.Type.FEES_REFUND);
                     break;
+                case "Commission Adjustments":
+                    // Correction of a commission charged on an earlier trade,
+                    // so it is linked to the security of that trade.
+                    if (element.getAttribute("symbol").length() > 0)
+                        accountTransaction.setSecurity(this.getOrCreateSecurity(element, true));
+
+                    // Positive amount are a commission refund
+                    if (Math.signum(Double.parseDouble(element.getAttribute("amount"))) == -1)
+                        accountTransaction.setType(AccountTransaction.Type.FEES);
+                    else
+                        accountTransaction.setType(AccountTransaction.Type.FEES_REFUND);
+                    break;
                 default:
                     throw new IllegalArgumentException("unsupported type '" + type + "'");
             }
