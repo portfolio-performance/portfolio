@@ -133,7 +133,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "wkn", "isin", "currency") //
                                                         .match("^[\\d]{3} [\\d]+ [\\d]+ (?<name>.*) [\\d]\\/[\\d]$") //
-                                                        .match("^WKN (?<wkn>[A-Z0-9]{6})\\s+Nominal[\\s]+(?<currency>[A-Z]{3})[\\s]+[\\.,\\d]+.*$") //
+                                                        .match("^WKN (?<wkn>[A-Z0-9]{6})[\\s]+Nominal[\\s]+(?<currency>[A-Z]{3})[\\s]+[\\.,\\d]+.*$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Kurs [\\.,\\d]+[\\s]*%$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
@@ -168,7 +168,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^WKN [A-Z0-9]{6} Nominal [A-Z]{3} (?<shares>[\\.,\\d]+)$") //
+                                                        .match("^WKN [A-Z0-9]{6}[\\s]+Nominal[\\s]+[A-Z]{3}[\\s]+(?<shares>[\\.,\\d]+).*$") //
                                                         .assign((t, v) -> t.setShares(asBondNominal(v.get("shares")))))
 
                         .oneOf( //
@@ -192,7 +192,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time") //
-                                                        .match("^.*Schlusstag\\/\\-zeit ... (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}).*$") //
+                                                        .match("^.*Schlusstag\\/\\-zeit ... (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}(\\:[\\d]{2})?).*$") //
                                                         .assign((t, v) -> t
                                                                         .setDate(asDate(v.get("date"), v.get("time")))),
                                         // @formatter:off
@@ -717,7 +717,12 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                             t.setNote(v.get("note"));
                         })
 
-                        .wrap(TransactionItem::new));
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                            return new TransactionItem(t);
+                        }));
 
         // @formatter:off
         // 06.08./07.08. SEPA Überw. Einzel - 250,00
@@ -744,7 +749,12 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                             t.setNote(v.get("note"));
                         })
 
-                        .wrap(TransactionItem::new));
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                            return new TransactionItem(t);
+                        }));
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
