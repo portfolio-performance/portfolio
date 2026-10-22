@@ -19,6 +19,8 @@ import org.junit.rules.TemporaryFolder;
 
 import com.google.gson.JsonObject;
 
+import name.abuchen.portfolio.junit.AccountBuilder;
+import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
@@ -102,12 +104,18 @@ public class DescribeConsistencyTest
         TaxonomyFixtures.assign(europe, instrument, 60);
         TaxonomyFixtures.assign(equity, client.getPortfolios().get(0).getReferenceAccount(), 100);
         TaxonomyFixtures.child(taxonomy.getRoot(), "Bonds");
-        var sampleFile = ClientFiles.xml(folder.getRoot().toPath(), client).toPath();
 
         // one add and one update per entity kind, so that every kind of change record is checked
         var cash = client.getAccounts().get(0);
         var depot = client.getPortfolios().get(0);
+        var other = client.getSecurities().get(1);
+        var spareCash = new AccountBuilder().addTo(client);
+        var spareDepot = new PortfolioBuilder(spareCash).addTo(client);
+        var sampleFile = ClientFiles.xml(folder.getRoot().toPath(), client).toPath();
         var batch = folder.newFile("batch.json").toPath();
+        var trade = "{\"operation\":\"transaction.add\",\"investmentAccount\":\"" + depot.getUUID()
+                        + "\",\"currencyCode\":\"" + cash.getCurrencyCode() + "\",\"instrument\":\"" + other.getUUID()
+                        + "\"";
         Files.writeString(batch, "{\"operations\":[{\"operation\":\"instrument.add\",\"name\":\"New\"},"
                         + "{\"operation\":\"instrument.update\",\"uuid\":\"" + instrument.getUUID()
                         + "\",\"note\":null,\"retired\":true},"
@@ -120,6 +128,28 @@ public class DescribeConsistencyTest
                         + "\",\"retired\":true},"
                         + "{\"operation\":\"transaction.add\",\"type\":\"DEPOSIT\",\"cashAccount\":\""
                         + cash.getUUID() + "\",\"date\":\"2026-05-01\",\"amount\":250.00,\"currencyCode\":\""
+                        + cash.getCurrencyCode() + "\"},"
+                        + trade.replace("{\"operation\":\"transaction.add\"",
+                                        "{\"operation\":\"transaction.add\",\"type\":\"BUY\",\"cashAccount\":\""
+                                                        + cash.getUUID() + "\",\"date\":\"2026-05-02\",\"shares\":2,"
+                                                        + "\"amount\":250.00")
+                        + "},"
+                        + trade.replace("{\"operation\":\"transaction.add\"",
+                                        "{\"operation\":\"transaction.add\",\"type\":\"SELL\",\"cashAccount\":\""
+                                                        + cash.getUUID() + "\",\"date\":\"2026-05-06\",\"shares\":1,"
+                                                        + "\"amount\":120.00")
+                        + "},"
+                        + trade.replace("{\"operation\":\"transaction.add\"",
+                                        "{\"operation\":\"transaction.add\",\"type\":\"DELIVERY_INBOUND\","
+                                                        + "\"date\":\"2026-05-03\",\"shares\":1,\"amount\":100.00")
+                        + "},"
+                        + "{\"operation\":\"transaction.add\",\"type\":\"TRANSFER\",\"kind\":\"security\",\"from\":\""
+                        + depot.getUUID() + "\",\"to\":\"" + spareDepot.getUUID() + "\",\"instrument\":\""
+                        + instrument.getUUID() + "\",\"date\":\"2026-05-04\",\"shares\":2,\"amount\":200.00,"
+                        + "\"currencyCode\":\"" + instrument.getCurrencyCode() + "\"},"
+                        + "{\"operation\":\"transaction.add\",\"type\":\"TRANSFER\",\"kind\":\"cash\",\"from\":\""
+                        + cash.getUUID() + "\",\"to\":\"" + spareCash.getUUID()
+                        + "\",\"date\":\"2026-05-05\",\"amount\":50.00,\"currencyCode\":\""
                         + cash.getCurrencyCode() + "\"}]}");
 
         for (var element : describe().getAsJsonArray("commands"))

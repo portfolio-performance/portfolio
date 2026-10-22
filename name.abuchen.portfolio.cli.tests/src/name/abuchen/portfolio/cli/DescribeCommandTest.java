@@ -110,6 +110,19 @@ public class DescribeCommandTest
                         is("[\"operation\",\"name\",\"referenceCashAccount\"]"));
         assertThat(operations.get("investment-account.update").getAsJsonObject("input").getAsJsonArray("required")
                         .toString(), is("[\"operation\",\"uuid\"]"));
+
+        var transactionAdd = operations.get("transaction.add").getAsJsonObject("input");
+        var types = new ArrayList<String>();
+        transactionAdd.getAsJsonObject("properties").getAsJsonObject("type").getAsJsonArray("enum")
+                        .forEach(t -> types.add(t.getAsString()));
+        assertThat(types, containsInAnyOrder("DEPOSIT", "REMOVAL", "INTEREST", "INTEREST_CHARGE", "DIVIDENDS", "FEES",
+                        "FEES_REFUND", "TAXES", "TAX_REFUND", "BUY", "SELL", "DELIVERY_INBOUND", "DELIVERY_OUTBOUND",
+                        "TRANSFER"));
+        assertThat(transactionAdd.getAsJsonObject("properties").keySet(),
+                        hasItems("investmentAccount", "cashAccount", "kind", "from", "to", "targetAmount",
+                                        "exchangeRate"));
+        assertThat(transactionAdd.getAsJsonArray("required").toString(),
+                        is("[\"operation\",\"type\",\"date\",\"amount\",\"currencyCode\"]"));
     }
 
     private static JsonObject data(CliRun run)

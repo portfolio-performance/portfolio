@@ -53,10 +53,10 @@ Settled in a grilling session. Field names mirror the `transactions` output.
 
 ## Acceptance criteria
 
-- [ ] A buy, a sell, a security transfer, and a same-currency and a cross-currency cash transfer can each be added, and read back through `transactions` as one record with both sides
-- [ ] An inbound and an outbound delivery can each be added and read back
-- [ ] A forex buy with a consistent rate is accepted; an inconsistent one is refused with a field-level error
-- [ ] A cross-currency transfer echoes the derived rate; a supplied rate outside tolerance is refused
-- [ ] A sell, an outbound delivery, or an outbound transfer that would make any end-of-date holding negative is refused, including when a later buy would restore it
-- [ ] An oversell already in the file doesn't block an unrelated write
-- [ ] The new types appear in the `transaction.add` input schema in `describe` and pass its consistency test
+- [x] A buy, a sell, a security transfer, and a same-currency and a cross-currency cash transfer can each be added, and read back through `transactions` as one record with both sides
+- [x] An inbound and an outbound delivery can each be added and read back
+- [x] A forex buy with a consistent rate is accepted; an inconsistent one is refused with a field-level error
+- [x] A cross-currency transfer echoes the derived rate; a supplied rate outside tolerance is refused
+- [x] A sell, an outbound delivery, or an outbound transfer that would make any end-of-date holding negative is refused, including when a later buy would restore it
+- [x] An oversell already in the file doesn't block an unrelated write
+- [x] The new types appear in the `transaction.add` input schema in `describe` and pass its consistency test
