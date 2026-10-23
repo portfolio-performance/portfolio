@@ -204,7 +204,7 @@ public class TransactionUpdateDeleteTest
         var change = updated(run);
         assertThat(change.get("uuid").getAsString(), is(portfolioSide));
         assertThat(change.getAsJsonObject("after").keySet(),
-                        is(Set.of("date", "amount", "shares", "note")));
+                        is(java.util.Set.of("date", "amount", "shares", "note")));
 
         var reloaded = reload();
         var position = reloaded.getPortfolios().get(0).getTransactions().get(0);
@@ -296,7 +296,7 @@ public class TransactionUpdateDeleteTest
     }
 
     @Test
-    public void updatesACrossCurrencyTransferAndDerivesTheRateAgain() throws IOException
+    public void updatesACrossCurrencyTransferAndRefusesAPatchThatContradictsItsRate() throws IOException
     {
         var transfer = TransactionFixtures.crossCurrencyTransfer(eur, usd, "2026-03-09", 10_000, 11_000,
                         "0.9090909091");
@@ -305,17 +305,14 @@ public class TransactionUpdateDeleteTest
 
         var both = apply(update(id, "\"amount\":200.00,\"targetAmount\":220.00"));
         assertThat(both.stdout, both.exitCode, is(0));
-        assertThat(updated(both).getAsJsonObject("after").keySet(), is(Set.of("amount", "targetAmount")));
+        assertThat(updated(both).getAsJsonObject("after").keySet(), is(java.util.Set.of("amount", "targetAmount")));
         var reloaded = reload();
         assertThat(reloaded.getAccounts().get(0).getTransactions().get(0).getAmount(), is(20_000L));
         assertThat(reloaded.getAccounts().get(1).getTransactions().get(0).getAmount(), is(22_000L));
 
         var amountOnly = apply(update(id, "\"amount\":400.00"));
-        assertThat(amountOnly.stdout, amountOnly.exitCode, is(0));
-        var after = updated(amountOnly).getAsJsonObject("after");
-        assertThat(after.get("exchangeRate").getAsBigDecimal().toPlainString(), is("1.8181818182"));
-        assertThat(updated(amountOnly).getAsJsonObject("before").get("exchangeRate").getAsBigDecimal()
-                        .toPlainString(), is("0.9090909091"));
+        assertRefused(amountOnly, "exchangeRate", "forex-mismatch");
+        assertThat(reload().getAccounts().get(0).getTransactions().get(0).getAmount(), is(20_000L));
     }
 
     private Transaction forexBuy()

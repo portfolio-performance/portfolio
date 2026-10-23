@@ -34,7 +34,7 @@ final class TransactionUpdates
     private static final Gson GSON = new Gson();
 
     /** Members of the rendered record that an add doesn't take: they are derived from the others. */
-    private static final List<String> NOT_INPUT = List.of("id", "sides", "targetCurrencyCode", "exchangeRate");
+    private static final List<String> NOT_INPUT = List.of("id", "sides", "targetCurrencyCode");
 
     static final OperationSpec DELETE = new OperationSpec("transaction.delete",
                     "Deletes a whole transaction record, both sides, found by the UUID of either of its sides. The response is one deleted change whose uuid is the record id, with the record as it was in before. A delete that would make an investment account's holding of an instrument negative at the end of any date, by removing a buy or a delivery or transfer into it, is refused.",
@@ -114,28 +114,8 @@ final class TransactionUpdates
             if (!context.claim(UUID_MEMBER, side))
                 return null;
         }
-        return new Existing(record, record.sides().stream().map(side -> locate(client, side)).toList());
-    }
-
-    private static BuiltRecord.Side locate(Client client, String uuid)
-    {
-        for (var account : client.getAccounts())
-        {
-            for (var transaction : account.getTransactions())
-            {
-                if (uuid.equals(transaction.getUUID()))
-                    return new BuiltRecord.Side(transaction, account);
-            }
-        }
-        for (var portfolio : client.getPortfolios())
-        {
-            for (var transaction : portfolio.getTransactions())
-            {
-                if (uuid.equals(transaction.getUUID()))
-                    return new BuiltRecord.Side(transaction, portfolio);
-            }
-        }
-        throw new IllegalStateException("Transaction " + uuid + " is in no account");
+        return new Existing(record, record.sides().stream()
+                        .map(side -> TransactionRecord.sideOf(client, side).orElseThrow()).toList());
     }
 
     /** The current record in the shape of an add, with the members of the patch laid over it. */

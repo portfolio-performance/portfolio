@@ -6,6 +6,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -98,14 +99,36 @@ record TransactionRecord(String id, String type, Optional<TransferKind> kind, Tr
         return from.filter(accountUuid::equals).isPresent() || to.filter(accountUuid::equals).isPresent();
     }
 
+    private static IdentityHashMap<Transaction, Account> accountOwners(Client client)
+    {
+        var owners = new IdentityHashMap<Transaction, Account>();
+        client.getAccounts().forEach(account -> account.getTransactions().forEach(t -> owners.put(t, account)));
+        return owners;
+    }
+
+    private static IdentityHashMap<Transaction, Portfolio> portfolioOwners(Client client)
+    {
+        var owners = new IdentityHashMap<Transaction, Portfolio>();
+        client.getPortfolios().forEach(portfolio -> portfolio.getTransactions().forEach(t -> owners.put(t, portfolio)));
+        return owners;
+    }
+
+    /** The side with the given UUID, with the account or portfolio it is in. */
+    static Optional<BuiltRecord.Side> sideOf(Client client, String uuid)
+    {
+        var accounts = accountOwners(client).entrySet().stream()
+                        .map(e -> new BuiltRecord.Side(e.getKey(), e.getValue()));
+        var portfolios = portfolioOwners(client).entrySet().stream()
+                        .map(e -> new BuiltRecord.Side(e.getKey(), e.getValue()));
+        return Stream.concat(accounts, portfolios).filter(side -> uuid.equals(side.transaction().getUUID()))
+                        .findFirst();
+    }
+
     /** All records of the client, in no particular order. */
     static List<TransactionRecord> allOf(Client client)
     {
-        var accountOwners = new IdentityHashMap<Transaction, Account>();
-        var portfolioOwners = new IdentityHashMap<Transaction, Portfolio>();
-        client.getAccounts().forEach(account -> account.getTransactions().forEach(t -> accountOwners.put(t, account)));
-        client.getPortfolios()
-                        .forEach(portfolio -> portfolio.getTransactions().forEach(t -> portfolioOwners.put(t, portfolio)));
+        var accountOwners = accountOwners(client);
+        var portfolioOwners = portfolioOwners(client);
 
         var join = new Join(accountOwners, portfolioOwners);
         var records = new ArrayList<TransactionRecord>();
