@@ -95,43 +95,15 @@ final class TaxonomyOperations
 
     private static Taxonomy parseTaxonomy(OperationContext context)
     {
-        var uuid = parseUuid(context, "taxonomy");
-        if (uuid == null)
-            return null;
-
-        var found = context.client().getTaxonomies().stream().filter(t -> uuid.equals(t.getId())).findFirst();
-        if (found.isEmpty())
-            context.fail("taxonomy", "reference-not-found", "No taxonomy with UUID " + uuid + " in the file.");
-        return found.orElse(null);
+        return TransactionOperations.find(context, context.input(), "taxonomy", "This operation needs the taxonomy.",
+                        "taxonomy", context.client().getTaxonomies(), Taxonomy::getId);
     }
 
     private static Security parseInstrument(OperationContext context)
     {
-        var uuid = parseUuid(context, "instrument");
-        if (uuid == null)
-            return null;
-
-        var found = context.client().getSecurities().stream()
-                        .filter(s -> uuid.equals(s.getUUID()) && context.existedBeforeBatch(s)).findFirst();
-        if (found.isEmpty())
-            context.fail("instrument", "reference-not-found", "No instrument with UUID " + uuid + " in the file.");
-        return found.orElse(null);
-    }
-
-    /** The UUID in the member, or null after reporting why there is none. */
-    private static String parseUuid(OperationContext context, String member)
-    {
-        var uuid = TransactionOperations.parseText(context, context.input(), member);
-        if (uuid == null && !mistyped(context.input(), member))
-            context.fail(member, "required", "This operation needs the " + member + ".");
-        return uuid;
-    }
-
-    /** Whether the member is present, not null, and not a string. */
-    private static boolean mistyped(JsonObject object, String member)
-    {
-        var element = object.get(member);
-        return element != null && !element.isJsonNull() && !OperationContext.isText(element);
+        return TransactionOperations.find(context, context.input(), "instrument",
+                        "This operation needs the instrument.", "instrument", context.client().getSecurities(),
+                        Security::getUUID);
     }
 
     /** The placements, or null if the list itself is unusable; problems of single entries are reported. */
@@ -227,22 +199,10 @@ final class TaxonomyOperations
     /** The weight as stored in the file, or null after reporting why not. */
     private static Integer parseWeight(OperationContext context, JsonObject entry, String field)
     {
-        var member = field + ".weight";
-        var value = TransactionOperations.rawNumber(entry, "weight");
+        var value = TransactionOperations.parseNumber(context, entry, field + ".weight", "weight",
+                        "An assignment needs a weight.", true);
         if (value == null)
-        {
-            if (entry.has("weight") && !entry.get("weight").isJsonNull())
-                context.fail(member, "invalid-type", "The weight must be a number.");
-            else
-                context.fail(member, "required", "An assignment needs a weight.");
             return null;
-        }
-
-        if (value.signum() <= 0)
-        {
-            context.fail(member, "not-positive", "The weight must be positive.");
-            return null;
-        }
 
         try
         {
@@ -250,7 +210,8 @@ final class TaxonomyOperations
         }
         catch (ArithmeticException e)
         {
-            context.fail(member, "invalid-amount", "The weight has more decimal places than are stored; use at most four.");
+            context.fail(field + ".weight", "invalid-amount",
+                            "The weight has more decimal places than are stored; use at most four.");
             return null;
         }
     }

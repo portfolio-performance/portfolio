@@ -344,7 +344,7 @@ final class TransactionOperations
     }
 
     /** The entity of the UUID given in the member, which must have been in the file before the batch. */
-    private static <T> T find(OperationContext context, JsonObject input, String member, String requiredMessage,
+    static <T> T find(OperationContext context, JsonObject input, String member, String requiredMessage,
                     String noun, List<T> candidates, Function<T, String> uuidOf)
     {
         var uuid = parseText(context, input, member);
@@ -672,21 +672,10 @@ final class TransactionOperations
     private static Long number(OperationContext context, JsonObject input, String field, String member,
                     Values<Long> values, boolean positive)
     {
-        var value = rawNumber(input, member);
+        var value = parseNumber(context, input, field, member,
+                        field.equals(member) ? "A transaction needs " + member + "." : null, positive);
         if (value == null)
-        {
-            if (input.has(member) && !input.get(member).isJsonNull())
-                context.fail(field, "invalid-type", "The " + member + " must be a number.");
-            else if (field.equals(member))
-                context.fail(field, "required", "A transaction needs " + member + ".");
             return null;
-        }
-
-        if (positive && value.signum() <= 0)
-        {
-            context.fail(field, "not-positive", "The " + member + " must be positive.");
-            return null;
-        }
 
         var stored = Decimals.toStored(value, values);
         if (stored.isEmpty())
@@ -695,6 +684,32 @@ final class TransactionOperations
             return null;
         }
         return stored.get();
+    }
+
+    /**
+     * The member as a number, or null after reporting on {@code field} that it
+     * is not a number, is not positive if that is required, or is absent and a
+     * {@code requiredMessage} was given.
+     */
+    static BigDecimal parseNumber(OperationContext context, JsonObject input, String field, String member,
+                    String requiredMessage, boolean positive)
+    {
+        var value = rawNumber(input, member);
+        if (value == null)
+        {
+            if (input.has(member) && !input.get(member).isJsonNull())
+                context.fail(field, "invalid-type", "The " + member + " must be a number.");
+            else if (requiredMessage != null)
+                context.fail(field, "required", requiredMessage);
+            return null;
+        }
+
+        if (positive && value.signum() <= 0)
+        {
+            context.fail(field, "not-positive", "The " + member + " must be positive.");
+            return null;
+        }
+        return value;
     }
 
     /** The member as a number, or null if it is absent or not a number; reports nothing. */
