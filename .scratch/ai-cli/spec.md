@@ -165,6 +165,17 @@ I need a command an agent can run from its shell against a closed client file. I
 108. As the owner, I want `pp-cli restore --backup <path>` to restore a backup through the same safe-write sequence, including a backup of the current file, so that undoing an agent change is itself undoable.
 109. As the owner, I want an idempotent uninstall script per platform that reverses exactly what the installer created (the install directory, the `PATH` entry or symlink and profile lines) and keeps my backups and lock files, so that I can remove `pp-cli` cleanly without losing the ability to restore.
 
+### Agent skill (tickets 35 and 36)
+
+110. As the owner, I want one `pp-cli` agent skill installed where both Copilot and Claude Code find it, so that an agent knows how to use the tool without me pasting instructions.
+111. As an AI agent, I want the skill to hold only workflow, judgment and safety rules and to send me to `pp-cli describe` for the command reference, so that the skill can't contradict the tool.
+112. As the owner, I want the skill to forbid `apply` without a `--dry-run` first, a plain-language summary of the changes, and my explicit approval of that batch, so that an agent never changes my client file unreviewed.
+113. As the owner, I want the skill to make the agent use the CLI's figures with their echoed period, currency and cost method, and to pass on every warning, so that I never get a number whose basis I can't see.
+114. As the owner, I want the skill to keep passwords out of chat and command lines, so that an encrypted client file stays protected.
+115. As the owner, I want the skill's commands to work in PowerShell, cmd, Git Bash and zsh, so that the same skill serves both of my machines.
+116. As the owner, I want a test that fails when the skill names a command, option, operation or error code that `describe` doesn't know, so that the skill can't drift from the tool.
+117. As the owner, I want the install script to install the skill with the tool and the uninstall script to remove it, so that updating `pp-cli` updates the skill and removing `pp-cli` leaves nothing behind.
+
 ## Implementation Decisions
 
 ### Module and architecture
@@ -306,6 +317,22 @@ I need a command an agent can run from its shell against a closed client file. I
   - Uninstalling means running `uninstall.ps1` / `uninstall.sh` from the install directory. It removes only what the installer created and keeps `backups/` folders and lock files.
 - Per-platform build, install and launch documentation ships with the module as a required v1 deliverable.
 
+### Agent skill
+
+- One skill, `pp-cli`, in the Agent Skills format: a short `SKILL.md` plus one reference file for the write protocol that the agent loads only before running `apply`. Its source is `name.abuchen.portfolio.cli/skills/pp-cli/`.
+- It holds workflow, judgment and safety rules and defers the command reference to `pp-cli describe`, so the two can't contradict each other.
+- Its rules:
+  - Write protocol: `--dry-run`, then a plain-language summary of the entity-level changes, then the real `apply` only after the user explicitly approves that batch, then a note about the backup and `pp-cli restore`. There are no exceptions, and the agent never promises what `describe` lists as limits.
+  - Passwords: never asked for in chat and never on a command line. If a file needs one, the agent tells the user to set `PP_PASSWORD` (the `$env:` and `export` forms), and stops on `password-required` or `incorrect-password`.
+  - File selection: an explicit `--file` on every command, from the user or from `PP_FILE` if set. The agent never scans the disk for client files.
+  - Session start: `pp-cli info` once. A `file-version-unsupported` refusal or a core-tag mismatch is reported, never worked around. If `pp-cli` is not on `PATH`, the agent points to the install instructions and doesn't build or install it.
+  - Answers: figures come from the CLI, never from the agent's own calculation; the period, currency and cost method echoed in `meta` are stated; every warning is passed on; the AI/CLI vocabulary in the glossary is used.
+  - Shell neutrality: the `apply` batch goes into a UTF-8 temp file without a BOM and is passed with `--input <path>`, never inline or piped; paths are quoted; the tool is always called as plain `pp-cli`.
+- The `description` fires for client-file questions and edits, and for `pp-cli` itself. It does not fire for general investing advice or PDF import.
+- Distribution: the bundle carries the skill. The installers copy it to `~/.agents/skills/pp-cli/`, the canonical location that Copilot and other tools read. Claude Code reads only `~/.claude/skills/`, so `~/.claude/skills/pp-cli` is a symlink to the canonical copy. Both folders belong to the installer: install replaces them and uninstall removes them, with no marker file and no ownership check.
+- Windows: the installer stays non-admin. Only the symlink needs elevation or Developer Mode. Without it the installer completes everything else, prints the elevated command that finishes the link and exits non-zero. macOS needs no privilege.
+- Both installers accept a skip flag and overrides for both skills directories, so tests never touch the real home folder.
+
 ## Testing Decisions
 
 ### What makes a good test here
@@ -351,7 +378,7 @@ These are covered with a narrow injectable file-operations and process-probe hoo
 
 ### Seam 2 (smoke only): the installed launcher
 
-After a local build and install on each platform, a scripted smoke check runs the installed `pp-cli` from a fresh shell (`info` and `describe` against a sample file). It confirms the bundled runtime, the flat classpath (no pdfbox, the correct SWT fragment), the AppCDS archive and `PATH` wiring. This is a release-time check documented in the per-platform instructions, not part of the Maven test run.
+After a local build and install on each platform, a scripted smoke check runs the installed `pp-cli` from a fresh shell (`info` and `describe` against a sample file). It confirms the bundled runtime, the flat classpath (no pdfbox, the correct SWT fragment), the AppCDS archive, `PATH` wiring and the installed agent skill (both locations present, and the Claude link resolving to the canonical copy). This is a release-time check documented in the per-platform instructions, not part of the Maven test run.
 
 ### Prior art in the codebase
 
@@ -363,7 +390,7 @@ After a local build and install on each platform, a scripted smoke check runs th
 
 - **MCP server** over the CLI. Ruled out of v1 (not deferred with a recorded shape); a future effort would start the design from scratch.
 - **Live sync with, or live reads from, the running desktop app**. A possible later add-on if only #5870 merges upstream.
-- **AI skills or agent prompt packs** that teach agents to use `pp-cli`. To be written later, possibly in another repository.
+- **Agent skills beyond the single `pp-cli` skill**: separate read, write or setup skills, and skills published outside this repo.
 - **PDF statement import** (pdfbox is excluded from the flat classpath).
 - **Price writes**: historical or latest prices, and online feed configuration.
 - **Deleting instruments or accounts**; creating taxonomies or classifications; watchlists, investment plans, attributes, events; assigning cash accounts to taxonomies.

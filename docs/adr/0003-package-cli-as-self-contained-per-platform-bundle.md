@@ -15,5 +15,6 @@ The `pp-cli` tool (ADR 0002) must run from the Copilot and Claude Code shells on
 - Dropping pdfbox (it clashes 1.8 vs 3.x on any flat classpath, and ticket 03 runs no OSGi) means no PDF import; the read/write surfaces do not need one.
 - A dynamic AppCDS archive is generated per platform at install time to cut per-call startup (~0.5 s → ~0.37 s) for one-JVM-per-command usage.
 - One idempotent install/update/uninstall script per platform owns the install dir and `PATH` wiring (macOS: `~/.pp-cli/` symlinked into `/opt/homebrew/bin` or appended to `~/.zprofile`/`~/.zshenv`; Windows: `%LOCALAPPDATA%\pp-cli\` on the user `PATH`); updating is re-running it after bumping the pinned tag.
+- The bundle also carries the `pp-cli` agent skill. The same scripts install it to `~/.agents/skills/pp-cli` and symlink `~/.claude/skills/pp-cli` to it (Claude Code does not read `.agents`), so the skill always matches the installed CLI. On Windows only that symlink needs elevation or Developer Mode; the rest of the install stays non-admin.
 - Local-only builds need no Developer ID or notarization because nothing is downloaded.
 - Per-platform build, install and launch instructions ship with the module as a required deliverable.
