@@ -61,7 +61,7 @@ archive_is_used() {
         -cp "$install_dir/lib/*" name.abuchen.portfolio.cli.PpCli describe
 }
 
-# The directory the shell is expected to resolve pp-cli to: the Homebrew link when install.sh made one
+# The path the shell is expected to resolve pp-cli to: the Homebrew link when install.sh made one
 expected=$install_dir/pp-cli
 fresh_path=/usr/bin:/bin:/usr/sbin:/sbin
 if [ -L "$link_dir/pp-cli" ] && [ "$(readlink "$link_dir/pp-cli")" = "$install_dir/pp-cli" ]; then
@@ -90,8 +90,12 @@ trap 'rm -rf "$out"' EXIT
 fresh() {
     flag=$1
     shift
-    (cd "$out" && env -i HOME="$HOME" USER="${USER:-}" LOGNAME="${LOGNAME:-}" TMPDIR="$out" TERM=dumb PATH="$fresh_path" \
-        ${ZDOTDIR:+ZDOTDIR="$ZDOTDIR"} /bin/zsh "$flag" "$@") >"$out/stdout" 2>"$out/stderr"
+    (
+        cd "$out" || exit 1
+        # ZDOTDIR is passed on only when set
+        exec env -i HOME="$HOME" USER="${USER:-}" LOGNAME="${LOGNAME:-}" TMPDIR="$out" TERM=dumb PATH="$fresh_path" \
+            ${ZDOTDIR:+"ZDOTDIR=$ZDOTDIR"} /bin/zsh "$flag" "$@"
+    ) >"$out/stdout" 2>"$out/stderr"
     exit_code=$?
 }
 

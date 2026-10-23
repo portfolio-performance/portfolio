@@ -34,6 +34,7 @@ for tool in java jdeps jlink; do
 done
 [ -d "$JAVA_HOME/jmods" ] || die "No jmods directory in $JAVA_HOME; jlink needs a full JDK."
 grep -Eq '^JAVA_VERSION="21(\.|")' "$JAVA_HOME/release" || die "Java 21 is required in JAVA_HOME ($JAVA_HOME)."
+grep -Eq '^OS_ARCH="(aarch64|arm64)"' "$JAVA_HOME/release" || die "JAVA_HOME ($JAVA_HOME) must be an arm64 JDK; jlink would build an x64 runtime from it."
 
 if [ "$skip_maven" = false ]; then
     reactor=:portfolio-target-definition,:name.abuchen.portfolio.pdfbox1,:name.abuchen.portfolio.pdfbox3,:name.abuchen.portfolio,:name.abuchen.portfolio.cli

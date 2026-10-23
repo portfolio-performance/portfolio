@@ -63,6 +63,7 @@ if [ -d "$link_dir" ] && [ -w "$link_dir" ]; then
     echo "Linked $link_dir/pp-cli to $install_dir/pp-cli."
     exit 0
 fi
+[ ! -d "$link_dir" ] || echo "$link_dir is not writable; adding $install_dir to the zsh profiles instead."
 
 # the line is written with $HOME unexpanded where possible, so the profile survives a moved home
 case $install_dir in
