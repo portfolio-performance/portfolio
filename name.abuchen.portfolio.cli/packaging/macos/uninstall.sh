@@ -4,27 +4,38 @@
 # Deletes the install directory (including the bundled runtime and the AppCDS archive), the
 # pp-cli symlink in the link directory and the PATH lines in the zsh profiles. Backups and lock
 # files next to client files are never touched, because `pp-cli restore` depends on the backups.
-# Running it again with nothing installed exits 0.
+# Running it again with nothing installed exits 0. It also removes the agent skill: the
+# ~/.claude/skills/pp-cli symlink (never followed) and the ~/.agents/skills/pp-cli folder.
 #
 # Run the copy in the install directory: it uninstalls the directory it sits in. Pass
 # --install-dir to uninstall another directory.
 #
-# Usage: uninstall.sh [--install-dir DIR] [--link-dir DIR] [--skip-path]
-#   --install-dir  what to uninstall (default: the directory of this script when it is an
-#                  installed copy, i.e. install.sh generated pp-cli.jsa next to it, otherwise ~/.pp-cli)
-#   --link-dir     the directory install.sh symlinked pp-cli into (default /opt/homebrew/bin)
-#   --skip-path    do not touch the symlink or the zsh profiles
+# Usage: uninstall.sh [--install-dir DIR] [--link-dir DIR] [--skip-path] [--skip-skill]
+#                     [--agents-skills-dir DIR] [--claude-skills-dir DIR]
+#   --install-dir        what to uninstall (default: the directory of this script when it is an
+#                        installed copy, i.e. install.sh generated pp-cli.jsa next to it, otherwise ~/.pp-cli)
+#   --link-dir           the directory install.sh symlinked pp-cli into (default /opt/homebrew/bin)
+#   --skip-path          do not touch the symlink or the zsh profiles
+#   --skip-skill         leave the agent skill in place
+#   --agents-skills-dir  where the canonical copy of the skill is (default ~/.agents/skills)
+#   --claude-skills-dir  where the Claude Code symlink is (default ~/.claude/skills)
 set -eu
 
 script_dir=$(cd "$(dirname "$0")" && pwd -P)
 install_dir=
 link_dir=/opt/homebrew/bin
 skip_path=false
+skip_skill=false
+agents_skills_dir=$HOME/.agents/skills
+claude_skills_dir=$HOME/.claude/skills
 while [ $# -gt 0 ]; do
     case $1 in
         --install-dir) install_dir=${2:?--install-dir needs a value}; shift 2 ;;
         --link-dir) link_dir=${2:?--link-dir needs a value}; shift 2 ;;
         --skip-path) skip_path=true; shift ;;
+        --skip-skill) skip_skill=true; shift ;;
+        --agents-skills-dir) agents_skills_dir=${2:?--agents-skills-dir needs a value}; shift 2 ;;
+        --claude-skills-dir) claude_skills_dir=${2:?--claude-skills-dir needs a value}; shift 2 ;;
         *) echo "Unknown option: $1" >&2; exit 2 ;;
     esac
 done
@@ -95,6 +106,29 @@ else
         remove_profile_line "$ZDOTDIR/.zprofile"
         remove_profile_line "$ZDOTDIR/.zshenv"
     fi
+fi
+
+# remove_skill_entry <path>: removes whatever is there; a symlink is removed itself and never followed
+remove_skill_entry() {
+    if [ -L "$1" ]; then
+        rm "$1"
+        echo "Removed the symlink $1"
+        removed=true
+    elif [ -e "$1" ]; then
+        rm -rf "${1:?}"
+        echo "Removed $1"
+        removed=true
+    else
+        echo "Nothing at $1."
+    fi
+}
+
+if [ "$skip_skill" = true ]; then
+    echo 'Skipped the agent skill (--skip-skill).'
+else
+    # the symlink first, so it is never left dangling
+    remove_skill_entry "${claude_skills_dir%/}/pp-cli"
+    remove_skill_entry "${agents_skills_dir%/}/pp-cli"
 fi
 
 if [ "$exists" = true ]; then

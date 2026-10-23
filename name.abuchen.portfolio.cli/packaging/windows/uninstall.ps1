@@ -4,7 +4,8 @@ Removes what install.ps1 created for the current user.
 
 .DESCRIPTION
 Deletes the install directory (including the bundled runtime and the AppCDS archive) and removes
-the install directory from the user PATH. Backups and lock files next to client files are never
+the install directory from the user PATH. Also removes the agent skill: the ~\.claude\skills\pp-cli link
+(never followed) and the ~\.agents\skills\pp-cli folder. Backups and lock files next to client files are never
 touched, because `pp-cli restore` depends on the backups. Running it again with nothing installed
 exits 0.
 
@@ -17,11 +18,23 @@ installer generates pp-cli.jsa next to it), otherwise %LOCALAPPDATA%\pp-cli.
 
 .PARAMETER SkipPath
 Do not touch the user PATH.
+
+.PARAMETER SkipSkill
+Leave the agent skill (the ~\.agents\skills\pp-cli folder and the ~\.claude\skills\pp-cli link) in place.
+
+.PARAMETER AgentsSkillsDir
+The directory holding the canonical copy of the skill. Defaults to ~\.agents\skills.
+
+.PARAMETER ClaudeSkillsDir
+The directory holding the Claude Code link to the skill. Defaults to ~\.claude\skills.
 #>
 [CmdletBinding()]
 param(
     [string]$InstallDir,
-    [switch]$SkipPath
+    [switch]$SkipPath,
+    [switch]$SkipSkill,
+    [string]$AgentsSkillsDir = (Join-Path $HOME '.agents\skills'),
+    [string]$ClaudeSkillsDir = (Join-Path $HOME '.claude\skills')
 )
 
 $ErrorActionPreference = 'Stop'
@@ -91,6 +104,29 @@ elseif (Remove-UserPathEntry $installDir) {
 }
 else {
     Write-Host 'The user PATH does not contain the install directory.'
+}
+
+# Removes whatever is at $Path; a link is removed itself and never followed
+function Remove-SkillEntry([string]$Path) {
+    $item = Get-Item -LiteralPath $Path -Force -ErrorAction SilentlyContinue
+    if (-not $item) { Write-Host "Nothing at $Path."; return $false }
+    if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) {
+        if ($item.Attributes -band [IO.FileAttributes]::Directory) { [IO.Directory]::Delete($Path) } else { [IO.File]::Delete($Path) }
+        Write-Host "Removed the link $Path"
+    }
+    else {
+        Remove-Item -LiteralPath $Path -Recurse -Force
+        Write-Host "Removed $Path"
+    }
+    $true
+}
+
+if ($SkipSkill) { Write-Host 'Skipped the agent skill (-SkipSkill).' }
+else {
+    # the link first, so it is never left dangling
+    foreach ($entry in (Join-Path $ClaudeSkillsDir 'pp-cli'), (Join-Path $AgentsSkillsDir 'pp-cli')) {
+        if (Remove-SkillEntry ([IO.Path]::GetFullPath($entry))) { $removed = $true }
+    }
 }
 
 if ($removed) { Write-Host 'Kept the backups folders and .<name>.pp-cli.lock files next to your client files, because restore needs them.' }

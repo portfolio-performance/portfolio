@@ -88,6 +88,7 @@ Copy-Text 'pp-cli' "`n"
 Copy-Item (Join-Path $PSScriptRoot 'install.ps1') $bundleDir
 Copy-Item (Join-Path $PSScriptRoot 'uninstall.ps1') $bundleDir
 Copy-Item (Join-Path $PSScriptRoot 'smoke-check.ps1') $bundleDir
+Copy-Item -Recurse (Join-Path $cliDir 'skills') (Join-Path $bundleDir 'skills')
 $sampleDir = Join-Path $bundleDir 'sample'
 New-Item -ItemType Directory $sampleDir | Out-Null
 Copy-Item (Join-Path $repoRoot 'name.abuchen.portfolio.cli.tests\src\name\abuchen\portfolio\cli\historic\client69.xml') (Join-Path $sampleDir 'sample-client.xml')

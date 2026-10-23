@@ -8,9 +8,37 @@
 - the platform's SWT fragment, and **no pdfbox** (so no PDF import);
 - a jlink runtime, so no Java has to be installed;
 - a launcher, and an install and update script that also generates a dynamic AppCDS archive
-  (measured here: about 0.36 s per call instead of 0.43 s), plus an uninstall script.
+  (measured here: about 0.36 s per call instead of 0.43 s), plus an uninstall script;
+- the [agent skill](#agent-skill) for `pp-cli`, which the install script puts where Copilot and Claude Code find it.
 
 Documented platforms: [Windows x64](#windows-x64) and [macOS arm64](#macos-arm64).
+
+## Agent skill
+
+The bundle carries the `pp-cli` agent skill (source: [skills/pp-cli/](../skills/pp-cli)). The install script
+installs it with `pp-cli`, so the skill always matches the installed CLI, and the uninstall script removes it:
+
+| Location | What | Read by |
+| --- | --- | --- |
+| `~/.agents/skills/pp-cli/` | the canonical copy | Copilot (VS Code), Codex, Cursor and others |
+| `~/.claude/skills/pp-cli` | a symlink to the canonical copy | Claude Code |
+
+There are two locations because Claude Code reads personal skills only from `~/.claude/skills/` (it follows a
+symlinked skill folder), while the other tools read `~/.agents/skills/`. Both entries belong to the installer:
+install replaces them whatever they are, and uninstall removes them (the symlink itself, never what it points to).
+
+- **Skip it**: `install.ps1 -SkipSkill` or `install.sh --skip-skill` touches neither directory, and neither does the
+  same flag on uninstall. Tell the smoke check too (`-SkipSkill` / `--skip-skill`).
+- **Other directories**: `-AgentsSkillsDir` and `-ClaudeSkillsDir` (macOS: `--agents-skills-dir` and
+  `--claude-skills-dir`) replace the two skills directories, on install, uninstall and smoke check. The tests use them
+  so they never touch your home folder.
+- **Windows privilege**: the installer stays non-admin, but creating a symlink needs an elevated shell or Developer
+  Mode. Without it the installer still does everything else (the `%LOCALAPPDATA%\pp-cli` install, the AppCDS archive,
+  the `PATH` entry and the `~\.agents` copy), prints the elevated `New-Item -ItemType SymbolicLink ...` command that
+  completes the link and exits with 1. Run that command in an elevated PowerShell, or turn on Developer Mode and run
+  `install.ps1` again. macOS needs no privilege.
+- **Check by hand once per machine**: start a session in Copilot (VS Code) and in Claude Code and confirm that each
+  lists the `pp-cli` skill, for example by asking about the holdings of a client file.
 
 ## Matching the desktop release
 
@@ -54,8 +82,11 @@ powershell -ExecutionPolicy Bypass -File name.abuchen.portfolio.cli\target\pp-cl
 ```
 
 The script is idempotent. It replaces the installation in `%LOCALAPPDATA%\pp-cli\`, adds that directory to the
-user `PATH` only if it is not there yet, and regenerates the AppCDS archive with one training run.
-Use `-InstallDir <path>` to install elsewhere and `-SkipPath` to leave `PATH` alone.
+user `PATH` only if it is not there yet, and regenerates the AppCDS archive with one training run. It also installs
+the [agent skill](#agent-skill) and links it for Claude Code.
+Use `-InstallDir <path>` to install elsewhere, `-SkipPath` to leave `PATH` alone and `-SkipSkill` to leave the skill out.
+Without symlink privilege the script finishes everything else and exits with 1 after printing the elevated command
+that creates the Claude link.
 
 ### Confirm `PATH`
 
@@ -85,15 +116,18 @@ powershell -ExecutionPolicy Bypass -File "$env:LOCALAPPDATA\pp-cli\smoke-check.p
 It verifies the installed bundle (bundled runtime, AppCDS archive, no pdfbox, the one SWT fragment, install
 directory on the user `PATH`) and runs `pp-cli info` and `pp-cli describe` against the bundled sample file from fresh
 PowerShell, cmd and Git Bash processes. They get the `PATH` stored in the registry, not that of the calling
-process, and no `JAVA_HOME` or other Java on `PATH`. It exits with 1 if anything fails. Use `-SampleFile`
-for another client file and `-SkipGitBash` without Git for Windows.
+process, and no `JAVA_HOME` or other Java on `PATH`. It also checks the agent skill: the canonical copy exists with
+`SKILL.md` named `pp-cli`, and `~\.claude\skills\pp-cli` is a link that resolves to it. It exits with 1 if anything
+fails. Use `-SampleFile` for another client file, `-SkipGitBash` without Git for Windows, `-SkipSkill` after an
+install with `-SkipSkill` and `-SkillOnly` to check just the skill.
 
 ### Update
 
 1. Merge the upstream release tag of the desktop release you run into the fork, so core and CLI are built
    from it, and set `PINNED_UPSTREAM_TAG` in `CoreVersion` to that tag.
 2. Run `build-bundle.ps1` again.
-3. Run the new bundle's `install.ps1`, then the smoke check.
+3. Run the new bundle's `install.ps1` (it also replaces the agent skill with the one of the new bundle), then the
+   smoke check.
 
 ### Uninstall
 
@@ -103,18 +137,20 @@ powershell -ExecutionPolicy Bypass -File "$env:LOCALAPPDATA\pp-cli\uninstall.ps1
 
 Run the copy in the install directory: it uninstalls the directory it sits in (also a custom one, without
 `-InstallDir`) and can delete its own directory. Pass `-InstallDir <path>` to uninstall another directory
-and `-SkipPath` to leave `PATH` alone. The script is idempotent: with nothing installed it exits 0 and says there is
+and `-SkipPath` to leave `PATH` alone and `-SkipSkill` to leave the agent skill in place. The script is idempotent: with nothing installed it exits 0 and says there is
 nothing to remove. It removes only what `install.ps1` created:
 
 - the install directory, including the bundled runtime and the AppCDS archive. It is refused, with nothing
   changed, unless it has `pp-cli.cmd`, `lib` and `runtime`;
 - the user `PATH` entry, only if it equals the install directory (compared like the installer does); other
-  entries stay, and running programs are notified of the change.
+  entries stay, and running programs are notified of the change;
+- the agent skill: the link `~\.claude\skills\pp-cli` (removed itself, never followed, so no dangling link is left) and
+  the folder `~\.agents\skills\pp-cli`, one output line per item (`-AgentsSkillsDir` and `-ClaudeSkillsDir` name other directories).
 
 `backups` folders and `.<name>.pp-cli.lock` files next to your client files are kept, because `restore` depends
 on them. Close any running `pp-cli` first, and open a new terminal to see the `PATH` change.
 
-`packaging\test\test-uninstall.ps1` tests the script in temp directories. It backs up and restores the real user `PATH`.
+`packaging\test\test-uninstall.ps1` tests the install, uninstall and skill steps in temp directories (the skills directories are temp ones too). It backs up and restores the real user `PATH`. The symlink itself is only created, and checked, when the shell may create symlinks; otherwise a junction stands in for it and the unprivileged install path is checked instead.
 
 ## macOS arm64
 
@@ -153,8 +189,9 @@ training run and wires `pp-cli` onto `PATH` once:
 - Otherwise it appends one `PATH` line, tagged `# pp-cli`, to `~/.zprofile` and `~/.zshenv` (under `$ZDOTDIR`
   if that is set), unless the line is already there.
 
-Use `--install-dir <path>` to install elsewhere, `--link-dir <path>` to pick another link directory and
-`--skip-path` to leave `PATH` alone.
+Use `--install-dir <path>` to install elsewhere, `--link-dir <path>` to pick another link directory,
+`--skip-path` to leave `PATH` alone and `--skip-skill` to leave out the [agent skill](#agent-skill). Unless skipped, the
+skill is copied to `~/.agents/skills/pp-cli/` and `~/.claude/skills/pp-cli` becomes a symlink to it (no privilege needed).
 
 ### Confirm `PATH`
 
@@ -181,8 +218,10 @@ It verifies the installed bundle (bundled arm64 runtime, AppCDS archive, no pdfb
 runs `pp-cli info` and `pp-cli describe` against the bundled sample file from fresh `zsh -c` and `zsh -lc`
 processes, as an agent shell starts them. They get an empty environment with only a minimal `PATH` (plus
 `/opt/homebrew/bin` when `pp-cli` is linked there) and no `JAVA_HOME`, and `pp-cli` must resolve to the
-expected path. It exits with 1 if anything fails. Use `--sample-file` for another client file, and
-`--install-dir` and `--link-dir` if you installed elsewhere.
+expected path. It also checks the agent skill: the canonical copy exists with `SKILL.md` named `pp-cli`, and
+`~/.claude/skills/pp-cli` is a symlink that resolves to it. It exits with 1 if anything fails. Use `--sample-file`
+for another client file, `--install-dir` and `--link-dir` if you installed elsewhere, `--skip-skill` after an install with
+`--skip-skill` and `--skill-only` to check just the skill.
 
 ### Update
 
@@ -191,7 +230,8 @@ Keep the CLI core equal to the installed desktop release ([Matching the desktop 
 1. Merge the upstream release tag of the desktop release you run into the fork, so core and CLI are built
    from it, and set `PINNED_UPSTREAM_TAG` in `CoreVersion` to that tag.
 2. Run `build-bundle.sh` again.
-3. Run the new bundle's `install.sh`, then the smoke check.
+3. Run the new bundle's `install.sh` (it also replaces the agent skill with the one of the new bundle), then the
+   smoke check.
 
 ### Uninstall
 
@@ -201,7 +241,8 @@ Keep the CLI core equal to the installed desktop release ([Matching the desktop 
 
 Run the copy in the install directory: it uninstalls the directory it sits in (also a custom one, without
 `--install-dir`). Pass `--install-dir <path>` to uninstall another directory, `--link-dir <path>` if you installed
-with another link directory and `--skip-path` to leave the symlink and the profiles alone. The script is
+with another link directory and `--skip-path` to leave the symlink and the profiles alone, `--skip-skill` to leave the agent
+skill in place. The script is
 idempotent: with nothing installed it exits 0 and says there is nothing to remove. It removes only what
 `install.sh` created:
 
@@ -211,10 +252,12 @@ idempotent: with nothing installed it exits 0 and says there is nothing to remov
   anything else stays, with a warning;
 - the `# pp-cli` `PATH` line in `~/.zprofile` and `~/.zshenv`, and under `$ZDOTDIR` when that is set, only if it is
   exactly the line the installer writes for this directory. Each file it changes is named, and a file the line
-  leaves empty (one the installer created) is deleted.
+  leaves empty (one the installer created) is deleted;
+- the agent skill: the symlink `~/.claude/skills/pp-cli` (removed itself, never followed, so no dangling link is left) and
+  the folder `~/.agents/skills/pp-cli`, one output line per item (`--agents-skills-dir` and `--claude-skills-dir` name other directories).
 
 `backups` folders and `.<name>.pp-cli.lock` files next to your client files are kept, because `restore` depends
 on them. Open a new terminal to see the `PATH` change.
 
-`packaging/test/test-uninstall.sh` tests the script with `sh`, round-tripping the real `install.sh` against a fake
-bundle with temp `HOME`, `ZDOTDIR` and link directories, so your profiles are never edited.
+`packaging/test/test-uninstall.sh` tests the scripts with `sh`, round-tripping the real `install.sh` against a fake
+bundle with temp `HOME`, `ZDOTDIR`, link and skills directories, so your profiles and skills are never touched.

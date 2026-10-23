@@ -17,12 +17,28 @@ The client file to read. Defaults to the sample shipped in the bundle.
 
 .PARAMETER SkipGitBash
 Do not check Git Bash, for machines without Git for Windows.
+
+.PARAMETER SkipSkill
+Do not check the agent skill, for an installation made with install.ps1 -SkipSkill.
+
+.PARAMETER SkillOnly
+Check only the agent skill.
+
+.PARAMETER AgentsSkillsDir
+Where the canonical copy of the skill is. Defaults to ~\.agents\skills.
+
+.PARAMETER ClaudeSkillsDir
+Where the Claude Code link to the skill is. Defaults to ~\.claude\skills.
 #>
 [CmdletBinding()]
 param(
     [string]$InstallDir = (Join-Path $env:LOCALAPPDATA 'pp-cli'),
     [string]$SampleFile,
-    [switch]$SkipGitBash
+    [switch]$SkipGitBash,
+    [switch]$SkipSkill,
+    [switch]$SkillOnly,
+    [string]$AgentsSkillsDir = (Join-Path $HOME '.agents\skills'),
+    [string]$ClaudeSkillsDir = (Join-Path $HOME '.claude\skills')
 )
 
 $ErrorActionPreference = 'Stop'
@@ -34,6 +50,31 @@ $failures = [Collections.Generic.List[string]]::new()
 function Assert-Check([bool]$Condition, [string]$Description) {
     if ($Condition) { Write-Host "  ok    $Description" }
     else { Write-Host "  FAIL  $Description"; $failures.Add($Description) }
+}
+
+function Test-AgentSkill {
+    $canonical = [IO.Path]::GetFullPath((Join-Path $AgentsSkillsDir 'pp-cli'))
+    $link = [IO.Path]::GetFullPath((Join-Path $ClaudeSkillsDir 'pp-cli'))
+    Write-Host 'Agent skill'
+    $manifest = Join-Path $canonical 'SKILL.md'
+    Assert-Check (Test-Path -LiteralPath $manifest) "the canonical skill exists ($canonical)"
+    Assert-Check ((Test-Path -LiteralPath $manifest) -and ((Get-Content -LiteralPath $manifest -Raw) -match '(?m)^name:\s*pp-cli\s*$')) 'SKILL.md is named pp-cli'
+    $item = Get-Item -LiteralPath $link -Force -ErrorAction SilentlyContinue
+    Assert-Check ([bool]$item) "the Claude skill exists ($link)"
+    $target = $null
+    if ($item -and $item.LinkType) {
+        $target = @($item.Target)[0]
+        if (-not [IO.Path]::IsPathRooted($target)) { $target = Join-Path (Split-Path $link) $target }
+        $target = [IO.Path]::GetFullPath($target).TrimEnd('\')
+    }
+    Assert-Check ($target -ieq $canonical) 'the Claude skill is a link to the canonical copy'
+}
+
+if ($SkillOnly) {
+    Test-AgentSkill
+    if ($failures.Count -gt 0) { Write-Host "`n$($failures.Count) check(s) failed."; exit 1 }
+    Write-Host "`nSmoke check passed."
+    return
 }
 
 function Get-RegistryPath([Microsoft.Win32.RegistryKey]$Hive, [string]$SubKey) {
@@ -92,6 +133,7 @@ $swt = @(Get-ChildItem $lib -Filter 'org.eclipse.swt.*.jar' | Where-Object { $_.
 Assert-Check ($swt.Count -eq 1 -and $swt[0].Name -like 'org.eclipse.swt.win32.win32.x86_64-*') 'exactly one SWT fragment, win32 x86_64'
 Assert-Check (($freshPath -split ';' | ForEach-Object { $_.TrimEnd('\') }) -contains $installDir) 'the user PATH contains the install directory'
 Assert-Check (Test-Path $SampleFile) "sample file exists ($SampleFile)"
+if (-not $SkipSkill) { Test-AgentSkill }
 if ($failures.Count -gt 0) { Write-Host "`n$($failures.Count) check(s) failed."; exit 1 }
 
 $infoCheck = { param($d) $d.data.counts -and $d.data.pinnedUpstreamTag -and $d.data.format }

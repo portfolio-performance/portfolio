@@ -8,27 +8,40 @@
 # (plus the link directory when pp-cli is symlinked into it) and no JAVA_HOME, so the check
 # proves the PATH wiring and the bundled runtime. Exits with 1 if anything fails.
 #
-# Usage: smoke-check.sh [--install-dir DIR] [--link-dir DIR] [--sample-file FILE]
-#   --install-dir  the installation to check (default ~/.pp-cli)
-#   --link-dir     where install.sh may have symlinked pp-cli (default /opt/homebrew/bin)
-#   --sample-file  the client file to read (default: the sample shipped in the bundle)
+# Usage: smoke-check.sh [--install-dir DIR] [--link-dir DIR] [--sample-file FILE] [--skip-skill | --skill-only]
+#                       [--agents-skills-dir DIR] [--claude-skills-dir DIR]
+#   --install-dir        the installation to check (default ~/.pp-cli)
+#   --link-dir           where install.sh may have symlinked pp-cli (default /opt/homebrew/bin)
+#   --sample-file        the client file to read (default: the sample shipped in the bundle)
+#   --skip-skill         do not check the agent skill (an install made with --skip-skill)
+#   --skill-only         check only the agent skill
+#   --agents-skills-dir  where the canonical copy of the skill is (default ~/.agents/skills)
+#   --claude-skills-dir  where the Claude Code symlink is (default ~/.claude/skills)
+#
+# The agent skill check: the canonical copy exists and SKILL.md is named pp-cli, and
+# ~/.claude/skills/pp-cli is a symlink that resolves to the canonical copy.
 set -u
 
 install_dir=$HOME/.pp-cli
 link_dir=/opt/homebrew/bin
 sample_file=
+skip_skill=false
+skill_only=false
+agents_skills_dir=$HOME/.agents/skills
+claude_skills_dir=$HOME/.claude/skills
 while [ $# -gt 0 ]; do
     case $1 in
         --install-dir) install_dir=${2:?--install-dir needs a value}; shift 2 ;;
         --link-dir) link_dir=${2:?--link-dir needs a value}; shift 2 ;;
         --sample-file) sample_file=${2:?--sample-file needs a value}; shift 2 ;;
+        --skip-skill) skip_skill=true; shift ;;
+        --skill-only) skill_only=true; shift ;;
+        --agents-skills-dir) agents_skills_dir=${2:?--agents-skills-dir needs a value}; shift 2 ;;
+        --claude-skills-dir) claude_skills_dir=${2:?--claude-skills-dir needs a value}; shift 2 ;;
         *) echo "Unknown option: $1" >&2; exit 2 ;;
     esac
 done
 
-install_dir=$(cd "$install_dir" 2>/dev/null && pwd -P) || { echo "Not installed: $install_dir" >&2; exit 1; }
-[ -n "$sample_file" ] || sample_file=$install_dir/sample/sample-client.xml
-swt_fragment=org.eclipse.swt.cocoa.macosx.aarch64
 failures=0
 
 check() { # description, then a command whose exit status is the result
@@ -41,6 +54,32 @@ check() { # description, then a command whose exit status is the result
         failures=$((failures + 1))
     fi
 }
+
+skill_link_resolves() {
+    [ -L "$claude_skills_dir/pp-cli" ] && [ "$(cd "$claude_skills_dir/pp-cli" && pwd -P)" = "$(cd "$agents_skills_dir/pp-cli" && pwd -P)" ]
+}
+
+check_skill() {
+    echo 'Agent skill'
+    check "the canonical skill exists ($agents_skills_dir/pp-cli)" test -f "$agents_skills_dir/pp-cli/SKILL.md"
+    check 'SKILL.md is named pp-cli' grep -Eq '^name:[[:space:]]*pp-cli[[:space:]]*$' "$agents_skills_dir/pp-cli/SKILL.md"
+    check "the Claude skill exists ($claude_skills_dir/pp-cli)" test -L "$claude_skills_dir/pp-cli" -o -e "$claude_skills_dir/pp-cli"
+    check 'the Claude skill is a symlink to the canonical copy' skill_link_resolves
+}
+
+if [ "$skill_only" = true ]; then
+    check_skill
+    if [ "$failures" -gt 0 ]; then
+        printf '\n%s check(s) failed.\n' "$failures"
+        exit 1
+    fi
+    printf '\nSmoke check passed.\n'
+    exit 0
+fi
+
+install_dir=$(cd "$install_dir" 2>/dev/null && pwd -P) || { echo "Not installed: $install_dir" >&2; exit 1; }
+[ -n "$sample_file" ] || sample_file=$install_dir/sample/sample-client.xml
+swt_fragment=org.eclipse.swt.cocoa.macosx.aarch64
 
 no_pdfbox() {
     ! ls "$install_dir/lib" | grep -Eq '^(name\.abuchen\.portfolio\.pdfbox[13]|pdfbox|pdfbox-io|fontbox|jempbox)-[0-9]'
@@ -78,6 +117,7 @@ check 'the JVM accepts and uses the AppCDS archive' archive_is_used
 check 'no pdfbox jars on the classpath' no_pdfbox
 check 'exactly one SWT fragment, cocoa macosx aarch64' one_swt_fragment
 check "sample file exists ($sample_file)" test -f "$sample_file"
+if [ "$skip_skill" = false ]; then check_skill; fi
 if [ "$failures" -gt 0 ]; then
     printf '\n%s check(s) failed.\n' "$failures"
     exit 1
