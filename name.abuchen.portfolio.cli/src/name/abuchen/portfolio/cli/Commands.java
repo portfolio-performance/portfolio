@@ -13,10 +13,8 @@ final class Commands
                     AllocationCommand.SPEC, ApplyCommand.SPEC);
 
     /** Write operations, applied by the <code>apply</code> command. */
-    static final List<OperationSpec> OPERATIONS = Stream
-                    .concat(Stream.concat(InstrumentOperations.ALL.stream(), AccountOperations.ALL.stream()),
-                                    TransactionOperations.ALL.stream())
-                    .toList();
+    static final List<OperationSpec> OPERATIONS = Stream.of(InstrumentOperations.ALL, AccountOperations.ALL,
+                    TransactionOperations.ALL, TaxonomyOperations.ALL).flatMap(List::stream).toList();
 
     private Commands()
     {

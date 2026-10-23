@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -18,6 +19,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import name.abuchen.portfolio.junit.AccountBuilder;
 import name.abuchen.portfolio.junit.PortfolioBuilder;
@@ -117,6 +119,9 @@ public class DescribeConsistencyTest
                         + "\",\"currencyCode\":\"" + cash.getCurrencyCode() + "\",\"instrument\":\"" + other.getUUID()
                         + "\"";
         Files.writeString(batch, "{\"operations\":[{\"operation\":\"instrument.add\",\"name\":\"New\"},"
+                        + "{\"operation\":\"taxonomy.assign\",\"taxonomy\":\"" + taxonomy.getId() + "\",\"instrument\":\""
+                        + other.getUUID() + "\",\"assignments\":[{\"classification\":\"" + europe.getId()
+                        + "\",\"weight\":0.25}]},"
                         + "{\"operation\":\"instrument.update\",\"uuid\":\"" + instrument.getUUID()
                         + "\",\"note\":null,\"retired\":true},"
                         + "{\"operation\":\"cash-account.add\",\"name\":\"Savings\",\"currencyCode\":\"USD\"},"
@@ -158,6 +163,8 @@ public class DescribeConsistencyTest
         Files.writeString(batch.resolveSibling("delete.json"), "{\"operations\":[{\"operation\":\"transaction.delete\","
                         + "\"uuid\":\"" + cash.getTransactions().get(0).getUUID() + "\"}]}");
 
+        assertOperationInputsConform(batch);
+
         for (var element : describe().getAsJsonArray("commands"))
         {
             var command = element.getAsJsonObject();
@@ -166,6 +173,24 @@ public class DescribeConsistencyTest
             assertConforms(command, sampleArguments(name, sampleFile, instrument, batch));
             for (var arguments : furtherArguments(name, sampleFile, client, batch))
                 assertConforms(command, arguments);
+        }
+    }
+
+    /** The operations an agent sends must conform to the input schema that describe publishes for them. */
+    private void assertOperationInputsConform(Path batch) throws IOException
+    {
+        var inputs = new HashMap<String, JsonObject>();
+        describe().getAsJsonArray("operations").forEach(o -> inputs.put(o.getAsJsonObject().get("name").getAsString(),
+                        o.getAsJsonObject().getAsJsonObject("input")));
+
+        var operations = JsonParser.parseString(Files.readString(batch)).getAsJsonObject()
+                        .getAsJsonArray("operations");
+        for (var element : operations)
+        {
+            var operation = element.getAsJsonObject();
+            var name = operation.get("operation").getAsString();
+            assertThat(name + " input " + operation, SchemaValidator.validate(operation, inputs.get(name)),
+                            is(empty()));
         }
     }
 

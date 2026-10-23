@@ -14,7 +14,7 @@ An agent reads the instrument's current assignment from `taxonomies` (ticket 21)
 
 ## Acceptance criteria
 
-- [ ] Assigning, reassigning and removing (with an empty list) works, and `allocation` reflects the change
-- [ ] Non-positive weights, repeated classifications, totals over 100% and non-leaf classifications are each refused with field-level errors
-- [ ] An unknown taxonomy, classification or instrument UUID is refused
-- [ ] `taxonomy.assign` is declared with its input schema, appears in `describe` and passes its consistency test
+- [x] Assigning, reassigning and removing (with an empty list) works, and `allocation` reflects the change
+- [x] Non-positive weights, repeated classifications, totals over 100% and non-leaf classifications are each refused with field-level errors
+- [x] An unknown taxonomy, classification or instrument UUID is refused
+- [x] `taxonomy.assign` is declared with its input schema, appears in `describe` and passes its consistency test

@@ -85,7 +85,7 @@ public class DescribeCommandTest
                         o -> operations.put(o.getAsJsonObject().get("name").getAsString(), o.getAsJsonObject()));
         assertThat(operations.keySet(), containsInAnyOrder("instrument.add", "instrument.update", "cash-account.add",
                         "cash-account.update", "investment-account.add", "investment-account.update",
-                        "transaction.add", "transaction.update", "transaction.delete"));
+                        "transaction.add", "transaction.update", "transaction.delete", "taxonomy.assign"));
 
         var addInput = operations.get("instrument.add").getAsJsonObject("input");
         assertThat(addInput.getAsJsonObject("properties").keySet(), containsInAnyOrder("operation", "name",
@@ -134,6 +134,17 @@ public class DescribeCommandTest
         assertThat(transactionDelete.getAsJsonObject("properties").keySet(),
                         containsInAnyOrder("operation", "uuid"));
         assertThat(transactionDelete.getAsJsonArray("required").toString(), is("[\"operation\",\"uuid\"]"));
+
+        var taxonomyAssign = operations.get("taxonomy.assign").getAsJsonObject("input");
+        assertThat(taxonomyAssign.getAsJsonObject("properties").keySet(),
+                        containsInAnyOrder("operation", "taxonomy", "instrument", "assignments"));
+        assertThat(taxonomyAssign.getAsJsonArray("required").toString(),
+                        is("[\"operation\",\"taxonomy\",\"instrument\",\"assignments\"]"));
+        var assignmentItems = taxonomyAssign.getAsJsonObject("properties").getAsJsonObject("assignments")
+                        .getAsJsonObject("items");
+        assertThat(assignmentItems.getAsJsonObject("properties").keySet(),
+                        containsInAnyOrder("classification", "weight"));
+        assertThat(assignmentItems.getAsJsonArray("required").toString(), is("[\"classification\",\"weight\"]"));
     }
 
     private static JsonObject data(CliRun run)
