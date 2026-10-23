@@ -1,7 +1,7 @@
 # 34: Uninstall scripts for Windows and macOS
 
 Type: task
-Status: ready-for-agent
+Status: done
 Blocked by: 31, 32
 
 Spec: [spec.md](../spec.md), "Packaging and distribution" (owner user stories for install and update). ADR 0003.
@@ -28,12 +28,12 @@ The script ships in the bundle, is copied into the install directory next to `in
 
 ## Acceptance criteria
 
-- [ ] After install and uninstall into a temp directory, the directory is gone, a second uninstall exits 0, and the output reports that backups and lock files are kept
-- [ ] Windows: the user `PATH` is byte-identical before install and after uninstall, and entries the installer didn't add are untouched
-- [ ] macOS: the symlink is gone and the profile files are byte-identical to before install, with a temp `--link-dir` and `ZDOTDIR` used so the real profiles are never edited (the tests need `env -u ZDOTDIR` otherwise)
-- [ ] macOS: a foreign `<link-dir>/pp-cli` file or a symlink to another target is left in place with a warning
-- [ ] Pointing the script at a directory that isn't a pp-cli install is refused with no side effects
-- [ ] The uninstaller runs from the installed copy, including on Windows where it deletes its own directory, and from a custom install directory without needing `-InstallDir`
-- [ ] The per-platform docs, ADR 0003 and the spec are updated as described
+- [x] After install and uninstall into a temp directory, the directory is gone, a second uninstall exits 0, and the output reports that backups and lock files are kept
+- [x] Windows: the user `PATH` is byte-identical before install and after uninstall, and entries the installer didn't add are untouched
+- [x] macOS: the symlink is gone and the profile files are byte-identical to before install, with a temp `--link-dir` and `ZDOTDIR` used so the real profiles are never edited (the tests need `env -u ZDOTDIR` otherwise)
+- [x] macOS: a foreign `<link-dir>/pp-cli` file or a symlink to another target is left in place with a warning
+- [x] Pointing the script at a directory that isn't a pp-cli install is refused with no side effects
+- [x] The uninstaller runs from the installed copy, including on Windows where it deletes its own directory, and from a custom install directory without needing `-InstallDir`
+- [x] The per-platform docs, ADR 0003 and the spec are updated as described
 
 _Notes: the scripts live in `name.abuchen.portfolio.cli/packaging/windows/` and `packaging/macos/`. The Windows half can be verified on the Windows machine; the macOS script needs a Mac or `sh` for its round-trip run._

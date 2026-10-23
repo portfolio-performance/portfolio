@@ -79,8 +79,8 @@ modules=$(printf '%s,jdk.crypto.ec,jdk.localedata,jdk.unsupported\n' "$deps" | t
 "$JAVA_HOME/bin/jlink" --add-modules "$modules" --strip-debug --no-header-files --no-man-pages \
     --compress zip-6 --generate-cds-archive --output "$bundle_dir/runtime"
 
-cp "$here/pp-cli" "$here/install.sh" "$here/smoke-check.sh" "$bundle_dir/"
-chmod 755 "$bundle_dir/pp-cli" "$bundle_dir/install.sh" "$bundle_dir/smoke-check.sh"
+cp "$here/pp-cli" "$here/install.sh" "$here/uninstall.sh" "$here/smoke-check.sh" "$bundle_dir/"
+chmod 755 "$bundle_dir/pp-cli" "$bundle_dir/install.sh" "$bundle_dir/uninstall.sh" "$bundle_dir/smoke-check.sh"
 mkdir "$bundle_dir/sample"
 cp "$repo_root/name.abuchen.portfolio.cli.tests/src/name/abuchen/portfolio/cli/historic/client69.xml" "$bundle_dir/sample/sample-client.xml"
 

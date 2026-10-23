@@ -30,7 +30,7 @@ I need a command an agent can run from its shell against a closed client file. I
 
 1. As the owner, I want to build `pp-cli` locally from my fork on my macOS arm64 machine, so that I can use it without a CI pipeline or signing.
 2. As the owner, I want to build `pp-cli` locally from my fork on my Windows x64 machine, so that I can use it on both machines I own.
-3. As the owner, I want one idempotent install script per platform, so that installing and updating are the same step.
+3. As the owner, I want one idempotent install script per platform, so that installing and updating are the same step (and an uninstall script that reverses it: story 109).
 4. As the owner, I want the macOS installer to put `pp-cli` where non-interactive agent shells find it (a Homebrew bin symlink, or `~/.zprofile` and `~/.zshenv`), so that Claude Code and Copilot can run it without me editing shell config.
 5. As the owner, I want the Windows installer to add the install directory to my user `PATH`, so that new VS Code terminals, PowerShell, cmd and Git Bash all resolve `pp-cli`.
 6. As the owner, I want the Windows launcher to be a `.cmd` wrapper, so that PowerShell execution policy never blocks it.
@@ -163,6 +163,7 @@ I need a command an agent can run from its shell against a closed client file. I
 106. As the owner, I want reads never to take the lock, so that queries work while a write is in progress or the app has the file open.
 107. As an AI agent, I want the backup path and the before and after file versions in `meta` after a write, so that I can tell the user how to undo it.
 108. As the owner, I want `pp-cli restore --backup <path>` to restore a backup through the same safe-write sequence, including a backup of the current file, so that undoing an agent change is itself undoable.
+109. As the owner, I want an idempotent uninstall script per platform that reverses exactly what the installer created (the install directory, the `PATH` entry or symlink and profile lines) and keeps my backups and lock files, so that I can remove `pp-cli` cleanly without losing the ability to restore.
 
 ## Implementation Decisions
 
@@ -297,11 +298,12 @@ I need a command an agent can run from its shell against a closed client file. I
 - The build produces a self-contained bundle per platform: the fork's core jar plus the target-platform jars, collected by Tycho `list-dependencies` and placed on a flat classpath; a bundled jlink runtime; and a thin launcher. SWT's per-platform fragment makes each OS and architecture a separate artifact.
 - Targets: macOS arm64 and Windows x64, each built locally and natively on its own machine. There is no CI build, signing or notarization.
 - Launchers: a POSIX `sh` script `pp-cli` on macOS and a `pp-cli.cmd` batch wrapper on Windows. Each runs the bundled runtime with the fixed classpath and the AppCDS archive.
-- One idempotent install and update script per platform:
+- One idempotent install and update script per platform, with an uninstall script that reverses it:
   - macOS: installs to `~/.pp-cli/` and symlinks into `/opt/homebrew/bin` if present, otherwise appends to `~/.zprofile` and `~/.zshenv`.
   - Windows: installs to `%LOCALAPPDATA%\pp-cli\` and adds that directory to the user `PATH`.
   - Both generate a dynamic AppCDS archive at install time.
   - Updating means re-running the script after bumping the pinned tag.
+  - Uninstalling means running `uninstall.ps1` / `uninstall.sh` from the install directory. It removes only what the installer created and keeps `backups/` folders and lock files.
 - Per-platform build, install and launch documentation ships with the module as a required v1 deliverable.
 
 ## Testing Decisions

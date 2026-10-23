@@ -37,7 +37,7 @@ mkdir -p "$install_dir"
 install_dir=$(cd "$install_dir" && pwd -P)
 [ "$bundle_dir" != "$install_dir" ] || die 'Run install.sh from the built bundle, not from the install directory.'
 
-managed='lib runtime sample pp-cli pp-cli.jsa install.sh smoke-check.sh'
+managed='lib runtime sample pp-cli pp-cli.jsa install.sh uninstall.sh smoke-check.sh'
 for name in $managed; do
     rm -rf "${install_dir:?}/$name"
 done

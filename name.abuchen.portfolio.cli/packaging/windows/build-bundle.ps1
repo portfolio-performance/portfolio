@@ -86,6 +86,7 @@ function Copy-Text([string]$Name, [string]$Eol) {
 Copy-Text 'pp-cli.cmd' "`r`n"
 Copy-Text 'pp-cli' "`n"
 Copy-Item (Join-Path $PSScriptRoot 'install.ps1') $bundleDir
+Copy-Item (Join-Path $PSScriptRoot 'uninstall.ps1') $bundleDir
 Copy-Item (Join-Path $PSScriptRoot 'smoke-check.ps1') $bundleDir
 $sampleDir = Join-Path $bundleDir 'sample'
 New-Item -ItemType Directory $sampleDir | Out-Null

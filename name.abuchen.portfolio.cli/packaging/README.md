@@ -8,7 +8,7 @@
 - the platform's SWT fragment, and **no pdfbox** (so no PDF import);
 - a jlink runtime, so no Java has to be installed;
 - a launcher, and an install and update script that also generates a dynamic AppCDS archive
-  (measured here: about 0.36 s per call instead of 0.43 s).
+  (measured here: about 0.36 s per call instead of 0.43 s), plus an uninstall script.
 
 Documented platforms: [Windows x64](#windows-x64) and [macOS arm64](#macos-arm64).
 
@@ -95,6 +95,27 @@ for another client file and `-SkipGitBash` without Git for Windows.
 2. Run `build-bundle.ps1` again.
 3. Run the new bundle's `install.ps1`, then the smoke check.
 
+### Uninstall
+
+```powershell
+powershell -ExecutionPolicy Bypass -File "$env:LOCALAPPDATA\pp-cli\uninstall.ps1"
+```
+
+Run the copy in the install directory: it uninstalls the directory it sits in (also a custom one, without
+`-InstallDir`) and can delete its own directory. Pass `-InstallDir <path>` to uninstall another directory
+and `-SkipPath` to leave `PATH` alone. The script is idempotent: with nothing installed it exits 0 and says there is
+nothing to remove. It removes only what `install.ps1` created:
+
+- the install directory, including the bundled runtime and the AppCDS archive. It is refused, with nothing
+  changed, unless it has `pp-cli.cmd`, `lib` and `runtime`;
+- the user `PATH` entry, only if it equals the install directory (compared like the installer does); other
+  entries stay, and running programs are notified of the change.
+
+`backups` folders and `.<name>.pp-cli.lock` files next to your client files are kept, because `restore` depends
+on them. Close any running `pp-cli` first, and open a new terminal to see the `PATH` change.
+
+`packaging\test\test-uninstall.ps1` tests the script in temp directories. It backs up and restores the real user `PATH`.
+
 ## macOS arm64
 
 ### Prerequisites
@@ -171,3 +192,29 @@ Keep the CLI core equal to the installed desktop release ([Matching the desktop 
    from it, and set `PINNED_UPSTREAM_TAG` in `CoreVersion` to that tag.
 2. Run `build-bundle.sh` again.
 3. Run the new bundle's `install.sh`, then the smoke check.
+
+### Uninstall
+
+```sh
+~/.pp-cli/uninstall.sh
+```
+
+Run the copy in the install directory: it uninstalls the directory it sits in (also a custom one, without
+`--install-dir`). Pass `--install-dir <path>` to uninstall another directory, `--link-dir <path>` if you installed
+with another link directory and `--skip-path` to leave the symlink and the profiles alone. The script is
+idempotent: with nothing installed it exits 0 and says there is nothing to remove. It removes only what
+`install.sh` created:
+
+- the install directory, including the bundled runtime and the AppCDS archive. It is refused, with nothing
+  changed, unless it has `pp-cli`, `lib` and `runtime`;
+- the symlink `<link-dir>/pp-cli`, only if it points to this installation's `pp-cli`. A regular file or a link to
+  anything else stays, with a warning;
+- the `# pp-cli` `PATH` line in `~/.zprofile` and `~/.zshenv`, and under `$ZDOTDIR` when that is set, only if it is
+  exactly the line the installer writes for this directory. Each file it changes is named, and a file the line
+  leaves empty (one the installer created) is deleted.
+
+`backups` folders and `.<name>.pp-cli.lock` files next to your client files are kept, because `restore` depends
+on them. Open a new terminal to see the `PATH` change.
+
+`packaging/test/test-uninstall.sh` tests the script with `sh`, round-tripping the real `install.sh` against a fake
+bundle with temp `HOME`, `ZDOTDIR` and link directories, so your profiles are never edited.

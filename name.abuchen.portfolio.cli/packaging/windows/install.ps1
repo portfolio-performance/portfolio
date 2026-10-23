@@ -23,7 +23,7 @@ $ErrorActionPreference = 'Stop'
 
 $bundleDir = $PSScriptRoot
 $installDir = [IO.Path]::GetFullPath($InstallDir).TrimEnd('\')
-$managed = 'lib', 'runtime', 'sample', 'pp-cli', 'pp-cli.cmd', 'pp-cli.jsa', 'install.ps1', 'smoke-check.ps1'
+$managed = 'lib', 'runtime', 'sample', 'pp-cli', 'pp-cli.cmd', 'pp-cli.jsa', 'install.ps1', 'uninstall.ps1', 'smoke-check.ps1'
 
 foreach ($name in 'lib', 'runtime', 'pp-cli.cmd') {
     if (-not (Test-Path (Join-Path $bundleDir $name))) { throw "$bundleDir is not a pp-cli bundle ($name is missing). Run build-bundle.ps1 first." }
