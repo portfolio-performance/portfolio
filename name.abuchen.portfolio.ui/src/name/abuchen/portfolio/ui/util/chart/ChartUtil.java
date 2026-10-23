@@ -53,11 +53,17 @@ public final class ChartUtil
 
         Point chartSize = chart.getSize();
 
+        // The chart size is reported in logical pixels (device independent). SWT
+        // expects the provider to deliver an ImageData matching the requested zoom
+        // level, i.e. scaled by zoom / 100 relative to the base (100%) size. GC's
+        // copyArea then uses a non-scaling BitBlt of exactly that pixel area onto
+        // the image buffer, which only fills it completely if the buffer has the
+        // chart's physical size.
         ImageDataProvider chartImageDataProvider = zoom -> {
-            if (zoom != 100)
-                return null;
+            int width = Math.max(1, chartSize.x * zoom / 100);
+            int height = Math.max(1, chartSize.y * zoom / 100);
             PaletteData palette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
-            return new ImageData(chartSize.x, chartSize.y, 32, palette);
+            return new ImageData(width, height, 32, palette);
         };
 
         Image image = null;
