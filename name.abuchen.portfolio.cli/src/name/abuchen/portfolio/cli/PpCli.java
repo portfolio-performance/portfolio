@@ -36,8 +36,9 @@ public final class PpCli
 
     /**
      * Runs one command. Stdout receives exactly one JSON document, either the
-     * response envelope or a problem+json error; everything else, including
-     * core's own log output, goes to stderr.
+     * response envelope or a problem+json error, unless <code>--format
+     * table</code> asks for a table of a successful list; everything else,
+     * including core's own log output, goes to stderr.
      *
      * @return the process exit code: 0 on success, 2 for usage errors, 1 for
      *         other failures
@@ -61,10 +62,14 @@ public final class PpCli
         try
         {
             var parsed = ArgumentParser.parse(Arrays.asList(args));
+            var format = OutputFormat.parse(parsed.command(), parsed.options());
             var context = new CommandContext(parsed.options(), env, stdin, stderr, clock, osName, writeEnvironment);
             var response = parsed.command().handler().execute(context);
 
-            print(stdout, response.toEnvelope());
+            if (format == OutputFormat.TABLE)
+                TableFormat.print(stdout, stderr, response, parsed.command().tableColumns());
+            else
+                print(stdout, response.toEnvelope());
             return 0;
         }
         catch (CliException e)

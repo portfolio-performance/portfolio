@@ -1,7 +1,7 @@
 # 33: `--format table` for human reading
 
 Type: task
-Status: ready-for-agent
+Status: done
 Blocked by: 15
 
 Spec: [spec.md](../spec.md), user story 64 (nice-to-have).
@@ -23,7 +23,7 @@ The owner can read list output in a terminal. `--format table` renders a command
 
 ## Acceptance criteria
 
-- [ ] `instruments`, `investment-accounts` and `cash-accounts` render as readable tables with `--format table`
-- [ ] Without `--format`, or with `--format json`, output is unchanged
-- [ ] A command that doesn't support tables gives a usage error for `--format table`
-- [ ] The `--format` option is declared, appears in `describe` and passes its consistency test
+- [x] `instruments`, `investment-accounts` and `cash-accounts` render as readable tables with `--format table`
+- [x] Without `--format`, or with `--format json`, output is unchanged
+- [x] A command that doesn't support tables gives a usage error for `--format table`
+- [x] The `--format` option is declared, appears in `describe` and passes its consistency test

@@ -36,7 +36,12 @@ final class InstrumentsCommand
 
     static final CommandSpec SPEC = MasterDataList.command("instruments",
                     "Instruments (securities, indices, exchange rates): UUID, name, currency, ISIN, ticker, WKN, note, retired flag and attributes",
-                    ITEM, SOURCE);
+                    ITEM,
+                    List.of(TableColumn.of("uuid", "UUID"), TableColumn.capped("name", "Name", 40),
+                                    TableColumn.of("currencyCode", "Currency"), TableColumn.of("isin", "ISIN"),
+                                    TableColumn.of("wkn", "WKN"), TableColumn.of("tickerSymbol", "Ticker"),
+                                    TableColumn.of("retired", "Retired")),
+                    SOURCE);
 
     private InstrumentsCommand()
     {

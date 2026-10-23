@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.cli;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import name.abuchen.portfolio.model.Account;
@@ -19,7 +20,10 @@ final class CashAccountsCommand
                     Account::getUUID, Account::getName, client -> CashAccountsCommand::render);
 
     static final CommandSpec SPEC = MasterDataList.command("cash-accounts",
-                    "Cash accounts: UUID, name, currency, note and retired flag", ITEM, SOURCE);
+                    "Cash accounts: UUID, name, currency, note and retired flag", ITEM,
+                    List.of(TableColumn.of("uuid", "UUID"), TableColumn.capped("name", "Name", 40),
+                                    TableColumn.of("currencyCode", "Currency"), TableColumn.of("retired", "Retired")),
+                    SOURCE);
 
     private CashAccountsCommand()
     {

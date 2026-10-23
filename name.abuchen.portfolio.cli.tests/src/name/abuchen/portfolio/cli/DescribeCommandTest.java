@@ -70,7 +70,8 @@ public class DescribeCommandTest
         var byName = new HashMap<String, JsonObject>();
         apply.getAsJsonArray("options")
                         .forEach(o -> byName.put(o.getAsJsonObject().get("name").getAsString(), o.getAsJsonObject()));
-        assertThat(byName.keySet(), containsInAnyOrder("file", "input", "dry-run", "backup-dir", "keep", "force"));
+        assertThat(byName.keySet(), containsInAnyOrder("file", "input", "dry-run", "backup-dir", "keep", "force",
+                        "format"));
         assertThat(byName.get("keep").get("default").getAsInt(), is(20));
         assertThat(byName.get("keep").get("minimum").getAsInt(), is(0));
         assertThat(byName.get("force").get("type").getAsString(), is("flag"));
@@ -184,7 +185,36 @@ public class DescribeCommandTest
 
         var describe = command(data, "describe");
         assertThat(describe.get("usesClientFile").getAsBoolean(), is(false));
-        assertThat(describe.getAsJsonArray("options").size(), is(0));
+        assertThat(describe.getAsJsonArray("options").size(), is(1));
+        assertThat(describe.getAsJsonArray("options").get(0).getAsJsonObject().get("name").getAsString(),
+                        is("format"));
+    }
+
+    @Test
+    public void describePublishesTheAllowedFormatsOfEachCommand()
+    {
+        var data = data(CliRun.run("describe"));
+
+        for (var name : List.of("instruments", "investment-accounts", "cash-accounts"))
+            assertThat(name, formatOf(data, name).getAsJsonArray("values").toString(), is("[\"json\",\"table\"]"));
+
+        for (var name : List.of("info", "describe", "holdings", "transactions", "apply"))
+            assertThat(name, formatOf(data, name).getAsJsonArray("values").toString(), is("[\"json\"]"));
+
+        var format = formatOf(data, "instruments");
+        assertThat(format.get("type").getAsString(), is("enum"));
+        assertThat(format.get("default").getAsString(), is("json"));
+        assertThat(format.get("valueName").getAsString().isBlank(), is(false));
+    }
+
+    private static JsonObject formatOf(JsonObject data, String command)
+    {
+        for (var option : command(data, command).getAsJsonArray("options"))
+        {
+            if (option.getAsJsonObject().get("name").getAsString().equals("format"))
+                return option.getAsJsonObject();
+        }
+        throw new AssertionError(command + " does not describe --format");
     }
 
     @Test
@@ -265,7 +295,7 @@ public class DescribeCommandTest
         var byName = new HashMap<String, JsonObject>();
         prices.getAsJsonArray("options")
                         .forEach(o -> byName.put(o.getAsJsonObject().get("name").getAsString(), o.getAsJsonObject()));
-        assertThat(byName.keySet(), is(Set.of("file", "instrument", "from", "to", "limit", "offset")));
+        assertThat(byName.keySet(), is(Set.of("file", "instrument", "from", "to", "limit", "offset", "format")));
 
         var instrument = byName.get("instrument");
         assertThat(instrument.get("required").getAsBoolean(), is(true));
@@ -306,7 +336,7 @@ public class DescribeCommandTest
         transactions.getAsJsonArray("options")
                         .forEach(o -> byName.put(o.getAsJsonObject().get("name").getAsString(), o.getAsJsonObject()));
         assertThat(byName.keySet(), is(Set.of("file", "investment-account", "cash-account", "instrument", "type",
-                        "from", "to", "currency", "limit", "offset")));
+                        "from", "to", "currency", "limit", "offset", "format")));
         assertThat(byName.get("from").get("type").getAsString(), is("date"));
         assertThat(byName.get("to").get("type").getAsString(), is("date"));
         assertThat(byName.get("to").get("description").getAsString().toLowerCase(), containsString("future"));
@@ -338,7 +368,7 @@ public class DescribeCommandTest
         holdings.getAsJsonArray("options")
                         .forEach(o -> byName.put(o.getAsJsonObject().get("name").getAsString(), o.getAsJsonObject()));
         assertThat(byName.keySet(), is(Set.of("file", "date", "investment-account", "by-account", "include-zero",
-                        "currency")));
+                        "currency", "format")));
         assertThat(byName.get("date").get("type").getAsString(), is("date"));
 
         for (var flag : List.of("by-account", "include-zero"))
@@ -363,7 +393,7 @@ public class DescribeCommandTest
         var byName = new HashMap<String, JsonObject>();
         allocation.getAsJsonArray("options")
                         .forEach(o -> byName.put(o.getAsJsonObject().get("name").getAsString(), o.getAsJsonObject()));
-        assertThat(byName.keySet(), is(Set.of("file", "taxonomy", "date", "currency")));
+        assertThat(byName.keySet(), is(Set.of("file", "taxonomy", "date", "currency", "format")));
         assertThat(byName.get("taxonomy").get("required").getAsBoolean(), is(true));
         assertThat(byName.get("date").get("type").getAsString(), is("date"));
 

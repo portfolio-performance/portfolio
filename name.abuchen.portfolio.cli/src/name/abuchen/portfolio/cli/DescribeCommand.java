@@ -56,7 +56,9 @@ final class DescribeCommand
                                                                     .optionalProperty("valueName", Schema.string("Placeholder for the value; absent for a switch."))
                                                                     .property("description", Schema.string(null))
                                                                     .optionalProperty("type",
-                                                                                    Schema.string("Value type, if declared: integer, date (ISO yyyy-MM-dd, inclusive when used as a bound) or flag (a switch given without a value)."))
+                                                                                    Schema.string("Value type, if declared: integer, date (ISO yyyy-MM-dd, inclusive when used as a bound), flag (a switch given without a value) or enum (one of values)."))
+                                                                    .optionalProperty("values",
+                                                                                    Schema.array("Accepted values of an enum option.", Schema.string(null)))
                                                                     .optionalProperty("required",
                                                                                     Schema.bool("True if the command fails without this option; absent otherwise."))
                                                                     .optionalProperty("default",
@@ -153,6 +155,12 @@ final class DescribeCommand
             {
                 json.put("type", "flag");
                 json.put("default", false);
+            }
+            case OptionSpec.Choice choice ->
+            {
+                json.put("type", "enum");
+                json.put("values", choice.values());
+                json.put("default", choice.defaultValue());
             }
             case OptionSpec.Text text ->
             {

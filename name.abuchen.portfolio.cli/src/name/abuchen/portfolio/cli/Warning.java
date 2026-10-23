@@ -33,6 +33,11 @@ final class Warning
         return code;
     }
 
+    String detail()
+    {
+        return detail;
+    }
+
     Map<String, Object> toJson()
     {
         var json = new LinkedHashMap<String, Object>();

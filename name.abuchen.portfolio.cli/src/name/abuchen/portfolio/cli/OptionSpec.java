@@ -2,6 +2,7 @@ package name.abuchen.portfolio.cli;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -15,7 +16,12 @@ import java.util.regex.Pattern;
 record OptionSpec(String name, String valueName, String description, Type type, boolean required)
 {
     /** How the value of an option is read. */
-    sealed interface Type permits Text, IsoDate, IntegerDomain, Flag
+    sealed interface Type permits Text, IsoDate, IntegerDomain, Flag, Choice
+    {
+    }
+
+    /** One of a fixed set of values; <code>describe</code> publishes them. */
+    record Choice(List<String> values, String defaultValue) implements Type
     {
     }
 
@@ -72,6 +78,12 @@ record OptionSpec(String name, String valueName, String description, Type type, 
         return new OptionSpec(name, "yyyy-MM-dd", description, new IsoDate(), false);
     }
 
+    static OptionSpec choice(String name, String valueName, String description, List<String> values,
+                    String defaultValue)
+    {
+        return new OptionSpec(name, valueName, description, new Choice(values, defaultValue), false);
+    }
+
     /** A switch such as <code>--include-zero</code>, given without a value. */
     static OptionSpec flag(String name, String description)
     {
@@ -122,6 +134,25 @@ record OptionSpec(String name, String valueName, String description, Type type, 
         }
 
         throw invalid(text, "a date in the form yyyy-MM-dd");
+    }
+
+    /**
+     * The value of this choice option: the default when the option is absent.
+     *
+     * @throws CliException
+     *             a usage error if the value is not one of the choices
+     */
+    String parseChoice(Optional<String> raw) throws CliException
+    {
+        var choice = (Choice) type;
+        if (raw.isEmpty())
+            return choice.defaultValue();
+
+        var text = raw.get();
+        if (choice.values().contains(text))
+            return text;
+
+        throw invalid(text, "one of " + String.join(", ", choice.values()));
     }
 
     /**

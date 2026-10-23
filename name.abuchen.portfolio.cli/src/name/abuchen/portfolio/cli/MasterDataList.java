@@ -46,11 +46,14 @@ final class MasterDataList
      *            what each item holds; the shared ordering is appended
      * @param item
      *            the schema of one rendered item
+     * @param columns
+     *            the columns of <code>--format table</code>
      */
-    static <T> CommandSpec command(String name, String summary, Schema item, Source<T> source)
+    static <T> CommandSpec command(String name, String summary, Schema item, List<TableColumn> columns,
+                    Source<T> source)
     {
         return new CommandSpec(name, summary + ", ordered by name then UUID.", true, Paging.OPTIONS,
-                        Paging.pageSchema("A page of the list.", item), ResponseMeta.pagedSchema(),
+                        Paging.pageSchema("A page of the list.", item), ResponseMeta.pagedSchema(), List.of(), columns,
                         context -> respond(context, source));
     }
 

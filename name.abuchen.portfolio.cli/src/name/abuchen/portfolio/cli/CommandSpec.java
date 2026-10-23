@@ -7,10 +7,12 @@ import java.util.List;
  * Declares a command once: its parsing, dispatch and its description all
  * derive from this record. The data and meta schemas describe the two
  * variable parts of the response envelope; the warnings are every code the
- * command can emit.
+ * command can emit. A command that declares table columns also accepts
+ * <code>--format table</code>; its data must then be a page of items.
  */
 record CommandSpec(String name, String summary, boolean usesClientFile, List<OptionSpec> declaredOptions,
-                Schema dataSchema, Schema metaSchema, List<WarningSpec> warnings, CommandHandler handler)
+                Schema dataSchema, Schema metaSchema, List<WarningSpec> warnings, List<TableColumn> tableColumns,
+                CommandHandler handler)
 {
     @FunctionalInterface
     interface CommandHandler
@@ -18,7 +20,14 @@ record CommandSpec(String name, String summary, boolean usesClientFile, List<Opt
         Response execute(CommandContext context) throws CliException;
     }
 
-    /** A command that emits no warnings. */
+    /** A command with warnings that can only answer in JSON. */
+    CommandSpec(String name, String summary, boolean usesClientFile, List<OptionSpec> declaredOptions,
+                    Schema dataSchema, Schema metaSchema, List<WarningSpec> warnings, CommandHandler handler)
+    {
+        this(name, summary, usesClientFile, declaredOptions, dataSchema, metaSchema, warnings, List.of(), handler);
+    }
+
+    /** A command that emits no warnings and can only answer in JSON. */
     CommandSpec(String name, String summary, boolean usesClientFile, List<OptionSpec> declaredOptions,
                     Schema dataSchema, Schema metaSchema, CommandHandler handler)
     {
@@ -32,6 +41,7 @@ record CommandSpec(String name, String summary, boolean usesClientFile, List<Opt
         if (usesClientFile)
             options.add(OptionSpec.FILE);
         options.addAll(declaredOptions);
+        options.add(OutputFormat.option(!tableColumns.isEmpty()));
         return options;
     }
 
