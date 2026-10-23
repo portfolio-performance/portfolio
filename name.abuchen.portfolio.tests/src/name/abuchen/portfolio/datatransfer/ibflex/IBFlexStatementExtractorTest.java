@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.ibflex;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.feeRefund;
@@ -3999,6 +4000,38 @@ public class IBFlexStatementExtractorTest
                         hasDate("2026-07-23"), hasShares(0), //
                         hasSecurity(hasName("PIMCO Active Bond ETF"), hasIsin("US72201R7750"), //
                                         hasWkn("103562908"), hasTicker("BOND")), //
+                        hasNote("Transaction-ID: 41560910443 | Trade-ID: 9760868262 | Refund (BOND, 200, 2026-06-23)"), //
+                        hasAmount("USD", 1.00), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+    }
+
+    @Test
+    public void testIBFlexStatementFile32WithoutSecurity() throws IOException
+    {
+        // Commission Adjustments for a security that is not known yet: no
+        // security is created from the refund description, the refund stays
+        // unlinked (issue #5933).
+        var extractor = new IBFlexStatementExtractor(new Client());
+
+        var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile32.xml");
+        var tempFile = createTempFile(activityStatement);
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(Collections.singletonList(tempFile), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.USD);
+
+        // check fee refund transaction
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2026-07-23"), hasShares(0), //
+                        check(t -> assertNull(t.getSecurity())), //
                         hasNote("Transaction-ID: 41560910443 | Trade-ID: 9760868262 | Refund (BOND, 200, 2026-06-23)"), //
                         hasAmount("USD", 1.00), //
                         hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
