@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.cli;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
@@ -101,6 +102,27 @@ final class SafeWrite
     }
 
     /**
+     * Decides what the client file becomes: the loaded model, changed, or
+     * another model altogether.
+     */
+    @FunctionalInterface
+    interface Plan<R>
+    {
+        Planned<R> apply(Client loaded) throws CliException;
+    }
+
+    /**
+     * @param client
+     *            the model to write
+     * @param baseline
+     *            the file whose consistency issues are the ones the write may
+     *            not add to: the file as it was, or the file restored from
+     */
+    record Planned<R>(Client client, R result, File baseline)
+    {
+    }
+
+    /**
      * @param backup
      *            the backup that was written, or that a real write would
      *            write
@@ -145,19 +167,32 @@ final class SafeWrite
     static <R> Outcome<R> run(ClientLoader.OpenedFile opened, Settings settings, Mutation<R> change)
                     throws CliException
     {
+        return replace(opened, settings, client -> new Planned<>(client, change.apply(client), opened.file()));
+    }
+
+    /**
+     * Like {@link #run}, but the plan may name a different model to write
+     * than the one loaded.
+     *
+     * @param opened
+     *            a file that passed the version guard
+     */
+    static <R> Outcome<R> replace(ClientLoader.OpenedFile opened, Settings settings, Plan<R> plan)
+                    throws CliException
+    {
         var file = opened.file().toPath().toAbsolutePath();
 
         if (settings.dryRun())
         {
             var loaded = opened.load();
-            var result = change.apply(loaded.client());
+            var planned = plan.apply(loaded.client());
 
-            // nothing is written, so the changed model itself stands in for the written file
-            var warnings = new ArrayList<>(migrationWarnings(loaded.client()));
-            warnings.addAll(ConsistencyCheck.verify(ConsistencyCheck.run(opened.load().client()),
-                            ConsistencyCheck.run(loaded.client())));
-            return new Outcome<>(result, backupPath(file, settings), loaded.client().getFileVersionAfterRead(),
-                            Client.CURRENT_VERSION, true, warnings);
+            // nothing is written, so the planned model itself stands in for the written file
+            var warnings = new ArrayList<>(migrationWarnings(planned.client()));
+            warnings.addAll(ConsistencyCheck.verify(ConsistencyCheck.run(opened.load(planned.baseline()).client()),
+                            ConsistencyCheck.run(planned.client())));
+            return new Outcome<>(planned.result(), backupPath(file, settings),
+                            loaded.client().getFileVersionAfterRead(), Client.CURRENT_VERSION, true, warnings);
         }
 
         try (var lock = Lock.acquire(file))
@@ -176,9 +211,8 @@ final class SafeWrite
             }
 
             var loaded = opened.load();
-            var client = loaded.client();
-            warnings.addAll(migrationWarnings(client));
-            var result = change.apply(client);
+            var planned = plan.apply(loaded.client());
+            warnings.addAll(migrationWarnings(planned.client()));
 
             var backup = backupPath(file, settings);
             var temp = sibling(file, ".", ".pp-cli-tmp");
@@ -188,10 +222,10 @@ final class SafeWrite
             var moveAttempted = false;
             try
             {
-                ClientFactory.save(client, temp.toFile());
+                ClientFactory.save(planned.client(), temp.toFile());
 
                 // the file as it would be read back, against the file as it was; both are scratch copies
-                warnings.addAll(ConsistencyCheck.verify(ConsistencyCheck.run(opened.load().client()),
+                warnings.addAll(ConsistencyCheck.verify(ConsistencyCheck.run(opened.load(planned.baseline()).client()),
                                 ConsistencyCheck.run(readBack(opened, temp))));
 
                 Files.createDirectories(backup.getParent());
@@ -228,8 +262,8 @@ final class SafeWrite
 
             prune(file, backup.getParent(), settings.keep());
 
-            return new Outcome<>(result, backup, client.getFileVersionAfterRead(), Client.CURRENT_VERSION, false,
-                            warnings);
+            return new Outcome<>(planned.result(), backup, loaded.client().getFileVersionAfterRead(),
+                            Client.CURRENT_VERSION, false, warnings);
         }
     }
 

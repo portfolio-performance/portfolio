@@ -69,6 +69,16 @@ final class ClientLoader
             }
         }
 
+        /**
+         * Opens another file with this one's password, so that an encrypted
+         * file and its backups need the password only once. The other file
+         * passes the version guard too.
+         */
+        OpenedFile openRelated(String path) throws CliException
+        {
+            return open(path, () -> password == null ? null : password.clone());
+        }
+
         @Override
         public void close()
         {

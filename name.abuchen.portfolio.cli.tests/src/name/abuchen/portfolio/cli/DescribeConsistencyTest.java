@@ -58,6 +58,8 @@ public class DescribeConsistencyTest
                             "--date", "2026-10-01", "--currency", "USD");
             case "apply" -> List.of("apply", "--file", sampleFile.toString(), "--input", batch.toString(),
                             "--dry-run");
+            case "restore" -> List.of("restore", "--file", sampleFile.toString(), "--backup",
+                            sampleFile.toString(), "--dry-run");
             default -> throw new AssertionError("Add sample arguments for command '" + command
                             + "' to DescribeConsistencyTest.sampleArguments");
         };
@@ -164,6 +166,7 @@ public class DescribeConsistencyTest
                         + "\"uuid\":\"" + cash.getTransactions().get(0).getUUID() + "\"}]}");
 
         assertOperationInputsConform(batch);
+        Files.copy(sampleFile, batch.resolveSibling("original.xml"));
 
         for (var element : describe().getAsJsonArray("commands"))
         {
@@ -204,6 +207,10 @@ public class DescribeConsistencyTest
                                             "1", "--force"),
                             List.of("apply", "--file", sampleFile.toString(), "--input",
                                             batch.resolveSibling("delete.json").toString(), "--dry-run"));
+
+        if (command.equals("restore"))
+            return List.of(List.of("restore", "--file", sampleFile.toString(), "--backup",
+                            batch.resolveSibling("original.xml").toString()));
 
         if (command.equals("allocation"))
             return List.of(List.of("allocation", "--file", sampleFile.toString(), "--taxonomy", "Classes", "--date",

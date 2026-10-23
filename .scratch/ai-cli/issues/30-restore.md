@@ -12,9 +12,9 @@ Spec: [spec.md](../spec.md), user story 108 and "Restore" under "Safe-write sequ
 
 ## Acceptance criteria
 
-- [ ] After `apply`, `restore` with the reported backup path brings the client file back to its original domain state
-- [ ] The restore itself creates a backup of the file it replaces, and `meta` reports that backup's path
-- [ ] A backup newer than supported, or a missing backup path, is refused with no side effects
-- [ ] A held lock, and a file changed before the rename, abort `restore` as they do `apply`
-- [ ] `--dry-run` reports what would happen and creates nothing
-- [ ] `restore` is declared, appears in `describe` and passes its consistency test
+- [x] After `apply`, `restore` with the reported backup path brings the client file back to its original domain state
+- [x] The restore itself creates a backup of the file it replaces, and `meta` reports that backup's path
+- [x] A backup newer than supported, or a missing backup path, is refused with no side effects
+- [x] A held lock, and a file changed before the rename, abort `restore` as they do `apply`
+- [x] `--dry-run` reports what would happen and creates nothing
+- [x] `restore` is declared, appears in `describe` and passes its consistency test
