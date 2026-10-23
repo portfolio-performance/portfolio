@@ -22,8 +22,10 @@ A scripted smoke check (seam 2) runs the installed `pp-cli info` and `describe` 
 
 ## Acceptance criteria
 
-- [ ] A documented local build produces the Windows bundle with no pdfbox jars and the correct SWT fragment on the classpath
-- [ ] The bundle runs with its own runtime on a machine with no other Java on `PATH`
-- [ ] Running the installer twice gives the same result, with no duplicate `PATH` entries, and it regenerates the AppCDS archive
-- [ ] The smoke check passes from fresh PowerShell, cmd and Git Bash sessions
-- [ ] The per-platform docs cover build, install, `PATH` confirmation, update and the version-matching caveat
+- [x] A documented local build produces the Windows bundle with no pdfbox jars and the correct SWT fragment on the classpath
+- [x] The bundle runs with its own runtime on a machine with no other Java on `PATH`
+- [x] Running the installer twice gives the same result, with no duplicate `PATH` entries, and it regenerates the AppCDS archive
+- [x] The smoke check passes from fresh PowerShell, cmd and Git Bash sessions
+- [x] The per-platform docs cover build, install, `PATH` confirmation, update and the version-matching caveat
+
+_Notes for later tickets: the module's README is `name.abuchen.portfolio.cli/packaging/README.md` (macOS gets its own section there); the Windows scripts are in `packaging/windows/`. The `cli-bundle` Maven profile of the CLI module writes `target/dependencies-list.txt`, which lists every platform's SWT fragment and the source jars, so the platform script does the filtering and asserts no pdfbox jar and one SWT fragment. The launcher reads `PP_CLI_BUILD_ARCHIVE` to record the AppCDS archive. Fresh cmd shells search the working directory before `PATH`, so the smoke check starts them in the temp directory. Verified with a temp `-InstallDir`; the owner's real install is still to be run._

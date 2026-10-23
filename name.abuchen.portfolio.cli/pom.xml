@@ -31,4 +31,29 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<!-- writes target/dependencies-list.txt for the packaged bundle, see packaging/README.md -->
+		<profile>
+			<id>cli-bundle</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho.extras</groupId>
+						<artifactId>tycho-dependency-tools-plugin</artifactId>
+						<version>${tycho-version}</version>
+						<executions>
+							<execution>
+								<id>list-dependencies</id>
+								<phase>package</phase>
+								<goals>
+									<goal>list-dependencies</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
