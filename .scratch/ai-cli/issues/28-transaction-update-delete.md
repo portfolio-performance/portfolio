@@ -17,10 +17,10 @@ The overselling check covers edits and deletes too: removing or shrinking an ear
 
 ## Acceptance criteria
 
-- [ ] Updating a field of each record kind (cash-only, buy/sell, transfer) works by either side's UUID, and both sides stay consistent
-- [ ] A patch that breaks fee, tax or unit consistency is refused with a field-level error, and nothing is recomputed
-- [ ] Changing `type` is refused
-- [ ] Deleting by either side's UUID removes both sides
-- [ ] An update or delete that would oversell at any date is refused
-- [ ] Update and delete change records show before and after for the changed fields
-- [ ] Both operations are declared with input schemas, appear in `describe` and pass its consistency test
+- [x] Updating a field of each record kind (cash-only, buy/sell, transfer) works by either side's UUID, and both sides stay consistent
+- [x] A patch that breaks fee, tax or unit consistency is refused with a field-level error, and nothing is recomputed
+- [x] Changing `type` is refused
+- [x] Deleting by either side's UUID removes both sides
+- [x] An update or delete that would oversell at any date is refused
+- [x] Update and delete change records show before and after for the changed fields
+- [x] Both operations are declared with input schemas, appear in `describe` and pass its consistency test

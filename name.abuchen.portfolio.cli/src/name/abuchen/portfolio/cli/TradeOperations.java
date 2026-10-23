@@ -45,9 +45,6 @@ final class TradeOperations
                         || security == null || shares == null || !delivery && account == null)
             return;
 
-        OversellGuard.check(context, portfolio, security, dateTime.toLocalDate(),
-                        type.isPurchase() ? shares : -shares);
-
         if (delivery)
         {
             var transaction = new PortfolioTransaction();
@@ -61,11 +58,7 @@ final class TradeOperations
             units.forEach(transaction::addUnit);
 
             TransactionOperations.runCoreChecks(context, check -> check.process(transaction, portfolio));
-            if (context.failed())
-                return;
-
-            portfolio.addTransaction(transaction);
-            TransactionOperations.reportCreated(context, transaction);
+            TransactionOperations.commit(context, BuiltRecord.of(transaction, portfolio));
             return;
         }
 
@@ -80,10 +73,6 @@ final class TradeOperations
         units.forEach(entry.getPortfolioTransaction()::addUnit);
 
         TransactionOperations.runCoreChecks(context, check -> check.process(entry, account, portfolio));
-        if (context.failed())
-            return;
-
-        entry.insert();
-        TransactionOperations.reportCreated(context, entry.getPortfolioTransaction());
+        TransactionOperations.commit(context, BuiltRecord.of(entry));
     }
 }

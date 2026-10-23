@@ -2,6 +2,8 @@ package name.abuchen.portfolio.cli;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.TreeMap;
 
 import name.abuchen.portfolio.model.Portfolio;
@@ -18,30 +20,69 @@ import name.abuchen.portfolio.money.Values;
  */
 final class OversellGuard
 {
+    /** Shares that a side of a record adds to or takes from an investment account on a date. */
+    record Effect(Portfolio portfolio, Security security, LocalDate date, long shares)
+    {
+    }
+
+    private record Pair(Portfolio portfolio, Security security)
+    {
+        boolean covers(Effect effect)
+        {
+            return portfolio == effect.portfolio() && security == effect.security();
+        }
+    }
+
     private OversellGuard()
     {
     }
 
+    /** What the investment-account sides among the given ones do to the holdings. */
+    static List<Effect> effectsOf(List<BuiltRecord.Side> sides)
+    {
+        return sides.stream().filter(side -> side.transaction() instanceof PortfolioTransaction
+                        && side.owner() instanceof Portfolio && side.transaction().getSecurity() != null)
+                        .map(side -> new Effect((Portfolio) side.owner(), side.transaction().getSecurity(),
+                                        side.transaction().getDateTime().toLocalDate(),
+                                        signed((PortfolioTransaction) side.transaction())))
+                        .toList();
+    }
+
     /**
-     * Reports a <code>negative-holding</code> failure if adding the change
-     * would oversell.
+     * Reports a <code>negative-holding</code> failure for every holding that
+     * the change would oversell.
      *
-     * @param signedShares
-     *            the stored shares that are added to the holding, negative if
-     *            they leave it
+     * @param field
+     *            the field the failure is reported on
+     * @param removed
+     *            effects that are in the model now and that the change takes
+     *            away
+     * @param added
+     *            effects that the change adds
      */
-    static void check(OperationContext context, Portfolio portfolio, Security security, LocalDate date,
-                    long signedShares)
+    static void check(OperationContext context, String field, List<Effect> removed, List<Effect> added)
+    {
+        var pairs = new LinkedHashSet<Pair>();
+        removed.forEach(e -> pairs.add(new Pair(e.portfolio(), e.security())));
+        added.forEach(e -> pairs.add(new Pair(e.portfolio(), e.security())));
+
+        for (var pair : pairs)
+            check(context, field, pair, removed, added);
+    }
+
+    private static void check(OperationContext context, String field, Pair pair, List<Effect> removed,
+                    List<Effect> added)
     {
         var before = new TreeMap<LocalDate, Long>();
-        for (var transaction : portfolio.getTransactions())
+        for (var transaction : pair.portfolio().getTransactions())
         {
-            if (transaction.getSecurity() == security)
+            if (transaction.getSecurity() == pair.security())
                 before.merge(transaction.getDateTime().toLocalDate(), signed(transaction), Long::sum);
         }
 
         var after = new TreeMap<>(before);
-        after.merge(date, signedShares, Long::sum);
+        removed.stream().filter(pair::covers).forEach(e -> after.merge(e.date(), -e.shares(), Long::sum));
+        added.stream().filter(pair::covers).forEach(e -> after.merge(e.date(), e.shares(), Long::sum));
 
         long holdingBefore = 0;
         long holdingAfter = 0;
@@ -52,9 +93,9 @@ final class OversellGuard
 
             if (holdingAfter < 0 && holdingAfter < holdingBefore)
             {
-                context.fail("shares", "negative-holding",
-                                portfolio.getName() + " would hold " + plain(holdingAfter) + " of "
-                                                + security.getName() + " at the end of " + day
+                context.fail(field, "negative-holding",
+                                pair.portfolio().getName() + " would hold " + plain(holdingAfter) + " of "
+                                                + pair.security().getName() + " at the end of " + day
                                                 + ", a shortfall of " + plain(-holdingAfter) + " shares.");
                 return;
             }

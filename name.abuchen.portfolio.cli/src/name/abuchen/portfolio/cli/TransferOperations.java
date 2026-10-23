@@ -103,13 +103,7 @@ final class TransferOperations
         entry.setSource(source);
 
         TransactionOperations.runCoreChecks(context, check -> check.process(entry, from, to));
-        OversellGuard.check(context, from, security, dateTime.toLocalDate(), -shares);
-        OversellGuard.check(context, to, security, dateTime.toLocalDate(), shares);
-        if (context.failed())
-            return;
-
-        entry.insert();
-        TransactionOperations.reportCreated(context, entry.getSourceTransaction());
+        TransactionOperations.commit(context, BuiltRecord.of(entry));
     }
 
     private static void addCash(OperationContext context)
@@ -159,11 +153,7 @@ final class TransferOperations
         }
 
         TransactionOperations.runCoreChecks(context, check -> check.process(entry, from, to));
-        if (context.failed())
-            return;
-
-        entry.insert();
-        TransactionOperations.reportCreated(context, entry.getSourceTransaction());
+        TransactionOperations.commit(context, BuiltRecord.of(entry));
     }
 
     /**

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import com.google.gson.JsonElement;
@@ -35,7 +36,8 @@ final class OperationContext
 
     /**
      * What an operation did to one entity. A created entity has only
-     * <code>after</code>, an updated one the changed fields in both.
+     * <code>after</code>, an updated one the changed fields in both, and a
+     * deleted one its whole <code>before</code> and an empty <code>after</code>.
      */
     record Change(String entity, String uuid, Map<String, Object> before, Map<String, Object> after)
     {
@@ -54,8 +56,10 @@ final class OperationContext
     private final ApplyBatch batch;
     private final int index;
     private final JsonObject input;
-    private final List<Change> created = new ArrayList<>();
-    private final List<Change> updated = new ArrayList<>();
+    private final List<Change> created;
+    private final List<Change> updated;
+    private final List<Change> deleted;
+    private final Optional<TransactionUpdates.Existing> replacing;
     private int failureCount;
 
     OperationContext(ApplyBatch batch, int index, JsonObject input)
@@ -63,6 +67,37 @@ final class OperationContext
         this.batch = batch;
         this.index = index;
         this.input = input;
+        this.created = new ArrayList<>();
+        this.updated = new ArrayList<>();
+        this.deleted = new ArrayList<>();
+        this.replacing = Optional.empty();
+    }
+
+    private OperationContext(OperationContext outer, JsonObject input, TransactionUpdates.Existing replacing)
+    {
+        this.batch = outer.batch;
+        this.index = outer.index;
+        this.input = input;
+        this.created = outer.created;
+        this.updated = outer.updated;
+        this.deleted = outer.deleted;
+        this.replacing = Optional.of(replacing);
+    }
+
+    /**
+     * A context of the same operation whose input is the given one and whose
+     * add of a transaction replaces the existing record instead. Changes go to
+     * this operation's result; failures are counted separately.
+     */
+    OperationContext replacing(JsonObject merged, TransactionUpdates.Existing existing)
+    {
+        return new OperationContext(this, merged, existing);
+    }
+
+    /** The record that the transaction being built replaces, if this is an update. */
+    Optional<TransactionUpdates.Existing> replacing()
+    {
+        return replacing;
     }
 
     /** Whether the JSON value is a string. */
@@ -155,6 +190,11 @@ final class OperationContext
         updated.add(change);
     }
 
+    void deleted(Change change)
+    {
+        deleted.add(change);
+    }
+
     Map<String, Object> result(String operation)
     {
         var json = new LinkedHashMap<String, Object>();
@@ -162,7 +202,7 @@ final class OperationContext
         json.put("operation", operation);
         json.put("created", created.stream().map(Change::toJson).toList());
         json.put("updated", updated.stream().map(Change::toJson).toList());
-        json.put("deleted", List.of()); // no operation deletes yet
+        json.put("deleted", deleted.stream().map(Change::toJson).toList());
         return json;
     }
 }

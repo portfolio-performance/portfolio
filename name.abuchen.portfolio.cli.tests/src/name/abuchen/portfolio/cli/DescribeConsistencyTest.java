@@ -126,6 +126,8 @@ public class DescribeConsistencyTest
                         + "\"referenceCashAccount\":\"" + cash.getUUID() + "\"},"
                         + "{\"operation\":\"investment-account.update\",\"uuid\":\"" + depot.getUUID()
                         + "\",\"retired\":true},"
+                        + "{\"operation\":\"transaction.update\",\"uuid\":\"" + cash.getTransactions().get(0).getUUID()
+                        + "\",\"note\":\"corrected\"},"
                         + "{\"operation\":\"transaction.add\",\"type\":\"DEPOSIT\",\"cashAccount\":\""
                         + cash.getUUID() + "\",\"date\":\"2026-05-01\",\"amount\":250.00,\"currencyCode\":\""
                         + cash.getCurrencyCode() + "\"},"
@@ -152,6 +154,10 @@ public class DescribeConsistencyTest
                         + "\",\"date\":\"2026-05-05\",\"amount\":50.00,\"currencyCode\":\""
                         + cash.getCurrencyCode() + "\"}]}");
 
+        // a delete can only be applied once, so it is only previewed; a deposit leaves every holding alone
+        Files.writeString(batch.resolveSibling("delete.json"), "{\"operations\":[{\"operation\":\"transaction.delete\","
+                        + "\"uuid\":\"" + cash.getTransactions().get(0).getUUID() + "\"}]}");
+
         for (var element : describe().getAsJsonArray("commands"))
         {
             var command = element.getAsJsonObject();
@@ -170,7 +176,9 @@ public class DescribeConsistencyTest
             return List.of(List.of("apply", "--file", sampleFile.toString(), "--input", batch.toString()),
                             List.of("apply", "--file", sampleFile.toString(), "--input", batch.toString(),
                                             "--backup-dir", batch.resolveSibling("elsewhere").toString(), "--keep",
-                                            "1", "--force"));
+                                            "1", "--force"),
+                            List.of("apply", "--file", sampleFile.toString(), "--input",
+                                            batch.resolveSibling("delete.json").toString(), "--dry-run"));
 
         if (command.equals("allocation"))
             return List.of(List.of("allocation", "--file", sampleFile.toString(), "--taxonomy", "Classes", "--date",

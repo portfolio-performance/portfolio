@@ -28,9 +28,9 @@ final class ApplyCommand
                     .property("entity", Schema.string("Kind of entity: instrument, cash-account, investment-account or transaction."))
                     .property("uuid", Schema.string("UUID of the entity."))
                     .optionalProperty("before", Schema.anyObject(
-                                    "The changed fields as they were; absent for a created entity. A field that was unset is null."))
+                                    "The changed fields as they were, or for a deleted entity all its fields; absent for a created entity. A field that was unset is null."))
                     .property("after", Schema.anyObject(
-                                    "A created entity's fields that are set, or an updated entity's changed fields as they are now; a cleared field is null."));
+                                    "A created entity's fields that are set, or an updated entity's changed fields as they are now; a cleared field is null. Empty for a deleted entity."));
 
     private static final Schema DATA = Schema.object("The outcome of the batch.").property("results", Schema.array(
                     "One result per operation, in order.",

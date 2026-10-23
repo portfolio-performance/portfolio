@@ -374,7 +374,7 @@ public class TransactionAddTradesTest
     {
         var run = apply(usdBuy("900.00", "990.00", "0.9090909091"));
 
-        assertRefused(run, "", "import-check-failed");
+        assertRefused(run, "units", "import-check-failed");
     }
 
     private String securityTransfer(String from, String to, String amount)

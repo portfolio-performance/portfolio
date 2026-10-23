@@ -85,7 +85,7 @@ public class DescribeCommandTest
                         o -> operations.put(o.getAsJsonObject().get("name").getAsString(), o.getAsJsonObject()));
         assertThat(operations.keySet(), containsInAnyOrder("instrument.add", "instrument.update", "cash-account.add",
                         "cash-account.update", "investment-account.add", "investment-account.update",
-                        "transaction.add"));
+                        "transaction.add", "transaction.update", "transaction.delete"));
 
         var addInput = operations.get("instrument.add").getAsJsonObject("input");
         assertThat(addInput.getAsJsonObject("properties").keySet(), containsInAnyOrder("operation", "name",
@@ -123,6 +123,17 @@ public class DescribeCommandTest
                                         "exchangeRate"));
         assertThat(transactionAdd.getAsJsonArray("required").toString(),
                         is("[\"operation\",\"type\",\"date\",\"amount\",\"currencyCode\"]"));
+
+        var transactionUpdate = operations.get("transaction.update").getAsJsonObject("input");
+        var addMembers = new java.util.HashSet<>(transactionAdd.getAsJsonObject("properties").keySet());
+        addMembers.add("uuid");
+        assertThat(transactionUpdate.getAsJsonObject("properties").keySet(), is(addMembers));
+        assertThat(transactionUpdate.getAsJsonArray("required").toString(), is("[\"operation\",\"uuid\"]"));
+
+        var transactionDelete = operations.get("transaction.delete").getAsJsonObject("input");
+        assertThat(transactionDelete.getAsJsonObject("properties").keySet(),
+                        containsInAnyOrder("operation", "uuid"));
+        assertThat(transactionDelete.getAsJsonArray("required").toString(), is("[\"operation\",\"uuid\"]"));
     }
 
     private static JsonObject data(CliRun run)
