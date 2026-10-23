@@ -33,7 +33,8 @@ install replaces them whatever they are, and uninstall removes them (the symlink
   `--claude-skills-dir`) replace the two skills directories, on install, uninstall and smoke check. The tests use them
   so they never touch your home folder.
 - **Windows privilege**: the installer stays non-admin, but creating a symlink needs an elevated shell or Developer
-  Mode. Without it the installer still does everything else (the `%LOCALAPPDATA%\pp-cli` install, the AppCDS archive,
+  Mode. Without it the installer asks Windows for elevation (a UAC prompt) for the link step alone. If you decline,
+  or `-NoElevate` is given, it still does everything else (the `%LOCALAPPDATA%\pp-cli` install, the AppCDS archive,
   the `PATH` entry and the `~\.agents` copy), prints the elevated `New-Item -ItemType SymbolicLink ...` command that
   completes the link and exits with 1. Run that command in an elevated PowerShell, or turn on Developer Mode and run
   `install.ps1` again. macOS needs no privilege.
@@ -84,9 +85,10 @@ powershell -ExecutionPolicy Bypass -File name.abuchen.portfolio.cli\target\pp-cl
 The script is idempotent. It replaces the installation in `%LOCALAPPDATA%\pp-cli\`, adds that directory to the
 user `PATH` only if it is not there yet, and regenerates the AppCDS archive with one training run. It also installs
 the [agent skill](#agent-skill) and links it for Claude Code.
-Use `-InstallDir <path>` to install elsewhere, `-SkipPath` to leave `PATH` alone and `-SkipSkill` to leave the skill out.
-Without symlink privilege the script finishes everything else and exits with 1 after printing the elevated command
-that creates the Claude link.
+Use `-InstallDir <path>` to install elsewhere, `-SkipPath` to leave `PATH` alone, `-SkipSkill` to leave the skill out and
+`-NoElevate` to never show the UAC prompt for the Claude link.
+Without symlink privilege the script asks for elevation for that one step; if that is declined or unavailable it finishes
+everything else and exits with 1 after printing the elevated command that creates the Claude link.
 
 ### Confirm `PATH`
 

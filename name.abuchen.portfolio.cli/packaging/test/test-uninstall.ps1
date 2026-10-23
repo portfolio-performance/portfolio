@@ -155,7 +155,7 @@ try {
     $claude = Join-Path $root 'home\.claude\skills'
     $canonical = Join-Path $agents 'pp-cli'
     $link = Join-Path $claude 'pp-cli'
-    $skillArgs = @('-InstallDir', $dir, '-SkipPath', '-AgentsSkillsDir', $agents, '-ClaudeSkillsDir', $claude)
+    $skillArgs = @('-InstallDir', $dir,     '-SkipPath', '-NoElevate', '-AgentsSkillsDir', $agents, '-ClaudeSkillsDir', $claude)
 
     function Assert-Installed([string]$Label) {
         Assert-That ((Test-Path (Join-Path $dir 'pp-cli.jsa')) -and (Test-Path (Join-Path $dir 'uninstall.ps1'))) "$Label`: pp-cli itself is installed"

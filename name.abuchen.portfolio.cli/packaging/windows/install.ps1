@@ -16,6 +16,9 @@ Do not touch the user PATH.
 .PARAMETER SkipSkill
 Do not install the agent skill.
 
+.PARAMETER NoElevate
+Do not ask for elevation (UAC prompt) when the Claude link cannot be created without it; print the elevated command instead.
+
 .PARAMETER AgentsSkillsDir
 Where the canonical copy of the skill goes. Defaults to ~\.agents\skills (read by Copilot, Codex, Cursor and others).
 
@@ -25,13 +28,15 @@ Where the link for Claude Code goes. Defaults to ~\.claude\skills. Claude Code d
 .NOTES
 The skill is copied to <AgentsSkillsDir>\pp-cli, replacing whatever is there, and <ClaudeSkillsDir>\pp-cli
 becomes a symlink to it. Creating a symlink needs an elevated shell or Developer Mode. Without it the script
-finishes everything else, prints the elevated command that completes the link and exits with 1.
+asks for elevation (a UAC prompt) for the link step alone. If that is declined, unavailable or switched off with
+-NoElevate, the script finishes everything else, prints the elevated command that completes the link and exits with 1.
 #>
 [CmdletBinding()]
 param(
     [string]$InstallDir = (Join-Path $env:LOCALAPPDATA 'pp-cli'),
     [switch]$SkipPath,
     [switch]$SkipSkill,
+    [switch]$NoElevate,
     [string]$AgentsSkillsDir = (Join-Path $HOME '.agents\skills'),
     [string]$ClaudeSkillsDir = (Join-Path $HOME '.claude\skills')
 )
@@ -148,7 +153,29 @@ function New-SkillLink {
     $reason
 }
 
+# Creates only the link in a separate elevated process, which shows the UAC prompt. The rest of the install stays non-admin.
+function New-SkillLinkElevated {
+    $quotedLink = $link.Replace("'", "''")
+    $quotedTarget = $canonical.Replace("'", "''")
+    $script = "`$ErrorActionPreference = 'Stop'; try { New-Item -ItemType SymbolicLink -Path '$quotedLink' -Target '$quotedTarget' | Out-Null } catch { exit 1 }"
+    $encoded = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($script))
+    $powershell = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+    try {
+        $process = Start-Process $powershell -Verb RunAs -Wait -PassThru -WindowStyle Hidden `
+            -ArgumentList '-NoProfile', '-ExecutionPolicy', 'Bypass', '-EncodedCommand', $encoded
+        return ($process.ExitCode -eq 0 -and (Test-Path -LiteralPath $link))
+    }
+    catch { return $false } # the prompt was declined or is not available (no desktop session)
+}
+
 $failure = New-SkillLink
+if ($failure -and -not $NoElevate) {
+    $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+    if (-not $isAdmin) {
+        Write-Host 'Creating the symlink needs elevation. Asking Windows to confirm (UAC prompt)...'
+        if (New-SkillLinkElevated) { $failure = $null }
+    }
+}
 if (-not $failure) { Write-Host "Linked $link to $canonical" }
 else {
     Write-Host "Could not create the symlink $link ($failure)."
