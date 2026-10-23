@@ -1,0 +1,2 @@
+# the installed skill must be byte-identical on Windows and macOS
+* text eol=lf

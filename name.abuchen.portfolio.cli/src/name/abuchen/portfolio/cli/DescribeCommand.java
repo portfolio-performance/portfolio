@@ -6,7 +6,7 @@ import java.util.Map;
 
 /**
  * Publishes everything declared in {@link Commands}: commands, options,
- * response schemas, write operations and the known limits. Nothing here is
+ * response schemas, write operations, error codes and the known limits. Nothing here is
  * written by hand per command, so the output can't drift from the behavior.
  */
 final class DescribeCommand
@@ -77,10 +77,14 @@ final class DescribeCommand
                     .property("operations", Schema.array("Every declared write operation.", Schema.object(null)
                                     .property("name", Schema.string("Operation name."))
                                     .property("summary", Schema.string("What the operation does."))
-                                    .property("input", jsonSchema())));
+                                    .property("input", jsonSchema())))
+                    .property("errors", Schema.array(
+                                    "Every error code the tool can fail with, in the code member of its problem+json error.",
+                                    Schema.object(null).property("code", Schema.string("Error code."))
+                                                    .property("description", Schema.string("When the error occurs."))));
 
     static final CommandSpec SPEC = new CommandSpec("describe",
-                    "Commands, options, write operations, response schemas and known limits of this tool.", false,
+                    "Commands, options, write operations, response schemas, error codes and known limits of this tool.", false,
                     List.of(), SCHEMA, ResponseMeta.AS_OF_SCHEMA, DescribeCommand::execute);
 
     private DescribeCommand()
@@ -106,6 +110,7 @@ final class DescribeCommand
         data.put("environment", ENVIRONMENT.stream().map(DescribeCommand::render).toList());
         data.put("commands", commands.stream().map(DescribeCommand::render).toList());
         data.put("operations", operations.stream().map(DescribeCommand::render).toList());
+        data.put("errors", ErrorSpec.ALL.stream().map(DescribeCommand::render).toList());
         return data;
     }
 
@@ -176,6 +181,14 @@ final class DescribeCommand
         var json = new LinkedHashMap<String, Object>();
         json.put("code", warning.code());
         json.put("description", warning.description());
+        return json;
+    }
+
+    private static Map<String, Object> render(ErrorSpec error)
+    {
+        var json = new LinkedHashMap<String, Object>();
+        json.put("code", error.code());
+        json.put("description", error.description());
         return json;
     }
 

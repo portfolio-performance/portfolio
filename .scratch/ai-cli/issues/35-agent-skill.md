@@ -39,7 +39,9 @@ A test in `name.abuchen.portfolio.cli.tests`, run through the in-process entry p
 
 ## Acceptance criteria
 
-- [ ] `name.abuchen.portfolio.cli/skills/pp-cli/` holds `SKILL.md`, the write-protocol reference file and a `.gitattributes` forcing LF
-- [ ] The skill contains every rule listed under Decisions and no copy of the command reference
-- [ ] The drift test passes, and fails when a command, option, operation or error code is renamed or removed in the skill's text (shown by a temporary edit)
+- [x] `name.abuchen.portfolio.cli/skills/pp-cli/` holds `SKILL.md`, the write-protocol reference file and a `.gitattributes` forcing LF
+- [x] The skill contains every rule listed under Decisions and no copy of the command reference
+- [x] The drift test passes, and fails when a command, option, operation or error code is renamed or removed in the skill's text (shown by a temporary edit)
 - [ ] An agent given only the skill, a sample client file and the installed `pp-cli` completes a read question and a dry-run write, and stops for approval before the real `apply` (checked once by hand in Copilot and in Claude Code)
+
+_Notes: `describe` published no error codes, so it now lists `errors` (`{code, description}`) from `ErrorSpec.ALL`; `DescribeConsistencyTest` scans the CLI sources so every code passed to `CliException.usage`/`failure` is declared there. The drift test is `SkillDriftTest`; it also checks `PP_*` variables and that the skill's links resolve. The write protocol covers `restore` as well as `apply`._

@@ -21,7 +21,7 @@ I need a command an agent can run from its shell against a closed client file. I
 - **Reads** list instruments, investment accounts, cash accounts, **transaction records**, **holdings**, prices, performance, taxonomies and allocation. Each command returns one JSON envelope `{data, meta, warnings}` with the engine's calculated figures.
 - **Writes** go through one command, `pp-cli apply`. It takes a JSON batch of domain operations: add, update and delete transaction records; add and update instruments and accounts; replace an instrument's taxonomy assignment. The batch is atomic and reuses core's validation plus a few extra rules. Every write follows one safe-write sequence: lock, consistency check, timestamped backup, temp file plus atomic rename, and a check that the file did not change on disk. `--dry-run` shows the entity-level changes without writing anything. `pp-cli restore` rolls back to a backup.
 - **Formats and versions**: every client file format core supports is read, and written back in its existing format. A file newer than the CLI's core is refused cleanly.
-- **Discovery**: `pp-cli describe` publishes every command, option, operation and response schema, so an agent can learn the tool without outside documentation.
+- **Discovery**: `pp-cli describe` publishes every command, option, operation, response schema and error code, so an agent can learn the tool without outside documentation.
 - **Distribution**: a self-contained bundle per platform (macOS arm64, Windows x64) with a bundled runtime, built locally. An idempotent install script puts `pp-cli` on `PATH` for both agent shells. Per-platform build, install and launch docs are included.
 
 ## User Stories

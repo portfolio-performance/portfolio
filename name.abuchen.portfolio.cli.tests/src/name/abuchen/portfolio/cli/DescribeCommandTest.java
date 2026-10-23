@@ -42,6 +42,26 @@ public class DescribeCommandTest
     }
 
     @Test
+    public void describePublishesEveryErrorCodeOnceWithADescription()
+    {
+        var data = data(CliRun.run("describe"));
+
+        var codes = new ArrayList<String>();
+        for (var element : data.getAsJsonArray("errors"))
+        {
+            var error = element.getAsJsonObject();
+            assertThat(error.keySet(), is(Set.of("code", "description")));
+            assertThat(error.get("code").getAsString(), not(""));
+            assertThat(error.get("description").getAsString(), not(""));
+            codes.add(error.get("code").getAsString());
+        }
+
+        assertThat(codes, hasItems("file-version-unsupported", "password-required", "incorrect-password",
+                        "validation-failed", "file-locked", "internal-error"));
+        assertThat(Set.copyOf(codes).size(), is(codes.size()));
+    }
+
+    @Test
     public void describeRendersWriteOperationsWithInputSchemas()
     {
         var operation = new OperationSpec("instrument.create", "Creates an instrument.",

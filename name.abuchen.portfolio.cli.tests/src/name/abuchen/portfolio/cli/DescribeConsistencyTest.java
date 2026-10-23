@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -264,6 +265,28 @@ public class DescribeConsistencyTest
             assertThat(name + " warning " + object, declaredWarnings.contains(object.get("code").getAsString()),
                             is(true));
         }
+    }
+
+    @Test
+    public void describeListsExactlyTheErrorCodesTheToolFailsWith() throws IOException
+    {
+        var call = Pattern.compile("\\b(?:usage|failure)\\(\\s*\"([a-z0-9-]+)\"");
+        var thrown = new TreeSet<String>();
+        try (var sources = Files.walk(SourceTree.cliBundle("src")))
+        {
+            for (var source : sources.filter(p -> p.toString().endsWith(".java")).toList())
+            {
+                var matcher = call.matcher(Files.readString(source));
+                while (matcher.find())
+                    thrown.add(matcher.group(1));
+            }
+        }
+        assertThat(thrown.contains("file-version-unsupported"), is(true));
+
+        var described = new TreeSet<String>();
+        describe().getAsJsonArray("errors")
+                        .forEach(e -> described.add(e.getAsJsonObject().get("code").getAsString()));
+        assertThat(described, is(thrown));
     }
 
     @Test
