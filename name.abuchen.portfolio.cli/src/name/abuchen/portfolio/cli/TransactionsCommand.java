@@ -70,10 +70,10 @@ final class TransactionsCommand
         return Schema.object(
                         "A fee, tax or gross value of the record, in the shape that transaction writes accept.")
                         .property("type", Schema.enumOf("Kind of unit.", List.of("FEE", "TAX", "GROSS_VALUE")))
-                        .property("amount", Schema.number("Amount in the currency of the record."))
-                        .property("currencyCode", Schema.string("ISO currency code of the amount."))
-                        .optionalProperty("forexAmount", Schema.number("Original amount in a foreign currency."))
-                        .optionalProperty("forexCurrencyCode", Schema.string("ISO currency code of forexAmount."))
+                        .property("amount", Schema.number("Amount in the currency of the record." + MinorUnits.CONVERTED_WITH_CURRENCY_OPTION))
+                        .property("currencyCode", Schema.string("ISO currency code of the amount." + MinorUnits.CONVERTED_WITH_CURRENCY_OPTION))
+                        .optionalProperty("forexAmount", Schema.number("Original amount in a foreign currency." + MinorUnits.CONVERTED_WITH_CURRENCY_OPTION))
+                        .optionalProperty("forexCurrencyCode", Schema.string("ISO currency code of forexAmount." + MinorUnits.CONVERTED_WITH_CURRENCY_OPTION))
                         .optionalProperty("exchangeRate", Schema.number(
                                         "Unrounded as stored: forexAmount times exchangeRate is approximately amount."));
     }
@@ -93,8 +93,9 @@ final class TransactionsCommand
                         .property("sides", Schema.array("UUIDs of every side of the event, id first.",
                                         Schema.string(null)))
                         .property("amount", Schema.number(
-                                        "Net amount as stored, from the investment-account side of a buy or sell and the outgoing side of a transfer."))
-                        .property("currencyCode", Schema.string("ISO currency code of amount."))
+                                        "Net amount as stored, from the investment-account side of a buy or sell and the outgoing side of a transfer."
+                                        + MinorUnits.CONVERTED_WITH_CURRENCY_OPTION))
+                        .property("currencyCode", Schema.string("ISO currency code of amount." + MinorUnits.CONVERTED_WITH_CURRENCY_OPTION))
                         .optionalProperty("targetAmount",
                                         Schema.number("Amount of the incoming side of a cross-currency cash transfer."))
                         .optionalProperty("targetCurrencyCode",
