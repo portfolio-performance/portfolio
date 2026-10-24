@@ -27,4 +27,14 @@ public class AvailableUpdate
     {
         return updateHelper.promptAndInstallLatest(newVersion);
     }
+
+    /**
+     * Same as {@link #promptAndInstallLatest} but used while the application
+     * is closing, i.e. without the messages that only make sense if the
+     * application keeps running.
+     */
+    public UpdateHelper.Outcome promptAndInstallLatestOnExit()
+    {
+        return updateHelper.promptAndInstallLatestOnExit(newVersion);
+    }
 }
