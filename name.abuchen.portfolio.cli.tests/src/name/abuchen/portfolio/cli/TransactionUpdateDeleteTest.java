@@ -296,6 +296,30 @@ public class TransactionUpdateDeleteTest
     }
 
     @Test
+    public void theChangeOfAnUpdateAndADeleteCarriesTheSameNamesAsTheRecords() throws IOException
+    {
+        var transfer = TransactionFixtures.cashTransfer(eur, eurSavings, "2026-03-09", 25_000);
+        var buy = TransactionFixtures.buy(depot, eur, eurStock, "2026-03-02", shares(10), 100_000);
+        save();
+
+        var swap = apply(update(transfer.getSourceTransaction().getUUID(),
+                        "\"from\":\"" + eurSavings.getUUID() + "\",\"to\":\"" + eur.getUUID() + "\""));
+        assertThat(swap.stdout, swap.exitCode, is(0));
+        var change = updated(swap);
+        assertThat(change.getAsJsonObject("before").get("fromName").getAsString(), is(eur.getName()));
+        assertThat(change.getAsJsonObject("before").get("toName").getAsString(), is(eurSavings.getName()));
+        assertThat(change.getAsJsonObject("after").get("fromName").getAsString(), is(eurSavings.getName()));
+        assertThat(change.getAsJsonObject("after").get("toName").getAsString(), is(eur.getName()));
+
+        var delete = apply(delete(buy.getPortfolioTransaction().getUUID()));
+        assertThat(delete.stdout, delete.exitCode, is(0));
+        var before = deleted(delete).getAsJsonObject("before");
+        assertThat(before.get("instrumentName").getAsString(), is(eurStock.getName()));
+        assertThat(before.get("investmentAccountName").getAsString(), is(depot.getName()));
+        assertThat(before.get("cashAccountName").getAsString(), is(eur.getName()));
+    }
+
+    @Test
     public void updatesACrossCurrencyTransferAndRefusesAPatchThatContradictsItsRate() throws IOException
     {
         var transfer = TransactionFixtures.crossCurrencyTransfer(eur, usd, "2026-03-09", 10_000, 11_000,
