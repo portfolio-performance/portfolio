@@ -485,10 +485,14 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
             {
                 ModalContext.run(job, true, progressMonitor, Display.getDefault());
             }
-            catch (InvocationTargetException | InterruptedException e)
+            catch (InvocationTargetException e)
             {
                 PortfolioPlugin.log(e);
                 MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError, e.getMessage());
+            }
+            catch (InterruptedException e)
+            {
+                Thread.currentThread().interrupt();
             }
         });
 
