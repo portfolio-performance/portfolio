@@ -126,7 +126,7 @@ public class LeewayQuoteFeed implements QuoteFeed
     @SuppressWarnings("nls")
     public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse, LocalDate quoteStartDate)
     {
-        String securityTickerSymbol = trim(security.getTickerSymbol()).toUpperCase();
+        String securityTickerSymbol = trim(security.getTickerSymbol());
 
         if (apiKey == null || apiKey.isBlank())
         {
@@ -140,6 +140,8 @@ public class LeewayQuoteFeed implements QuoteFeed
             return QuoteFeedData.withError(
                             new IOException(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName())));
         }
+
+        securityTickerSymbol = securityTickerSymbol.toUpperCase();
 
         QuoteFeedData data = new QuoteFeedData();
 
