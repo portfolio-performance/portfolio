@@ -121,6 +121,10 @@ public class UploadToDivvyDiaryHandler
         {
             DDPortfolio selected = dialog.getSelectedDDPortfolio();
 
+            // the user can deselect the pre-selected DivvyDiary portfolio
+            if (selected == null)
+                return Optional.empty();
+
             Portfolio portfolio = null;
             if (dialog.getSelectedPPPortfolio() instanceof Portfolio p)
                 portfolio = p;

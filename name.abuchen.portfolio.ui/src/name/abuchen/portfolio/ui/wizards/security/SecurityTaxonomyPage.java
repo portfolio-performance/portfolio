@@ -263,7 +263,8 @@ public class SecurityTaxonomyPage extends AbstractPage
                     if (left == null)
                         return -1;
 
-                    return designation.getElements().indexOf(right) - designation.getElements().indexOf(left);
+                    return Integer.compare(designation.getElements().indexOf(right),
+                                    designation.getElements().indexOf(left));
                 });
                 break;
             case NAME:
