@@ -202,6 +202,17 @@ public class WebAccess
                     .build();
 
     /**
+     * Experimental: if enabled, requests use the {@link SharedClient} and reuse
+     * connections. Otherwise, each request creates a separate client.
+     */
+    private static volatile boolean reuseConnections = false;
+
+    public static void setReuseConnections(boolean reuseConnections)
+    {
+        WebAccess.reuseConnections = reuseConnections;
+    }
+
+    /**
      * Headers and user agent of one request. They are passed to the shared
      * client via the request context and applied to every request of the
      * exchange (including redirects) in the same way as the default headers
@@ -366,6 +377,22 @@ public class WebAccess
         {
             URI uri = builder.build();
             HttpUriRequestBase request = function.create(uri);
+
+            if (!reuseConnections)
+            {
+                var connectionManager = new PoolingHttpClientConnectionManager();
+                connectionManager.setDefaultConnectionConfig(defaultConnectionConfig);
+
+                CloseableHttpClient client = HttpClientBuilder.create() //
+                                .setConnectionManager(connectionManager) //
+                                .setDefaultRequestConfig(defaultRequestConfig) //
+                                .setDefaultHeaders(this.headers) //
+                                .setUserAgent(this.userAgent) //
+                                .useSystemProperties() //
+                                .build();
+
+                return client.execute(request, new CustomResponseHandler(uri.toString()));
+            }
 
             // new cookie store per request: cookies are kept within one request
             // (including redirects), but not shared between requests
