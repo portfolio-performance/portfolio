@@ -1,0 +1,47 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.5
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Durchführungsanzeig e                     Freier Erhalt
+888888 - 05.02.2021
+Depotnummer Betreuer
+Mustermann Max 111-1111.11 Z 3
+23
+Wertpapiernummer Bezeichnung Nominale/Stück
+IE00BYZK4552 iShsIV-Automation&Robot.U.ETF Zugang Stk.              123,00
+Registered Shares o.N.
+Schlusstag 05.02.2021
+Kassatag 05.02.2021
+Verwahrart, Positionsdaten
+Wertpapierrechnung
+Düsseldorf
+Oberbank AG, Rechtsform: Aktiengesellschaft, Sitz: Linz, Firmenbuch Nr. FN 79063w, Landesgericht Linz, DVR: 0019020, UID-Nr. ATU22852606       Seite 1 von 3
+Durchführungsanzeig e                     Freier Erhalt
+888888 - 05.02.2021
+Depotnummer Betreuer
+Mustermann Max
+111-1111.11 Z 3
+23
+Wertpapiernummer Bezeichnung Nominale/Stück
+IE00BYZK4552 iShsIV-Automation&Robot.U.ETF Stk.               123,00
+Registered Shares o.N.
+Institut
+OBERBANK AG
+Depotnummer
+111-1111.11
+      Seite 2 von 3
+Oberbank AG, Rechtsform: Aktiengesellschaft, Sitz: Linz, Firmenbuch Nr. FN 79063w, Landesgericht Linz, DVR: 0019020, UID-Nr. ATU22852606
+Durchführungsanzeige
+888888 - 05.02.2021
+Depotnummer Betreuer
+Mustermann Max
+111-1111.11 Z 3
+23
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden                         123,00 STK
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG
+  Anschaffungskurswert:                                                          1.199,76 EUR
+  Nebenkosten:                                                                       7,25 EUR
+---------------------------------------------------------------------------------------------
+Fondsgesellschaft: iShares IV PLC
+      Seite 3 von 3
+Oberbank AG, Rechtsform: Aktiengesellschaft, Sitz: Linz, Firmenbuch Nr. FN 79063w, Landesgericht Linz, DVR: 0019020, UID-Nr. ATU22852606
