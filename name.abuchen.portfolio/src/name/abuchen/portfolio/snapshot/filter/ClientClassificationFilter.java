@@ -431,13 +431,14 @@ public class ClientClassificationFilter implements ClientFilter
         BigDecimal inboundWeight = state.getWeight(inboundAccount);
         BigDecimal outboundWeight = state.getWeight(outboundAccount);
 
-        if (inboundWeight.equals(outboundWeight) && inboundWeight.equals(Classification.ONE_HUNDRED_PERCENT_BD))
+        if (inboundWeight.compareTo(outboundWeight) == 0
+                        && inboundWeight.compareTo(Classification.ONE_HUNDRED_PERCENT_BD) == 0)
         {
             state.asReadOnly(inboundAccount).internalAddTransaction(t);
             state.asReadOnly(outboundAccount)
                             .internalAddTransaction((AccountTransaction) t.getCrossEntry().getCrossTransaction(t));
         }
-        else if (inboundWeight.equals(outboundWeight))
+        else if (inboundWeight.compareTo(outboundWeight) == 0)
         {
             AccountTransferEntry entry = createTransferEntry((AccountTransferEntry) t.getCrossEntry(), inboundWeight);
 
