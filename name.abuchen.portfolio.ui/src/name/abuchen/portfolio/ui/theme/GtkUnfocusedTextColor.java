@@ -14,6 +14,25 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
  * disabled text alone. It uses settings priority, so an explicit color
  * installed at application priority stays in place. The stylesheet is
  * installed only on GTK.
+ * <p>
+ * This works around SWT: it does not color the GTK label inside table headers
+ * and tool bar items, so a theme rule for unfocused labels wins over the
+ * inherited color. To check whether a newer SWT still needs the workaround,
+ * comment out the call in {@link ThemeAddon}, start the application on Linux
+ * with a theme that colors unfocused labels red, and click into another
+ * window:
+ *
+ * <pre>
+ * mkdir -p ~/.themes/BreezeRed/gtk-3.0
+ * cat &gt; ~/.themes/BreezeRed/gtk-3.0/gtk.css &lt;&lt;'EOF'
+ * &#64;import url("/usr/share/themes/Breeze/gtk-3.0/gtk.css");
+ * label:backdrop { color: #ff0000; }
+ * EOF
+ * GTK_THEME=BreezeRed ./PortfolioPerformance
+ * </pre>
+ *
+ * If table headers and tool bar labels turn red, SWT still needs it.
+ * {@code GtkUnfocusedTextColorTest} fails on every SWT update as a reminder.
  */
 @SuppressWarnings("nls")
 final class GtkUnfocusedTextColor
