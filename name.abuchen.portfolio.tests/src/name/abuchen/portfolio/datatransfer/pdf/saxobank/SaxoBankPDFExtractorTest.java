@@ -5,6 +5,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -382,7 +383,7 @@ public class SaxoBankPDFExtractorTest
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin("DE0005933956"), hasWkn(null), hasTicker("DJSXE"), //
-                        hasName(null), //
+                        hasName("iShares Core Euro STOXX 50 (DE) UCITS ETF"), //
                         hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
@@ -521,7 +522,7 @@ public class SaxoBankPDFExtractorTest
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin("CH0016999846"), hasWkn(null), hasTicker("CSBGC7"), //
-                        hasName(null), //
+                        hasName("iShares Swiss Domestic Government Bnd 3-7 (CH) ETF"), //
                         hasCurrencyCode("CHF"))));
 
         // check buy sell transaction
@@ -531,6 +532,40 @@ public class SaxoBankPDFExtractorTest
                         hasNote("Order-ID 5330170993 | Trade-ID 6428724964"), //
                         hasAmount("CHF", 376.70), hasGrossValue("CHF", 376.42), //
                         hasTaxes("CHF", 0.28), hasFees("CHF", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierKauf09()
+    {
+        var extractor = new SaxoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B8GKDB10"), hasWkn(null), hasTicker("VHYL"), //
+                        hasName("Vanguard FTSE All-World High Dvd Yield UCITS ETF"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-03-10T14:26:26"), hasShares(8.00), //
+                        hasSource("Kauf09.txt"), //
+                        hasNote("Order-ID 5381305526 | Trade-ID 6624692645"), //
+                        hasAmount("CHF", 539.64), hasGrossValue("CHF", 535.84), //
+                        hasTaxes("CHF", 0.80), hasFees("CHF", 3.00))));
     }
 
     @Test
@@ -555,7 +590,7 @@ public class SaxoBankPDFExtractorTest
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin("CH0016999846"), hasWkn(null), hasTicker("CSBGC7"), //
-                        hasName(null), //
+                        hasName("iShares Swiss Domestic Government Bnd 3-7 (CH) ETF"), //
                         hasCurrencyCode("CHF"))));
 
         // check buy sell transaction
@@ -725,7 +760,7 @@ public class SaxoBankPDFExtractorTest
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin("CH0016999846"), hasWkn(null), hasTicker("CSBGC7"), //
-                        hasName(null), //
+                        hasName("iShares Swiss Domestic Government Bnd 3-7 (CH) ETF"), //
                         hasCurrencyCode("CHF"))));
 
         // check buy sell transaction
@@ -758,7 +793,7 @@ public class SaxoBankPDFExtractorTest
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin("IE00B4K48X80"), hasWkn(null), hasTicker("IMAE"), //
-                        hasName(null), //
+                        hasName("iShares Core MSCI Europe EUR (Acc) UCITS ETF"), //
                         hasCurrencyCode("EUR"))));
 
         assertThat(results, hasItem(purchase( //
@@ -791,7 +826,7 @@ public class SaxoBankPDFExtractorTest
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin("CH0016999846"), hasWkn(null), hasTicker("CSBGC7"), //
-                        hasName(null), //
+                        hasName("iShares Swiss Domestic Government Bnd 3-7 (CH) ETF"), //
                         hasCurrencyCode("CHF"))));
 
         assertThat(results, hasItem(purchase( //
@@ -981,7 +1016,8 @@ public class SaxoBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-04-30T00:00"), hasShares(604.00), //
+                        hasDate("2025-04-30T00:00"), hasExDate("2025-04-15T00:00"), //
+                        hasShares(604.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Event Id 9369584"), //
                         hasAmount("USD", 47.69), hasGrossValue("USD", 56.11), //
@@ -1015,7 +1051,8 @@ public class SaxoBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-05-01T00:00"), hasShares(69.00), //
+                        hasDate("2025-05-01T00:00"), hasExDate("2025-04-11T00:00"), //
+                        hasShares(69.00), //
                         hasSource("Dividende02.txt"), //
                         hasNote("Event Id 9369517"), //
                         hasAmount("USD", 6.97), hasGrossValue("USD", 8.20), //
@@ -1049,7 +1086,8 @@ public class SaxoBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-07-17T00:00"), hasShares(75.00), //
+                        hasDate("2025-07-17T00:00"), hasExDate("2025-07-15T00:00"), //
+                        hasShares(75.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote("Event Id 9413396"), //
                         hasAmount("CHF", 12.67), hasGrossValue("CHF", 19.50), //
@@ -1085,6 +1123,41 @@ public class SaxoBankPDFExtractorTest
     }
 
     @Test
+    public void testDividende04()
+    {
+        var extractor = new SaxoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0011683594"), hasWkn(null), hasTicker("VDIV"), //
+                        hasName("VanEck Morningstar Dvlp Mkts Dvd Leaders UCITS ETF"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-09-10T00:00"), hasExDate("2026-09-02T00:00"), //
+                        hasShares(54.00), //
+                        hasSource("Dividende04.txt"), //
+                        hasNote("Event Id 9593275"), //
+                        hasAmount("EUR", 18.36), hasGrossValue("EUR", 21.60), //
+                        hasTaxes("EUR", 3.24), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testKontoauszug01()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());
@@ -1106,5 +1179,41 @@ public class SaxoBankPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2024-11-26"), hasAmount("CHF", 700.00), //
                         hasSource("Kontoauszug01.txt"), hasNote(null))));
+    }
+
+    @Test
+    public void testKontoauszug02()
+    {
+        var extractor = new SaxoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2026-01-21"), hasAmount("EUR", 3000.00), //
+                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-01-21"), hasAmount("EUR", 3000.00), //
+                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-01-20"), hasAmount("EUR", 2999.00), //
+                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-01-20"), hasAmount("EUR", 1.00), //
+                        hasSource("Kontoauszug02.txt"), hasNote(null))));
     }
 }
