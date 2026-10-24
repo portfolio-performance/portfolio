@@ -4,6 +4,9 @@ import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGros
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.List;
+import java.util.Optional;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
@@ -15,12 +18,35 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
+/**
+ * @formatter:off
+ * @implNote VIAC (Terzo Vorsorgestiftung / Freizügigkeitsstiftung der WIR Bank) provides separate documents
+ *           for the ordinary dividend and for the refund of the Swiss withholding tax of the same distribution.
+ *
+ *           The ordinary dividend contains the exchange rate if the security currency differs.
+ *           The refund of the withholding tax is always booked in CHF and does not contain an exchange rate.
+ *
+ *           In postProcessing, the tax refund receives the gross value in the security currency
+ *           from the matching dividend (same security, value date and shares) of the same import.
+ *           If no matching dividend is found and the security currency differs, the tax refund is marked as failure.
+ *
+ *           The refund document always shows CHF. If the security was created by a refund document,
+ *           the currency of the security is corrected in postProcessing from the dividend or buy/sell
+ *           documents of the same import, so that the order of the documents does not matter.
+ * @formatter:on
+ */
 @SuppressWarnings("nls")
 public class WirBankPDFExtractor extends AbstractPDFExtractor
 {
+    private static final String ATTRIBUTE_SECURITY_CURRENCY = "security_currency";
+    private static final String ATTRIBUTE_GROSS = "gross";
+    private static final String ATTRIBUTE_FX_GROSS = "fx_gross";
+    private static final String ATTRIBUTE_EXCHANGE_RATE = "exchange_rate";
+
     public WirBankPDFExtractor(Client client)
     {
         super(client);
@@ -44,12 +70,12 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDepositTransaction()
     {
-        DocumentType type = new DocumentType("(Einzahlung|Deposit|Avis de versement) (3a|VIAC Invest)");
+        final var type = new DocumentType("(Einzahlung|Deposit|Versement|Avis de versement) (3a|VIAC Invest)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^(Einzahlung|Deposit|Avis de versement) (3a|VIAC Invest)$");
+        Block firstRelevantLine = new Block("^(Einzahlung|Deposit|Versement|Avis de versement) (3a|VIAC Invest)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -82,7 +108,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(B.rsenabrechnung|Exchange Settlement|Op.ration de bourse) " //
+        final var type = new DocumentType("(B.rsenabrechnung|Exchange Settlement|Op.ration de bourse) " //
                         + "\\- (Kauf|Zeichnung|Verkauf|R.cknahme|Buy|Subscription|Sell|Redemption|Achat|Vente)");
         this.addDocumentTyp(type);
 
@@ -121,7 +147,11 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         .match("^[\\.,\\d]+ (Anteile|Qty|Ant|units|Qt.|Quantit.|parts|actions)?(?<name>.*)$") //
                         .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                         .match("^(Kurs|Price|Cours): (?<currency>[\\w]{3}) .*$") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                            v.getTransactionContext().put(ATTRIBUTE_SECURITY_CURRENCY,
+                                            asCurrencyCode(v.get("currency")));
+                        })
 
                         // @formatter:off
                         // 1.369 Ant iShares Core S&P500
@@ -164,18 +194,23 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                             Money fxGross = Money.of(rate.getBaseCurrency(), asAmount(v.get("fxGross")));
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                            storeExchangeRate(v.getTransactionContext(), gross, fxGross, rate);
                         })
 
                         .conclude(ExtractorUtils.fixGrossValueBuySell())
 
-                        .wrap(BuySellEntryItem::new);
+                        .wrap((t, ctx) -> {
+                            var item = new BuySellEntryItem(t);
+                            storeItemData(item, ctx);
+                            return item;
+                        });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
     }
 
     private void addInterestTransaction()
     {
-        DocumentType type = new DocumentType("(Zins|Interest|Int.r.ts)");
+        final var type = new DocumentType("(Zins|Interest|Int.r.ts)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -219,7 +254,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
 
     private void addFeeTransaction()
     {
-        DocumentType type = new DocumentType("(Belastung|Commission)");
+        final var type = new DocumentType("(Belastung|Commission)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -240,7 +275,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         .find("(Belastung|Commission)") //
                         .match("^(Verrechneter Betrag|Charged amount|Montant d.bit.): (Valuta|Value|Valeur)( date)? " //
                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
-                                        + "(?<currency>[\\w]{3}) (\\-)?(?<amount>[\\.,'\\d]+)$")
+                                        + "(?<currency>[\\w]{3}) (\\-)?(?<amount>[\\.,'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -262,7 +297,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         // Commission de gestion effective VIAC: 0.26% p.a. CHF -3.10
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^(?<note>Commission de gestion effective VIAC.*: [\\.,\\d]+%).*$")
+                        .match("^(?<note>Commission de gestion effective VIAC.*: [\\.,\\d]+%).*$") //
                         .assign((t, v) -> t.setNote(v.get("note")))
 
                         .wrap(t -> {
@@ -275,9 +310,9 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendTransaction()
     {
-        DocumentType type = new DocumentType("(Dividendenaussch.ttung" //
+        final var type = new DocumentType("(Dividendenaussch.ttung" //
                         + "|Dividend Payment" //
-                        + "|Avis de dividende"
+                        + "|Avis de dividende" //
                         + "|R.ckerstattung Quellensteuer" //
                         + "|Refund withholding tax" //
                         + "|Remboursement de l.imp.t . la source)");
@@ -288,7 +323,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
         Block firstRelevantLine = new Block("^(Dividendenaussch.ttung" //
                         + "|Dividend Payment" //
                         + "|Cancelation Dividend Payment" //
-                        + "|Avis de dividende"
+                        + "|Avis de dividende" //
                         + "|R.ckerstattung Quellensteuer" //
                         + "|Refund withholding tax" //
                         + "|Remboursement de l.imp.t . la source)$");
@@ -327,7 +362,11 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         .match("^[\\.,\\d]+ (Anteile|Qty|Ant|parts|units|actions)?(?<name>.*)$") //
                         .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                         .match("^(Aussch.ttung|Dividend payment|Distribution|Dividende distribu.): (?<currency>[\\w]{3}) .*$") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                            v.getTransactionContext().put(ATTRIBUTE_SECURITY_CURRENCY,
+                                            asCurrencyCode(v.get("currency")));
+                        })
 
                         // @formatter:off
                         // Dividendenart: Ordentliche Dividende
@@ -374,6 +413,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                                                             Money fxGross = Money.of(rate.getBaseCurrency(), asAmount(v.get("fxGross")));
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                            storeExchangeRate(v.getTransactionContext(), gross, fxGross, rate);
                                                         }),
                                         // @formatter:off
                                         // Betrag USD 34.26
@@ -393,6 +433,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                                                             Money fxGross = Money.of(rate.getBaseCurrency(), asAmount(v.get("fxGross")));
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                            storeExchangeRate(v.getTransactionContext(), gross, fxGross, rate);
                                                         }))
 
                         // @formatter:off
@@ -404,7 +445,144 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         .match("^(Dividendenart|Aussch.ttungsart|Type of (dividend|distribution)|Type de dividende): (?<note>.*)") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                        .wrap(TransactionItem::new);
+                        .wrap((t, ctx) -> {
+                            var item = new TransactionItem(t);
+                            storeItemData(item, ctx);
+                            return item;
+                        });
+    }
+
+    private void storeExchangeRate(PDFParser.TransactionContext context, Money gross, Money fxGross,
+                    ExtrExchangeRate rate)
+    {
+        context.put(ATTRIBUTE_GROSS, gross);
+        context.put(ATTRIBUTE_FX_GROSS, fxGross);
+        context.put(ATTRIBUTE_EXCHANGE_RATE, rate.getRate(gross.getCurrencyCode()).toPlainString());
+    }
+
+    private void storeItemData(Item item, PDFParser.TransactionContext context)
+    {
+        item.setData(ATTRIBUTE_SECURITY_CURRENCY, context.get(ATTRIBUTE_SECURITY_CURRENCY));
+        item.setData(ATTRIBUTE_GROSS, context.get(ATTRIBUTE_GROSS));
+        item.setData(ATTRIBUTE_FX_GROSS, context.get(ATTRIBUTE_FX_GROSS));
+        item.setData(ATTRIBUTE_EXCHANGE_RATE, context.get(ATTRIBUTE_EXCHANGE_RATE));
+    }
+
+    /**
+     * @formatter:off
+     * Processes the extracted items of one import:
+     *
+     * 1. Corrects the currency of securities created during this import. The refund document
+     *    of the withholding tax always shows CHF, the dividend and buy/sell documents show
+     *    the currency of the security.
+     *
+     * 2. Adds the missing gross value to dividends and buy/sell transactions whose security
+     *    currency was corrected.
+     *
+     * 3. Adds the gross value to the tax refund from the matching dividend
+     *    (same security, value date and shares). If there is no matching dividend and
+     *    the security currency differs, the tax refund is marked as failure.
+     * @formatter:on
+     */
+    @Override
+    public void postProcessing(List<Item> items)
+    {
+        var dividendAndBuySellItems = items.stream() //
+                        .filter(i -> i.getData(ATTRIBUTE_SECURITY_CURRENCY) != null) //
+                        .filter(i -> !isTaxRefund(i)) //
+                        .toList();
+
+        // correct the currency of securities created during this import
+        for (var item : dividendAndBuySellItems)
+        {
+            var security = item.getSecurity();
+            var securityCurrency = (String) item.getData(ATTRIBUTE_SECURITY_CURRENCY);
+
+            if (security != null && !getClient().getSecurities().contains(security)
+                            && !securityCurrency.equals(security.getCurrencyCode()))
+                security.setCurrencyCode(securityCurrency);
+        }
+
+        // add missing gross values to dividend and buy/sell transactions
+        for (var item : dividendAndBuySellItems)
+            addMissingGrossValue(item);
+
+        // add gross value from matching dividend to the tax refund
+        items.stream() //
+                        .filter(this::isTaxRefund) //
+                        .filter(i -> !i.isFailure()) //
+                        .forEach(refundItem -> {
+                            var refund = (AccountTransaction) refundItem.getSubject();
+
+                            if (refund.getSecurity() == null
+                                            || refund.getCurrencyCode().equals(refund.getSecurity().getCurrencyCode())
+                                            || refund.getUnit(Unit.Type.GROSS_VALUE).isPresent())
+                                return;
+
+                            var dividendGrossValue = items.stream() //
+                                            .filter(i -> !i.isFailure()) //
+                                            .filter(i -> i.getSubject() instanceof AccountTransaction tx
+                                                            && tx.getType() == AccountTransaction.Type.DIVIDENDS
+                                                            && tx.getSecurity() == refund.getSecurity()
+                                                            && tx.getDateTime().equals(refund.getDateTime())
+                                                            && tx.getShares() == refund.getShares()) //
+                                            .map(i -> ((AccountTransaction) i.getSubject())
+                                                            .getUnit(Unit.Type.GROSS_VALUE))
+                                            .flatMap(Optional::stream) //
+                                            .filter(u -> u.getForex().getCurrencyCode()
+                                                            .equals(refund.getSecurity().getCurrencyCode())) //
+                                            .findFirst();
+
+                            if (dividendGrossValue.isPresent())
+                            {
+                                var exchangeRate = dividendGrossValue.get().getExchangeRate();
+                                var fxAmount = BigDecimal.valueOf(refund.getAmount()) //
+                                                .divide(exchangeRate, Values.MC) //
+                                                .setScale(0, RoundingMode.HALF_EVEN).longValue();
+
+                                refund.addUnit(new Unit(Unit.Type.GROSS_VALUE, refund.getMonetaryAmount(),
+                                                Money.of(refund.getSecurity().getCurrencyCode(), fxAmount),
+                                                exchangeRate));
+                            }
+                            else
+                            {
+                                refundItem.setFailureMessage(Messages.MsgErrorTransactionSkipIfDetailsMissing);
+                            }
+                        });
+    }
+
+    private boolean isTaxRefund(Item item)
+    {
+        return item.getSubject() instanceof AccountTransaction tx
+                        && tx.getType() == AccountTransaction.Type.TAX_REFUND;
+    }
+
+    private void addMissingGrossValue(Item item)
+    {
+        var gross = (Money) item.getData(ATTRIBUTE_GROSS);
+        var fxGross = (Money) item.getData(ATTRIBUTE_FX_GROSS);
+        var exchangeRate = (String) item.getData(ATTRIBUTE_EXCHANGE_RATE);
+
+        if (gross == null || fxGross == null || exchangeRate == null)
+            return;
+
+        name.abuchen.portfolio.model.Transaction tx;
+        if (item.getSubject() instanceof BuySellEntry entry)
+            tx = entry.getPortfolioTransaction();
+        else if (item.getSubject() instanceof AccountTransaction accountTransaction)
+            tx = accountTransaction;
+        else
+            return;
+
+        if (tx.getSecurity() == null || tx.getCurrencyCode().equals(tx.getSecurity().getCurrencyCode())
+                        || tx.getUnit(Unit.Type.GROSS_VALUE).isPresent()
+                        || !fxGross.getCurrencyCode().equals(tx.getSecurity().getCurrencyCode()))
+            return;
+
+        tx.addUnit(new Unit(Unit.Type.GROSS_VALUE, gross, fxGross, new BigDecimal(exchangeRate)));
+
+        if (item.getSubject() instanceof BuySellEntry entry)
+            ExtractorUtils.fixGrossValueBuySell().accept(entry);
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)

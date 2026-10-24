@@ -7,6 +7,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -24,6 +25,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.skippedItem;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
@@ -34,18 +36,13 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertNull;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
-import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
-import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
@@ -53,15 +50,10 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.WirBankPDFExtractor;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class WirBankPDFExtractorTest
@@ -91,7 +83,7 @@ public class WirBankPDFExtractorTest
                         hasName("iShares Core S&P500"), //
                         hasCurrencyCode("USD"))));
 
-        // check buy sell transaction
+        // check purchase transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2018-07-05T00:00"), hasShares(1.369), //
                         hasSource("Kauf01.txt"), //
@@ -126,7 +118,7 @@ public class WirBankPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
-        // check buy sell transaction
+        // check purchase transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2018-07-05T00:00"), hasShares(1.369), //
                         hasSource("Kauf01.txt"), //
@@ -165,7 +157,7 @@ public class WirBankPDFExtractorTest
                         hasName("CSIF SPI Extra"), //
                         hasCurrencyCode("CHF"))));
 
-        // check buy sell transaction
+        // check purchase transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2018-07-04T00:00"), hasShares(0.051), //
                         hasSource("Kauf02.txt"), //
@@ -199,7 +191,7 @@ public class WirBankPDFExtractorTest
                         hasName("iShares Core S&P500"), //
                         hasCurrencyCode("USD"))));
 
-        // check buy sell transaction
+        // check purchase transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2019-01-07T00:00"), hasShares(1.924), //
                         hasSource("Kauf03.txt"), //
@@ -234,7 +226,7 @@ public class WirBankPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
-        // check buy sell transaction
+        // check purchase transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2019-01-07T00:00"), hasShares(1.924), //
                         hasSource("Kauf03.txt"), //
@@ -251,9 +243,7 @@ public class WirBankPDFExtractorTest
     @Test
     public void testWertpapierKauf04()
     {
-        var client = new Client();
-
-        var extractor = new WirBankPDFExtractor(client);
+        var extractor = new WirBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -270,42 +260,24 @@ public class WirBankPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("CH0033782431"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("CSIF SMI"));
-        assertThat(security.getCurrencyCode(), is("CHF"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0033782431"), hasWkn(null), hasTicker(null), //
+                        hasName("CSIF SMI"), //
+                        hasCurrencyCode("CHF"))));
 
-        // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-01-07T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.766)));
-        assertThat(entry.getSource(), is("Kauf04.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(1886.94))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(1886.94))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2019-01-07T00:00"), hasShares(1.766), //
+                        hasSource("Kauf04.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 1886.94), hasGrossValue("CHF", 1886.94), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
     public void testWertpapierKauf05()
     {
-        var client = new Client();
-
-        var extractor = new WirBankPDFExtractor(client);
+        var extractor = new WirBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -322,38 +294,19 @@ public class WirBankPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("CH0037606552"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("CSIF Europe ex CH"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0037606552"), hasWkn(null), hasTicker(null), //
+                        hasName("CSIF Europe ex CH"), //
+                        hasCurrencyCode("EUR"))));
 
-        // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-01-07T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.024)));
-        assertThat(entry.getSource(), is("Kauf05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(719.24))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(719.24))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-
-        var grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
-                        .orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of("EUR", Values.Amount.factorize(635.26))));
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2019-01-07T00:00"), hasShares(1.024), //
+                        hasSource("Kauf05.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 719.24), hasGrossValue("CHF", 719.24), //
+                        hasForexGrossValue("EUR", 635.26), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
@@ -381,40 +334,24 @@ public class WirBankPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
-        // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-01-07T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.024)));
-        assertThat(entry.getSource(), is("Kauf05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(719.24))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(719.24))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-
-        var c = new CheckCurrenciesAction();
-        var account = new Account();
-        account.setCurrencyCode("CHF");
-        var s = c.process(entry, account, entry.getPortfolio());
-        assertThat(s, is(Status.OK_STATUS));
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2019-01-07T00:00"), hasShares(1.024), //
+                        hasSource("Kauf05.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 719.24), hasGrossValue("CHF", 719.24), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
     public void testWertpapierKauf06()
     {
-        var client = new Client();
-
-        var extractor = new WirBankPDFExtractor(client);
+        var extractor = new WirBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -431,38 +368,19 @@ public class WirBankPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("LU0629460675"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("UBS ETF MSCI EMU SRI"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0629460675"), hasWkn(null), hasTicker(null), //
+                        hasName("UBS ETF MSCI EMU SRI"), //
+                        hasCurrencyCode("EUR"))));
 
-        // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-03T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.114)));
-        assertThat(entry.getSource(), is("Kauf06_English.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(11.30))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(11.29))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.01))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-
-        var grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
-                        .orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of("EUR", Values.Amount.factorize(10.58))));
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-03T00:00"), hasShares(0.114), //
+                        hasSource("Kauf06_English.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 11.30), hasGrossValue("CHF", 11.29), //
+                        hasForexGrossValue("EUR", 10.58), //
+                        hasTaxes("CHF", 0.01), hasFees("CHF", 0.00))));
     }
 
     @Test
@@ -490,40 +408,24 @@ public class WirBankPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
-        // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-03T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.114)));
-        assertThat(entry.getSource(), is("Kauf06_English.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(11.30))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(11.29))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.01))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-
-        var c = new CheckCurrenciesAction();
-        var account = new Account();
-        account.setCurrencyCode("CHF");
-        var s = c.process(entry, account, entry.getPortfolio());
-        assertThat(s, is(Status.OK_STATUS));
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-03T00:00"), hasShares(0.114), //
+                        hasSource("Kauf06_English.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 11.30), hasGrossValue("CHF", 11.29), //
+                        hasTaxes("CHF", 0.01), hasFees("CHF", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
     public void testWertpapierKauf07()
     {
-        var client = new Client();
-
-        var extractor = new WirBankPDFExtractor(client);
+        var extractor = new WirBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -540,38 +442,19 @@ public class WirBankPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("CH0037606552"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("CSIF Europe ex CH"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0037606552"), hasWkn(null), hasTicker(null), //
+                        hasName("CSIF Europe ex CH"), //
+                        hasCurrencyCode("EUR"))));
 
-        // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-05-19T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.477)));
-        assertThat(entry.getSource(), is("Kauf07.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(421.47))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(421.47))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-
-        var grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
-                        .orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of("EUR", Values.Amount.factorize(402.34))));
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-05-19T00:00"), hasShares(0.477), //
+                        hasSource("Kauf07.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 421.47), hasGrossValue("CHF", 421.47), //
+                        hasForexGrossValue("EUR", 402.34), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
@@ -599,32 +482,18 @@ public class WirBankPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
-        // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-05-19T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.477)));
-        assertThat(entry.getSource(), is("Kauf07.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(421.47))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(421.47))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-
-        var c = new CheckCurrenciesAction();
-        var account = new Account();
-        account.setCurrencyCode("CHF");
-        var s = c.process(entry, account, entry.getPortfolio());
-        assertThat(s, is(Status.OK_STATUS));
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-05-19T00:00"), hasShares(0.477), //
+                        hasSource("Kauf07.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 421.47), hasGrossValue("CHF", 421.47), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
@@ -652,7 +521,7 @@ public class WirBankPDFExtractorTest
                         hasName("CSIF Europe ex CH"), //
                         hasCurrencyCode("EUR"))));
 
-        // check buy sell transaction
+        // check purchase transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-08-31T00:00"), hasShares(0.025), //
                         hasSource("Kauf08.txt"), //
@@ -687,7 +556,7 @@ public class WirBankPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
-        // check buy sell transaction
+        // check purchase transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-08-31T00:00"), hasShares(0.025), //
                         hasSource("Kauf08.txt"), //
@@ -726,7 +595,7 @@ public class WirBankPDFExtractorTest
                         hasName("CSIMF Money Market CHF"), //
                         hasCurrencyCode("CHF"))));
 
-        // check buy sell transaction
+        // check purchase transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-09-06T00:00"), hasShares(0.001), //
                         hasSource("Kauf09.txt"), //
@@ -760,7 +629,7 @@ public class WirBankPDFExtractorTest
                         hasName("Swisscanto Pacific ex Japan"), //
                         hasCurrencyCode("USD"))));
 
-        // check buy sell transaction
+        // check purchase transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-09-08T00:00"), hasShares(0.027), //
                         hasSource("Kauf10_English.txt"), //
@@ -795,7 +664,7 @@ public class WirBankPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
-        // check buy sell transaction
+        // check purchase transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-09-08T00:00"), hasShares(0.027), //
                         hasSource("Kauf10_English.txt"), //
@@ -812,9 +681,7 @@ public class WirBankPDFExtractorTest
     @Test
     public void testWertpapierKauf11()
     {
-        var client = new Client();
-
-        var extractor = new WirBankPDFExtractor(client);
+        var extractor = new WirBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -831,38 +698,19 @@ public class WirBankPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("CH0030849613"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("CSIF Canada"));
-        assertThat(security.getCurrencyCode(), is("CAD"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0030849613"), hasWkn(null), hasTicker(null), //
+                        hasName("CSIF Canada"), //
+                        hasCurrencyCode("CAD"))));
 
-        // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-05-19T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.027)));
-        assertThat(entry.getSource(), is("Kauf11_Francais.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(32.84))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(32.84))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-
-        var grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
-                        .orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of("CAD", Values.Amount.factorize(42.12))));
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-05-19T00:00"), hasShares(0.027), //
+                        hasSource("Kauf11_Francais.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 32.84), hasGrossValue("CHF", 32.84), //
+                        hasForexGrossValue("CAD", 42.12), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
@@ -890,7 +738,7 @@ public class WirBankPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
-        // check buy sell transaction
+        // check purchase transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2022-05-19T00:00"), hasShares(0.027), //
                         hasSource("Kauf11_Francais.txt"), //
@@ -907,9 +755,7 @@ public class WirBankPDFExtractorTest
     @Test
     public void testWertpapierKauf12()
     {
-        var client = new Client();
-
-        var extractor = new WirBankPDFExtractor(client);
+        var extractor = new WirBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -926,42 +772,24 @@ public class WirBankPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("CH1336969030"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("VIAC Equity North America Sustainable"));
-        assertThat(security.getCurrencyCode(), is("CHF"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH1336969030"), hasWkn(null), hasTicker(null), //
+                        hasName("VIAC Equity North America Sustainable"), //
+                        hasCurrencyCode("CHF"))));
 
-        // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2025-01-09T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(16.839)));
-        assertThat(entry.getSource(), is("Kauf12_ViacInvest.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(1709.70))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(1709.70))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-01-09T00:00"), hasShares(16.839), //
+                        hasSource("Kauf12_ViacInvest.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 1709.70), hasGrossValue("CHF", 1709.70), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
     public void testWertpapierKauf13()
     {
-        var client = new Client();
-
-        var extractor = new WirBankPDFExtractor(client);
+        var extractor = new WirBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -977,11 +805,13 @@ public class WirBankPDFExtractorTest
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
+        // check security
         assertThat(results, hasItem(security( //
                         hasIsin("CH1336969097"), hasWkn(null), hasTicker(null), //
                         hasName("VIAC Equity Switzerland Sustainable"), //
                         hasCurrencyCode("CHF"))));
 
+        // check purchase transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2025-01-16T00:00"), hasShares(0.682), //
                         hasSource("Kauf13_ViacInvest_English.txt"), //
@@ -993,9 +823,7 @@ public class WirBankPDFExtractorTest
     @Test
     public void testInterest01()
     {
-        var client = new Client();
-
-        var extractor = new WirBankPDFExtractor(client);
+        var extractor = new WirBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1012,27 +840,18 @@ public class WirBankPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check interest transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-03-31T00:00")));
-        assertThat(transaction.getSource(), is("Zins01.txt"));
-        assertThat(transaction.getNote(), is("Zinssatz: 0.11% | Zinsperiode: März"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(0.04))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(0.04))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2019-03-31T00:00"), //
+                        hasSource("Zins01.txt"), //
+                        hasNote("Zinssatz: 0.11% | Zinsperiode: März"), //
+                        hasAmount("CHF", 0.04), hasGrossValue("CHF", 0.04), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
     public void testInterest02()
     {
-        var client = new Client();
-
-        var extractor = new WirBankPDFExtractor(client);
+        var extractor = new WirBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1049,27 +868,18 @@ public class WirBankPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check interest transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-30T00:00")));
-        assertThat(transaction.getSource(), is("Zins02_English.txt"));
-        assertThat(transaction.getNote(), is("Interest rate: 0.10% | Interest period: June"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(0.05))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(0.05))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2020-06-30T00:00"), //
+                        hasSource("Zins02_English.txt"), //
+                        hasNote("Interest rate: 0.10% | Interest period: June"), //
+                        hasAmount("CHF", 0.05), hasGrossValue("CHF", 0.05), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
     public void testInterest03()
     {
-        var client = new Client();
-
-        var extractor = new WirBankPDFExtractor(client);
+        var extractor = new WirBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1086,27 +896,18 @@ public class WirBankPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check interest transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-31T00:00")));
-        assertThat(transaction.getSource(), is("Zins03.txt"));
-        assertThat(transaction.getNote(), is("Zinssatz: 0.05% | Zinsperiode: Januar"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(0.19))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(0.19))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2021-01-31T00:00"), //
+                        hasSource("Zins03.txt"), //
+                        hasNote("Zinssatz: 0.05% | Zinsperiode: Januar"), //
+                        hasAmount("CHF", 0.19), hasGrossValue("CHF", 0.19), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
     public void testInterest04()
     {
-        var client = new Client();
-
-        var extractor = new WirBankPDFExtractor(client);
+        var extractor = new WirBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1123,19 +924,12 @@ public class WirBankPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check interest transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-31T00:00")));
-        assertThat(transaction.getSource(), is("Zins04_Francais.txt"));
-        assertThat(transaction.getNote(), is("Taux d’intérêt: 0.10% | Période d’intérêt: mai"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(0.04))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(0.04))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2022-05-31T00:00"), //
+                        hasSource("Zins04_Francais.txt"), //
+                        hasNote("Taux d’intérêt: 0.10% | Période d’intérêt: mai"), //
+                        hasAmount("CHF", 0.04), hasGrossValue("CHF", 0.04), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
@@ -1157,9 +951,9 @@ public class WirBankPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
-        // check fee transaction
+        // check interest transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2023-10-31T00:00"), hasShares(0.00), //
+                        hasDate("2023-10-31T00:00"), //
                         hasSource("Zins05_English.txt"), //
                         hasNote("Interest rate: 0.90% | Interest period: October"), //
                         hasAmount("CHF", 0.30), hasGrossValue("CHF", 0.30), //
@@ -1169,9 +963,7 @@ public class WirBankPDFExtractorTest
     @Test
     public void testInterest06()
     {
-        var client = new Client();
-
-        var extractor = new WirBankPDFExtractor(client);
+        var extractor = new WirBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1189,7 +981,7 @@ public class WirBankPDFExtractorTest
 
         // check interest transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2019-11-30"), hasShares(0.00), //
+                        hasDate("2019-11-30T00:00"), //
                         hasSource("Zins06_Francais_2019.txt"), //
                         hasNote("Taux d’intérêt: 0.20% | Période d’intérêt: novembre"), //
                         hasAmount("CHF", 1.15), hasGrossValue("CHF", 1.15), //
@@ -1199,9 +991,7 @@ public class WirBankPDFExtractorTest
     @Test
     public void testFees01()
     {
-        var client = new Client();
-
-        var extractor = new WirBankPDFExtractor(client);
+        var extractor = new WirBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1218,27 +1008,18 @@ public class WirBankPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check fee transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-01-31T00:00")));
-        assertThat(transaction.getSource(), is("Gebuehren01.txt"));
-        assertThat(transaction.getNote(), is("VIAC Verwaltungsgebühr: 0.123%"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(1.11))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(1.11))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2019-01-31T00:00"), //
+                        hasSource("Gebuehren01.txt"), //
+                        hasNote("VIAC Verwaltungsgebühr: 0.123%"), //
+                        hasAmount("CHF", 1.11), hasGrossValue("CHF", 1.11), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
     public void testFees02()
     {
-        var client = new Client();
-
-        var extractor = new WirBankPDFExtractor(client);
+        var extractor = new WirBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1255,19 +1036,12 @@ public class WirBankPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check fee transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-30T00:00")));
-        assertThat(transaction.getSource(), is("Gebuehren02_English.txt"));
-        assertThat(transaction.getNote(), is("VIAC administration fee: 0.47%"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(4.23))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(4.23))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2020-06-30T00:00"), //
+                        hasSource("Gebuehren02_English.txt"), //
+                        hasNote("VIAC administration fee: 0.47%"), //
+                        hasAmount("CHF", 4.23), hasGrossValue("CHF", 4.23), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
@@ -1293,7 +1067,7 @@ public class WirBankPDFExtractorTest
         assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         fee( //
-                                        hasDate("2023-07-31T00:00"), hasShares(0.00), //
+                                        hasDate("2023-07-31T00:00"), //
                                         hasSource("Gebuehren03_English.txt"), //
                                         hasNote("VIAC administration fee: 0.00%"), //
                                         hasAmount("CHF", 0.00), hasGrossValue("CHF", 0.00), //
@@ -1321,7 +1095,7 @@ public class WirBankPDFExtractorTest
 
         // check fee transaction
         assertThat(results, hasItem(fee( //
-                        hasDate("2023-10-31T00:00"), hasShares(0.00), //
+                        hasDate("2023-10-31T00:00"), //
                         hasSource("Gebuehren04_English.txt"), //
                         hasNote("VIAC administration fee: 0.24%"), //
                         hasAmount("CHF", 5.45), hasGrossValue("CHF", 5.45), //
@@ -1349,7 +1123,7 @@ public class WirBankPDFExtractorTest
 
         // check fee transaction
         assertThat(results, hasItem(fee( //
-                        hasDate("2019-04-30T00:00"), hasShares(0.00), //
+                        hasDate("2019-04-30T00:00"), //
                         hasSource("Gebuehren05_Francais.txt"), //
                         hasNote("Commission de gestion effective VIAC: 0.26%"), //
                         hasAmount("CHF", 3.10), hasGrossValue("CHF", 3.10), //
@@ -1359,9 +1133,7 @@ public class WirBankPDFExtractorTest
     @Test
     public void testCreditNote01()
     {
-        var client = new Client();
-
-        var extractor = new WirBankPDFExtractor(client);
+        var extractor = new WirBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1378,27 +1150,14 @@ public class WirBankPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check deposit transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-01-15T00:00")));
-        assertThat(transaction.getSource(), is("CreditNote01.txt"));
-        assertThat(transaction.getNote(), is("Einzahlung ABCD"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(2150.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(2150.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(deposit(hasDate("2019-01-15T00:00"), hasAmount("CHF", 2150.00), //
+                        hasSource("CreditNote01.txt"), hasNote("Einzahlung ABCD"))));
     }
 
     @Test
     public void testCreditNote02()
     {
-        var client = new Client();
-
-        var extractor = new WirBankPDFExtractor(client);
+        var extractor = new WirBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1415,27 +1174,14 @@ public class WirBankPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check deposit transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-15T00:00")));
-        assertThat(transaction.getSource(), is("CreditNote02.txt"));
-        assertThat(transaction.getNote(), is("Einzahlung ABCD"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(150.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(150.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(deposit(hasDate("2020-01-15T00:00"), hasAmount("CHF", 150.00), //
+                        hasSource("CreditNote02.txt"), hasNote("Einzahlung ABCD"))));
     }
 
     @Test
     public void testCreditNote03()
     {
-        var client = new Client();
-
-        var extractor = new WirBankPDFExtractor(client);
+        var extractor = new WirBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1452,27 +1198,14 @@ public class WirBankPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check deposit transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-17T00:00")));
-        assertThat(transaction.getSource(), is("CreditNote03_English.txt"));
-        assertThat(transaction.getNote(), is("Deposit BESR"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(1000.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(1000.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(deposit(hasDate("2019-12-17T00:00"), hasAmount("CHF", 1000.00), //
+                        hasSource("CreditNote03_English.txt"), hasNote("Deposit BESR"))));
     }
 
     @Test
     public void testCreditNote04()
     {
-        var client = new Client();
-
-        var extractor = new WirBankPDFExtractor(client);
+        var extractor = new WirBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1489,19 +1222,14 @@ public class WirBankPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check deposit transaction
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2018-12-27"), //
-                        hasSource("CreditNote04_Francais.txt"), //
-                        hasNote("Versement BVRB"), //
-                        hasAmount("CHF", 6768.00))));
+        assertThat(results, hasItem(deposit(hasDate("2018-12-27T00:00"), hasAmount("CHF", 6768.00), //
+                        hasSource("CreditNote04_Francais.txt"), hasNote("Versement BVRB"))));
     }
 
     @Test
     public void testCreditNote05()
     {
-        var client = new Client();
-
-        var extractor = new WirBankPDFExtractor(client);
+        var extractor = new WirBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1518,19 +1246,15 @@ public class WirBankPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2025-01-08"), //
-                        hasSource("CreditNote05_ViacInvest_English.txt"), //
-                        hasNote("John Doe"), //
-                        hasAmount("CHF", 610.00))));
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-01-08T00:00"), hasAmount("CHF", 610.00), //
+                        hasSource("CreditNote05_ViacInvest_English.txt"), hasNote("John Doe"))));
     }
 
     @Test
     public void testDividende01()
     {
-        var client = new Client();
-
-        var extractor = new WirBankPDFExtractor(client);
+        var extractor = new WirBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1547,37 +1271,25 @@ public class WirBankPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("CH0030849654"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("CSIF Pacific ex Japan"));
-        assertThat(security.getCurrencyCode(), is("CHF"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0030849654"), hasWkn(null), hasTicker(null), //
+                        hasName("CSIF Pacific ex Japan"), //
+                        hasCurrencyCode("CHF"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-05-21T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0.242)));
-        assertThat(transaction.getSource(), is("Dividende01.txt"));
-        assertThat(transaction.getNote(), is("Ordentliche Dividende"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(0.04))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(0.04))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2019-05-21T00:00"), hasExDate(null), //
+                        hasShares(0.242), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote("Ordentliche Dividende"), //
+                        hasAmount("CHF", 0.04), hasGrossValue("CHF", 0.04), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
     public void testDividende02()
     {
-        var client = new Client();
-
-        var extractor = new WirBankPDFExtractor(client);
+        var extractor = new WirBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1594,32 +1306,20 @@ public class WirBankPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("CH0030849613"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("CSIF Canada"));
-        assertThat(security.getCurrencyCode(), is("CAD"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0030849613"), hasWkn(null), hasTicker(null), //
+                        hasName("CSIF Canada"), //
+                        hasCurrencyCode("CAD"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-05-21T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0.176)));
-        assertThat(transaction.getSource(), is("Dividende02.txt"));
-        assertThat(transaction.getNote(), is("Ordentliche Dividende"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(0.15))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(0.15))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-
-        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of("CAD", Values.Amount.factorize(0.20))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2019-05-21T00:00"), hasExDate(null), //
+                        hasShares(0.176), //
+                        hasSource("Dividende02.txt"), //
+                        hasNote("Ordentliche Dividende"), //
+                        hasAmount("CHF", 0.15), hasGrossValue("CHF", 0.15), //
+                        hasForexGrossValue("CAD", 0.20), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
@@ -1648,34 +1348,26 @@ public class WirBankPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-05-21T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0.176)));
-        assertThat(transaction.getSource(), is("Dividende02.txt"));
-        assertThat(transaction.getNote(), is("Ordentliche Dividende"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(0.15))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(0.15))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-
-        var c = new CheckCurrenciesAction();
-        var account = new Account();
-        account.setCurrencyCode("CHF");
-        var s = c.process(transaction, account);
-        assertThat(s, is(Status.OK_STATUS));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2019-05-21T00:00"), hasExDate(null), //
+                        hasShares(0.176), //
+                        hasSource("Dividende02.txt"), //
+                        hasNote("Ordentliche Dividende"), //
+                        hasAmount("CHF", 0.15), hasGrossValue("CHF", 0.15), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("CHF");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
     public void testDividende03()
     {
-        var client = new Client();
-
-        var extractor = new WirBankPDFExtractor(client);
+        var extractor = new WirBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1692,32 +1384,20 @@ public class WirBankPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("IE00B1FZSF77"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("iShares US Property Yield"));
-        assertThat(security.getCurrencyCode(), is("USD"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B1FZSF77"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares US Property Yield"), //
+                        hasCurrencyCode("USD"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-27T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(2.142)));
-        assertThat(transaction.getSource(), is("Dividende03_English.txt"));
-        assertThat(transaction.getNote(), is("Ordinary dividend"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(0.52))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(0.52))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-
-        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(0.54))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2020-02-27T00:00"), hasExDate(null), //
+                        hasShares(2.142), //
+                        hasSource("Dividende03_English.txt"), //
+                        hasNote("Ordinary dividend"), //
+                        hasAmount("CHF", 0.52), hasGrossValue("CHF", 0.52), //
+                        hasForexGrossValue("USD", 0.54), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
@@ -1746,34 +1426,26 @@ public class WirBankPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-27T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(2.142)));
-        assertThat(transaction.getSource(), is("Dividende03_English.txt"));
-        assertThat(transaction.getNote(), is("Ordinary dividend"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(0.52))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(0.52))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-
-        var c = new CheckCurrenciesAction();
-        var account = new Account();
-        account.setCurrencyCode("CHF");
-        var s = c.process(transaction, account);
-        assertThat(s, is(Status.OK_STATUS));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2020-02-27T00:00"), hasExDate(null), //
+                        hasShares(2.142), //
+                        hasSource("Dividende03_English.txt"), //
+                        hasNote("Ordinary dividend"), //
+                        hasAmount("CHF", 0.52), hasGrossValue("CHF", 0.52), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("CHF");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
     public void testDividende04()
     {
-        var client = new Client();
-
-        var extractor = new WirBankPDFExtractor(client);
+        var extractor = new WirBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1790,32 +1462,20 @@ public class WirBankPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("LU0629460089"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("UBS ETF MSCI USA SRI"));
-        assertThat(security.getCurrencyCode(), is("USD"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0629460089"), hasWkn(null), hasTicker(null), //
+                        hasName("UBS ETF MSCI USA SRI"), //
+                        hasCurrencyCode("USD"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-02-04T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(47.817)));
-        assertThat(transaction.getSource(), is("Dividende04.txt"));
-        assertThat(transaction.getNote(), is("Ordentliche Dividende"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(31.44))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(31.44))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-
-        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(34.26))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2022-02-04T00:00"), hasExDate(null), //
+                        hasShares(47.817), //
+                        hasSource("Dividende04.txt"), //
+                        hasNote("Ordentliche Dividende"), //
+                        hasAmount("CHF", 31.44), hasGrossValue("CHF", 31.44), //
+                        hasForexGrossValue("USD", 34.26), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
@@ -1844,26 +1504,20 @@ public class WirBankPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-02-04T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(47.817)));
-        assertThat(transaction.getSource(), is("Dividende04.txt"));
-        assertThat(transaction.getNote(), is("Ordentliche Dividende"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(31.44))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(31.44))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-
-        var c = new CheckCurrenciesAction();
-        var account = new Account();
-        account.setCurrencyCode("CHF");
-        var s = c.process(transaction, account);
-        assertThat(s, is(Status.OK_STATUS));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2022-02-04T00:00"), hasExDate(null), //
+                        hasShares(47.817), //
+                        hasSource("Dividende04.txt"), //
+                        hasNote("Ordentliche Dividende"), //
+                        hasAmount("CHF", 31.44), hasGrossValue("CHF", 31.44), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("CHF");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
@@ -1893,7 +1547,8 @@ public class WirBankPDFExtractorTest
 
         // check dividende transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-09-14T00:00"), hasShares(31.64), //
+                        hasDate("2023-09-14T00:00"), hasExDate(null), //
+                        hasShares(31.64), //
                         hasSource("Dividende05.txt"), //
                         hasNote("Ordentliche Dividende"), //
                         hasAmount("CHF", 15.19), hasGrossValue("CHF", 15.19), //
@@ -1927,7 +1582,8 @@ public class WirBankPDFExtractorTest
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-05-24T00:00"), hasShares(0.027), //
+                        hasDate("2022-05-24T00:00"), hasExDate(null), //
+                        hasShares(0.027), //
                         hasSource("Dividende06_Francais.txt"), //
                         hasNote("Dividende ordinaire"), //
                         hasAmount("CHF", 0.02), hasGrossValue("CHF", 0.02), //
@@ -1936,9 +1592,9 @@ public class WirBankPDFExtractorTest
     }
 
     @Test
-    public void testtestDividende06WithSecurityInCHF()
+    public void testDividende06WithSecurityInCHF()
     {
-        var security = new Security("CSIF Canada0", "CHF");
+        var security = new Security("CSIF Canada", "CHF");
         security.setIsin("CH0030849613");
 
         var client = new Client();
@@ -1962,7 +1618,8 @@ public class WirBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-05-24T00:00"), hasShares(0.027), //
+                        hasDate("2022-05-24T00:00"), hasExDate(null), //
+                        hasShares(0.027), //
                         hasSource("Dividende06_Francais.txt"), //
                         hasNote("Dividende ordinaire"), //
                         hasAmount("CHF", 0.02), hasGrossValue("CHF", 0.02), //
@@ -1977,11 +1634,409 @@ public class WirBankPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierVerkauf01()
+    public void testDividende07()
     {
+        var extractor = new WirBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0030849712"), hasWkn(null), hasTicker(null), //
+                        hasName("UBS US - Pension Fund"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-05-27T00:00"), hasExDate(null), //
+                        hasShares(2.128), //
+                        hasSource("Dividende07.txt"), //
+                        hasNote("Ordentliche Dividende"), //
+                        hasAmount("CHF", 1.52), hasGrossValue("CHF", 1.52), //
+                        hasForexGrossValue("USD", 1.85), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+    }
+
+    @Test
+    public void testDividende07WithSecurityInCHF()
+    {
+        var security = new Security("UBS US - Pension Fund", "CHF");
+        security.setIsin("CH0030849712");
+
         var client = new Client();
+        client.addSecurity(security);
 
         var extractor = new WirBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-05-27T00:00"), hasExDate(null), //
+                        hasShares(2.128), //
+                        hasSource("Dividende07.txt"), //
+                        hasNote("Ordentliche Dividende"), //
+                        hasAmount("CHF", 1.52), hasGrossValue("CHF", 1.52), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("CHF");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testDividende07MitSteuerrueckerstattung10()
+    {
+        var extractor = new WirBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "Dividende07.txt", "Steuerrueckerstattung10.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0030849712"), hasWkn(null), hasTicker(null), //
+                        hasName("UBS US - Pension Fund"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-05-27T00:00"), hasExDate(null), //
+                        hasShares(2.128), //
+                        hasSource("Dividende07.txt"), //
+                        hasNote("Ordentliche Dividende"), //
+                        hasAmount("CHF", 1.52), hasGrossValue("CHF", 1.52), //
+                        hasForexGrossValue("USD", 1.85), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("CHF");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2025-05-27T00:00"), hasShares(2.128), //
+                        hasSource("Steuerrueckerstattung10.txt"), //
+                        hasNote("Rückerstattung Quellensteuer"), //
+                        hasAmount("CHF", 0.82), hasGrossValue("CHF", 0.82), //
+                        hasForexGrossValue("USD", 1.00), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("CHF");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testSteuerrueckerstattung10MitDividende07()
+    {
+        var extractor = new WirBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "Steuerrueckerstattung10.txt", "Dividende07.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0030849712"), hasWkn(null), hasTicker(null), //
+                        hasName("UBS US - Pension Fund"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-05-27T00:00"), hasExDate(null), //
+                        hasShares(2.128), //
+                        hasSource("Dividende07.txt"), //
+                        hasNote("Ordentliche Dividende"), //
+                        hasAmount("CHF", 1.52), hasGrossValue("CHF", 1.52), //
+                        hasForexGrossValue("USD", 1.85), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("CHF");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2025-05-27T00:00"), hasShares(2.128), //
+                        hasSource("Steuerrueckerstattung10.txt"), //
+                        hasNote("Rückerstattung Quellensteuer"), //
+                        hasAmount("CHF", 0.82), hasGrossValue("CHF", 0.82), //
+                        hasForexGrossValue("USD", 1.00), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("CHF");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testDividende07MitSteuerrueckerstattung10WithSecurityInUSD()
+    {
+        var security = new Security("UBS US - Pension Fund", "USD");
+        security.setIsin("CH0030849712");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new WirBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "Dividende07.txt", "Steuerrueckerstattung10.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-05-27T00:00"), hasExDate(null), //
+                        hasShares(2.128), //
+                        hasSource("Dividende07.txt"), //
+                        hasNote("Ordentliche Dividende"), //
+                        hasAmount("CHF", 1.52), hasGrossValue("CHF", 1.52), //
+                        hasForexGrossValue("USD", 1.85), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("CHF");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2025-05-27T00:00"), hasShares(2.128), //
+                        hasSource("Steuerrueckerstattung10.txt"), //
+                        hasNote("Rückerstattung Quellensteuer"), //
+                        hasAmount("CHF", 0.82), hasGrossValue("CHF", 0.82), //
+                        hasForexGrossValue("USD", 1.00), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("CHF");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testDividende08()
+    {
+        var extractor = new WirBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende08_English.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0030849613"), hasWkn(null), hasTicker(null), //
+                        hasName("UBS Canada"), //
+                        hasCurrencyCode("CAD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-05-28T00:00"), hasExDate(null), //
+                        hasShares(0.196), //
+                        hasSource("Dividende08_English.txt"), //
+                        hasNote("Ordinary dividend"), //
+                        hasAmount("CHF", 0.09), hasGrossValue("CHF", 0.09), //
+                        hasForexGrossValue("CAD", 0.15), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+    }
+
+    @Test
+    public void testDividende08WithSecurityInCHF()
+    {
+        var security = new Security("UBS Canada", "CHF");
+        security.setIsin("CH0030849613");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new WirBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende08_English.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-05-28T00:00"), hasExDate(null), //
+                        hasShares(0.196), //
+                        hasSource("Dividende08_English.txt"), //
+                        hasNote("Ordinary dividend"), //
+                        hasAmount("CHF", 0.09), hasGrossValue("CHF", 0.09), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("CHF");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testDividende08MitSteuerrueckerstattung09()
+    {
+        var extractor = new WirBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), //
+                        "Dividende08_English.txt", //
+                        "Steuerrueckerstattung09_English.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0030849613"), hasWkn(null), hasTicker(null), //
+                        hasName("UBS Canada"), //
+                        hasCurrencyCode("CAD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-05-28T00:00"), hasExDate(null), //
+                        hasShares(0.196), //
+                        hasSource("Dividende08_English.txt"), //
+                        hasNote("Ordinary dividend"), //
+                        hasAmount("CHF", 0.09), hasGrossValue("CHF", 0.09), //
+                        hasForexGrossValue("CAD", 0.15), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("CHF");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2026-05-28T00:00"), hasShares(0.196), //
+                        hasSource("Steuerrueckerstattung09_English.txt"), //
+                        hasNote("Refund Swiss withholding tax"), //
+                        hasAmount("CHF", 0.05), hasGrossValue("CHF", 0.05), //
+                        hasForexGrossValue("CAD", 0.09), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("CHF");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf01()
+    {
+        var extractor = new WirBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1998,38 +2053,19 @@ public class WirBankPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("CH0032400670"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("CSIF World ex CH"));
-        assertThat(security.getCurrencyCode(), is("USD"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0032400670"), hasWkn(null), hasTicker(null), //
+                        hasName("CSIF World ex CH"), //
+                        hasCurrencyCode("USD"))));
 
-        // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-05T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.03)));
-        assertThat(entry.getSource(), is("Verkauf01.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(45.66))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(45.66))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-
-        var grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
-                        .orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(45.71))));
+        // check sale transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2019-12-05T00:00"), hasShares(0.03), //
+                        hasSource("Verkauf01.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 45.66), hasGrossValue("CHF", 45.66), //
+                        hasForexGrossValue("USD", 45.71), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
@@ -2057,40 +2093,24 @@ public class WirBankPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
-        // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-05T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.03)));
-        assertThat(entry.getSource(), is("Verkauf01.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(45.66))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(45.66))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-
-        var c = new CheckCurrenciesAction();
-        var account = new Account();
-        account.setCurrencyCode("CHF");
-        var s = c.process(entry, account, entry.getPortfolio());
-        assertThat(s, is(Status.OK_STATUS));
+        // check sale transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2019-12-05T00:00"), hasShares(0.03), //
+                        hasSource("Verkauf01.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 45.66), hasGrossValue("CHF", 45.66), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
     public void testWertpapierVerkauf02()
     {
-        var client = new Client();
-
-        var extractor = new WirBankPDFExtractor(client);
+        var extractor = new WirBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2107,42 +2127,24 @@ public class WirBankPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("CH0033782431"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("CSIF SMI"));
-        assertThat(security.getCurrencyCode(), is("CHF"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0033782431"), hasWkn(null), hasTicker(null), //
+                        hasName("CSIF SMI"), //
+                        hasCurrencyCode("CHF"))));
 
-        // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-02-05T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.035)));
-        assertThat(entry.getSource(), is("Verkauf02_English.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(48.24))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(48.24))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        // check sale transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-02-05T00:00"), hasShares(0.035), //
+                        hasSource("Verkauf02_English.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 48.24), hasGrossValue("CHF", 48.24), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
     public void testWertpapierVerkauf03()
     {
-        var client = new Client();
-
-        var extractor = new WirBankPDFExtractor(client);
+        var extractor = new WirBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2159,38 +2161,19 @@ public class WirBankPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("CH0209106761"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("CSIF Gold"));
-        assertThat(security.getCurrencyCode(), is("USD"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0209106761"), hasWkn(null), hasTicker(null), //
+                        hasName("CSIF Gold"), //
+                        hasCurrencyCode("USD"))));
 
-        // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-09T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.135)));
-        assertThat(entry.getSource(), is("Verkauf03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(200.69))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(200.69))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-
-        var grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
-                        .orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(205.76))));
+        // check sale transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-06-09T00:00"), hasShares(0.135), //
+                        hasSource("Verkauf03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 200.69), hasGrossValue("CHF", 200.69), //
+                        hasForexGrossValue("USD", 205.76), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
@@ -2218,32 +2201,18 @@ public class WirBankPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
-        // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-09T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.135)));
-        assertThat(entry.getSource(), is("Verkauf03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(200.69))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(200.69))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-
-        var c = new CheckCurrenciesAction();
-        var account = new Account();
-        account.setCurrencyCode("CHF");
-        var s = c.process(entry, account, entry.getPortfolio());
-        assertThat(s, is(Status.OK_STATUS));
+        // check sale transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-06-09T00:00"), hasShares(0.135), //
+                        hasSource("Verkauf03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 200.69), hasGrossValue("CHF", 200.69), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
@@ -2271,45 +2240,12 @@ public class WirBankPDFExtractorTest
                         hasName("Swisscanto World ex CH Small Cap Responsible - IPF"), //
                         hasCurrencyCode("USD"))));
 
-        // check buy sell transaction
+        // check sale transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2023-09-08T00:00"), hasShares(0.148), //
                         hasSource("Verkauf04.txt"), hasNote(null), //
                         hasAmount("CHF", 14.41), hasGrossValue("CHF", 14.41), //
                         hasForexGrossValue("USD", 16.30), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
-    }
-
-    @Test
-    public void testWertpapierVerkauf05()
-    {
-        var extractor = new WirBankPDFExtractor(new Client());
-
-        List<Exception> errors = new ArrayList<>();
-
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf05_ViacInvest.txt"), errors);
-
-        assertThat(errors, empty());
-        assertThat(countSecurities(results), is(1L));
-        assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(0L));
-        assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, "CHF");
-
-        // check security
-        assertThat(results, hasItem(security( //
-                        hasIsin("CH1336969030"), hasWkn(null), hasTicker(null), //
-                        hasName("VIAC Equity North America Sustainable"), //
-                        hasCurrencyCode("CHF"))));
-
-        // check buy sell transaction
-        assertThat(results, hasItem(sale( //
-                        hasDate("2025-01-16T00:00"), hasShares(0.181), //
-                        hasSource("Verkauf05_ViacInvest.txt"), hasNote(null), //
-                        hasAmount("CHF", 18.10), hasGrossValue("CHF", 18.10), //
                         hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
@@ -2338,7 +2274,7 @@ public class WirBankPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
-        // check buy sell transaction
+        // check sale transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2023-09-08T00:00"), hasShares(0.148), //
                         hasSource("Verkauf04.txt"), hasNote(null), //
@@ -2352,11 +2288,42 @@ public class WirBankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf05()
+    {
+        var extractor = new WirBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf05_ViacInvest.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH1336969030"), hasWkn(null), hasTicker(null), //
+                        hasName("VIAC Equity North America Sustainable"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check sale transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-01-16T00:00"), hasShares(0.181), //
+                        hasSource("Verkauf05_ViacInvest.txt"), hasNote(null), //
+                        hasAmount("CHF", 18.10), hasGrossValue("CHF", 18.10), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+    }
+
+    @Test
     public void testSteuerrueckerstattung01()
     {
-        var client = new Client();
-
-        var extractor = new WirBankPDFExtractor(client);
+        var extractor = new WirBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2373,37 +2340,24 @@ public class WirBankPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("CH0030849654"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("CSIF Pacific ex Japan"));
-        assertThat(security.getCurrencyCode(), is("CHF"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0030849654"), hasWkn(null), hasTicker(null), //
+                        hasName("CSIF Pacific ex Japan"), //
+                        hasCurrencyCode("CHF"))));
 
         // check tax refund transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-23T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0.966)));
-        assertThat(transaction.getSource(), is("Steuerrueckerstattung01.txt"));
-        assertThat(transaction.getNote(), is("Rückerstattung Quellensteuer"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(11.59))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(11.59))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2022-05-23T00:00"), hasShares(0.966), //
+                        hasSource("Steuerrueckerstattung01.txt"), //
+                        hasNote("Rückerstattung Quellensteuer"), //
+                        hasAmount("CHF", 11.59), hasGrossValue("CHF", 11.59), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
     public void testSteuerrueckerstattung02()
     {
-        var client = new Client();
-
-        var extractor = new WirBankPDFExtractor(client);
+        var extractor = new WirBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2420,37 +2374,24 @@ public class WirBankPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("CH0017844686"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("CSIF Emerging Markets"));
-        assertThat(security.getCurrencyCode(), is("CHF"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0017844686"), hasWkn(null), hasTicker(null), //
+                        hasName("CSIF Emerging Markets"), //
+                        hasCurrencyCode("CHF"))));
 
         // check tax refund transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-27T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0.353)));
-        assertThat(transaction.getSource(), is("Steuerrueckerstattung02.txt"));
-        assertThat(transaction.getNote(), is("Rückerstattung Quellensteuer"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(5.73))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(5.73))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2020-02-27T00:00"), hasShares(0.353), //
+                        hasSource("Steuerrueckerstattung02.txt"), //
+                        hasNote("Rückerstattung Quellensteuer"), //
+                        hasAmount("CHF", 5.73), hasGrossValue("CHF", 5.73), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
     public void testSteuerrueckerstattung03()
     {
-        var client = new Client();
-
-        var extractor = new WirBankPDFExtractor(client);
+        var extractor = new WirBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2467,37 +2408,107 @@ public class WirBankPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("CH0037606552"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("CSIF Europe ex CH"));
-        assertThat(security.getCurrencyCode(), is("CHF"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0037606552"), hasWkn(null), hasTicker(null), //
+                        hasName("CSIF Europe ex CH"), //
+                        hasCurrencyCode("CHF"))));
 
         // check tax refund transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2020-02-27T00:00"), hasShares(0.154), //
+                        hasSource("Steuerrueckerstattung03.txt"), //
+                        hasNote("Rückerstattung Quellensteuer"), //
+                        hasAmount("CHF", 1.36), hasGrossValue("CHF", 1.36), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+    }
 
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
+    @Test
+    public void testSteuerrueckerstattung03WithSecurityInEUR()
+    {
+        var security = new Security("CSIF Europe ex CH", "EUR");
+        security.setIsin("CH0037606552");
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-27T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0.154)));
-        assertThat(transaction.getSource(), is("Steuerrueckerstattung03.txt"));
-        assertThat(transaction.getNote(), is("Rückerstattung Quellensteuer"));
+        var client = new Client();
+        client.addSecurity(security);
 
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(1.36))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(1.36))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        var extractor = new WirBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerrueckerstattung03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionSkipIfDetailsMissing, //
+                        taxRefund( //
+                                        hasDate("2020-02-27T00:00"), hasShares(0.154), //
+                                        hasSource("Steuerrueckerstattung03.txt"), //
+                                        hasNote("Rückerstattung Quellensteuer"), //
+                                        hasAmount("CHF", 1.36), hasGrossValue("CHF", 1.36), //
+                                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00)))));
+    }
+
+    @Test
+    public void testSteuerrueckerstattung03MitKauf05()
+    {
+        var extractor = new WirBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "Steuerrueckerstattung03.txt", "Kauf05.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0037606552"), hasWkn(null), hasTicker(null), //
+                        hasName("CSIF Europe ex CH"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2019-01-07T00:00"), hasShares(1.024), //
+                        hasSource("Kauf05.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 719.24), hasGrossValue("CHF", 719.24), //
+                        hasForexGrossValue("EUR", 635.26), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionSkipIfDetailsMissing, //
+                        taxRefund( //
+                                        hasDate("2020-02-27T00:00"), hasShares(0.154), //
+                                        hasSource("Steuerrueckerstattung03.txt"), //
+                                        hasNote("Rückerstattung Quellensteuer"), //
+                                        hasAmount("CHF", 1.36), hasGrossValue("CHF", 1.36), //
+                                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00)))));
     }
 
     @Test
     public void testSteuerrueckerstattung04()
     {
-        var client = new Client();
-
-        var extractor = new WirBankPDFExtractor(client);
+        var extractor = new WirBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2515,37 +2526,24 @@ public class WirBankPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("CH0037606552"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("CSIF Europe ex CH"));
-        assertThat(security.getCurrencyCode(), is("CHF"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0037606552"), hasWkn(null), hasTicker(null), //
+                        hasName("CSIF Europe ex CH"), //
+                        hasCurrencyCode("CHF"))));
 
         // check tax refund transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-25T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(1.841)));
-        assertThat(transaction.getSource(), is("Steuerrueckerstattung04_English.txt"));
-        assertThat(transaction.getNote(), is("Refund withholding tax"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(17.28))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(17.28))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2021-02-25T00:00"), hasShares(1.841), //
+                        hasSource("Steuerrueckerstattung04_English.txt"), //
+                        hasNote("Refund withholding tax"), //
+                        hasAmount("CHF", 17.28), hasGrossValue("CHF", 17.28), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
     public void testSteuerrueckerstattung05()
     {
-        var client = new Client();
-
-        var extractor = new WirBankPDFExtractor(client);
+        var extractor = new WirBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2563,29 +2561,18 @@ public class WirBankPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("CH0017844686"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("CSIF Emerging Markets"));
-        assertThat(security.getCurrencyCode(), is("CHF"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0017844686"), hasWkn(null), hasTicker(null), //
+                        hasName("CSIF Emerging Markets"), //
+                        hasCurrencyCode("CHF"))));
 
         // check tax refund transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-23T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0.104)));
-        assertThat(transaction.getSource(), is("Steuerrueckerstattung05_English.txt"));
-        assertThat(transaction.getNote(), is("Refund withholding tax"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(1.65))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(1.65))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2022-05-23T00:00"), hasShares(0.104), //
+                        hasSource("Steuerrueckerstattung05_English.txt"), //
+                        hasNote("Refund withholding tax"), //
+                        hasAmount("CHF", 1.65), hasGrossValue("CHF", 1.65), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
@@ -2656,7 +2643,43 @@ public class WirBankPDFExtractorTest
                         hasAmount("CHF", 0.05), hasGrossValue("CHF", 0.05), //
                         hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
-    
+
+    @Test
+    public void testSteuerrueckerstattung07WithSecurityInCAD()
+    {
+        var security = new Security("CSIF Canada", "CAD");
+        security.setIsin("CH0030849613");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new WirBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerrueckerstattung07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionSkipIfDetailsMissing, //
+                        taxRefund( //
+                                        hasDate("2024-04-19T00:00"), hasShares(0.431), //
+                                        hasSource("Steuerrueckerstattung07.txt"), //
+                                        hasNote("Rückerstattung Quellensteuer"), //
+                                        hasAmount("CHF", 0.05), hasGrossValue("CHF", 0.05), //
+                                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00)))));
+    }
+
     @Test
     public void testSteuerrueckerstattung08()
     {
@@ -2727,6 +2750,76 @@ public class WirBankPDFExtractorTest
     }
 
     @Test
+    public void testSteuerrueckerstattung10()
+    {
+        var extractor = new WirBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerrueckerstattung10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0030849712"), hasWkn(null), hasTicker(null), //
+                        hasName("UBS US - Pension Fund"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2025-05-27T00:00"), hasShares(2.128), //
+                        hasSource("Steuerrueckerstattung10.txt"), //
+                        hasNote("Rückerstattung Quellensteuer"), //
+                        hasAmount("CHF", 0.82), hasGrossValue("CHF", 0.82), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+    }
+
+    @Test
+    public void testSteuerrueckerstattung10WithSecurityInUSD()
+    {
+        var security = new Security("UBS US - Pension Fund", "USD");
+        security.setIsin("CH0030849712");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new WirBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerrueckerstattung10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionSkipIfDetailsMissing, //
+                        taxRefund( //
+                                        hasDate("2025-05-27T00:00"), hasShares(2.128), //
+                                        hasSource("Steuerrueckerstattung10.txt"), //
+                                        hasNote("Rückerstattung Quellensteuer"), //
+                                        hasAmount("CHF", 0.82), hasGrossValue("CHF", 0.82), //
+                                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00)))));
+    }
+
+    @Test
     public void testDividendeStorno01()
     {
         var extractor = new WirBankPDFExtractor(new Client());
@@ -2746,36 +2839,19 @@ public class WirBankPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("CH0030849654"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("CSIF Pacific ex Japan"));
-        assertThat(security.getCurrencyCode(), is("CHF"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0030849654"), hasWkn(null), hasTicker(null), //
+                        hasName("CSIF Pacific ex Japan"), //
+                        hasCurrencyCode("CHF"))));
 
-        // check cancellation (Storno) transaction
-        var cancellation = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.TAX_REFUND));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionOrderCancellationUnsupported));
-
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2022-05-23T00:00")));
-        assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(0.515)));
-        assertThat(((Transaction) cancellation.getSubject()).getSource(), is("DividendeStorno01.txt"));
-        assertThat(((Transaction) cancellation.getSubject()).getNote(), is("Refund withholding tax"));
-
-        assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(6.18))));
-        assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(6.18))));
-        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionOrderCancellationUnsupported, //
+                        taxRefund( //
+                                        hasDate("2022-05-23T00:00"), hasShares(0.515), //
+                                        hasSource("DividendeStorno01.txt"), //
+                                        hasNote("Refund withholding tax"), //
+                                        hasAmount("CHF", 6.18), hasGrossValue("CHF", 6.18), //
+                                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00)))));
     }
 }
