@@ -33,6 +33,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.CurrencyToStringConverter;
 import name.abuchen.portfolio.ui.util.SWTHelper;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.StringToCurrencyConverter;
@@ -47,6 +48,7 @@ import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 public class ReBalancingViewer extends AbstractNodeTreeViewer
 {
     private final StringToCurrencyConverter amountConverter = new StringToCurrencyConverter(Values.Amount, true);
+    private final CurrencyToStringConverter amountFormatter = new CurrencyToStringConverter(Values.Amount);
 
     /**
      * Whether the "Amount to invest" row is shown. Transient view state; off by
@@ -59,6 +61,10 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
 
     private Composite amountRow;
     private Text amountInput;
+    private Label amountCurrency;
+
+    /** Guards the modify listener while the input field is updated in code. */
+    private boolean isUpdatingAmountInput = false;
 
     @Inject
     public ReBalancingViewer(AbstractFinanceView view, TaxonomyModel model, TaxonomyNodeRenderer renderer)
@@ -97,12 +103,15 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
         GridDataFactory.fillDefaults().hint(SWTHelper.amountWidth(amountInput), SWT.DEFAULT).applyTo(amountInput);
 
         amountInput.addModifyListener(e -> {
+            if (isUpdatingAmountInput)
+                return;
+
             amountText = amountInput.getText();
             applyAmount();
         });
 
-        Label currency = new Label(row, SWT.NONE);
-        currency.setText(getModel().getCurrencyCode());
+        amountCurrency = new Label(row, SWT.NONE);
+        amountCurrency.setText(getModel().getCurrencyCode());
 
         return row;
     }
@@ -144,6 +153,41 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
         }
     }
 
+    /**
+     * Follows a change of the model currency: the model has converted the
+     * amount to invest into the new currency, hence the currency label and the
+     * input field must be updated accordingly.
+     */
+    private void updateAmountCurrency()
+    {
+        if (amountRow == null || amountRow.isDisposed())
+            return;
+
+        var currencyCode = getModel().getCurrencyCode();
+        if (currencyCode.equals(amountCurrency.getText()))
+            return;
+
+        amountCurrency.setText(currencyCode);
+        amountRow.layout(true);
+
+        // a zero amount has no converted value to show: keep the text as it is
+        // so that an empty or an invalid input is not overwritten
+        var amount = getModel().getAmountToInvest();
+        if (amount.isZero())
+            return;
+
+        isUpdatingAmountInput = true;
+        try
+        {
+            amountText = amountFormatter.convert(amount.getAmount());
+            amountInput.setText(amountText);
+        }
+        finally
+        {
+            isUpdatingAmountInput = false;
+        }
+    }
+
     private void updateAmountRowVisibility()
     {
         if (amountRow == null || amountRow.isDisposed())
@@ -156,6 +200,14 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
 
         if (showAmountToInvest)
             amountInput.setFocus();
+    }
+
+    @Override
+    public void nodeChange(TaxonomyNode node)
+    {
+        super.nodeChange(node);
+
+        updateAmountCurrency();
     }
 
     @Override

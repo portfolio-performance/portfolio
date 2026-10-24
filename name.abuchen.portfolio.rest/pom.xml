@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>name.abuchen.portfolio</groupId>
+		<artifactId>portfolio-app</artifactId>
+		<version>0.89.1-SNAPSHOT</version>
+		<relativePath>../portfolio-app</relativePath>
+	</parent>
+
+	<artifactId>name.abuchen.portfolio.rest</artifactId>
+	<packaging>eclipse-plugin</packaging>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>enforce-versions</id>
+						<phase>none</phase>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jarsigner-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<!--
+			openapi-lint: validates openapi.yaml with Redocly during the verify
+			phase. Opt-in (append -Popenapi-lint) because it needs Node/npx on the
+			PATH and network access on first run - which not every contributor has,
+			and which the offline (-o) build cannot provide. CI runs the same check
+			on every build (see .github/workflows/main.yml). To always run it
+			locally, add openapi-lint to activeProfiles in your ~/.m2/settings.xml.
+		-->
+		<profile>
+			<id>openapi-lint</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>redocly-lint</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>npx</executable>
+									<!-- repository root, where redocly.yaml lives -->
+									<workingDirectory>${project.basedir}/..</workingDirectory>
+									<arguments>
+										<argument>--yes</argument>
+										<argument>@redocly/cli@2</argument>
+										<argument>lint</argument>
+									</arguments>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<!--
+			openapi-compat: fails the verify phase if openapi.yaml breaks the /v1
+			contract as published in the rest-api-v1.0.0 tag. oasdiff reads the
+			baseline straight from the tag. The baseline stays 1.0 for every 1.x,
+			because each one must keep the 1.0 promise. WARN rather than ERR because
+			oasdiff only warns when an optional response property disappears, and
+			/v1 promises that nothing disappears. Opt-in for the same reasons as
+			openapi-lint, with Go in place of Node; it fails while the tag does
+			not exist, so CI activates it only from the 1.0 release on.
+		-->
+		<profile>
+			<id>openapi-compat</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>oasdiff-breaking</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>go</executable>
+									<!-- repository root, so the git ref and the file path agree -->
+									<workingDirectory>${project.basedir}/..</workingDirectory>
+									<arguments>
+										<argument>run</argument>
+										<argument>github.com/oasdiff/oasdiff@v1.33.0</argument>
+										<argument>breaking</argument>
+										<argument>rest-api-v1.0.0:name.abuchen.portfolio.rest/openapi.yaml</argument>
+										<argument>name.abuchen.portfolio.rest/openapi.yaml</argument>
+										<argument>--fail-on</argument>
+										<argument>WARN</argument>
+									</arguments>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>

@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.is;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
@@ -14,6 +15,7 @@ import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Portfolio;
@@ -200,4 +202,27 @@ public class CostCalculationTest
         assertThat(cost.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED), is(Money.of(CurrencyUnit.EUR, 0L)));
     }
 
+    @Test
+    public void testFeesAndTaxesEmbeddedInDividendsAreCollected()
+    {
+        Client client = new Client();
+
+        Security security = new SecurityBuilder() //
+                        .addTo(client);
+
+        Account account = new Account();
+        account.setCurrencyCode(CurrencyUnit.EUR);
+
+        var dividend = new AccountTransaction(LocalDateTime.parse("2010-06-01T00:00"), CurrencyUnit.EUR,
+                        Values.Amount.factorize(80), security, AccountTransaction.Type.DIVIDENDS);
+        dividend.addUnit(new Unit(Unit.Type.FEE, Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5))));
+        dividend.addUnit(new Unit(Unit.Type.TAX, Money.of(CurrencyUnit.EUR, Values.Amount.factorize(15))));
+
+        CostCalculation cost = new CostCalculation();
+        cost.setTermCurrency(CurrencyUnit.EUR);
+        cost.visitAll(new TestCurrencyConverter(), List.of(CalculationLineItem.of(account, dividend)));
+
+        assertThat(cost.getFees(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5))));
+        assertThat(cost.getTaxes(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(15))));
+    }
 }

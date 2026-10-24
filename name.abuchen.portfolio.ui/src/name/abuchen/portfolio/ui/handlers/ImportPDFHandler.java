@@ -93,6 +93,13 @@ public class ImportPDFHandler
 
     public static void runImport(PortfolioPart part, Shell shell, Client client, Account account, Portfolio portfolio)
     {
+        runImport(part, shell, client, account, portfolio, UIConstants.Preferences.PDF_IMPORT_PATH,
+                        Messages.PDFImportFilterName, "*.pdf;*.PDF;*.zip;*.ZIP"); //$NON-NLS-1$
+    }
+
+    /* package */ static void runImport(PortfolioPart part, Shell shell, Client client, Account account,
+                    Portfolio portfolio, String pathPreference, String filterName, String filterExtensions)
+    {
         if (client.getAccounts().isEmpty())
         {
             MessageDialog.openError(shell, Messages.LabelError, Messages.MsgErrorAccountNotExist);
@@ -113,12 +120,12 @@ public class ImportPDFHandler
         else if (account != null)
             qualifier = account.getUUID();
 
-        FilePathHelper helper = new FilePathHelper(part, UIConstants.Preferences.PDF_IMPORT_PATH, qualifier);
+        FilePathHelper helper = new FilePathHelper(part, pathPreference, qualifier);
 
         FileDialog fileDialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
         fileDialog.setText(Messages.PDFImportWizardAssistant);
-        fileDialog.setFilterNames(new String[] { Messages.PDFImportFilterName });
-        fileDialog.setFilterExtensions(new String[] { "*.pdf;*.PDF;*.zip;*.ZIP" }); //$NON-NLS-1$
+        fileDialog.setFilterNames(new String[] { filterName });
+        fileDialog.setFilterExtensions(new String[] { filterExtensions });
         fileDialog.setFilterPath(helper.getPath());
         fileDialog.open();
 

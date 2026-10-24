@@ -176,12 +176,6 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public boolean mergeDownloadRequests()
-    {
-        return true;
-    }
-
-    @Override
     public int getMaxRateLimitAttempts()
     {
         return 30;

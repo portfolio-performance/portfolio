@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -56,6 +58,9 @@ import name.abuchen.portfolio.money.Values;
     {
         private Security security;
 
+        /** looks up the prices for the increasing dates of the valuation */
+        private PriceCursor prices;
+
         /** the current number of shares after applying the transactions */
         private long shares;
 
@@ -65,8 +70,117 @@ import name.abuchen.portfolio.money.Values;
         public SecurityPosition(Security security)
         {
             this.security = security;
+            this.prices = new PriceCursor(security);
             this.transactions = new ArrayList<>();
             this.shares = 0;
+        }
+    }
+
+    /**
+     * Reuses the exchange rate per currency for the same date. The valuation
+     * converts every position of a currency on the same day, but the rate
+     * (binary search, inverse or chained exchange rate series) only needs to
+     * be looked up once per currency and day. The conversion and rounding of
+     * each position is unchanged.
+     */
+    /* package */ static final class SameDayRateConverter implements CurrencyConverter
+    {
+        private final CurrencyConverter delegate;
+        private final Map<String, ExchangeRate> rates = new HashMap<>();
+        private LocalDate date;
+
+        /* package */ SameDayRateConverter(CurrencyConverter delegate)
+        {
+            this.delegate = delegate;
+        }
+
+        @Override
+        public String getTermCurrency()
+        {
+            return delegate.getTermCurrency();
+        }
+
+        @Override
+        public ExchangeRate getRate(LocalDate requestedDate, String currencyCode)
+        {
+            if (!requestedDate.equals(date))
+            {
+                rates.clear();
+                date = requestedDate;
+            }
+
+            ExchangeRate rate = rates.get(currencyCode);
+            if (rate == null)
+            {
+                rate = delegate.getRate(requestedDate, currencyCode);
+                rates.put(currencyCode, rate);
+            }
+            return rate;
+        }
+
+        @Override
+        public CurrencyConverter with(String currencyCode)
+        {
+            return delegate.with(currencyCode);
+        }
+    }
+
+    /**
+     * Returns the same price as {@link Security#getSecurityPrice(LocalDate)}
+     * but avoids the binary search per day: the valuation requests the prices
+     * for increasing dates, therefore the cursor walks forward through the
+     * historic prices.
+     * <p/>
+     * The latest (intraday) price is only relevant for dates on or after the
+     * last historic price. These requests are delegated to
+     * {@link Security#getSecurityPrice(LocalDate)} which answers them without a
+     * search. For dates before the last historic price the latest price never
+     * applies.
+     * <p/>
+     * The price list is read on every call. If prices are added or removed
+     * while the cursor is used (e.g. by a running price update), the cursor
+     * either walks forward or falls back to a binary search.
+     */
+    /* package */ static final class PriceCursor
+    {
+        private final Security security;
+        private int index;
+
+        /* package */ PriceCursor(Security security)
+        {
+            this.security = security;
+        }
+
+        /* package */ SecurityPrice getSecurityPrice(LocalDate date)
+        {
+            List<SecurityPrice> prices = security.getPrices();
+            int size = prices.size();
+
+            if (size == 0 || !prices.get(size - 1).getDate().isAfter(date))
+                return security.getSecurityPrice(date);
+
+            // reset if the list has shrunk or the date moved backwards
+            if (index >= size || (index > 0 && prices.get(index).getDate().isAfter(date)))
+                index = indexOf(prices, date);
+
+            while (index + 1 < size && !prices.get(index + 1).getDate().isAfter(date))
+                index++;
+
+            // if the date is before the first historic price, the first price
+            // is returned (same as Security#getSecurityPrice)
+            return prices.get(index);
+        }
+
+        private static int indexOf(List<SecurityPrice> prices, LocalDate date)
+        {
+            int answer = Collections.binarySearch(prices, new SecurityPrice(date, 0));
+
+            if (answer >= 0)
+                return answer;
+            else if (answer == -1)
+                return 0;
+            else
+                return -answer - 2;
         }
     }
 
@@ -80,7 +194,7 @@ import name.abuchen.portfolio.money.Values;
 
     /* package */ ClientSnapshotIterator(Client client, CurrencyConverter converter)
     {
-        this.converter = converter;
+        this.converter = new SameDayRateConverter(converter);
 
         this.portfolioTransactions = client.getPortfolios().stream().flatMap(p -> p.getTransactions().stream())
                         .sorted(Transaction.BY_DATE).toList();
@@ -116,7 +230,7 @@ import name.abuchen.portfolio.money.Values;
             if (position.shares == 0)
                 continue;
 
-            SecurityPrice price = position.security.getSecurityPrice(date);
+            SecurityPrice price = position.prices.getSecurityPrice(date);
 
             if (price.getValue() == 0L)
             {

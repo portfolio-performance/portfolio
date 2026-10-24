@@ -26,6 +26,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.money.Values;
 
 public class DetectDuplicatesActionTest
 {
@@ -127,6 +128,27 @@ public class DetectDuplicatesActionTest
         status = action.process(transferOut, account(withdrawl));
 
         assertThat(status.getCode(), is(Code.WARNING));
+    }
+
+    @Test
+    public void testDividendWithoutShareCountMatchesExistingDividend()
+    {
+        var security = new Security("Example", "EUR"); //$NON-NLS-1$ //$NON-NLS-2$
+        var existing = getTestEntry(AccountTransaction.Type.DIVIDENDS);
+        existing.setSecurity(security);
+        existing.setShares(100L * Values.Share.factor());
+
+        var imported = getTestEntry(AccountTransaction.Type.DIVIDENDS);
+        imported.setSecurity(security);
+
+        var action = new DetectDuplicatesAction(new Client());
+        assertThat(action.process(imported, account(existing)).getCode(), is(Code.WARNING));
+
+        imported.setShares(100L * Values.Share.factor());
+        assertThat(action.process(imported, account(existing)).getCode(), is(Code.WARNING));
+
+        imported.setShares(101L * Values.Share.factor());
+        assertThat(action.process(imported, account(existing)).getCode(), is(Code.OK));
     }
 
     private AccountTransaction getTestEntry(AccountTransaction.Type type)

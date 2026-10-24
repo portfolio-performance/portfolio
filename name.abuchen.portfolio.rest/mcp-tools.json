@@ -1,0 +1,1059 @@
+{
+  "notice": {
+    "about": "Every word the MCP endpoint shows a model: the sixteen tool names, their descriptions, their argument descriptions and their annotations. Read by the /mcp endpoint in this bundle.",
+    "stability": "Descriptions and inputSchema are published contract, not prose to tidy. Claude Desktop hashes a tool's description and parameters into the user's \"always allow\" grant, so revising wording silently revokes it. Change these words deliberately, in a release, on purpose.",
+    "language": "English only, and excluded from translation. This text is read by a model, not by the user.",
+    "fields": {
+      "name, description, inputSchema, annotations": "the tools/list payload, served as-is",
+      "operationId, method, pathTemplate, bindings": "routing, used only by the endpoint to dispatch into the REST routing table"
+    }
+  },
+  "tools": [
+    {
+      "name": "pp_list_files",
+      "operationId": "listFiles",
+      "method": "GET",
+      "pathTemplate": "/v1/files",
+      "description": "List the portfolio files this connector may address. Every other tool needs one of them as its `file`, by `id` or `alias`, so start here — there is no default file and no active file. Only files the user has open in Portfolio Performance *and* has individually enabled appear.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "bindings": []
+    },
+    {
+      "name": "pp_list_instruments",
+      "operationId": "listInstruments",
+      "method": "GET",
+      "pathTemplate": "/v1/files/{file}/instruments",
+      "description": "List every instrument in a file — what the application itself labels a *security*: stocks, funds, bonds, crypto, and currency-less series such as an index. Each entry is the complete record, identical to what pp_get_instrument returns, including any custom attributes that are set.\n\nThis is how a name, ISIN, WKN or ticker becomes the `uuid` that every other instrument tool requires.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Which portfolio file to work in — the `id` or `alias` from pp_list_files. Required; there is no default file."
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "bindings": [
+        {
+          "arg": "file",
+          "where": "path",
+          "wire": "file"
+        }
+      ]
+    },
+    {
+      "name": "pp_get_instrument",
+      "operationId": "getInstrument",
+      "method": "GET",
+      "pathTemplate": "/v1/files/{file}/instruments/{uuid}",
+      "description": "Read one instrument by `uuid`: name, trading currency, ISIN, WKN, ticker symbol, note and custom attributes. The record is the same one pp_list_instruments carries, so reach for this when you already hold a `uuid` — off a holding, a trade or a performance row — and want the master data behind it rather than the whole file.\n\nCustom attributes come back keyed by an opaque attribute `id`, never by the name the user sees in the application; pp_list_instrument_attribute_types is what puts a name to one. Only attributes that are actually set appear, and only those with a scalar type.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Which portfolio file to work in — the `id` or `alias` from pp_list_files. Required; there is no default file."
+          },
+          "uuid": {
+            "type": "string",
+            "description": "The instrument's `uuid`, from pp_list_instruments. Nothing else resolves: a name, ISIN, WKN or ticker symbol will not."
+          }
+        },
+        "required": [
+          "file",
+          "uuid"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "bindings": [
+        {
+          "arg": "file",
+          "where": "path",
+          "wire": "file"
+        },
+        {
+          "arg": "uuid",
+          "where": "path",
+          "wire": "uuid"
+        }
+      ]
+    },
+    {
+      "name": "pp_update_instrument",
+      "operationId": "patchInstrument",
+      "method": "PATCH",
+      "pathTemplate": "/v1/files/{file}/instruments/{uuid}",
+      "description": "Change an instrument's master data or its custom attributes. This is a merge, not a replacement: only the arguments you pass are touched, and passing null clears a field rather than setting it blank. Nothing else about an instrument is writable here — prices, transactions, quote feeds, events and taxonomies are read-only, and there is no way to create an instrument.\n\nCustom attributes are addressed by the opaque attribute `id` from pp_list_instrument_attribute_types, never by the display name, and each value has to match the type declared there. Mind the two numeric types: a `percent` value is a fraction, so 0.7% is `0.007`, while a `number` value is unscaled, so an attribute the application reads as a percentage takes `5` to mean 5%.\n\nWhile the user has a dialog open in the application, or is part-way through editing a cell, writes are refused until they finish. That is normal and temporary, not a request that went wrong.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Which portfolio file to work in — the `id` or `alias` from pp_list_files. Required; there is no default file."
+          },
+          "uuid": {
+            "type": "string",
+            "description": "The instrument's `uuid`, from pp_list_instruments. Nothing else resolves: a name, ISIN, WKN or ticker symbol will not."
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A new display name. Must be non-empty and cannot be cleared; omit it to leave the name alone."
+          },
+          "currencyCode": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "A new trading currency as an ISO 4217 code, or null to remove it and mark the instrument a currency-less series such as an index. Any currency change, clearing included, is refused once the instrument has transactions — the same rule the application applies. Clearing is also refused on an exchange rate."
+          },
+          "isin": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "A new ISIN, or null to clear it. Omit to leave it as it is."
+          },
+          "wkn": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "A new WKN, the German securities identifier, or null to clear it. Omit to leave it as it is."
+          },
+          "tickerSymbol": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "A new ticker symbol, or null to clear it. Omit to leave it as it is."
+          },
+          "note": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "A new free-text note, or null to clear it. Omit to leave it as it is."
+          },
+          "attributes": {
+            "type": "object",
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "description": "Custom attributes to change, keyed by the opaque attribute `id` from pp_list_instrument_attribute_types — never by the name shown in the application. A value sets that attribute, null clears it, and any id you leave out is untouched. Every value has to match the attribute's declared type; an unknown id, a compound type this connector cannot write, or a mistyped value fails the whole call rather than being quietly skipped."
+          }
+        },
+        "required": [
+          "file",
+          "uuid"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "bindings": [
+        {
+          "arg": "file",
+          "where": "path",
+          "wire": "file"
+        },
+        {
+          "arg": "uuid",
+          "where": "path",
+          "wire": "uuid"
+        },
+        {
+          "arg": "name",
+          "where": "body",
+          "wire": "name"
+        },
+        {
+          "arg": "currencyCode",
+          "where": "body",
+          "wire": "currencyCode"
+        },
+        {
+          "arg": "isin",
+          "where": "body",
+          "wire": "isin"
+        },
+        {
+          "arg": "wkn",
+          "where": "body",
+          "wire": "wkn"
+        },
+        {
+          "arg": "tickerSymbol",
+          "where": "body",
+          "wire": "tickerSymbol"
+        },
+        {
+          "arg": "note",
+          "where": "body",
+          "wire": "note"
+        },
+        {
+          "arg": "attributes",
+          "where": "body",
+          "wire": "attributes"
+        }
+      ]
+    },
+    {
+      "name": "pp_delete_instrument",
+      "operationId": "deleteInstrument",
+      "method": "DELETE",
+      "pathTemplate": "/v1/files/{file}/instruments/{uuid}",
+      "description": "Delete an instrument from a file. Refused outright while any transaction or investment plan still refers to it. Erasing it would take that history with it, and this connector will not make that call on the user's behalf — they have to clear the transactions first. Sitting in a watchlist or a taxonomy does not block a delete.\n\nLike any write, this is refused while the user has a dialog open in the application. That is temporary, not a failure.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Which portfolio file to work in — the `id` or `alias` from pp_list_files. Required; there is no default file."
+          },
+          "uuid": {
+            "type": "string",
+            "description": "The instrument's `uuid`, from pp_list_instruments. Nothing else resolves: a name, ISIN, WKN or ticker symbol will not."
+          }
+        },
+        "required": [
+          "file",
+          "uuid"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "bindings": [
+        {
+          "arg": "file",
+          "where": "path",
+          "wire": "file"
+        },
+        {
+          "arg": "uuid",
+          "where": "path",
+          "wire": "uuid"
+        }
+      ]
+    },
+    {
+      "name": "pp_list_instrument_attribute_types",
+      "operationId": "listInstrumentAttributeTypes",
+      "method": "GET",
+      "pathTemplate": "/v1/files/{file}/instruments/attribute-types",
+      "description": "List the custom attribute definitions that apply to instruments in a file: each one's opaque `id`, the name the user sees, and its value type. Attributes are defined per file, and everywhere else they are addressed by that `id` — a display name is never accepted — so read this before setting one with pp_update_instrument, and to put a name to an attribute id read off an instrument.\n\nThe types matter when writing. `percent` values are fractions, so `0.007` is 0.7%, while `number` values are unscaled, so `5` in an attribute the application reads as a percentage means 5%. Compound types — a limit price, a bookmark, an image — are listed with `supported: false` and can be neither read nor written.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Which portfolio file to work in — the `id` or `alias` from pp_list_files. Required; there is no default file."
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "bindings": [
+        {
+          "arg": "file",
+          "where": "path",
+          "wire": "file"
+        }
+      ]
+    },
+    {
+      "name": "pp_list_cash_accounts",
+      "operationId": "listCashAccounts",
+      "method": "GET",
+      "pathTemplate": "/v1/files/{file}/cash-accounts",
+      "description": "Every cash account in a file — the accounts holding money in a single currency, which the application itself calls simply *accounts*. Each entry gives the `uuid`, name, currency and note — and no balance. What an account is actually worth on a given day comes from pp_list_holdings, which values cash and instrument positions side by side.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Which portfolio file to work in — the `id` or `alias` from pp_list_files. Required; there is no default file."
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "bindings": [
+        {
+          "arg": "file",
+          "where": "path",
+          "wire": "file"
+        }
+      ]
+    },
+    {
+      "name": "pp_get_cash_account",
+      "operationId": "getCashAccount",
+      "method": "GET",
+      "pathTemplate": "/v1/files/{file}/cash-accounts/{uuid}",
+      "description": "Read one cash account by `uuid`: its name, its currency and its note. It carries no balance — pp_list_holdings is where a cash account's value on a date comes from. The record is the same one pp_list_cash_accounts returns, so reach for this when you already hold a `uuid` and want the name behind it: typically the `referenceCashAccount` of an investment account, or a cash line in a statement of assets.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Which portfolio file to work in — the `id` or `alias` from pp_list_files. Required; there is no default file."
+          },
+          "uuid": {
+            "type": "string",
+            "description": "The cash account's `uuid`, from pp_list_cash_accounts — or read off an investment account's `referenceCashAccount`, or a `cash-account` holding."
+          }
+        },
+        "required": [
+          "file",
+          "uuid"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "bindings": [
+        {
+          "arg": "file",
+          "where": "path",
+          "wire": "file"
+        },
+        {
+          "arg": "uuid",
+          "where": "path",
+          "wire": "uuid"
+        }
+      ]
+    },
+    {
+      "name": "pp_list_investment_accounts",
+      "operationId": "listInvestmentAccounts",
+      "method": "GET",
+      "pathTemplate": "/v1/files/{file}/investment-accounts",
+      "description": "Every investment account in a file — securities accounts, which the application calls *portfolios*. An investment account holds instrument positions and nothing else; the money that goes with it sits in an ordinary cash account, whose uuid it carries as `referenceCashAccount`. A user asking what is \"in an account\" usually means the two together, so read the cash side as well before answering.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Which portfolio file to work in — the `id` or `alias` from pp_list_files. Required; there is no default file."
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "bindings": [
+        {
+          "arg": "file",
+          "where": "path",
+          "wire": "file"
+        }
+      ]
+    },
+    {
+      "name": "pp_get_investment_account",
+      "operationId": "getInvestmentAccount",
+      "method": "GET",
+      "pathTemplate": "/v1/files/{file}/investment-accounts/{uuid}",
+      "description": "Read one investment account by `uuid`: its name, its note, and the `referenceCashAccount` where the money that belongs with it is kept — the account itself holds instrument positions and nothing else. The record is the same one pp_list_investment_accounts returns, so reach for this when you already hold a `uuid`, such as the securities account named on a trade.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Which portfolio file to work in — the `id` or `alias` from pp_list_files. Required; there is no default file."
+          },
+          "uuid": {
+            "type": "string",
+            "description": "The investment account's `uuid`, from pp_list_investment_accounts — or read off the `portfolio` named on a trade."
+          }
+        },
+        "required": [
+          "file",
+          "uuid"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "bindings": [
+        {
+          "arg": "file",
+          "where": "path",
+          "wire": "file"
+        },
+        {
+          "arg": "uuid",
+          "where": "path",
+          "wire": "uuid"
+        }
+      ]
+    },
+    {
+      "name": "pp_list_holdings",
+      "operationId": "listHoldings",
+      "method": "GET",
+      "pathTemplate": "/v1/files/{file}/holdings",
+      "description": "The statement of assets: everything the file holds on one date and what it is worth, instrument positions and cash account balances in a single list, each with its share of total assets. This is the only place a cash balance can be read and the only place a position's value can be, because the account tools carry neither.\n\nEach position is valued at the most recent price on or before the date, and that price's own date travels with it, so a quote that has gone stale is visible rather than hidden. Positions already closed by the date drop out; cash accounts stay in even at zero.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Which portfolio file to work in — the `id` or `alias` from pp_list_files. Required; there is no default file."
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "description": "Value the file as of this day, as YYYY-MM-DD. Defaults to today. A past date gives the statement of assets as it stood then; a future date is accepted and simply uses the latest known prices."
+          },
+          "reportingCurrency": {
+            "type": "string",
+            "description": "Express every amount in this ISO 4217 currency. Defaults to the file's own base currency. A pair the file has no exchange rate series for converts at 1:1 in silence, so an amount that looks untranslated means a missing rate series rather than a bad request."
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "bindings": [
+        {
+          "arg": "file",
+          "where": "path",
+          "wire": "file"
+        },
+        {
+          "arg": "date",
+          "where": "query",
+          "wire": "date"
+        },
+        {
+          "arg": "reportingCurrency",
+          "where": "query",
+          "wire": "reportingCurrency"
+        }
+      ]
+    },
+    {
+      "name": "pp_get_overall_performance",
+      "operationId": "getPerformance",
+      "method": "GET",
+      "pathTemplate": "/v1/files/{file}/performance",
+      "description": "How the file as a whole performed between two dates: its true time-weighted return, its money-weighted return, and a breakdown of where the change in value came from. This covers everything in the file at once — for the same interval split instrument by instrument, use pp_list_instrument_performance.\n\nThe breakdown is a reconciliation rather than a set of totals, and its terms are signed: opening value, unrealized and realized capital gains, income, fees, taxes, currency gains and net deposits add up exactly to the closing value. Net deposits is money the user paid in or took out, which is not performance at all — it is in the sum only to make it reconcile, so never present it as a gain.\n\nThe report is computed for this request and stored nowhere. It has no id, and no figure in it can be fetched back later — identify one by the dates and settings that produced it.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Which portfolio file to work in — the `id` or `alias` from pp_list_files. Required; there is no default file."
+          },
+          "openingDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Start of the period, as YYYY-MM-DD. A transaction dated on this exact day counts as part of the starting position rather than as activity within the period."
+          },
+          "closingDate": {
+            "type": "string",
+            "format": "date",
+            "description": "End of the period, as YYYY-MM-DD. Defaults to today, and must be strictly after the opening date. A future date is accepted and values at the latest known prices — it does not forecast."
+          },
+          "reportingCurrency": {
+            "type": "string",
+            "description": "Express every amount in this ISO 4217 currency. Defaults to the file's own base currency. A pair the file has no exchange rate series for converts at 1:1 in silence, so an amount that looks untranslated means a missing rate series rather than a bad request."
+          },
+          "costMethod": {
+            "type": "string",
+            "enum": [
+              "fifo",
+              "moving-average"
+            ],
+            "default": "fifo",
+            "description": "`fifo` (the default) or `moving-average`. It moves the cost basis that gains are measured against, and with it the split between realized and unrealized gain; it does not touch `irr`, which reads the cash flows directly, nor any time-weighted return. Under `moving-average`, a figure with no moving-average counterpart comes back `null` rather than being recomputed some other way."
+          }
+        },
+        "required": [
+          "file",
+          "openingDate"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "bindings": [
+        {
+          "arg": "file",
+          "where": "path",
+          "wire": "file"
+        },
+        {
+          "arg": "openingDate",
+          "where": "query",
+          "wire": "openingDate"
+        },
+        {
+          "arg": "closingDate",
+          "where": "query",
+          "wire": "closingDate"
+        },
+        {
+          "arg": "reportingCurrency",
+          "where": "query",
+          "wire": "reportingCurrency"
+        },
+        {
+          "arg": "costMethod",
+          "where": "query",
+          "wire": "costMethod"
+        }
+      ]
+    },
+    {
+      "name": "pp_list_instrument_performance",
+      "operationId": "listInstrumentPerformance",
+      "method": "GET",
+      "pathTemplate": "/v1/files/{file}/performance/instruments",
+      "description": "How each instrument performed over an interval, one row per instrument, across the same period and in the same terms as pp_get_overall_performance. Every instrument the interval touched appears, including one sold during it: that row shows zero shares and a zero closing value but real realized gains, dividends and fees, and leaving it out would quietly erase part of the period.\n\nThis is the largest response the API produces and there is no pagination. Narrow `metrics` when a whole file is more than the question needs, or ask about a single instrument with pp_get_instrument_performance.\n\nEvery figure is computed for this request and stored nowhere, so a row is reproducible only by asking again with the same dates and settings — the row itself cannot be fetched back.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Which portfolio file to work in — the `id` or `alias` from pp_list_files. Required; there is no default file."
+          },
+          "openingDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Start of the period, as YYYY-MM-DD. A transaction dated on this exact day counts as part of the starting position rather than as activity within the period."
+          },
+          "closingDate": {
+            "type": "string",
+            "format": "date",
+            "description": "End of the period, as YYYY-MM-DD. Defaults to today, and must be strictly after the opening date. A future date is accepted and values at the latest known prices — it does not forecast."
+          },
+          "reportingCurrency": {
+            "type": "string",
+            "description": "Express every amount in this ISO 4217 currency. Defaults to the file's own base currency. A pair the file has no exchange rate series for converts at 1:1 in silence, so an amount that looks untranslated means a missing rate series rather than a bad request."
+          },
+          "costMethod": {
+            "type": "string",
+            "enum": [
+              "fifo",
+              "moving-average"
+            ],
+            "default": "fifo",
+            "description": "`fifo` (the default) or `moving-average`. It moves the cost basis that gains are measured against, and with it the split between realized and unrealized gain; it does not touch `irr`, which reads the cash flows directly, nor any time-weighted return. Under `moving-average`, a figure with no moving-average counterpart comes back `null` rather than being recomputed some other way."
+          },
+          "taxesAndFees": {
+            "type": "string",
+            "enum": [
+              "included",
+              "excluded"
+            ],
+            "default": "included",
+            "description": "`included` (the default) or `excluded`: whether the taxes and fees charged on a purchase or a sale count towards what it cost. It moves cost basis and capital gains together so the two stay comparable, and leaves the fee and tax totals themselves, and every return ratio, alone."
+          },
+          "metrics": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "valuation",
+                "gains",
+                "income",
+                "expenses",
+                "moneyWeighted",
+                "timeWeighted",
+                "risk"
+              ]
+            },
+            "description": "Which groups of figures to include. Defaults to all seven; an unselected group is simply absent, and a selected one means exactly what it means when all are asked for.\n\n- `valuation` — shares held, opening and closing value, the period's cost basis\n- `gains` — realized and unrealized capital gains, each with the part caused by exchange rates\n- `income` — dividends received, how many, and the date of the most recent\n- `expenses` — the fees and taxes charged, as positive amounts\n- `moneyWeighted` — the internal rate of return\n- `timeWeighted` — the true time-weighted return, plain and annualized\n- `risk` — volatility, semi-volatility, deepest drawdown, longest drawdown in days\n\n`timeWeighted` and `risk` each need a day-by-day valuation of every instrument, which is what makes a request expensive; the two share that work, so both together cost no more than either alone. The other five are cheap. Narrow this when a response is too large to return whole, and widen it when a figure you need is missing."
+          }
+        },
+        "required": [
+          "file",
+          "openingDate"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "bindings": [
+        {
+          "arg": "file",
+          "where": "path",
+          "wire": "file"
+        },
+        {
+          "arg": "openingDate",
+          "where": "query",
+          "wire": "openingDate"
+        },
+        {
+          "arg": "closingDate",
+          "where": "query",
+          "wire": "closingDate"
+        },
+        {
+          "arg": "reportingCurrency",
+          "where": "query",
+          "wire": "reportingCurrency"
+        },
+        {
+          "arg": "costMethod",
+          "where": "query",
+          "wire": "costMethod"
+        },
+        {
+          "arg": "taxesAndFees",
+          "where": "query",
+          "wire": "taxesAndFees"
+        },
+        {
+          "arg": "metrics",
+          "where": "query",
+          "wire": "metrics",
+          "explode": false
+        }
+      ]
+    },
+    {
+      "name": "pp_get_instrument_performance",
+      "operationId": "getInstrumentPerformance",
+      "method": "GET",
+      "pathTemplate": "/v1/files/{file}/performance/instruments/{uuid}",
+      "description": "How one instrument performed over an interval — exactly the row pp_list_instrument_performance would return for it, and nothing about the rest of the file. Cheaper than the collection in substance and not merely narrower, because the day-by-day valuations that `timeWeighted` and `risk` rest on are then computed for this instrument alone.\n\nThe figures are computed for this request and stored nowhere; they are reproducible only by asking again with the same dates and settings.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Which portfolio file to work in — the `id` or `alias` from pp_list_files. Required; there is no default file."
+          },
+          "uuid": {
+            "type": "string",
+            "description": "The instrument's `uuid`, from pp_list_instruments. Nothing else resolves: a name, ISIN, WKN or ticker symbol will not."
+          },
+          "openingDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Start of the period, as YYYY-MM-DD. A transaction dated on this exact day counts as part of the starting position rather than as activity within the period."
+          },
+          "closingDate": {
+            "type": "string",
+            "format": "date",
+            "description": "End of the period, as YYYY-MM-DD. Defaults to today, and must be strictly after the opening date. A future date is accepted and values at the latest known prices — it does not forecast."
+          },
+          "reportingCurrency": {
+            "type": "string",
+            "description": "Express every amount in this ISO 4217 currency. Defaults to the file's own base currency. A pair the file has no exchange rate series for converts at 1:1 in silence, so an amount that looks untranslated means a missing rate series rather than a bad request."
+          },
+          "costMethod": {
+            "type": "string",
+            "enum": [
+              "fifo",
+              "moving-average"
+            ],
+            "default": "fifo",
+            "description": "`fifo` (the default) or `moving-average`. It moves the cost basis that gains are measured against, and with it the split between realized and unrealized gain; it does not touch `irr`, which reads the cash flows directly, nor any time-weighted return. Under `moving-average`, a figure with no moving-average counterpart comes back `null` rather than being recomputed some other way."
+          },
+          "taxesAndFees": {
+            "type": "string",
+            "enum": [
+              "included",
+              "excluded"
+            ],
+            "default": "included",
+            "description": "`included` (the default) or `excluded`: whether the taxes and fees charged on a purchase or a sale count towards what it cost. It moves cost basis and capital gains together so the two stay comparable, and leaves the fee and tax totals themselves, and every return ratio, alone."
+          },
+          "metrics": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "valuation",
+                "gains",
+                "income",
+                "expenses",
+                "moneyWeighted",
+                "timeWeighted",
+                "risk"
+              ]
+            },
+            "description": "Which groups of figures to include. Defaults to all seven; an unselected group is simply absent, and a selected one means exactly what it means when all are asked for.\n\n- `valuation` — shares held, opening and closing value, the period's cost basis\n- `gains` — realized and unrealized capital gains, each with the part caused by exchange rates\n- `income` — dividends received, how many, and the date of the most recent\n- `expenses` — the fees and taxes charged, as positive amounts\n- `moneyWeighted` — the internal rate of return\n- `timeWeighted` — the true time-weighted return, plain and annualized\n- `risk` — volatility, semi-volatility, deepest drawdown, longest drawdown in days\n\n`timeWeighted` and `risk` each need a day-by-day valuation of every instrument, which is what makes a request expensive; the two share that work, so both together cost no more than either alone. The other five are cheap. Narrow this when a response is too large to return whole, and widen it when a figure you need is missing."
+          }
+        },
+        "required": [
+          "file",
+          "uuid",
+          "openingDate"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "bindings": [
+        {
+          "arg": "file",
+          "where": "path",
+          "wire": "file"
+        },
+        {
+          "arg": "uuid",
+          "where": "path",
+          "wire": "uuid"
+        },
+        {
+          "arg": "openingDate",
+          "where": "query",
+          "wire": "openingDate"
+        },
+        {
+          "arg": "closingDate",
+          "where": "query",
+          "wire": "closingDate"
+        },
+        {
+          "arg": "reportingCurrency",
+          "where": "query",
+          "wire": "reportingCurrency"
+        },
+        {
+          "arg": "costMethod",
+          "where": "query",
+          "wire": "costMethod"
+        },
+        {
+          "arg": "taxesAndFees",
+          "where": "query",
+          "wire": "taxesAndFees"
+        },
+        {
+          "arg": "metrics",
+          "where": "query",
+          "wire": "metrics",
+          "explode": false
+        }
+      ]
+    },
+    {
+      "name": "pp_list_trades",
+      "operationId": "listTrades",
+      "method": "GET",
+      "pathTemplate": "/v1/files/{file}/trades",
+      "description": "Matched purchases and sales across the whole file, each with its profit and loss, its holding period and its return. Buys are paired against the sells that closed them, so this answers \"how did that position actually do\" — unlike pp_list_holdings, which values what is held now, and pp_list_instrument_performance, which measures a fixed interval.\n\nA trade has no id. It is recomputed on every call, it cannot be created or edited through this connector, and changing `grouping` or touching the transactions underneath re-cuts it into different trades entirely. Identify one by the filter that produced it; to change one, the user changes its transactions in the application.\n\nCheck `direction` before doing arithmetic. On a long trade the profit is exit less entry; on a short one it runs the other way, and since share counts are never negative there is nothing in the figures to tell you which.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Which portfolio file to work in — the `id` or `alias` from pp_list_files. Required; there is no default file."
+          },
+          "status": {
+            "type": "array",
+            "default": [
+              "open",
+              "closed"
+            ],
+            "items": {
+              "type": "string",
+              "enum": [
+                "open",
+                "closed"
+              ]
+            },
+            "description": "`open`, `closed`, or both — the default. A closed trade has been sold out and its result is realized; an open one is still held, so its exit side is a valuation at today's price and the same trade reports different numbers on different days."
+          },
+          "grouping": {
+            "type": "string",
+            "enum": [
+              "combined",
+              "per-lot"
+            ],
+            "default": "combined",
+            "description": "`combined` (the default) reports the purchases that one sale closed as a single trade; `per-lot` reports each purchase as a trade of its own. This does not pick a matching strategy — lots are always matched first in, first out."
+          },
+          "costMethod": {
+            "type": "string",
+            "enum": [
+              "fifo",
+              "moving-average"
+            ],
+            "default": "fifo",
+            "description": "`fifo` (the default) or `moving-average`. It moves the cost basis that gains are measured against, and with it the split between realized and unrealized gain; it does not touch `irr`, which reads the cash flows directly, nor any time-weighted return. Under `moving-average`, a figure with no moving-average counterpart comes back `null` rather than being recomputed some other way."
+          },
+          "taxesAndFees": {
+            "type": "string",
+            "enum": [
+              "included",
+              "excluded"
+            ],
+            "default": "included",
+            "description": "`included` (the default) or `excluded`: whether the taxes and fees charged on a purchase or a sale count towards what it cost. It moves cost basis and capital gains together so the two stay comparable, and leaves the fee and tax totals themselves, and every return ratio, alone."
+          },
+          "reportingCurrency": {
+            "type": "string",
+            "description": "Express every amount in this ISO 4217 currency. Defaults to the file's own base currency. A pair the file has no exchange rate series for converts at 1:1 in silence, so an amount that looks untranslated means a missing rate series rather than a bad request."
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "bindings": [
+        {
+          "arg": "file",
+          "where": "path",
+          "wire": "file"
+        },
+        {
+          "arg": "status",
+          "where": "query",
+          "wire": "status",
+          "explode": false
+        },
+        {
+          "arg": "grouping",
+          "where": "query",
+          "wire": "grouping"
+        },
+        {
+          "arg": "costMethod",
+          "where": "query",
+          "wire": "costMethod"
+        },
+        {
+          "arg": "taxesAndFees",
+          "where": "query",
+          "wire": "taxesAndFees"
+        },
+        {
+          "arg": "reportingCurrency",
+          "where": "query",
+          "wire": "reportingCurrency"
+        }
+      ]
+    },
+    {
+      "name": "pp_list_instrument_trades",
+      "operationId": "listInstrumentTrades",
+      "method": "GET",
+      "pathTemplate": "/v1/files/{file}/instruments/{uuid}/trades",
+      "description": "The matched purchases and sales of a single instrument, computed and filtered exactly as pp_list_trades is but scoped to one `uuid`. Use it when the question is about one position rather than the whole file, and to keep a large file's trades down to an answerable size.\n\nAn instrument that has simply never been traded answers with an empty list rather than an error. As in the file-wide tool, a trade has no id and is recomputed on every call — identify one by the filter that produced it — and `direction` still decides which way the subtraction runs.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Which portfolio file to work in — the `id` or `alias` from pp_list_files. Required; there is no default file."
+          },
+          "uuid": {
+            "type": "string",
+            "description": "The instrument's `uuid`, from pp_list_instruments. Nothing else resolves: a name, ISIN, WKN or ticker symbol will not."
+          },
+          "status": {
+            "type": "array",
+            "default": [
+              "open",
+              "closed"
+            ],
+            "items": {
+              "type": "string",
+              "enum": [
+                "open",
+                "closed"
+              ]
+            },
+            "description": "`open`, `closed`, or both — the default. A closed trade has been sold out and its result is realized; an open one is still held, so its exit side is a valuation at today's price and the same trade reports different numbers on different days."
+          },
+          "grouping": {
+            "type": "string",
+            "enum": [
+              "combined",
+              "per-lot"
+            ],
+            "default": "combined",
+            "description": "`combined` (the default) reports the purchases that one sale closed as a single trade; `per-lot` reports each purchase as a trade of its own. This does not pick a matching strategy — lots are always matched first in, first out."
+          },
+          "costMethod": {
+            "type": "string",
+            "enum": [
+              "fifo",
+              "moving-average"
+            ],
+            "default": "fifo",
+            "description": "`fifo` (the default) or `moving-average`. It moves the cost basis that gains are measured against, and with it the split between realized and unrealized gain; it does not touch `irr`, which reads the cash flows directly, nor any time-weighted return. Under `moving-average`, a figure with no moving-average counterpart comes back `null` rather than being recomputed some other way."
+          },
+          "taxesAndFees": {
+            "type": "string",
+            "enum": [
+              "included",
+              "excluded"
+            ],
+            "default": "included",
+            "description": "`included` (the default) or `excluded`: whether the taxes and fees charged on a purchase or a sale count towards what it cost. It moves cost basis and capital gains together so the two stay comparable, and leaves the fee and tax totals themselves, and every return ratio, alone."
+          },
+          "reportingCurrency": {
+            "type": "string",
+            "description": "Express every amount in this ISO 4217 currency. Defaults to the file's own base currency. A pair the file has no exchange rate series for converts at 1:1 in silence, so an amount that looks untranslated means a missing rate series rather than a bad request."
+          }
+        },
+        "required": [
+          "file",
+          "uuid"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "bindings": [
+        {
+          "arg": "file",
+          "where": "path",
+          "wire": "file"
+        },
+        {
+          "arg": "uuid",
+          "where": "path",
+          "wire": "uuid"
+        },
+        {
+          "arg": "status",
+          "where": "query",
+          "wire": "status",
+          "explode": false
+        },
+        {
+          "arg": "grouping",
+          "where": "query",
+          "wire": "grouping"
+        },
+        {
+          "arg": "costMethod",
+          "where": "query",
+          "wire": "costMethod"
+        },
+        {
+          "arg": "taxesAndFees",
+          "where": "query",
+          "wire": "taxesAndFees"
+        },
+        {
+          "arg": "reportingCurrency",
+          "where": "query",
+          "wire": "reportingCurrency"
+        }
+      ]
+    }
+  ]
+}

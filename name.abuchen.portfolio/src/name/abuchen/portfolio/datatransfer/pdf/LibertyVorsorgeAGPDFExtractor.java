@@ -49,7 +49,7 @@ public class LibertyVorsorgeAGPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        final var type = new DocumentType("B[\\s]*.[\\s]*r[\\s]*s[\\s]*e[\\s]*n[\\s]*a[\\s]*b[\\s]*r[\\s]*e[\\s]*c[\\s]*h[\\s]*n[\\s]*u[\\s]*n[\\s]*g[\\s]*\\-[\\s]*([\\s]*Z[\\s]*e[\\s]*i[\\s]*c[\\s]*h[\\s]*n[\\s]*u[\\s]*n[\\s]*g[\\s]*)?([\\s]*K[\\s]*a[\\s]*u[\\s]*f[\\s]*|[\\s]*V[\\s]*e[\\s]*r[\\s]*k[\\s]*a[\\s]*u[\\s]*f[\\s]*)");
+        final var type = new DocumentType("B[\\s]*.[\\s]*r[\\s]*s[\\s]*e[\\s]*n[\\s]*a[\\s]*b[\\s]*r[\\s]*e[\\s]*c[\\s]*h[\\s]*n[\\s]*u[\\s]*n[\\s]*g[\\s]*\\-[\\s]*([\\s]*Z[\\s]*e[\\s]*i[\\s]*c[\\s]*h[\\s]*n[\\s]*u[\\s]*n[\\s]*g[\\s]*)?([\\s]*R[\\s]*.[\\s]*c[\\s]*k[\\s]*n[\\s]*a[\\s]*h[\\s]*m[\\s]*e[\\s]*)?([\\s]*K[\\s]*a[\\s]*u[\\s]*f[\\s]*|[\\s]*V[\\s]*e[\\s]*r[\\s]*k[\\s]*a[\\s]*u[\\s]*f[\\s]*)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
@@ -86,13 +86,55 @@ public class LibertyVorsorgeAGPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "nameContinued", "wkn", "isin", "currency") //
                                                         .find("Wir haben f.r Sie am.*") //
-                                                        .match("^[\\.'\\d]+ Anteile .*$") //
+                                                        .match("^[\\.'\\d]+ Anteile( .*)?$") //
                                                         .match("^(?<name>.*)$")
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .match("^Valor: (?<wkn>[A-Z0-9]{5,9})$") //
                                                         .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .find("Menge\\/Nominal B.rsenplatz Preis") //
-                                                        .match("^Total Kurswert (?<currency>[A-Z]{3}) .*$") //)
+                                                        .match("^Total Kurswert (?<currency>[A-Z]{3}) .*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Wir haben für Sie am 26.07.2023 gekauft
+                                        // 1 Anteile -(CHF) A-dis-
+                                        // UBS ETF (CH) - SPI (R) Mid
+                                        // Valor: 13059512
+                                        // ISIN: CH0130595124
+                                        // Menge/Nominal Börsenplatz Preis
+                                        // 1 SIX Swiss Exchange 115.70
+                                        // Total Kurswert CHF -115.70
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "wkn", "isin", "currency") //
+                                                        .find("Wir haben f.r Sie am.*") //
+                                                        .match("^[\\.'\\d]+ Anteile( .*)?$") //
+                                                        .match("^(?<name>.*)$") //
+                                                        .match("^Valor: (?<wkn>[A-Z0-9]{5,9})$") //
+                                                        .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .find("Menge\\/Nominal B.rsenplatz Preis") //
+                                                        .match("^Total Kurswert (?<currency>[A-Z]{3}) .*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Wir haben für Sie am 16.11.2023 verkauft
+                                        // 43 Anlagefonds -USD- Capitalisation
+                                        // Multi Units Luxembourg SICAV
+                                        // - Lyxor MSCI World Climate Change (DR) UCITS ETF
+                                        // Valor: 53154391
+                                        // ISIN: LU2056739464
+                                        // Menge/Nominal Börsenplatz Preis
+                                        // 43 London Stock Exchange SETS 7.123
+                                        // Total Kurswert USD 306.29
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "nameContinued", "wkn", "isin", "currency") //
+                                                        .find("Wir haben f.r Sie am.*") //
+                                                        .match("^[\\.'\\d]+ Anlagefonds .*$") //
+                                                        .match("^(?<name>.*)$") //
+                                                        .match("^(?<nameContinued>.*)$") //
+                                                        .match("^Valor: (?<wkn>[A-Z0-9]{5,9})$") //
+                                                        .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .find("Menge\\/Nominal B.rsenplatz Preis") //
+                                                        .match("^Total Kurswert (?<currency>[A-Z]{3}) .*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // W ir ha ben für Sie a m  06.03.2025 v erk a u ft
@@ -146,7 +188,7 @@ public class LibertyVorsorgeAGPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .find("Menge\\/Nominal B.rsenplatz Preis") //
-                                                        .match("^(?<shares>[\\.'\\d]+) .*$") //"
+                                                        .match("^(?<shares>[\\.'\\d]+) .*$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
                                         // M enge/Nom ina l Börsenpla tz Preis
@@ -155,10 +197,24 @@ public class LibertyVorsorgeAGPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .find("M[\s]*e[\\s]*n[\\s]*g[\\s]*e[\\s]*\\/[\\s]*N[\\s]*o[\\s]*m[\\s]*i[\\s]*n[\\s]*a[\\s]*l[\\s]*B[\\s]*.[\\s]*r[\\s]*s[\\s]*e[\\s]*n[\\s]*p[\\s]*l[\\s]*a[\\s]*t[\\s]*z[\\s]*P[\\s]*r[\\s]*e[\\s]*i[\\s]*s[\\s]*") //
-                                                        .match("^(?<shares>[\\.'\\d]+) .*$") //"
+                                                        .match("^(?<shares>[\\.'\\d]+) .*$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
                         .oneOf( //
+                                        // @formatter:off
+                                        // Netto U SD 320.66
+                                        // Cha nge U SD /CH F 0.885050 CH F 283.80
+                                        //
+                                        // Netto USD 305.83
+                                        // Change USD/CHF 0.888300 CHF 271.67
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^C[\\s]*h[\\s]*a[\s]*n[\\s]*g[\\s]*e[\\s]*[A-Z\\s]{3,}[\\s]*\\/[\\s]*[A-Z\\s]{3,} [\\.,\\d]+[\\s]*(?<currency>[A-Z\\s]{3,})[\\s]*(\\-)?(?<amount>[\\.'\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(stripBlanks(v.get("currency"))));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
                                         // @formatter:off
                                         // Netto CHF -10'142.00
                                         // @formatter:on
@@ -167,17 +223,6 @@ public class LibertyVorsorgeAGPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Netto (?<currency>[A-Z]{3}) (\\-)?(?<amount>[\\.'\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                                            t.setAmount(asAmount(v.get("amount")));
-                                                        }),
-                                        // @formatter:off
-                                        // Netto U SD 320.66
-                                        // Cha nge U SD /CH F 0.885050 CH F 283.80
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("currency", "amount") //
-                                                        .match("^C[\\s]*h[\\s]*a[\s]*n[\\s]*g[\\s]*e[\\s]*[A-Z\\s]{3,}[\\s]*\\/[\\s]*[A-Z\\s]{3,} [\\.,\\d]+[\\s]*(?<currency>[A-Z\\s]{3,})[\\s]*(\\-)?(?<amount>[\\.'\\d]+)$") //
-                                                        .assign((t, v) -> {
-                                                            t.setCurrencyCode(asCurrencyCode(stripBlanks(v.get("currency"))));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }))
 
@@ -227,7 +272,8 @@ public class LibertyVorsorgeAGPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        final var type = new DocumentType("A[\\s]*u[\\s]*s[\\s]*s[\\s]*c[\\s]*h[\\s]*.[\\s]*t[\\s]*t[\\s]*u[\\s]*[\\s]*n[\\s]*g");
+        final var type = new DocumentType("(A[\\s]*u[\\s]*s[\\s]*s[\\s]*c[\\s]*h[\\s]*.[\\s]*t[\\s]*t[\\s]*u[\\s]*[\\s]*n[\\s]*g" //
+                        + "|K[\\s]*a[\\s]*p[\\s]*i[\\s]*t[\\s]*a[\\s]*l[\\s]*g[\\s]*e[\\s]*w[\\s]*i[\\s]*n[\\s]*n)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -267,7 +313,23 @@ public class LibertyVorsorgeAGPDFExtractor extends AbstractPDFExtractor
                                                             v.put("currency", asCurrencyCode(stripBlanks(v.get("currency"))));
 
                                                             t.setSecurity(getOrCreateSecurity(v));
-                                                        }))
+                                                        }),
+                                        // @formatter:off
+                                        // Wir beziehen uns auf die in Ihrem Wertschriftendepot verwahrten Titel und rechnen die Ausschüttung wie folgt ab:
+                                        // Anteile -(CHF) A-dis- Ex Datum: 08.09.2023
+                                        // UBS ETF (CH) - SPI (R) Mid Zahlbar Datum: 13.09.2023
+                                        // Valor: 13059512 Coupons-Nummer: 22
+                                        // ISIN: CH0130595124
+                                        // Bestand: 6 zu CHF 2.59
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "wkn", "isin", "currency") //
+                                                        .find("Wir beziehen uns.*") //
+                                                        .match("^(?<name>.*) Zahlbar Datum: .*$") //
+                                                        .match("^Valor: (?<wkn>[A-Z0-9]{5,9})( Coupons\\-Nummer: .*)?$") //
+                                                        .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^Bestand: [\\.'\\d]+ zu (?<currency>[A-Z]{3}) .*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off
                         // Besta nd: 1.739 z u  CH F 1.15
@@ -280,8 +342,15 @@ public class LibertyVorsorgeAGPDFExtractor extends AbstractPDFExtractor
                         // U nsere G u tschrift erfolgt a u f K onto 1.2886.4114-199 per 20.06.2025
                         // @formatter:on
                         .section("date") //
-                        .match("^U[\\s]*n[\\s]*s[\\s]*e[\\s]*r[\\s]*e[\\s]*G[\\s]*u[\\s]*t[\\s]*s[\\s]*c[\\s]*h[\\s]*r[\\s]*i[\\s]*f[\\s]*t.*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //"
+                        .match("^U[\\s]*n[\\s]*s[\\s]*e[\\s]*r[\\s]*e[\\s]*G[\\s]*u[\\s]*t[\\s]*s[\\s]*c[\\s]*h[\\s]*r[\\s]*i[\\s]*f[\\s]*t.*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Anteile -FA CH F- Ex  D a tu m : 17.06.2025
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^.*E[\\s]*x[\\s]*D[\\s]*a[\\s]*t[\\s]*u[\\s]*m[\\s]*:[\\s]*(?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
 
                         // @formatter:off
                         // Netto CH F 1.30

@@ -361,10 +361,14 @@ public class PaymentsViewModel
                 if (!end.isPresent() || !interval.contains(end.get()))
                     continue;
 
-                long value = 0;
-                value = costMethod.useFifo()
-                                ? trade.getProfitLossWithoutTaxesAndFees().getAmount()
-                                : trade.getProfitLossMovingAverageWithoutTaxesAndFees().getAmount();
+                var profitLoss = costMethod.useFifo() ? trade.getProfitLossWithoutTaxesAndFees()
+                                : trade.getProfitLossMovingAverageWithoutTaxesAndFees();
+
+                // a short trade has no moving average profit
+                if (profitLoss == null)
+                    continue;
+
+                long value = profitLoss.getAmount();
 
                 if (value != 0)
                 {

@@ -98,12 +98,6 @@ public class LeewayQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public boolean mergeDownloadRequests()
-    {
-        return true;
-    }
-
-    @Override
     public Optional<LatestSecurityPrice> getLatestQuote(Security security)
     {
         List<LatestSecurityPrice> prices = getHistoricalQuotes(security, true, LocalDate.now()).getLatestPrices();

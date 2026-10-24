@@ -1,139 +1,110 @@
 ```
-PDFBox Version: 1.8.17
-Portfolio Performance Version: 0.62.2.qualifier
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.74.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
 -----------------------------------------
-Sparkasse
-S
+S Sparkasse
 Schweinfurt-Haßberge
-Herrn
-Ihr Ansprechpartner:
-Max Mustermann
-Lena Hochrein
-Kundenberatung Hofheim
-Stadt
-Straße 7
-Frankenweg 7
-97461 Hofheim
-97494 Bundorf
+Herrn Ihr Ansprechpartner:
+max max max max
+strasse Kundenberatung Hofheim
+strasse 7 Marktplatz 7
+99999 stadt 99999 Hofheim
 Telefon 09521 58-764
 Fax 09521 58-499
-lena.hochrein@sparkasse-sw-has.de
+max.max@sparkasse-sw-has.de
  
  
- 
-1. Dezember 2021
+ 1. Dezember 2021
 Kontoauszug 20/2021 Seite 1 von 3
-S-Giro Smart 111111111, DE34 1111 0101 0111 1111 11
-  
+S  -Giro Smart 190999999, DE34 7935 0101 0190 9999 99
 Datum Erläuterung Betrag Soll EUR Betrag Haben EUR
-            2.648,17
- Kontostand am 29.10.2021, Auszug Nr.   19
-             -600,00
-02.11.2021 Dauerauftrag / Wert: 01.11.2021
-Max Mustermann ETF
-              -34,50
-02.11.2021 Lastschrift
+ Kontostand am 29.10.2021, Auszug Nr.   19             2.648,17
+02.11.2021 Dauerauftrag / Wert: 01.11.2021              -600,00
+max max ETF
+02.11.2021 Lastschrift               -34,50
 IGM Schweinfurt Industriegewerkschaft Metall BEITRAG BIS
-10/21 MANDATSREF 114089 3701 GLAEUBIGER-ID
+10/21 MANDATSREF 999999 3701 GLAEUBIGER-ID
 DE71ZZZ000000535 93 NAECHSTER BEITRAGSEINZUG IN
 BEKA NNTER HOEHE UND VEREINBARTEM TURNUS
-162144784 1140893701 Gläubiger-ID:
-DE71ZZZ00000011111
-           -1.000,00
-08.11.2021 Überweisung online
-Max Mustermann DATUM 07.11.2021, 14.38 UHR
-ed167428d-1111111-14375169-20211107
-              -57,30
-16.11.2021 Lastschrift
+162144784 9999993701 Gläubiger-ID:
+DE71ZZZ00000053593
+08.11.2021 Überweisung online            -1.000,00
+max max DATUM 07.11.2021, 14.38 UHR
+ed167428d-7976906-14375169-20211107
+16.11.2021 Lastschrift               -57,30
 PAYPAL (EUROPE) S.A.R.L ET CIE,S.C. PP.9962.PP . WES
 Handel . Dienstlei stung GmbH, Ihr Einkauf bei WES Han
 del . Dienstleistung GmbH 1016806442351 PP.9962.PP
 PAYPAL 4CU2224VNSRPG Gläubiger-ID:
 LU96ZZZ0000000000000000058
-               -8,30
-16.11.2021 Lastschrift
-Lotto24 by Adyen Lotto24 C11111111 T558459002550
+16.11.2021 Lastschrift                -8,30
+Lotto24 by Adyen Lotto24 C99685998 T558459002550
 C7739369178101997C 1636257542382004 Gläubiger-ID:
 NL48ZZZ342764500000
-              -86,39
-23.11.2021 Lastschrift
+23.11.2021 Lastschrift               -86,39
 PAYPAL (EUROPE) S.A.R.L ET CIE,S.C. PP.9962.PP . Re-In
 Retail Internati onal GmbH, Ihr Einkauf bei Re-In Re tail
 International GmbH 1016920528968 PP.9962.PP PAYPAL
 4CU2224VNSRPG Gläubiger-ID:
 LU96ZZZ0000000000000000058
-              -12,34
-23.11.2021 Lastschrift
+23.11.2021 Lastschrift               -12,34
 AMAZON PAYMENTS EUROPE S.C.A.
-305-0111111-8690705 AMZN Mktp DE 6W
+305-0193746-8690705 AMZN Mktp DE 6W
 ZH55YDCWHOML8K 6WZH55YDCWHOML8K
 KcoKMYuvg4ojtd-,O0?0,pPDaFQVWe Gläubiger-ID:
-DE94ZZZ00000111111
+DE94ZZZ00000561653
 Übertrag:               849,34
 Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
 Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
 97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
 Sparkassen-Finanzgruppe
-Sparkasse
-S
+S Sparkasse
 Schweinfurt-Haßberge
 Kontoauszug 20/2021 Seite 2 von 3
-S-Giro Smart 111111111, DE34 1111 0101 0111 1111 11,  Max Mustermann
+S-Giro Smart 190999999, DE34 7935 0101 0190 9999 99,  max max
 Datum Erläuterung Betrag Soll EUR Betrag Haben EUR
 Übertrag:               849,34
-              -73,73
-24.11.2021 Lastschrift
+24.11.2021 Lastschrift               -73,73
 AMAZON PAYMENTS EUROPE S.C.A.
 305-9919388-8166721 AMZN Mktp DE FQ
 HRADKBJ0P27QTJ FQHRADKBJ0P27QTJ
 KcoKMYuvg4ojtd-,O0?0,pPDaFQVWe Gläubiger-ID:
-DE94ZZZ00000111111
-             -250,00
-29.11.2021 Überweisung online
+DE94ZZZ00000561653
+29.11.2021 Überweisung online              -250,00
 solarisBank AG BISON App DATUM 27.11.2021, 14.49 UHR
 7387004d-13537109-14483336-20211127
-              -10,00
-29.11.2021 Lastschrift
+29.11.2021 Lastschrift               -10,00
 PAYPAL (EUROPE) S.A.R.L ET CIE,S.C. . Telekom
 Deutschland GmbH, Ihr Ein kauf bei Telekom Deutschland
-GmbH 10111111108 PAYPAL 4CU2224VNSRPG
+GmbH 1017019999608 PAYPAL 4CU2224VNSRPG
 Gläubiger-ID: LU96ZZZ0000000000000000058
-            1.111,11
-29.11.2021 Lohn, Gehalt, Rente
-ZF FRIEDRICHSHAFEN A Lohn/Gehalt 09006580/202111
-  
-           -1.000,00
-30.11.2021 Überweisung online
-Max Mustermann DATUM 30.11.2021, 17.24 UHR
-f1fd88a43-111118-16500185-20211130
-             -600,00
-30.11.2021 Dauerauftrag
-Max Mustermann ETF
-              -10,96
-30.11.2021 Lastschrift
+29.11.2021 Lohn, Gehalt, Rente             3.499,31
+  ZF FRIEDRICHSHAFEN A Lohn/Gehalt 99999999/202111
+30.11.2021 Überweisung online            -1.000,00
+max max DATUM 30.11.2021, 17.24 UHR
+f1fd88a43-4759718-16500185-20211130
+30.11.2021 Dauerauftrag              -600,00
+max max ETF
+30.11.2021 Lastschrift               -10,96
 PAYPAL (EUROPE) S.A.R.L ET CIE,S.C. . eBay S.a r.l., Ihr
-Einkauf bei eB ay S.a r.l. 10111111238 PAYPAL
+Einkauf bei eB ay S.a r.l. 1017045769238 PAYPAL
 4CU2224VNSRPG Gläubiger-ID:
 LU96ZZZ0000000000000000058
-               -5,10
-30.11.2021 Entgeltabrechnung / Wert: 01.12.2021
+30.11.2021 Entgeltabrechnung / Wert: 01.12.2021                -5,10
 siehe Anlage Nr. 1
-            2.398,86
- Kontostand am 30.11.2021 um 20:02 Uhr
+ Kontostand am 30.11.2021 um 20:02 Uhr             2.398,86
 Der Kontostand kann Beträge mit späterer Wertstellung enthalten, bitte Hinweise zum Kontoauszug beachten.
-1
-Anzahl Anlagen
-2.000,00
-Ihr Kreditlimit EUR:
+Anzahl Anlagen 1
+Ihr Kreditlimit EUR: 2.000,00
 Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
 Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
 97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
 Sparkassen-Finanzgruppe
-Sparkasse
-S
+S Sparkasse
 Schweinfurt-Haßberge
 Kontoauszug 20/2021 Seite 3 von 3
-S-Giro Smart 111111111, DE34 1111 0101 0111 1111 11,  Max Mustermann
+S-Giro Smart 190999999, DE34 7935 0101 0190 9999 99,  max max
 Entgeltabschluss: Anlage     1
 Entgelte vom 30.10.2021 bis 30.11.2021                               5,10-
 Grundpreis (Kontoführung)                              4,00-

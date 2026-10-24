@@ -1,0 +1,32 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.5
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 1234567 - TRADING
+IBAN: xx000000000000000000
+Luxemburg, 05.12.2025
+Börsentransaktion: Kauf Unsere Referenz: 987654321 
+Gemäss Ihrem Kaufauftrag vom 05.12.2025 haben wir folgende Transaktionen vorgenommen:
+Titel Börse
+GLOBAL X NASDAQ 100 COVERED CALL ETF ISIN: IE00BM8R0J59 XETR
+Auftragsart Zeit Anzahl Preis Betrag
+Limit 16:38:31 700 14.16 EUR 9'912.00
+Total EUR 9'912.00
+Our commission EUR 14.95
+Zu Ihren Lasten EUR 9'926.95
+Betrag belastet auf Kontonummer  123456789, Valutadatum 09.12.2025
+MIFID-Klassifizierung: Aufgrund der uns vorliegenden Informationen wurden Sie als Privatkunde eingestuft. Falls
+Sie Fragen zu dieser Einstufung haben sollten, können Sie gerne den Kundenservice kontaktieren.
+Dieser Transaktionsbeleg sowie die aufgeführte Transaktion unterliegen unseren Allgemeinen Geschäftsbedingungen.
+Die Angabe einer Börse oder eines anderen Ausführungsplatzes wird nur zu Informationszwecken angegeben und bedeutet nicht, dass Ihr Auftrag
+dort ausgeführt wurde. In bestimmten Fällen kann Ihr Auftrag an einem anderen als dem oben genannten Ausführungsplatz ausgeführt worden
+sein oder ein Intermediär (zum Beispiel ein Wertpapierhaus oder ein Liquiditätsgeber) kann als Gegenpartei für Ihren Auftrag fungiert haben. Bitte
+setzen Sie sich mit uns in Verbindung, wenn Sie weitere Informationen dazu benötigen. 
+Weitere Informationen zur Ausführung erhalten Sie auf Anfrage.
+Vielen Dank für Ihren Auftrag.
+Swissquote Bank Europe SA,  Formular ohne Unterschrift | SE&O.
+2 Rue Edward Steichen, 2958 Luxemburg
+T: +352 2603 2003
+MwSt n° LU18538486 
+

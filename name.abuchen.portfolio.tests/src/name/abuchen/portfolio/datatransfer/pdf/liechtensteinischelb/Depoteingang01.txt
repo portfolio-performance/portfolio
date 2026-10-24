@@ -1,0 +1,34 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.87.1.202609180847
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Liechtensteinische
+Landesbank AG
+Städtle 44 · Postfach 384
+9490 Vaduz · Liechtenstein
+Telefon +423 236 88 11
+Fax +423 236 88 22
+Sitz Vaduz
+Registerbehörde: AJU
+HR FL-0001.000.289-1
+Herr oder Frau 
+Ohkp oder kmnhYwh EtRjcTfI iaIW ygXLG
+FzMSdDhyrGxe 26 Referenz Zpd / dpr
+Direktwahl +027 382 82 69
+1285 sZN 
+Direktfax +905 236 57 04
+Vaduz, 8. November 2022
+Portfolionummer 1111.2222.3333
+LLB Consult ESG
+Depoteingang
+Auftragsnummer 556171599
+Wir haben Ihrem Depot folgende Werte beigefügt:
+Reg Shs Naspers Ltd -N-
+Anzahl / Nominal 50 Stück
+ISIN ZAE000015889
+Valorennummer 104977
+Währung ZAR
+Abschlussdatum 04.11.2022
+Valutadatum 08.11.2022
+Elektronisch zugestellt
+SETTLE 43 35254320 74485-345220953-745278154 EBANKING

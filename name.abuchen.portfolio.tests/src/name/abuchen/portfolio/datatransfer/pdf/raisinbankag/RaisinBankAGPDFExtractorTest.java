@@ -294,4 +294,38 @@ public class RaisinBankAGPDFExtractorTest
                         hasAmount("EUR", 13.47), hasGrossValue("EUR", 13.47), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
+
+    @Test
+    public void testVorabpauschale02()
+    {
+        var extractor = new RaisinBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BKX55R35"), hasWkn(null), hasTicker(null), //
+                        hasName("Vanguard FTSE N.America U.ETF Registered Shares USD Dis.oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2026-01-02T00:00"), hasShares(77.20617), //
+                        hasSource("Vorabpauschale02.txt"), //
+                        hasNote("Dokument ID: ca4ae61c-9c5c-4b5e-9893-5cvv488ds844"), //
+                        hasAmount("EUR", 11.65), hasGrossValue("EUR", 11.65), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
 }

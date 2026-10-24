@@ -1,0 +1,29 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Sutor Bank
+Hermannstr. 46
+20095 Hamburg
+Hamburg, 20.01.2026
+Herrn Max Mustermann
+Musterstr. 1
+12345 Musterstadt
+Name des Kunden: Max Mustermann
+Depotnummer: 123456789
+Steuerausgleich nach §43a EstG
+Kapitalertragsteuer: €8,20
+Solidaritätszuschlag: €0,45
+Kirchensteuer (0,00%): €0,00
+Ausmachender Betrag: €8,65
+Valutatag Datum: 19.01.2026
+Der Gegenwert der Transaktion wird per Valutatag gebucht. Dieses Dokument wurde
+maschinell erstellt und wird nicht unterschrieben.
+Hinweise zur steuerlichen Verrechnung Vorher Aktuell
+Aktienverlusttopf: €0,00 €0,00
+Verlusttopf Sonstige: €32,83 €0,00
+Freistellungsauftrag: €0,00 €0,00
+Quellensteuertopf: €0,00 €0,00
+SUTOR BANK GMBH TELEFON 040-82223163 SERVICEZEITEN AMTSGERICHT HAMBURG HRB 178357
+HERMANNSTRASSE 46 FAX 040-80801319 MONTAG-DONNERSTAG 08:30-17:00 UHR UST-IDNR. DE155617009
+20095 HAMBURG E-MAIL INFO@SUTORBANK.DE FREITAG 08:30-16:00 UHR BIC MHSBDEHBXXX

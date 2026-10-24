@@ -1,0 +1,71 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.78.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+$FORM=D5012,01,700000004104276791,0,0001,FD501200.PUBXL,01591,02.04.2020,STDDEP,LU0187079347,5050,5050000000094197,J,100001,
+Es betreut Sie:
+FondsKonzept Investmentmakler GmbH
+Ulmer Str. 6
+89257 Illertissen
+ServiceCenter:
+Telefon: +49 9281 7258-3000
+Telefax: +49 9281 7258-46118
+E-Mail: info@fondsdepotbank.de
+Frau Servicezeiten:
+VlhgG fSOYg Mo. - Fr.: 8 Uhr bis 20 Uhr
+Alleestr. 426d Datum: Hof, 02. April 2020
+92059 ljwrK
+Depotabrechnung Auszug Nr. 1 Seite 1/2
+Fondsdepot Nr. 1613915307
+Depotinhaber/-in: gzDVd kpSdS
+Fondsbezeichnung: Robeco GlobConsTrend D EUR
+ISIN/WKN: LU0187079347/A0CA0W Ertragsverwendung: thesaurierend
+Verwahrart/Lagerort: Wertpapierrechnung/Luxemburg
+Fondsklasse/Teilfreistellung: Aktienfonds/30%
+Transaktion Abrechnungsbetrag Wertermittlungstag Preis je Anteil Abgerechnete Anteile
+Währungsbetrag Bestand alt
+Devisenkurs Bestand neu
+Gebührenverkauf 45,83 EUR 01.04.2020 228,2300 EUR -0,201
+0,234
+0,033
+Abrechnungsbetrag 45,83 EUR
+Kapitalertragsteuer -0,00 EUR
+Solidaritätszuschlag -0,00 EUR
+ant. Depotführungsentgelt lfd. Jahr inkl. 19% USt. -45,83 EUR
+Verbleibende Gutschrift 0,00 EUR
+Konto- und Depotabrechnungen, Depot- und Erträgnisaufstellungen, sonstige Auszüge und Anzeigen über die Ausführung von Aufträgen sind
+auf ihre Richtigkeit und Vollständigkeit unverzüglich zu überprüfen. Etwaige Einwendungen sind unverzüglich geltend zu machen. Die Unter-
+lassung rechtzeitiger Einwendungen gilt als Genehmigung. Die vorstehenden girosammelverwahrten/gegen Wertpapierrechnung verwahrten
+Anteile oder Aktien an Investmentvermögen haben wir Ihrem Depot bei Kauf gutgeschrieben/bei Verkauf belastet.
+Dieses Schreiben wurde maschinell erstellt und ist ohne Unterschrift gültig.
+Fondsdepot Bank GmbH Telefon: +49 9281 7258-3000 Geschäftsführung:
+Postanschrift: Telefax: +49 9281 7258-46118
+95025 Hof info@fondsdepotbank.de Sebastian Henrichs
+Hausanschrift: www.fondsdepotbank.de Sabine Dittmann-Stenger
+Windmühlenweg 12 Sitz: Hof/Saale
+95030 Hof Handelsregister: HRB 2018, Amtsgericht Hof USt - IdNr. DE 231 265 246
+$FORM=D5012,01,700000004104276791,0,0002,FD501200.PUBXL,01591,02.04.2020,STDDEP,LU0187079347,5050,5050000000094197,J,100001,
+Hof, 02. April 2020
+Depotabrechnung Auszug Nr. 1 Seite 2/2
+Fondsdepot Nr. 2616940596
+Depotinhaber/-in: gdsmA srXfW
+Fondsbezeichnung: Robeco GlobConsTrend D EUR
+ISIN/WKN: LU0187079347/A0CA0W Ertragsverwendung: thesaurierend
+Verwahrart/Lagerort: Wertpapierrechnung/Luxemburg
+Fondsklasse/Teilfreistellung: Aktienfonds/30%
+Veräußerungsgewinn/-verlust gem. §19 InvStG brutto 2,92 EUR
+davon Gewinne/Verluste aus Anteilen mit Erwerb vor 2009 brutto 0,00 EUR
+abzüglich Teilfreistellung gem. § 20 InvStG 0,88 EUR
+Bemessungsgrundlage netto 2,04 EUR
+Gesamtbemessungsgrundlage 2,04 EUR
+abzüglich Verlustverrechnungstopf 0,00 EUR
+abzüglich Freistellungsauftrag 2,04 EUR
+Bemessungsgrundlage für Steuerabzug 0,00 EUR
+Hinterlegter Freistellungsauftrag 500,00 EUR Verfügbarer Freistellungsauftrag 500,00 EUR
+Verrechneter Freistellungsauftrag 2,04 EUR Verbleibender Freistellungsauftrag 497,96 EUR
+Verfügbarer Verlustverrechnungstopf 0,00 EUR Verbleibender Verlustverrechnungstopf 0,00 EUR
+Konto- und Depotabrechnungen, Depot- und Erträgnisaufstellungen, sonstige Auszüge und Anzeigen über die Ausführung von Aufträgen sind
+auf ihre Richtigkeit und Vollständigkeit unverzüglich zu überprüfen. Etwaige Einwendungen sind unverzüglich geltend zu machen. Die Unter-
+lassung rechtzeitiger Einwendungen gilt als Genehmigung. Die vorstehenden girosammelverwahrten/gegen Wertpapierrechnung verwahrten
+Anteile oder Aktien an Investmentvermögen haben wir Ihrem Depot bei Kauf gutgeschrieben/bei Verkauf belastet.
+Dieses Schreiben wurde maschinell erstellt und ist ohne Unterschrift gültig.

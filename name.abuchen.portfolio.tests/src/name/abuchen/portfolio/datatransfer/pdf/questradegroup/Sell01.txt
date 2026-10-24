@@ -1,0 +1,77 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.85.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE CONFIRMATION REPORT
+Account #: 75336510 Dealer: Questrade, Inc. Type: TFSA
+Client: qbVQKf ppXFWij
+Order execution only account
+Summary
+Stocks and Options Canadian securities U.S. securities
+Purchase 0.00 0.00
+Sales 8,003.20 0.00
+Total gross 8,003.20 0.00
+Commission 0.00 0.00
+Sec fees 0.00 0.00
+Interest amount 0.00 0.00
+Total fees 0.00 0.00
+Total amount 8,003.20 0.00
+Canadian stocks and options - Account 4831017146
+Report generated on 04:36:07 PM 07.07.2026 TRADE CONFIRMATION REPORT 1 of 10
+TRADE CONFIRMATION REPORT
+Account #: 12698580 Dealer: Questrade, Inc. Type: TFSA
+Client: sPAOsc CZPIGEq
+Order execution only account
+Report generated on 04:36:07 PM 07.07.2026 TRADE CONFIRMATION REPORT 2 of 10
+TRADE CONFIRMATION REPORT
+Account #: 42937204 Dealer: Questrade, Inc. Type: TFSA
+Client: ILrqMF lHawuwb
+Order execution only account
+Settlement T Interest 
+Trade Date  Trade # Action Quantity Symbol B EX Price (CAD) Gross amount 
+(CAD) Comm (CAD) SEC fees 
+date (CAD) amount Net amount (CAD)
+(CAD)
+06-05-26 07-05-26 A3DB70 Sell 160 .CASH  A T 50.02 8,003.20 0.00 0.00 0.00 8,003.20
+      
+      
+  
+Description GLOBAL X HIGH INT SVGS ETF, CL A UNIT, AVG PRICE - ASK US FOR DETAILS 
+Totals 8,003.20 0.00 0.00 0.00 8,003.20
+Report generated on 04:36:07 PM 07.07.2026 TRADE CONFIRMATION REPORT 3 of 10
+TRADE CONFIRMATION REPORT
+Account #: 81502757 Dealer: Questrade, Inc. Type: TFSA
+Client: cqUvZY DxakGqS
+Order execution only account
+Report generated on 04:36:07 PM 07.07.2026 TRADE CONFIRMATION REPORT 4 of 10
+TRADE CONFIRMATION REPORT
+Account #: 13493824 Dealer: Questrade, Inc. Type: TFSA
+Client: roAGFD fPCMfty
+Order execution only account
+Report generated on 04:36:07 PM 07.07.2026 TRADE CONFIRMATION REPORT 5 of 10
+TRADE CONFIRMATION REPORT
+Account #: 97050283 Dealer: Questrade, Inc. Type: TFSA
+Client: WHzsdx QSCRRxY
+Order execution only account
+Report generated on 04:36:07 PM 07.07.2026 TRADE CONFIRMATION REPORT 6 of 10
+TRADE CONFIRMATION REPORT
+Account #: 11432886 Dealer: Questrade, Inc. Type: TFSA
+Client: ruGwbD rOKbmcl
+Order execution only account
+Report generated on 04:36:07 PM 07.07.2026 TRADE CONFIRMATION REPORT 7 of 10
+TRADE CONFIRMATION REPORT
+Account #: 08140307 Dealer: Questrade, Inc. Type: TFSA
+Client: fckjbg BRCgSwH
+Order execution only account
+Report generated on 04:36:07 PM 07.07.2026 TRADE CONFIRMATION REPORT 8 of 10
+TRADE CONFIRMATION REPORT
+Account #: 10606771 Dealer: Questrade, Inc. Type: TFSA
+Client: FizNUr ISckMjX
+Order execution only account
+Report generated on 04:36:07 PM 07.07.2026 TRADE CONFIRMATION REPORT 9 of 10
+TRADE CONFIRMATION REPORT
+Account #: 19813392 Dealer: Questrade, Inc. Type: TFSA
+Client: FQnFcJ GLCIjWJ
+Order execution only account
+Report generated on 04:36:07 PM 07.07.2026 TRADE CONFIRMATION REPORT 10 of 10
+

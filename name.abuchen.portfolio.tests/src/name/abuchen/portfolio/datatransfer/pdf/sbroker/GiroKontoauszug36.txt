@@ -1,45 +1,150 @@
-PDFBox Version: 1.8.17
-Portfolio Performance Version: 0.65.4
+```
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.74.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
 -----------------------------------------
-Sparkasse
-S
-Sparkasse Schweinfurt-Haßberge
-Schweinfurt-Haßberge
-Herrn
-Ihr Ansprechpartner:
-Max Mann
-Max Max
-Strasse 8
-Kundenberatung Ebern
-96250 Ebensfeld Marktplatz 3
-96106 Ebern
+SSpaSrkpaasrskea SsscheSchweinfuwrte-iHnafußrbt-eHragßeberge
+Herrn Ihr Ansprechpartner:
+max max max max
+strasse. 8 Kundenberatung stadt
+99999 stadt Marktplatz 3
+99999 stadt
 Telefon 09721 721-7783
 Fax 09521 58-775
-Max.Max@sparkasse-sw-has.de
+max.max@sparkasse-sw-has.de
 1. August 2023
 Kontoauszug 7/2023 Seite 1 von 6
-Giro Plus 999999999, DE78 9999 0101 0999 9999 99 
-  
+G  iro Plus 190999999, DE78 7935 0101 0190 9999 99 
 Datum Erläuterung Betrag Soll EUR Betrag Haben EUR
-            999,00
-Kontostand am 30.06.2023, Auszug Nr.    6
-           -888,00
-27.07.2023 Bargeldauszahlung
-             -3333,00
-28.07.2023 Überweisung online
-Autohaus Max Renr. 2230512 DATUM 28.07.2023, 
-  
+Kontostand am 30.06.2023, Auszug Nr.    6             2.921,12
+03.07.2023 Dauerauftrag              -455,00
+max max Miete und Strom max und max
+03.07.2023 Dauerauftrag              -300,00
+max max Einzahlung Depot
+03.07.2023 Kartenzahlung               -45,90
+DANKE 13525 E ROTHER//stadt/DE 2023-07-01T16:54 
+Debitk.2 2026-12
+03.07.2023 Lastschrift               -43,00
+Katholische Kindertagesstaette St. Kindergartenbeitrag 
+07-2023 fuer ma nger max K59999-2023 
+KigaSt.Max-377 Gläubiger-ID: DE38ZZZ00000630464
+03.07.2023 Dauerauftrag               -25,00
+max max Taschengeld
+03.07.2023 GutschriftÜberweisung               242,49
+max max Handyvertrag, max Taschengeld, S trom 
+und Miete
+04.07.2023 GutschriftÜberweisung                15,00
+PayPal Europe S.a.r.l. et Cie S.C.A PP.4548.PP ABBUCHUNG 
+VOM PAYPAL-KON TO AWV-MELDEPFLICHT BEACHTEN 
+HOTLINE BUNDESBANK: (0800) 1234-111 
+YYW1027988469796
+06.07.2023 Lastschrift            -1.372,04
+Spk Schweinfurt-Haßberge KREDITKARTENABRECHNUNG 
+VISA-ABR. 49 0762XXXXXX0999 
+AD08-D-2023-07-05-21.48.12.796747
+06.07.2023 Lastschrift                -6,01
+TESSOL KRAFTSTOFFE, MINERALOELE RE 37213036 
+V.30.06.23 EUR 6,01 ./. SK 0,00 37213036 1219462-01 
+Gläubiger-ID: DE71ZZZ00000020225
+07.07.2023 GutschriftÜberweisung                74,59
+PayPal Europe S.a.r.l. et Cie S.C.A PP.4548.PP ABBUCHUNG 
+VOM PAYPAL-KON TO AWV-MELDEPFLICHT BEACHTEN 
+HOTLINE BUNDESBANK: (0800) 1234-111 
+YYW1028045665872
+Übertrag:             1.006,25
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+S Sparkasse
+Schweinfurt-Haßberge
+Kontoauszug 7/2023 Seite 2 von 6
+Giro Plus 190999999, DE78 7935 0101 0190 9999 99,  max max
+Datum Erläuterung Betrag Soll EUR Betrag Haben EUR
+Übertrag:             1.006,25
+10.07.2023 Dauerauftrag               -42,00
+max max Bausparbeitrag 809929999
+10.07.2023 Kartenzahlung               -30,52
+Autohaus Hennig Fil. stadt//stadt/D E 2023-07-07T14:46 
+Debitk.2 2026-12
+13.07.2023 Überweisung online            -4.833,87
+max max DATUM 13.07.2023, 18.53 UHR 
+f9266e5d8-6819531-18524484-20230713
+13.07.2023 GutschriftÜberweisung             2.028,01
+Autohaus max e.K. Inhaber max S Autohaus Bmax 
+Schauer Gehalt Juni 23
+13.07.2023Wertpapierabrechnung / Wert: 14.07.2023             4.833,87
+  DekaBank Deutsche Girozentrale Verkauf AT 12.07.2023 St 
+13,660 zu 376,860000EUR Steuer 314,04 Deka-Na 
+chhaltigkeit Gesundheit TF Depot 9999999999 
+LU0348413815 00
+14.07.2023 Lastschrift               -52,97
+Telefonica Germany GmbH + Co. OHG Kd-Nr.: 9999999999, 
+Rg-Nr.: 1773314 522/7, Ihre Tarifrechnung 
+3403847704900001773314522007RCUR 
+T0010001B000009999999999 Gläubiger-ID: 
+DE9700000000142462
+17.07.2023 Überweisung online            -2.000,00
+max, max Rückzahlung DATUM 13.07.2023, 22.34 
+UHR
+17.07.2023 GutschriftÜberweisung                15,00
+Vladimir max Bekannt
+17.07.2023Wertpapierabrechnung / Wert: 18.07.2023             4.001,66
+DekaBank Deutsche Girozentrale Verkauf AT 14.07.2023 St 
+30,156 zu 134,930000EUR Steuer 67,29 Deka-Eur 
+opaPotential TF Depot 9999999999 DE0009786285 00
+17.07.2023Wertpapierabrechnung / Wert: 18.07.2023             5.100,11
+DekaBank Deutsche Girozentrale Verkauf AT 14.07.2023 St 
+6,492 zu 8 10,710000EUR Steuer 163,02 DekaLuxT 
+eam-Aktien Asien Depot 9999999999 LU0052859252 00
+20.07.2023 Lastschrift               -99,04
+PSA Bank Deutschland GmbH REF. 
+0004139911/0079506393, RATE 20 /07/23, VERTRAG 
+9371064041, WWW.PSA -BANK-DEUTSCHLAND.DE 
+9371064041.28 PEUGEOT BANK DE000488636400000 
+Gläubiger-ID: DE84PBD00009999951
+21.07.2023 GutschriftÜberweisung               450,34
+PayPal Europe S.a.r.l. et Cie S.C.A PP.4548.PP ABBUCHUNG 
+VOM PAYPAL-KON TO AWV-MELDEPFLICHT BEACHTEN 
+HOTLINE BUNDESBANK: (0800) 1234-111 
+YYW1028313963944
+24.07.2023 Überweisung online               -50,00
+eBay Kleinanzeigen GmbH 3SKAGD9 tra cb3841273837 Re 
+tro Led ermantel, Motorradma DATUM 22.07.2023, 14.24 
+UHR
+Übertrag:            10.326,84
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+S Sparkasse
+Schweinfurt-Haßberge
+Kontoauszug 7/2023 Seite 3 von 6
+Giro Plus 190999999, DE78 7935 0101 0190 9999 99,  max max
+Datum Erläuterung Betrag Soll EUR Betrag Haben EUR
+Übertrag:            10.326,84
+26.07.2023 Lastschrift               -13,00
+Bundeskasse in Weiden Kfz-Steuer fuer LIF R 21 fuer die Z 
+eit vom 13.06.2023 bis zum 30.09.20 23 Kassenzeichen 
+K12255817066 K12255817066/000002/23ZVS06E 
+KFZFK1225581706619062023 Gläubiger-ID: 
+DE09ZZZ00000000001
+26.07.2023 GutschriftÜberweisung                50,00
+Ute Gottier Handschuhe
+26.07.2023 GutschriftÜberweisung                70,00
+MICHAEL KIEFER Original Ducati Motorradstiefel Gr. 44 
+powered by TCX Anzeigen-ID 2499 434034
+27.07.2023 Bargeldauszahlung            -9.000,00
+28.07.2023 Überweisung online              -151,32
+  Autohaus Hennig Renr. 2230512 DATUM 28.07.2023, 
 14.21 UHR
-               -777,00
-31.07.2023 Entgeltabrechnung / Wert: 01.08.2023
+31.07.2023 Entgeltabrechnung / Wert: 01.08.2023                -8,50
 siehe Anlage Nr. 1
-               -3,50
-31.07.2023 Lastschrift
-LOTTO24 via Adyen LOTTO24 C99999853 T102292133707 
-CKG6TTPLFN6WH3HC2C MJBDM299999NQPB2 
-Gläubiger-ID: NL48ZZZ342764500000
-            999,52
-Kontostand am 31.07.2023 um 20:02 Uhr
+31.07.2023 Lastschrift                -3,50
+LOTTO24 via Adyen LOTTO24 C95558853 T102292133707 
+CKG6TTPLFN6WH3HC2C MJBDM2396Z2NQPB2 
+Gläubiger-ID: NL48ZZZ342999900000
+Kontostand am 31.07.2023 um 20:02 Uhr             1.270,52
 Der Kontostand kann Beträge mit späterer Wertstellung enthalten, bitte Hinweise zum Kontoauszug beachten.
 Anzahl Anlagen 1
 Kundenmitteilungen:
@@ -66,11 +171,10 @@ Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/7
 Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
 97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
 Sparkassen-Finanzgruppe
-Sparkasse
-S
+S Sparkasse
 Schweinfurt-Haßberge
 Kontoauszug 7/2023 Seite 4 von 6
-Giro Plus 999999999, DE78 9999 0101 0999 9999 99,  Max Mann
+Giro Plus 190999999, DE78 7935 0101 0190 9999 99,  max max
 Falls Sie ein Gemein-      Die Obergrenze von 100.000 EUR gilt für
 schaftskonto mit einer     jeden einzelnen Einleger (3)
 oder mehreren anderen
@@ -81,9 +185,7 @@ Währung der Erstattung:    Euro (EUR)
 Kontaktdaten:              Sicherungssystem der Sparkassen-Finanzgruppe
                            Deutscher Sparkassen- und Giroverband e. V.
                            Adresse:   Charlottenstraße 47
-                                      10117 Berlin
-  
-                           Telefon:   +49 30 20225-3838
+                                        10117 Berlin                           Telefon:   +49 30 20225-3838
                            E-Mail:    sicherungssystem(at)dsgv.de
 Weitere Informationen:     http://www.dsgv.de/sicherungssystem
 Zusätzliche Informationen:
@@ -119,11 +221,10 @@ Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/7
 Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
 97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
 Sparkassen-Finanzgruppe
-Sparkasse
-S
+S Sparkasse
 Schweinfurt-Haßberge
 Kontoauszug 7/2023 Seite 5 von 6
-Giro Plus 999999999, DE78 9999 0101 0999 9999 99,  Max Mann
+Giro Plus 190999999, DE78 7935 0101 0190 9999 99,  max max
 Telefon:  +49 30 20225-3838
 E-Mail:   sicherungssystem(at)dsgv.de
 Website:  http://www.dsgv.de/sicherungssystem
@@ -135,9 +236,7 @@ zeitraum für Erstattungsforderungen nach einer bestimmten Frist abgelaufen
 sein kann. Weitere Informationen sind erhältlich über:
 http://www.dsgv.de/sicherungssystem
 Weitere wichtige Informationen: Einlagen von Privatkunden und Unternehmen
-sind im Allgemeinen durch Einlagensicherungssysteme gedeckt. Für bestimmte
-  
-Einlagen geltende Ausnahmen werden auf der Website des zuständigen
+s  ind im Allgemeinen durch Einlagensicherungssysteme gedeckt. Für bestimmteEinlagen geltende Ausnahmen werden auf der Website des zuständigen
 Einlagensicherungssystems mitgeteilt. Ihr Kreditinstitut wird Sie auf
 Anfrage auch darüber informieren, ob bestimmte Produkte gedeckt sind oder
 nicht. Wenn Einlagen entschädigungsfähig sind, wird das Kreditinstitut dies
@@ -146,11 +245,10 @@ Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/7
 Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
 97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
 Sparkassen-Finanzgruppe
-Sparkasse
-S
+S Sparkasse
 Schweinfurt-Haßberge
 Kontoauszug 7/2023 Seite 6 von 6
-Giro Plus 999999999, DE78 9999 0101 0999 9999 99,  Max Mann
+Giro Plus 190999999, DE78 7935 0101 0190 9999 99,  max max
 Entgeltabschluss: Anlage     1
 Entgelte vom 01.07.2023 bis 31.07.2023                               8,50-
 Grundpreis (Kontoführung)                              8,50-
@@ -158,8 +256,7 @@ Grundpreis (Kontoführung)                              8,50-
 Abrechnung 31.07.2023                                                8,50-
 Es handelt sich hierbei um eine umsatzsteuerfreie Leistung.
 Rechnungsnummer: 20230731-BY044-00018053888
-Bitte beachten Sie die Hinweise zum Kontoauszug.
-  
+  Bitte beachten Sie die Hinweise zum Kontoauszug.
 Hinweise zum Kontoauszug:
 l Einwendungen gegen den Kontoauszug teilen Sie uns bitte unverzüglich mit.
 l Rechnungsabschlüsse gelten als genehmigt, sofern Sie innerhalb von sechs Wochen nach Zugang keine Einwendungen erheben. 
@@ -179,3 +276,5 @@ Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/7
 Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
 97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
 Sparkassen-Finanzgruppe
+
+```
