@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Declares a command once: its parsing, dispatch and its description all
+ * Declares a command once: its parsing, dispatch and its help all
  * derive from this record. The data and meta schemas describe the two
  * variable parts of the response envelope; the warnings are every code the
  * command can emit. A command that declares table columns also accepts

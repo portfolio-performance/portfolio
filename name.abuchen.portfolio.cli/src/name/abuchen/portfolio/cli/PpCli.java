@@ -37,9 +37,11 @@ public final class PpCli
     /**
      * Runs one command. Stdout receives exactly one JSON document, either the
      * response envelope or a problem+json error, unless <code>--format
-     * table</code> asks for a table of a successful list; everything else,
-     * including core's own log output, goes to stderr. Core's INFO and OK status
-     * lines are left out unless <code>--verbose</code> is given.
+     * table</code> asks for a table of a successful list, or <code>--help</code>
+     * (or no command at all) asks for plain-text help, which needs no client
+     * file; everything else, including core's own log output, goes to stderr.
+     * Core's INFO and OK status lines are left out unless <code>--verbose</code>
+     * is given.
      *
      * @return the process exit code: 0 on success, 2 for usage errors, 1 for
      *         other failures
@@ -63,6 +65,14 @@ public final class PpCli
         System.setErr(stderr);
         try
         {
+            var help = HelpText.render(Arrays.asList(args));
+            if (help.isPresent())
+            {
+                stdout.print(help.get());
+                stdout.flush();
+                return 0;
+            }
+
             var parsed = ArgumentParser.parse(Arrays.asList(args));
             if (!parsed.options().containsKey(OptionSpec.VERBOSE.name()))
             {

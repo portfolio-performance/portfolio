@@ -43,8 +43,8 @@ install replaces them whatever they are, and uninstall removes them (the symlink
 
 ## Matching the desktop release
 
-The CLI's core is built from the pinned upstream tag reported by `pp-cli info` and `pp-cli describe`
-(`pinnedUpstreamTag`, [CoreVersion](../src/name/abuchen/portfolio/cli/CoreVersion.java)). **Keep it equal to the installed
+The CLI's core is built from the pinned upstream tag reported by `pp-cli info` and the global
+`pp-cli --help` (`pinnedUpstreamTag`, [CoreVersion](../src/name/abuchen/portfolio/cli/CoreVersion.java)). **Keep it equal to the installed
 desktop release.**
 
 - A CLI core older than the desktop app refuses the files the app saved (`file-version-unsupported`).
@@ -101,7 +101,7 @@ and Claude Code shells started from them, inherit its environment), then check i
 | cmd | `where pp-cli` | `...\pp-cli\pp-cli.cmd` |
 | Git Bash | `command -v pp-cli` | `.../pp-cli/pp-cli` (a shim that forwards to `pp-cli.cmd`) |
 
-Then `pp-cli describe` should print JSON.
+Then `pp-cli --help` should print the usage text.
 
 Launching `pp-cli.cmd` rather than a `.ps1` keeps PowerShell's execution policy out of the way. In cmd, the
 working directory is searched before `PATH`, so do not keep another `pp-cli.cmd` in it. A literal `%` in an
@@ -116,7 +116,7 @@ powershell -ExecutionPolicy Bypass -File "$env:LOCALAPPDATA\pp-cli\smoke-check.p
 ```
 
 It verifies the installed bundle (bundled runtime, AppCDS archive, no pdfbox, the one SWT fragment, install
-directory on the user `PATH`) and runs `pp-cli info` and `pp-cli describe` against the bundled sample file from fresh
+directory on the user `PATH`) and runs `pp-cli info` against the bundled sample file and `pp-cli --help` from fresh
 PowerShell, cmd and Git Bash processes. They get the `PATH` stored in the registry, not that of the calling
 process, and no `JAVA_HOME` or other Java on `PATH`. It also checks the agent skill: the canonical copy exists with
 `SKILL.md` named `pp-cli`, and `~\.claude\skills\pp-cli` is a link that resolves to it. It exits with 1 if anything
@@ -206,7 +206,7 @@ Agent shells run `zsh -c` (non-interactive: reads `~/.zshenv`) or `zsh -lc` (log
 | --- | --- | --- |
 | VS Code terminal, Copilot agent shell, Claude Code | `command -v pp-cli` | `/opt/homebrew/bin/pp-cli`, or `~/.pp-cli/pp-cli` without Homebrew |
 
-Then `pp-cli describe` should print JSON. The smoke check below does this from fresh shells for you.
+Then `pp-cli --help` should print the usage text. The smoke check below does this from fresh shells for you.
 
 ### Smoke check
 
@@ -217,7 +217,7 @@ A release-time check, not part of the Maven tests:
 ```
 
 It verifies the installed bundle (bundled arm64 runtime, AppCDS archive, no pdfbox, the one SWT fragment) and
-runs `pp-cli info` and `pp-cli describe` against the bundled sample file from fresh `zsh -c` and `zsh -lc`
+runs `pp-cli info` against the bundled sample file and `pp-cli --help` from fresh `zsh -c` and `zsh -lc`
 processes, as an agent shell starts them. They get an empty environment with only a minimal `PATH` (plus
 `/opt/homebrew/bin` when `pp-cli` is linked there) and no `JAVA_HOME`, and `pp-cli` must resolve to the
 expected path. It also checks the agent skill: the canonical copy exists with `SKILL.md` named `pp-cli`, and

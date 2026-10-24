@@ -2,7 +2,7 @@ package name.abuchen.portfolio.cli;
 
 import name.abuchen.portfolio.model.Client;
 
-/** What core the CLI is built from, as reported by <code>info</code> and <code>describe</code>. */
+/** What core the CLI is built from, as reported by <code>info</code> and the global <code>--help</code>. */
 final class CoreVersion
 {
     /**

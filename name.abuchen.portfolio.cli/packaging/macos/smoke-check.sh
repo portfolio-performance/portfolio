@@ -2,7 +2,7 @@
 # Release-time smoke check of the installed pp-cli on macOS arm64.
 #
 # Checks the installed bundle (own runtime, AppCDS archive, no pdfbox, the cocoa macosx aarch64
-# SWT fragment) and runs `pp-cli info` and `pp-cli describe` against a sample file from fresh
+# SWT fragment) and runs `pp-cli info` against a sample file and `pp-cli --help` from fresh
 # non-interactive zsh processes, as an agent shell starts them: `zsh -c` (reads ~/.zshenv) and
 # `zsh -lc` (also reads ~/.zprofile). A fresh shell gets an empty environment with a minimal PATH
 # (plus the link directory when pp-cli is symlinked into it) and no JAVA_HOME, so the check
@@ -97,7 +97,7 @@ runtime_is_arm64() {
 # -Xshare:on fails instead of silently ignoring an archive the JVM rejects (the launcher falls back quietly)
 archive_is_used() {
     "$install_dir/runtime/bin/java" "-XX:SharedArchiveFile=$install_dir/pp-cli.jsa" -Xshare:on -Xlog:disable \
-        -cp "$install_dir/lib/*" name.abuchen.portfolio.cli.PpCli describe
+        -cp "$install_dir/lib/*" name.abuchen.portfolio.cli.PpCli --help
 }
 
 # The path the shell is expected to resolve pp-cli to: the Homebrew link when install.sh made one
@@ -157,6 +157,24 @@ json_check() {
     fi
 }
 
+# the help is plain text: succeed and mention every needle
+text_check() {
+    description=$1
+    shift
+    valid=true
+    [ "$exit_code" -eq 0 ] || valid=false
+    for needle in "$@"; do
+        grep -qF -- "$needle" "$out/stdout" || valid=false
+    done
+    if [ "$valid" = true ]; then
+        echo "  ok    $description"
+    else
+        echo "  FAIL  $description"
+        echo "        exit code $exit_code; stdout: $(head -c 600 "$out/stdout"); stderr: $(head -c 600 "$out/stderr")"
+        failures=$((failures + 1))
+    fi
+}
+
 for flag in -c -lc; do
     shell="zsh $flag"
     echo "Fresh $shell"
@@ -173,8 +191,8 @@ for flag in -c -lc; do
     fresh "$flag" 'pp-cli info --file "$1"' pp-cli-smoke "$sample_file"
     json_check "$shell: pp-cli info" data.counts data.pinnedUpstreamTag data.format warnings
 
-    fresh "$flag" 'pp-cli describe'
-    json_check "$shell: pp-cli describe" data.commands data.pinnedUpstreamTag data.limits warnings
+    fresh "$flag" 'pp-cli --help'
+    text_check "$shell: pp-cli --help" Commands: Limits Exit
 done
 
 if [ "$failures" -gt 0 ]; then

@@ -113,12 +113,13 @@ public class QuietLoggingTest
     }
 
     @Test
-    public void verboseIsAcceptedByCommandsWithoutAClientFile()
+    public void verboseDoesNotDisturbHelp()
     {
-        var run = CliRun.run("describe", "--verbose");
+        var run = CliRun.run("info", "--verbose", "--help");
 
         assertThat(run.exitCode, is(0));
-        assertSingleJsonDocument(run);
+        assertThat(run.stdout.startsWith("pp-cli info"), is(true));
+        assertThat(run.stderr, is(""));
     }
 
     @Test

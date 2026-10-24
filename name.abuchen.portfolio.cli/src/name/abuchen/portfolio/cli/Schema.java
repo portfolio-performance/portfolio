@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * A small JSON Schema subset (type, properties, required, items, enum,
  * nullable, multi-type values, open enum) used to declare response shapes and write-operation inputs. The
- * same declaration is rendered by <code>describe</code> and checked against
+ * same declaration is rendered by <code>--help</code> and checked against
  * real output by the consistency test.
  */
 final class Schema
@@ -117,6 +117,62 @@ final class Schema
     {
         this.nullable = true;
         return this;
+    }
+
+    /** The description of the value itself, or null if there is none. */
+    String description()
+    {
+        return description;
+    }
+
+    /**
+     * Plain-text help for the members of this object, one line per member
+     * (<code>name (type, facts) description</code>) with nested members
+     * indented below it.
+     */
+    List<String> helpLines(int indent)
+    {
+        var lines = new ArrayList<String>();
+        for (var entry : properties.entrySet())
+        {
+            var schema = entry.getValue();
+            var facts = new ArrayList<String>();
+            facts.add(schema.typeLabel());
+            if (schema.enumValues != null)
+                facts.add("one of " + String.join(", ", schema.enumValues));
+            if (schema.knownValues != null)
+                facts.add("e.g. " + String.join(", ", schema.knownValues));
+            if (!required.contains(entry.getKey()))
+                facts.add("optional");
+
+            var line = " ".repeat(indent) + entry.getKey() + " (" + String.join(", ", facts) + ")";
+            lines.add(schema.description != null ? line + " " + schema.description : line);
+            lines.addAll(schema.element().helpLines(indent + 2));
+        }
+        return lines;
+    }
+
+    /** The names of the members that are required or, if <code>required</code> is false, optional. */
+    List<String> memberNames(boolean required)
+    {
+        return properties.keySet().stream().filter(name -> this.required.contains(name) == required).toList();
+    }
+
+    private String typeLabel()
+    {
+        if (alternativeTypes != null)
+            return String.join(" or ", alternativeTypes);
+        if ("array".equals(type))
+            return "array of " + items.typeLabel();
+        if ("object".equals(type) && freeform)
+            return "object, any members";
+        return nullable ? type + " or null" : type;
+    }
+
+    /** The schema that carries the nested members: the item type of an array, else the schema itself. */
+    private Schema element()
+    {
+        return items != null ? items.element() : this;
     }
 
     Map<String, Object> toJson()

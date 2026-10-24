@@ -5,11 +5,11 @@ description: Read and edit a Portfolio Performance client file with the pp-cli t
 
 # pp-cli
 
-`pp-cli` reads and writes a Portfolio Performance client file. It is the single source of truth for two things: the figures, and its own interface. `pp-cli describe` lists every command, option, write operation with its input schema, response schema, warning code, error code and known limit. Look things up there; this skill holds only the workflow and the safety rules.
+`pp-cli` reads and writes a Portfolio Performance client file. It is the single source of truth for two things: the figures, and its own interface. `pp-cli --help` lists the commands, global options, error codes and known limits; `pp-cli <command> --help` gives one command's options, response fields, warning codes and error codes; `pp-cli apply --help <operation>` gives one write operation's input schema. Look things up there; this skill holds only the workflow and the safety rules.
 
 ## Session start
 
-1. Run `pp-cli describe` and keep its output as your reference for the session. If the shell can't find `pp-cli`, tell the user that it is built and installed by following `name.abuchen.portfolio.cli/packaging/README.md` and stop; building and installing it is the user's step, not yours.
+1. Run `pp-cli --help` and read it as your reference for the session; ask for a command's own help before you first use it. If the shell can't find `pp-cli`, tell the user that it is built and installed by following `name.abuchen.portfolio.cli/packaging/README.md` and stop; building and installing it is the user's step, not yours.
 2. Settle the client file: the path the user gave, or the `PP_FILE` environment variable if the user set it. Otherwise ask for the path; the user names the file, and you leave the disk unsearched. Pass it as `--file "<path>"` on every command, so each command names its file.
 3. Run `pp-cli info --file "<path>"` once. Mention its `pinnedUpstreamTag`: the CLI's core must match the user's desktop release, and a mismatch is reported to the user as it is. A `file-version-unsupported` refusal means the CLI is older than the file: report `fileVersion` and `maxSupportedVersion` and stop until the user updates the CLI.
 
@@ -27,7 +27,7 @@ On `password-required`, show the user both forms and wait. On `incorrect-passwor
 - **Figures** come from `pp-cli` responses. Quote them; valuations, IRR and TTWROR are the tool's to compute. If no command returns a figure, say so.
 - **Basis**: state what `meta` echoes for the figure: the period (`from`, `to`), the valuation `date`, the `currency` and the `costMethod`.
 - **Warnings**: pass on every entry of `warnings` (such as `stale-price` or `exchange-rate-missing`) with what it means for the answer.
-- **Limits**: anything under `limits` in `pp-cli describe` is out of reach. Say so plainly and offer what the tool can do.
+- **Limits**: anything under Limits in `pp-cli --help` is out of reach. Say so plainly and offer what the tool can do.
 - **Vocabulary**: Instrument (Security in the app), Investment account (Portfolio in the app), Cash account (Account in the app), Transaction record (one business event with all its sides, such as a buy with its investment-account and cash-account side).
 
 ## Shell
@@ -44,14 +44,14 @@ Before any `pp-cli apply` or `pp-cli restore`, read [write-protocol.md](write-pr
 
 ## Troubleshooting
 
-A failure is a problem+json document on stdout with a `code` and a non-zero exit code. Its `detail` and the `errors` list of `pp-cli describe` explain it.
+A failure is a problem+json document on stdout with a `code` and a non-zero exit code. Its `detail` and the error codes in `pp-cli <command> --help` explain it.
 
 | Code | Action |
 |---|---|
 | `file-required`, `file-not-found` | Ask the user for the client file's path. |
 | `file-version-unsupported` | Report it as in Session start and stop. |
 | `password-required`, `incorrect-password` | Follow Passwords. |
-| `unknown-command`, `unknown-option`, `invalid-option-value`, `option-required`, `conflicting-options` | Correct the call from `pp-cli describe`. |
+| `unknown-command`, `unknown-option`, `invalid-option-value`, `option-required`, `conflicting-options` | Correct the call from `pp-cli <command> --help`. |
 | `reference-ambiguous` | Show the user the candidates and ask which one is meant. |
 | `reference-not-found` | List the entities of that kind (such as `pp-cli instruments --file "<path>"`) and confirm the right one with the user. |
 | `validation-failed` | Explain each entry of `failures`, fix the batch with the user, and restart the write protocol. |
@@ -60,4 +60,4 @@ A failure is a problem+json document on stdout with a `code` and a non-zero exit
 | `file-locked` | Report the lock file from `detail`; the user decides whether another `pp-cli` is still running. |
 | `file-changed` | Read the file again and restart the write protocol from the dry run. |
 | `write-failed`, `internal-error` | Report `detail` to the user as it is. |
-| any other code | Report `detail` and the code's entry under `errors` in `pp-cli describe`, then wait for the user. |
+| any other code | Report `detail` and the code's entry in `pp-cli <command> --help`, then wait for the user. |

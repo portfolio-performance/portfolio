@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.cli;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 
@@ -19,6 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -29,12 +31,12 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 
 /**
- * Every declared command and operation must show up in <code>describe</code>,
- * and every real response must conform to the schema that <code>describe</code>
- * publishes for it. A later ticket that adds a command gets a failure here
+ * Every declared command and operation must be reachable through
+ * <code>--help</code>, and every real response must conform to the schema that
+ * is declared in code for it, and from which help is generated. A later ticket that adds a command gets a failure here
  * until it adds sample arguments and a correct schema.
  */
-public class DescribeConsistencyTest
+public class HelpConsistencyTest
 {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
@@ -45,7 +47,6 @@ public class DescribeConsistencyTest
         return switch (command)
         {
             case "info" -> List.of("info", "--file", sampleFile.toString());
-            case "describe" -> List.of("describe");
             case "instruments", "investment-accounts", "cash-accounts" ->
                 List.of(command, "--file", sampleFile.toString());
             case "prices" -> List.of("prices", "--file", sampleFile.toString(), "--instrument", instrument.getUUID());
@@ -62,34 +63,39 @@ public class DescribeConsistencyTest
             case "restore" -> List.of("restore", "--file", sampleFile.toString(), "--backup",
                             sampleFile.toString(), "--dry-run");
             default -> throw new AssertionError("Add sample arguments for command '" + command
-                            + "' to DescribeConsistencyTest.sampleArguments");
+                            + "' to HelpConsistencyTest.sampleArguments");
         };
     }
 
-    private JsonObject describe()
+    @Test
+    public void everyDeclaredCommandAndOperationIsReachableThroughHelp()
     {
-        var run = CliRun.run("describe");
-        assertThat(run.exitCode, is(0));
-        return run.json().getAsJsonObject().getAsJsonObject("data");
+        var global = CliRun.run("--help");
+        assertThat(global.exitCode, is(0));
+
+        for (var command : Commands.ALL)
+        {
+            assertThat(command.name(), global.stdout, containsString("  " + command.name() + " "));
+
+            var help = CliRun.run(command.name(), "--help");
+            assertThat(command.name(), help.exitCode, is(0));
+            assertThat(command.name(), help.stdout, containsString("pp-cli " + command.name()));
+        }
+
+        var apply = CliRun.run("apply", "--help");
+        for (var operation : Commands.OPERATIONS)
+        {
+            assertThat(operation.name(), apply.stdout, containsString("  " + operation.name() + " "));
+
+            var help = CliRun.run("apply", "--help", operation.name());
+            assertThat(operation.name(), help.exitCode, is(0));
+            assertThat(operation.name(), help.stdout, containsString(operation.name()));
+        }
     }
 
-    @Test
-    public void describeListsExactlyTheDeclaredCommandsAndOperations()
+    private static JsonObject json(Schema schema)
     {
-        var data = describe();
-
-        var described = new TreeSet<String>();
-        data.getAsJsonArray("commands").forEach(e -> described.add(e.getAsJsonObject().get("name").getAsString()));
-        var declared = new TreeSet<String>();
-        Commands.ALL.forEach(c -> declared.add(c.name()));
-        assertThat(described, is(declared));
-
-        var describedOperations = new TreeSet<String>();
-        data.getAsJsonArray("operations")
-                        .forEach(e -> describedOperations.add(e.getAsJsonObject().get("name").getAsString()));
-        var declaredOperations = new TreeSet<String>();
-        Commands.OPERATIONS.forEach(o -> declaredOperations.add(o.name()));
-        assertThat(describedOperations, is(declaredOperations));
+        return new Gson().toJsonTree(schema.toJson()).getAsJsonObject();
     }
 
     @Test
@@ -169,10 +175,9 @@ public class DescribeConsistencyTest
         assertOperationInputsConform(batch);
         Files.copy(sampleFile, batch.resolveSibling("original.xml"));
 
-        for (var element : describe().getAsJsonArray("commands"))
+        for (var command : Commands.ALL)
         {
-            var command = element.getAsJsonObject();
-            var name = command.get("name").getAsString();
+            var name = command.name();
 
             assertConforms(command, sampleArguments(name, sampleFile, instrument, batch));
             for (var arguments : furtherArguments(name, sampleFile, client, batch))
@@ -180,12 +185,11 @@ public class DescribeConsistencyTest
         }
     }
 
-    /** The operations an agent sends must conform to the input schema that describe publishes for them. */
+    /** The operations an agent sends must conform to the input schema that help publishes for them. */
     private void assertOperationInputsConform(Path batch) throws IOException
     {
         var inputs = new HashMap<String, JsonObject>();
-        describe().getAsJsonArray("operations").forEach(o -> inputs.put(o.getAsJsonObject().get("name").getAsString(),
-                        o.getAsJsonObject().getAsJsonObject("input")));
+        Commands.OPERATIONS.forEach(o -> inputs.put(o.name(), json(o.input())));
 
         var operations = JsonParser.parseString(Files.readString(batch)).getAsJsonObject()
                         .getAsJsonArray("operations");
@@ -239,9 +243,9 @@ public class DescribeConsistencyTest
         return all;
     }
 
-    private void assertConforms(JsonObject command, List<String> arguments)
+    private void assertConforms(CommandSpec command, List<String> arguments)
     {
-        var name = command.get("name").getAsString();
+        var name = command.name();
 
         var run = CliRun.run(arguments.toArray(String[]::new));
         assertThat(name + " exit code, stdout: " + run.stdout, run.exitCode, is(0));
@@ -249,15 +253,13 @@ public class DescribeConsistencyTest
         var envelope = run.json().getAsJsonObject();
         assertThat(name + " envelope", envelope.keySet(), is(Set.of("data", "meta", "warnings")));
 
-        var response = command.getAsJsonObject("response");
-        assertThat(name + " data", SchemaValidator.validate(envelope.get("data"), response.getAsJsonObject("data")),
+        assertThat(name + " data", SchemaValidator.validate(envelope.get("data"), json(command.dataSchema())),
                         is(empty()));
-        assertThat(name + " meta", SchemaValidator.validate(envelope.get("meta"), response.getAsJsonObject("meta")),
+        assertThat(name + " meta", SchemaValidator.validate(envelope.get("meta"), json(command.metaSchema())),
                         is(empty()));
 
         var declaredWarnings = new TreeSet<String>();
-        command.getAsJsonArray("warnings")
-                        .forEach(w -> declaredWarnings.add(w.getAsJsonObject().get("code").getAsString()));
+        command.warnings().forEach(w -> declaredWarnings.add(w.code()));
         for (var warning : envelope.getAsJsonArray("warnings"))
         {
             var object = warning.getAsJsonObject();
@@ -268,7 +270,7 @@ public class DescribeConsistencyTest
     }
 
     @Test
-    public void describeListsExactlyTheErrorCodesTheToolFailsWith() throws IOException
+    public void theErrorCodesInHelpAreExactlyTheOnesTheToolFailsWith() throws IOException
     {
         var call = Pattern.compile("\\b(?:usage|failure)\\(\\s*\"([a-z0-9-]+)\"");
         var thrown = new TreeSet<String>();
@@ -283,30 +285,8 @@ public class DescribeConsistencyTest
         }
         assertThat(thrown.contains("file-version-unsupported"), is(true));
 
-        var described = new TreeSet<String>();
-        describe().getAsJsonArray("errors")
-                        .forEach(e -> described.add(e.getAsJsonObject().get("code").getAsString()));
-        assertThat(described, is(thrown));
-    }
-
-    @Test
-    public void everyCommandsDeclaredOptionsAreDescribed()
-    {
-        var described = describe();
-
-        for (var command : Commands.ALL)
-        {
-            var options = new TreeSet<String>();
-            for (var spec : described.getAsJsonArray("commands"))
-            {
-                if (spec.getAsJsonObject().get("name").getAsString().equals(command.name()))
-                    spec.getAsJsonObject().getAsJsonArray("options")
-                                    .forEach(o -> options.add(o.getAsJsonObject().get("name").getAsString()));
-            }
-
-            var declared = new TreeSet<String>();
-            command.options().forEach(o -> declared.add(o.name()));
-            assertThat(command.name(), options, is(declared));
-        }
+        var declared = new TreeSet<String>();
+        ErrorSpec.ALL.forEach(e -> declared.add(e.code()));
+        assertThat(declared, is(thrown));
     }
 }

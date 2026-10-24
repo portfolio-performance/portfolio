@@ -16,16 +16,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
 /**
  * Keeps the <code>pp-cli</code> agent skill honest: every command, option,
  * operation, error or warning code and environment variable that the skill
- * names in code must exist in <code>describe</code>.
+ * names in code must exist in the declared specs that <code>--help</code> is
+ * generated from.
  */
 public class SkillDriftTest
 {
@@ -41,8 +40,6 @@ public class SkillDriftTest
     private static final Pattern VARIABLE = Pattern.compile("\\bPP_[A-Z_]+\\b");
     private static final Pattern LINK = Pattern.compile("\\]\\(([^)#:]+)\\)");
 
-    private final JsonObject describe = describe();
-
     @Test
     public void frontmatterNamesTheSkillAfterItsFolderAndDescribesIt() throws IOException
     {
@@ -53,7 +50,7 @@ public class SkillDriftTest
     }
 
     @Test
-    public void everyCommandOptionOperationCodeAndVariableTheSkillNamesIsDescribed() throws IOException
+    public void everyCommandOptionOperationCodeAndVariableTheSkillNamesIsDeclared() throws IOException
     {
         var problems = new ArrayList<String>();
         for (var file : FILES)
@@ -79,15 +76,14 @@ public class SkillDriftTest
     public void noCommandTakesAPasswordOption()
     {
         // the skill keeps passwords off the command line, which only holds while no option accepts one
-        for (var command : describe.getAsJsonArray("commands"))
-            for (var option : command.getAsJsonObject().getAsJsonArray("options"))
-                assertThat(option.getAsJsonObject().get("name").getAsString().toLowerCase(),
-                                not(containsString("password")));
+        for (var command : Commands.ALL)
+            for (var option : command.options())
+                assertThat(option.name().toLowerCase(), not(containsString("password")));
     }
 
     private void check(String file, String span, List<String> problems)
     {
-        var commands = names(describe.getAsJsonArray("commands"), "name");
+        var commands = Commands.ALL.stream().map(CommandSpec::name).collect(Collectors.toSet());
         var where = file + " `" + span + "`: ";
 
         String command = null;
@@ -104,20 +100,21 @@ public class SkillDriftTest
         var optionMatcher = OPTION.matcher(span);
         while (optionMatcher.find())
         {
-            if (!options.contains(optionMatcher.group(1)))
+            if (!options.contains(optionMatcher.group(1)) && !optionMatcher.group(1).equals("help"))
                 problems.add(where + "unknown option --" + optionMatcher.group(1)
                                 + (command != null ? " for " + command : ""));
         }
 
         var token = span.strip();
         if (OPERATION.matcher(token).matches()
-                        && !names(describe.getAsJsonArray("operations"), "name").contains(token))
+                        && Commands.OPERATIONS.stream().noneMatch(o -> o.name().equals(token)))
             problems.add(where + "unknown operation");
 
         if (CODE.matcher(token).matches() && !token.equals("pp-cli") && !codes(commands).contains(token))
             problems.add(where + "unknown error or warning code");
 
-        var variables = names(describe.getAsJsonArray("environment"), "name");
+        var variables = HelpText.ENVIRONMENT.stream().map(HelpText.EnvironmentVariable::name)
+                        .collect(Collectors.toSet());
         var variableMatcher = VARIABLE.matcher(span);
         while (variableMatcher.find())
         {
@@ -126,38 +123,26 @@ public class SkillDriftTest
         }
     }
 
-    private Set<String> codes(Set<String> commands)
+    private static Set<String> codes(Set<String> commands)
     {
-        var codes = new HashSet<>(names(describe.getAsJsonArray("errors"), "code"));
-        for (var command : describe.getAsJsonArray("commands"))
-            codes.addAll(names(command.getAsJsonObject().getAsJsonArray("warnings"), "code"));
+        var codes = new HashSet<String>();
+        ErrorSpec.ALL.forEach(e -> codes.add(e.code()));
+        Commands.ALL.forEach(c -> c.warnings().forEach(w -> codes.add(w.code())));
         codes.addAll(commands);
         return codes;
     }
 
-    private Set<String> options(String command)
+    private static Set<String> options(String command)
     {
-        for (var element : describe.getAsJsonArray("commands"))
-        {
-            if (element.getAsJsonObject().get("name").getAsString().equals(command))
-                return names(element.getAsJsonObject().getAsJsonArray("options"), "name");
-        }
-        throw new AssertionError(command);
+        return Commands.find(command).orElseThrow(() -> new AssertionError(command)).options().stream()
+                        .map(OptionSpec::name).collect(Collectors.toSet());
     }
 
-    private Set<String> allOptions()
+    private static Set<String> allOptions()
     {
         var all = new HashSet<String>();
-        for (var element : describe.getAsJsonArray("commands"))
-            all.addAll(names(element.getAsJsonObject().getAsJsonArray("options"), "name"));
+        Commands.ALL.forEach(c -> c.options().forEach(o -> all.add(o.name())));
         return all;
-    }
-
-    private static Set<String> names(JsonArray array, String member)
-    {
-        var names = new HashSet<String>();
-        array.forEach(e -> names.add(e.getAsJsonObject().get(member).getAsString()));
-        return names;
     }
 
     private static List<String> codeSpans(String markdown)
@@ -195,12 +180,5 @@ public class SkillDriftTest
     private static String read(String file) throws IOException
     {
         return Files.readString(SourceTree.cliBundle(SKILL).resolve(file));
-    }
-
-    private static JsonObject describe()
-    {
-        var run = CliRun.run("describe");
-        assertThat(run.exitCode, is(0));
-        return run.json().getAsJsonObject().getAsJsonObject("data");
     }
 }

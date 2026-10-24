@@ -2,7 +2,7 @@ package name.abuchen.portfolio.cli;
 
 /**
  * Declares a write operation once: its name, the schema of the input an
- * agent sends and the handler that applies it. <code>describe</code> renders
+ * agent sends and the handler that applies it. <code>--help</code> renders
  * the declaration and <code>apply</code> dispatches on it.
  */
 record OperationSpec(String name, String summary, Schema input, Handler handler)

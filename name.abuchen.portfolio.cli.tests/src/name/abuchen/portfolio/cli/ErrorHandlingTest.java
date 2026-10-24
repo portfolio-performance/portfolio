@@ -74,15 +74,6 @@ public class ErrorHandlingTest
     }
 
     @Test
-    public void missingCommandIsAUsageError()
-    {
-        var run = CliRun.run();
-
-        assertThat(run.exitCode, is(2));
-        assertThat(problem(run).get("code").getAsString(), is("command-required"));
-    }
-
-    @Test
     public void unknownOptionIsAUsageError() throws IOException
     {
         var run = CliRun.run("info", "--file", ClientFiles.xml(dir()).getPath(), "--bogus", "1");
