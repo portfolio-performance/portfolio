@@ -13,6 +13,7 @@ public class OnlyAccountTransactionsWithSecurityCanHaveExDateCheck implements Ch
     public List<Issue> execute(Client client)
     {
         var answer = new ArrayList<Issue>();
+        var isDirty = false;
 
         for (var account : client.getAccounts())
         {
@@ -21,9 +22,13 @@ public class OnlyAccountTransactionsWithSecurityCanHaveExDateCheck implements Ch
                 if (tx.getExDate() != null && tx.getSecurity() == null)
                 {
                     tx.setExDate(null);
+                    isDirty = true;
                 }
             }
         }
+
+        if (isDirty)
+            client.markDirty();
 
         return answer;
     }
