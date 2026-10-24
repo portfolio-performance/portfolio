@@ -108,6 +108,48 @@ public class HelpTest
     }
 
     @Test
+    public void helpForEveryPagedListStatesTheSortFieldsTheOrderValuesAndTheDefaults()
+    {
+        for (var command : Commands.ALL)
+        {
+            var sort = command.options().stream().filter(o -> o.name().equals("sort")).findFirst();
+            if (sort.isEmpty())
+                continue;
+
+            var stdout = CliRun.run(command.name(), "--help").stdout;
+            var choice = (OptionSpec.Choice) sort.get().type();
+            assertThat(command.name(), stdout, containsString("--sort <field>"));
+            assertThat(command.name(), stdout,
+                            containsString("one of " + String.join(", ", choice.values()) + ", default "
+                                            + choice.defaultValue()));
+            assertThat(command.name(), stdout, containsString("--order <asc|desc>"));
+            assertThat(command.name(), stdout, containsString("one of asc, desc, default asc"));
+            assertThat(command.name() + " meta", stdout, containsString("sort"));
+            assertThat(command.name() + " meta", stdout, containsString("order"));
+        }
+    }
+
+    @Test
+    public void helpNamesTheSortFieldsOfTheMasterDataListsTheTransactionsAndThePrices()
+    {
+        assertThat(CliRun.run("instruments", "--help").stdout, containsString("one of name, updatedAt, default name"));
+        assertThat(CliRun.run("transactions", "--help").stdout,
+                        containsString("one of date, updatedAt, default date"));
+        assertThat(CliRun.run("prices", "--help").stdout, containsString("one of date, default date"));
+    }
+
+    @Test
+    public void helpForMasterDataAndTransactionsDocumentsUpdatedAtAndVerbose()
+    {
+        for (var name : List.of("instruments", "investment-accounts", "cash-accounts", "transactions"))
+        {
+            var stdout = CliRun.run(name, "--help").stdout;
+            assertThat(name, stdout, containsString("updatedAt (string"));
+            assertThat(name, stdout, containsString("--verbose"));
+        }
+    }
+
+    @Test
     public void commandHelpIndentsNestedDataFieldsAndDescribesThem()
     {
         var stdout = CliRun.run("info", "--help").stdout;
