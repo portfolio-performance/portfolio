@@ -1,4 +1,3 @@
-```
 PDFBox Version: 1.8.17
 Portfolio Performance Version: 0.70.4
 -----------------------------------------
@@ -229,5 +228,3 @@ FNZ Bank SE Amtsgericht München Vorstand: Peter Karst, Fax: +49 89 45460-892
 USt-ID Nr. DE 813330104 Pamela Schmidt-Fischbach
 Gläubiger-ID: Aufsichtsratsvorsitzender:
 DE68ZZZ00000025032 Frank Strauß
-
-```
