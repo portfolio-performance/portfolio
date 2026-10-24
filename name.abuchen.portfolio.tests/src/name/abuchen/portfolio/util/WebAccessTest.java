@@ -3,6 +3,7 @@ package name.abuchen.portfolio.util;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.fail;
 
@@ -23,6 +24,7 @@ import com.sun.net.httpserver.HttpServer;
 /**
  * Tests {@link WebAccess} against a local HTTP server: connections are reused
  * across requests, while headers, user agent and cookies stay per request.
+ * Connection reuse is experimental and therefore enabled for these tests.
  */
 @SuppressWarnings("nls")
 public class WebAccessTest
@@ -38,6 +40,8 @@ public class WebAccessTest
     @Before
     public void startServer() throws IOException
     {
+        WebAccess.setReuseConnections(true);
+
         server = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 0);
 
         server.createContext("/echo", exchange -> {
@@ -70,6 +74,7 @@ public class WebAccessTest
     public void stopServer()
     {
         server.stop(0);
+        WebAccess.setReuseConnections(false);
     }
 
     private void record(HttpExchange exchange) throws IOException
@@ -116,6 +121,24 @@ public class WebAccessTest
         var port = requests.get(0).remotePort();
         assertThat(requests.get(1).remotePort(), is(port));
         assertThat(requests.get(2).remotePort(), is(port));
+    }
+
+    @Test
+    public void testConnectionIsNotReusedIfExperimentIsDisabled() throws IOException
+    {
+        WebAccess.setReuseConnections(false);
+
+        assertThat(webAccess("/echo").addHeader("X-Test", "first").addUserAgent("TestAgent/1.0").get(), is("ok"));
+        assertThat(webAccess("/echo").get(), is("ok"));
+
+        assertThat(requests, hasSize(2));
+
+        // different client port = separate TCP connection per request
+        assertThat(requests.get(1).remotePort(), is(not(requests.get(0).remotePort())));
+
+        assertThat(requests.get(0).testHeader(), is("first"));
+        assertThat(requests.get(0).userAgent(), is("TestAgent/1.0"));
+        assertThat(requests.get(1).userAgent(), is(OnlineHelper.getUserAgent()));
     }
 
     @Test
