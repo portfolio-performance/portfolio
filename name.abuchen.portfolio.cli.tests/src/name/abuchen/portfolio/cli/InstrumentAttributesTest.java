@@ -15,6 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -298,7 +299,7 @@ public class InstrumentAttributesTest
     }
 
     @Test
-    public void attributeValuesConformToTheDescribedSchema() throws IOException
+    public void attributeValuesConformToTheDeclaredSchema() throws IOException
     {
         var type = addType("custom-string", "Sector", String.class, StringConverter.class);
         security.getAttributes().put(type, "Technology");
@@ -313,16 +314,7 @@ public class InstrumentAttributesTest
         var run = CliRun.run("instruments", "--file", file.getPath());
         var envelope = run.json().getAsJsonObject();
 
-        var describe = CliRun.run("describe").json().getAsJsonObject().getAsJsonObject("data");
-        JsonObject response = null;
-        for (var command : describe.getAsJsonArray("commands"))
-        {
-            if ("instruments".equals(command.getAsJsonObject().get("name").getAsString()))
-                response = command.getAsJsonObject().getAsJsonObject("response");
-        }
-
-        assertThat(response != null, is(true));
-        assertThat(SchemaValidator.validate(envelope.get("data"), response.getAsJsonObject("data")),
-                        is(List.<String>of()));
+        var schema = new Gson().toJsonTree(InstrumentsCommand.SPEC.dataSchema().toJson()).getAsJsonObject();
+        assertThat(SchemaValidator.validate(envelope.get("data"), schema), is(List.<String>of()));
     }
 }

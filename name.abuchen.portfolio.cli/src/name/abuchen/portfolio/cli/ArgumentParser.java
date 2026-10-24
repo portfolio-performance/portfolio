@@ -17,13 +17,8 @@ final class ArgumentParser
 
     static Parsed parse(List<String> args) throws CliException
     {
-        if (args.isEmpty())
-            throw CliException.usage("command-required", "Command required",
-                            "Usage: pp-cli <command> [--option value]. Known commands: " + commandNames());
-
         var name = args.get(0);
-        var command = Commands.find(name).orElseThrow(() -> CliException.usage("unknown-command", "Unknown command",
-                        "Unknown command '" + name + "'. Known commands: " + commandNames()));
+        var command = Commands.require(name);
 
         var options = new LinkedHashMap<String, String>();
         for (int ii = 1; ii < args.size(); ii++)
@@ -78,10 +73,5 @@ final class ArgumentParser
         }
 
         return new Parsed(command, options);
-    }
-
-    private static String commandNames()
-    {
-        return String.join(", ", Commands.ALL.stream().map(CommandSpec::name).toList());
     }
 }

@@ -1,7 +1,7 @@
 # 01: Per-command `--help` replaces `describe`
 
 Type: task
-Status: ready-for-agent
+Status: done
 
 Spec: [spec.md](../spec.md), "Help". [ADR 0006](../../../docs/adr/0006-per-command-help-replaces-describe.md).
 
@@ -26,11 +26,11 @@ Remove `DescribeCommand` and its registration. Keep the in-code schemas, since t
 
 ## Acceptance criteria
 
-- [ ] `pp-cli --help`, bare `pp-cli`, `pp-cli <command> --help` and `pp-cli apply --help [<operation>]` work as described, with exit code 0
-- [ ] `describe` is gone and gives `unknown-command`
-- [ ] Schema conformance of real responses is still tested for every command and operation
-- [ ] The skill drift test checks against the declared specs
-- [ ] The help size guard passes
-- [ ] Packaging README and any docs that mention `describe` are updated
+- [x] `pp-cli --help`, bare `pp-cli`, `pp-cli <command> --help` and `pp-cli apply --help [<operation>]` work as described, with exit code 0
+- [x] `describe` is gone and gives `unknown-command`
+- [x] Schema conformance of real responses is still tested for every command and operation
+- [x] The skill drift test checks against the declared specs
+- [x] The help size guard passes
+- [x] Packaging README and any docs that mention `describe` are updated
 
 ## Comments

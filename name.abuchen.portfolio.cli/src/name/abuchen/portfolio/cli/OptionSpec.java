@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 /**
  * Declares one option that takes a value, e.g. <code>--file &lt;path&gt;</code>.
  * An integer option also declares its default and range, a date option its
- * ISO format; <code>describe</code> publishes them and {@link #parseInteger}
+ * ISO format; <code>--help</code> publishes them and {@link #parseInteger}
  * and {@link #parseDate} enforce them, so the two can't drift. A required
  * option is checked by the argument parser.
  */
@@ -20,7 +20,7 @@ record OptionSpec(String name, String valueName, String description, Type type, 
     {
     }
 
-    /** One of a fixed set of values; <code>describe</code> publishes them. */
+    /** One of a fixed set of values; <code>--help</code> publishes them. */
     record Choice(List<String> values, String defaultValue) implements Type
     {
     }

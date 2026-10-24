@@ -2,7 +2,7 @@
 
 Every change to the client file, `pp-cli apply` or `pp-cli restore`, goes through these steps, once per batch. A small edit, an obvious edit and an edit the user asked for all take the same path.
 
-1. **Resolve.** Take each operation's input schema from `operations` in `pp-cli describe`. Look up the UUID of every entity the batch refers to with the read commands (such as `pp-cli instruments --file "<path>"`). Done when every reference in the batch is a UUID that a read returned.
+1. **Resolve.** Take each operation's input schema from `pp-cli apply --help <operation>`. Look up the UUID of every entity the batch refers to with the read commands (such as `pp-cli instruments --file "<path>"`). Done when every reference in the batch is a UUID that a read returned.
 2. **Write the batch.** With your file tool, write `{"operations": [...]}` to a new file in the temp folder, UTF-8 without a BOM. Done when the file exists and holds exactly the batch you will summarize.
 3. **Dry run.** Run `pp-cli apply --file "<client file>" --input "<batch file>" --dry-run`. On a failure, act on its code as Troubleshooting in the skill says, correct the batch file, and run the dry run again. Done when the dry run exits 0.
 4. **Summarize.** Tell the user in plain language what the batch does, entity by entity, from `results` in the dry run's `data`: every created, updated and deleted entity, with its name, the fields that change and their new values (dates, amounts, shares, currencies). Add every entry of `warnings`. Ask the user to save and close the file in Portfolio Performance if it is open there, because unsaved edits in the app can't be detected. Then ask for approval of this batch. Done when every entity in `results` appears in the summary.

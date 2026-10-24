@@ -4,7 +4,7 @@ Release-time smoke check of the installed pp-cli.
 
 .DESCRIPTION
 Checks the installed bundle (own runtime, AppCDS archive, no pdfbox, the win32 x86_64 SWT
-fragment) and then runs `pp-cli info` and `pp-cli describe` against a sample file from fresh
+fragment) and then runs `pp-cli info` against a sample file and `pp-cli --help` from fresh
 PowerShell, cmd and Git Bash sessions. A fresh session gets the PATH stored in the registry,
 not the PATH of this process, and no JAVA_HOME or other Java on PATH, so the check proves
 the PATH wiring and the bundled runtime. Exits with 1 if anything fails.
@@ -111,6 +111,13 @@ function Invoke-FreshShell([string]$Exe, [string]$Arguments) {
     [pscustomobject]@{ ExitCode = $process.ExitCode; Stdout = $stdout.Result; Stderr = $stderr.Result }
 }
 
+# The help is plain text: it must succeed and mention every needle
+function Test-HelpText([string]$Shell, [string[]]$Needles, [pscustomobject]$Result) {
+    $valid = $Result.ExitCode -eq 0 -and -not ($Needles | Where-Object { -not $Result.Stdout.Contains($_) })
+    Assert-Check ([bool]$valid) "${Shell}: pp-cli --help"
+    if (-not $valid) { Write-Host "        exit code $($Result.ExitCode); stdout: $($Result.Stdout.Trim()); stderr: $($Result.Stderr.Trim())" }
+}
+
 function Test-Response([string]$Shell, [string]$Command, [scriptblock]$Check, [pscustomobject]$Result) {
     $document = $null
     try { $document = $Result.Stdout | ConvertFrom-Json } catch { Write-Verbose "Not JSON: $_" }
@@ -125,7 +132,7 @@ Assert-Check (Test-Path (Join-Path $installDir 'runtime\bin\java.exe')) 'bundled
 Assert-Check (Test-Path (Join-Path $installDir 'pp-cli.jsa')) 'AppCDS archive is present'
 if (Test-Path (Join-Path $installDir 'pp-cli.jsa')) {
     # -Xshare:on fails instead of silently ignoring an archive the JVM rejects (the launcher falls back quietly)
-    & (Join-Path $installDir 'runtime\bin\java.exe') "-XX:SharedArchiveFile=$(Join-Path $installDir 'pp-cli.jsa')" -Xshare:on -Xlog:disable -cp "$installDir\lib\*" name.abuchen.portfolio.cli.PpCli describe 2>$null | Out-Null
+    & (Join-Path $installDir 'runtime\bin\java.exe') "-XX:SharedArchiveFile=$(Join-Path $installDir 'pp-cli.jsa')" -Xshare:on -Xlog:disable -cp "$installDir\lib\*" name.abuchen.portfolio.cli.PpCli --help 2>$null | Out-Null
     Assert-Check ($LASTEXITCODE -eq 0) 'the JVM accepts and uses the AppCDS archive'
 }
 Assert-Check (-not (Get-ChildItem $lib -Filter *.jar | Where-Object { $_.Name -match '^(name\.abuchen\.portfolio\.pdfbox[13]|pdfbox|pdfbox-io|fontbox|jempbox)-\d' })) 'no pdfbox jars on the classpath'
@@ -137,7 +144,6 @@ if (-not $SkipSkill) { Test-AgentSkill }
 if ($failures.Count -gt 0) { Write-Host "`n$($failures.Count) check(s) failed."; exit 1 }
 
 $infoCheck = { param($d) $d.data.counts -and $d.data.pinnedUpstreamTag -and $d.data.format }
-$describeCheck = { param($d) @($d.data.commands).Count -gt 0 -and $d.data.pinnedUpstreamTag -and $d.data.limits }
 
 $shells = [ordered]@{
     PowerShell = @{ Exe = (Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'); Arguments = { param($c) "-NoProfile -NonInteractive -Command `"$c`"" }; Sample = { param($f) "'$f'" } }
@@ -161,7 +167,7 @@ foreach ($name in $shells.Keys) {
     $shell = $shells[$name]
     $sample = & $shell.Sample $SampleFile
     Test-Response $name 'info' $infoCheck (Invoke-FreshShell $shell.Exe (& $shell.Arguments "pp-cli info --file $sample"))
-    Test-Response $name 'describe' $describeCheck (Invoke-FreshShell $shell.Exe (& $shell.Arguments 'pp-cli describe'))
+    Test-HelpText $name @('Commands:', 'Limits', 'Exit') (Invoke-FreshShell $shell.Exe (& $shell.Arguments 'pp-cli --help'))
 }
 
 if ($failures.Count -gt 0) { Write-Host "`n$($failures.Count) check(s) failed."; exit 1 }
