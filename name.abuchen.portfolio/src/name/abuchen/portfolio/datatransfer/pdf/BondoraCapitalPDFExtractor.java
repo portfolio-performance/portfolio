@@ -114,12 +114,12 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             if ("Überweisen".equals(v.get("type")) //
                                             || "Transfer".equals(v.get("type")) //
-                                            || "SEPA-Banküberweisung".equals(v.get("type")))
+                                            || "SEPA-Banküberweisung".equals(v.get("type")) //
+                                            || "SEPA payment".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.DEPOSIT);
                             else if ("Abheben".equals(v.get("type")) //
                                             || "Withdrawal".equals(v.get("type")) //
-                                            || "Abheben auf Bankkonto".equals(v.get("type"))
-                                            || "SEPA payment".equals(v.get("type")))
+                                            || "Abheben auf Bankkonto".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.REMOVAL);
                         })
 
