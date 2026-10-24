@@ -14,7 +14,8 @@ public class Experiments
     {
         JULY26_PREVENT_UPDATE_WHILE_EDITING_CELLS, //
         AUG26_UNOBTRUSIVE_UPDATE_NOTIFICATION, //
-        SEP26_IMPORT_PDF_TEXT_FILES
+        SEP26_IMPORT_PDF_TEXT_FILES, //
+        OCT26_REUSE_HTTP_CONNECTIONS
     }
 
     public boolean isEnabled(Feature feature)

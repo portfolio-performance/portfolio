@@ -188,9 +188,14 @@ public class RestApiServerTest
 
     private int sendRaw(String method, String path, String hostHeader) throws Exception
     {
+        return sendRaw(method, path, hostHeader, "HTTP/1.1");
+    }
+
+    private int sendRaw(String method, String path, String hostHeader, String protocol) throws Exception
+    {
         try (var socket = new Socket(InetAddress.getLoopbackAddress(), server.getPort()))
         {
-            var request = method + " " + path + " HTTP/1.1\r\n" //
+            var request = method + " " + path + " " + protocol + "\r\n" //
                             + (hostHeader != null ? "Host: " + hostHeader + "\r\n" : "") //
                             + "Authorization: Bearer " + TOKEN + "\r\n" //
                             + "Content-Length: 0\r\n" //
@@ -243,10 +248,14 @@ public class RestApiServerTest
         assertThat(sendWithHost("localhost.evil.example:" + server.getPort()), is(403));
     }
 
+    /**
+     * HTTP/1.0 because since 21.0.13 the JDK server itself rejects an HTTP/1.1
+     * request without Host with 400, before our handler runs
+     */
     @Test
     public void testMissingHostIs403() throws Exception
     {
-        assertThat(sendWithHost(null), is(403));
+        assertThat(sendRaw("GET", "/v1/ping", null, "HTTP/1.0"), is(403));
     }
 
     /**

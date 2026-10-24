@@ -43,7 +43,7 @@ public class AJBellSecuritiesLimitedPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        var type = new DocumentType("CONTRACT NOTE");
+        final var type = new DocumentType("CONTRACT NOTE");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();

@@ -581,24 +581,44 @@ public final class Security implements Attributable, InvestmentVehicle
         if (prices.isEmpty())
             return Optional.empty();
 
-        List<SecurityPrice> list = getPricesIncludingLatest();
-        if (list.size() < 2)
-            return Optional.empty();
+        // Same result as working on #getPricesIncludingLatest, but without
+        // copying the full price history: the method is called multiple
+        // times per cell of the securities table.
 
-        LocalDate now = LocalDate.now();
+        var now = LocalDate.now();
 
-        SecurityPrice today = null;
-
-        int index = list.size() - 1;
-        while (index >= 0)
+        // the two most recent historic prices that are not in the future
+        SecurityPrice newest = null;
+        SecurityPrice previous = null;
+        for (int index = prices.size() - 1; index >= 0 && previous == null; index--)
         {
-            today = list.get(index);
-            if (!today.getDate().isAfter(now))
-                break;
-            index--;
+            var price = prices.get(index);
+            if (price.getDate().isAfter(now))
+                continue;
+            if (newest == null)
+                newest = price;
+            else
+                previous = price;
         }
 
-        return index > 0 ? Optional.of(new Pair<>(list.get(index), list.get(index - 1))) : Optional.empty();
+        // the latest price counts unless it is in the future or a historic
+        // quote exists for the same date (see #getPricesIncludingLatest)
+        var latestPrice = latest;
+        if (latestPrice != null && !latestPrice.getDate().isAfter(now)
+                        && Collections.binarySearch(prices, new SecurityPrice(latestPrice.getDate(), 0)) < 0)
+        {
+            if (newest == null || latestPrice.getDate().isAfter(newest.getDate()))
+            {
+                previous = newest;
+                newest = latestPrice;
+            }
+            else if (previous == null || latestPrice.getDate().isAfter(previous.getDate()))
+            {
+                previous = latestPrice;
+            }
+        }
+
+        return newest != null && previous != null ? Optional.of(new Pair<>(newest, previous)) : Optional.empty();
     }
 
     public String getLatestFeed()

@@ -75,8 +75,12 @@ public class AdvanziaBankPDFExtractorTest
                         hasSource("Kontoauszug01.txt"), hasNote(null))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2023-06-30"), hasAmount("EUR", 47.11), //
-                        hasSource("Kontoauszug01.txt"), hasNote(null))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2023-06-30"), //
+                        hasSource("Kontoauszug01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 47.11), hasGrossValue("EUR", 47.11), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -119,8 +123,12 @@ public class AdvanziaBankPDFExtractorTest
                         hasSource("Kontoauszug02.txt"), hasNote(null))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-05-31"), hasAmount("EUR", 308.76), //
-                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2024-05-31"), //
+                        hasSource("Kontoauszug02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 308.76), hasGrossValue("EUR", 308.76), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -155,8 +163,12 @@ public class AdvanziaBankPDFExtractorTest
                         hasSource("Kontoauszug03.txt"), hasNote(null))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2025-07-31"), hasAmount("EUR", 123.66), //
-                        hasSource("Kontoauszug03.txt"), hasNote(null))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2025-07-31"), //
+                        hasSource("Kontoauszug03.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 123.66), hasGrossValue("EUR", 123.66), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test

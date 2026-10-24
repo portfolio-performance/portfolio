@@ -50,6 +50,7 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 
+@SuppressWarnings("nls")
 public class DekaBankPDFExtractorTest
 {
     @Test

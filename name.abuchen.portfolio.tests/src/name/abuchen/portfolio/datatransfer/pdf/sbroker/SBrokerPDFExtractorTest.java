@@ -59,6 +59,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 
+@SuppressWarnings("nls")
 public class SBrokerPDFExtractorTest
 {
     @Test

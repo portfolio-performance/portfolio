@@ -6,7 +6,6 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 
-import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -40,12 +39,12 @@ public class FindependentAGPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("ETF\\-(Kauf|Verkauf)");
+        final var type = new DocumentType("ETF\\-(Kauf|Verkauf)");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^ETF\\-(Kauf|Verkauf)$", "^Erstellt am:.*$");
+        var firstRelevantLine = new Block("^ETF\\-(Kauf|Verkauf)$", "^Erstellt am:.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -76,7 +75,7 @@ public class FindependentAGPDFExtractor extends AbstractPDFExtractor
                         // Anzahl Anteile 2
                         // @formatter:on
                         .section("shares") //
-                        .match("^Anzahl Anteile (?<shares>[\\',\\d]+)$") //
+                        .match("^Anzahl Anteile (?<shares>[\\.'\\d]+)$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
@@ -111,11 +110,11 @@ public class FindependentAGPDFExtractor extends AbstractPDFExtractor
                         .match("^Wechselkurs (?<termCurrency>[\\w]{3})\\/(?<baseCurrency>[\\w]{3}) (?<exchangeRate>[\\.'\\d]+)$") //
                         .match("^(Kaufpreis|Verkaufspreis) [\\w]{3} [\\w]{3} (?<gross>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
+                            var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            Money gross = Money.of(rate.getTermCurrency(), asAmount(v.get("gross")));
-                            Money fxGross = Money.of(rate.getBaseCurrency(), asAmount(v.get("fxGross")));
+                            var gross = Money.of(rate.getTermCurrency(), asAmount(v.get("gross")));
+                            var fxGross = Money.of(rate.getBaseCurrency(), asAmount(v.get("fxGross")));
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
@@ -128,12 +127,12 @@ public class FindependentAGPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendsTransaction()
     {
-        DocumentType type = new DocumentType("Ertragsaussch.ttung");
+        final var type = new DocumentType("Ertragsaussch.ttung");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^Ertragsaussch.ttung$");
+        var firstRelevantLine = new Block("^Ertragsaussch.ttung$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -184,12 +183,12 @@ public class FindependentAGPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        DocumentType type = new DocumentType("Deinem Konto wurde (gut(ge)?schrieben|belastet):");
+        final var type = new DocumentType("Deinem Konto wurde (gut(ge)?schrieben|belastet):");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^(Einzahlung" //
+        var firstRelevantLine = new Block("^(Einzahlung" //
                         + "|Willkommensbonus von findependent" //
                         + "|Depotgeb.hren an" //
                         + "|Verwaltungsgeb.hren an" //
@@ -251,7 +250,7 @@ public class FindependentAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^Zahlungsgrund (?<note>.*)$") //
-                        .assign((t, v) -> t.setNote(trim(v.get("note")))) //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         // @formatter:off
                         // Depotgebühren CHF 1.95
@@ -268,7 +267,7 @@ public class FindependentAGPDFExtractor extends AbstractPDFExtractor
                             t.setNote(concatenate(t.getNote(), v.get("note2"), " "));
                         })
 
-                .wrap(TransactionItem::new);
+                        .wrap(TransactionItem::new);
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
@@ -279,7 +278,7 @@ public class FindependentAGPDFExtractor extends AbstractPDFExtractor
                         // Verrechnungssteuer (35%) CHF -2.44
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Verrechnungssteuer \\([\\d]+%\\) (?<currency>[\\w]{3}) (\\-)?(?<tax>[\\.'\\d]+)") //
+                        .match("^Verrechnungssteuer \\([\\d]+%\\) (?<currency>[\\w]{3}) (\\-)?(?<tax>[\\.'\\d]+)$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
@@ -287,7 +286,7 @@ public class FindependentAGPDFExtractor extends AbstractPDFExtractor
                         // Stempelabgaben CHF -1.05
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Stempelabgaben (?<currency>[\\w]{3}) (\\-)?(?<tax>[\\.'\\d]+)") //
+                        .match("^Stempelabgaben (?<currency>[\\w]{3}) (\\-)?(?<tax>[\\.'\\d]+)$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
