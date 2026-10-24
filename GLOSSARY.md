@@ -48,6 +48,10 @@ _Avoid_: asset allocation (it is not limited to asset classes), breakdown
 The part of an **Allocation** that no **Assignment** covers: securities and accounts not classified in the taxonomy, or only partly classified.
 _Avoid_: unclassified, other, without classification
 
+**Minor currency unit**:
+A currency that is a fixed fraction of another, such as ILA (agorot, 1/100 ILS) or GBX (pence, 1/100 GBP). Some exchanges quote **Securities** in it, so their prices and values are 100 times the major-unit figure.
+_Avoid_: subunit, cents currency
+
 **Exchange-rate instrument**:
 A **Security** with a target currency, whose prices are the exchange rates between its currency and that target currency. Users create them to supply rates the built-in sources lack.
 _Avoid_: currency pair, FX security
@@ -108,6 +112,14 @@ _Avoid_: outdated quote, old price
 **Transaction record**:
 One business event as shown to and edited by agents: a buy or sell with both its **Investment account** side and its **Cash account** side, or a transfer with its from and to accounts. It is created, changed and deleted as a whole, never one side at a time.
 _Avoid_: leg, cross entry, half-transaction
+
+**Transaction date**:
+When the business event of a **Transaction record** happened, such as the trade date of a buy.
+_Avoid_: entry date, booking date
+
+**Last modified**:
+When an **Instrument**, **Investment account**, **Cash account** or **Transaction record** last changed in the **Client file**. The app keeps no separate creation time.
+_Avoid_: entry date, updated (alone), created
 
 **Side**:
 One stored transaction within a **Transaction record**. A buy or sell has an **Investment account** side and a **Cash account** side, a transfer has an outgoing and an incoming side, and every other record has exactly one side. Any side's UUID identifies the whole record.
