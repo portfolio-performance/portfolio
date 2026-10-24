@@ -1,0 +1,50 @@
+PDFBox Version: 3.0.8
+Portfolio Performance Version: 0.89.0
+System: linux | x86_64 | 21.0.12.1+1-1-26.04.4-Ubuntu | Ubuntu
+-----------------------------------------
+Postbank
+Beratungsteam
+HiYeYMA 24/7-Kundenservice (0228) 5500-5500
+ mNiTWrFh 
+lMEXTEdQl. 43 
+68200 sbPINJkr
+20. Oktober 2026
+Abrechnung: Verkauf von Wertpapieren 
+Depotinhaber: EJBkCxt tFxMYvAo
+Filialnummer Depotnummer Wertpapierbezeichnung Seite
+212 5288691 00 ANR.A.PENNON GROUP PLC 26. 10.26 1/2
+WKN A42KQC Nominal ST 93
+ISIN GB00BWNPZS82 Kurs GBP 0,7995
+Verwahrart Wertpapierrechnung Großbritannien 
+Geschäft Kommissionsgeschäft
+Börse London - London Stock Exchange
+Belegnummer 8695653127 / 338317982 Schlusstag/-zeit MEZ 20.10.2026 / 11:33:30
+Ihre Referenz 6694397-0
+Auftragsart Marktpreisauftrag
+Kapitalmaßnahme - bestmögliche Verwertung
+Abrechnung Währung Betrag
+Kurswert GBP 74,35
+Provision GBP -8,40
+Gesamtbetrag
+GBP 65,95
+Devisenkurs zur Handelswährung (EUR/GBP) 0,8444
+Gutschrift
+Buchung auf Kontonummer 5288691 00 mit Wertstellung 22.10.2026 EUR 78,10
+Summe der in der Abrechnung enthaltenen Provisionen und Auslagen EUR 9,95
+Postbank - eine Niederlassung der Deutsche Bank AG - Vorsitzender des Aufsichtsrats: Alexander R. Wynaendts - Vorstand: Christian Sewing (Vorsitzender),
+Fabrizio Campelli, Raja Akram, Marcus Chromik, Marie-Jeanne Deverdun, Stefan Hoops, Alexander von zur Mühlen, Laura Padovani, Claudio de Sanctis, Rebecca Short 
+Deutsche Bank AG mit Sitz in Frankfurt am Main, Amtsgericht Frankfurt am Main, HRB Nr. 30 000, Umsatzsteuer-Id.-Nr. DE114103379; www.postbank.de
+TR00000001 20261020 172_000_
+  
+Informationen zum Steuerabzug 
+- keine Steuerbescheinigung - Währung Betrag
+Veräußerungsgewinn EUR 78,10
+KESt-pflichtiger Kapitalertrag EUR 78,10
+Auf die KESt angerechnete ausländische Quellensteuer EUR 19,53
+Die Wertpapiere haben wir entsprechend der Abrechnung gebucht. Unser Geschäftsverkehr mit Ihnen wird durch unsere Allgemeinen Geschäftsbedingungen 
+und die Sonderbedingungen für Wertpapiergeschäfte geregelt. Bitte überprüfen Sie diese Abrechnung schnellstmöglich und richten Sie etwaige Einwendungen 
+in den Geschäftsräumen der Bank oder schriftlich an Deutsche Bank AG, QM - Support, 04082 Leipzig. Andernfalls gilt diese Abrechnung als genehmigt. 
+Die unter § 4 Nr. 8 UStG im Inland fallenden Bank- und Finanzdienstleistungen sind von der Umsatzsteuer befreit, sofern Umsatzsteuer nicht gesondert 
+ausgewiesen ist. Soweit der Leistungsempfänger umsatzsteuerlicher Unternehmer ist und seinen Sitz in einem anderen EU-Mitgliedstaat hat und die Bank 
+und Finanzdienstleistungen nach dortigem Recht umsatzsteuerpflichtig sind, gilt die Steuerschuldnerschaft des Leistungsempfängers. Umsatzsteuer ID Nr.: 
+Deutsche Bank AG, 60262 Frankfurt DE114103379
