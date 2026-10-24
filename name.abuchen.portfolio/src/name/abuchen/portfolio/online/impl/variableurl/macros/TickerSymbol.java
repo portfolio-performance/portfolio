@@ -7,7 +7,7 @@ public class TickerSymbol implements Macro
 {
     public TickerSymbol(CharSequence input)
     {
-        if (!"TICKER".equals(input)) //$NON-NLS-1$
+        if (!"TICKER".contentEquals(input)) //$NON-NLS-1$
             throw new IllegalArgumentException(input.toString());
     }
 
