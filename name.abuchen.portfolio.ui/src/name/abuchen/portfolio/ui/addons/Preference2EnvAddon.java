@@ -15,6 +15,7 @@ import name.abuchen.portfolio.online.impl.DivvyDiaryDividendFeed;
 import name.abuchen.portfolio.online.impl.DivvyDiarySearchProvider;
 import name.abuchen.portfolio.online.impl.EODHistoricalDataQuoteFeed;
 import name.abuchen.portfolio.online.impl.EODHistoricalDataSearchProvider;
+import name.abuchen.portfolio.online.impl.FXMacroDataQuoteFeed;
 import name.abuchen.portfolio.online.impl.FinnhubQuoteFeed;
 import name.abuchen.portfolio.online.impl.FinnhubSearchProvider;
 import name.abuchen.portfolio.online.impl.LeewayQuoteFeed;
@@ -86,6 +87,14 @@ public class Preference2EnvAddon
     {
         ((FinnhubQuoteFeed) Factory.getQuoteFeedProvider(FinnhubQuoteFeed.ID)).setApiKey(finnhubApiKey);
         Factory.getSearchProvider(FinnhubSearchProvider.class).setApiKey(finnhubApiKey);
+    }
+
+    @Inject
+    @Optional
+    public void setFXMacroDataApiKey(
+                    @Preference(value = UIConstants.Preferences.FXMACRODATA_API_KEY) String fxmacrodataApiKey)
+    {
+        Factory.getQuoteFeed(FXMacroDataQuoteFeed.class).setApiKey(fxmacrodataApiKey);
     }
 
     @Inject
