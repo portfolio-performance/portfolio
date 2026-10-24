@@ -128,7 +128,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                         .section("name", "wkn", "nameContinued", "currency") //
                         .find("W[\\s]*e[\\s]*r[\\s]*t[\\s]*p[\\s]*a[\\s]*p[\\s]*i[\\s]*e[\\s]*r[\\s]*([\\-\\s]+)?B[\\s]*e[\\s]*z[\\s]*e[\\s]*i[\\s]*c[\\s]*h[\\s]*n[\\s]*u[\\s]*n[\\s]*g[\\s]*W[\\s]*e[\\s]*r[\\s]*t[\\s]*p[\\s]*a[\\s]*p[\\s]*i[\\s]*e[\\s]*r[\\s]*k[\\s]*e[\\s]*n[\\s]*n[\\s]*n[\\s]*u[\\s]*m[\\s]*m[\\s]*e[\\s]*r.*") //
                         .match("^(?<name>.*)([,])?[\\s]{1,}(?<wkn>(?:[A-Z0-9][\\s]*){6})$") //
-                        .match("^(?<nameContinued>.*)") //
+                        .match("^(?<nameContinued>.*)$") //
                         .match("^(Summe[\\s]*)?S[\\s]*t[\\s]*\\.[\\s]{1,}[\\.,\\d\\s]+[\\s]{1,}(?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> {
                             v.put("name", replaceMultipleBlanks(v.get("name")));
@@ -153,14 +153,14 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("time") //
                                                         .match("^(?<time>[\\d\\s]+:[\\d\\s]+)[\\s]{1,}(S[\\s]*t[\\s]*.|St.)[\\s]{1,}[\\.,\\d\\s]+[\\s]{1,}[A-Z]{3}[\\s]{1,}[\\.,\\d\\s]+[\\s]{1,}[A-Z]{3} [\\.,\\d\\s]+$") //
-                                                        .assign((t, v) -> type.getCurrentContext().put("time", stripBlanks(v.get("time")))),
+                                                        .assign((t, v) -> v.getTransactionContext().putString("time", stripBlanks(v.get("time")))),
                                         // @formatter:off
                                         // H a n d e l s z e i t : 1 3 : 1 0 U h r (MEZ/MESZ)
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("time") //
                                                         .match("^H[\\s]*a[\\s]*n[\\s]*d[\\s]*e[\\s]*l[\\s]*s[\\s]*z[\\s]*e[\\s]*i[\\s]*t[\\s]*:[\\s]{1,}(?<time>[\\d\\s]+:[\\d\\s]+).*$") //
-                                                        .assign((t, v) -> type.getCurrentContext().put("time", stripBlanks(v.get("time")))))
+                                                        .assign((t, v) -> v.getTransactionContext().putString("time", stripBlanks(v.get("time")))))
 
                         // @formatter:off
                         // G e s c h ä f t s t a g : 1 7 . 0 2 . 2 0 2 1 A b w i c k l u n g : F e s t p r e i s
@@ -169,8 +169,10 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                         .section("date") //
                         .match("^G[\\s]*e[\\s]*s[\\s]*c[\\s]*h[\\s]*.[\\s]*f[\\s]*t[\\s]*s[\\s]*t[\\s]*a[\\s]*g[\\s]*:[\\s]{1,}(?<date>[\\d\\s]+\\.[\\d\\s]+\\.[\\d\\s]+).*$") //
                         .assign((t, v) -> {
-                            if (type.getCurrentContext().get("time") != null)
-                                t.setDate(asDate(stripBlanks(v.get("date")), type.getCurrentContext().get("time")));
+                            var time = v.getTransactionContext().getString("time");
+
+                            if (time != null)
+                                t.setDate(asDate(stripBlanks(v.get("date")), time));
                             else
                                 t.setDate(asDate(stripBlanks(v.get("date"))));
                         })
@@ -255,7 +257,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                         // DE12 3456 7890 1234 5678 01 EUR 2 2 . 0 6 . 2 0 1 5 EUR 1 2 3 , 4 5
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match(".*[A-Z]{3} [\\d\\s]+\\.[\\d\\s]+\\.[\\d\\s]+ (?<currency>[A-Z]{3})(?<amount>[\\.,\\d\\s]+).*$") //
+                        .match("^.*[A-Z]{3} [\\d\\s]+\\.[\\d\\s]+\\.[\\d\\s]+ (?<currency>[A-Z]{3})(?<amount>[\\.,\\d\\s]+).*$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(stripBlanks(v.get("amount"))));
@@ -679,7 +681,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                         // T r a n s a k t i o n s e n t g e l t : EUR 4 , 6 1 -
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^T[\\s]*r[\\s]*a[\\s]*n[\\s]*s[\\s]*a[\\s]*k[\\s]*t[\\s]*i[\\s]*o[\\s]*n[\\s]*s[\\s]*e[\\s]*n[\\s]*t[\\s]*g[\\s]*e[\\s]*l[\\s]*t[\\s]*:[\\s]{1,}(?<currency>[A-Z]{3}) (?<fee>[\\.,\\d\\s]+( \\-)?.*$)") //
+                        .match("^T[\\s]*r[\\s]*a[\\s]*n[\\s]*s[\\s]*a[\\s]*k[\\s]*t[\\s]*i[\\s]*o[\\s]*n[\\s]*s[\\s]*e[\\s]*n[\\s]*t[\\s]*g[\\s]*e[\\s]*l[\\s]*t[\\s]*:[\\s]{1,}(?<currency>[A-Z]{3}) (?<fee>[\\.,\\d\\s]+)( \\-)?.*$") //
                         .assign((t, v) -> {
                             v.put("fee", stripBlanks(v.get("fee")));
                             processFeeEntries(t, v, type);
