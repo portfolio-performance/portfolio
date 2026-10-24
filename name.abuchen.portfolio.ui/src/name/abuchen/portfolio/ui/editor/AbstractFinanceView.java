@@ -375,6 +375,16 @@ public abstract class AbstractFinanceView
     {
         return top;
     }
+
+    /**
+     * Returns true if the view control has not been created yet or has already
+     * been disposed. Actions of the view must not touch the UI (and especially
+     * must not open dialogs on top of the view) if the view is disposed.
+     */
+    public final boolean isDisposed()
+    {
+        return top == null || top.isDisposed();
+    }
     
     public void setFocus()
     {
