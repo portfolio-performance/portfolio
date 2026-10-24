@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.util.chart;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
@@ -53,13 +55,17 @@ public final class ChartUtil
 
         Point chartSize = chart.getSize();
 
-        // The chart size is reported in logical pixels (device independent). SWT
-        // expects the provider to deliver an ImageData matching the requested zoom
-        // level, i.e. scaled by zoom / 100 relative to the base (100%) size. GC's
-        // copyArea then uses a non-scaling BitBlt of exactly that pixel area onto
-        // the image buffer, which only fills it completely if the buffer has the
-        // chart's physical size.
+        // SWT keeps one image handle per zoom level. GC.copyArea() fills the handle
+        // of the GC's zoom level, but Image.getImageData() reads the handle of zoom
+        // 100. At display scaling above 100 % there is no handle at zoom 100, so the
+        // provider is called again and the untouched - black - buffer is returned.
+        // Remember the zoom the provider is asked for (this is exactly the zoom
+        // copyArea uses) and read the image data back from that handle.
+        AtomicInteger usedZoom = new AtomicInteger(100);
+
         ImageDataProvider chartImageDataProvider = zoom -> {
+            usedZoom.set(zoom);
+
             int width = Math.max(1, chartSize.x * zoom / 100);
             int height = Math.max(1, chartSize.y * zoom / 100);
             PaletteData palette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
@@ -73,7 +79,9 @@ public final class ChartUtil
             image = new Image(chart.getDisplay(), chartImageDataProvider);
             gc = new GC(chart);
             gc.copyArea(image, 0, 0);
-            return image.getImageData();
+
+            // read back at the zoom whose handle copyArea actually filled
+            return image.getImageData(usedZoom.get());
         }
         finally
         {
