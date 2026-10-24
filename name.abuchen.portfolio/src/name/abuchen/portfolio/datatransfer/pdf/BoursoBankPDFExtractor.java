@@ -107,24 +107,24 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                         .match("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} (?<shares>[\\,\\d\\s]+) .*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        // @formatter:off
-                        // 15:38:46
-                        // @formatter:on
-                        .section("time").optional() //
-                        .match("^(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$") //
-                        .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
-
-                        // @formatter:off
-                        // 29/05/2024 400 ISHS VI-ISMWSPE EOA
-                        // @formatter:on
-                        .section("date") //
-                        .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) [\\,\\d\\s]+ .*$") //
-                        .assign((t, v) -> {
-                            if (type.getCurrentContext().get("time") != null)
-                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
-                            else
-                                t.setDate(asDate(v.get("date")));
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // 29/05/2024 400 ISHS VI-ISMWSPE EOA
+                                        // Type d'ordre : à cours limite
+                                        // 15:38:46
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "time") //
+                                                        .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) [\\,\\d\\s]+ .*$") //
+                                                        .match("^(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
+                                        // @formatter:off
+                                        // 27/02/2024 1,02 AXA COURT TERME A CAP.SI.2DEC
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) [\\,\\d\\s]+ .*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -200,7 +200,7 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
-                                                        .match("^.*Type d.ordre : (?<note>.* [\\,\\d\\s]+ [A-Z]{3})$")
+                                                        .match("^.*Type d.ordre : (?<note>.*)Cours demand. : [\\,\\d\\s]+ [A-Z]{3}$") //
                                                         .assign((t, v) -> t.setNote(trim(v.get("note")))))
 
                         // @formatter:off
@@ -225,7 +225,7 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                         // coupon Quantité Nom de la valeur (code) EUR EUR EUR EUR EUR EUR
                         // @formatter:on
                         .section("currency")
-                                        .match("coupon Quantit. Nom de la valeur \\(code\\) .* (?<currency>[A-Z]{3})$")
+                                        .match("^coupon Quantit. Nom de la valeur \\(code\\) .* (?<currency>[A-Z]{3})$")
                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
 
         this.addDocumentTyp(type);
@@ -274,7 +274,7 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                         .match("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\,\\d\\s]+ .* (?<amount>(\\d+,\\d+))$") //
                         .documentContext("currency") //
                         .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
