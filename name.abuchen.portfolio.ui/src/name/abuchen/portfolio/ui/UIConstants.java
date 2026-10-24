@@ -189,6 +189,13 @@ public interface UIConstants
         String UPDATE_QUOTES_STRATEGY = "UPDATE_QUOTES_STRATEGY"; //$NON-NLS-1$
 
         /**
+         * Preference key for the minimum time in milliseconds between two
+         * recalculations of the views while prices are updated. The value 0
+         * recalculates only after the price update has finished.
+         */
+        String UPDATE_QUOTES_RECALCULATION_INTERVAL = "UPDATE_QUOTES_RECALCULATION_INTERVAL"; //$NON-NLS-1$
+
+        /**
          * Preference key whether to automatically update quotes after opening a
          * data file.
          */
