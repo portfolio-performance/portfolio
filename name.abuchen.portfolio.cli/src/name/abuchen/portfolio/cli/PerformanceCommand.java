@@ -30,8 +30,6 @@ final class PerformanceCommand
     private static final OptionSpec CURRENCY = new OptionSpec("currency", "code",
                     "ISO currency of the figures. Defaults to the base currency of the file.");
 
-    private static final String LEFT_OUT = " Absent if an exchange rate is missing.";
-
     /** A value or gain of the performance snapshot, as the output names it. */
     private record Figure(String key, CategoryType category, String description)
     {
@@ -54,28 +52,21 @@ final class PerformanceCommand
                     new Figure("transfers", CategoryType.TRANSFERS,
                                     "Deposits less removals, and deliveries in less deliveries out."));
 
-    private static Schema reportingAmount(String description)
-    {
-        return Schema.number(description + " In the reporting currency." + LEFT_OUT);
-    }
-
     private static Schema dataSchema()
     {
         var data = Schema.object(
-                        "How the scope performed over the period. Every figure but the currency is left out if an exchange rate is missing, with the warning exchange-rate-missing, and for a quiet instrument, with the warning no-activity-in-period. With --by instrument, the currency and items instead.")
+                        "How the scope performed over the period. Every amount is in the reporting currency. Every figure but the currency is left out if an exchange rate is missing, with the warning exchange-rate-missing, and for a quiet instrument, with no-activity-in-period. With --by instrument, the currency and items instead.")
                         .property("currencyCode", Schema.string("The reporting currency of every amount."))
                         .optionalProperty("items", Schema.array(
                                         "With --by instrument only: one record per instrument active in the period, sorted by name (case-insensitive, ordinal) then UUID. Not paged, with no total.",
                                         PerformanceByInstrument.itemSchema()))
                         .optionalProperty("irr", Schema.number(
-                                        "Internal rate of return over the period, annualized, as a fraction: 0.05 is 5 %. Absent if core finds none."
-                                                        + LEFT_OUT))
+                                        "Internal rate of return over the period, annualized, as a fraction: 0.05 is 5 %. Absent if core finds none."))
                         .optionalProperty("ttwror", Schema.number(
-                                        "True time-weighted rate of return over the period, not annualized, as a fraction: 0.05 is 5 %."
-                                                        + LEFT_OUT))
-                        .optionalProperty("absoluteGain", reportingAmount(
+                                        "True time-weighted rate of return over the period, not annualized, as a fraction: 0.05 is 5 %."))
+                        .optionalProperty("absoluteGain", Schema.number(
                                         "Capital gains, realized capital gains, earnings and currency gains, less fees and taxes."));
-        FIGURES.forEach(figure -> data.optionalProperty(figure.key(), reportingAmount(figure.description())));
+        FIGURES.forEach(figure -> data.optionalProperty(figure.key(), Schema.number(figure.description())));
         return data;
     }
 
@@ -99,7 +90,7 @@ final class PerformanceCommand
                     ExchangeRates.CACHE_UNAVAILABLE);
 
     static final CommandSpec SPEC = new CommandSpec("performance",
-                    "IRR, TTWROR and gains of the whole client, one investment account (with or without its reference cash account), one cash account or one instrument over a period, given as --from and --to or as a reporting-period --period code, by FIFO or moving-average cost, in the base currency or --currency; or with --by instrument, one record per instrument active in the period. The figures are left out if an exchange rate is missing.",
+                    "IRR, TTWROR and gains of the whole client, one investment account (optionally with its reference cash account), one cash account or one instrument over a period (--from and --to, or --period), by FIFO or moving-average cost, in the base currency or --currency; or with --by instrument, one record per instrument active in the period.",
                     true, options(), DATA, META, WARNINGS, PerformanceCommand::execute);
 
     private PerformanceCommand()

@@ -24,8 +24,6 @@ final class PerformanceByInstrument
     static final OptionSpec BY = new OptionSpec("by", "dimension",
                     "Break the figures down: instrument is the only dimension. Returns one record per instrument active in the period, sorted by name, instead of the figures of the scope. With the whole client or an investment account.");
 
-    private static final String LEFT_OUT = " Absent if an exchange rate is missing.";
-
     private PerformanceByInstrument()
     {
     }
@@ -56,34 +54,27 @@ final class PerformanceByInstrument
 
     static Schema itemSchema()
     {
-        return Schema.object("How one instrument performed over the period, as core's per-security snapshot has it.")
+        return Schema.object("How one instrument performed over the period, as core's per-security snapshot has it. Amounts are in the reporting currency; the figures are absent if an exchange rate is missing.")
                         .property("uuid", Schema.string("UUID of the instrument."))
                         .property("name", Schema.string("Name of the instrument."))
                         .property("retired", Schema.bool("Whether the instrument is retired."))
                         .optionalProperty("isin", Schema.string("ISIN, if set."))
                         .optionalProperty("tickerSymbol", Schema.string("Ticker symbol, if set."))
                         .optionalProperty("irr", Schema.number(
-                                        "Internal rate of return of the instrument over the period, annualized, as a fraction: 0.05 is 5 %. It can differ slightly from irr at --instrument scope, which core calculates differently. Absent if core finds none."
-                                                        + LEFT_OUT))
+                                        "Internal rate of return of the instrument over the period, annualized, as a fraction: 0.05 is 5 %. It can differ slightly from irr at --instrument scope, which core calculates differently. Absent if core finds none."))
                         .optionalProperty("ttwror", Schema.number(
-                                        "True time-weighted rate of return over the period, not annualized, as a fraction: 0.05 is 5 %."
-                                                        + LEFT_OUT))
-                        .optionalProperty("initialValue", amount("Value of the holding at the start of the period."))
-                        .optionalProperty("finalValue", amount("Market value of the holding at the end of the period."))
-                        .optionalProperty("dividends", amount("Dividends received in the period."))
-                        .optionalProperty("fees", amount("Fees paid in the period."))
-                        .optionalProperty("taxes", amount("Taxes paid in the period."))
-                        .optionalProperty("absoluteGain", amount(
+                                        "True time-weighted rate of return over the period, not annualized, as a fraction: 0.05 is 5 %."))
+                        .optionalProperty("initialValue", Schema.number("Value of the holding at the start of the period."))
+                        .optionalProperty("finalValue", Schema.number("Market value of the holding at the end of the period."))
+                        .optionalProperty("dividends", Schema.number("Dividends received in the period."))
+                        .optionalProperty("fees", Schema.number("Fees paid in the period."))
+                        .optionalProperty("taxes", Schema.number("Taxes paid in the period."))
+                        .optionalProperty("absoluteGain", Schema.number(
                                         "Market value at the end and sales and dividends, less the value at the start, purchases, fees and taxes. Core's delta: it does not depend on the cost method."))
                         .optionalProperty("realizedCapitalGains",
-                                        amount("Realized capital gains of the period, by the cost method."))
+                                        Schema.number("Realized capital gains of the period, by the cost method."))
                         .optionalProperty("unrealizedCapitalGains",
-                                        amount("Unrealized capital gains on the holding at the end, by the cost method."));
-    }
-
-    private static Schema amount(String description)
-    {
-        return Schema.number(description + " In the reporting currency." + LEFT_OUT);
+                                        Schema.number("Unrealized capital gains on the holding at the end, by the cost method."));
     }
 
     /**

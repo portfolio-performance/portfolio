@@ -34,7 +34,7 @@ final class HoldingsCommand
                     "Day to value the holdings at. Defaults to today. Holdings use the prices on or before this day, and conversions the rates on or before it.");
 
     private static final OptionSpec INVESTMENT_ACCOUNT = new OptionSpec("investment-account", "ref",
-                    "Only the holdings of this investment account: its UUID, or for convenience its exact name. Names are accepted on reads only. The cash section is not affected.");
+                    "Only the holdings of this investment account. The cash section is not affected.");
 
     private static final OptionSpec BY_ACCOUNT = OptionSpec.flag("by-account",
                     "Split the holdings into one block per investment account instead of one aggregate.");

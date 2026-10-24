@@ -58,14 +58,14 @@ final class ExchangeRates
     }
 
     static final WarningSpec MISSING = new WarningSpec("exchange-rate-missing",
-                    "No usable exchange rate was found for a currency pair; the figures that need it are left out. Carries baseCurrency, termCurrency and the count of affected records (or holdings and cash accounts) on the page.");
+                    "No usable exchange rate for a currency pair; its figures are left out. Carries baseCurrency, termCurrency and the count of affected items.");
 
     static final WarningSpec STALE = new WarningSpec("stale-exchange-rate",
-                    "An exchange rate more than " + Prices.STALE_AFTER_DAYS
-                                    + " days before the day needed was used. Carries baseCurrency, termCurrency, the count of records and the maxAgeDays.");
+                    "An exchange rate over " + Prices.STALE_AFTER_DAYS
+                                    + " days older than the day needed was used. Carries baseCurrency, termCurrency, the count of records and maxAgeDays.");
 
     static final WarningSpec CACHE_UNAVAILABLE = new WarningSpec("exchange-rate-cache-unavailable",
-                    "The desktop app's ECB exchange-rate cache is needed but missing, unreadable or invalid, so it is not used. Carries the path when known and a reason: not-configured, not-found, unreadable or unparsable.");
+                    "The desktop app's ECB rate cache is missing, unreadable or invalid, so it is not used. Carries the path if known and a reason: not-configured, not-found, unreadable or unparsable.");
 
     /** The warnings of every command that converts. */
     static final List<WarningSpec> WARNINGS = List.of(MISSING, STALE, CACHE_UNAVAILABLE);
@@ -171,10 +171,10 @@ final class ExchangeRates
         return Schema.object(description)
                         .property("currencyCode", Schema.string("The ISO currency code asked for."))
                         .property("amount", Schema.number("The amount converted, rounded to minor units like core does."))
-                        .property("rate", Schema.number("Unrounded factor from the native currency into the converted currency."))
-                        .property("rateDate", Schema.string("ISO date of the rate; of the oldest rate if several were chained."))
+                        .property("rate", Schema.number("Unrounded factor from the native to the converted currency."))
+                        .property("rateDate", Schema.string("ISO date of the rate; of the oldest if chained."))
                         .property("rateSource", Schema.enumOf(
-                                        "Where the rate comes from: identity (same currency), transaction (the record's own forex unit or transfer rate), instrument (exchange-rate instruments of the file), ecb (the ECB cache of the desktop app, alone or chained) or fixed (core's fixed pairs such as GBX to GBP).",
+                                        "Where the rate comes from: transaction is the record's own forex unit or transfer rate, instrument an exchange-rate instrument of the file, ecb the desktop app's ECB cache, fixed one of core's fixed pairs such as GBX to GBP.",
                                         Source.ids()));
     }
 

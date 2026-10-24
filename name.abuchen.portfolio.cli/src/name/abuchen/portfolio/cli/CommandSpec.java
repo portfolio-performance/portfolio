@@ -34,15 +34,22 @@ record CommandSpec(String name, String summary, boolean usesClientFile, List<Opt
         this(name, summary, usesClientFile, declaredOptions, dataSchema, metaSchema, List.of(), handler);
     }
 
-    /** All options the parser accepts, including the shared ones. */
-    List<OptionSpec> options()
+    /** The global options this command accepts besides its declared ones. */
+    List<OptionSpec> sharedOptions()
     {
         var options = new ArrayList<OptionSpec>();
         if (usesClientFile)
             options.add(OptionSpec.FILE);
-        options.addAll(declaredOptions);
         options.add(OutputFormat.option(!tableColumns.isEmpty()));
         options.add(OptionSpec.VERBOSE);
+        return options;
+    }
+
+    /** All options the parser accepts, including the shared ones. */
+    List<OptionSpec> options()
+    {
+        var options = new ArrayList<OptionSpec>(declaredOptions);
+        options.addAll(sharedOptions());
         return options;
     }
 

@@ -47,7 +47,7 @@ Before any `pp-cli apply` or `pp-cli restore`, read [write-protocol.md](write-pr
 
 ## Troubleshooting
 
-A failure is a problem+json document on stdout with a `code` and a non-zero exit code. Its `detail` and the error codes in `pp-cli <command> --help` explain it.
+A failure is a problem+json document on stdout with a `code` and a non-zero exit code. Its `detail` explains it. `pp-cli --help` says what each code means; `pp-cli <command> --help` lists only the code names that command can return.
 
 | Code | Action |
 |---|---|
@@ -63,4 +63,4 @@ A failure is a problem+json document on stdout with a `code` and a non-zero exit
 | `file-locked` | Report the lock file from `detail`; the user decides whether another `pp-cli` is still running. |
 | `file-changed` | Read the file again and restart the write protocol from the dry run. |
 | `write-failed`, `internal-error` | Report `detail` to the user as it is. |
-| any other code | Report `detail` and the code's entry in `pp-cli <command> --help`, then wait for the user. |
+| any other code | Report `detail` and the code's meaning from `pp-cli --help`, then wait for the user. |

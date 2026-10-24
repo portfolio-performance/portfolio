@@ -19,4 +19,4 @@ Run them in this order. Done when every call has returned and each `warnings` en
 - **Allocation nesting**: a row's `value` is cumulative over its children. The total is the sum of the top-level rows plus the unassigned row; adding children double-counts.
 - **Share**: `share` is a share of the client total, not of the parent classification. A share of the parent is the row's `value` divided by its parent's `value`.
 - **Closed or briefly held positions**: an IRR that is extreme (millions of percent) or a TTWROR of -100% is mathematically valid and still misleading. Flag the position and leave the figure unquoted.
-- **Minor currency units**: for an instrument whose `currencyCode` is `ILA` or `GBX`, `amount` is in the minor unit, 1/100 of the main currency. Quote `converted`, which is in the requested currency.
+- **Minor currency units**: for an instrument whose `currencyCode` is `ILA` or `GBX`, `amount` is in the minor unit, 1/100 of the main currency. Quote `converted`, which is in the reporting currency: the base currency, or `--currency` if given.

@@ -6,7 +6,7 @@
 
 - *Copy upstream's id-keyed attribute map*: rejected. An agent can't interpret a key like `5c1f…` without a separate lookup that doesn't exist.
 - *Id-keyed map plus a separate `attribute-types` command*: rejected. An extra round trip on every instrument read, for no gain over inlining.
-- *Paging fields in `meta`*: rejected. `total` and `nextOffset` describe the result set, not the assumptions behind it. `meta` only echoes the resolved `limit` and `offset`.
+- *Paging fields in `meta`*: rejected. `total` and `nextOffset` describe the result set, not the assumptions behind it. `meta` only echoes the resolved `limit`, `offset`, `sort` and `order`.
 
 **Consequences**
 

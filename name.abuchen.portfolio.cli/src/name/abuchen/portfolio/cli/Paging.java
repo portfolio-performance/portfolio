@@ -15,7 +15,7 @@ record Paging(int limit, long offset)
                     DEFAULT_LIMIT, 1, (long) MAX_LIMIT);
 
     static final OptionSpec OFFSET = OptionSpec.integer("offset", "n",
-                    "Number of items to skip. Use nextOffset of the previous page to continue.", 0, 0, null);
+                    "Number of items to skip; continue with nextOffset of the previous page.", 0, 0, null);
 
     /** Both paging options, to declare on a list command. */
     static final List<OptionSpec> OPTIONS = List.of(LIMIT, OFFSET);

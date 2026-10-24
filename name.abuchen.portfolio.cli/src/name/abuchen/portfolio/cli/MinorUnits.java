@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.cli;
 
+import java.util.List;
+
 /**
  * The wording that tells an agent that an instrument's currency can be a minor
  * currency unit. Core models such a currency as its own, with a fixed rate to
@@ -21,6 +23,13 @@ final class MinorUnits
     /** The command converts nothing; holdings does. */
     static final String CONVERTED_BY_HOLDINGS = CAUTION
                     + " This command does not convert: holdings has the market value in the reporting currency in converted.";
+
+    /** Every wording above; help shows each in full once and then points back to it. */
+    static final List<String> NOTES = List.of(CONVERTED_NEXT_TO_IT, CONVERTED_WITH_CURRENCY_OPTION,
+                    CONVERTED_BY_HOLDINGS);
+
+    /** What help shows in place of a note it has already shown. */
+    static final String AS_ABOVE = " Minor units: as above.";
 
     private MinorUnits()
     {

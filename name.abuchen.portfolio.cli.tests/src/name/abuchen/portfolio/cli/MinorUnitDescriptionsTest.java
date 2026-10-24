@@ -3,12 +3,14 @@ package name.abuchen.portfolio.cli;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 
 import org.junit.Test;
 
@@ -38,7 +40,11 @@ public class MinorUnitDescriptionsTest
                     "transactions:items[].units[].forexAmount", //
                     "transactions:items[].units[].forexCurrencyCode");
 
-    /** Response fields that are never in an instrument's currency. */
+    /**
+     * Response fields that are never in an instrument's currency: the
+     * reporting currency, or the currency of a cash account (the target of a
+     * transfer, a cash account's own currency).
+     */
     private static final Set<String> OTHER_CURRENCY = Set.of( //
                     "holdings:holdings[].total.amount", //
                     "holdings:holdings[].total.currencyCode", //
@@ -77,6 +83,23 @@ public class MinorUnitDescriptionsTest
         var expected = new TreeSet<>(INSTRUMENT_CURRENCY);
         expected.removeAll(found);
         assertThat("declared instrument-currency fields missing from the schemas", expected, empty());
+    }
+
+    @Test
+    public void helpShowsEveryNoteInFullOnceAndPointsBackToItAfterwards()
+    {
+        for (var command : List.of("holdings", "transactions", "prices"))
+        {
+            var help = CliRun.run(command, "--help").stdout;
+
+            assertThat(command, help, containsString("minor currency unit"));
+            assertThat(command, help, containsString("ILA (1/100 ILS)"));
+            assertThat(command, help, containsString("GBX (1/100 GBP)"));
+            for (var note : MinorUnits.NOTES)
+                assertThat(command, help.split(Pattern.quote(note), -1).length - 1,
+                                lessThanOrEqualTo(1));
+        }
+        assertThat(CliRun.run("transactions", "--help").stdout, containsString(MinorUnits.AS_ABOVE.trim()));
     }
 
     @SuppressWarnings("unchecked")

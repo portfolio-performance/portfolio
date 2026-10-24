@@ -36,7 +36,7 @@ import name.abuchen.portfolio.snapshot.ClientSnapshot;
 final class AllocationCommand
 {
     private static final OptionSpec TAXONOMY = new OptionSpec("taxonomy", "ref",
-                    "Taxonomy to allocate by: its UUID, or for convenience its exact name. Names are accepted on reads only. List the taxonomies with the taxonomies command.")
+                    "Taxonomy to allocate by. List the taxonomies with the taxonomies command.")
                                     .asRequired();
 
     private static final OptionSpec DATE = OptionSpec.date("date",

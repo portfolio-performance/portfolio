@@ -3,7 +3,6 @@ package name.abuchen.portfolio.cli;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
 
@@ -19,10 +18,9 @@ public class HelpTest
 {
     /**
      * What an agent harness shows without truncating; describe, at about 20 KB,
-     * was cut. Most help stays near 6 KB; performance, with its two levels of
-     * figures, is the largest.
+     * was cut. Ticket 01 asks for about 6 KB; this is the hard guard.
      */
-    private static final int SIZE_LIMIT = 9 * 1024;
+    private static final int SIZE_LIMIT = 6656;
 
     @Test
     public void globalHelpListsEveryCommandWithASummaryAndEveryErrorCode()
@@ -49,6 +47,8 @@ public class HelpTest
         assertThat(stdout, containsString("--format"));
         assertThat(stdout, containsString("--verbose"));
         assertThat(stdout, containsString("--help"));
+        for (var option : List.of(OptionSpec.FILE, OptionSpec.VERBOSE, OutputFormat.option(true)))
+            assertThat(option.name(), stdout, containsString(option.description()));
         for (var limit : HelpText.KNOWN_LIMITS)
             assertThat(stdout, containsString(limit));
         assertThat(stdout, containsString("PP_PASSWORD"));
@@ -96,7 +96,7 @@ public class HelpTest
         assertThat(instruments, containsString("--limit <"));
         assertThat(instruments, containsString("default 200"));
         assertThat(instruments, containsString("1 to 1000"));
-        assertThat(instruments, containsString("json, table"));
+        assertThat(instruments, containsString("(json, table)"));
 
         var prices = CliRun.run("prices", "--help").stdout;
         assertThat(prices, containsString("(required"));
@@ -244,7 +244,9 @@ public class HelpTest
 
         assertThat(run.exitCode, is(2));
         var problem = run.json().getAsJsonObject();
-        assertThat(problem.get("code").getAsString(), is("unknown-operation"));
+        assertThat(problem.get("code").getAsString(), is("invalid-option-value"));
+        assertThat(problem.get("option").getAsString(), is("help"));
+        assertThat(problem.get("value").getAsString(), is("instrument.explode"));
         assertThat(problem.get("detail").getAsString(), containsString("instrument.add"));
     }
 
@@ -294,9 +296,14 @@ public class HelpTest
         for (var operation : Commands.OPERATIONS)
             outputs.add(CliRun.run("apply", "--help", operation.name()).stdout);
 
+        var tooLarge = new ArrayList<String>();
         for (var output : outputs)
-            assertThat(output.lines().findFirst().orElse(""), output.getBytes(StandardCharsets.UTF_8).length,
-                            lessThanOrEqualTo(SIZE_LIMIT));
+        {
+            var size = output.getBytes(StandardCharsets.UTF_8).length;
+            if (size > SIZE_LIMIT)
+                tooLarge.add(output.lines().findFirst().orElse("").substring(0, 20) + ": " + size);
+        }
+        assertThat(tooLarge.toString(), tooLarge, is(List.of()));
     }
 
     /** The start of a summary, which every one-line listing keeps. */

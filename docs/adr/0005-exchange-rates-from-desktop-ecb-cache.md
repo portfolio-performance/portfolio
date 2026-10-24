@@ -39,4 +39,4 @@ Home directories come only from the CLI's injected environment, never from the r
 - The cache format is internal to core (it moved from XML to protobuf in 2026). If it changes, the cache reads as unavailable rather than producing wrong figures; the parser then needs updating alongside the pinned core.
 - Desktop releases older than upstream `86b6eb860` keep the cache elsewhere; users of those need `PP_ECB_RATES` or an upgrade.
 - Commands that aggregate (`holdings`, `performance`, `allocation`) inherit the never-guess rule; each of those tickets decides how a total behaves when one of its parts has no rate.
-- `describe` lists `PP_ECB_RATES` among the environment variables, and each converting command lists `exchange-rate-cache-unavailable`, `exchange-rate-missing` and `stale-exchange-rate` among its warning codes.
+- `pp-cli --help` lists `PP_ECB_RATES` among the environment variables, and the `--help` of each converting command lists `exchange-rate-cache-unavailable`, `exchange-rate-missing` and `stale-exchange-rate` among its warning codes.

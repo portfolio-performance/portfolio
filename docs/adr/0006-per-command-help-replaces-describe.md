@@ -14,3 +14,4 @@
 - This removes a command, so it breaks the contract. Agents and the skill must switch to `--help`.
 - Tests that validated responses against the schema `describe` published now validate against the in-code `Schema` objects. The guarantee that real responses conform to the documented schema stays.
 - Issue 13 of `.scratch/ai-cli/` is superseded where it assumes `describe`.
+- The error code `command-required` is removed. A bare `pp-cli` now prints the global help and exits 0 instead of failing with a usage error.

@@ -45,9 +45,10 @@ Additive changes are made freely: new optional fields, and new options whose def
 | `instruments`, `investment-accounts`, `cash-accounts` | `name`, `updatedAt` | `name` |
 | `transactions` | `date`, `updatedAt` | `date` |
 | `prices` | `date` | `date` |
-| `taxonomies` | `name` | `name` |
+| `taxonomies` | `position`, `name` | `position` |
 
 - `--order` defaults to `asc`, so default output doesn't change.
+- `taxonomies` defaults to `position`, the order of the file and the app, because a `name` default would change today's output.
 - `--sort date` on `transactions` orders by date-time, as today.
 - Unpaged commands (`holdings`, `performance --by instrument`) get no sort options. The agent sees the whole list anyway.
 - Records with no `updatedAt` sort before all others in `asc`. This default was chosen while writing the spec; confirm it during implementation.

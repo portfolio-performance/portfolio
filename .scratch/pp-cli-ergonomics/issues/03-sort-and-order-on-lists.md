@@ -19,8 +19,9 @@ Add `--sort <field>` and `--order asc|desc` to the paged list commands. Each com
 | `instruments`, `investment-accounts`, `cash-accounts` | `name`, `updatedAt` | `name` |
 | `transactions` | `date`, `updatedAt` | `date` |
 | `prices` | `date` | `date` |
-| `taxonomies` | `name` | `name` |
+| `taxonomies` | `position`, `name` | `position` |
 
+- `taxonomies` defaults to `position` (file order, as the app shows them) instead of `name`: a `name` default would change today's output.
 - Ties are broken by id, so paging stays stable. `--order desc` reverses the whole comparator, tie-breaker included.
 - Items with no `updatedAt` sort first in `asc`.
 - An unknown sort field or order value gives `invalid-option-value`, with the allowed values listed.

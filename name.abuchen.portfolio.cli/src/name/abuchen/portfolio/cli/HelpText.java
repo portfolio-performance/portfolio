@@ -1,8 +1,10 @@
 package name.abuchen.portfolio.cli;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Plain-text help for <code>--help</code>, generated from everything declared
@@ -12,7 +14,10 @@ import java.util.Optional;
  */
 final class HelpText
 {
-    static final String OPTION = "--help";
+    private static final OptionSpec HELP = OptionSpec.flag("help",
+                    "Show this help, or the help of the command before it. Needs no file.");
+
+    static final String OPTION = "--" + HELP.name();
 
     private static final int ONE_LINE_LIMIT = 100;
 
@@ -85,6 +90,7 @@ final class HelpText
         out.line("  pp-cli <command> [options]");
         out.line("  pp-cli <command> --help           Options, response fields and error codes of one command.");
         out.line("  pp-cli apply --help <operation>   Input schema of one write operation.");
+        out.line("References (the <ref> option values): a UUID. Reads also accept an exact name, and for instruments an ISIN or ticker; writes take UUIDs only.");
         out.blank();
 
         out.line("Commands:");
@@ -94,10 +100,10 @@ final class HelpText
         out.blank();
 
         out.line("Global options:");
-        out.line("  --file <path>      " + OptionSpec.FILE.description() + " Not for commands that read no file.");
-        out.line("  --format <format>  How to write the result: json (default) or, where the command's help lists it, table.");
-        out.line("  --verbose          Show core's INFO and OK status messages on stderr; hidden by default.");
-        out.line("  --help             Show this help, or the help of the command before it. Needs no file.");
+        out.line("  " + optionLine(OptionSpec.FILE) + " Not for commands that read no file.");
+        out.line("  " + optionLine(OutputFormat.option(true)) + " Only the commands whose help lists it offer table.");
+        out.line("  " + optionLine(OptionSpec.VERBOSE));
+        out.line("  " + syntax(HELP) + "  " + HELP.description());
         out.blank();
 
         out.line("Environment variables:");
@@ -125,8 +131,9 @@ final class HelpText
         out.blank();
 
         out.line("Options:");
-        for (var option : command.options())
-            out.line("  " + syntax(option) + "  " + option.description() + facts(option));
+        command.declaredOptions().forEach(option -> out.line("  " + optionLine(option)));
+        out.line("  Global options (pp-cli --help): "
+                        + String.join(", ", command.sharedOptions().stream().map(HelpText::sharedSyntax).toList()));
 
         if (command.name().equals(ApplyCommand.SPEC.name()))
         {
@@ -139,7 +146,8 @@ final class HelpText
 
         out.blank();
         out.line("Response data: " + orEmpty(command.dataSchema().description()));
-        command.dataSchema().helpLines(2).forEach(out::line);
+        var shown = new HashSet<String>();
+        command.dataSchema().helpLines(2).forEach(line -> out.line(shortenRepeatedNotes(line, shown)));
         out.blank();
         var meta = command.metaSchema();
         var optionalMeta = meta.memberNames(false);
@@ -149,25 +157,22 @@ final class HelpText
         if (!command.warnings().isEmpty())
         {
             out.blank();
-            out.line("Warnings (code and detail in the warnings of the response):");
+            out.line("Warnings:");
             for (var warning : command.warnings())
                 out.line("  " + warning.code() + "  " + warning.description());
         }
 
         out.blank();
-        out.line("Errors (the code of the problem+json document; exit code 2 for usage errors, 1 otherwise;"
-                        + " pp-cli --help says what each means): " + String.join(", ", ErrorSpec.ALL.stream()
-                                        .filter(e -> e.appliesTo(command)).map(ErrorSpec::code).toList()));
+        out.line("Error codes (meanings: pp-cli --help): " + String.join(", ", ErrorSpec.ALL.stream()
+                        .filter(e -> e.appliesTo(command)).map(ErrorSpec::code).toList()));
         return out.toString();
     }
 
     private static String operation(String name) throws CliException
     {
         var operation = Commands.OPERATIONS.stream().filter(o -> o.name().equals(name)).findFirst()
-                        .orElseThrow(() -> CliException.usage("unknown-operation", "Unknown operation",
-                                        "Unknown operation '" + name + "'. Known operations: " + String.join(", ",
-                                                        Commands.OPERATIONS.stream().map(OperationSpec::name)
-                                                                        .toList())));
+                        .orElseThrow(() -> HELP.invalid(name, "one of the operations " + String.join(", ",
+                                        Commands.OPERATIONS.stream().map(OperationSpec::name).toList())));
 
         var out = new Text();
         out.line("pp-cli apply operation " + operation.name() + ": " + operation.summary());
@@ -195,6 +200,19 @@ final class HelpText
         return usage.append(" [options]").toString();
     }
 
+    private static String optionLine(OptionSpec option)
+    {
+        return syntax(option) + "  " + option.description() + facts(option);
+    }
+
+    /** A global option as one phrase: its syntax, and its values if it has a choice. */
+    private static String sharedSyntax(OptionSpec option)
+    {
+        return option.type() instanceof OptionSpec.Choice choice
+                        ? syntax(option) + " (" + String.join(", ", choice.values()) + ")"
+                        : syntax(option);
+    }
+
     private static String syntax(OptionSpec option)
     {
         return "--" + option.name() + (option.isFlag() ? "" : " <" + option.valueName() + ">");
@@ -215,7 +233,10 @@ final class HelpText
                                 : domain.minimum() + " to " + domain.maximum()));
                 facts.add("default " + domain.defaultValue());
             }
-            case OptionSpec.IsoDate date -> facts.add("date");
+            case OptionSpec.IsoDate date ->
+            {
+                // the value placeholder already reads yyyy-MM-dd
+            }
             case OptionSpec.Flag flag -> facts.add("switch, default off");
             case OptionSpec.Choice choice ->
             {
@@ -238,6 +259,17 @@ final class HelpText
             return sentence;
 
         return sentence.substring(0, sentence.lastIndexOf(' ', ONE_LINE_LIMIT)) + " ...";
+    }
+
+    /** The minor-unit notes repeat on many fields; the second time a note appears it is replaced by a pointer. */
+    private static String shortenRepeatedNotes(String line, Set<String> shown)
+    {
+        for (var note : MinorUnits.NOTES)
+        {
+            if (line.contains(note) && !shown.add(note))
+                return line.replace(note, MinorUnits.AS_ABOVE);
+        }
+        return line;
     }
 
     private static String pad(String text, int width)

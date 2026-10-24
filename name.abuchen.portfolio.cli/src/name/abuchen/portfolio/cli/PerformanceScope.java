@@ -24,13 +24,13 @@ import name.abuchen.portfolio.util.Interval;
 final class PerformanceScope
 {
     private static final OptionSpec INVESTMENT_ACCOUNT = new OptionSpec("investment-account", "ref",
-                    "Report this investment account only: its UUID, or for convenience its exact name. Names are accepted on reads only. At most one of --investment-account, --cash-account and --instrument.");
+                    "Report this investment account only. One scope option at most.");
 
     private static final OptionSpec CASH_ACCOUNT = new OptionSpec("cash-account", "ref",
-                    "Report this cash account only: its UUID, or for convenience its exact name. Names are accepted on reads only. At most one of --investment-account, --cash-account and --instrument.");
+                    "Report this cash account only. One scope option at most.");
 
     private static final OptionSpec INSTRUMENT = new OptionSpec("instrument", "ref",
-                    "Report this instrument only: its UUID, or for convenience its ISIN, ticker or exact name. Name, ISIN and ticker references are accepted on reads only. At most one of --investment-account, --cash-account and --instrument.");
+                    "Report this instrument only. One scope option at most.");
 
     private static final OptionSpec WITH_REFERENCE_CASH_ACCOUNT = OptionSpec.flag("with-reference-cash-account",
                     "Report the investment account together with its reference cash account. Only with --investment-account; fails with no-reference-cash-account if the account has none.");

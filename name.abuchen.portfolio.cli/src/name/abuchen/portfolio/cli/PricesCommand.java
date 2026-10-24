@@ -13,7 +13,7 @@ import name.abuchen.portfolio.money.Values;
 final class PricesCommand
 {
     private static final OptionSpec INSTRUMENT = new OptionSpec("instrument", "ref",
-                    "Instrument to read: its UUID, or for convenience its ISIN, ticker or exact name. Name, ISIN and ticker references are accepted on reads only; writes accept UUIDs alone.")
+                    "Instrument to read.")
                                     .asRequired();
 
     private static final OptionSpec FROM = OptionSpec.date("from",

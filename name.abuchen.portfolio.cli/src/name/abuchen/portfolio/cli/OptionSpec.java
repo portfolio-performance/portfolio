@@ -58,7 +58,7 @@ record OptionSpec(String name, String valueName, String description, Type type, 
                     "Client file to read. Falls back to the PP_FILE environment variable.");
 
     static final OptionSpec VERBOSE = flag("verbose",
-                    "Show core's INFO and OK status messages on stderr, such as the line logged when a file is loaded. They are hidden by default; warnings and errors are always shown. Stdout is not affected.");
+                    "Show core's INFO and OK status messages on stderr, such as the line logged when a file is loaded; hidden by default. Warnings and errors always show; stdout is unaffected.");
 
     // Long.parseLong alone would accept a leading '+' and non-ASCII digits
     private static final Pattern INTEGER = Pattern.compile("-?[0-9]+");

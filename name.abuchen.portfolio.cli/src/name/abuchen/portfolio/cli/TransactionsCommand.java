@@ -45,26 +45,25 @@ final class TransactionsCommand
     private static final DateTimeFormatter TIME = DateTimeFormatter.ofPattern("HH:mm");
 
     private static final OptionSpec INVESTMENT_ACCOUNT = new OptionSpec("investment-account", "ref",
-                    "Only records with a side in this investment account: its UUID, or for convenience its exact name. Names are accepted on reads only.");
+                    "Only records with a side in this investment account.");
 
     private static final OptionSpec CASH_ACCOUNT = new OptionSpec("cash-account", "ref",
-                    "Only records with a side in this cash account: its UUID, or for convenience its exact name. Names are accepted on reads only.");
+                    "Only records with a side in this cash account.");
 
     private static final OptionSpec INSTRUMENT = new OptionSpec("instrument", "ref",
-                    "Only records of this instrument, including its dividends, fees and taxes: its UUID, or for convenience its ISIN, ticker or exact name. Name, ISIN and ticker references are accepted on reads only.");
+                    "Only records of this instrument, including its dividends, fees and taxes.");
 
     private static final OptionSpec TYPE = new OptionSpec("type", "types",
-                    "Only records of these types: a comma-separated list, case-insensitive, of any value the type field can have: "
-                                    + String.join(", ", FILTERABLE_TYPES) + ".");
+                    "Only records of these types: comma-separated, case-insensitive values of the type field.");
 
     private static final OptionSpec FROM = OptionSpec.date("from",
-                    "First day of the range, inclusive. Without it the range has no lower bound.");
+                    "First day of the range, inclusive. Without it, no lower bound.");
 
     private static final OptionSpec TO = OptionSpec.date("to",
-                    "Last day of the range, inclusive. Defaults to today, so records dated in the future are hidden unless a later date is given.");
+                    "Last day of the range, inclusive. Defaults to today.");
 
     private static final OptionSpec CURRENCY = new OptionSpec("currency", "code",
-                    "Adds to every record its amount converted into this ISO currency, with the rate, its date and its source. Amounts stay in each record's own currency.");
+                    "Adds converted to every record: its amount in this ISO currency, with rate, date and source. amount stays in the record's currency.");
 
     private static Schema unit()
     {
@@ -79,51 +78,52 @@ final class TransactionsCommand
                                         "Unrounded as stored: forexAmount times exchangeRate is approximately amount."));
     }
 
+    /** The name that goes with a UUID member: present exactly when that member is. */
+    private static Schema nameOf(String idMember)
+    {
+        return Schema.string("Name for " + idMember + ", empty if none. Present exactly when it is.");
+    }
+
     private static Schema recordSchema()
     {
         return Schema.object("One business event.")
                         .property("id", Schema.string(
-                                        "UUID of the investment-account side of a buy or sell, the outgoing side of a transfer, and the transaction itself otherwise."))
+                                        "UUID of the investment-account side of a buy or sell, the outgoing side of a transfer, else of the transaction."))
                         .property("type", Schema.openEnumOf(
-                                        "Core's transaction type. An open enum: new values may appear. An intact transfer is TRANSFER; a side whose partner is missing keeps its raw core type, e.g. TRANSFER_OUT.",
+                                        "Core's transaction type. An open enum: new values may appear. An intact transfer is TRANSFER; a side without its partner keeps its raw type, e.g. TRANSFER_OUT.",
                                         FILTERABLE_TYPES))
-                        .optionalProperty("kind", Schema.enumOf("Of a TRANSFER: cash or security.",
+                        .optionalProperty("kind", Schema.enumOf("Of a TRANSFER.",
                                         TransactionRecord.TransferKind.ids()))
                         .property("date", Schema.string("ISO date."))
                         .optionalProperty("time", Schema.string("HH:mm; absent if the stored time is midnight."))
                         .property("sides", Schema.array("UUIDs of every side of the event, id first.",
                                         Schema.string(null)))
                         .property("amount", Schema.number(
-                                        "Net amount as stored, from the investment-account side of a buy or sell and the outgoing side of a transfer."
+                                        "Net amount as stored, of the investment-account side of a buy or sell and the outgoing side of a transfer."
                                         + MinorUnits.CONVERTED_WITH_CURRENCY_OPTION))
                         .property("currencyCode", Schema.string("ISO currency code of amount." + MinorUnits.CONVERTED_WITH_CURRENCY_OPTION))
                         .optionalProperty("targetAmount",
-                                        Schema.number("Amount of the incoming side of a cross-currency cash transfer."))
+                                        Schema.number("Amount of the incoming side of a cross-currency transfer."))
                         .optionalProperty("targetCurrencyCode",
                                         Schema.string("ISO currency code of targetAmount."))
                         .optionalProperty("exchangeRate", Schema.number(
                                         "Of a cross-currency cash transfer with a rate: unrounded as stored, targetAmount times exchangeRate is approximately amount."))
                         .optionalProperty("instrument", Schema.string("UUID of the instrument."))
-                        .optionalProperty("instrumentName", Schema.string(
-                                        "Name of the instrument; empty if it has none. Present exactly when instrument is."))
+                        .optionalProperty("instrumentName", nameOf("instrument"))
                         .optionalProperty("shares", Schema.number("Number of shares."))
                         .optionalProperty("investmentAccount", Schema.string("UUID of the investment account."))
-                        .optionalProperty("investmentAccountName", Schema.string(
-                                        "Name of the investment account; empty if it has none. Present exactly when investmentAccount is."))
+                        .optionalProperty("investmentAccountName", nameOf("investmentAccount"))
                         .optionalProperty("cashAccount", Schema.string("UUID of the cash account."))
-                        .optionalProperty("cashAccountName", Schema.string(
-                                        "Name of the cash account; empty if it has none. Present exactly when cashAccount is."))
+                        .optionalProperty("cashAccountName", nameOf("cashAccount"))
                         .optionalProperty("from", Schema.string("Of a TRANSFER: UUID of the account it leaves."))
-                        .optionalProperty("fromName", Schema.string(
-                                        "Name of the account it leaves; empty if it has none. Present exactly when from is."))
+                        .optionalProperty("fromName", nameOf("from"))
                         .optionalProperty("to", Schema.string("Of a TRANSFER: UUID of the account it enters."))
-                        .optionalProperty("toName", Schema.string(
-                                        "Name of the account it enters; empty if it has none. Present exactly when to is."))
+                        .optionalProperty("toName", nameOf("to"))
                         .optionalProperty("exDate", Schema.string("ISO ex-date of a dividend."))
                         .optionalProperty("note", Schema.string("The note."))
                         .optionalProperty("source", Schema.string("Where the record was imported from."))
                         .optionalProperty("updatedAt", Schema.string(
-                                        "When the record last changed in the file: the latest of its sides, as an ISO-8601 UTC instant to the second, for example 2026-10-24T15:04:57Z. Absent if none has one."))
+                                        "When the record last changed: the latest of its sides, as an ISO-8601 UTC instant such as 2026-10-24T15:04:57Z. Absent if none has one."))
                         .property("units", Schema.array("Fees, taxes and forex of the record; empty if none.", unit()))
                         .optionalProperty("converted", ExchangeRates.convertedSchema(
                                         "The amount in the currency asked for with --currency. Absent if no rate was found."));
@@ -146,7 +146,7 @@ final class TransactionsCommand
                     .optionalProperty("exchangeRates", ExchangeRates.metaSchema());
 
     static final CommandSpec SPEC = new CommandSpec("transactions",
-                    "Business events as transaction records, each joining the sides of a buy, sell or transfer, filtered by date range, account, instrument and type, sorted by date-time (default) or updatedAt, then id; --order desc reverses.",
+                    "Business events as transaction records, each joining the sides of a buy, sell or transfer, filtered by date range, account, instrument and type.",
                     true,
                     List.of(INVESTMENT_ACCOUNT, CASH_ACCOUNT, INSTRUMENT, TYPE, FROM, TO, CURRENCY, Paging.LIMIT,
                                     Paging.OFFSET, SORT.sortOption(), Sorting.ORDER),

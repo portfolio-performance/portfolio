@@ -57,14 +57,13 @@ record ErrorSpec(String code, String description, Scope scope, List<String> comm
     static final List<ErrorSpec> ALL = List.of(
                     // invocation
                     global("unknown-command", "The command does not exist; the detail lists the known commands."),
-                    of("unknown-operation", "apply --help named an operation that does not exist; the detail lists the known ones.", "apply"),
                     everyCommand("unexpected-argument", "An argument is not an option; options look like --name value."),
                     everyCommand("unknown-option", "The command has no such option."),
                     everyCommand("option-value-required", "An option that takes a value was given without one."),
                     of("option-required", "A required option is missing, or an option needs another option.", "prices",
                                     "performance", "allocation", "apply", "restore"),
                     everyCommand("invalid-option-value",
-                                    "An option value is not accepted; the detail states the expected value."),
+                                    "An option value is not accepted, including an unknown operation after apply --help; the detail states the expected value."),
                     of("conflicting-options", "Options were combined that can't be used together.", "performance"),
                     of("invalid-date-range", "The start of the period is after its end.", "prices", "transactions",
                                     "performance"),

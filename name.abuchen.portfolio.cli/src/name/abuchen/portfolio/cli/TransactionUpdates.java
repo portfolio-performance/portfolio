@@ -167,7 +167,7 @@ final class TransactionUpdates
         }
 
         var client = context.client();
-        var before = TransactionsCommand.render(existing.record(), context.client());
+        var before = TransactionsCommand.render(existing.record(), client);
         var updatedAt = sides.stream().map(side -> side.transaction().getUpdatedAt()).toList();
 
         for (var i = 0; i < sides.size(); i++)
