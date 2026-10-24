@@ -23,7 +23,8 @@ final class InstrumentsCommand
     private static final Schema ITEM = Schema.object("An instrument: a security, index or exchange rate.")
                     .property("uuid", Schema.string("Canonical UUID."))
                     .property("name", Schema.string("Instrument name; empty if the file has none."))
-                    .optionalProperty("currencyCode", Schema.string("ISO currency code; absent for indices."))
+                    .optionalProperty("currencyCode", Schema.string(
+                                    "ISO currency code; absent for indices." + MinorUnits.CONVERTED_BY_HOLDINGS))
                     .optionalProperty("isin", Schema.string("ISIN, if set."))
                     .optionalProperty("wkn", Schema.string("WKN, if set."))
                     .optionalProperty("tickerSymbol", Schema.string("Ticker symbol, if set."))

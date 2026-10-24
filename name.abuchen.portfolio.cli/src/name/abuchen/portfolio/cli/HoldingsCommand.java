@@ -60,9 +60,10 @@ final class HoldingsCommand
                         .optionalProperty("price", Schema.object(
                                         "The price valuation used: the last one on or before the date, or the last transaction's price if there is none. Absent for a sold-out holding.")
                                         .property("date", Schema.string("ISO date of the price."))
-                                        .property("value", Schema.number("Price per share in the currency of the instrument.")))
-                        .property("amount", Schema.number("Market value in the currency of the instrument."))
-                        .property("currencyCode", Schema.string("ISO currency code of the instrument."))
+                                        .property("value", Schema.number("Price per share in the currency of the instrument."
+                                                        + MinorUnits.CONVERTED_NEXT_TO_IT)))
+                        .property("amount", Schema.number("Market value in the currency of the instrument." + MinorUnits.CONVERTED_NEXT_TO_IT))
+                        .property("currencyCode", Schema.string("ISO currency code of the instrument." + MinorUnits.CONVERTED_NEXT_TO_IT))
                         .optionalProperty("converted", ExchangeRates.convertedSchema(
                                         "The market value in the reporting currency, at the rate of the date. Absent if no rate was found."));
     }

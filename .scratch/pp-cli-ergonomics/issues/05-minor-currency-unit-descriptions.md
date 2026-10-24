@@ -1,7 +1,7 @@
 # 05: Explain minor currency units in field descriptions
 
 Type: task
-Status: ready-for-agent
+Status: done
 
 Spec: [spec.md](../spec.md), "Solution". Glossary: **Minor currency unit**.
 
@@ -18,7 +18,7 @@ The wording is generated into help (issue 01) and is the single source of truth.
 
 ## Acceptance criteria
 
-- [ ] Every affected `currencyCode`/`amount` description mentions minor units and names the converted field
-- [ ] No behaviour change; existing tests pass
+- [x] Every affected `currencyCode`/`amount` description mentions minor units and names the converted field
+- [x] No behaviour change; existing tests pass
 
 ## Comments

@@ -282,7 +282,7 @@ final class TransactionOperations
         var record = TransactionRecord.allOf(context.client()).stream().filter(r -> r.primary() == primary).findFirst()
                         .orElseThrow();
         context.created(new OperationContext.Change("transaction", record.id(), null,
-                        TransactionsCommand.render(record)));
+                        TransactionsCommand.render(record, context.client())));
     }
 
     /** Reports a failure for each of the members that is present, because the kind of transaction doesn't take it. */

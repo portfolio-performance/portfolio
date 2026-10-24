@@ -47,6 +47,7 @@ public class HelpTest
 
         assertThat(stdout, containsString("--file"));
         assertThat(stdout, containsString("--format"));
+        assertThat(stdout, containsString("--verbose"));
         assertThat(stdout, containsString("--help"));
         for (var limit : HelpText.KNOWN_LIMITS)
             assertThat(stdout, containsString(limit));

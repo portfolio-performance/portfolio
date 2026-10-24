@@ -96,6 +96,7 @@ final class HelpText
         out.line("Global options:");
         out.line("  --file <path>      " + OptionSpec.FILE.description() + " Not for commands that read no file.");
         out.line("  --format <format>  How to write the result: json (default) or, where the command's help lists it, table.");
+        out.line("  --verbose          Show core's INFO and OK status messages on stderr; hidden by default.");
         out.line("  --help             Show this help, or the help of the command before it. Needs no file.");
         out.blank();
 
