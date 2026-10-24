@@ -288,7 +288,7 @@ public class PortfolioClientFilter implements ClientFilter
         var portfolioWeight = getWeightBD(portfolio);
         var accountWeight = getWeightBD(account);
 
-        if (portfolioWeight.equals(accountWeight))
+        if (portfolioWeight.compareTo(accountWeight) == 0)
         {
             // both sides share the same weight -> a single scaled buy/sell
             var copy = new BuySellEntry(readOnlyPortfolio, readOnlyAccount);
@@ -558,14 +558,14 @@ public class PortfolioClientFilter implements ClientFilter
      */
     private PortfolioTransaction scaled(PortfolioTransaction t, BigDecimal weight)
     {
-        if (weight.equals(Classification.ONE_HUNDRED_PERCENT_BD))
+        if (weight.compareTo(Classification.ONE_HUNDRED_PERCENT_BD) == 0)
             return t;
         return convertTo(t, t.getType(), weight);
     }
 
     private AccountTransaction scaled(AccountTransaction t, BigDecimal weight)
     {
-        if (weight.equals(Classification.ONE_HUNDRED_PERCENT_BD))
+        if (weight.compareTo(Classification.ONE_HUNDRED_PERCENT_BD) == 0)
             return t;
 
         AccountTransaction clone = new AccountTransaction();
