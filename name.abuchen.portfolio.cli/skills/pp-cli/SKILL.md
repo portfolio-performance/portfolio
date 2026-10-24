@@ -24,7 +24,7 @@ On `password-required`, show the user both forms and wait. On `incorrect-passwor
 
 ## Answers
 
-- **Figures** come from `pp-cli` responses. Quote them; valuations, IRR and TTWROR are the tool's to compute. If no command returns a figure, say so.
+- **Figures** come from `pp-cli` responses. Quote them; valuations, IRR and TTWROR are the tool's to compute. If no command returns a figure, say so. A figure you derive from responses (a sum, a split, a share) is yours: compute it with a tool, not in your head, and label it as derived.
 - **Basis**: state what `meta` echoes for the figure: the period (`from`, `to`), the valuation `date`, the `currency` and the `costMethod`.
 - **Warnings**: pass on every entry of `warnings` (such as `stale-price` or `exchange-rate-missing`) with what it means for the answer.
 - **Limits**: anything under Limits in `pp-cli --help` is out of reach. Say so plainly and offer what the tool can do.
@@ -39,7 +39,8 @@ The same commands run in PowerShell, cmd, Git Bash and zsh when you:
 - call the tool as plain `pp-cli`, with no path or extension;
 - wrap every path in double quotes, since paths may contain spaces or backslashes;
 - write any JSON for the tool to a file with your file tool and pass the file's path. Stdin pipes and inline JSON break differently in each shell, so `--input` always gets a file path;
-- read CLI output directly. To save it for parsing, and for every `--input` file, use a temp directory made for this session and delete it before you finish, since both hold financial data.
+- read CLI output directly, and project large responses down to the fields you need in the same command, with whatever JSON tool the shell offers (such as `jq`, PowerShell's `ConvertFrom-Json`, or a Python one-liner). Output saved to disk may be blocked by the environment;
+- keep every `--input` file in a temp directory made for this session and delete it before you finish, since it holds financial data.
 
 ## Changes
 
