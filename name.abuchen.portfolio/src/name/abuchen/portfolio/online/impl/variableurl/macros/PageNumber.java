@@ -8,7 +8,7 @@ public class PageNumber implements Macro
 {
     public PageNumber(CharSequence input)
     {
-        if (!"PAGE".equals(input)) //$NON-NLS-1$
+        if (!"PAGE".contentEquals(input)) //$NON-NLS-1$
             throw new IllegalArgumentException(input.toString());
     }
 

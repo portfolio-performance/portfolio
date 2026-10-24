@@ -7,7 +7,7 @@ public class ISIN implements Macro
 {
     public ISIN(CharSequence input)
     {
-        if (!"ISIN".equals(input)) //$NON-NLS-1$
+        if (!"ISIN".contentEquals(input)) //$NON-NLS-1$
             throw new IllegalArgumentException(input.toString());
     }
 
