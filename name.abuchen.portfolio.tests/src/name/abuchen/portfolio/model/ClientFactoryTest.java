@@ -6,11 +6,17 @@ import static org.junit.Assert.assertTrue;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.EnumSet;
+import java.util.Set;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
+import name.abuchen.portfolio.money.CurrencyUnit;
 
 @SuppressWarnings("nls")
 public class ClientFactoryTest
@@ -206,5 +212,57 @@ public class ClientFactoryTest
         var flags = ClientFactory.getFlags(file);
         assertTrue(flags.contains(SaveFlag.XML));
         assertTrue(flags.contains(SaveFlag.ID_REFERENCES));
+    }
+
+    @Test
+    public void testSaveAndLoadCompressedBinaryFile() throws IOException
+    {
+        assertSaveAndLoad("test.portfolio", null, EnumSet.of(SaveFlag.BINARY, SaveFlag.COMPRESSED));
+    }
+
+    @Test
+    public void testSaveAndLoadCompressedXmlFile() throws IOException
+    {
+        assertSaveAndLoad("test.zip", null, EnumSet.of(SaveFlag.XML, SaveFlag.COMPRESSED));
+    }
+
+    @Test
+    public void testSaveAndLoadEncryptedBinaryFile() throws IOException
+    {
+        assertSaveAndLoad("test.portfolio", "secret".toCharArray(),
+                        EnumSet.of(SaveFlag.BINARY, SaveFlag.ENCRYPTED, SaveFlag.AES256));
+    }
+
+    @Test
+    public void testSaveAndLoadEncryptedXmlFile() throws IOException
+    {
+        assertSaveAndLoad("test.portfolio", "secret".toCharArray(),
+                        EnumSet.of(SaveFlag.XML, SaveFlag.ENCRYPTED, SaveFlag.AES256));
+    }
+
+    private void assertSaveAndLoad(String filename, char[] password, Set<SaveFlag> flags) throws IOException
+    {
+        var client = ClientFactory.load(ClientFactoryTest.class.getResourceAsStream("/scenarios/protobuf.xml"));
+
+        // add enough historical prices so that the compressed data spans
+        // multiple blocks of the parallel compression
+        var security = new Security("Security with many prices", CurrencyUnit.EUR);
+        var date = LocalDate.of(1900, 1, 1);
+        for (int ii = 0; ii < 60_000; ii++)
+            security.addPrice(new SecurityPrice(date.plusDays(ii), 1_000_000_000L + ii * 12_345L));
+        // the binary format requires the timestamp of the last modification
+        security.setUpdatedAt(Instant.parse("2026-10-21T08:00:00Z"));
+        client.addSecurity(security);
+
+        var expected = ClientTestUtilities.toString(client);
+
+        var file = tempFolder.newFile(filename);
+        ClientFactory.saveAs(client, file, password, EnumSet.copyOf(flags));
+
+        var loaded = ClientFactory.load(file, password, new NullProgressMonitor());
+        var actual = ClientTestUtilities.toString(loaded);
+
+        assertTrue("difference starting at character " + ClientTestUtilities.indexOfDifference(expected, actual),
+                        expected.equals(actual));
     }
 }
