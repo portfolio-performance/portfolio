@@ -65,7 +65,7 @@ public class LibertyVorsorgeAGPDFExtractor extends AbstractPDFExtractor
                         // Is type --> "verkauft" change from BUY to SELL
                         .section("type").optional() //
                         .match("^W[\\s]*i[\\s]*r[\\s]*h[\\s]*a[\\s]*b[\\s]*e[\\s]*n[\\s]*f.[\\s]*r[\\s]*S[\\s]*i[\\s]*e[\\s]*a[\\s]*m.*" //
-                                        + "(?<type>v[\\s]*e[\\s]*r[\\s]*k[\\s]*a[\\s]*u[\\s]*f[\\s]*t).*") //
+                                        + "(?<type>v[\\s]*e[\\s]*r[\\s]*k[\\s]*a[\\s]*u[\\s]*f[\\s]*t).*$") //
                         .assign((t, v) -> {
                             if ("verkauft".equals(stripBlanks(v.get("type"))))
                                 t.setType(PortfolioTransaction.Type.SELL);
@@ -87,7 +87,7 @@ public class LibertyVorsorgeAGPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "nameContinued", "wkn", "isin", "currency") //
                                                         .find("Wir haben f.r Sie am.*") //
                                                         .match("^[\\.'\\d]+ Anteile( .*)?$") //
-                                                        .match("^(?<name>.*)$")
+                                                        .match("^(?<name>.*)$") //
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .match("^Valor: (?<wkn>[A-Z0-9]{5,9})$") //
                                                         .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
@@ -170,14 +170,14 @@ public class LibertyVorsorgeAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^Wir haben für Sie am (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .match("^Wir haben f.r Sie am (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date")))),
                                         // @formatter:off
                                         // W ir ha ben für Sie a m  06.03.2025 v erk a u ft
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("W[\\s]*i[\\s]*r[\\s]*h[\\s]*a[\\s]*b[\\s]*e[\\s]*n[\\s]*f.[\\s]*r[\\s]*S[\\s]*i[\\s]*e[\\s]*a[\\s]*m[\\s]*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*") //
+                                                        .match("^W[\\s]*i[\\s]*r[\\s]*h[\\s]*a[\\s]*b[\\s]*e[\\s]*n[\\s]*f.[\\s]*r[\\s]*S[\\s]*i[\\s]*e[\\s]*a[\\s]*m[\\s]*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date")))))
 
                         .oneOf( //
@@ -196,7 +196,7 @@ public class LibertyVorsorgeAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .find("M[\s]*e[\\s]*n[\\s]*g[\\s]*e[\\s]*\\/[\\s]*N[\\s]*o[\\s]*m[\\s]*i[\\s]*n[\\s]*a[\\s]*l[\\s]*B[\\s]*.[\\s]*r[\\s]*s[\\s]*e[\\s]*n[\\s]*p[\\s]*l[\\s]*a[\\s]*t[\\s]*z[\\s]*P[\\s]*r[\\s]*e[\\s]*i[\\s]*s[\\s]*") //
+                                                        .find("M[\\s]*e[\\s]*n[\\s]*g[\\s]*e[\\s]*\\/[\\s]*N[\\s]*o[\\s]*m[\\s]*i[\\s]*n[\\s]*a[\\s]*l[\\s]*B[\\s]*.[\\s]*r[\\s]*s[\\s]*e[\\s]*n[\\s]*p[\\s]*l[\\s]*a[\\s]*t[\\s]*z[\\s]*P[\\s]*r[\\s]*e[\\s]*i[\\s]*s[\\s]*") //
                                                         .match("^(?<shares>[\\.'\\d]+) .*$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
@@ -210,7 +210,7 @@ public class LibertyVorsorgeAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^C[\\s]*h[\\s]*a[\s]*n[\\s]*g[\\s]*e[\\s]*[A-Z\\s]{3,}[\\s]*\\/[\\s]*[A-Z\\s]{3,} [\\.,\\d]+[\\s]*(?<currency>[A-Z\\s]{3,})[\\s]*(\\-)?(?<amount>[\\.'\\d]+)$") //
+                                                        .match("^C[\\s]*h[\\s]*a[\\s]*n[\\s]*g[\\s]*e[\\s]*[A-Z\\s]{3,}[\\s]*\\/[\\s]*[A-Z\\s]{3,} [\\.,\\d]+[\\s]*(?<currency>[A-Z\\s]{3,})[\\s]*(\\-)?(?<amount>[\\.'\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(stripBlanks(v.get("currency"))));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -233,8 +233,8 @@ public class LibertyVorsorgeAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("termCurrency", "baseCurrency", "exchangeRate", "fxGross") //
-                                                        .match("^T[\\s]*o[\\s]*t[\\s]*a[\\s]*l[\\s]*K[\\s]*u[\\s]*r[\\s]*s[\\s]*w[\\s]*e[\\s]*r[\\s]*t[\\s]*(?<currency>[A-Z\\s]{3,}) (?<fxGross>[\\.,\\d]+)$") //
-                                                        .match("^C[\\s]*h[\\s]*a[\s]*n[\\s]*g[\\s]*e[\\s]*(?<baseCurrency>[A-Z\\s]{3,})[\\s]*\\/[\\s]*(?<termCurrency>[A-Z\\s]{3,}) (?<exchangeRate>[\\.,\\d]+) [A-Z\\s]{3,} [\\.,\\d]+$") //
+                                                        .match("^T[\\s]*o[\\s]*t[\\s]*a[\\s]*l[\\s]*K[\\s]*u[\\s]*r[\\s]*s[\\s]*w[\\s]*e[\\s]*r[\\s]*t[\\s]*(?<currency>[A-Z\\s]{3,}) (?<fxGross>[\\.'\\d]+)$") //
+                                                        .match("^C[\\s]*h[\\s]*a[\\s]*n[\\s]*g[\\s]*e[\\s]*(?<baseCurrency>[A-Z\\s]{3,})[\\s]*\\/[\\s]*(?<termCurrency>[A-Z\\s]{3,}) (?<exchangeRate>[\\.,\\d]+) [A-Z\\s]{3,} [\\.,\\d]+$") //
                                                         .assign((t, v) -> {
                                                             v.put("termCurrency", asCurrencyCode(stripBlanks(v.get("termCurrency"))));
                                                             v.put("baseCurrency", asCurrencyCode(stripBlanks(v.get("baseCurrency"))));
@@ -385,7 +385,7 @@ public class LibertyVorsorgeAGPDFExtractor extends AbstractPDFExtractor
                         // 35%  V errechnu ngssteu er CH F -0.70
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^[\\d]+%[\\s]*V[\\s]*e[\\s]*r[\\s]*r[\\s]*e[\\s]*c[\\s]*h[\\s]*n[\\s]*u[\\s]*n[\\s]*g[\\s]*s[\\s]*s[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*(?<currency>[A-Z\\s]{3,}) \\-(?<tax>[\\.,\\d]+)$") //
+                        .match("^[\\d]+%[\\s]*V[\\s]*e[\\s]*r[\\s]*r[\\s]*e[\\s]*c[\\s]*h[\\s]*n[\\s]*u[\\s]*n[\\s]*g[\\s]*s[\\s]*s[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*(?<currency>[A-Z\\s]{3,}) \\-(?<tax>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             v.put("currency", asCurrencyCode(stripBlanks(v.get("currency"))));
 
@@ -396,7 +396,7 @@ public class LibertyVorsorgeAGPDFExtractor extends AbstractPDFExtractor
                         // Stem pel U SD -0.48
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^S[\\s]*t[\\s]*e[\\s]*m[\\s]*p[\\s]*e[\\s]*l[\\s]*(?<currency>[A-Z\\s]{3,}) \\-(?<tax>[\\.,\\d]+)$") //
+                        .match("^S[\\s]*t[\\s]*e[\\s]*m[\\s]*p[\\s]*e[\\s]*l[\\s]*(?<currency>[A-Z\\s]{3,}) \\-(?<tax>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             v.put("currency", asCurrencyCode(stripBlanks(v.get("currency"))));
 
@@ -412,7 +412,7 @@ public class LibertyVorsorgeAGPDFExtractor extends AbstractPDFExtractor
                         // Andere Spesen U SD -0.05
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^A[\\s]*n[\\s]*d[\\s]*e[\\s]*r[\\s]*e[\\s]*S[\\s]*p[\\s]*e[\\s]*s[\\s]*e[\\s]*n[\\s]*(?<currency>[A-Z\\s]{3,}) \\-(?<fee>[\\.,\\d]+)$") //
+                        .match("^A[\\s]*n[\\s]*d[\\s]*e[\\s]*r[\\s]*e[\\s]*S[\\s]*p[\\s]*e[\\s]*s[\\s]*e[\\s]*n[\\s]*(?<currency>[A-Z\\s]{3,}) \\-(?<fee>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             v.put("currency", asCurrencyCode(stripBlanks(v.get("currency"))));
                             v.put("fee", stripBlanks(v.get("fee")));
