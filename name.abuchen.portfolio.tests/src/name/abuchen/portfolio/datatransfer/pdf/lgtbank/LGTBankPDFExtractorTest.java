@@ -28,26 +28,16 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertNull;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
-import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.LGTBankPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
-import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class LGTBankPDFExtractorTest
@@ -72,34 +62,18 @@ public class LGTBankPDFExtractorTest
         new AssertImportActions().check(results, "DKK");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DK0010244508"));
-        assertThat(security.getWkn(), is("861837"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("A.P. Moeller - Maersk A/S Namen- und Inhaber-Aktien -B-"));
-        assertThat(security.getCurrencyCode(), is("DKK"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DK0010244508"), hasWkn("861837"), hasTicker(null), //
+                        hasName("A.P. Moeller - Maersk A/S Namen- und Inhaber-Aktien -B-"), //
+                        hasCurrencyCode("DKK"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-04-14T09:00:02")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(12)));
-        assertThat(entry.getSource(), is("Kauf01.txt"));
-        assertThat(entry.getNote(), is("Auftragsnummer: 262697612 | Valorennummer 906020"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("DKK", Values.Amount.factorize(82452.21))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("DKK", Values.Amount.factorize(80784.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("DKK", Values.Amount.factorize(121.19))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("DKK", Values.Amount.factorize(1534.90 + 12.12))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-04-14T09:00:02"), hasShares(12.00), //
+                        hasSource("Kauf01.txt"), //
+                        hasNote("Auftragsnummer: 262697612 | Valorennummer 906020"), //
+                        hasAmount("DKK", 82452.21), hasGrossValue("DKK", 80784.00), //
+                        hasTaxes("DKK", 121.19), hasFees("DKK", 1534.90 + 12.12))));
     }
 
     @Test
@@ -122,34 +96,18 @@ public class LGTBankPDFExtractorTest
         new AssertImportActions().check(results, "DKK");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DK0060534915"));
-        assertThat(security.getWkn(), is("A1XA8R"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("Novo Nordisk A/S Namen-Aktien -B-"));
-        assertThat(security.getCurrencyCode(), is("DKK"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DK0060534915"), hasWkn("A1XA8R"), hasTicker(null), //
+                        hasName("Novo Nordisk A/S Namen-Aktien -B-"), //
+                        hasCurrencyCode("DKK"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-04-14T09:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(180)));
-        assertThat(entry.getSource(), is("Kauf02.txt"));
-        assertThat(entry.getNote(), is("Auftragsnummer: 323232609 | Valorennummer 23159222"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("DKK", Values.Amount.factorize(72811.75))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("DKK", Values.Amount.factorize(71280.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("DKK", Values.Amount.factorize(106.90))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("DKK", Values.Amount.factorize(1414.16 + 10.69))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-04-14T09:00"), hasShares(180.00), //
+                        hasSource("Kauf02.txt"), //
+                        hasNote("Auftragsnummer: 323232609 | Valorennummer 23159222"), //
+                        hasAmount("DKK", 72811.75), hasGrossValue("DKK", 71280.00), //
+                        hasTaxes("DKK", 106.90), hasFees("DKK", 1414.16 + 10.69))));
     }
 
     @Test
@@ -179,7 +137,7 @@ public class LGTBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-06-29T14:54:02"), hasShares(260), //
+                        hasDate("2023-06-29T14:54:02"), hasShares(260.00), //
                         hasSource("Kauf03.txt"), //
                         hasNote("Auftragsnummer: 210796978 | Valorennummer 3176893"), //
                         hasAmount("CHF", 48502.01), hasGrossValue("CHF", 48465.46), //
@@ -213,7 +171,7 @@ public class LGTBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-06-08T00:00"), hasShares(480), //
+                        hasDate("2023-06-08T00:00"), hasShares(480.00), //
                         hasSource("Kauf04.txt"), //
                         hasNote("Auftragsnummer: 209174085 | Valorennummer 50139326"), //
                         hasAmount("USD", 50595.78), hasGrossValue("USD", 50520.00), //
@@ -247,7 +205,7 @@ public class LGTBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-07-26T00:00"), hasShares(40), //
+                        hasDate("2023-07-26T00:00"), hasShares(40.00), //
                         hasSource("Kauf05.txt"), //
                         hasNote("Auftragsnummer: 212706117 | Valorennummer 1203204"), //
                         hasAmount("CHF", 10931.63), hasGrossValue("CHF", 10922.00), //
@@ -281,7 +239,7 @@ public class LGTBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2023-06-08T11:22:14"), hasShares(260), //
+                        hasDate("2023-06-08T11:22:14"), hasShares(260.00), //
                         hasSource("Verkauf01.txt"), //
                         hasNote("Auftragsnummer: 209179086 | Valorennummer 41359963"), //
                         hasAmount("USD", 8332.19), hasGrossValue("USD", 8344.70), //
@@ -315,7 +273,7 @@ public class LGTBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2023-07-04T00:00"), hasShares(260), //
+                        hasDate("2023-07-04T00:00"), hasShares(260.00), //
                         hasSource("Verkauf02.txt"), //
                         hasNote("Auftragsnummer: 123295456 | Valorennummer 3176893"), //
                         hasAmount("CHF", 48591.42), hasGrossValue("CHF", 48636.90), //
@@ -349,7 +307,7 @@ public class LGTBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2023-11-02T00:00"), hasShares(260), //
+                        hasDate("2023-11-02T00:00"), hasShares(260.00), //
                         hasSource("Verkauf03.txt"), //
                         hasNote("Auftragsnummer: 219764567 | Valorennummer 1200526"), //
                         hasAmount("CHF", 21954.31), hasGrossValue("CHF", 21972.42), //
@@ -384,7 +342,7 @@ public class LGTBankPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2020-05-14T00:00"), hasExDate("2020-05-12T00:00"), //
-                        hasShares(551), //
+                        hasShares(551.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Auftragsnummer: 256401138 | Ordentliche Dividende"), //
                         hasAmount("EUR", 198.36), hasGrossValue("EUR", 275.50), //
@@ -419,7 +377,7 @@ public class LGTBankPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2023-03-13T00:00"), hasExDate("2023-03-09T00:00"), //
-                        hasShares(760), //
+                        hasShares(760.00), //
                         hasSource("Dividende02.txt"), //
                         hasNote("Auftragsnummer: 200738771 | Ordentliche Dividende"), //
                         hasAmount("CHF", 1580.80), hasGrossValue("CHF", 2432.00), //
@@ -454,7 +412,7 @@ public class LGTBankPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2023-04-03T00:00"), hasExDate("2023-03-30T00:00"), //
-                        hasShares(130), //
+                        hasShares(130.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote("Auftragsnummer: 330401346 | Ordentliche Dividende"), //
                         hasAmount("CHF", 338.00), hasGrossValue("CHF", 520.00), //
@@ -489,7 +447,7 @@ public class LGTBankPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2023-04-03T00:00"), hasExDate("2023-03-30T00:00"), //
-                        hasShares(12), //
+                        hasShares(12.00), //
                         hasSource("Dividende04.txt"), //
                         hasNote("Auftragsnummer: 303105603 | Ordentliche Dividende"), //
                         hasAmount("CHF", 624.00), hasGrossValue("CHF", 960.00), //
@@ -524,7 +482,7 @@ public class LGTBankPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2023-04-03T00:00"), hasExDate("2023-03-30T00:00"), //
-                        hasShares(490), //
+                        hasShares(490.00), //
                         hasSource("Dividende05.txt"), //
                         hasNote("Auftragsnummer: 303107922 | Ordentliche Dividende"), //
                         hasAmount("CHF", 127.40), hasGrossValue("CHF", 196.00), //

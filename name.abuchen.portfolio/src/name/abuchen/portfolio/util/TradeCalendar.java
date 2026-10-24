@@ -32,6 +32,13 @@ public class TradeCalendar implements Comparable<TradeCalendar>
         @Override
         public Map<LocalDate, Holiday> get(Object key)
         {
+            // fast path: avoid allocating the mapping function on every lookup
+            // (isHoliday is called for every single day when counting trading
+            // days)
+            Map<LocalDate, Holiday> holidays = super.get(key);
+            if (holidays != null)
+                return holidays;
+
             return super.computeIfAbsent((Integer) key, year -> holidayTypes.stream()
                             .map(type -> type.getHolidays(year)).flatMap(Collection::stream).filter(Objects::nonNull)
                             .collect(Collectors.toMap(Holiday::getDate, holiday -> holiday, (right, left) -> right)));

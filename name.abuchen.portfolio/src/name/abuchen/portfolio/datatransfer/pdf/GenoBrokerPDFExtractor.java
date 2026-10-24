@@ -144,7 +144,7 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("note1", "note2") //
                                                         .match("^.*(?<note1>Auftragsnummer).*$") //
-                                                        .match(".* (?<note2>[\\d]+\\/[\\.\\d]+) .* Datum.*$") //
+                                                        .match("^.* (?<note2>[\\d]+\\/[\\.\\d]+) .* Datum.*$") //
                                                         .assign((t, v) -> t.setNote(trim(v.get("note1")) + ": " + trim(v.get("note2")))),
                                         // @formatter:off
                                         //  Auftragsnummer 433499/69.01
@@ -189,7 +189,7 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
                                         // DE000A0LAUP1    (A0LAUP)
                                         // Dividende pro Stück                      0,60         EUR
                                         // @formatter:on
-                                        section -> section
+                                        section -> section //
                                                         .attributes("name", "nameContinued", "isin", "wkn", "currency") //
                                                         .match("^St.ck [\\.,\\d]+ (?<name>.*)$") //
                                                         .match("^(?<nameContinued>.*)$") //
@@ -201,7 +201,7 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
                                         // REGISTERED SHARES USD DIS.ON
                                         // Zahlbarkeitstag 27.12.2023 Ausschüttung pro St. 0,279226000 USD
                                         // @formatter:on
-                                        section -> section
+                                        section -> section //
                                                         .attributes("name", "isin", "wkn", "nameContinued", "currency") //
                                                         .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
                                                         .match("^(?<nameContinued>.*)$") //
@@ -227,10 +227,18 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
+                        // Ex-Tag                                     12.07.2023
+                        // Ex-Tag 14.12.2023 fonds) 0,195458200 USD
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Ex\\-Tag[\\s]{1,}(?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
+                        // @formatter:off
                         // Den Betrag buchen wir mit Wertstellung 14.07.2023 zu Gunsten des Kontos 12345678 (IBAN DE05 7206 9274 0000 0000
                         // @formatter:on
                         .section("date") //
-                        .match("^Den Betrag buchen wir mit Wertstellung (?<date>[\\d]{2}\\.[\\d]{2}.[\\d]{4}).*$") //
+                        .match("^Den Betrag buchen wir mit Wertstellung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
@@ -475,7 +483,7 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
                         // Fremde Auslagen 21,65- EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("Fremde Auslagen (?<fee>[\\.,\\d]+)\\-[\\s]{1,}(?<currency>[A-Z]{3}).*$") //
+                        .match("^Fremde Auslagen (?<fee>[\\.,\\d]+)\\-[\\s]{1,}(?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
 
     }

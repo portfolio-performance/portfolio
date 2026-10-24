@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.theme;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -20,10 +21,25 @@ public class ThemeAddon
     @Inject
     private IEventBroker broker;
 
+    @PostConstruct
+    public void installGtkUnfocusedTextColor()
+    {
+        GtkUnfocusedTextColor.install();
+    }
+
+    /**
+     * Installs the GTK stylesheet if needed, applies the current theme to the
+     * color definitions, and publishes the active value color scheme.
+     *
+     * @param event
+     *            theme-changed event that carries the theme engine
+     */
     @Inject
     @Optional
     public void onThemeChanged(@UIEventTopic(IThemeEngine.Events.THEME_CHANGED) Event event)
     {
+        GtkUnfocusedTextColor.install();
+
         IThemeEngine engine = (IThemeEngine) event.getProperty(IThemeEngine.Events.THEME_ENGINE);
         engine.applyStyles(Colors.theme(), false);
         engine.applyStyles(DataSeriesColors.instance(), false);
