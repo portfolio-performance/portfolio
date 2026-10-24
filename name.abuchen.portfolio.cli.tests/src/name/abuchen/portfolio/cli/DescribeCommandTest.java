@@ -91,7 +91,7 @@ public class DescribeCommandTest
         apply.getAsJsonArray("options")
                         .forEach(o -> byName.put(o.getAsJsonObject().get("name").getAsString(), o.getAsJsonObject()));
         assertThat(byName.keySet(), containsInAnyOrder("file", "input", "dry-run", "backup-dir", "keep", "force",
-                        "format"));
+                        "format", "verbose"));
         assertThat(byName.get("keep").get("default").getAsInt(), is(20));
         assertThat(byName.get("keep").get("minimum").getAsInt(), is(0));
         assertThat(byName.get("force").get("type").getAsString(), is("flag"));
@@ -205,7 +205,7 @@ public class DescribeCommandTest
 
         var describe = command(data, "describe");
         assertThat(describe.get("usesClientFile").getAsBoolean(), is(false));
-        assertThat(describe.getAsJsonArray("options").size(), is(1));
+        assertThat(describe.getAsJsonArray("options").size(), is(2));
         assertThat(describe.getAsJsonArray("options").get(0).getAsJsonObject().get("name").getAsString(),
                         is("format"));
     }
@@ -315,7 +315,8 @@ public class DescribeCommandTest
         var byName = new HashMap<String, JsonObject>();
         prices.getAsJsonArray("options")
                         .forEach(o -> byName.put(o.getAsJsonObject().get("name").getAsString(), o.getAsJsonObject()));
-        assertThat(byName.keySet(), is(Set.of("file", "instrument", "from", "to", "limit", "offset", "format")));
+        assertThat(byName.keySet(), is(Set.of("file", "instrument", "from", "to", "limit", "offset", "format",
+                        "verbose")));
 
         var instrument = byName.get("instrument");
         assertThat(instrument.get("required").getAsBoolean(), is(true));
@@ -356,7 +357,7 @@ public class DescribeCommandTest
         transactions.getAsJsonArray("options")
                         .forEach(o -> byName.put(o.getAsJsonObject().get("name").getAsString(), o.getAsJsonObject()));
         assertThat(byName.keySet(), is(Set.of("file", "investment-account", "cash-account", "instrument", "type",
-                        "from", "to", "currency", "limit", "offset", "format")));
+                        "from", "to", "currency", "limit", "offset", "format", "verbose")));
         assertThat(byName.get("from").get("type").getAsString(), is("date"));
         assertThat(byName.get("to").get("type").getAsString(), is("date"));
         assertThat(byName.get("to").get("description").getAsString().toLowerCase(), containsString("future"));
@@ -388,7 +389,7 @@ public class DescribeCommandTest
         holdings.getAsJsonArray("options")
                         .forEach(o -> byName.put(o.getAsJsonObject().get("name").getAsString(), o.getAsJsonObject()));
         assertThat(byName.keySet(), is(Set.of("file", "date", "investment-account", "by-account", "include-zero",
-                        "currency", "format")));
+                        "currency", "format", "verbose")));
         assertThat(byName.get("date").get("type").getAsString(), is("date"));
 
         for (var flag : List.of("by-account", "include-zero"))
@@ -413,7 +414,7 @@ public class DescribeCommandTest
         var byName = new HashMap<String, JsonObject>();
         allocation.getAsJsonArray("options")
                         .forEach(o -> byName.put(o.getAsJsonObject().get("name").getAsString(), o.getAsJsonObject()));
-        assertThat(byName.keySet(), is(Set.of("file", "taxonomy", "date", "currency", "format")));
+        assertThat(byName.keySet(), is(Set.of("file", "taxonomy", "date", "currency", "format", "verbose")));
         assertThat(byName.get("taxonomy").get("required").getAsBoolean(), is(true));
         assertThat(byName.get("date").get("type").getAsString(), is("date"));
 

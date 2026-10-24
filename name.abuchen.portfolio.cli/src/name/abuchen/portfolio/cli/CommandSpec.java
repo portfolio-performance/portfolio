@@ -42,6 +42,7 @@ record CommandSpec(String name, String summary, boolean usesClientFile, List<Opt
             options.add(OptionSpec.FILE);
         options.addAll(declaredOptions);
         options.add(OutputFormat.option(!tableColumns.isEmpty()));
+        options.add(OptionSpec.VERBOSE);
         return options;
     }
 
