@@ -17,6 +17,8 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
@@ -28,16 +30,12 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertNull;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
-import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
@@ -45,13 +43,8 @@ import name.abuchen.portfolio.datatransfer.pdf.DreiBankenEDVPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class DreiBankenEDVPDFExtractorTest
@@ -76,34 +69,18 @@ public class DreiBankenEDVPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("LU0675401409"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("Lyxor Emerg Market 2x Lev ETF Inhaber-Anteile I o.N."));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0675401409"), hasWkn(null), hasTicker(null), //
+                        hasName("Lyxor Emerg Market 2x Lev ETF Inhaber-Anteile I o.N."), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-01-04T12:05:55")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2)));
-        assertThat(entry.getSource(), is("Kauf01.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(205.30))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(205.28))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.02))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-01-04T12:05:55"), hasShares(2.00), //
+                        hasSource("Kauf01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 205.30), hasGrossValue("EUR", 205.28), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.02))));
     }
 
     @Test
@@ -126,34 +103,18 @@ public class DreiBankenEDVPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE0007664039"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("VOLKSWAGEN AG VORZUGSAKTIEN O.ST. O.N."));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0007664039"), hasWkn(null), hasTicker(null), //
+                        hasName("VOLKSWAGEN AG VORZUGSAKTIEN O.ST. O.N."), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-01-02T13:54:46")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5)));
-        assertThat(entry.getSource(), is("Verkauf01.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(680.30))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(683.75))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(3.37))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.08))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2017-01-02T13:54:46"), hasShares(5.00), //
+                        hasSource("Verkauf01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 680.30), hasGrossValue("EUR", 683.75), //
+                        hasTaxes("EUR", 3.37), hasFees("EUR", 0.08))));
     }
 
     @Test
@@ -184,7 +145,7 @@ public class DreiBankenEDVPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2020-12-23T00:00"), hasExDate("2020-12-10T00:00"), //
-                        hasShares(4), //
+                        hasShares(4.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.30), hasGrossValue("EUR", 0.32), //
@@ -219,7 +180,7 @@ public class DreiBankenEDVPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2020-12-30T00:00"), hasExDate("2020-12-14T00:00"), //
-                        hasShares(3), //
+                        hasShares(3.00), //
                         hasSource("Dividende02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 1.21), hasGrossValue("EUR", 1.67), //
@@ -255,7 +216,7 @@ public class DreiBankenEDVPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2021-01-15T00:00"), hasExDate("2021-01-04T00:00"), //
-                        hasShares(7), //
+                        hasShares(7.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 4.16), hasGrossValue("EUR", 5.74), //
@@ -291,7 +252,7 @@ public class DreiBankenEDVPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2021-01-15T00:00"), hasExDate("2021-01-04T00:00"), //
-                        hasShares(7), //
+                        hasShares(7.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 4.16), hasGrossValue("EUR", 5.74), //
@@ -309,6 +270,7 @@ public class DreiBankenEDVPDFExtractorTest
     public void testDividende04()
     {
         var extractor = new DreiBankenEDVPDFExtractor(new Client());
+
         List<Exception> errors = new ArrayList<>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
@@ -332,7 +294,7 @@ public class DreiBankenEDVPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2021-01-15T00:00"), hasExDate("2021-01-04T00:00"), //
-                        hasShares(6), //
+                        hasShares(6.00), //
                         hasSource("Dividende04.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.73), hasGrossValue("EUR", 1.01), //
@@ -368,7 +330,7 @@ public class DreiBankenEDVPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2021-01-15T00:00"), hasExDate("2021-01-04T00:00"), //
-                        hasShares(6), //
+                        hasShares(6.00), //
                         hasSource("Dividende04.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.73), hasGrossValue("EUR", 1.01), //
@@ -386,6 +348,7 @@ public class DreiBankenEDVPDFExtractorTest
     public void testDividende05()
     {
         var extractor = new DreiBankenEDVPDFExtractor(new Client());
+
         List<Exception> errors = new ArrayList<>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
@@ -409,12 +372,12 @@ public class DreiBankenEDVPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2020-12-11T00:00"), hasExDate("2020-12-09T00:00"), //
-                        hasShares(6), //
+                        hasShares(6.00), //
                         hasSource("Dividende05.txt"), //
                         hasNote(null), //
-                        hasAmount("EUR", 0.32), hasGrossValue("EUR", 0.46), //
-                        hasForexGrossValue("USD", 0.46 * 1.214), //
-                        hasTaxes("EUR", (0.15 + 0.0204) / 1.214), hasFees("EUR", 0.00))));
+                        hasAmount("EUR", 0.32), hasGrossValue("EUR", 0.44), //
+                        hasForexGrossValue("USD", 0.54), //
+                        hasTaxes("EUR", 0.15 / 1.214), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -445,11 +408,11 @@ public class DreiBankenEDVPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2020-12-11T00:00"), hasExDate("2020-12-09T00:00"), //
-                        hasShares(6), //
+                        hasShares(6.00), //
                         hasSource("Dividende05.txt"), //
                         hasNote(null), //
-                        hasAmount("EUR", 0.32), hasGrossValue("EUR", 0.46), //
-                        hasTaxes("EUR", (0.15 + 0.0204) / 1.214), hasFees("EUR", 0.00), //
+                        hasAmount("EUR", 0.32), hasGrossValue("EUR", 0.44), //
+                        hasTaxes("EUR", 0.15 / 1.214), hasFees("EUR", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
