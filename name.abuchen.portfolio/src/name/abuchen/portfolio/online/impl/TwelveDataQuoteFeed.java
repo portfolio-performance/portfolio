@@ -94,15 +94,7 @@ public class TwelveDataQuoteFeed implements QuoteFeed
     public Optional<LatestSecurityPrice> getLatestQuote(Security security)
     {
         LocalDate quoteStartDate = LocalDate.now();
-        String securityTickerSymbol = trim(security.getTickerSymbol()).toUpperCase();
-        String securityTickerSymbolWithoutStockMarket = trim(security.getTickerSymbolWithoutStockMarket())
-                        .toUpperCase();
-
-        // Extract the exchange from the ticker symbol, if present
-        String securityExchange = null;
-        if (security.getTickerSymbol().contains(".")) //$NON-NLS-1$
-            securityExchange = security.getTickerSymbol().substring(security.getTickerSymbol().indexOf('.') + 1)
-                            .toUpperCase();
+        String securityTickerSymbol = trim(security.getTickerSymbol());
 
         if (apiKey == null || apiKey.isBlank())
         {
@@ -115,6 +107,15 @@ public class TwelveDataQuoteFeed implements QuoteFeed
             PortfolioLog.error(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName()));
             return Optional.empty();
         }
+
+        securityTickerSymbol = securityTickerSymbol.toUpperCase();
+        String securityTickerSymbolWithoutStockMarket = trim(security.getTickerSymbolWithoutStockMarket())
+                        .toUpperCase();
+
+        // Extract the exchange from the ticker symbol, if present
+        String securityExchange = null;
+        if (securityTickerSymbol.contains(".")) //$NON-NLS-1$
+            securityExchange = securityTickerSymbol.substring(securityTickerSymbol.indexOf('.') + 1);
 
         QuoteFeedData data = new QuoteFeedData();
         try
@@ -185,15 +186,7 @@ public class TwelveDataQuoteFeed implements QuoteFeed
     @SuppressWarnings("nls")
     public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse, LocalDate quoteStartDate)
     {
-        String securityTickerSymbol = trim(security.getTickerSymbol()).toUpperCase();
-        String securityTickerSymbolWithoutStockMarket = trim(security.getTickerSymbolWithoutStockMarket())
-                        .toUpperCase();
-
-        // Extract the exchange from the ticker symbol, if present
-        String securityExchange = null;
-        if (security.getTickerSymbol().contains(".")) //$NON-NLS-1$
-            securityExchange = security.getTickerSymbol().substring(security.getTickerSymbol().indexOf('.') + 1)
-                            .toUpperCase();
+        String securityTickerSymbol = trim(security.getTickerSymbol());
 
         if (apiKey == null || apiKey.isBlank())
         {
@@ -207,6 +200,15 @@ public class TwelveDataQuoteFeed implements QuoteFeed
             return QuoteFeedData.withError(
                             new IOException(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName())));
         }
+
+        securityTickerSymbol = securityTickerSymbol.toUpperCase();
+        String securityTickerSymbolWithoutStockMarket = trim(security.getTickerSymbolWithoutStockMarket())
+                        .toUpperCase();
+
+        // Extract the exchange from the ticker symbol, if present
+        String securityExchange = null;
+        if (securityTickerSymbol.contains(".")) //$NON-NLS-1$
+            securityExchange = securityTickerSymbol.substring(securityTickerSymbol.indexOf('.') + 1);
 
         QuoteFeedData data = new QuoteFeedData();
 
