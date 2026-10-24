@@ -10,6 +10,7 @@ import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -148,7 +149,6 @@ public class IBFlexStatementExtractor implements Extractor
     /**
      * Parses a date/time string using all supported formats.
      * <p/>
-     * If a timezone is present, it is dropped (not converted).
      *
      * @param dateTime
      *            the date/time string to parse
@@ -165,7 +165,7 @@ public class IBFlexStatementExtractor implements Extractor
             {
                 TemporalAccessor parsed = formatter.parseBest(dateTime, ZonedDateTime::from, LocalDateTime::from);
                 if (parsed instanceof ZonedDateTime zdt)
-                    return zdt.toLocalDateTime();
+                    return LocalDateTime.ofInstant(zdt.toInstant(), ZoneId.systemDefault());
                 return LocalDateTime.from(parsed);
             }
             catch (DateTimeParseException ignore)
