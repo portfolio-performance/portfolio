@@ -3,7 +3,6 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
-import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -36,12 +35,12 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        final DocumentType type = new DocumentType("Gesch.ftsart: (Kauf|Verkauf|Kauf aus Dauerauftrag)");
+        final var type = new DocumentType("Gesch.ftsart: (Kauf|Verkauf|Kauf aus Dauerauftrag)");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^Gesch.ftsart: (Kauf|Verkauf|Kauf aus Dauerauftrag)$");
+        var firstRelevantLine = new Block("^Gesch.ftsart: (Kauf|Verkauf|Kauf aus Dauerauftrag)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -73,7 +72,7 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("time").optional() //
                         .match("^Handelszeit: .* (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$") //
-                        .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
+                        .assign((t, v) -> v.getTransactionContext().putString("time", v.get("time")))
 
                         // @formatter:off
                         // Handelszeit: 11.5.2021
@@ -81,8 +80,8 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                         .section("date") //
                         .match("^Handelszeit: (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> {
-                            if (type.getCurrentContext().get("time") != null)
-                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                            if (v.getTransactionContext().getString("time") != null)
+                                t.setDate(asDate(v.get("date"), v.getTransactionContext().getString("time")));
                             else
                                 t.setDate(asDate(v.get("date")));
                         })
@@ -112,11 +111,11 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                         .match("^Kurswert: (?<fxGross>[\\-\\.,\\d]+) (?<termCurrency>[\\w]{3}).*$") //
                         .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}\\) [\\-\\.,\\d]+ (?<baseCurrency>[\\w]{3}).*$") //
                         .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
+                            var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
-                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
+                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                            var gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
@@ -129,12 +128,12 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendTransaction()
     {
-        final DocumentType type = new DocumentType("Gesch.ftsart: Ertrag");
+        final var type = new DocumentType("Gesch.ftsart: Ertrag");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^Gesch.ftsart: Ertrag$");
+        var firstRelevantLine = new Block("^Gesch.ftsart: Ertrag$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -192,11 +191,11 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                         .match("^Bruttoertrag: (?<fxGross>[\\-\\.,\\d]+) (?<termCurrency>[\\w]{3}).*$") //
                         .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}\\) [\\-\\.,\\d]+ (?<baseCurrency>[\\w]{3}).*$") //
                         .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
+                            var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
-                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
+                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                            var gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
@@ -209,12 +208,12 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
 
     private void addInboundDelivery()
     {
-        final DocumentType type = new DocumentType("Freier Erhalt");
+        final var type = new DocumentType("Freier Erhalt");
         this.addDocumentTyp(type);
 
-        Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<PortfolioTransaction>();
 
-        Block firstRelevantLine = new Block("^Gesch.ftsart: Freier Erhalt$");
+        var firstRelevantLine = new Block("^Gesch.ftsart: Freier Erhalt$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
