@@ -38,7 +38,7 @@ public class AustrianAnadiBankPDFExtractor extends AbstractPDFExtractor
                                         // Max Mustermann EUR 4.348,95
                                         // @formatter:on
                                         .section("currency") //
-                                        .find("^Neuer Saldo zu Ihren Gunsten.*$") //
+                                        .find("Neuer Saldo zu Ihren Gunsten.*") //
                                         .match("^.* (?<currency>[A-Z]{3}) [\\.,\\d]+(\\-)?$") //
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency"))))
 
@@ -185,7 +185,7 @@ public class AustrianAnadiBankPDFExtractor extends AbstractPDFExtractor
                         .section("date", "note", "amount") //
                         .documentContext("currency", "year") //
                         .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) ABRECHNUNG ZU KONTO (?<note>[\\d]+) [\\d]{1,2}\\.[\\d]{1,2} [\\.,\\d]+$") //
-                        .find("^Habenzinsen$") //
+                        .find("Habenzinsen.*") //
                         .match("^AB [\\d]{4}\\-[\\d]{2}\\-[\\d]{2} .* (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> { //
                             t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
