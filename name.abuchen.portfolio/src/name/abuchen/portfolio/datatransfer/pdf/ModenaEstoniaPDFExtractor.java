@@ -38,7 +38,7 @@ public class ModenaEstoniaPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} [\\d]{2}:[\\d]{2}:[\\d]{2}.*$");
+        var firstRelevantLine = new Block("^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} [\\d]{2}\\:[\\d]{2}\\:[\\d]{2}.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.setMaxSize(1);
         firstRelevantLine.set(pdfTransaction);
@@ -54,7 +54,7 @@ public class ModenaEstoniaPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("type") //
-                                                        .match("^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} [\\d]{2}:[\\d]{2}:[\\d]{2} " //
+                                                        .match("^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} [\\d]{2}\\:[\\d]{2}\\:[\\d]{2} " //
                                                                         + "(?<type>(Vault signup bonus" //
                                                                         + "|Vault campaign bonus" //
                                                                         + "|Vault accrued revenue)" //
@@ -69,7 +69,7 @@ public class ModenaEstoniaPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("type") //
-                                                        .match("^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} [\\d]{2}:[\\d]{2}:[\\d]{2} " //
+                                                        .match("^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} [\\d]{2}\\:[\\d]{2}\\:[\\d]{2} " //
                                                                         + "(?<type>Debt claims buyback).*$") //
                                                         .assign((t, v) -> {
                                                             if ("Debt claims buyback".equals(v.get("type")))
@@ -84,7 +84,7 @@ public class ModenaEstoniaPDFExtractor extends AbstractPDFExtractor
                         // 2025-05-01 08:00:10 Vault accrued revenue €0.61
                         // @formatter:on
                         .section("date", "time", "note", "currency", "amount") //
-                        .match("^(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) " //
+                        .match("^(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}) " //
                                         + "(?<note>(Vault revenue share" //
                                         + "|Vault signup bonus" //
                                         + "|Vault campaign bonus" //

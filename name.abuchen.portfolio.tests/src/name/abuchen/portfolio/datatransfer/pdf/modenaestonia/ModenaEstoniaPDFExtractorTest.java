@@ -6,7 +6,6 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
@@ -56,25 +55,33 @@ public class ModenaEstoniaPDFExtractorTest
         assertThat(results.size(), is(5));
         new AssertImportActions().check(results, "EUR");
 
-        // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2025-03-13T21:39:01"), hasAmount("EUR", 12.56), //
-                        hasSource("Kontoauszug01.txt"), hasNote("Vault revenue share"))));
+        // check interest transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2025-03-13T21:39:01"), //
+                        hasSource("Kontoauszug01.txt"), //
+                        hasNote("Vault revenue share"), //
+                        hasAmount("EUR", 12.56), hasGrossValue("EUR", 12.56), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
+        // check deposit transaction
         assertThat(results, hasItem(deposit(hasDate("2025-03-14T07:00:00"), hasAmount("EUR", 1.42), //
                         hasSource("Kontoauszug01.txt"), hasNote("Vault signup bonus"))));
 
-        // assert transaction
+        // check deposit transaction
         assertThat(results, hasItem(deposit(hasDate("2025-03-21T21:59:09"), hasAmount("EUR", 50.00), //
                         hasSource("Kontoauszug01.txt"), hasNote("Vault campaign bonus"))));
 
-        // assert transaction
+        // check deposit transaction
         assertThat(results, hasItem(deposit(hasDate("2025-03-22T07:00:02"), hasAmount("EUR", 1.48), //
                         hasSource("Kontoauszug01.txt"), hasNote("Vault signup bonus"))));
 
-        // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2025-03-22T09:00:04"), hasAmount("EUR", 1.23), //
-                        hasSource("Kontoauszug01.txt"), hasNote("Vault revenue share"))));
+        // check interest transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2025-03-22T09:00:04"), //
+                        hasSource("Kontoauszug01.txt"), //
+                        hasNote("Vault revenue share"), //
+                        hasAmount("EUR", 1.23), hasGrossValue("EUR", 1.23), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -96,9 +103,13 @@ public class ModenaEstoniaPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
-        // assert transaction
-        assertThat(results, hasItem(interestCharge(hasDate("2025-04-17T07:00:16"), hasAmount("EUR", 0.63), //
-                        hasSource("Kontoauszug02.txt"), hasNote("Debt claims buyback"))));
+        // check interest charge transaction
+        assertThat(results, hasItem(interestCharge( //
+                        hasDate("2025-04-17T07:00:16"), //
+                        hasSource("Kontoauszug02.txt"), //
+                        hasNote("Debt claims buyback"), //
+                        hasAmount("EUR", 0.63), hasGrossValue("EUR", 0.63), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -120,15 +131,19 @@ public class ModenaEstoniaPDFExtractorTest
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
-        // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2025-05-01T08:00:10"), hasAmount("EUR", 0.61), //
-                        hasSource("Kontoauszug03.txt"), hasNote("Vault accrued revenue"))));
+        // check interest transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2025-05-01T08:00:10"), //
+                        hasSource("Kontoauszug03.txt"), //
+                        hasNote("Vault accrued revenue"), //
+                        hasAmount("EUR", 0.61), hasGrossValue("EUR", 0.61), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check skipped item
         assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         interestCharge( //
-                                        hasDate("2025-05-12T07:30:56"), hasShares(0.00), //
+                                        hasDate("2025-05-12T07:30:56"), //
                                         hasSource("Kontoauszug03.txt"), //
                                         hasNote("Debt claims buyback"), //
                                         hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
