@@ -1,0 +1,136 @@
+package name.abuchen.portfolio.cli;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
+import java.time.Clock;
+import java.util.Map;
+import java.util.Optional;
+
+/**
+ * Everything a command gets from the outside world: parsed options, the
+ * environment, stdin, stderr, the clock and the name of the operating system.
+ */
+final class CommandContext
+{
+    static final String PASSWORD_VARIABLE = "PP_PASSWORD";
+
+    private final Map<String, String> options;
+    private final Map<String, String> env;
+    private final InputStream stdin;
+    private final PrintStream stderr;
+    private final Clock clock;
+    private final String osName;
+    private final WriteEnvironment writeEnvironment;
+
+    CommandContext(Map<String, String> options, Map<String, String> env, InputStream stdin, PrintStream stderr,
+                    Clock clock, String osName, WriteEnvironment writeEnvironment)
+    {
+        this.options = options;
+        this.env = env;
+        this.stdin = stdin;
+        this.stderr = stderr;
+        this.clock = clock;
+        this.osName = osName;
+        this.writeEnvironment = writeEnvironment;
+    }
+
+    Optional<String> option(String name)
+    {
+        return Optional.ofNullable(options.get(name));
+    }
+
+    /** Whether the switch was given. */
+    boolean flag(OptionSpec option)
+    {
+        return options.containsKey(option.name());
+    }
+
+    Optional<String> env(String name)
+    {
+        return Optional.ofNullable(env.get(name));
+    }
+
+    InputStream stdin()
+    {
+        return stdin;
+    }
+
+    Clock clock()
+    {
+        return clock;
+    }
+
+    /** The <code>os.name</code> of the running system. */
+    String osName()
+    {
+        return osName;
+    }
+
+    WriteEnvironment writeEnvironment()
+    {
+        return writeEnvironment;
+    }
+
+    /** Loads the client file named by <code>--file</code> or PP_FILE. */
+    LoadedClient loadClient() throws CliException
+    {
+        return ClientLoader.load(clientPath(), this::password);
+    }
+
+    /**
+     * Checks the client file named by <code>--file</code> or PP_FILE without
+     * loading it; the caller closes it.
+     */
+    ClientLoader.OpenedFile openClient() throws CliException
+    {
+        return ClientLoader.open(clientPath(), this::password);
+    }
+
+    private String clientPath() throws CliException
+    {
+        return option(OptionSpec.FILE.name()).filter(p -> !p.isBlank())
+                        .or(() -> env("PP_FILE").filter(p -> !p.isBlank()))
+                        .orElseThrow(() -> CliException.usage("file-required", "Client file required",
+                                        "Pass --file <path> or set the PP_FILE environment variable."));
+    }
+
+    /**
+     * The password for an encrypted file: PP_PASSWORD, or else one line from
+     * stdin. The prompt goes to stderr so stdout stays a single JSON document.
+     *
+     * @return the password, or null if none was given
+     */
+    private char[] password()
+    {
+        var fromEnv = env(PASSWORD_VARIABLE).filter(p -> !p.isEmpty());
+        if (fromEnv.isPresent())
+            return fromEnv.get().toCharArray();
+
+        stderr.print("Password: ");
+        stderr.flush();
+        return readLine();
+    }
+
+    private char[] readLine()
+    {
+        try
+        {
+            var bytes = new ByteArrayOutputStream();
+            int b;
+            while ((b = stdin.read()) >= 0 && b != '\n')
+                bytes.write(b);
+
+            var line = bytes.toString(StandardCharsets.UTF_8);
+            if (line.endsWith("\r"))
+                line = line.substring(0, line.length() - 1);
+            return line.toCharArray();
+        }
+        catch (IOException e)
+        {
+            return null;
+        }
+    }
+}

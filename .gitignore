@@ -10,4 +10,8 @@ workspace
 *.iml
 *.ipr
 
+/.vscode/
+**/.settings/
+/javaConfig.json
+
 .claude/settings.local.json

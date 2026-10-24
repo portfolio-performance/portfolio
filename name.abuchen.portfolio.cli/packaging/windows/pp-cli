@@ -1,0 +1,5 @@
+#!/bin/sh
+# Git Bash does not look up pp-cli.cmd by its bare name, so forward to it. `call` keeps cmd
+# from stripping the quotes around a path with spaces.
+bat=$(cygpath -w "$(dirname "$0")/pp-cli.cmd")
+exec cmd.exe //d //c call "$bat" "$@"
