@@ -1,0 +1,9 @@
+<FlexQueryResponse>
+  <FlexStatements count="1">
+    <FlexStatement accountId="U***0773">
+      <CashTransactions>
+        <CashTransaction accountId="U***0773" acctAlias="ADFADF AFADAFADF - U***0773" model="" currency="USD" fxRateToBase="1" assetCategory="STK" subCategory="ETF" symbol="BOND" description="Refund (BOND, 200, 2026-06-23)" conid="103562908" securityID="US72201R7750" securityIDType="ISIN" cusip="72201R775" isin="US72201R7750" figi="BBG002N12B91" listingExchange="NYSE" underlyingConid="" underlyingSymbol="BOND" underlyingSecurityID="" underlyingListingExchange="" issuer="" issuerCountryCode="US" multiplier="1" strike="" expiry="" putCall="" principalAdjustFactor="" dateTime="2026-07-23" settleDate="2026-06-23" availableForTradingDate="" amount="1.0006" type="Commission Adjustments" tradeID="9760868262" code="" transactionID="41560910443" reportDate="2026-07-23" exDate="" clientReference="" actionID="" levelOfDetail="DETAIL" serialNumber="" deliveryType="" commodityType="" fineness="0.0" weight="0.0" />
+      </CashTransactions>
+    </FlexStatement>
+  </FlexStatements>
+</FlexQueryResponse>
