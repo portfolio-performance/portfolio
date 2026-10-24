@@ -153,7 +153,7 @@ final class TransactionOperations
                         .optional("shares", Schema.number(
                                         "Positive number of shares. Required for BUY, SELL, deliveries and security transfers; accepted on a dividend; refused otherwise."))
                         .optional("units", Schema.array(
-                                        "Fees, taxes and the forex gross value an instrument in another currency needs. Refused on transfers.",
+                                        "Fees, taxes and the forex gross value an instrument in another currency needs. Taxes are accepted only on DIVIDENDS and INTEREST and fees only on DIVIDENDS, as in core's import check; refused on transfers.",
                                         unit))
                         .optional("exDate", Schema.string(
                                         "ISO ex-date; accepted only on a dividend with an instrument and never after the date."))

@@ -352,6 +352,43 @@ public class TransactionAddTest
     }
 
     @Test
+    public void refusesAGrossAmountThatDiffersFromTheAmountOfADebitType() throws IOException
+    {
+        // a debit type carries no units, so its gross amount can only equal the amount
+        var run = apply("{\"operation\":\"transaction.add\",\"type\":\"INTEREST_CHARGE\",\"cashAccount\":\""
+                        + eurAccount + "\",\"date\":\"2026-03-02\",\"amount\":20.00,\"currencyCode\":\"EUR\","
+                        + "\"grossAmount\":25.00}");
+
+        assertRefused(run, "grossAmount", "gross-amount-mismatch");
+    }
+
+    @Test
+    public void refusesTaxesOnATypeThatCoreDoesNotAllowThemOn() throws IOException
+    {
+        // core's CheckValidTypesAction allows taxes only on dividends and interest
+        var run = apply("{\"operation\":\"transaction.add\",\"type\":\"INTEREST_CHARGE\",\"cashAccount\":\""
+                        + eurAccount + "\",\"date\":\"2026-03-02\",\"amount\":20.00,\"currencyCode\":\"EUR\","
+                        + "\"units\":[{\"type\":\"TAX\",\"amount\":5.00,\"currencyCode\":\"EUR\"}]}");
+
+        assertRefused(run, "", "import-check-failed");
+        assertThat(failure(run, 0).get("check").getAsString(), is("CheckValidTypesAction"));
+        assertFileUnchanged();
+    }
+
+    @Test
+    public void refusesFeesOnATypeThatCoreDoesNotAllowThemOn() throws IOException
+    {
+        // core's CheckValidTypesAction allows fees only on dividends, not even on interest
+        var run = apply("{\"operation\":\"transaction.add\",\"type\":\"INTEREST\",\"cashAccount\":\"" + eurAccount
+                        + "\",\"date\":\"2026-03-02\",\"amount\":20.00,\"currencyCode\":\"EUR\","
+                        + "\"units\":[{\"type\":\"FEE\",\"amount\":5.00,\"currencyCode\":\"EUR\"}]}");
+
+        assertRefused(run, "", "import-check-failed");
+        assertThat(failure(run, 0).get("check").getAsString(), is("CheckValidTypesAction"));
+        assertFileUnchanged();
+    }
+
+    @Test
     public void readsBackADividendThroughTransactions() throws IOException
     {
         apply("{\"operation\":\"transaction.add\",\"type\":\"DIVIDENDS\",\"cashAccount\":\"" + eurAccount
