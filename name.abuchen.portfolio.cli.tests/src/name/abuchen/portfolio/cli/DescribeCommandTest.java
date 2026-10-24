@@ -32,7 +32,7 @@ public class DescribeCommandTest
     {
         var data = data(CliRun.run("describe"));
 
-        assertThat(data.get("pinnedUpstreamTag").getAsString(), is("0.88.0"));
+        assertThat(data.get("pinnedUpstreamTag").getAsString(), is("0.89.0"));
         assertThat(data.get("maxSupportedVersion").getAsInt(), is(Client.CURRENT_VERSION));
 
         var limits = data.getAsJsonArray("limits").toString().toLowerCase();

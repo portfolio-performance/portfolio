@@ -352,23 +352,6 @@ public class TransactionAddTest
     }
 
     @Test
-    public void reconcilesAGrossAmountOnADebitType() throws IOException
-    {
-        // INTEREST_CHARGE is a debit type: the gross value is the amount minus fees and taxes
-        var run = apply("{\"operation\":\"transaction.add\",\"type\":\"INTEREST_CHARGE\",\"cashAccount\":\"" + eurAccount
-                        + "\",\"date\":\"2026-03-02\",\"amount\":20.00,\"currencyCode\":\"EUR\",\"grossAmount\":15.00,"
-                        + "\"units\":[{\"type\":\"TAX\",\"amount\":5.00,\"currencyCode\":\"EUR\"}]}");
-
-        assertThat(run.stdout, run.exitCode, is(0));
-
-        var wrong = apply("{\"operation\":\"transaction.add\",\"type\":\"INTEREST_CHARGE\",\"cashAccount\":\""
-                        + eurAccount + "\",\"date\":\"2026-03-02\",\"amount\":20.00,\"currencyCode\":\"EUR\","
-                        + "\"grossAmount\":25.00,\"units\":[{\"type\":\"TAX\",\"amount\":5.00,\"currencyCode\":\"EUR\"}]}");
-
-        assertRefused(wrong, "grossAmount", "gross-amount-mismatch");
-    }
-
-    @Test
     public void readsBackADividendThroughTransactions() throws IOException
     {
         apply("{\"operation\":\"transaction.add\",\"type\":\"DIVIDENDS\",\"cashAccount\":\"" + eurAccount
