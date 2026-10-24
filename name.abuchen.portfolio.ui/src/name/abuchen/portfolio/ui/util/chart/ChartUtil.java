@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.util.chart;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
@@ -53,11 +55,26 @@ public final class ChartUtil
 
         Point chartSize = chart.getSize();
 
+        // SWT keeps one image handle per zoom level. GC.copyArea() fills the handle
+        // of the GC's zoom level, but Image.getImageData() reads the handle of zoom
+        // 100. At display scaling above 100 % there is no handle at zoom 100, so the
+        // provider is called again and the untouched - black - buffer is returned.
+        // Remember the zoom the provider is asked for (this is exactly the zoom
+        // copyArea uses) and read the image data back from that handle.
+        AtomicInteger usedZoom = new AtomicInteger(100);
+
         ImageDataProvider chartImageDataProvider = zoom -> {
-            if (zoom != 100)
-                return null;
+            usedZoom.set(zoom);
+
+            // the size of the returned ImageData becomes the size of the image
+            // handle in pixels, and GC.copyArea() copies exactly that area out of
+            // the control. The size must therefore match SWT's own point-to-pixel
+            // conversion, which rounds: truncating allocates a buffer one pixel too
+            // small and drops the last column/row of the chart.
+            int width = Math.max(1, Math.round(chartSize.x * zoom / 100f));
+            int height = Math.max(1, Math.round(chartSize.y * zoom / 100f));
             PaletteData palette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
-            return new ImageData(chartSize.x, chartSize.y, 32, palette);
+            return new ImageData(width, height, 32, palette);
         };
 
         Image image = null;
@@ -67,7 +84,9 @@ public final class ChartUtil
             image = new Image(chart.getDisplay(), chartImageDataProvider);
             gc = new GC(chart);
             gc.copyArea(image, 0, 0);
-            return image.getImageData();
+
+            // read back at the zoom whose handle copyArea actually filled
+            return image.getImageData(usedZoom.get());
         }
         finally
         {
