@@ -30,7 +30,7 @@ public class NorddeutscheLandesbankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendTransaction()
     {
-        final var type = new DocumentType("(Dividendengutschrift)");
+        final var type = new DocumentType("Dividendengutschrift");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -58,23 +58,19 @@ public class NorddeutscheLandesbankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Zahlbarkeitstag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Dividende pro St.ck [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
-                        .oneOf( //
-                                        // @formatter:off
-                                        // Stück 140 NOVARTIS AG CH0012005267 (904278)
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("shares") //
-                                                        .match("^St.ck (?<shares>[\\.,\\d]+) .*$") //
-                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
+                        // @formatter:off
+                        // Stück 140 NOVARTIS AG CH0012005267 (904278)
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^St.ck (?<shares>[\\.,\\d]+) .*$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        .oneOf( //
-                                        // @formatter:off
-                                        // Den Betrag buchen wir mit Wertstellung 17.03.2025 zu Gunsten des Kontos 8220092118 (IBAN Ex76 3069 2250 0086
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("date") //
-                                                        .match("^Den Betrag buchen wir mit Wertstellung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+                        // @formatter:off
+                        // Den Betrag buchen wir mit Wertstellung 17.03.2025 zu Gunsten des Kontos 8220092118 (IBAN Ex76 3069 2250 0086
+                        // @formatter:on
+                        .section("date") //
+                        .match("^Den Betrag buchen wir mit Wertstellung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Ex-Tag 11.03.2025
@@ -83,17 +79,15 @@ public class NorddeutscheLandesbankPDFExtractor extends AbstractPDFExtractor
                         .match("^Ex\\-Tag (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
 
-                        .oneOf( //
-                                        // @formatter:off
-                                        // Ausmachender Betrag 330,80+ EUR
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("amount", "currency") //
-                                                        .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)[\\+\\-]? (?<currency>[A-Z]{3}).*$") //
-                                                        .assign((t, v) -> {
-                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                                            t.setAmount(asAmount(v.get("amount")));
-                                                        }))
+                        // @formatter:off
+                        // Ausmachender Betrag 330,80+ EUR
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)[\\+\\-]? (?<currency>[A-Z]{3}).*$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
 
                         .optionalOneOf( //
                                         // @formatter:off
@@ -115,15 +109,12 @@ public class NorddeutscheLandesbankPDFExtractor extends AbstractPDFExtractor
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }))
 
-                        .optionalOneOf( //
-                                        // @formatter:off
-                                        // Abrechnungsnr. 39001696226
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("note") //
-                                                        .match("^.*(?<note>Abrechnungsnr\\. .*)$") //
-                                                        .assign((t, v) -> t.setNote(trim(v.get("note")))))
-
+                        // @formatter:off
+                        // Abrechnungsnr. 39001696226
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^.*(?<note>Abrechnungsnr\\. .*)$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         .wrap(TransactionItem::new);
 
