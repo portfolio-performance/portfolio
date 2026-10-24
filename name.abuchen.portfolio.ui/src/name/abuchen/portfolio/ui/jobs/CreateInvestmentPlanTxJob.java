@@ -64,30 +64,24 @@ public final class CreateInvestmentPlanTxJob extends AbstractClientJob
                     if (!plan.isAutoGenerate())
                         continue;
 
-                    var sizeBefore = plan.getTransactions().size();
+                    List<TransactionPair<?>> transactions = new ArrayList<>();
 
                     try
                     {
-                        List<TransactionPair<?>> transactions = plan.generateTransactions(converter);
-                        if (!transactions.isEmpty())
-                            tx.put(plan, transactions);
+                        plan.generateTransactions(converter, transactions);
                     }
                     catch (IOException e)
                     {
+                        // transactions keeps the ones created before the
+                        // exception
                         PortfolioPlugin.log(e);
-
-                        // generateTransactions does not return the
-                        // transactions created before the exception
-                        var all = plan.getTransactions(getClient());
-                        if (all.size() > sizeBefore)
-                            tx.put(plan, new ArrayList<>(all.subList(sizeBefore, all.size())));
                     }
 
-                    // generateTransactions keeps the transactions created
-                    // before an IOException is thrown, therefore compare the
-                    // number of transactions instead of the returned list
-                    if (plan.getTransactions().size() != sizeBefore)
+                    if (!transactions.isEmpty())
+                    {
+                        tx.put(plan, transactions);
                         isModified = true;
+                    }
                 }
 
                 // mark the client dirty once after all plans have been
