@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf.postfinance;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
@@ -8,6 +9,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyC
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFeed;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFeedProperty;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -19,10 +21,12 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
@@ -33,32 +37,22 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertNull;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
-import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
-import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.PostfinancePDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.TestCoinSearchProvider;
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
 
@@ -96,34 +90,18 @@ public class PostfinancePDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("NL0000009355"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("UNILEVER DUTCH CERT"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0000009355"), hasWkn(null), hasTicker(null), //
+                        hasName("UNILEVER DUTCH CERT"), //
+                        hasCurrencyCode("EUR"))));
 
-        // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-09-25T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(60)));
-        assertThat(entry.getSource(), is("Kauf01.txt"));
-        assertThat(entry.getNote(), is("Ref.-Nr.: 153557048"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(2850.24))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(2837.40))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(4.26))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(8.58))));
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2018-09-25T00:00"), hasShares(60.00), //
+                        hasSource("Kauf01.txt"), //
+                        hasNote("Ref.-Nr.: 153557048"), //
+                        hasAmount("EUR", 2850.24), hasGrossValue("EUR", 2837.40), //
+                        hasTaxes("EUR", 4.26), hasFees("EUR", 8.58))));
     }
 
     @Test
@@ -148,34 +126,18 @@ public class PostfinancePDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("CH0025751329"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("LOGITECH N"));
-        assertThat(security.getCurrencyCode(), is("CHF"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0025751329"), hasWkn(null), hasTicker(null), //
+                        hasName("LOGITECH N"), //
+                        hasCurrencyCode("CHF"))));
 
-        // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-10-25T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(87)));
-        assertThat(entry.getSource(), is("Kauf02.txt"));
-        assertThat(entry.getNote(), is("Ref.-Nr.: 155571206"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(2998.95))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(2970.20))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(2.25))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(25.00 + 1.50))));
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2018-10-25T00:00"), hasShares(87.00), //
+                        hasSource("Kauf02.txt"), //
+                        hasNote("Ref.-Nr.: 155571206"), //
+                        hasAmount("CHF", 2998.95), hasGrossValue("CHF", 2970.20), //
+                        hasTaxes("CHF", 2.25), hasFees("CHF", (25.00 + 1.50)))));
     }
 
     @Test
@@ -200,38 +162,19 @@ public class PostfinancePDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE000PAH0038"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("PORSCHE AUTOMOBIL HOLDING PRF"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000PAH0038"), hasWkn(null), hasTicker(null), //
+                        hasName("PORSCHE AUTOMOBIL HOLDING PRF"), //
+                        hasCurrencyCode("EUR"))));
 
-        // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-03-27T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(55)));
-        assertThat(entry.getSource(), is("Kauf03.txt"));
-        assertThat(entry.getNote(), is("Ref.-Nr.: 122007844"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(2968.50))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(2963.40))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(4.45))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.60 * 1.08279))));
-
-        var grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
-                        .orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of("EUR", Values.Amount.factorize(2736.80))));
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2017-03-27T00:00"), hasShares(55.00), //
+                        hasSource("Kauf03.txt"), //
+                        hasNote("Ref.-Nr.: 122007844"), //
+                        hasAmount("CHF", 2968.50), hasGrossValue("CHF", 2963.40), //
+                        hasForexGrossValue("EUR", 2736.80), //
+                        hasTaxes("CHF", 4.45), hasFees("CHF", 0.60 * 1.08279))));
     }
 
     @Test
@@ -259,32 +202,18 @@ public class PostfinancePDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
-        // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-03-27T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(55)));
-        assertThat(entry.getSource(), is("Kauf03.txt"));
-        assertThat(entry.getNote(), is("Ref.-Nr.: 122007844"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(2968.50))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(2963.40))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(4.45))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.60 * 1.08279))));
-
-        var c = new CheckCurrenciesAction();
-        var account = new Account();
-        account.setCurrencyCode("CHF");
-        var s = c.process(entry, account, entry.getPortfolio());
-        assertThat(s, is(Status.OK_STATUS));
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2017-03-27T00:00"), hasShares(55.00), //
+                        hasSource("Kauf03.txt"), //
+                        hasNote("Ref.-Nr.: 122007844"), //
+                        hasAmount("CHF", 2968.50), hasGrossValue("CHF", 2963.40), //
+                        hasTaxes("CHF", 4.45), hasFees("CHF", 0.60 * 1.08279), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
@@ -309,38 +238,19 @@ public class PostfinancePDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("LU0188802960"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("Pictet - Japan Index - I"));
-        assertThat(security.getCurrencyCode(), is("JPY"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0188802960"), hasWkn(null), hasTicker(null), //
+                        hasName("Pictet - Japan Index - I"), //
+                        hasCurrencyCode("JPY"))));
 
-        // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-12-20T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.441)));
-        assertThat(entry.getSource(), is("Kauf04.txt"));
-        assertThat(entry.getNote(), is("Auftrag 10111111"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(280.91))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(280.49))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.42))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-
-        var grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
-                        .orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of("JPY", Values.Amount.factorize(34019.00))));
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-12-20T00:00"), hasShares(1.441), //
+                        hasSource("Kauf04.txt"), //
+                        hasNote("Auftrag 10111111"), //
+                        hasAmount("CHF", 280.91), hasGrossValue("CHF", 280.49), //
+                        hasForexGrossValue("JPY", 34019.00), //
+                        hasTaxes("CHF", 0.42), hasFees("CHF", 0.00))));
     }
 
     @Test
@@ -368,32 +278,18 @@ public class PostfinancePDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
-        // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-12-20T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.441)));
-        assertThat(entry.getSource(), is("Kauf04.txt"));
-        assertThat(entry.getNote(), is("Auftrag 10111111"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(280.91))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(280.49))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.42))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-
-        var c = new CheckCurrenciesAction();
-        var account = new Account();
-        account.setCurrencyCode("CHF");
-        var s = c.process(entry, account, entry.getPortfolio());
-        assertThat(s, is(Status.OK_STATUS));
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-12-20T00:00"), hasShares(1.441), //
+                        hasSource("Kauf04.txt"), //
+                        hasNote("Auftrag 10111111"), //
+                        hasAmount("CHF", 280.91), hasGrossValue("CHF", 280.49), //
+                        hasTaxes("CHF", 0.42), hasFees("CHF", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
@@ -421,7 +317,7 @@ public class PostfinancePDFExtractorTest
                         hasName("PF - Global Fund A"), //
                         hasCurrencyCode("CHF"))));
 
-        // check buy sell transaction
+        // check purchase transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-07-31T00:00"), hasShares(1.216), //
                         hasSource("Kauf05.txt"), //
@@ -455,7 +351,7 @@ public class PostfinancePDFExtractorTest
                         hasName("UBS ETF - SXI Real Estate Funds"), //
                         hasCurrencyCode("CHF"))));
 
-        // check buy sell transaction
+        // check purchase transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2025-01-14T00:00"), hasShares(14.000), //
                         hasSource("Kauf06.txt"), //
@@ -486,34 +382,18 @@ public class PostfinancePDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("IE00BD4TYL27"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("UBSETF MSCI USA hdg to CHF"));
-        assertThat(security.getCurrencyCode(), is("CHF"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BD4TYL27"), hasWkn(null), hasTicker(null), //
+                        hasName("UBSETF MSCI USA hdg to CHF"), //
+                        hasCurrencyCode("CHF"))));
 
-        // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-09-20T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(308)));
-        assertThat(entry.getSource(), is("Verkauf01.txt"));
-        assertThat(entry.getNote(), is("Ref.-Nr.: 153327044"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(7467.50))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(7481.30))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(11.20))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(2.60))));
+        // check sale transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2018-09-20T00:00"), hasShares(308.00), //
+                        hasSource("Verkauf01.txt"), //
+                        hasNote("Ref.-Nr.: 153327044"), //
+                        hasAmount("CHF", 7467.50), hasGrossValue("CHF", 7481.30), //
+                        hasTaxes("CHF", 11.20), hasFees("CHF", 2.60))));
     }
 
     @Test
@@ -541,7 +421,7 @@ public class PostfinancePDFExtractorTest
                         hasName("UBS Index Fund - Bonds"), //
                         hasCurrencyCode("CHF"))));
 
-        // check buy sell transaction
+        // check sale transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2025-04-16T00:00"), hasShares(0.074), //
                         hasSource("Verkauf02.txt"), //
@@ -575,7 +455,7 @@ public class PostfinancePDFExtractorTest
                         hasName("Pictet - Short-Term Money Market"), //
                         hasCurrencyCode("JPY"))));
 
-        // check buy sell transaction
+        // check sale transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2025-06-18T00:00"), hasShares(0.553), //
                         hasSource("Verkauf03.txt"), //
@@ -610,7 +490,7 @@ public class PostfinancePDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
-        // check buy sell transaction
+        // check sale transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2025-06-18T00:00"), hasShares(0.553), //
                         hasSource("Verkauf03.txt"), //
@@ -644,7 +524,7 @@ public class PostfinancePDFExtractorTest
                         hasName("Credit Suisse Index Fund (CH) II - Gold Blue - QB"), //
                         hasCurrencyCode("USD"))));
 
-        // check buy sell transaction
+        // check sale transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2024-03-13T00:00"), hasShares(0.211), //
                         hasSource("Verkauf04.txt"), //
@@ -679,7 +559,7 @@ public class PostfinancePDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
-        // check buy sell transaction
+        // check sale transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2024-03-13T00:00"), hasShares(0.211), //
                         hasSource("Verkauf04.txt"), //
@@ -713,7 +593,7 @@ public class PostfinancePDFExtractorTest
                         hasFeed(CoinGeckoQuoteFeed.ID), //
                         hasFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID, "bitcoin"))));
 
-        // check buy sell transaction
+        // check purchase transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-12-01T00:00"), hasShares(0.006124), //
                         hasSource("CryptoKauf01.txt"), //
@@ -743,29 +623,19 @@ public class PostfinancePDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("NL0000009355"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("UNILEVER DUTCH CERT"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0000009355"), hasWkn(null), hasTicker(null), //
+                        hasName("UNILEVER DUTCH CERT"), //
+                        hasCurrencyCode("EUR"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-06-05T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(60)));
-        assertThat(transaction.getSource(), is("Dividende01.txt"));
-        assertThat(transaction.getNote(), is("Ref.-Nr.: 169933304"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(20.93))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(24.62))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(3.69))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2019-06-05"), hasExDate("2019-05-02T00:00"), //
+                        hasShares(60.00), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote("Ref.-Nr.: 169933304"), //
+                        hasAmount("EUR", 20.93), hasGrossValue("EUR", 24.62), //
+                        hasTaxes("EUR", 3.69), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -788,29 +658,19 @@ public class PostfinancePDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("CH0032912732"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("UBS ETF CH - SLI CHF A"));
-        assertThat(security.getCurrencyCode(), is("CHF"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0032912732"), hasWkn(null), hasTicker(null), //
+                        hasName("UBS ETF CH - SLI CHF A"), //
+                        hasCurrencyCode("CHF"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-09-08T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(34)));
-        assertThat(transaction.getSource(), is("Dividende02.txt"));
-        assertThat(transaction.getNote(), is("Ref.-Nr.: 130516418"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(36.69))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(56.44))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(19.75))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2017-09-08"), hasExDate("2017-09-06T00:00"), //
+                        hasShares(34.00), //
+                        hasSource("Dividende02.txt"), //
+                        hasNote("Ref.-Nr.: 130516418"), //
+                        hasAmount("CHF", 36.69), hasGrossValue("CHF", 56.44), //
+                        hasTaxes("CHF", 19.75), hasFees("CHF", 0.00))));
     }
 
     @Test
@@ -833,29 +693,19 @@ public class PostfinancePDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("CH0019396990"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("YPSOMED HLDG"));
-        assertThat(security.getCurrencyCode(), is("CHF"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0019396990"), hasWkn(null), hasTicker(null), //
+                        hasName("YPSOMED HLDG"), //
+                        hasCurrencyCode("CHF"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-07-05T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(19)));
-        assertThat(transaction.getSource(), is("Dividende03.txt"));
-        assertThat(transaction.getNote(), is("Ref.-Nr.: 149619136"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(26.60))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(26.60))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2018-07-05"), hasExDate("2018-07-03T00:00"), //
+                        hasShares(19.00), //
+                        hasSource("Dividende03.txt"), //
+                        hasNote("Ref.-Nr.: 149619136"), //
+                        hasAmount("CHF", 26.60), hasGrossValue("CHF", 26.60), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
@@ -885,7 +735,7 @@ public class PostfinancePDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-10-25T00:00"), hasShares(275.00), //
+                        hasDate("2023-10-25T00:00"), hasExDate("2023-10-12T00:00"), hasShares(275.00), //
                         hasSource("Dividende04.txt"), //
                         hasNote("Ref.-Nr.: 7790541"), //
                         hasAmount("CHF", 4.07), hasGrossValue("CHF", 4.07), //
@@ -919,7 +769,7 @@ public class PostfinancePDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-09-13T00:00"), hasShares(42.00), //
+                        hasDate("2023-09-13T00:00"), hasExDate("2023-09-08T00:00"), hasShares(42.00), //
                         hasSource("Dividende05.txt"), //
                         hasNote("Ref.-Nr.: 7600589"), //
                         hasAmount("CHF", 3.28), hasGrossValue("CHF", 5.04), //
@@ -945,7 +795,7 @@ public class PostfinancePDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
-        // assert transaction
+        // check deposit transaction
         assertThat(results, hasItem(deposit(hasDate("2023-05-02"), hasAmount("CHF", 1200.00), //
                         hasSource("Zahlungsverkehr01.txt"), hasNote("Ref.-Nr.: 391377700"))));
     }
@@ -969,7 +819,7 @@ public class PostfinancePDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal(hasDate("2017-01-31"), hasAmount("CHF", 5675.50), //
                         hasSource("Zahlungsverkehr02.txt"), hasNote("Ref.-Nr.: 119387423"))));
     }
@@ -994,19 +844,12 @@ public class PostfinancePDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check fees transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-01-03T00:00")));
-        assertThat(transaction.getSource(), is("Jahresgebuehr01.txt"));
-        assertThat(transaction.getNote(), is("Jahresgebühr | Ref.-Nr.: 161333839"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(90.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(90.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2019-01-03"), //
+                        hasSource("Jahresgebuehr01.txt"), //
+                        hasNote("Jahresgebühr | Ref.-Nr.: 161333839"), //
+                        hasAmount("CHF", 90.00), hasGrossValue("CHF", 90.00), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
@@ -1028,9 +871,13 @@ public class PostfinancePDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
-        // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2024-01-01"), hasAmount("CHF", 18.00), //
-                        hasSource("Depotgebuehr01.txt"), hasNote("Depotgebühr | Ref.-Nr.: 464973467"))));
+        // check fees transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2024-01-01"), //
+                        hasSource("Depotgebuehr01.txt"), //
+                        hasNote("Depotgebühr | Ref.-Nr.: 464973467"), //
+                        hasAmount("CHF", 18.00), hasGrossValue("CHF", 18.00), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
@@ -1052,9 +899,13 @@ public class PostfinancePDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
-        // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2023-12-30"), hasAmount("CHF", 16.12), //
-                        hasSource("Depotgebuehr02.txt"), hasNote("R-Nr.: 2705944 | 01.10.2023 - 31.12.2023"))));
+        // check fees transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2023-12-30"), //
+                        hasSource("Depotgebuehr02.txt"), //
+                        hasNote("R-Nr.: 2705944 | 01.10.2023 - 31.12.2023"), //
+                        hasAmount("CHF", 16.12), hasGrossValue("CHF", 16.12), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
@@ -1077,34 +928,20 @@ public class PostfinancePDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check 1st interest transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-10-31T00:00")));
-        assertThat(transaction.getSource(), is("Zinsabschluss01.txt"));
-        assertThat(transaction.getNote(), is("01.01.2019 – 31.10.2019"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(4.17))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(4.17))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2019-10-31"), //
+                        hasSource("Zinsabschluss01.txt"), //
+                        hasNote("01.01.2019 – 31.10.2019"), //
+                        hasAmount("CHF", 4.17), hasGrossValue("CHF", 4.17), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
 
         // check 2nd interest transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-31T00:00")));
-        assertThat(transaction.getSource(), is("Zinsabschluss01.txt"));
-        assertThat(transaction.getNote(), is("01.11.2019 – 31.12.2019"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(0.42))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(0.42))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2019-12-31"), //
+                        hasSource("Zinsabschluss01.txt"), //
+                        hasNote("01.11.2019 – 31.12.2019"), //
+                        hasAmount("CHF", 0.42), hasGrossValue("CHF", 0.42), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
@@ -1127,49 +964,28 @@ public class PostfinancePDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check 1st interest transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-10-31T00:00")));
-        assertThat(transaction.getSource(), is("Zinsabschluss02.txt"));
-        assertThat(transaction.getNote(), is("01.01.2019 – 31.10.2019"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(83.33))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(83.33))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2019-10-31"), //
+                        hasSource("Zinsabschluss02.txt"), //
+                        hasNote("01.01.2019 – 31.10.2019"), //
+                        hasAmount("CHF", 83.33), hasGrossValue("CHF", 83.33), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
 
         // check 2nd interest transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-31T00:00")));
-        assertThat(transaction.getSource(), is("Zinsabschluss02.txt"));
-        assertThat(transaction.getNote(), is("01.11.2019 – 31.12.2019"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(33.33))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(33.33))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2019-12-31"), //
+                        hasSource("Zinsabschluss02.txt"), //
+                        hasNote("01.11.2019 – 31.12.2019"), //
+                        hasAmount("CHF", 33.33), hasGrossValue("CHF", 33.33), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
 
         // check taxes transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(2)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-31T00:00")));
-        assertThat(transaction.getSource(), is("Zinsabschluss02.txt"));
-        assertThat(transaction.getNote(), is("Verrechnungssteuer 01.01.2019 - 31.12.2019"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(40.83))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(40.83))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2019-12-31"), //
+                        hasSource("Zinsabschluss02.txt"), //
+                        hasNote("Verrechnungssteuer 01.01.2019 - 31.12.2019"), //
+                        hasAmount("CHF", 40.83), hasGrossValue("CHF", 40.83), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
@@ -1192,34 +1008,20 @@ public class PostfinancePDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check interest transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-12-31T00:00")));
-        assertThat(transaction.getSource(), is("Zinsabschluss03.txt"));
-        assertThat(transaction.getNote(), is("01.01.2015 - 31.12.2015"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(1.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(1.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2015-12-31"), //
+                        hasSource("Zinsabschluss03.txt"), //
+                        hasNote("01.01.2015 - 31.12.2015"), //
+                        hasAmount("CHF", 1.00), hasGrossValue("CHF", 1.00), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
 
         // check fees transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-12-31T00:00")));
-        assertThat(transaction.getSource(), is("Zinsabschluss03.txt"));
-        assertThat(transaction.getNote(), is("Gebührenausweis 01.01.2015 - 31.12.2015"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(60.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(60.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2015-12-31"), //
+                        hasSource("Zinsabschluss03.txt"), //
+                        hasNote("Gebührenausweis 01.01.2015 - 31.12.2015"), //
+                        hasAmount("CHF", 60.00), hasGrossValue("CHF", 60.00), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
@@ -1242,49 +1044,28 @@ public class PostfinancePDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check interest transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-31T00:00")));
-        assertThat(transaction.getSource(), is("Zinsabschluss04.txt"));
-        assertThat(transaction.getNote(), is("01.01.2017 - 31.12.2017"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(400.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(400.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2017-12-31"), //
+                        hasSource("Zinsabschluss04.txt"), //
+                        hasNote("01.01.2017 - 31.12.2017"), //
+                        hasAmount("CHF", 400.00), hasGrossValue("CHF", 400.00), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
 
         // check taxes transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-31T00:00")));
-        assertThat(transaction.getSource(), is("Zinsabschluss04.txt"));
-        assertThat(transaction.getNote(), is("Verrechnungssteuer 01.01.2017 - 31.12.2017"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(140.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(140.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2017-12-31"), //
+                        hasSource("Zinsabschluss04.txt"), //
+                        hasNote("Verrechnungssteuer 01.01.2017 - 31.12.2017"), //
+                        hasAmount("CHF", 140.00), hasGrossValue("CHF", 140.00), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
 
         // check fees transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(2)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-31T00:00")));
-        assertThat(transaction.getSource(), is("Zinsabschluss04.txt"));
-        assertThat(transaction.getNote(), is("Gebührenausweis 01.01.2017 - 31.12.2017"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(60.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(60.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2017-12-31"), //
+                        hasSource("Zinsabschluss04.txt"), //
+                        hasNote("Gebührenausweis 01.01.2017 - 31.12.2017"), //
+                        hasAmount("CHF", 60.00), hasGrossValue("CHF", 60.00), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
@@ -1306,780 +1087,341 @@ public class PostfinancePDFExtractorTest
         assertThat(results.size(), is(77));
         new AssertImportActions().check(results, "CHF");
 
-        // check transaction
-        // get transactions
-        var iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
-        assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(77L));
-
-        var item = iter.next();
-
-        // assert transaction
-        var transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-01T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(100.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Auftrag CH-DD-Basislastschrift"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-01T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(150.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Auftrag CH-DD-Basislastschrift"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-01T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(250.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Auftrag CH-DD-Basislastschrift"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-02T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(250.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Lastschrift"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-02T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(150.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Lastschrift"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-02T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(100.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Lastschrift"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-02T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(250.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Oranger Einzahlungsschein"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-02T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(150.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Oranger Einzahlungsschein"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-02T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(100.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Oranger Einzahlungsschein"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-03T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(25.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kauf/Dienstleistung"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-03T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(15.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kauf/Dienstleistung"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-03T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(10.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kauf/Dienstleistung"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-04T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(2000.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Übertrag auf Konto"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-04T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(1000.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Übertrag auf Konto"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-04T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(500.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Übertrag auf Konto"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-05T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(1300.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Giro Post"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-05T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(150.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Giro Post"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-05T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(200.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Giro Post"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-06T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(1000.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Giro Bank"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-06T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(100.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Giro Bank"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-06T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(200.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Giro Bank"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-07T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(10.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kauf/Online Shopping"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-07T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(15.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kauf/Online Shopping"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-07T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(25.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kauf/Online Shopping"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-07T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(150.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Bargeldbezug vom 07.04.2018"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-07T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(100.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Bargeldbezug vom 07.04.2018"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-07T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(100.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Bargeldbezug vom 07.04.2018"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-08T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(100.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Bargeldbezug"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-08T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(150.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Bargeldbezug"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-08T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(250.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Bargeldbezug"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-08T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(100.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kauf/Dienstleistung vom 08.04.2018"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-08T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(150.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kauf/Dienstleistung vom 08.04.2018"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-08T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(250.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kauf/Dienstleistung vom 08.04.2018"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-08T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(100.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kauf/Dienstleistung vom 08.04.2018"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-08T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(150.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kauf/Dienstleistung vom 08.04.2018"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-08T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(250.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kauf/Dienstleistung vom 08.04.2018"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-08T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(5.25))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kauf/Dienstleistung"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-09T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(10.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kauf/Online Shopping vom 09.04.2018"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-09T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(15.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kauf/Online Shopping vom 09.04.2018"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-09T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(25.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kauf/Online Shopping vom 09.04.2018"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-09T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(10.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kauf/Online Shopping vom 09.04.2018"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-09T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(15.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kauf/Online Shopping vom 09.04.2018"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-09T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(25.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kauf/Online Shopping vom 09.04.2018"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-10T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(10.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("TWINT Geld senden"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-10T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(15.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("TWINT Geld senden"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-10T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(25.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("TWINT Geld senden"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-10T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(10.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("TWINT Geld senden"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-10T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(15.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("TWINT Geld senden"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-10T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(25.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("TWINT Geld senden"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-10T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(10.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("TWINT Kauf/Dienstleistung"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-10T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(15.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("TWINT Kauf/Dienstleistung"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-10T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(25.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("TWINT Kauf/Dienstleistung"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-10T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(10.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("TWINT Geld empfangen"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-10T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(15.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("TWINT Geld empfangen"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-10T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(25.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("TWINT Geld empfangen"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-11T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(11.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("TWINT Geld empfangen"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-11T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(16.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("TWINT Geld empfangen"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-11T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(26.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("TWINT Geld empfangen"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-20T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(10000.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Gutschrift von Fremdbank"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-20T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(600.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Gutschrift von Fremdbank"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-20T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(500.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Gutschrift von Fremdbank"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-21T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(50.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Einzahlschein/QR-Zahlteil"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-21T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(150.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Einzahlschein/QR-Zahlteil"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-21T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(250.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Einzahlschein/QR-Zahlteil"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-22T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(50.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Gutschrift Online Shopping"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-22T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(150.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Gutschrift Online Shopping"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-22T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(250.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Gutschrift Online Shopping"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-23T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(10.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Gutschrift"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-23T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(10.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Gutschrift"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-23T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(10.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Gutschrift"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-30T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(11.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is(""));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-30T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(10.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is(""));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-30T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(9.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is(""));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-30T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(5.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kontoführungsgebühr"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-30T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(2.40))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Einzahlungen am Schalter"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-30T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(15.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Guthabengebühr für 03.2018"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-30T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(1.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Zinsabschluss 01.01.2018 - 30.04.2018"));
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-01"), hasAmount("CHF", 100.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Auftrag CH-DD-Basislastschrift"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-01"), hasAmount("CHF", 150.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Auftrag CH-DD-Basislastschrift"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-01"), hasAmount("CHF", 250.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Auftrag CH-DD-Basislastschrift"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-02"), hasAmount("CHF", 250.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Lastschrift"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-02"), hasAmount("CHF", 150.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Lastschrift"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-02"), hasAmount("CHF", 100.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Lastschrift"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-02"), hasAmount("CHF", 250.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Oranger Einzahlungsschein"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-02"), hasAmount("CHF", 150.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Oranger Einzahlungsschein"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-02"), hasAmount("CHF", 100.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Oranger Einzahlungsschein"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-03"), hasAmount("CHF", 25.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Kauf/Dienstleistung"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-03"), hasAmount("CHF", 15.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Kauf/Dienstleistung"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-03"), hasAmount("CHF", 10.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Kauf/Dienstleistung"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-04"), hasAmount("CHF", 2000.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Übertrag auf Konto"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-04"), hasAmount("CHF", 1000.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Übertrag auf Konto"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-04"), hasAmount("CHF", 500.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Übertrag auf Konto"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-05"), hasAmount("CHF", 1300.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Giro Post"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-05"), hasAmount("CHF", 150.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Giro Post"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-05"), hasAmount("CHF", 200.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Giro Post"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-06"), hasAmount("CHF", 1000.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Giro Bank"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-06"), hasAmount("CHF", 100.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Giro Bank"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-06"), hasAmount("CHF", 200.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Giro Bank"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-07"), hasAmount("CHF", 10.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Kauf/Online Shopping"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-07"), hasAmount("CHF", 15.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Kauf/Online Shopping"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-07"), hasAmount("CHF", 25.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Kauf/Online Shopping"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-07"), hasAmount("CHF", 150.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Bargeldbezug vom 07.04.2018"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-07"), hasAmount("CHF", 100.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Bargeldbezug vom 07.04.2018"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-07"), hasAmount("CHF", 100.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Bargeldbezug vom 07.04.2018"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-08"), hasAmount("CHF", 100.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Bargeldbezug"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-08"), hasAmount("CHF", 150.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Bargeldbezug"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-08"), hasAmount("CHF", 250.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Bargeldbezug"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-08"), hasAmount("CHF", 100.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Kauf/Dienstleistung vom 08.04.2018"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-08"), hasAmount("CHF", 150.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Kauf/Dienstleistung vom 08.04.2018"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-08"), hasAmount("CHF", 250.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Kauf/Dienstleistung vom 08.04.2018"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-08"), hasAmount("CHF", 100.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Kauf/Dienstleistung vom 08.04.2018"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-08"), hasAmount("CHF", 150.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Kauf/Dienstleistung vom 08.04.2018"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-08"), hasAmount("CHF", 250.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Kauf/Dienstleistung vom 08.04.2018"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-08"), hasAmount("CHF", 5.25), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Kauf/Dienstleistung"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-09"), hasAmount("CHF", 10.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Kauf/Online Shopping vom 09.04.2018"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-09"), hasAmount("CHF", 15.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Kauf/Online Shopping vom 09.04.2018"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-09"), hasAmount("CHF", 25.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Kauf/Online Shopping vom 09.04.2018"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-09"), hasAmount("CHF", 10.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Kauf/Online Shopping vom 09.04.2018"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-09"), hasAmount("CHF", 15.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Kauf/Online Shopping vom 09.04.2018"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-09"), hasAmount("CHF", 25.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Kauf/Online Shopping vom 09.04.2018"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-10"), hasAmount("CHF", 10.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("TWINT Geld senden"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-10"), hasAmount("CHF", 15.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("TWINT Geld senden"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-10"), hasAmount("CHF", 25.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("TWINT Geld senden"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-10"), hasAmount("CHF", 10.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("TWINT Geld senden"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-10"), hasAmount("CHF", 15.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("TWINT Geld senden"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-10"), hasAmount("CHF", 25.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("TWINT Geld senden"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-10"), hasAmount("CHF", 10.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("TWINT Kauf/Dienstleistung"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-10"), hasAmount("CHF", 15.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("TWINT Kauf/Dienstleistung"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-10"), hasAmount("CHF", 25.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("TWINT Kauf/Dienstleistung"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2018-04-10"), hasAmount("CHF", 10.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("TWINT Geld empfangen"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2018-04-10"), hasAmount("CHF", 15.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("TWINT Geld empfangen"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2018-04-10"), hasAmount("CHF", 25.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("TWINT Geld empfangen"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2018-04-11"), hasAmount("CHF", 11.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("TWINT Geld empfangen"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2018-04-11"), hasAmount("CHF", 16.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("TWINT Geld empfangen"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2018-04-11"), hasAmount("CHF", 26.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("TWINT Geld empfangen"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2018-04-20"), hasAmount("CHF", 10000.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Gutschrift von Fremdbank"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2018-04-20"), hasAmount("CHF", 600.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Gutschrift von Fremdbank"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2018-04-20"), hasAmount("CHF", 500.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Gutschrift von Fremdbank"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2018-04-21"), hasAmount("CHF", 50.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Einzahlschein/QR-Zahlteil"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2018-04-21"), hasAmount("CHF", 150.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Einzahlschein/QR-Zahlteil"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2018-04-21"), hasAmount("CHF", 250.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Einzahlschein/QR-Zahlteil"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2018-04-22"), hasAmount("CHF", 50.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Gutschrift Online Shopping"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2018-04-22"), hasAmount("CHF", 150.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Gutschrift Online Shopping"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2018-04-22"), hasAmount("CHF", 250.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Gutschrift Online Shopping"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2018-04-23"), hasAmount("CHF", 10.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Gutschrift"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2018-04-23"), hasAmount("CHF", 10.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Gutschrift"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2018-04-23"), hasAmount("CHF", 10.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Gutschrift"))));
+
+        // check fees transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2018-04-30"), //
+                        hasSource("Kontoauszug01.txt"), //
+                        hasNote(""), //
+                        hasAmount("CHF", 11.00), hasGrossValue("CHF", 11.00), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+
+        // check fees transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2018-04-30"), //
+                        hasSource("Kontoauszug01.txt"), //
+                        hasNote(""), //
+                        hasAmount("CHF", 10.00), hasGrossValue("CHF", 10.00), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+
+        // check fees transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2018-04-30"), //
+                        hasSource("Kontoauszug01.txt"), //
+                        hasNote(""), //
+                        hasAmount("CHF", 9.00), hasGrossValue("CHF", 9.00), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+
+        // check fees transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2018-04-30"), //
+                        hasSource("Kontoauszug01.txt"), //
+                        hasNote("Kontoführungsgebühr"), //
+                        hasAmount("CHF", 5.00), hasGrossValue("CHF", 5.00), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+
+        // check fees transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2018-04-30"), //
+                        hasSource("Kontoauszug01.txt"), //
+                        hasNote("Einzahlungen am Schalter"), //
+                        hasAmount("CHF", 2.40), hasGrossValue("CHF", 2.40), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+
+        // check fees transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2018-04-30"), //
+                        hasSource("Kontoauszug01.txt"), //
+                        hasNote("Guthabengebühr für 03.2018"), //
+                        hasAmount("CHF", 15.00), hasGrossValue("CHF", 15.00), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+
+        // check interest transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2018-04-30"), //
+                        hasSource("Kontoauszug01.txt"), //
+                        hasNote("Zinsabschluss 01.01.2018 - 30.04.2018"), //
+                        hasAmount("CHF", 1.00), hasGrossValue("CHF", 1.00), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
@@ -2101,70 +1443,29 @@ public class PostfinancePDFExtractorTest
         assertThat(results.size(), is(6));
         new AssertImportActions().check(results, "CHF");
 
-        // check transaction
-        // get transactions
-        var iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
-        assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(6L));
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-09"), hasAmount("CHF", 20000.00), //
+                        hasSource("Kontoauszug02.txt"), hasNote("Übertrag auf Konto"))));
 
-        var item = iter.next();
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-09"), hasAmount("CHF", 20000.00), //
+                        hasSource("Kontoauszug02.txt"), hasNote("Übertrag auf Konto"))));
 
-        // assert transaction
-        var transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-09T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(20000.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Übertrag auf Konto"));
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-12"), hasAmount("CHF", 40000.00), //
+                        hasSource("Kontoauszug02.txt"), hasNote("Übertrag auf Konto"))));
 
-        item = iter.next();
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2018-04-10"), hasAmount("CHF", 25000.00), //
+                        hasSource("Kontoauszug02.txt"), hasNote("Übertrag aus Konto"))));
 
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-09T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(20000.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Übertrag auf Konto"));
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2018-04-11"), hasAmount("CHF", 25000.00), //
+                        hasSource("Kontoauszug02.txt"), hasNote("Übertrag aus Konto"))));
 
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-12T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(40000.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Übertrag auf Konto"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-10T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(25000.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Übertrag aus Konto"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-11T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(25000.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Übertrag aus Konto"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-13T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(10000.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Übertrag aus Konto"));
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2018-04-13"), hasAmount("CHF", 10000.00), //
+                        hasSource("Kontoauszug02.txt"), hasNote("Übertrag aus Konto"))));
     }
 
     @Test
@@ -2186,550 +1487,245 @@ public class PostfinancePDFExtractorTest
         assertThat(results.size(), is(54));
         new AssertImportActions().check(results, "CHF");
 
-        // check transaction
-        // get transactions
-        var iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
-        assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(54L));
-
-        var item = iter.next();
-
-        // assert transaction
-        var transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-01T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(250.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("E-FINANCE 01-22222-5"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-02T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(1000.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("E-FINANCE 01-22222-5"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-02T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(350.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("E-FINANCE 01-22222-5"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-03T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(250.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Auftrag DEBIT DIRECT"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-04T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(250.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Auftrag DEBIT DIRECT"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-04T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(1150.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Auftrag DEBIT DIRECT"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-05T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(200.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Kauf/Online Shopping"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-06T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(100.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Kauf/Online Shopping"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-06T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(150.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Kauf/Online Shopping"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-07T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(150.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Kauf/Online Shopping"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-08T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(100.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Kauf/Online Shopping"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-08T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(200.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Kauf/Online Shopping"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-09T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(50.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Bargeldbezug"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-10T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(100.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Bargeldbezug"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-10T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(150.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Bargeldbezug"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-11T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(50.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Online-Shopping"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-12T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(75.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Online-Shopping"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-12T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(25.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Online-Shopping"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-13T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(100.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Kauf/Dienstleistung"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-14T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(50.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Kauf/Dienstleistung"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-14T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(100.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Kauf/Dienstleistung"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-15T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(100.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Auftrag CH-DD-Basislastschrift"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-16T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(200.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Auftrag CH-DD-Basislastschrift"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-16T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(300.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Auftrag CH-DD-Basislastschrift"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-17T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(100.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Giro Internation (SEPA)"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-18T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(150.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Giro Internation (SEPA)"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-18T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(250.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Giro Internation (SEPA)"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-27T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(100.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Übertrag auf Konto"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-27T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(250.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Übertrag auf Konto"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-22T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(100.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Giro Ausland"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-22T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(150.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Giro Ausland"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-22T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(250.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Giro Ausland"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-22T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(1300.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Giro aus Online-SIC"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-22T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(2000.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Giro aus Online-SIC"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-22T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(250.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Giro aus Online-SIC"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-23T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(1000.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Giro aus Konto"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-23T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(500.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Giro aus Konto"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-23T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(250.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Giro aus Konto"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-24T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(100.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Gutschrift Online Shopping"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-24T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(500.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Gutschrift Online Shopping"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-24T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(250.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Gutschrift Online Shopping"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-25T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(100.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Gutschrift von Fremdbank"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-25T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(500.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Gutschrift von Fremdbank"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-25T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(1250.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Gutschrift von Fremdbank"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-26T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(100.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Gutschrift von Fremdbank"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-26T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(500.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Gutschrift von Fremdbank"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-26T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(250.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Gutschrift von Fremdbank"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-27T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(150.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Übertrag aus Konto"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-30T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(1.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Überweisungsgebühr (SEPA)"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-30T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(2.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Kontoführungsgebühr"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-30T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(5.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Kontoführungsgebühr"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-30T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(4.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Jahrespreis Login"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-30T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(24.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Kontoführungsgebühr (Papier)"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-30T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(1.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Zinsabschluss 01.04.2015 - 30.04.2015"));
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2015-04-01"), hasAmount("CHF", 250.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("E-FINANCE 01-22222-5"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2015-04-02"), hasAmount("CHF", 1000.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("E-FINANCE 01-22222-5"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2015-04-02"), hasAmount("CHF", 350.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("E-FINANCE 01-22222-5"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2015-04-03"), hasAmount("CHF", 250.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Auftrag DEBIT DIRECT"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2015-04-04"), hasAmount("CHF", 250.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Auftrag DEBIT DIRECT"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2015-04-04"), hasAmount("CHF", 1150.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Auftrag DEBIT DIRECT"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2015-04-05"), hasAmount("CHF", 200.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Kauf/Online Shopping"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2015-04-06"), hasAmount("CHF", 100.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Kauf/Online Shopping"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2015-04-06"), hasAmount("CHF", 150.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Kauf/Online Shopping"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2015-04-07"), hasAmount("CHF", 150.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Kauf/Online Shopping"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2015-04-08"), hasAmount("CHF", 100.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Kauf/Online Shopping"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2015-04-08"), hasAmount("CHF", 200.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Kauf/Online Shopping"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2015-04-09"), hasAmount("CHF", 50.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Bargeldbezug"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2015-04-10"), hasAmount("CHF", 100.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Bargeldbezug"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2015-04-10"), hasAmount("CHF", 150.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Bargeldbezug"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2015-04-11"), hasAmount("CHF", 50.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Online-Shopping"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2015-04-12"), hasAmount("CHF", 75.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Online-Shopping"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2015-04-12"), hasAmount("CHF", 25.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Online-Shopping"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2015-04-13"), hasAmount("CHF", 100.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Kauf/Dienstleistung"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2015-04-14"), hasAmount("CHF", 50.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Kauf/Dienstleistung"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2015-04-14"), hasAmount("CHF", 100.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Kauf/Dienstleistung"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2015-04-15"), hasAmount("CHF", 100.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Auftrag CH-DD-Basislastschrift"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2015-04-16"), hasAmount("CHF", 200.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Auftrag CH-DD-Basislastschrift"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2015-04-16"), hasAmount("CHF", 300.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Auftrag CH-DD-Basislastschrift"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2015-04-17"), hasAmount("CHF", 100.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Giro Internation (SEPA)"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2015-04-18"), hasAmount("CHF", 150.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Giro Internation (SEPA)"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2015-04-18"), hasAmount("CHF", 250.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Giro Internation (SEPA)"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2015-04-27"), hasAmount("CHF", 100.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Übertrag auf Konto"))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2015-04-27"), hasAmount("CHF", 250.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Übertrag auf Konto"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2015-04-22"), hasAmount("CHF", 100.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Giro Ausland"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2015-04-22"), hasAmount("CHF", 150.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Giro Ausland"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2015-04-22"), hasAmount("CHF", 250.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Giro Ausland"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2015-04-22"), hasAmount("CHF", 1300.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Giro aus Online-SIC"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2015-04-22"), hasAmount("CHF", 2000.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Giro aus Online-SIC"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2015-04-22"), hasAmount("CHF", 250.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Giro aus Online-SIC"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2015-04-23"), hasAmount("CHF", 1000.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Giro aus Konto"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2015-04-23"), hasAmount("CHF", 500.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Giro aus Konto"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2015-04-23"), hasAmount("CHF", 250.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Giro aus Konto"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2015-04-24"), hasAmount("CHF", 100.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Gutschrift Online Shopping"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2015-04-24"), hasAmount("CHF", 500.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Gutschrift Online Shopping"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2015-04-24"), hasAmount("CHF", 250.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Gutschrift Online Shopping"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2015-04-25"), hasAmount("CHF", 100.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Gutschrift von Fremdbank"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2015-04-25"), hasAmount("CHF", 500.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Gutschrift von Fremdbank"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2015-04-25"), hasAmount("CHF", 1250.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Gutschrift von Fremdbank"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2015-04-26"), hasAmount("CHF", 100.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Gutschrift von Fremdbank"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2015-04-26"), hasAmount("CHF", 500.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Gutschrift von Fremdbank"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2015-04-26"), hasAmount("CHF", 250.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Gutschrift von Fremdbank"))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2015-04-27"), hasAmount("CHF", 150.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Übertrag aus Konto"))));
+
+        // check fees transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2015-04-30"), //
+                        hasSource("Kontoauszug03.txt"), //
+                        hasNote("Überweisungsgebühr (SEPA)"), //
+                        hasAmount("CHF", 1.00), hasGrossValue("CHF", 1.00), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+
+        // check fees transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2015-04-30"), //
+                        hasSource("Kontoauszug03.txt"), //
+                        hasNote("Kontoführungsgebühr"), //
+                        hasAmount("CHF", 2.00), hasGrossValue("CHF", 2.00), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+
+        // check fees transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2015-04-30"), //
+                        hasSource("Kontoauszug03.txt"), //
+                        hasNote("Kontoführungsgebühr"), //
+                        hasAmount("CHF", 5.00), hasGrossValue("CHF", 5.00), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+
+        // check fees transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2015-04-30"), //
+                        hasSource("Kontoauszug03.txt"), //
+                        hasNote("Jahrespreis Login"), //
+                        hasAmount("CHF", 4.00), hasGrossValue("CHF", 4.00), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+
+        // check fees transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2015-04-30"), //
+                        hasSource("Kontoauszug03.txt"), //
+                        hasNote("Kontoführungsgebühr (Papier)"), //
+                        hasAmount("CHF", 24.00), hasGrossValue("CHF", 24.00), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+
+        // check interest transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2015-04-30"), //
+                        hasSource("Kontoauszug03.txt"), //
+                        hasNote("Zinsabschluss 01.04.2015 - 30.04.2015"), //
+                        hasAmount("CHF", 1.00), hasGrossValue("CHF", 1.00), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
@@ -2751,30 +1747,13 @@ public class PostfinancePDFExtractorTest
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
-        // check transaction
-        // get transactions
-        var iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
-        assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(2L));
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2021-12-01"), hasAmount("CHF", 111.00), //
+                        hasSource("Kontoauszug04.txt"), hasNote("Überweisung"))));
 
-        var item = iter.next();
-
-        // assert transaction
-        var transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-01T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(111.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
-        assertThat(transaction.getNote(), is("Überweisung"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-05T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(11.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
-        assertThat(transaction.getNote(), is("Überweisung"));
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2021-12-05"), hasAmount("CHF", 11.00), //
+                        hasSource("Kontoauszug04.txt"), hasNote("Überweisung"))));
     }
 
     @Test
@@ -2796,161 +1775,161 @@ public class PostfinancePDFExtractorTest
         assertThat(results.size(), is(27));
         new AssertImportActions().check(results, "CHF");
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal( //
                         hasDate("2024-11-27"), //
                         hasAmount("CHF", 13.90), //
                         hasSource("Kontoauszug05MitTwintKauf.txt"), //
                         hasNote("Kauf/Dienstleistung vom 27.11.2024"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal( //
                         hasDate("2024-12-02"), //
                         hasAmount("CHF", 24.00), //
                         hasSource("Kontoauszug05MitTwintKauf.txt"), //
                         hasNote("Kauf/Dienstleistung vom 02.12.2024"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal( //
                         hasDate("2024-12-08"), //
                         hasAmount("CHF", 3.20), //
                         hasSource("Kontoauszug05MitTwintKauf.txt"), //
                         hasNote("Kauf/Dienstleistung vom 08.12.2024"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal( //
                         hasDate("2024-12-09"), //
                         hasAmount("CHF", 3.20), //
                         hasSource("Kontoauszug05MitTwintKauf.txt"), //
                         hasNote("Kauf/Dienstleistung vom 09.12.2024"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal( //
                         hasDate("2024-12-09"), //
                         hasAmount("CHF", 20.00), //
                         hasSource("Kontoauszug05MitTwintKauf.txt"), //
                         hasNote("Kauf/Dienstleistung vom 09.12.2024"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal( //
                         hasDate("2024-12-09"), //
                         hasAmount("CHF", 5.00), //
                         hasSource("Kontoauszug05MitTwintKauf.txt"), //
                         hasNote("Kauf/Online Shopping"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal( //
                         hasDate("2024-12-10"), //
                         hasAmount("CHF", 13.80), //
                         hasSource("Kontoauszug05MitTwintKauf.txt"), //
                         hasNote("Kauf/Dienstleistung vom 10.12.2024"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal( //
                         hasDate("2024-12-11"), //
                         hasAmount("CHF", 16.50), //
                         hasSource("Kontoauszug05MitTwintKauf.txt"), //
                         hasNote("Kauf/Dienstleistung vom 11.12.2024"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal( //
                         hasDate("2024-12-11"), //
                         hasAmount("CHF", 18.00), //
                         hasSource("Kontoauszug05MitTwintKauf.txt"), //
                         hasNote("Kauf/Dienstleistung vom 11.12.2024"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal( //
                         hasDate("2024-12-12"), //
                         hasAmount("CHF", 25.00), //
                         hasSource("Kontoauszug05MitTwintKauf.txt"), //
                         hasNote("Kauf/Dienstleistung vom 12.12.2024"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal( //
                         hasDate("2024-12-13"), //
                         hasAmount("CHF", 8.20), //
                         hasSource("Kontoauszug05MitTwintKauf.txt"), //
                         hasNote("Kauf/Dienstleistung vom 13.12.2024"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal( //
                         hasDate("2024-12-13"), //
                         hasAmount("CHF", 20.00), //
                         hasSource("Kontoauszug05MitTwintKauf.txt"), //
                         hasNote("Kauf/Dienstleistung vom 13.12.2024"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal( //
                         hasDate("2024-12-14"), //
                         hasAmount("CHF", 28.85), //
                         hasSource("Kontoauszug05MitTwintKauf.txt"), //
                         hasNote("Kauf/Dienstleistung vom 14.12.2024"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal( //
                         hasDate("2024-12-12"), //
                         hasAmount("CHF", 8.80), //
                         hasSource("Kontoauszug05MitTwintKauf.txt"), //
                         hasNote("Kauf/Dienstleistung vom 12.12.2024"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal( //
                         hasDate("2024-12-15"), //
                         hasAmount("CHF", 21.00), //
                         hasSource("Kontoauszug05MitTwintKauf.txt"), //
                         hasNote("TWINT Kauf/Dienstleistung"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal( //
                         hasDate("2024-12-16"), //
                         hasAmount("CHF", 26.00), //
                         hasSource("Kontoauszug05MitTwintKauf.txt"), //
                         hasNote("Kauf/Dienstleistung vom 16.12.2024"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal( //
                         hasDate("2024-12-16"), //
                         hasAmount("CHF", 5.70), //
                         hasSource("Kontoauszug05MitTwintKauf.txt"), //
                         hasNote("Kauf/Dienstleistung vom 16.12.2024"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal( //
                         hasDate("2024-12-17"), //
                         hasAmount("CHF", 25.00), //
                         hasSource("Kontoauszug05MitTwintKauf.txt"), //
                         hasNote("Kauf/Dienstleistung vom 17.12.2024"))));
 
-        // assert transaction
+        // check deposit transaction
         assertThat(results, hasItem(deposit( //
                         hasDate("2024-12-20"), //
                         hasAmount("CHF", 6465.80), //
                         hasSource("Kontoauszug05MitTwintKauf.txt"), //
                         hasNote("Gutschrift"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal( //
                         hasDate("2024-12-24"), //
                         hasAmount("CHF", 2000.00), //
                         hasSource("Kontoauszug05MitTwintKauf.txt"), //
                         hasNote("Lastschrift"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal( //
                         hasDate("2024-12-27"), //
                         hasAmount("CHF", 5056.00), //
                         hasSource("Kontoauszug05MitTwintKauf.txt"), //
                         hasNote("Lastschrift"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal( //
                         hasDate("2024-12-27"), //
                         hasAmount("CHF", 2000.00), //
                         hasSource("Kontoauszug05MitTwintKauf.txt"), //
                         hasNote("Lastschrift"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal( //
                         hasDate("2024-12-27"), //
                         hasAmount("CHF", 1720.00), //
@@ -2967,26 +1946,28 @@ public class PostfinancePDFExtractorTest
                         hasSource("Kontoauszug05MitTwintKauf.txt"), //
                         hasNote("Übertrag aus Konto CH0000000000000000000"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal( //
                         hasDate("2024-12-28"), //
                         hasAmount("CHF", 12.31), //
                         hasSource("Kontoauszug05MitTwintKauf.txt"), //
                         hasNote("Kauf/Dienstleistung vom 28.12.2024"))));
 
-        // assert transaction
+        // check fees transaction
         assertThat(results, hasItem(fee( //
                         hasDate("2024-12-30"), //
-                        hasAmount("CHF", 4.72), //
                         hasSource("Kontoauszug05MitTwintKauf.txt"), //
-                        hasNote("Depotgebühr"))));
+                        hasNote("Depotgebühr"), //
+                        hasAmount("CHF", 4.72), hasGrossValue("CHF", 4.72), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
 
-        // assert transaction
+        // check fees transaction
         assertThat(results, hasItem(fee( //
                         hasDate("2024-12-31"), //
-                        hasAmount("CHF", 5.00), //
                         hasSource("Kontoauszug05MitTwintKauf.txt"), //
-                        hasNote(""))));
+                        hasNote(""), //
+                        hasAmount("CHF", 5.00), hasGrossValue("CHF", 5.00), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
@@ -3008,7 +1989,7 @@ public class PostfinancePDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal( //
                         hasDate("2025-01-04"), hasAmount("CHF", 70.30), //
                         hasSource("Kontoauszug06.txt"), hasNote("Kauf/Dienstleistung"))));
@@ -3033,21 +2014,21 @@ public class PostfinancePDFExtractorTest
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "CHF");
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal( //
                         hasDate("2026-03-01"), //
                         hasAmount("CHF", 30.00), //
                         hasSource("Kontoauszug7MitPFPay.txt"), //
                         hasNote("PF Pay Kauf/Online Shopping"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal( //
                         hasDate("2026-03-02"), //
                         hasAmount("CHF", 20.00), //
                         hasSource("Kontoauszug7MitPFPay.txt"), //
                         hasNote("PF Pay Kauf/Online Shopping"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal( //
                         hasDate("2026-03-03"), //
                         hasAmount("CHF", 10.00), //
