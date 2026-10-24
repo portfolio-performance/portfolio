@@ -34,7 +34,8 @@ final class TransactionUpdates
     private static final Gson GSON = new Gson();
 
     /** Members of the rendered record that an add doesn't take: they are derived from the others. */
-    private static final List<String> NOT_INPUT = List.of("id", "sides", "targetCurrencyCode", "updatedAt");
+    private static final List<String> NOT_INPUT = List.of("id", "sides", "targetCurrencyCode", "instrumentName",
+                    "investmentAccountName", "cashAccountName", "fromName", "toName", "updatedAt");
 
     static final OperationSpec DELETE = new OperationSpec("transaction.delete",
                     "Deletes a whole transaction record, both sides, found by the UUID of either of its sides. The response is one deleted change whose uuid is the record id, with the record as it was in before. A delete that would make an investment account's holding of an instrument negative at the end of any date, by removing a buy or a delivery or transfer into it, is refused.",
@@ -79,7 +80,7 @@ final class TransactionUpdates
         if (context.failed())
             return;
 
-        var before = TransactionsCommand.render(existing.record());
+        var before = TransactionsCommand.render(existing.record(), context.client());
         existing.sides().forEach(side -> detach(context.client(), side));
         context.deleted(new OperationContext.Change("transaction", existing.record().id(), before, Map.of()));
     }
@@ -121,7 +122,7 @@ final class TransactionUpdates
     /** The current record in the shape of an add, with the members of the patch laid over it. */
     private static JsonObject overlay(OperationContext context, TransactionRecord record)
     {
-        var merged = GSON.toJsonTree(TransactionsCommand.render(record)).getAsJsonObject();
+        var merged = GSON.toJsonTree(TransactionsCommand.render(record, context.client())).getAsJsonObject();
         NOT_INPUT.forEach(merged::remove);
         if (record.kind().isPresent())
             merged.remove("units"); // a transfer takes none, and the rendered empty list would be refused
@@ -166,7 +167,7 @@ final class TransactionUpdates
         }
 
         var client = context.client();
-        var before = TransactionsCommand.render(existing.record());
+        var before = TransactionsCommand.render(existing.record(), context.client());
         var updatedAt = sides.stream().map(side -> side.transaction().getUpdatedAt()).toList();
 
         for (var i = 0; i < sides.size(); i++)
@@ -175,7 +176,7 @@ final class TransactionUpdates
 
         var id = existing.record().id();
         var after = TransactionsCommand.render(TransactionRecord.allOf(client).stream()
-                        .filter(record -> record.id().equals(id)).findFirst().orElseThrow());
+                        .filter(record -> record.id().equals(id)).findFirst().orElseThrow(), client);
 
         var changedBefore = new LinkedHashMap<String, Object>();
         var changedAfter = new LinkedHashMap<String, Object>();

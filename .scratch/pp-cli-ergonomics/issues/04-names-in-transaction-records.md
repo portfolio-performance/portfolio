@@ -1,7 +1,7 @@
 # 04: Names in transaction records
 
 Type: task
-Status: ready-for-agent
+Status: done
 
 Spec: [spec.md](../spec.md), "Transaction record names".
 
@@ -23,9 +23,9 @@ Each transaction record from `pp-cli transactions` adds a flat name field next t
 
 ## Acceptance criteria
 
-- [ ] A buy shows `instrumentName`, `investmentAccountName` and `cashAccountName`
-- [ ] A cash transfer and a security transfer show `fromName` and `toName`
-- [ ] A dividend shows `instrumentName` and `cashAccountName`
-- [ ] The response schema and help describe the new fields; schema conformance tests pass
+- [x] A buy shows `instrumentName`, `investmentAccountName` and `cashAccountName`
+- [x] A cash transfer and a security transfer show `fromName` and `toName`
+- [x] A dividend shows `instrumentName` and `cashAccountName`
+- [x] The response schema and help describe the new fields; schema conformance tests pass
 
 ## Comments

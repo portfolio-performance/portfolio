@@ -25,7 +25,8 @@ final class PricesCommand
     private static Schema price(String description)
     {
         return Schema.object(description).property("date", Schema.string("ISO 8601 date of the price."))
-                        .property("value", Schema.number("Price per share as a decimal."));
+                        .property("value", Schema.number("Price per share as a decimal, in the currency of the instrument."
+                                        + MinorUnits.CONVERTED_BY_HOLDINGS));
     }
 
     private static final Schema DATA = Paging.pageSchema("The price history of one instrument.", price("A price on a day."))
@@ -33,7 +34,8 @@ final class PricesCommand
                                     .property("uuid", Schema.string("Canonical UUID."))
                                     .property("name", Schema.string("Instrument name; empty if the file has none."))
                                     .optionalProperty("currencyCode",
-                                                    Schema.string("ISO currency code; absent for indices.")))
+                                                    Schema.string("ISO currency code; absent for indices."
+                                                                    + MinorUnits.CONVERTED_BY_HOLDINGS)))
                     .optionalProperty("latest", price(
                                     "The price valuation uses today: the feed's latest price when it is current, otherwise the last stored price. Absent if no price is dated on or before today. Independent of from and to."));
 

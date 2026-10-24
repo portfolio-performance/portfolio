@@ -38,7 +38,8 @@ public final class PpCli
      * Runs one command. Stdout receives exactly one JSON document, either the
      * response envelope or a problem+json error, unless <code>--format
      * table</code> asks for a table of a successful list; everything else,
-     * including core's own log output, goes to stderr.
+     * including core's own log output, goes to stderr. Core's INFO and OK status
+     * lines are left out unless <code>--verbose</code> is given.
      *
      * @return the process exit code: 0 on success, 2 for usage errors, 1 for
      *         other failures
@@ -55,6 +56,7 @@ public final class PpCli
     {
         var originalOut = System.out; // NOSONAR
         var originalErr = System.err; // NOSONAR
+        PrintStream quietErr = null;
 
         // core logs to the console; keep it away from the JSON on stdout
         System.setOut(stderr);
@@ -62,6 +64,12 @@ public final class PpCli
         try
         {
             var parsed = ArgumentParser.parse(Arrays.asList(args));
+            if (!parsed.options().containsKey(OptionSpec.VERBOSE.name()))
+            {
+                quietErr = new PrintStream(new QuietStatusFilter(stderr), true, StandardCharsets.UTF_8);
+                System.setErr(quietErr);
+            }
+
             var format = OutputFormat.parse(parsed.command(), parsed.options());
             var context = new CommandContext(parsed.options(), env, stdin, stderr, clock, osName, writeEnvironment);
             var response = parsed.command().handler().execute(context);
@@ -86,6 +94,8 @@ public final class PpCli
         }
         finally
         {
+            if (quietErr != null)
+                quietErr.close();
             System.setOut(originalOut);
             System.setErr(originalErr);
         }
