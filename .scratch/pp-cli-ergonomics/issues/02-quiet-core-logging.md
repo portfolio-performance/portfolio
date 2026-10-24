@@ -1,7 +1,7 @@
 # 02: Quiet core logging by default
 
 Type: task
-Status: ready-for-agent
+Status: done
 
 Spec: [spec.md](../spec.md), "Solution".
 
@@ -16,9 +16,9 @@ Core prints status lines such as `Status INFO: name.abuchen.portfolio.model.Clie
 
 ## Acceptance criteria
 
-- [ ] `pp-cli info --file <sample>` writes nothing to stderr
-- [ ] With `--verbose`, the load status line appears on stderr again
-- [ ] An internal error still writes its stack trace to stderr
-- [ ] stdout holds only the JSON document in every case
+- [x] `pp-cli info --file <sample>` writes nothing to stderr
+- [x] With `--verbose`, the load status line appears on stderr again
+- [x] An internal error still writes its stack trace to stderr
+- [x] stdout holds only the JSON document in every case
 
 ## Comments
