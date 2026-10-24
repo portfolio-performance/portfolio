@@ -555,6 +555,18 @@ public class Messages extends NLS
     public static String LabelAbsoluteChange;
     public static String LabelAbsoluteDelta;
     public static String LabelAbsoluteInvestedCapital;
+    public static String LabelAbsolutePerformanceChart;
+    public static String LabelAbsolutePerformanceAsOf;
+    public static String LabelAbsolutePerformanceCurrentValue;
+    public static String LabelAbsolutePerformanceCurrentValueBasis;
+    public static String LabelAbsolutePerformanceGain;
+    public static String LabelAbsolutePerformanceGainLoss;
+    public static String LabelAbsolutePerformanceInvestedCapital;
+    public static String LabelAbsolutePerformanceInvestedCapitalBasis;
+    public static String LabelAbsolutePerformanceLoss;
+    public static String LabelAbsolutePerformanceNoData;
+    public static String LabelAbsolutePerformanceRemainingValue;
+    public static String LabelAbsolutePerformanceUnavailable;
     public static String LabelAccounts;
     public static String LabelAccountTransfer;
     public static String LabelAccumulatedDividends;
