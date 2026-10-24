@@ -66,8 +66,13 @@ public final class ChartUtil
         ImageDataProvider chartImageDataProvider = zoom -> {
             usedZoom.set(zoom);
 
-            int width = Math.max(1, chartSize.x * zoom / 100);
-            int height = Math.max(1, chartSize.y * zoom / 100);
+            // the size of the returned ImageData becomes the size of the image
+            // handle in pixels, and GC.copyArea() copies exactly that area out of
+            // the control. The size must therefore match SWT's own point-to-pixel
+            // conversion, which rounds: truncating allocates a buffer one pixel too
+            // small and drops the last column/row of the chart.
+            int width = Math.max(1, Math.round(chartSize.x * zoom / 100f));
+            int height = Math.max(1, Math.round(chartSize.y * zoom / 100f));
             PaletteData palette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
             return new ImageData(width, height, 32, palette);
         };
