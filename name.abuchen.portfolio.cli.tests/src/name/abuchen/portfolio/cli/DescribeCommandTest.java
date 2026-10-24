@@ -296,7 +296,7 @@ public class DescribeCommandTest
                         is("[\"items\",\"total\"]"));
 
         var meta = response.getAsJsonObject("meta").getAsJsonObject("properties");
-        assertThat(meta.keySet(), is(Set.of("fileVersion", "asOf", "limit", "offset")));
+        assertThat(meta.keySet(), is(Set.of("fileVersion", "asOf", "limit", "offset", "sort", "order")));
 
         var attribute = dataSchema.getAsJsonObject("items").getAsJsonObject("items").getAsJsonObject("properties")
                         .getAsJsonObject("attributes").getAsJsonObject("items").getAsJsonObject("properties");
@@ -315,7 +315,7 @@ public class DescribeCommandTest
         var byName = new HashMap<String, JsonObject>();
         prices.getAsJsonArray("options")
                         .forEach(o -> byName.put(o.getAsJsonObject().get("name").getAsString(), o.getAsJsonObject()));
-        assertThat(byName.keySet(), is(Set.of("file", "instrument", "from", "to", "limit", "offset", "format")));
+        assertThat(byName.keySet(), is(Set.of("file", "instrument", "from", "to", "limit", "offset", "sort", "order", "format")));
 
         var instrument = byName.get("instrument");
         assertThat(instrument.get("required").getAsBoolean(), is(true));
@@ -336,7 +336,7 @@ public class DescribeCommandTest
 
         var meta = prices.getAsJsonObject("response").getAsJsonObject("meta");
         assertThat(meta.getAsJsonArray("required").toString(),
-                        is("[\"fileVersion\",\"asOf\",\"limit\",\"offset\",\"to\"]"));
+                        is("[\"fileVersion\",\"asOf\",\"limit\",\"offset\",\"sort\",\"order\",\"to\"]"));
         assertThat(meta.getAsJsonObject("properties").has("from"), is(true));
 
         var response = prices.getAsJsonObject("response").getAsJsonObject("data");
@@ -356,7 +356,7 @@ public class DescribeCommandTest
         transactions.getAsJsonArray("options")
                         .forEach(o -> byName.put(o.getAsJsonObject().get("name").getAsString(), o.getAsJsonObject()));
         assertThat(byName.keySet(), is(Set.of("file", "investment-account", "cash-account", "instrument", "type",
-                        "from", "to", "currency", "limit", "offset", "format")));
+                        "from", "to", "currency", "limit", "offset", "sort", "order", "format")));
         assertThat(byName.get("from").get("type").getAsString(), is("date"));
         assertThat(byName.get("to").get("type").getAsString(), is("date"));
         assertThat(byName.get("to").get("description").getAsString().toLowerCase(), containsString("future"));

@@ -29,7 +29,8 @@ final class InstrumentsCommand
                     .optionalProperty("tickerSymbol", Schema.string("Ticker symbol, if set."))
                     .optionalProperty("note", Schema.string("Note, if set."))
                     .property("retired", Schema.bool("Whether the instrument is retired."))
-                    .property("attributes", Schema.array("User-defined attributes that have a value.", ATTRIBUTE));
+                    .property("attributes", Schema.array("User-defined attributes that have a value.", ATTRIBUTE))
+                    .optionalProperty("updatedAt", MasterData.UPDATED_AT);
 
     static final MasterDataList.Source<Security> SOURCE = new MasterDataList.Source<Security>(Client::getSecurities,
                     Security::getUUID, Security::getName, InstrumentsCommand::renderer);
@@ -41,7 +42,7 @@ final class InstrumentsCommand
                                     TableColumn.of("currencyCode", "Currency"), TableColumn.of("isin", "ISIN"),
                                     TableColumn.of("wkn", "WKN"), TableColumn.of("tickerSymbol", "Ticker"),
                                     TableColumn.of("retired", "Retired")),
-                    SOURCE);
+                    SOURCE, Security::getUpdatedAt);
 
     private InstrumentsCommand()
     {
@@ -66,6 +67,7 @@ final class InstrumentsCommand
         MasterData.putIfSet(json, "note", security.getNote());
         json.put("retired", security.isRetired());
         json.put("attributes", attributes(security, attributeTypes));
+        MasterData.putUpdatedAt(json, security.getUpdatedAt());
         return json;
     }
 

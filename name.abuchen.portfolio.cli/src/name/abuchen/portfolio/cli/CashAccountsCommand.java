@@ -14,7 +14,8 @@ final class CashAccountsCommand
                     .property("name", Schema.string("Account name; empty if the file has none."))
                     .property("currencyCode", Schema.string("ISO currency code of the account."))
                     .optionalProperty("note", Schema.string("Note, if set."))
-                    .property("retired", Schema.bool("Whether the account is retired."));
+                    .property("retired", Schema.bool("Whether the account is retired."))
+                    .optionalProperty("updatedAt", MasterData.UPDATED_AT);
 
     static final MasterDataList.Source<Account> SOURCE = new MasterDataList.Source<Account>(Client::getAccounts,
                     Account::getUUID, Account::getName, client -> CashAccountsCommand::render);
@@ -23,7 +24,7 @@ final class CashAccountsCommand
                     "Cash accounts: UUID, name, currency, note and retired flag", ITEM,
                     List.of(TableColumn.of("uuid", "UUID"), TableColumn.capped("name", "Name", 40),
                                     TableColumn.of("currencyCode", "Currency"), TableColumn.of("retired", "Retired")),
-                    SOURCE);
+                    SOURCE, Account::getUpdatedAt);
 
     private CashAccountsCommand()
     {
@@ -37,6 +38,7 @@ final class CashAccountsCommand
         json.put("currencyCode", account.getCurrencyCode());
         MasterData.putIfSet(json, "note", account.getNote());
         json.put("retired", account.isRetired());
+        MasterData.putUpdatedAt(json, account.getUpdatedAt());
         return json;
     }
 }

@@ -34,7 +34,7 @@ final class TransactionUpdates
     private static final Gson GSON = new Gson();
 
     /** Members of the rendered record that an add doesn't take: they are derived from the others. */
-    private static final List<String> NOT_INPUT = List.of("id", "sides", "targetCurrencyCode");
+    private static final List<String> NOT_INPUT = List.of("id", "sides", "targetCurrencyCode", "updatedAt");
 
     static final OperationSpec DELETE = new OperationSpec("transaction.delete",
                     "Deletes a whole transaction record, both sides, found by the UUID of either of its sides. The response is one deleted change whose uuid is the record id, with the record as it was in before. A delete that would make an investment account's holding of an instrument negative at the end of any date, by removing a buy or a delivery or transfer into it, is refused.",
@@ -181,6 +181,7 @@ final class TransactionUpdates
         var changedAfter = new LinkedHashMap<String, Object>();
         var members = new LinkedHashSet<>(before.keySet());
         members.addAll(after.keySet());
+        members.remove("updatedAt"); // set by every write, so never what the patch changed
         for (var member : members)
         {
             if (!sameJson(before.get(member), after.get(member)))

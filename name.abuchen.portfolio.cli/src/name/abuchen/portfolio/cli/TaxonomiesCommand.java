@@ -1,9 +1,11 @@
 package name.abuchen.portfolio.cli;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
@@ -49,10 +51,16 @@ final class TaxonomiesCommand
     static final MasterDataList.Source<Taxonomy> SOURCE = new MasterDataList.Source<Taxonomy>(Client::getTaxonomies,
                     Taxonomy::getId, Taxonomy::getName, client -> TaxonomiesCommand::render);
 
+    /** The natural order is the position the app shows; <code>name</code> is an alphabetical alternative. */
+    private static final Sorting.Spec<Taxonomy> SORT = Sorting.Spec.of(Taxonomy::getId, "position",
+                    new Sorting.Field<Taxonomy>("position", client -> Comparator.comparingInt(client.getTaxonomies()::indexOf)),
+                    Sorting.Field.of("name", MasterData.byName(Taxonomy::getName)));
+
     static final CommandSpec SPEC = new CommandSpec("taxonomies",
-                    "Taxonomies in the order the app shows them, each with its classification tree flattened in pre-order: UUID, name, parent, path, target weight and direct assignments.",
-                    true, Paging.OPTIONS, Paging.pageSchema("A page of the taxonomies.", ITEM),
-                    ResponseMeta.pagedSchema(), TaxonomiesCommand::execute);
+                    "Taxonomies in the order the app shows them (--sort position, the default) or by name, each with its classification tree flattened in pre-order: UUID, name, parent, path, target weight and direct assignments. --order desc reverses.",
+                    true, Stream.concat(Paging.OPTIONS.stream(), SORT.options().stream()).toList(),
+                    Paging.pageSchema("A page of the taxonomies.", ITEM), ResponseMeta.pagedSchema(SORT),
+                    TaxonomiesCommand::execute);
 
     private TaxonomiesCommand()
     {
@@ -61,13 +69,14 @@ final class TaxonomiesCommand
     private static Response execute(CommandContext context) throws CliException
     {
         var paging = Paging.parse(context);
+        var sorting = SORT.parse(context);
         var client = context.loadClient().client();
 
-        var page = paging.of(client.getTaxonomies());
+        var page = paging.of(sorting.sort(client, client.getTaxonomies()));
 
         var data = new LinkedHashMap<String, Object>();
         page.putInto(data, TaxonomiesCommand::render);
-        return Response.of(data, ResponseMeta.paged(context, client, paging));
+        return Response.of(data, ResponseMeta.paged(context, client, paging, sorting));
     }
 
     private static Map<String, Object> render(Taxonomy taxonomy)

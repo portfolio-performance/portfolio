@@ -8,7 +8,8 @@ import name.abuchen.portfolio.model.Client;
 
 /**
  * The <code>meta</code> of commands that read a client file: the file version
- * and the date the command ran. List commands add the resolved paging.
+ * and the date the command ran. List commands add the resolved paging and
+ * sorting.
  */
 final class ResponseMeta
 {
@@ -31,10 +32,10 @@ final class ResponseMeta
     }
 
     /** A fresh copy each call, so a command can add members of its own. */
-    static Schema pagedSchema()
+    static Schema pagedSchema(Sorting.Spec<?> sort)
     {
-        return fileEnvelope().property("limit", Schema.integer("Page size used."))
-                        .property("offset", Schema.integer("Index of the first item returned."));
+        return Sorting.declareIn(fileEnvelope().property("limit", Schema.integer("Page size used."))
+                        .property("offset", Schema.integer("Index of the first item returned.")), sort);
     }
 
     private static Schema envelope()
@@ -62,11 +63,12 @@ final class ResponseMeta
         return meta;
     }
 
-    static Map<String, Object> paged(CommandContext context, Client client, Paging paging)
+    static Map<String, Object> paged(CommandContext context, Client client, Paging paging, Sorting<?> sorting)
     {
         var meta = of(context, client);
         meta.put("limit", paging.limit());
         meta.put("offset", paging.offset());
+        sorting.putInto(meta);
         return meta;
     }
 

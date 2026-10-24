@@ -57,7 +57,7 @@ public class InvestmentAccountsCommandTest
         assertThat(run.json().getAsJsonObject().getAsJsonObject("data").get("total").getAsInt(), is(1));
 
         var item = items(run).get(0).getAsJsonObject();
-        assertThat(item.keySet(), is(Set.of("uuid", "name", "referenceCashAccount", "note", "retired")));
+        assertThat(item.keySet(), is(Set.of("uuid", "name", "referenceCashAccount", "note", "retired", "updatedAt")));
         assertThat(item.get("uuid").getAsString(), is(portfolio.getUUID()));
         assertThat(item.get("name").getAsString(), is("Depot"));
         assertThat(item.get("referenceCashAccount").getAsString(), is(cash.getUUID()));
@@ -76,7 +76,7 @@ public class InvestmentAccountsCommandTest
 
         var item = items(run(client)).get(0).getAsJsonObject();
 
-        assertThat(item.keySet(), is(Set.of("uuid", "name", "retired")));
+        assertThat(item.keySet(), is(Set.of("uuid", "name", "retired", "updatedAt")));
         assertThat(item.get("retired").getAsBoolean(), is(false));
     }
 

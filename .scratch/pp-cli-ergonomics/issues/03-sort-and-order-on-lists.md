@@ -1,7 +1,7 @@
 # 03: `--sort` and `--order` on paged lists, and `updatedAt`
 
 Type: task
-Status: ready-for-agent
+Status: done
 
 Spec: [spec.md](../spec.md), "Sorting" and "Last modified". Glossary: **Last modified**, **Transaction date**.
 
@@ -30,11 +30,11 @@ Add `--sort <field>` and `--order asc|desc` to the paged list commands. Each com
 
 ## Acceptance criteria
 
-- [ ] `transactions --order desc --limit 10` returns the 10 latest records by transaction date
-- [ ] `transactions --sort updatedAt --order desc` returns the most recently modified records first; a buy's `updatedAt` is the later of its two sides
-- [ ] Master data lists sort by `name` and `updatedAt` in both orders
-- [ ] Default calls produce byte-identical `data` to before (existing tests unchanged)
-- [ ] Paging across pages is stable under every sort and order
-- [ ] Response schemas and help document `updatedAt`, `--sort`, `--order` and each command's natural order
+- [x] `transactions --order desc --limit 10` returns the 10 latest records by transaction date
+- [x] `transactions --sort updatedAt --order desc` returns the most recently modified records first; a buy's `updatedAt` is the later of its two sides
+- [x] Master data lists sort by `name` and `updatedAt` in both orders
+- [x] Default calls produce byte-identical `data` to before (existing tests unchanged)
+- [x] Paging across pages is stable under every sort and order
+- [x] Response schemas and help document `updatedAt`, `--sort`, `--order` and each command's natural order
 
 ## Comments

@@ -110,14 +110,21 @@ final class TransactionsCommand
                         .optionalProperty("exDate", Schema.string("ISO ex-date of a dividend."))
                         .optionalProperty("note", Schema.string("The note."))
                         .optionalProperty("source", Schema.string("Where the record was imported from."))
+                        .optionalProperty("updatedAt", Schema.string(
+                                        "When the record last changed in the file: the latest of its sides, as an ISO-8601 UTC instant to the second, for example 2026-10-24T15:04:57Z. Absent if none has one."))
                         .property("units", Schema.array("Fees, taxes and forex of the record; empty if none.", unit()))
                         .optionalProperty("converted", ExchangeRates.convertedSchema(
                                         "The amount in the currency asked for with --currency. Absent if no rate was found."));
     }
 
+    private static final Sorting.Spec<TransactionRecord> SORT = Sorting.Spec.of(TransactionRecord::id, "date",
+                    Sorting.Field.of("date", Comparator.comparing((TransactionRecord record) -> record.primary().getDateTime())),
+                    Sorting.Field.of("updatedAt", Sorting.byInstant(
+                                    (TransactionRecord record) -> record.updatedAt().flatMap(Sorting::lastModified))));
+
     private static final Schema DATA = Paging.pageSchema("A page of the transaction records.", recordSchema());
 
-    private static final Schema META = DateRange.declareIn(ResponseMeta.pagedSchema())
+    private static final Schema META = DateRange.declareIn(ResponseMeta.pagedSchema(SORT))
                     .optionalProperty("currency", Schema.string("The currency asked for, as given."))
                     .optionalProperty("investmentAccount", Schema.string("UUID the investment-account filter resolved to."))
                     .optionalProperty("cashAccount", Schema.string("UUID the cash-account filter resolved to."))
@@ -127,10 +134,10 @@ final class TransactionsCommand
                     .optionalProperty("exchangeRates", ExchangeRates.metaSchema());
 
     static final CommandSpec SPEC = new CommandSpec("transactions",
-                    "Business events as transaction records, each joining the sides of a buy, sell or transfer, filtered by date range, account, instrument and type, ordered by date-time then id.",
+                    "Business events as transaction records, each joining the sides of a buy, sell or transfer, filtered by date range, account, instrument and type, sorted by date-time (default) or updatedAt, then id; --order desc reverses.",
                     true,
                     List.of(INVESTMENT_ACCOUNT, CASH_ACCOUNT, INSTRUMENT, TYPE, FROM, TO, CURRENCY, Paging.LIMIT,
-                                    Paging.OFFSET),
+                                    Paging.OFFSET, SORT.sortOption(), Sorting.ORDER),
                     DATA, META, ExchangeRates.WARNINGS, TransactionsCommand::execute);
 
     private TransactionsCommand()
@@ -155,6 +162,7 @@ final class TransactionsCommand
     private static Response execute(CommandContext context) throws CliException
     {
         var paging = Paging.parse(context);
+        var sorting = SORT.parse(context);
         var range = DateRange.parse(context, FROM, TO);
         var types = parseTypes(context.option(TYPE.name()));
         var currency = ExchangeRates.parseCurrency(CURRENCY, context.option(CURRENCY.name()));
@@ -166,17 +174,14 @@ final class TransactionsCommand
         var instrument = resolve(context, INSTRUMENT, client, References::instrument);
 
         var filter = new Filter(range, investmentAccount, cashAccount, instrument, types);
-        var records = TransactionRecord.allOf(client).stream().filter(filter::test)
-                        .sorted(Comparator.comparing((TransactionRecord record) -> record.primary().getDateTime())
-                                        .thenComparing(TransactionRecord::id))
-                        .toList();
+        var records = sorting.sort(client, TransactionRecord.allOf(client).stream().filter(filter::test).toList());
         var page = paging.of(records);
 
         var rates = new ExchangeRates(context, client);
         var data = new LinkedHashMap<String, Object>();
         page.putInto(data, record -> render(record, currency, rates));
 
-        var meta = ResponseMeta.paged(context, client, paging);
+        var meta = ResponseMeta.paged(context, client, paging, sorting);
         range.putInto(meta);
         currency.ifPresent(code -> meta.put("currency", code));
         investmentAccount.ifPresent(account -> meta.put("investmentAccount", account.getUUID()));
@@ -276,6 +281,7 @@ final class TransactionsCommand
             json.put("exDate", account.getExDate().toLocalDate().toString());
         MasterData.putIfSet(json, "note", primary.getNote());
         MasterData.putIfSet(json, "source", primary.getSource());
+        record.updatedAt().ifPresent(instant -> MasterData.putUpdatedAt(json, instant));
 
         json.put("units", primary.getUnits().filter(unit -> transferRate.isEmpty() || unit != transferRate.get())
                         .map(TransactionsCommand::render).toList());

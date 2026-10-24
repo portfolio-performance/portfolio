@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.cli;
 
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -9,9 +11,9 @@ import java.util.function.Function;
 import name.abuchen.portfolio.model.Client;
 
 /**
- * A paged, stably ordered list of master data (instruments or accounts) as a
+ * A paged, sortable list of master data (instruments or accounts) as a
  * command. A command only says what its entities are and how to render one;
- * the options, ordering, paging, response shape and meta come from here.
+ * the options, sorting, paging, response shape and meta come from here.
  */
 final class MasterDataList
 {
@@ -43,31 +45,48 @@ final class MasterDataList
 
     /**
      * @param summary
-     *            what each item holds; the shared ordering is appended
+     *            what each item holds; the sort fields are appended
      * @param item
      *            the schema of one rendered item
      * @param columns
      *            the columns of <code>--format table</code>
+     * @param updatedAt
+     *            the last modified time of an entity; null if core has none
      */
     static <T> CommandSpec command(String name, String summary, Schema item, List<TableColumn> columns,
-                    Source<T> source)
+                    Source<T> source, Function<T, Instant> updatedAt)
     {
-        return new CommandSpec(name, summary + ", ordered by name then UUID.", true, Paging.OPTIONS,
-                        Paging.pageSchema("A page of the list.", item), ResponseMeta.pagedSchema(), List.of(), columns,
-                        context -> respond(context, source));
+        var sort = sortSpec(source, updatedAt);
+        var options = new ArrayList<>(Paging.OPTIONS);
+        options.addAll(sort.options());
+
+        return new CommandSpec(name,
+                        summary + ", sorted by name (default) or updatedAt, then UUID; --order desc reverses.", true,
+                        options, Paging.pageSchema("A page of the list.", item),
+                        ResponseMeta.pagedSchema(sort), List.of(), columns,
+                        context -> respond(context, source, sort));
     }
 
-    private static <T> Response respond(CommandContext context, Source<T> source) throws CliException
+    private static <T> Sorting.Spec<T> sortSpec(Source<T> source, Function<T, Instant> updatedAt)
+    {
+        return Sorting.Spec.of(source.uuid(), "name", Sorting.Field.of("name", MasterData.byName(source.name())),
+                        Sorting.Field.of("updatedAt",
+                                        Sorting.byInstant(entity -> Sorting.lastModified(updatedAt.apply(entity)))));
+    }
+
+    private static <T> Response respond(CommandContext context, Source<T> source, Sorting.Spec<T> sort)
+                    throws CliException
     {
         var paging = Paging.parse(context);
+        var sorting = sort.parse(context);
         var client = context.loadClient().client();
 
-        var ordered = source.entities().apply(client).stream().sorted(source.ordering()).toList();
+        var ordered = sorting.sort(client, source.entities().apply(client));
         var page = paging.of(ordered);
 
         var data = new LinkedHashMap<String, Object>();
         page.putInto(data, source.renderer().apply(client));
 
-        return Response.of(data, ResponseMeta.paged(context, client, paging));
+        return Response.of(data, ResponseMeta.paged(context, client, paging, sorting));
     }
 }

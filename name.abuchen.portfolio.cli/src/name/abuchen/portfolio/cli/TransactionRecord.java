@@ -1,10 +1,13 @@
 package name.abuchen.portfolio.cli;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -65,6 +68,17 @@ record TransactionRecord(String id, String type, Optional<TransferKind> kind, Tr
     private boolean isTransferOf(TransferKind expected)
     {
         return kind.filter(expected::equals).isPresent();
+    }
+
+    /** The latest last modified time across the sides of the record; empty if none of them has one. */
+    Optional<Instant> updatedAt()
+    {
+        var partner = incoming.or(() -> sides.size() > 1 && primary.getCrossEntry() != null
+                        ? Optional.ofNullable(primary.getCrossEntry().getCrossTransaction(primary))
+                        : Optional.empty());
+
+        return Stream.concat(Stream.of(primary), partner.stream()).map(Transaction::getUpdatedAt)
+                        .filter(Objects::nonNull).max(Comparator.naturalOrder());
     }
 
     /** The incoming side of a cash transfer between accounts of different currencies. */

@@ -62,7 +62,7 @@ public class CashAccountsCommandTest
         assertThat(items.size(), is(1));
 
         var item = items.get(0).getAsJsonObject();
-        assertThat(item.keySet(), is(Set.of("uuid", "name", "currencyCode", "note", "retired")));
+        assertThat(item.keySet(), is(Set.of("uuid", "name", "currencyCode", "note", "retired", "updatedAt")));
         assertThat(item.get("uuid").getAsString(), is(account.getUUID()));
         assertThat(item.get("name").getAsString(), is("Brokerage cash"));
         assertThat(item.get("currencyCode").getAsString(), is("USD"));
@@ -74,7 +74,7 @@ public class CashAccountsCommandTest
         assertThat(data.get("total").getAsInt(), is(1));
 
         var meta = run.json().getAsJsonObject().getAsJsonObject("meta");
-        assertThat(meta.keySet(), is(Set.of("fileVersion", "asOf", "limit", "offset")));
+        assertThat(meta.keySet(), is(Set.of("fileVersion", "asOf", "limit", "offset", "sort", "order")));
         assertThat(meta.get("fileVersion").getAsInt(), is(Client.CURRENT_VERSION));
         assertThat(meta.get("asOf").getAsString(), is("2026-10-16"));
         assertThat(meta.get("limit").getAsInt(), is(200));
@@ -90,7 +90,7 @@ public class CashAccountsCommandTest
 
         var item = items(run(client)).get(0).getAsJsonObject();
 
-        assertThat(item.keySet(), is(Set.of("uuid", "name", "currencyCode", "retired")));
+        assertThat(item.keySet(), is(Set.of("uuid", "name", "currencyCode", "retired", "updatedAt")));
         assertThat(item.get("retired").getAsBoolean(), is(false));
     }
 

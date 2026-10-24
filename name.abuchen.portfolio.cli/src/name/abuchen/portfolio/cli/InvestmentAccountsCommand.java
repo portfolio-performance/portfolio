@@ -15,7 +15,8 @@ final class InvestmentAccountsCommand
                     .optionalProperty("referenceCashAccount",
                                     Schema.string("UUID of the cash account that settles this account, if any."))
                     .optionalProperty("note", Schema.string("Note, if set."))
-                    .property("retired", Schema.bool("Whether the account is retired."));
+                    .property("retired", Schema.bool("Whether the account is retired."))
+                    .optionalProperty("updatedAt", MasterData.UPDATED_AT);
 
     static final MasterDataList.Source<Portfolio> SOURCE = new MasterDataList.Source<Portfolio>(Client::getPortfolios,
                     Portfolio::getUUID, Portfolio::getName, client -> InvestmentAccountsCommand::render);
@@ -25,7 +26,7 @@ final class InvestmentAccountsCommand
                     List.of(TableColumn.of("uuid", "UUID"), TableColumn.capped("name", "Name", 40),
                                     TableColumn.of("referenceCashAccount", "Reference cash account"),
                                     TableColumn.of("retired", "Retired")),
-                    SOURCE);
+                    SOURCE, Portfolio::getUpdatedAt);
 
     private InvestmentAccountsCommand()
     {
@@ -40,6 +41,7 @@ final class InvestmentAccountsCommand
             json.put("referenceCashAccount", portfolio.getReferenceAccount().getUUID());
         MasterData.putIfSet(json, "note", portfolio.getNote());
         json.put("retired", portfolio.isRetired());
+        MasterData.putUpdatedAt(json, portfolio.getUpdatedAt());
         return json;
     }
 }

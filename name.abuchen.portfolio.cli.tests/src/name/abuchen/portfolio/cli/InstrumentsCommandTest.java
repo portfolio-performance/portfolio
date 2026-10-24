@@ -70,7 +70,7 @@ public class InstrumentsCommandTest
 
         var item = items(run).get(0).getAsJsonObject();
         assertThat(item.keySet(), is(Set.of("uuid", "name", "currencyCode", "isin", "wkn", "tickerSymbol", "note",
-                        "retired", "attributes")));
+                        "retired", "attributes", "updatedAt")));
         assertThat(item.get("uuid").getAsString(), is(security.getUUID()));
         assertThat(item.get("name").getAsString(), is("ACME Corp"));
         assertThat(item.get("currencyCode").getAsString(), is("USD"));
@@ -95,7 +95,7 @@ public class InstrumentsCommandTest
 
         var item = items(run(client)).get(0).getAsJsonObject();
 
-        assertThat(item.keySet(), is(Set.of("uuid", "name", "retired", "attributes")));
+        assertThat(item.keySet(), is(Set.of("uuid", "name", "retired", "attributes", "updatedAt")));
         assertThat(item.get("retired").getAsBoolean(), is(false));
     }
 

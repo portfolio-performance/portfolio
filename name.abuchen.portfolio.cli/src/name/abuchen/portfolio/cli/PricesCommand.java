@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.cli;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,11 +37,14 @@ final class PricesCommand
                     .optionalProperty("latest", price(
                                     "The price valuation uses today: the feed's latest price when it is current, otherwise the last stored price. Absent if no price is dated on or before today. Independent of from and to."));
 
-    private static final Schema META = DateRange.declareIn(ResponseMeta.pagedSchema());
+    private static final Sorting.Spec<SecurityPrice> SORT = Sorting.Spec.of(price -> price.getDate().toString(),
+                    "date", Sorting.Field.of("date", Comparator.comparing(SecurityPrice::getDate)));
+
+    private static final Schema META = DateRange.declareIn(ResponseMeta.pagedSchema(SORT));
 
     static final CommandSpec SPEC = new CommandSpec("prices",
-                    "Price history of one instrument by date ascending, within an optional date range, with its latest price.",
-                    true, List.of(INSTRUMENT, FROM, TO, Paging.LIMIT, Paging.OFFSET), DATA, META,
+                    "Price history of one instrument by date, ascending unless --order desc, within an optional date range, with its latest price.",
+                    true, List.of(INSTRUMENT, FROM, TO, Paging.LIMIT, Paging.OFFSET, SORT.sortOption(), Sorting.ORDER), DATA, META,
                     List.of(Prices.STALE_PRICE), PricesCommand::execute);
 
     private PricesCommand()
@@ -50,6 +54,7 @@ final class PricesCommand
     private static Response execute(CommandContext context) throws CliException
     {
         var paging = Paging.parse(context);
+        var sorting = SORT.parse(context);
         var range = DateRange.parse(context, FROM, TO);
         var asOf = LocalDate.now(context.clock());
 
@@ -58,7 +63,7 @@ final class PricesCommand
 
         var history = security.getPricesIncludingLatest().stream().filter(price -> range.contains(price.getDate()))
                         .toList();
-        var page = paging.of(history);
+        var page = paging.of(sorting.sort(client, history));
         var latest = Prices.latest(security, asOf);
 
         var data = new LinkedHashMap<String, Object>();
@@ -66,7 +71,7 @@ final class PricesCommand
         latest.ifPresent(price -> data.put("latest", render(price)));
         page.putInto(data, PricesCommand::render);
 
-        var meta = ResponseMeta.paged(context, client, paging);
+        var meta = ResponseMeta.paged(context, client, paging, sorting);
         range.putInto(meta);
 
         var response = Response.of(data, meta);
