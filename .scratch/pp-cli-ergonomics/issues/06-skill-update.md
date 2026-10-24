@@ -1,7 +1,7 @@
 # 06: Skill update: help-based discovery, insights recipe, scratch-file hygiene
 
 Type: task
-Status: ready-for-agent
+Status: done
 Blocked by: 01, 03, 04
 
 Spec: [spec.md](../spec.md). Use the `writing-for-agents` skill. Edit `name.abuchen.portfolio.cli/skills/pp-cli/`, which is the source the installer copies.
@@ -25,9 +25,9 @@ Spec: [spec.md](../spec.md). Use the `writing-for-agents` skill. Edit `name.abuc
 
 ## Acceptance criteria
 
-- [ ] No skill file mentions `describe`
-- [ ] `SkillDriftTest` passes against the reworked checks from issue 01
-- [ ] `insights.md` is linked from `SKILL.md`, and every command and option it names exists
-- [ ] `SKILL.md` stays lean: the pointer and the Shell rule add no more than a few lines
+- [x] No skill file mentions `describe`
+- [x] `SkillDriftTest` passes against the reworked checks from issue 01
+- [x] `insights.md` is linked from `SKILL.md`, and every command and option it names exists
+- [x] `SKILL.md` stays lean: the pointer and the Shell rule add no more than a few lines
 
 ## Comments

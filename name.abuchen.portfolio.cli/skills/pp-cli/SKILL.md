@@ -30,13 +30,16 @@ On `password-required`, show the user both forms and wait. On `incorrect-passwor
 - **Limits**: anything under Limits in `pp-cli --help` is out of reach. Say so plainly and offer what the tool can do.
 - **Vocabulary**: Instrument (Security in the app), Investment account (Portfolio in the app), Cash account (Account in the app), Transaction record (one business event with all its sides, such as a buy with its investment-account and cash-account side).
 
+For an overview of the file or a request for insights, read [insights.md](insights.md) and follow its call sequence and traps.
+
 ## Shell
 
 The same commands run in PowerShell, cmd, Git Bash and zsh when you:
 
 - call the tool as plain `pp-cli`, with no path or extension;
 - wrap every path in double quotes, since paths may contain spaces or backslashes;
-- write any JSON for the tool to a file with your file tool and pass the file's path. Stdin pipes and inline JSON break differently in each shell, so `--input` always gets a file path.
+- write any JSON for the tool to a file with your file tool and pass the file's path. Stdin pipes and inline JSON break differently in each shell, so `--input` always gets a file path;
+- read CLI output directly. To save it for parsing, and for every `--input` file, use a temp directory made for this session and delete it before you finish, since both hold financial data.
 
 ## Changes
 

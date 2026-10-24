@@ -29,7 +29,7 @@ import org.junit.Test;
 public class SkillDriftTest
 {
     private static final String SKILL = "skills/pp-cli";
-    private static final List<String> FILES = List.of("SKILL.md", "write-protocol.md");
+    private static final List<String> FILES = List.of("SKILL.md", "write-protocol.md", "insights.md");
 
     private static final Pattern INLINE_CODE = Pattern.compile("`([^`\\n]+)`");
     private static final Pattern FENCED_CODE = Pattern.compile("(?ms)^```[^\\n]*\\n(.*?)^```");
@@ -70,6 +70,23 @@ public class SkillDriftTest
                 assertThat(file + " links " + matcher.group(1),
                                 Files.isRegularFile(SourceTree.cliBundle(SKILL).resolve(matcher.group(1))), is(true));
         }
+    }
+
+    @Test
+    public void everySkillFileIsReachableFromSkillMd() throws IOException
+    {
+        var skill = read("SKILL.md");
+        for (var file : FILES)
+            if (!file.equals("SKILL.md"))
+                assertThat("SKILL.md links " + file, skill, containsString("](" + file + ")"));
+    }
+
+    @Test
+    public void noSkillFileMentionsTheRemovedDescribeCommand() throws IOException
+    {
+        for (var file : FILES)
+            assertThat(file + " mentions describe", Pattern.compile("(?i)\\bdescribe\\b").matcher(read(file)).find(),
+                            is(false));
     }
 
     @Test
