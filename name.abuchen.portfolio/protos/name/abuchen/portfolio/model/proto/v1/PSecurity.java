@@ -926,6 +926,17 @@ private static final long serialVersionUID = 0L;
     return updatedAt_ == null ? com.google.protobuf.Timestamp.getDefaultInstance() : updatedAt_;
   }
 
+  public static final int ISPERCENTAGEQUOTED_FIELD_NUMBER = 22;
+  private boolean isPercentageQuoted_ = false;
+  /**
+   * <code>bool isPercentageQuoted = 22;</code>
+   * @return The isPercentageQuoted.
+   */
+  @java.lang.Override
+  public boolean getIsPercentageQuoted() {
+    return isPercentageQuoted_;
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -1002,6 +1013,9 @@ private static final long serialVersionUID = 0L;
     }
     if (updatedAt_ != null) {
       output.writeMessage(21, getUpdatedAt());
+    }
+    if (isPercentageQuoted_ != false) {
+      output.writeBool(22, isPercentageQuoted_);
     }
     getUnknownFields().writeTo(output);
   }
@@ -1081,6 +1095,10 @@ private static final long serialVersionUID = 0L;
     if (updatedAt_ != null) {
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(21, getUpdatedAt());
+    }
+    if (isPercentageQuoted_ != false) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeBoolSize(22, isPercentageQuoted_);
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -1181,6 +1199,8 @@ private static final long serialVersionUID = 0L;
       if (!getUpdatedAt()
           .equals(other.getUpdatedAt())) return false;
     }
+    if (getIsPercentageQuoted()
+        != other.getIsPercentageQuoted()) return false;
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -1271,6 +1291,9 @@ private static final long serialVersionUID = 0L;
       hash = (37 * hash) + UPDATEDAT_FIELD_NUMBER;
       hash = (53 * hash) + getUpdatedAt().hashCode();
     }
+    hash = (37 * hash) + ISPERCENTAGEQUOTED_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+        getIsPercentageQuoted());
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -1464,6 +1487,7 @@ private static final long serialVersionUID = 0L;
         updatedAtBuilder_.dispose();
         updatedAtBuilder_ = null;
       }
+      isPercentageQuoted_ = false;
       return this;
     }
 
@@ -1605,6 +1629,9 @@ private static final long serialVersionUID = 0L;
         result.updatedAt_ = updatedAtBuilder_ == null
             ? updatedAt_
             : updatedAtBuilder_.build();
+      }
+      if (((from_bitField0_ & 0x00200000) != 0)) {
+        result.isPercentageQuoted_ = isPercentageQuoted_;
       }
       result.bitField0_ |= to_bitField0_;
     }
@@ -1804,6 +1831,9 @@ private static final long serialVersionUID = 0L;
       if (other.hasUpdatedAt()) {
         mergeUpdatedAt(other.getUpdatedAt());
       }
+      if (other.getIsPercentageQuoted() != false) {
+        setIsPercentageQuoted(other.getIsPercentageQuoted());
+      }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
       return this;
@@ -1971,6 +2001,11 @@ private static final long serialVersionUID = 0L;
               bitField0_ |= 0x00100000;
               break;
             } // case 170
+            case 176: {
+              isPercentageQuoted_ = input.readBool();
+              bitField0_ |= 0x00200000;
+              break;
+            } // case 176
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -4308,6 +4343,38 @@ private static final long serialVersionUID = 0L;
         updatedAt_ = null;
       }
       return updatedAtBuilder_;
+    }
+
+    private boolean isPercentageQuoted_ ;
+    /**
+     * <code>bool isPercentageQuoted = 22;</code>
+     * @return The isPercentageQuoted.
+     */
+    @java.lang.Override
+    public boolean getIsPercentageQuoted() {
+      return isPercentageQuoted_;
+    }
+    /**
+     * <code>bool isPercentageQuoted = 22;</code>
+     * @param value The isPercentageQuoted to set.
+     * @return This builder for chaining.
+     */
+    public Builder setIsPercentageQuoted(boolean value) {
+
+      isPercentageQuoted_ = value;
+      bitField0_ |= 0x00200000;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>bool isPercentageQuoted = 22;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearIsPercentageQuoted() {
+      bitField0_ = (bitField0_ & ~0x00200000);
+      isPercentageQuoted_ = false;
+      onChanged();
+      return this;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

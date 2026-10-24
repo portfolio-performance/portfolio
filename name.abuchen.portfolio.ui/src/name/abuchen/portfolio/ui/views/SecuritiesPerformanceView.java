@@ -970,7 +970,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
             public String getText(Object element)
             {
                 LazySecurityPerformanceRecord entry = (LazySecurityPerformanceRecord) element;
-                return Values.Quote.format(entry.getQuote(), getClient().getBaseCurrency());
+                return Values.Quote.formatFor(entry.getSecurity(), entry.getQuote(), getClient().getBaseCurrency());
             }
 
             @Override
@@ -1002,18 +1002,20 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
                 return null;
             }
         }, element -> {
-            Optional<Pair<SecurityPrice, SecurityPrice>> previous = ((LazySecurityPerformanceRecord) element)
-                            .getSecurity().getLatestTwoSecurityPrices();
+            var recordSecurity = ((LazySecurityPerformanceRecord) element).getSecurity();
+            Optional<Pair<SecurityPrice, SecurityPrice>> previous = recordSecurity.getLatestTwoSecurityPrices();
             if (previous.isPresent())
             {
                 return Messages.ColumnLatestPrice + ": " //$NON-NLS-1$
                                 + MessageFormat.format(Messages.TooltipQuoteAtDate,
-                                                Values.Quote.format(previous.get().getLeft().getValue()),
+                                                Values.Quote.formatFor(recordSecurity,
+                                                                previous.get().getLeft().getValue()),
                                                 Values.Date.format(previous.get().getLeft().getDate()))
                                 + "\n" // //$NON-NLS-1$
                                 + Messages.ColumnPreviousPrice + ": " //$NON-NLS-1$
                                 + MessageFormat.format(Messages.TooltipQuoteAtDate,
-                                                Values.Quote.format(previous.get().getRight().getValue()),
+                                                Values.Quote.formatFor(recordSecurity,
+                                                                previous.get().getRight().getValue()),
                                                 Values.Date.format(previous.get().getRight().getDate()));
             }
             else
@@ -1066,19 +1068,20 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
                                 return null;
                             }
                         }, element -> {
-                            Optional<Pair<SecurityPrice, SecurityPrice>> previous = ((LazySecurityPerformanceRecord) element)
-                                            .getSecurity().getLatestTwoSecurityPrices();
+                            var recordSecurity = ((LazySecurityPerformanceRecord) element).getSecurity();
+                            Optional<Pair<SecurityPrice, SecurityPrice>> previous = recordSecurity
+                                            .getLatestTwoSecurityPrices();
                             if (previous.isPresent())
                             {
                                 return Messages.ColumnLatestPrice + ": " //$NON-NLS-1$
                                                 + MessageFormat.format(Messages.TooltipQuoteAtDate,
-                                                                Values.Quote.format(
+                                                                Values.Quote.formatFor(recordSecurity,
                                                                                 previous.get().getLeft().getValue()),
                                                                 Values.Date.format(previous.get().getLeft().getDate()))
                                                 + "\n" // //$NON-NLS-1$
                                                 + Messages.ColumnPreviousPrice + ": " //$NON-NLS-1$
                                                 + MessageFormat.format(Messages.TooltipQuoteAtDate,
-                                                                Values.Quote.format(
+                                                                Values.Quote.formatFor(recordSecurity,
                                                                                 previous.get().getRight().getValue()),
                                                                 Values.Date.format(
                                                                                 previous.get().getRight().getDate()));
@@ -1226,7 +1229,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setDescription(Messages.ColumnPurchasePrice_Description + TextUtil.PARAGRAPH_BREAK
                         + Messages.DescriptionDataRelativeToReportingPeriod);
         column.setImage(Images.INTERVAL);
-        column.setLabelProvider(new RowElementLabelProvider(r -> Values.CalculatedQuote.format(
+        column.setLabelProvider(new RowElementLabelProvider(r -> Values.CalculatedQuote.formatFor(r.getSecurity(),
                         r.getCostPerSharesHeld(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED),
                         getClient().getBaseCurrency())));
         column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e)
@@ -1240,7 +1243,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setDescription(Messages.ColumnPurchasePriceMovingAverage_Description + TextUtil.PARAGRAPH_BREAK
                         + Messages.DescriptionDataRelativeToReportingPeriod);
         column.setImage(Images.INTERVAL);
-        column.setLabelProvider(new RowElementLabelProvider(r -> Values.CalculatedQuote.format(
+        column.setLabelProvider(new RowElementLabelProvider(r -> Values.CalculatedQuote.formatFor(r.getSecurity(),
                         r.getCostPerSharesHeld(CostMethod.MOVING_AVERAGE, TaxesAndFees.NOT_INCLUDED),
                         getClient().getBaseCurrency())));
         column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e)
@@ -1256,7 +1259,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setDescription(Messages.ColumnGrossPurchasePriceFIFO_Description + TextUtil.PARAGRAPH_BREAK
                         + Messages.DescriptionDataRelativeToReportingPeriod);
         column.setImage(Images.INTERVAL);
-        column.setLabelProvider(new RowElementLabelProvider(r -> Values.CalculatedQuote.format(
+        column.setLabelProvider(new RowElementLabelProvider(r -> Values.CalculatedQuote.formatFor(r.getSecurity(),
                         r.getCostPerSharesHeld(CostMethod.FIFO, TaxesAndFees.INCLUDED),
                         getClient().getBaseCurrency())));
         column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e)
@@ -1270,7 +1273,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setDescription(Messages.ColumnGrossPurchasePriceMovingAverage_Description + TextUtil.PARAGRAPH_BREAK
                         + Messages.DescriptionDataRelativeToReportingPeriod);
         column.setImage(Images.INTERVAL);
-        column.setLabelProvider(new RowElementLabelProvider(r -> Values.CalculatedQuote.format(
+        column.setLabelProvider(new RowElementLabelProvider(r -> Values.CalculatedQuote.formatFor(r.getSecurity(),
                         r.getCostPerSharesHeld(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED),
                         getClient().getBaseCurrency())));
         column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e)
@@ -1744,7 +1747,8 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
             public String getText(Object element)
             {
                 LazySecurityPerformanceRecord entry = (LazySecurityPerformanceRecord) element;
-                return Values.CalculatedQuote.format(entry.getQuoteInTermCurrency(), getClient().getBaseCurrency());
+                return Values.CalculatedQuote.formatFor(entry.getSecurity(), entry.getQuoteInTermCurrency(),
+                                getClient().getBaseCurrency());
             }
 
             @Override

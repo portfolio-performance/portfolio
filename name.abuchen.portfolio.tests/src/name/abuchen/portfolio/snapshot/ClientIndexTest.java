@@ -411,4 +411,34 @@ public class ClientIndexTest
         assertThat(taxes[taxes.length - 8], is(7_50L));
     }
 
+    @Test
+    public void testPercentageQuotedSecurityValuation()
+    {
+        Client client = new Client();
+
+        Security bond = new SecurityBuilder() //
+                        .addPrice("2012-01-02", Values.Quote.factorize(100)) //
+                        .addPrice("2012-01-03", Values.Quote.factorize(101)) //
+                        .addTo(client);
+        bond.setPercentageQuoted(true);
+
+        Account account = new AccountBuilder() //
+                        .deposit_("2012-01-02", Values.Amount.factorize(1000)) //
+                        .addTo(client);
+
+        new PortfolioBuilder(account) //
+                        .buy(bond, "2012-01-02", Values.Share.factorize(1000), Values.Amount.factorize(1000)) //
+                        .addTo(client);
+
+        Interval period = Interval.of(LocalDate.of(2012, Month.JANUARY, 1), LocalDate.of(2012, Month.JANUARY, 3));
+        PerformanceIndex index = PerformanceIndex.forClient(client, new TestCurrencyConverter(), period,
+                        new ArrayList<>());
+
+        // 1,000 nominal x 101 % = 1,010.00 EUR
+        long[] totals = index.getTotals();
+        assertThat(totals[totals.length - 1], is(Values.Amount.factorize(1010)));
+
+        double[] accumulated = index.getAccumulatedPercentage();
+        assertThat(accumulated[accumulated.length - 1], IsCloseTo.closeTo(0.01, PRECISION));
+    }
 }

@@ -330,7 +330,7 @@ public class TradeCategory
             for (TransactionPair<PortfolioTransaction> txPair : trade.getTransactions())
             {
                 LocalDate date = txPair.getTransaction().getDateTime().toLocalDate();
-                double amount = txPair.getTransaction().getMonetaryAmount()
+                double amount = txPair.getTransaction().getMonetaryAmountWithoutAccruedInterest()
                                 .with(converter.at(txPair.getTransaction().getDateTime())).getAmount()
                                 / Values.Amount.divider();
 
