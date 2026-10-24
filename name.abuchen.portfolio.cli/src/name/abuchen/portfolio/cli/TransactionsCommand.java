@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -103,11 +104,21 @@ final class TransactionsCommand
                         .optionalProperty("exchangeRate", Schema.number(
                                         "Of a cross-currency cash transfer with a rate: unrounded as stored, targetAmount times exchangeRate is approximately amount."))
                         .optionalProperty("instrument", Schema.string("UUID of the instrument."))
+                        .optionalProperty("instrumentName", Schema.string(
+                                        "Name of the instrument; empty if it has none. Present exactly when instrument is."))
                         .optionalProperty("shares", Schema.number("Number of shares."))
                         .optionalProperty("investmentAccount", Schema.string("UUID of the investment account."))
+                        .optionalProperty("investmentAccountName", Schema.string(
+                                        "Name of the investment account; empty if it has none. Present exactly when investmentAccount is."))
                         .optionalProperty("cashAccount", Schema.string("UUID of the cash account."))
+                        .optionalProperty("cashAccountName", Schema.string(
+                                        "Name of the cash account; empty if it has none. Present exactly when cashAccount is."))
                         .optionalProperty("from", Schema.string("Of a TRANSFER: UUID of the account it leaves."))
+                        .optionalProperty("fromName", Schema.string(
+                                        "Name of the account it leaves; empty if it has none. Present exactly when from is."))
                         .optionalProperty("to", Schema.string("Of a TRANSFER: UUID of the account it enters."))
+                        .optionalProperty("toName", Schema.string(
+                                        "Name of the account it enters; empty if it has none. Present exactly when to is."))
                         .optionalProperty("exDate", Schema.string("ISO ex-date of a dividend."))
                         .optionalProperty("note", Schema.string("The note."))
                         .optionalProperty("source", Schema.string("Where the record was imported from."))
@@ -174,8 +185,9 @@ final class TransactionsCommand
         var page = paging.of(records);
 
         var rates = new ExchangeRates(context, client);
+        var names = new AccountNames(client);
         var data = new LinkedHashMap<String, Object>();
-        page.putInto(data, record -> render(record, currency, rates));
+        page.putInto(data, record -> render(record, names, currency, rates));
 
         var meta = ResponseMeta.paged(context, client, paging);
         range.putInto(meta);
@@ -227,18 +239,40 @@ final class TransactionsCommand
         return types;
     }
 
-    private static Map<String, Object> render(TransactionRecord record, Optional<String> currency,
-                    ExchangeRates rates)
+    private static Map<String, Object> render(TransactionRecord record, AccountNames names,
+                    Optional<String> currency, ExchangeRates rates)
     {
         var currencyCode = MasterData.orEmpty(record.primary().getCurrencyCode());
-        var json = render(record);
+        var json = render(record, names);
         currency.flatMap(target -> convert(record, currencyCode, target, rates))
                         .ifPresent(converted -> json.put("converted", converted));
         return json;
     }
 
+    /** The names of the accounts and investment accounts of a client by UUID. */
+    static final class AccountNames
+    {
+        private final Map<String, String> names = new HashMap<>();
+
+        AccountNames(Client client)
+        {
+            client.getAccounts().forEach(account -> names.put(account.getUUID(), account.getName()));
+            client.getPortfolios().forEach(portfolio -> names.put(portfolio.getUUID(), portfolio.getName()));
+        }
+
+        String of(String uuid)
+        {
+            return MasterData.orEmpty(names.get(uuid));
+        }
+    }
+
     /** The record's fields as written, without the {@code --currency} conversion; also the shape writes return. */
-    static Map<String, Object> render(TransactionRecord record)
+    static Map<String, Object> render(TransactionRecord record, Client client)
+    {
+        return render(record, new AccountNames(client));
+    }
+
+    private static Map<String, Object> render(TransactionRecord record, AccountNames names)
     {
         var primary = record.primary();
         var dateTime = primary.getDateTime();
@@ -265,13 +299,16 @@ final class TransactionsCommand
         transferRate.ifPresent(unit -> json.put("exchangeRate", Decimals.of(unit.getExchangeRate())));
 
         if (primary.getSecurity() != null)
+        {
             json.put("instrument", primary.getSecurity().getUUID());
+            json.put("instrumentName", MasterData.orEmpty(primary.getSecurity().getName()));
+        }
         if (record.hasShares())
             json.put("shares", Decimals.of(primary.getShares(), Values.Share));
-        record.investmentAccount().ifPresent(uuid -> json.put("investmentAccount", uuid));
-        record.cashAccount().ifPresent(uuid -> json.put("cashAccount", uuid));
-        record.from().ifPresent(uuid -> json.put("from", uuid));
-        record.to().ifPresent(uuid -> json.put("to", uuid));
+        putAccount(json, "investmentAccount", record.investmentAccount(), names);
+        putAccount(json, "cashAccount", record.cashAccount(), names);
+        putAccount(json, "from", record.from(), names);
+        putAccount(json, "to", record.to(), names);
         if (primary instanceof AccountTransaction account && account.getExDate() != null
                         && account.getType() == AccountTransaction.Type.DIVIDENDS)
             json.put("exDate", account.getExDate().toLocalDate().toString());
@@ -282,6 +319,16 @@ final class TransactionsCommand
                         .map(TransactionsCommand::render).toList());
 
         return json;
+    }
+
+    /** The UUID under the member and the name next to it, if there is an account. */
+    private static void putAccount(Map<String, Object> json, String member, Optional<String> uuid,
+                    AccountNames names)
+    {
+        uuid.ifPresent(value -> {
+            json.put(member, value);
+            json.put(member + "Name", names.of(value));
+        });
     }
 
     private static Map<String, Object> render(Transaction.Unit unit)

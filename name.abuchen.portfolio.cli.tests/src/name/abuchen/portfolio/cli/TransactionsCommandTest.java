@@ -140,6 +140,85 @@ public class TransactionsCommandTest
     }
 
     @Test
+    public void aBuyNamesItsInstrumentAndBothAccounts() throws IOException
+    {
+        TransactionFixtures.buy(depot, cash, acme, "2026-03-02", 10_00000000L, 100_500);
+
+        var run = run();
+
+        assertThat(run.stdout, run.exitCode, is(0));
+        var buy = item(run, 0);
+        assertThat(text(buy, "instrumentName"), is("ACME"));
+        assertThat(text(buy, "investmentAccountName"), is("Depot"));
+        assertThat(text(buy, "cashAccountName"), is("Cash"));
+        assertThat(buy.has("fromName"), is(false));
+        assertThat(buy.has("toName"), is(false));
+    }
+
+    @Test
+    public void transfersNameTheAccountsTheyLeaveAndEnter() throws IOException
+    {
+        var savings = new AccountBuilder("EUR").addTo(client);
+        savings.setName("Savings");
+        var other = new PortfolioBuilder(cash).addTo(client);
+        other.setName("Other depot");
+        TransactionFixtures.cashTransfer(cash, savings, "2026-02-01", 50_000);
+        TransactionFixtures.securityTransfer(depot, other, acme, "2026-02-02", 3_00000000L, 30_000);
+
+        var run = run();
+
+        assertThat(run.stdout, run.exitCode, is(0));
+        var cashTransfer = item(run, 0);
+        assertThat(text(cashTransfer, "fromName"), is("Cash"));
+        assertThat(text(cashTransfer, "toName"), is("Savings"));
+        assertThat(cashTransfer.has("instrumentName"), is(false));
+        assertThat(cashTransfer.has("cashAccountName"), is(false));
+
+        var securityTransfer = item(run, 1);
+        assertThat(text(securityTransfer, "fromName"), is("Depot"));
+        assertThat(text(securityTransfer, "toName"), is("Other depot"));
+        assertThat(text(securityTransfer, "instrumentName"), is("ACME"));
+        assertThat(securityTransfer.has("investmentAccountName"), is(false));
+    }
+
+    @Test
+    public void aDividendNamesItsInstrumentAndCashAccount() throws IOException
+    {
+        var dividend = TransactionFixtures.cash(cash, AccountTransaction.Type.DIVIDENDS, "2026-05-01", 4_000);
+        dividend.setSecurity(acme);
+        TransactionFixtures.cash(cash, AccountTransaction.Type.DEPOSIT, "2026-06-01", 1_000);
+
+        var run = run();
+
+        assertThat(run.stdout, run.exitCode, is(0));
+        var first = item(run, 0);
+        assertThat(text(first, "instrumentName"), is("ACME"));
+        assertThat(text(first, "cashAccountName"), is("Cash"));
+        assertThat(first.has("investmentAccountName"), is(false));
+
+        var deposit = item(run, 1);
+        assertThat(deposit.has("instrumentName"), is(false));
+        assertThat(text(deposit, "cashAccountName"), is("Cash"));
+    }
+
+    @Test
+    public void anUnnamedEntityHasAnEmptyName() throws IOException
+    {
+        acme.setName(null);
+        cash.setName(null);
+        depot.setName(null);
+        TransactionFixtures.buy(depot, cash, acme, "2026-03-02", 10_00000000L, 100_500);
+
+        var run = run();
+
+        assertThat(run.stdout, run.exitCode, is(0));
+        var buy = item(run, 0);
+        assertThat(text(buy, "instrumentName"), is(""));
+        assertThat(text(buy, "investmentAccountName"), is(""));
+        assertThat(text(buy, "cashAccountName"), is(""));
+    }
+
+    @Test
     public void aSellAndDeliveriesAreRecordsWithTheRightAccounts() throws IOException
     {
         var sell = TransactionFixtures.sell(depot, cash, acme, "2026-03-03", 5_00000000L, 60_000);
