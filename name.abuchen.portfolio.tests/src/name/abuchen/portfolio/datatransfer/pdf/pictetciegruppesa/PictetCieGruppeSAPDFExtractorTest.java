@@ -15,6 +15,8 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
@@ -26,26 +28,16 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertNull;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
-import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.PictetCieGruppeSAPDFExtractor;
-import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class PictetCieGruppeSAPDFExtractorTest
@@ -70,34 +62,18 @@ public class PictetCieGruppeSAPDFExtractorTest
         new AssertImportActions().check(results, "USD");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("IE00BHZKQ946"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("PIMCO GIS-GL.LO.DUR.R/R INS.USD-ACC"));
-        assertThat(security.getCurrencyCode(), is("USD"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BHZKQ946"), hasWkn(null), hasTicker(null), //
+                        hasName("PIMCO GIS-GL.LO.DUR.R/R INS.USD-ACC"), //
+                        hasCurrencyCode("USD"))));
 
-        // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-05-20T17:06:32")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(24728)));
-        assertThat(entry.getSource(), is("Kauf01.txt"));
-        assertThat(entry.getNote(), is("Transaction no.: 781327840"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("USD", Values.Amount.factorize(296598.18))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("USD", Values.Amount.factorize(295994.16))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("USD", Values.Amount.factorize(443.99))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("USD", Values.Amount.factorize(160.03))));
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-05-24T09:51:27"), hasShares(24728.00), //
+                        hasSource("Kauf01.txt"), //
+                        hasNote("Transaction no.: 781327840"), //
+                        hasAmount("USD", 296598.18), hasGrossValue("USD", 295994.16), //
+                        hasTaxes("USD", 443.99), hasFees("USD", 160.03))));
     }
 
     @Test
@@ -120,34 +96,18 @@ public class PictetCieGruppeSAPDFExtractorTest
         new AssertImportActions().check(results, "GBP");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("IE00B4ND3602"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("GOLD(ISHARES PH.MET.)-ETC-11/PERP S"));
-        assertThat(security.getCurrencyCode(), is("GBP"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B4ND3602"), hasWkn(null), hasTicker(null), //
+                        hasName("GOLD(ISHARES PH.MET.)-ETC-11/PERP S"), //
+                        hasCurrencyCode("GBP"))));
 
-        // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-02T14:40:10")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4834)));
-        assertThat(entry.getSource(), is("Kauf02.txt"));
-        assertThat(entry.getNote(), is("Transaction no.: 761800293"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("GBP", Values.Amount.factorize(137088.54))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("GBP", Values.Amount.factorize(136647.03))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("GBP", Values.Amount.factorize(204.97 + 1.04))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("GBP", Values.Amount.factorize(136.65 + 95.65 + 3.20))));
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-03-02T14:41:02"), hasShares(4834.00), //
+                        hasSource("Kauf02.txt"), //
+                        hasNote("Transaction no.: 761800293"), //
+                        hasAmount("GBP", 137088.54), hasGrossValue("GBP", 136647.03), //
+                        hasTaxes("GBP", (204.97 + 1.04)), hasFees("GBP", (136.65 + 95.65 + 3.20)))));
     }
 
     @Test
@@ -170,34 +130,18 @@ public class PictetCieGruppeSAPDFExtractorTest
         new AssertImportActions().check(results, "GBP");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("LU0419741177"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("LYXOR-BL.EQ.WEI.COM EX-AG I ETF"));
-        assertThat(security.getCurrencyCode(), is("GBP"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0419741177"), hasWkn(null), hasTicker(null), //
+                        hasName("LYXOR-BL.EQ.WEI.COM EX-AG I ETF"), //
+                        hasCurrencyCode("GBP"))));
 
-        // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-02T14:39:22")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1497)));
-        assertThat(entry.getSource(), is("Kauf03.txt"));
-        assertThat(entry.getNote(), is("Transaction no.: 761800107"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("GBP", Values.Amount.factorize(196855.38))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("GBP", Values.Amount.factorize(196402.66))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("GBP", Values.Amount.factorize(294.60 + 1.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("GBP", Values.Amount.factorize(157.12))));
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-03-02T14:40:24"), hasShares(1497.00), //
+                        hasSource("Kauf03.txt"), //
+                        hasNote("Transaction no.: 761800107"), //
+                        hasAmount("GBP", 196855.38), hasGrossValue("GBP", 196402.66), //
+                        hasTaxes("GBP", (294.60 + 1.00)), hasFees("GBP", 157.12))));
     }
 
     @Test
@@ -220,34 +164,18 @@ public class PictetCieGruppeSAPDFExtractorTest
         new AssertImportActions().check(results, "GBP");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("XS2425022303"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("6.516% MS (SX5E/SPX) 22/23"));
-        assertThat(security.getCurrencyCode(), is("GBP"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("XS2425022303"), hasWkn(null), hasTicker(null), //
+                        hasName("6.516% MS (SX5E/SPX) 22/23"), //
+                        hasCurrencyCode("GBP"))));
 
-        // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-22T17:45:26")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1800)));
-        assertThat(entry.getSource(), is("Kauf04.txt"));
-        assertThat(entry.getNote(), is("Transaction no.: 766962817"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("GBP", Values.Amount.factorize(180180.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("GBP", Values.Amount.factorize(180000.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("GBP", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("GBP", Values.Amount.factorize(180.00))));
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-03-23T08:26:01"), hasShares(1800.00), //
+                        hasSource("Kauf04.txt"), //
+                        hasNote("Transaction no.: 766962817"), //
+                        hasAmount("GBP", 180180.00), hasGrossValue("GBP", 180000.00), //
+                        hasTaxes("GBP", 0.00), hasFees("GBP", 180.00))));
     }
 
     @Test
@@ -270,34 +198,18 @@ public class PictetCieGruppeSAPDFExtractorTest
         new AssertImportActions().check(results, "GBP");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("LU2093580772"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("AGIF-CHINA A-SHARES PT GBP-ACC."));
-        assertThat(security.getCurrencyCode(), is("GBP"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU2093580772"), hasWkn(null), hasTicker(null), //
+                        hasName("AGIF-CHINA A-SHARES PT GBP-ACC."), //
+                        hasCurrencyCode("GBP"))));
 
-        // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-07-14T10:31:43")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(74.620)));
-        assertThat(entry.getSource(), is("Verkauf01.txt"));
-        assertThat(entry.getNote(), is("Transaction no.: 794448726"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("GBP", Values.Amount.factorize(116726.92))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("GBP", Values.Amount.factorize(116854.17))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("GBP", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("GBP", Values.Amount.factorize(127.25))));
+        // check sale transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-07-14T19:37:30"), hasShares(74.620), //
+                        hasSource("Verkauf01.txt"), //
+                        hasNote("Transaction no.: 794448726"), //
+                        hasAmount("GBP", 116726.92), hasGrossValue("GBP", 116854.17), //
+                        hasTaxes("GBP", 0.00), hasFees("GBP", 127.25))));
     }
 
     @Test
@@ -328,7 +240,7 @@ public class PictetCieGruppeSAPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2022-08-04T00:00"), hasExDate("2022-08-01T00:00"), //
-                        hasShares(2420), //
+                        hasShares(2420.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Transaction no.: 797075451"), //
                         hasAmount("USD", 2304.81), hasGrossValue("USD", 2304.81), //
