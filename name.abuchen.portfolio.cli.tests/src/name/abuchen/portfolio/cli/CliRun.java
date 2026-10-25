@@ -1,5 +1,8 @@
 package name.abuchen.portfolio.cli;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -7,15 +10,20 @@ import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
  * Runs the CLI in-process the way an agent would: arguments, environment and
- * stdin in; stdout, stderr and the exit code out.
+ * stdin in; stdout, stderr and the exit code out. Every successful run must
+ * keep the {@link ResponseContract}, or the test fails right there.
  */
 final class CliRun
 {
@@ -74,11 +82,137 @@ final class CliRun
                             osName, environment);
         }
 
-        return new CliRun(exitCode, out.toString(StandardCharsets.UTF_8), err.toString(StandardCharsets.UTF_8));
+        var run = new CliRun(exitCode, out.toString(StandardCharsets.UTF_8), err.toString(StandardCharsets.UTF_8));
+
+        var violations = ResponseContract.violations(List.of(args), exitCode, run.stdout);
+        if (!violations.isEmpty())
+            throw new AssertionError("pp-cli " + String.join(" ", args) + " broke the response contract:\n  "
+                            + String.join("\n  ", violations) + "\nstdout: " + run.stdout);
+
+        return run;
     }
 
     JsonElement json()
     {
         return JsonParser.parseString(stdout);
+    }
+
+    JsonObject data()
+    {
+        return json().getAsJsonObject().getAsJsonObject("data");
+    }
+
+    JsonObject meta()
+    {
+        return json().getAsJsonObject().getAsJsonObject("meta");
+    }
+
+    /** The items of a list response. */
+    JsonArray items()
+    {
+        return data().getAsJsonArray("items");
+    }
+
+    JsonArray warnings()
+    {
+        return json().getAsJsonObject().getAsJsonArray("warnings");
+    }
+
+    List<JsonObject> warnings(String code)
+    {
+        var matching = new ArrayList<JsonObject>();
+        for (var warning : warnings())
+        {
+            if (warning.getAsJsonObject().get("code").getAsString().equals(code))
+                matching.add(warning.getAsJsonObject());
+        }
+        return matching;
+    }
+
+    /** Empty for a failed run, which has no warnings. */
+    List<String> warningCodes()
+    {
+        var codes = new ArrayList<String>();
+        var warnings = warnings();
+        if (warnings != null)
+            warnings.forEach(w -> codes.add(w.getAsJsonObject().get("code").getAsString()));
+        return codes;
+    }
+
+    /** The problem+json document of a failed run. */
+    JsonObject problem()
+    {
+        var json = json().getAsJsonObject();
+        if (json.has("data"))
+            throw new AssertionError("expected a problem document but got a response: " + stdout);
+        return json;
+    }
+
+    /** The error code of a failed run. */
+    String code()
+    {
+        return problem().get("code").getAsString();
+    }
+
+    /** The field failures of a <code>validation-failed</code> problem. */
+    JsonArray failures()
+    {
+        return problem().getAsJsonArray("failures");
+    }
+
+    JsonObject failure(int index)
+    {
+        return failures().get(index).getAsJsonObject();
+    }
+
+    /** Each field failure as <code>operationIndex:field:code</code>. */
+    List<String> failureKeys()
+    {
+        var keys = new ArrayList<String>();
+        for (var element : failures())
+        {
+            var failure = element.getAsJsonObject();
+            keys.add(failure.get("operationIndex").getAsInt() + ":" + failure.get("field").getAsString() + ":"
+                            + failure.get("code").getAsString());
+        }
+        return keys;
+    }
+
+    /** The result of the operation at the index of an applied batch. */
+    JsonObject result(int index)
+    {
+        return data().getAsJsonArray("results").get(index).getAsJsonObject();
+    }
+
+    /** The record the first operation of an applied batch created. */
+    JsonObject created()
+    {
+        return first("created");
+    }
+
+    /** The record the first operation of an applied batch updated. */
+    JsonObject updated()
+    {
+        return first("updated");
+    }
+
+    /** The record the first operation of an applied batch deleted. */
+    JsonObject deleted()
+    {
+        return first("deleted");
+    }
+
+    private JsonObject first(String change)
+    {
+        return result(0).getAsJsonArray(change).get(0).getAsJsonObject();
+    }
+
+    /** Asserts that the batch was refused for one field failure first. */
+    void assertRefused(String field, String code)
+    {
+        assertThat(stdout, exitCode, is(1));
+        assertThat(code(), is("validation-failed"));
+        assertThat(failure(0).get("field").getAsString(), is(field));
+        assertThat(failure(0).get("code").getAsString(), is(code));
     }
 }

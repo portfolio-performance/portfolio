@@ -18,8 +18,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.google.gson.JsonObject;
-
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 
@@ -30,14 +28,11 @@ public class EncryptedFilesTest
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
+    private final CliFixture cli = new CliFixture(folder);
+
     private Path dir()
     {
         return folder.getRoot().toPath();
-    }
-
-    private static JsonObject json(CliRun run)
-    {
-        return run.json().getAsJsonObject();
     }
 
     private static CliRun infoWithEnvPassword(File file, String password)
@@ -49,7 +44,7 @@ public class EncryptedFilesTest
     {
         assertThat(run.stdout, run.exitCode, is(0));
 
-        var data = json(run).getAsJsonObject("data");
+        var data = run.data();
         assertThat(data.get("format").getAsString(), is(format));
         assertThat(data.getAsJsonObject("counts").get("instruments").getAsInt(), is(2));
         assertThat(data.getAsJsonObject("counts").get("transactions").getAsInt(), is(2));
@@ -106,7 +101,7 @@ public class EncryptedFilesTest
         var file = ClientFiles.xmlAes256(dir(), PASSWORD);
 
         var run = CliRun.runWithStdin(Map.of(), PASSWORD + "\n", "apply", "--file", file.getPath(), "--input",
-                        addAcme().getPath());
+                        cli.batch(CliFixture.ADD_ACME).toString());
 
         assertThat(run.stdout, run.exitCode, is(0));
         var reloaded = ClientFactory.load(file, PASSWORD.toCharArray(), new NullProgressMonitor());
@@ -120,17 +115,10 @@ public class EncryptedFilesTest
         var before = Files.readAllBytes(file.toPath());
 
         var run = CliRun.runWithStdin(Map.of(), PASSWORD + "\n", "apply", "--file", file.getPath(), "--input",
-                        addAcme().getPath(), "--dry-run");
+                        cli.batch(CliFixture.ADD_ACME).toString(), "--dry-run");
 
         assertThat(run.stdout, run.exitCode, is(0));
         assertThat(Files.readAllBytes(file.toPath()), is(before));
-    }
-
-    private File addAcme() throws IOException
-    {
-        var input = folder.newFile();
-        Files.writeString(input.toPath(), WriteFormatsTest.ADD_ACME);
-        return input;
     }
 
     @Test
@@ -187,8 +175,7 @@ public class EncryptedFilesTest
         var run = CliRun.run("info", "--file", ClientFiles.xmlAes256(dir(), PASSWORD).getPath());
 
         assertThat(run.exitCode, is(1));
-        assertThat(json(run).has("data"), is(false));
-        assertThat(json(run).get("code").getAsString(), is("password-required"));
+        assertThat(run.code(), is("password-required"));
         assertPasswordHidden(run);
     }
 
@@ -199,7 +186,7 @@ public class EncryptedFilesTest
                         ClientFiles.xmlAes256(dir(), PASSWORD).getPath());
 
         assertThat(run.exitCode, is(1));
-        assertThat(json(run).get("code").getAsString(), is("password-required"));
+        assertThat(run.code(), is("password-required"));
     }
 
     @Test
@@ -213,8 +200,7 @@ public class EncryptedFilesTest
             var run = infoWithEnvPassword(file, wrong);
 
             assertThat(run.exitCode, is(1));
-            assertThat(json(run).has("data"), is(false));
-            assertThat(json(run).get("code").getAsString(), is("incorrect-password"));
+            assertThat(run.code(), is("incorrect-password"));
             assertThat(run.stdout, not(containsString(wrong)));
             assertThat(run.stderr, not(containsString(wrong)));
         }
@@ -228,7 +214,7 @@ public class EncryptedFilesTest
         var run = CliRun.runWithStdin(Map.of(), "hunter2-wrong\n", "info", "--file", file.getPath());
 
         assertThat(run.exitCode, is(1));
-        assertThat(json(run).get("code").getAsString(), is("incorrect-password"));
+        assertThat(run.code(), is("incorrect-password"));
         assertThat(run.stdout, not(containsString("hunter2-wrong")));
         assertThat(run.stderr, not(containsString("hunter2-wrong")));
     }
@@ -240,7 +226,7 @@ public class EncryptedFilesTest
 
         assertThat(run.exitCode, is(1));
 
-        var problem = json(run);
+        var problem = run.problem();
         assertThat(problem.get("code").getAsString(), is("file-version-unsupported"));
         assertThat(problem.get("fileVersion").getAsInt(), is(ClientFiles.NEWER_ENCRYPTED_VERSION));
         assertThat(problem.get("maxSupportedVersion").getAsInt(), is(Client.CURRENT_VERSION));
@@ -252,7 +238,7 @@ public class EncryptedFilesTest
     {
         var run = infoWithEnvPassword(ClientFiles.newerEncrypted(dir(), PASSWORD), "wrong");
 
-        assertThat(json(run).get("code").getAsString(), is("incorrect-password"));
+        assertThat(run.code(), is("incorrect-password"));
     }
 
     @Test
@@ -264,7 +250,7 @@ public class EncryptedFilesTest
         var run = infoWithEnvPassword(file, PASSWORD);
 
         assertThat(run.exitCode, is(1));
-        assertThat(json(run).get("code").getAsString(), is("file-unreadable"));
+        assertThat(run.code(), is("file-unreadable"));
         assertPasswordHidden(run);
     }
 }

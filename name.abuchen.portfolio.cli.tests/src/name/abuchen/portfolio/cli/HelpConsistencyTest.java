@@ -12,7 +12,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
@@ -20,7 +19,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -91,11 +89,6 @@ public class HelpConsistencyTest
             assertThat(operation.name(), help.exitCode, is(0));
             assertThat(operation.name(), help.stdout, containsString(operation.name()));
         }
-    }
-
-    private static JsonObject json(Schema schema)
-    {
-        return new Gson().toJsonTree(schema.toJson()).getAsJsonObject();
     }
 
     @Test
@@ -189,7 +182,7 @@ public class HelpConsistencyTest
     private void assertOperationInputsConform(Path batch) throws IOException
     {
         var inputs = new HashMap<String, JsonObject>();
-        Commands.OPERATIONS.forEach(o -> inputs.put(o.name(), json(o.input())));
+        Commands.OPERATIONS.forEach(o -> inputs.put(o.name(), ResponseContract.json(o.input())));
 
         var operations = JsonParser.parseString(Files.readString(batch)).getAsJsonObject()
                         .getAsJsonArray("operations");
@@ -243,30 +236,11 @@ public class HelpConsistencyTest
         return all;
     }
 
+    /** The response is checked against the command's declared schemas by {@link CliRun} itself. */
     private void assertConforms(CommandSpec command, List<String> arguments)
     {
-        var name = command.name();
-
         var run = CliRun.run(arguments.toArray(String[]::new));
-        assertThat(name + " exit code, stdout: " + run.stdout, run.exitCode, is(0));
-
-        var envelope = run.json().getAsJsonObject();
-        assertThat(name + " envelope", envelope.keySet(), is(Set.of("data", "meta", "warnings")));
-
-        assertThat(name + " data", SchemaValidator.validate(envelope.get("data"), json(command.dataSchema())),
-                        is(empty()));
-        assertThat(name + " meta", SchemaValidator.validate(envelope.get("meta"), json(command.metaSchema())),
-                        is(empty()));
-
-        var declaredWarnings = new TreeSet<String>();
-        command.warnings().forEach(w -> declaredWarnings.add(w.code()));
-        for (var warning : envelope.getAsJsonArray("warnings"))
-        {
-            var object = warning.getAsJsonObject();
-            assertThat(name + " warning members", object.has("code") && object.has("detail"), is(true));
-            assertThat(name + " warning " + object, declaredWarnings.contains(object.get("code").getAsString()),
-                            is(true));
-        }
+        assertThat(command.name() + " exit code, stdout: " + run.stdout, run.exitCode, is(0));
     }
 
     @Test

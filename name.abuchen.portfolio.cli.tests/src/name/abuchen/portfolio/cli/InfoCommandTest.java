@@ -12,8 +12,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.google.gson.JsonObject;
-
 import name.abuchen.portfolio.model.Client;
 
 public class InfoCommandTest
@@ -24,11 +22,6 @@ public class InfoCommandTest
     private Path dir()
     {
         return folder.getRoot().toPath();
-    }
-
-    private static JsonObject data(CliRun run)
-    {
-        return run.json().getAsJsonObject().getAsJsonObject("data");
     }
 
     @Test
@@ -83,7 +76,7 @@ public class InfoCommandTest
         var run = CliRun.run(Map.of("PP_FILE", file.getPath()), "info");
 
         assertThat(run.exitCode, is(0));
-        assertThat(data(run).get("format").getAsString(), is("xml"));
+        assertThat(run.data().get("format").getAsString(), is("xml"));
     }
 
     @Test
@@ -113,7 +106,7 @@ public class InfoCommandTest
         var run = CliRun.run("info", "--file", ClientFiles.xmlWithIdReferences(dir()).getPath());
 
         assertThat(run.exitCode, is(0));
-        assertThat(data(run).get("format").getAsString(), is("xml-id-references"));
+        assertThat(run.data().get("format").getAsString(), is("xml-id-references"));
     }
 
     @Test
@@ -122,7 +115,7 @@ public class InfoCommandTest
         var run = CliRun.run("info", "--file", ClientFiles.xmlZip(dir()).getPath());
 
         assertThat(run.exitCode, is(0));
-        assertThat(data(run).get("format").getAsString(), is("xml-zip"));
+        assertThat(run.data().get("format").getAsString(), is("xml-zip"));
     }
 
     @Test
@@ -131,7 +124,7 @@ public class InfoCommandTest
         var run = CliRun.run("info", "--file", ClientFiles.binary(dir()).getPath());
 
         assertThat(run.exitCode, is(0));
-        assertThat(data(run).get("format").getAsString(), is("binary"));
-        assertThat(data(run).getAsJsonObject("counts").get("instruments").getAsInt(), is(2));
+        assertThat(run.data().get("format").getAsString(), is("binary"));
+        assertThat(run.data().getAsJsonObject("counts").get("instruments").getAsInt(), is(2));
     }
 }

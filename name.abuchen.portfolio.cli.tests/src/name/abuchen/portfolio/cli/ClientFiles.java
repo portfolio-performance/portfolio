@@ -8,7 +8,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -35,6 +37,18 @@ final class ClientFiles
 
     private ClientFiles()
     {
+    }
+
+    /**
+     * Every path below the folder, relative, with forward slashes and sorted;
+     * the folder itself is the empty string.
+     */
+    static List<String> listing(Path folder) throws IOException
+    {
+        try (Stream<Path> paths = Files.walk(folder))
+        {
+            return paths.map(p -> folder.relativize(p).toString().replace('\\', '/')).sorted().toList();
+        }
     }
 
     /** One instrument, one investment account, one cash account, two records. */

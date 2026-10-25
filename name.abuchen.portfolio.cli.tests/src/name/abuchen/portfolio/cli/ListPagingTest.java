@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
 import name.abuchen.portfolio.junit.AccountBuilder;
 import name.abuchen.portfolio.model.Account;
@@ -29,6 +28,8 @@ public class ListPagingTest
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
+    private final CliFixture cli = new CliFixture(folder);
+
     private Client clientWithAccounts(String... names)
     {
         var client = new Client();
@@ -42,27 +43,13 @@ public class ListPagingTest
 
     private CliRun run(Client client, String... options) throws IOException
     {
-        var file = ClientFiles.xml(folder.getRoot().toPath(), client);
-
-        var args = new ArrayList<String>(List.of("cash-accounts", "--file", file.getPath()));
-        args.addAll(List.of(options));
-        return CliRun.run(args.toArray(String[]::new));
-    }
-
-    private static JsonObject data(CliRun run)
-    {
-        return run.json().getAsJsonObject().getAsJsonObject("data");
-    }
-
-    private static JsonObject meta(CliRun run)
-    {
-        return run.json().getAsJsonObject().getAsJsonObject("meta");
+        return cli.save(client).run("cash-accounts", options);
     }
 
     private static List<String> names(CliRun run)
     {
         var names = new ArrayList<String>();
-        for (var item : data(run).getAsJsonArray("items"))
+        for (var item : run.items())
             names.add(item.getAsJsonObject().get("name").getAsString());
         return names;
     }
@@ -75,20 +62,20 @@ public class ListPagingTest
         var first = run(client, "--limit", "2");
         assertThat(first.exitCode, is(0));
         assertThat(names(first), contains("a", "b"));
-        assertThat(data(first).get("total").getAsInt(), is(5));
-        assertThat(data(first).get("nextOffset").getAsInt(), is(2));
-        assertThat(meta(first).get("limit").getAsInt(), is(2));
-        assertThat(meta(first).get("offset").getAsInt(), is(0));
+        assertThat(first.data().get("total").getAsInt(), is(5));
+        assertThat(first.data().get("nextOffset").getAsInt(), is(2));
+        assertThat(first.meta().get("limit").getAsInt(), is(2));
+        assertThat(first.meta().get("offset").getAsInt(), is(0));
 
         var second = run(client, "--limit", "2", "--offset", "2");
         assertThat(names(second), contains("c", "d"));
-        assertThat(data(second).get("nextOffset").getAsInt(), is(4));
-        assertThat(meta(second).get("offset").getAsInt(), is(2));
+        assertThat(second.data().get("nextOffset").getAsInt(), is(4));
+        assertThat(second.meta().get("offset").getAsInt(), is(2));
 
         var last = run(client, "--limit", "2", "--offset", "4");
         assertThat(names(last), contains("e"));
-        assertThat(data(last).get("total").getAsInt(), is(5));
-        assertThat(data(last).has("nextOffset"), is(false));
+        assertThat(last.data().get("total").getAsInt(), is(5));
+        assertThat(last.data().has("nextOffset"), is(false));
     }
 
     @Test
@@ -99,7 +86,7 @@ public class ListPagingTest
         var page = run(client, "--limit=2", "--offset=2");
 
         assertThat(names(page), contains("c", "d"));
-        assertThat(data(page).has("nextOffset"), is(false));
+        assertThat(page.data().has("nextOffset"), is(false));
     }
 
     @Test
@@ -112,9 +99,9 @@ public class ListPagingTest
             var page = run(client, "--offset", offset);
 
             assertThat(page.exitCode, is(0));
-            assertThat(data(page).getAsJsonArray("items").size(), is(0));
-            assertThat(data(page).get("total").getAsInt(), is(2));
-            assertThat(data(page).has("nextOffset"), is(false));
+            assertThat(page.items().size(), is(0));
+            assertThat(page.data().get("total").getAsInt(), is(2));
+            assertThat(page.data().has("nextOffset"), is(false));
         }
     }
 
@@ -125,13 +112,13 @@ public class ListPagingTest
         var client = clientWithAccounts(names);
 
         var byDefault = run(client);
-        assertThat(data(byDefault).getAsJsonArray("items").size(), is(200));
-        assertThat(data(byDefault).get("nextOffset").getAsInt(), is(200));
+        assertThat(byDefault.items().size(), is(200));
+        assertThat(byDefault.data().get("nextOffset").getAsInt(), is(200));
 
         var maximum = run(client, "--limit", "1000");
         assertThat(maximum.exitCode, is(0));
-        assertThat(data(maximum).getAsJsonArray("items").size(), is(250));
-        assertThat(data(maximum).has("nextOffset"), is(false));
+        assertThat(maximum.items().size(), is(250));
+        assertThat(maximum.data().has("nextOffset"), is(false));
     }
 
     @Test
@@ -158,7 +145,7 @@ public class ListPagingTest
         var client = clientWithAccounts("same", "same", "same", "same");
 
         var uuids = new ArrayList<String>();
-        for (var item : data(run(client)).getAsJsonArray("items"))
+        for (var item : run(client).data().getAsJsonArray("items"))
             uuids.add(item.getAsJsonObject().get("uuid").getAsString());
 
         var sorted = new ArrayList<>(uuids);
@@ -175,7 +162,7 @@ public class ListPagingTest
         for (var offset = 0; offset < 5; offset++)
         {
             var page = run(client, "--limit", "1", "--offset", String.valueOf(offset));
-            JsonArray items = data(page).getAsJsonArray("items");
+            JsonArray items = page.items();
             uuids.add(items.get(0).getAsJsonObject().get("uuid").getAsString());
         }
 
@@ -203,7 +190,7 @@ public class ListPagingTest
             var label = option.toString();
             assertThat(label, run.exitCode, is(2));
 
-            var problem = run.json().getAsJsonObject();
+            var problem = run.problem();
             assertThat(label, problem.get("code").getAsString(), is("invalid-option-value"));
             assertThat(label, problem.get("option").getAsString(), is(option.get(0)));
             assertThat(label, problem.get("value").getAsString(), is(option.get(1)));

@@ -8,14 +8,12 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -45,6 +43,8 @@ public class InstrumentAttributesTest
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
+    private final CliFixture cli = new CliFixture(folder);
+
     private final Client client = new Client();
     private final Security security = new SecurityBuilder().addTo(client);
 
@@ -68,12 +68,10 @@ public class InstrumentAttributesTest
 
     private JsonArray attributes() throws IOException
     {
-        var file = ClientFiles.xml(folder.getRoot().toPath(), client);
-
-        var run = CliRun.run("instruments", "--file", file.getPath());
+        var run = cli.save(client).run("instruments");
         assertThat(run.stdout, run.exitCode, is(0));
 
-        var items = run.json().getAsJsonObject().getAsJsonObject("data").getAsJsonArray("items");
+        var items = run.items();
         assertThat(items.size(), is(1));
         return items.get(0).getAsJsonObject().getAsJsonArray("attributes");
     }
@@ -290,7 +288,7 @@ public class InstrumentAttributesTest
         security.getAttributes().put(shares, 12L);
         security.getAttributes().put(zero, 0L);
 
-        var run = CliRun.run("instruments", "--file", ClientFiles.xml(folder.getRoot().toPath(), client).getPath());
+        var run = cli.save(client).run("instruments");
 
         assertThat(run.stdout.contains("\"value\":0.00000001"), is(true));
         assertThat(run.stdout.contains("\"value\":0.00000012"), is(true));
@@ -310,11 +308,9 @@ public class InstrumentAttributesTest
         var amount = addType("amount", "Amount", Long.class, AmountConverter.class);
         security.getAttributes().put(amount, 100L);
 
-        var file = ClientFiles.xml(folder.getRoot().toPath(), client);
-        var run = CliRun.run("instruments", "--file", file.getPath());
-        var envelope = run.json().getAsJsonObject();
+        var run = cli.save(client).run("instruments");
 
-        var schema = new Gson().toJsonTree(InstrumentsCommand.SPEC.dataSchema().toJson()).getAsJsonObject();
-        assertThat(SchemaValidator.validate(envelope.get("data"), schema), is(List.<String>of()));
+        // the response contract that CliRun checks includes the declared schema
+        assertThat(run.stdout, run.exitCode, is(0));
     }
 }

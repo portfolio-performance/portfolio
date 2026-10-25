@@ -21,7 +21,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import name.abuchen.portfolio.junit.AccountBuilder;
@@ -45,6 +44,8 @@ public class TransactionsConversionTest
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
+    private final CliFixture cli = new CliFixture(folder);
+
     private Client client;
     private Account euro;
     private Account dollars;
@@ -63,14 +64,13 @@ public class TransactionsConversionTest
 
     private CliRun run(Map<String, String> env, String... options) throws IOException
     {
-        return runOn("Linux", env, options);
+        return cli.save(client).run(env, "transactions", options);
     }
 
+    /** As if on another operating system, which decides where the default cache is looked for. */
     private CliRun runOn(String osName, Map<String, String> env, String... options) throws IOException
     {
-        var file = ClientFiles.xml(folder.getRoot().toPath(), client);
-
-        var args = new ArrayList<String>(List.of("transactions", "--file", file.getPath()));
+        var args = new ArrayList<String>(List.of("transactions", "--file", cli.save(client).file().getPath()));
         args.addAll(List.of(options));
         return CliRun.runOn(osName, env, args.toArray(String[]::new));
     }
@@ -81,30 +81,9 @@ public class TransactionsConversionTest
         return run(Map.of("PP_ECB_RATES", cache.toString()), options);
     }
 
-    private static JsonArray items(CliRun run)
-    {
-        return run.json().getAsJsonObject().getAsJsonObject("data").getAsJsonArray("items");
-    }
-
     private static JsonObject converted(CliRun run, int index)
     {
-        return items(run).get(index).getAsJsonObject().getAsJsonObject("converted");
-    }
-
-    private static JsonObject meta(CliRun run)
-    {
-        return run.json().getAsJsonObject().getAsJsonObject("meta");
-    }
-
-    private static List<JsonObject> warnings(CliRun run, String code)
-    {
-        var warnings = new ArrayList<JsonObject>();
-        for (var warning : run.json().getAsJsonObject().getAsJsonArray("warnings"))
-        {
-            if (warning.getAsJsonObject().get("code").getAsString().equals(code))
-                warnings.add(warning.getAsJsonObject());
-        }
-        return warnings;
+        return run.items().get(index).getAsJsonObject().getAsJsonObject("converted");
     }
 
     private static String decimal(JsonObject json, String member)
@@ -142,11 +121,11 @@ public class TransactionsConversionTest
         assertThat(decimal(converted, "rate"), is("1"));
         assertThat(text(converted, "rateDate"), is("2026-03-02"));
         assertThat(text(converted, "rateSource"), is("identity"));
-        assertThat(text(meta(run), "currency"), is("EUR"));
+        assertThat(text(run.meta(), "currency"), is("EUR"));
 
         // the cache file named by PP_ECB_RATES doesn't exist, and nothing says so
-        assertThat(run.json().getAsJsonObject().getAsJsonArray("warnings").size(), is(0));
-        assertThat(meta(run).has("exchangeRates"), is(false));
+        assertThat(run.warnings().size(), is(0));
+        assertThat(run.meta().has("exchangeRates"), is(false));
     }
 
     @Test
@@ -171,8 +150,8 @@ public class TransactionsConversionTest
         assertThat(text(converted, "currencyCode"), is("USD"));
         assertThat(text(converted, "rateDate"), is("2026-03-02"));
         assertThat(text(converted, "rateSource"), is("transaction"));
-        assertThat(meta(run).has("exchangeRates"), is(false));
-        assertThat(run.json().getAsJsonObject().getAsJsonArray("warnings").size(), is(0));
+        assertThat(run.meta().has("exchangeRates"), is(false));
+        assertThat(run.warnings().size(), is(0));
     }
 
     @Test
@@ -213,10 +192,10 @@ public class TransactionsConversionTest
         assertThat(new BigDecimal(decimal(converted, "amount")).movePointRight(2).longValue(),
                         is(core.convert(date, Money.of("EUR", 100_000)).getAmount()));
 
-        var exchangeRates = meta(run).getAsJsonObject("exchangeRates");
+        var exchangeRates = run.meta().getAsJsonObject("exchangeRates");
         assertThat(text(exchangeRates, "path"), is(cache.toString()));
         assertThat(text(exchangeRates, "latestRateDate"), is("2026-10-14"));
-        assertThat(run.json().getAsJsonObject().getAsJsonArray("warnings").size(), is(0));
+        assertThat(run.warnings().size(), is(0));
     }
 
     @Test
@@ -242,7 +221,7 @@ public class TransactionsConversionTest
                         is(core.convert(date, Money.of("USD", 100_000)).getAmount()));
 
         // exactly 7 days before the day needed is not stale yet
-        assertThat(warnings(run, "stale-exchange-rate"), hasSize(0));
+        assertThat(run.warnings("stale-exchange-rate"), hasSize(0));
     }
 
     @Test
@@ -275,19 +254,19 @@ public class TransactionsConversionTest
 
         var run = run("--currency", "CHF");
         assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(warnings(run, "exchange-rate-missing"), hasSize(2));
+        assertThat(run.warnings("exchange-rate-missing"), hasSize(2));
 
         var usdRun = run("--currency", "USD");
         assertThat(usdRun.stdout, usdRun.exitCode, is(0));
 
         var byId = new HashMap<String, JsonObject>();
-        items(usdRun).forEach(i -> byId.put(text(i.getAsJsonObject(), "id"), i.getAsJsonObject()));
+        usdRun.items().forEach(i -> byId.put(text(i.getAsJsonObject(), "id"), i.getAsJsonObject()));
         assertThat(byId.get(beforeFirst.getUUID()).has("converted"), is(false));
         assertThat(byId.get(alsoBefore.getUUID()).has("converted"), is(false));
         assertThat(byId.get(covered.getUUID()).has("converted"), is(true));
         assertThat(text(byId.get(noPath.getUUID()).getAsJsonObject("converted"), "rateSource"), is("identity"));
 
-        var missing = warnings(usdRun, "exchange-rate-missing");
+        var missing = usdRun.warnings("exchange-rate-missing");
         assertThat(missing, hasSize(1));
         assertThat(text(missing.get(0), "baseCurrency"), is("EUR"));
         assertThat(text(missing.get(0), "termCurrency"), is("USD"));
@@ -309,14 +288,14 @@ public class TransactionsConversionTest
         for (var i = 0; i < 3; i++)
             assertThat(text(converted(run, i), "rateDate"), is("2026-10-01"));
 
-        var stale = warnings(run, "stale-exchange-rate");
+        var stale = run.warnings("stale-exchange-rate");
         assertThat(stale, hasSize(1));
         assertThat(text(stale.get(0), "baseCurrency"), is("EUR"));
         assertThat(text(stale.get(0), "termCurrency"), is("USD"));
         // 10-08 is exactly 7 days after 10-01 and not stale
         assertThat(stale.get(0).get("count").getAsInt(), is(2));
         assertThat(stale.get(0).get("maxAgeDays").getAsInt(), is(11));
-        assertThat(warnings(run, "exchange-rate-missing"), hasSize(0));
+        assertThat(run.warnings("exchange-rate-missing"), hasSize(0));
     }
 
     @Test
@@ -329,7 +308,7 @@ public class TransactionsConversionTest
         var run = run("--currency", "USD", "--limit", "1", "--offset", "1");
 
         assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(warnings(run, "stale-exchange-rate").get(0).get("count").getAsInt(), is(1));
+        assertThat(run.warnings("stale-exchange-rate").get(0).get("count").getAsInt(), is(1));
     }
 
     @Test
@@ -354,18 +333,18 @@ public class TransactionsConversionTest
 
             assertThat(entry.getKey() + ": " + run.stdout, run.exitCode, is(0));
             for (var i = 0; i < 2; i++)
-                assertThat(entry.getKey(), items(run).get(i).getAsJsonObject().has("converted"), is(false));
+                assertThat(entry.getKey(), run.items().get(i).getAsJsonObject().has("converted"), is(false));
 
-            var unavailable = warnings(run, "exchange-rate-cache-unavailable");
+            var unavailable = run.warnings("exchange-rate-cache-unavailable");
             assertThat(entry.getKey(), unavailable, hasSize(1));
             assertThat(text(unavailable.get(0), "reason"), is(entry.getKey()));
             assertThat(unavailable.get(0).has("detail"), is(true));
             assertThat(entry.getKey(), unavailable.get(0).has("path"), is(!entry.getKey().equals("not-configured")));
 
-            var missing = warnings(run, "exchange-rate-missing");
+            var missing = run.warnings("exchange-rate-missing");
             assertThat(entry.getKey(), missing, hasSize(1));
             assertThat(missing.get(0).get("count").getAsInt(), is(2));
-            assertThat(entry.getKey(), meta(run).has("exchangeRates"), is(false));
+            assertThat(entry.getKey(), run.meta().has("exchangeRates"), is(false));
         }
     }
 
@@ -380,7 +359,7 @@ public class TransactionsConversionTest
 
         assertThat(run.stdout, run.exitCode, is(0));
         assertThat(text(converted(run, 0), "rateSource"), is("instrument"));
-        assertThat(warnings(run, "exchange-rate-cache-unavailable"), hasSize(1));
+        assertThat(run.warnings("exchange-rate-cache-unavailable"), hasSize(1));
     }
 
     @Test
@@ -396,11 +375,11 @@ public class TransactionsConversionTest
         var viaDefault = run(Map.of("HOME", home.toString()), "--currency", "USD");
         assertThat(viaDefault.stdout, viaDefault.exitCode, is(0));
         assertThat(decimal(converted(viaDefault, 0), "rate"), is("2.0000"));
-        assertThat(text(meta(viaDefault).getAsJsonObject("exchangeRates"), "path"), is(defaultFile.toString()));
+        assertThat(text(viaDefault.meta().getAsJsonObject("exchangeRates"), "path"), is(defaultFile.toString()));
 
         var overridden = run(Map.of("HOME", home.toString(), "PP_ECB_RATES", cache.toString()), "--currency", "USD");
         assertThat(decimal(converted(overridden, 0), "rate"), is("1.0850"));
-        assertThat(text(meta(overridden).getAsJsonObject("exchangeRates"), "path"), is(cache.toString()));
+        assertThat(text(overridden.meta().getAsJsonObject("exchangeRates"), "path"), is(cache.toString()));
 
         var blankOverride = run(Map.of("HOME", home.toString(), "PP_ECB_RATES", "  "), "--currency", "USD");
         assertThat(decimal(converted(blankOverride, 0), "rate"), is("2.0000"));
@@ -427,7 +406,7 @@ public class TransactionsConversionTest
                 var run = runOn(osName, Map.of(location.getKey(), home.toString()), "--currency", "USD");
 
                 assertThat(osName + " " + run.stdout, run.exitCode, is(0));
-                assertThat(osName, text(meta(run).getAsJsonObject("exchangeRates"), "path"), is(file.toString()));
+                assertThat(osName, text(run.meta().getAsJsonObject("exchangeRates"), "path"), is(file.toString()));
                 Files.delete(file);
             }
             catch (IOException e)
@@ -449,7 +428,7 @@ public class TransactionsConversionTest
         var run = run("--currency", "NOPE");
 
         assertThat(run.exitCode, is(2));
-        var problem = run.json().getAsJsonObject();
+        var problem = run.problem();
         assertThat(text(problem, "code"), is("invalid-option-value"));
         assertThat(text(problem, "option"), is("currency"));
         assertThat(text(problem, "value"), is("NOPE"));

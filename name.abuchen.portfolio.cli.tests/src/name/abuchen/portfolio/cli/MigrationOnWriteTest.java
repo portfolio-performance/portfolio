@@ -9,18 +9,13 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
-import com.google.gson.JsonObject;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
@@ -31,20 +26,11 @@ public class MigrationOnWriteTest
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
-    private Path clientFolder;
-    private File input;
-
-    @Before
-    public void setUp() throws IOException
-    {
-        clientFolder = folder.newFolder("client").toPath();
-        input = folder.newFile("batch.json");
-        Files.writeString(input.toPath(), WriteFormatsTest.ADD_ACME);
-    }
+    private final CliFixture cli = new CliFixture(folder);
 
     private File historic(String resource, String target) throws IOException
     {
-        var file = clientFolder.resolve(target);
+        var file = cli.clientFolder().resolve(target);
         try (var in = MigrationOnWriteTest.class.getResourceAsStream("historic/" + resource))
         {
             Files.write(file, in.readAllBytes());
@@ -52,58 +38,24 @@ public class MigrationOnWriteTest
         return file.toFile();
     }
 
-    private CliRun apply(File file, String... more)
-    {
-        return applyWith(Map.of(), file, more);
-    }
-
-    private CliRun applyWith(Map<String, String> env, File file, String... more)
-    {
-        var args = new ArrayList<>(List.of("apply", "--file", file.getPath(), "--input", input.getPath()));
-        args.addAll(List.of(more));
-        return CliRun.run(env, args.toArray(String[]::new));
-    }
-
-    private static JsonObject meta(CliRun run)
-    {
-        return run.json().getAsJsonObject().getAsJsonObject("meta");
-    }
-
-    private static List<String> warningCodes(CliRun run)
-    {
-        var codes = new ArrayList<String>();
-        var warnings = run.json().getAsJsonObject().getAsJsonArray("warnings");
-        if (warnings != null)
-            warnings.forEach(w -> codes.add(w.getAsJsonObject().get("code").getAsString()));
-        return codes;
-    }
-
     private static List<String> names(Client client)
     {
         return client.getSecurities().stream().map(s -> s.getName()).toList();
     }
 
-    private List<String> listing() throws IOException
-    {
-        try (Stream<Path> paths = Files.walk(clientFolder))
-        {
-            return paths.map(p -> clientFolder.relativize(p).toString().replace('\\', '/')).sorted().toList();
-        }
-    }
-
     @Test
     public void migratesAnOlderXmlFile() throws IOException
     {
-        var file = historic("client69.xml", "client.xml");
+        var file = cli.use(historic("client69.xml", "client.xml")).file();
         var original = Files.readAllBytes(file.toPath());
 
-        var run = apply(file);
+        var run = cli.apply(CliFixture.ADD_ACME);
 
         assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(meta(run).get("fileVersionBefore").getAsInt(), is(69));
-        assertThat(meta(run).get("fileVersionAfter").getAsInt(), is(Client.CURRENT_VERSION));
-        assertThat(warningCodes(run), hasItem("file-migrated"));
-        assertThat(Files.readAllBytes(Path.of(meta(run).get("backupPath").getAsString())), is(original));
+        assertThat(run.meta().get("fileVersionBefore").getAsInt(), is(69));
+        assertThat(run.meta().get("fileVersionAfter").getAsInt(), is(Client.CURRENT_VERSION));
+        assertThat(run.warningCodes(), hasItem("file-migrated"));
+        assertThat(Files.readAllBytes(Path.of(run.meta().get("backupPath").getAsString())), is(original));
 
         var reloaded = ClientFactory.load(file, null, new NullProgressMonitor());
         assertThat(reloaded.getFileVersionAfterRead(), is(Client.CURRENT_VERSION));
@@ -113,30 +65,30 @@ public class MigrationOnWriteTest
     @Test
     public void migratesAnOlderBinaryFileAndKeepsItBinary() throws IOException
     {
-        var file = historic("client52.binary.portfolio", "client.portfolio");
+        var file = cli.use(historic("client52.binary.portfolio", "client.portfolio")).file();
 
-        var run = apply(file);
+        var run = cli.apply(CliFixture.ADD_ACME);
 
         assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(meta(run).get("fileVersionBefore").getAsInt(), is(52));
-        assertThat(meta(run).get("fileVersionAfter").getAsInt(), is(Client.CURRENT_VERSION));
-        assertThat(warningCodes(run), hasItem("file-migrated"));
+        assertThat(run.meta().get("fileVersionBefore").getAsInt(), is(52));
+        assertThat(run.meta().get("fileVersionAfter").getAsInt(), is(Client.CURRENT_VERSION));
+        assertThat(run.warningCodes(), hasItem("file-migrated"));
 
-        var info = CliRun.run("info", "--file", file.getPath());
-        assertThat(info.json().getAsJsonObject().getAsJsonObject("data").get("format").getAsString(), is("binary"));
-        assertThat(meta(info).get("fileVersion").getAsInt(), is(Client.CURRENT_VERSION));
+        var info = cli.run("info");
+        assertThat(info.data().get("format").getAsString(), is("binary"));
+        assertThat(info.meta().get("fileVersion").getAsInt(), is(Client.CURRENT_VERSION));
     }
 
     @Test
     public void migratesAnOlderEncryptedFileWithTheLoadTimePassword() throws IOException
     {
-        var file = historic("client53.xml+pwd.portfolio", "client.portfolio");
+        var file = cli.use(historic("client53.xml+pwd.portfolio", "client.portfolio")).file();
 
-        var run = applyWith(Map.of("PP_PASSWORD", "123456"), file);
+        var run = cli.applyWith(Map.of("PP_PASSWORD", "123456"), List.of(), CliFixture.ADD_ACME);
 
         assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(meta(run).get("fileVersionBefore").getAsInt(), is(53));
-        assertThat(warningCodes(run), hasItem("file-migrated"));
+        assertThat(run.meta().get("fileVersionBefore").getAsInt(), is(53));
+        assertThat(run.warningCodes(), hasItem("file-migrated"));
 
         var reloaded = ClientFactory.load(file, "123456".toCharArray(), new NullProgressMonitor());
         assertThat(reloaded.getFileVersionAfterRead(), is(Client.CURRENT_VERSION));
@@ -146,27 +98,27 @@ public class MigrationOnWriteTest
     @Test
     public void aCurrentFileCarriesNoMigrationWarning() throws IOException
     {
-        var run = apply(ClientFiles.xml(clientFolder));
+        var run = cli.use(ClientFiles.xml(cli.clientFolder())).apply(CliFixture.ADD_ACME);
 
         assertThat(run.exitCode, is(0));
-        assertThat(warningCodes(run), not(hasItem("file-migrated")));
+        assertThat(run.warningCodes(), not(hasItem("file-migrated")));
     }
 
     @Test
     public void aDryRunReportsThePendingMigrationAndWritesNothing() throws IOException
     {
-        var file = historic("client69.xml", "client.xml");
+        var file = cli.use(historic("client69.xml", "client.xml")).file();
         var before = Files.readAllBytes(file.toPath());
-        var listingBefore = listing();
+        var listingBefore = ClientFiles.listing(cli.clientFolder());
 
-        var run = apply(file, "--dry-run");
+        var run = cli.applyWith(List.of("--dry-run"), CliFixture.ADD_ACME);
 
         assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(meta(run).get("dryRun").getAsBoolean(), is(true));
-        assertThat(meta(run).get("fileVersionBefore").getAsInt(), is(69));
-        assertThat(meta(run).get("fileVersionAfter").getAsInt(), is(Client.CURRENT_VERSION));
-        assertThat(warningCodes(run), hasItem("file-migrated"));
+        assertThat(run.meta().get("dryRun").getAsBoolean(), is(true));
+        assertThat(run.meta().get("fileVersionBefore").getAsInt(), is(69));
+        assertThat(run.meta().get("fileVersionAfter").getAsInt(), is(Client.CURRENT_VERSION));
+        assertThat(run.warningCodes(), hasItem("file-migrated"));
         assertThat(Files.readAllBytes(file.toPath()), is(before));
-        assertThat(listing(), is(listingBefore));
+        assertThat(ClientFiles.listing(cli.clientFolder()), is(listingBefore));
     }
 }

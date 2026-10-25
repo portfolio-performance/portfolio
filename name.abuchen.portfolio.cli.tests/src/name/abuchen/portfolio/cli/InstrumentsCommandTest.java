@@ -6,15 +6,11 @@ import static org.hamcrest.Matchers.is;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.model.Client;
@@ -25,23 +21,11 @@ public class InstrumentsCommandTest
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
+    private final CliFixture cli = new CliFixture(folder);
+
     private CliRun run(Client client, String... options) throws IOException
     {
-        var file = ClientFiles.xml(folder.getRoot().toPath(), client);
-
-        var args = new ArrayList<String>(List.of("instruments", "--file", file.getPath()));
-        args.addAll(List.of(options));
-        return CliRun.run(args.toArray(String[]::new));
-    }
-
-    private static JsonObject data(CliRun run)
-    {
-        return run.json().getAsJsonObject().getAsJsonObject("data");
-    }
-
-    private static JsonArray items(CliRun run)
-    {
-        return data(run).getAsJsonArray("items");
+        return cli.save(client).run("instruments", options);
     }
 
     private static Security instrument(Client client, String name)
@@ -66,9 +50,9 @@ public class InstrumentsCommandTest
         var run = run(client);
 
         assertThat(run.exitCode, is(0));
-        assertThat(data(run).get("total").getAsInt(), is(1));
+        assertThat(run.data().get("total").getAsInt(), is(1));
 
-        var item = items(run).get(0).getAsJsonObject();
+        var item = run.items().get(0).getAsJsonObject();
         assertThat(item.keySet(), is(Set.of("uuid", "name", "currencyCode", "isin", "wkn", "tickerSymbol", "note",
                         "retired", "attributes", "updatedAt")));
         assertThat(item.get("uuid").getAsString(), is(security.getUUID()));
@@ -93,7 +77,7 @@ public class InstrumentsCommandTest
         security.setNote("\t");
         security.setCurrencyCode("");
 
-        var item = items(run(client)).get(0).getAsJsonObject();
+        var item = run(client).items().get(0).getAsJsonObject();
 
         assertThat(item.keySet(), is(Set.of("uuid", "name", "retired", "attributes", "updatedAt")));
         assertThat(item.get("retired").getAsBoolean(), is(false));
@@ -106,7 +90,7 @@ public class InstrumentsCommandTest
         var index = instrument(client, "DAX");
         index.setCurrencyCode(null);
 
-        var item = items(run(client)).get(0).getAsJsonObject();
+        var item = run(client).items().get(0).getAsJsonObject();
 
         assertThat(item.get("name").getAsString(), is("DAX"));
         assertThat(item.has("currencyCode"), is(false));
@@ -119,7 +103,7 @@ public class InstrumentsCommandTest
         var security = instrument(client, " padded ");
         security.setNote(" note ");
 
-        var item = items(run(client)).get(0).getAsJsonObject();
+        var item = run(client).items().get(0).getAsJsonObject();
 
         assertThat(item.get("name").getAsString(), is(" padded "));
         assertThat(item.get("note").getAsString(), is(" note "));
@@ -131,7 +115,7 @@ public class InstrumentsCommandTest
         var client = new Client();
         var security = instrument(client, null);
 
-        var item = items(run(client)).get(0).getAsJsonObject();
+        var item = run(client).items().get(0).getAsJsonObject();
 
         assertThat(item.get("uuid").getAsString(), is(security.getUUID()));
         assertThat(item.get("name").getAsString(), is(""));
@@ -147,7 +131,7 @@ public class InstrumentsCommandTest
         var run = run(client);
 
         var names = new ArrayList<String>();
-        items(run).forEach(i -> names.add(i.getAsJsonObject().get("name").getAsString()));
+        run.items().forEach(i -> names.add(i.getAsJsonObject().get("name").getAsString()));
         assertThat(names, contains("active", "retired"));
     }
 }

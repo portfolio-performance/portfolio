@@ -7,7 +7,6 @@ import static org.hamcrest.Matchers.startsWith;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
@@ -26,8 +25,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.google.gson.JsonObject;
-
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
@@ -41,41 +38,28 @@ public class SafeWriteTest
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
+    private final CliFixture cli = new CliFixture(folder);
     private Path clientFolder;
-    private Path inputFolder;
     private File file;
 
     @Before
     public void setUp() throws IOException
     {
-        clientFolder = folder.newFolder("client").toPath();
-        inputFolder = folder.newFolder("input").toPath();
-        file = ClientFiles.xml(clientFolder);
-    }
-
-    private File input(String json) throws IOException
-    {
-        var input = Files.createTempFile(inputFolder, "batch", ".json");
-        Files.writeString(input, json, StandardCharsets.UTF_8);
-        return input.toFile();
+        clientFolder = cli.clientFolder();
+        file = cli.use(ClientFiles.xml(clientFolder)).file();
     }
 
     private List<String> applyArguments(String... more) throws IOException
     {
-        var args = new ArrayList<>(List.of("apply", "--file", file.getPath(), "--input",
-                        input("{\"operations\":[{\"operation\":\"instrument.add\",\"name\":\"ACME\"}]}").getPath()));
+        var batch = cli.batch(CliFixture.ADD_ACME);
+        var args = new ArrayList<>(List.of("apply", "--file", file.getPath(), "--input", batch.toString()));
         args.addAll(List.of(more));
         return args;
     }
 
     private CliRun apply(String... more) throws IOException
     {
-        return CliRun.run(applyArguments(more).toArray(String[]::new));
-    }
-
-    private static JsonObject meta(CliRun run)
-    {
-        return run.json().getAsJsonObject().getAsJsonObject("meta");
+        return cli.applyWith(List.of(more), CliFixture.ADD_ACME);
     }
 
     private static List<String> names(Path root) throws IOException
@@ -83,14 +67,6 @@ public class SafeWriteTest
         try (Stream<Path> paths = Files.list(root))
         {
             return paths.map(p -> p.getFileName().toString()).sorted().toList();
-        }
-    }
-
-    private static List<String> listing(Path root) throws IOException
-    {
-        try (Stream<Path> paths = Files.walk(root))
-        {
-            return paths.map(p -> root.relativize(p).toString().replace('\\', '/')).sorted().toList();
         }
     }
 
@@ -114,8 +90,8 @@ public class SafeWriteTest
         assertThat(run.stdout, run.exitCode, is(0));
         var backup = elsewhere.resolve("client.20261016-120000.pp-cli.xml");
         assertThat(Files.readAllBytes(backup), is(original));
-        assertThat(meta(run).get("backupPath").getAsString(), is(backup.toAbsolutePath().toString()));
-        assertThat(listing(clientFolder), is(List.of("", "client.xml")));
+        assertThat(run.meta().get("backupPath").getAsString(), is(backup.toAbsolutePath().toString()));
+        assertThat(ClientFiles.listing(clientFolder), is(List.of("", "client.xml")));
     }
 
     @Test
@@ -126,7 +102,7 @@ public class SafeWriteTest
         var run = apply("--dry-run", "--backup-dir", elsewhere.toString());
 
         assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(meta(run).get("backupPath").getAsString(),
+        assertThat(run.meta().get("backupPath").getAsString(),
                         is(elsewhere.resolve("client.20261016-120000.pp-cli.xml").toAbsolutePath().toString()));
         assertThat(Files.exists(elsewhere), is(false));
     }
@@ -197,9 +173,9 @@ public class SafeWriteTest
     public void aFailedWriteDoesNotPruneAnything() throws IOException
     {
         var backups = seedBackups(clientFolder.resolve("backups"), 5);
-        var bad = input("{\"operations\":[{\"operation\":\"instrument.add\",\"name\":\"Bad\",\"isin\":\"nope\"}]}");
+        var bad = "{\"operation\":\"instrument.add\",\"name\":\"Bad\",\"isin\":\"nope\"}";
 
-        var run = CliRun.run("apply", "--file", file.getPath(), "--input", bad.getPath(), "--keep", "1");
+        var run = cli.applyWith(List.of("--keep", "1"), bad);
 
         assertThat(run.exitCode, is(1));
         assertThat(names(backups).size(), is(5));
@@ -219,20 +195,19 @@ public class SafeWriteTest
 
         for (var format : formats.entrySet())
         {
-            file = format.getValue();
+            file = cli.use(format.getValue()).file();
             var instrument = ClientFactory.load(file, password.toCharArray(), new NullProgressMonitor())
                             .getSecurities().get(0);
-            var batch = input("{\"operations\":[{\"operation\":\"instrument.update\",\"uuid\":\"" + instrument.getUUID()
-                            + "\",\"note\":\"changed\"}]}");
-            var run = CliRun.run(Map.of(CommandContext.PASSWORD_VARIABLE, password), "apply", "--file", file.getPath(),
-                            "--input", batch.getPath());
+            var update = "{\"operation\":\"instrument.update\",\"uuid\":\"" + instrument.getUUID()
+                            + "\",\"note\":\"changed\"}";
+            var run = cli.applyWith(Map.of(CommandContext.PASSWORD_VARIABLE, password), List.of(), update);
 
             assertThat(format.getKey() + ": " + run.stdout, run.exitCode, is(0));
             var saved = ClientFactory.load(file, password.toCharArray(), new NullProgressMonitor());
             assertThat(format.getKey(), saved.getSecurities().get(0).getNote(), is("changed"));
             assertThat(format.getKey(), FileFormat.isEncrypted(file) || FileFormat.detect(file).id()
                             .equals(format.getKey()), is(true));
-            assertThat(format.getKey(), listing(file.getParentFile().toPath()).stream()
+            assertThat(format.getKey(), ClientFiles.listing(file.getParentFile().toPath()).stream()
                             .noneMatch(name -> name.contains("pp-cli.lock") || name.contains("pp-cli-tmp")), is(true));
         }
     }
@@ -243,18 +218,13 @@ public class SafeWriteTest
         var run = apply("--keep", "-1");
 
         assertThat(run.exitCode, is(2));
-        assertThat(run.json().getAsJsonObject().get("code").getAsString(), is("invalid-option-value"));
-        assertThat(listing(clientFolder), is(List.of("", "client.xml")));
+        assertThat(run.code(), is("invalid-option-value"));
+        assertThat(ClientFiles.listing(clientFolder), is(List.of("", "client.xml")));
     }
 
     private CliRun applyWith(WriteEnvironment environment, String osName, String... more) throws IOException
     {
         return CliRun.runWith(environment, osName, applyArguments(more).toArray(String[]::new));
-    }
-
-    private static JsonObject problem(CliRun run)
-    {
-        return run.json().getAsJsonObject();
     }
 
     @Test
@@ -279,9 +249,9 @@ public class SafeWriteTest
         var run = applyWith(environment, "Linux");
 
         assertThat(run.exitCode, is(1));
-        assertThat(problem(run).get("code").getAsString(), is("file-changed"));
+        assertThat(run.code(), is("file-changed"));
         assertThat(Files.readString(file.toPath()).endsWith("<!-- saved by the app -->"), is(true));
-        assertThat(listing(clientFolder), is(List.of("", "client.xml")));
+        assertThat(ClientFiles.listing(clientFolder), is(List.of("", "client.xml")));
     }
 
     @Test
@@ -307,9 +277,9 @@ public class SafeWriteTest
         var run = applyWith(environment, "Linux");
 
         assertThat(run.exitCode, is(1));
-        assertThat(problem(run).get("code").getAsString(), is("file-changed"));
+        assertThat(run.code(), is("file-changed"));
         assertThat(Files.readAllBytes(file.toPath()), is(original));
-        assertThat(listing(clientFolder), is(List.of("", "client.xml")));
+        assertThat(ClientFiles.listing(clientFolder), is(List.of("", "client.xml")));
     }
 
     @Test
@@ -334,7 +304,7 @@ public class SafeWriteTest
         assertThat(run.stdout, run.exitCode, is(0));
         assertThat(moves, is(List.of("atomic", "replace")));
         assertThat(Files.readAllBytes(file.toPath()), is(not(original)));
-        assertThat(listing(clientFolder),
+        assertThat(ClientFiles.listing(clientFolder),
                         is(List.of("", "backups", "backups/client.20261016-120000.pp-cli.xml", "client.xml")));
     }
 
@@ -356,11 +326,11 @@ public class SafeWriteTest
         var run = applyWith(environment, "Linux");
 
         assertThat(run.exitCode, is(1));
-        assertThat(problem(run).get("code").getAsString(), is("write-failed"));
+        assertThat(run.code(), is("write-failed"));
         assertThat(moves, is(List.of("atomic")));
         assertThat(Files.readAllBytes(file.toPath()), is(original));
         // the move was tried, so the backup stays; only the temp file is gone
-        assertThat(listing(clientFolder),
+        assertThat(ClientFiles.listing(clientFolder),
                         is(List.of("", "backups", "backups/client.20261016-120000.pp-cli.xml", "client.xml")));
     }
 
@@ -386,11 +356,11 @@ public class SafeWriteTest
         var run = applyWith(fileIsOpen(probed), "Mac OS X");
 
         assertThat(run.exitCode, is(1));
-        assertThat(problem(run).get("code").getAsString(), is("file-open-in-app"));
-        assertThat(problem(run).get("file").getAsString(), is(file.toPath().toAbsolutePath().toString()));
+        assertThat(run.code(), is("file-open-in-app"));
+        assertThat(run.problem().get("file").getAsString(), is(file.toPath().toAbsolutePath().toString()));
         assertThat(probed, is(List.of(file.toPath().toAbsolutePath())));
         assertThat(Files.readAllBytes(file.toPath()), is(original));
-        assertThat(listing(clientFolder), is(List.of("", "client.xml")));
+        assertThat(ClientFiles.listing(clientFolder), is(List.of("", "client.xml")));
     }
 
     @Test
@@ -399,7 +369,7 @@ public class SafeWriteTest
         var run = applyWith(fileIsOpen(new ArrayList<>()), "Mac OS X", "--force");
 
         assertThat(run.stdout, run.exitCode, is(0));
-        var warnings = run.json().getAsJsonObject().getAsJsonArray("warnings");
+        var warnings = run.warnings();
         assertThat(warnings.size(), is(1));
         assertThat(warnings.get(0).getAsJsonObject().get("code").getAsString(), is("file-open-in-app"));
     }
@@ -417,7 +387,7 @@ public class SafeWriteTest
         }, "Mac OS X");
 
         assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(run.json().getAsJsonObject().getAsJsonArray("warnings").size(), is(0));
+        assertThat(run.warnings().size(), is(0));
     }
 
     @Test
@@ -457,7 +427,7 @@ public class SafeWriteTest
     {
         var client = ClientFiles.sampleClient();
         addCurrencylessDeposit(client, "2020-03-01");
-        file = ClientFiles.xml(clientFolder, client);
+        file = cli.save(client).file();
         return client;
     }
 
@@ -492,7 +462,7 @@ public class SafeWriteTest
         var run = apply();
 
         assertThat(run.stdout, run.exitCode, is(0));
-        var warnings = run.json().getAsJsonObject().getAsJsonArray("warnings");
+        var warnings = run.warnings();
         assertThat(warnings.size(), is(1));
         var warning = warnings.get(0).getAsJsonObject();
         assertThat(warning.get("code").getAsString(), is("consistency-issues-preexisting"));
@@ -514,7 +484,7 @@ public class SafeWriteTest
         var run = apply("--dry-run");
 
         assertThat(run.stdout, run.exitCode, is(0));
-        var warnings = run.json().getAsJsonObject().getAsJsonArray("warnings");
+        var warnings = run.warnings();
         assertThat(warnings.get(0).getAsJsonObject().get("code").getAsString(), is("consistency-issues-preexisting"));
     }
 
@@ -524,7 +494,7 @@ public class SafeWriteTest
         var run = apply();
 
         assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(run.json().getAsJsonObject().getAsJsonArray("warnings").size(), is(0));
+        assertThat(run.warnings().size(), is(0));
     }
 
     @Test
@@ -535,7 +505,7 @@ public class SafeWriteTest
         var deposit = client.getAccounts().get(0).getTransactions().stream()
                         .filter(t -> t.getType() == AccountTransaction.Type.DEPOSIT).findFirst().orElseThrow();
         deposit.setSecurity(client.getSecurities().get(1));
-        file = ClientFiles.xml(clientFolder, client);
+        file = cli.save(client).file();
 
         var run = apply();
 
@@ -557,7 +527,7 @@ public class SafeWriteTest
         var issues = (List<?>) refusal.toProblem().get("issues");
         assertThat(issues.size(), is(1));
         assertThat(Files.readAllBytes(file.toPath()), is(original));
-        assertThat(listing(clientFolder), is(List.of("", "client.xml")));
+        assertThat(ClientFiles.listing(clientFolder), is(List.of("", "client.xml")));
     }
 
     @Test
@@ -579,7 +549,7 @@ public class SafeWriteTest
         assertThat(refusal.getCode(), is("consistency-check-failed"));
         assertThat(((List<?>) refusal.toProblem().get("issues")).size(), is(1));
         assertThat(Files.readAllBytes(file.toPath()), is(original));
-        assertThat(listing(clientFolder), is(List.of("", "client.xml")));
+        assertThat(ClientFiles.listing(clientFolder), is(List.of("", "client.xml")));
     }
 
     @Test

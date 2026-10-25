@@ -4,7 +4,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -23,13 +22,11 @@ public class FormatTableTest
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
+    private final CliFixture cli = new CliFixture(folder);
+
     private CliRun run(Client client, String command, String... options) throws IOException
     {
-        var file = ClientFiles.xml(folder.getRoot().toPath(), client);
-
-        var args = new ArrayList<String>(List.of(command, "--file", file.getPath()));
-        args.addAll(List.of(options));
-        return CliRun.run(args.toArray(String[]::new));
+        return cli.save(client).run(command, options);
     }
 
     private static Security instrument(Client client, String name)
@@ -196,7 +193,7 @@ public class FormatTableTest
         var run = run(new Client(), "holdings", "--format", "table");
 
         assertThat(run.exitCode, is(2));
-        var problem = run.json().getAsJsonObject();
+        var problem = run.problem();
         assertThat(problem.get("code").getAsString(), is("invalid-option-value"));
         assertThat(problem.get("detail").getAsString(), is("Option '--format' must be one of json."));
     }
@@ -207,7 +204,7 @@ public class FormatTableTest
         var run = run(new Client(), "instruments", "--format", "csv");
 
         assertThat(run.exitCode, is(2));
-        var problem = run.json().getAsJsonObject();
+        var problem = run.problem();
         assertThat(problem.get("code").getAsString(), is("invalid-option-value"));
         assertThat(problem.get("detail").getAsString(), is("Option '--format' must be one of json, table."));
     }
@@ -218,6 +215,6 @@ public class FormatTableTest
         var run = CliRun.run("instruments", "--format", "table");
 
         assertThat(run.exitCode, is(2));
-        assertThat(run.json().getAsJsonObject().get("code").getAsString(), is("file-required"));
+        assertThat(run.code(), is("file-required"));
     }
 }

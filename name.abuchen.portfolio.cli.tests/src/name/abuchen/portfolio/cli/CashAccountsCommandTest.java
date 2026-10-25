@@ -10,9 +10,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
 import name.abuchen.portfolio.junit.AccountBuilder;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
@@ -23,26 +20,11 @@ public class CashAccountsCommandTest
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
+    private final CliFixture cli = new CliFixture(folder);
+
     private CliRun run(Client client, String... options) throws IOException
     {
-        var file = ClientFiles.xml(folder.getRoot().toPath(), client);
-
-        var args = new String[options.length + 3];
-        args[0] = "cash-accounts";
-        args[1] = "--file";
-        args[2] = file.getPath();
-        System.arraycopy(options, 0, args, 3, options.length);
-        return CliRun.run(args);
-    }
-
-    static JsonObject data(CliRun run)
-    {
-        return run.json().getAsJsonObject().getAsJsonObject("data");
-    }
-
-    static JsonArray items(CliRun run)
-    {
-        return data(run).getAsJsonArray("items");
+        return cli.save(client).run("cash-accounts", options);
     }
 
     @Test
@@ -58,7 +40,7 @@ public class CashAccountsCommandTest
 
         assertThat(run.exitCode, is(0));
 
-        var items = items(run);
+        var items = run.items();
         assertThat(items.size(), is(1));
 
         var item = items.get(0).getAsJsonObject();
@@ -69,11 +51,11 @@ public class CashAccountsCommandTest
         assertThat(item.get("note").getAsString(), is("for dividends"));
         assertThat(item.get("retired").getAsBoolean(), is(true));
 
-        var data = data(run);
+        var data = run.data();
         assertThat(data.keySet(), is(Set.of("items", "total")));
         assertThat(data.get("total").getAsInt(), is(1));
 
-        var meta = run.json().getAsJsonObject().getAsJsonObject("meta");
+        var meta = run.meta();
         assertThat(meta.keySet(), is(Set.of("fileVersion", "asOf", "limit", "offset", "sort", "order")));
         assertThat(meta.get("fileVersion").getAsInt(), is(Client.CURRENT_VERSION));
         assertThat(meta.get("asOf").getAsString(), is("2026-10-16"));
@@ -88,7 +70,7 @@ public class CashAccountsCommandTest
         var account = new AccountBuilder().addTo(client);
         account.setNote("   ");
 
-        var item = items(run(client)).get(0).getAsJsonObject();
+        var item = run(client).items().get(0).getAsJsonObject();
 
         assertThat(item.keySet(), is(Set.of("uuid", "name", "currencyCode", "retired", "updatedAt")));
         assertThat(item.get("retired").getAsBoolean(), is(false));
@@ -101,7 +83,7 @@ public class CashAccountsCommandTest
         var account = new Account();
         client.addAccount(account);
 
-        var item = items(run(client)).get(0).getAsJsonObject();
+        var item = run(client).items().get(0).getAsJsonObject();
 
         assertThat(item.get("name").getAsString(), is(""));
     }
@@ -116,6 +98,6 @@ public class CashAccountsCommandTest
         portfolio.setReferenceAccount(account);
         client.addPortfolio(portfolio);
 
-        assertThat(items(run(client)).size(), is(1));
+        assertThat(run(client).items().size(), is(1));
     }
 }

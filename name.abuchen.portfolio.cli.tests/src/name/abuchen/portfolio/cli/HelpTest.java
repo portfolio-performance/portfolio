@@ -243,7 +243,7 @@ public class HelpTest
         var run = CliRun.run("apply", "--help", "instrument.explode");
 
         assertThat(run.exitCode, is(2));
-        var problem = run.json().getAsJsonObject();
+        var problem = run.problem();
         assertThat(problem.get("code").getAsString(), is("invalid-option-value"));
         assertThat(problem.get("option").getAsString(), is("help"));
         assertThat(problem.get("value").getAsString(), is("instrument.explode"));
@@ -273,7 +273,7 @@ public class HelpTest
         var run = CliRun.run("frobnicate", "--help");
 
         assertThat(run.exitCode, is(2));
-        assertThat(run.json().getAsJsonObject().get("code").getAsString(), is("unknown-command"));
+        assertThat(run.code(), is("unknown-command"));
     }
 
     @Test
@@ -282,7 +282,7 @@ public class HelpTest
         var run = CliRun.run("describe");
 
         assertThat(run.exitCode, is(2));
-        assertThat(run.json().getAsJsonObject().get("code").getAsString(), is("unknown-command"));
+        assertThat(run.code(), is("unknown-command"));
         assertThat(CliRun.run("--help").stdout, not(containsString("describe")));
     }
 

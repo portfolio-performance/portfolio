@@ -17,8 +17,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.google.gson.JsonObject;
-
 import name.abuchen.portfolio.junit.AccountBuilder;
 import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
@@ -44,6 +42,8 @@ public class PerformanceCommandTest
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
+
+    private final CliFixture cli = new CliFixture(folder);
 
     private Client client;
 
@@ -82,21 +82,7 @@ public class PerformanceCommandTest
 
     private CliRun run(Map<String, String> env, String... options) throws IOException
     {
-        var file = ClientFiles.xml(folder.getRoot().toPath(), client);
-
-        var args = new ArrayList<String>(List.of("performance", "--file", file.getPath()));
-        args.addAll(List.of(options));
-        return CliRun.runOn("Linux", env, args.toArray(String[]::new));
-    }
-
-    private static JsonObject data(CliRun run)
-    {
-        return run.json().getAsJsonObject().getAsJsonObject("data");
-    }
-
-    private static JsonObject meta(CliRun run)
-    {
-        return run.json().getAsJsonObject().getAsJsonObject("meta");
+        return cli.save(client).run(env, "performance", options);
     }
 
     /**
@@ -125,7 +111,7 @@ public class PerformanceCommandTest
     {
         assertThat(run.stdout, run.exitCode, is(0));
 
-        var data = data(run);
+        var data = run.data();
         var snapshot = index.getClientPerformanceSnapshot(fifo).orElseThrow();
 
         assertThat(data.get("irr").getAsDouble(), closeTo(snapshot.getPerformanceIRR(), EPSILON));
@@ -154,8 +140,8 @@ public class PerformanceCommandTest
         var run = run("--from", "2026-01-02", "--to", "2026-09-30");
 
         assertMatchesCore(run, coreOverDays("2026-01-02", "2026-09-30"), true);
-        assertThat(data(run).get("initialValue").getAsBigDecimal().signum(), is(1));
-        assertThat(meta(run).get("from").getAsString(), is("2026-01-02"));
+        assertThat(run.data().get("initialValue").getAsBigDecimal().signum(), is(1));
+        assertThat(run.meta().get("from").getAsString(), is("2026-01-02"));
     }
 
     @Test
@@ -164,8 +150,8 @@ public class PerformanceCommandTest
         var run = run("--from", "2026-09-30", "--to", "2026-09-30");
 
         assertMatchesCore(run, coreOverDays("2026-09-30", "2026-09-30"), true);
-        assertThat(meta(run).get("from").getAsString(), is("2026-09-30"));
-        assertThat(meta(run).get("to").getAsString(), is("2026-09-30"));
+        assertThat(run.meta().get("from").getAsString(), is("2026-09-30"));
+        assertThat(run.meta().get("to").getAsString(), is("2026-09-30"));
     }
 
     @Test
@@ -174,9 +160,9 @@ public class PerformanceCommandTest
         var run = run("--from", "2026-01-01");
 
         assertMatchesCore(run, coreOverDays("2026-01-01", "2026-10-16"), true);
-        assertThat(meta(run).get("from").getAsString(), is("2026-01-01"));
-        assertThat(meta(run).get("to").getAsString(), is("2026-10-16"));
-        assertThat(meta(run).has("period"), is(false));
+        assertThat(run.meta().get("from").getAsString(), is("2026-01-01"));
+        assertThat(run.meta().get("to").getAsString(), is("2026-10-16"));
+        assertThat(run.meta().has("period"), is(false));
     }
 
     @Test
@@ -191,9 +177,9 @@ public class PerformanceCommandTest
             var run = run("--period", code);
 
             assertMatchesCore(run, core(interval), true);
-            assertThat(code, meta(run).get("from").getAsString(), is(interval.getStart().plusDays(1).toString()));
-            assertThat(code, meta(run).get("to").getAsString(), is(interval.getEnd().toString()));
-            assertThat(code, meta(run).get("period").getAsString(), is(code));
+            assertThat(code, run.meta().get("from").getAsString(), is(interval.getStart().plusDays(1).toString()));
+            assertThat(code, run.meta().get("to").getAsString(), is(interval.getEnd().toString()));
+            assertThat(code, run.meta().get("period").getAsString(), is(code));
         }
     }
 
@@ -202,8 +188,8 @@ public class PerformanceCommandTest
     {
         var run = run("--period", "Y2025");
 
-        assertThat(meta(run).get("from").getAsString(), is("2025-01-01"));
-        assertThat(meta(run).get("to").getAsString(), is("2025-12-31"));
+        assertThat(run.meta().get("from").getAsString(), is("2025-01-01"));
+        assertThat(run.meta().get("to").getAsString(), is("2025-12-31"));
     }
 
     @Test
@@ -212,9 +198,9 @@ public class PerformanceCommandTest
         var byCode = run("--period", "Y2025");
         var byDates = run("--from", "2025-01-01", "--to", "2025-12-31");
 
-        assertThat(data(byCode), is(data(byDates)));
-        assertThat(meta(byCode).get("from"), is(meta(byDates).get("from")));
-        assertThat(meta(byCode).get("to"), is(meta(byDates).get("to")));
+        assertThat(byCode.data(), is(byDates.data()));
+        assertThat(byCode.meta().get("from"), is(byDates.meta().get("from")));
+        assertThat(byCode.meta().get("to"), is(byDates.meta().get("to")));
     }
 
     @Test
@@ -223,7 +209,7 @@ public class PerformanceCommandTest
         var run = run("--period", "M");
 
         assertMatchesCore(run, coreOverDays("2026-10-01", "2026-10-16"), true);
-        assertThat(meta(run).get("from").getAsString(), is("2026-10-01"));
+        assertThat(run.meta().get("from").getAsString(), is("2026-10-01"));
     }
 
     @Test
@@ -232,8 +218,8 @@ public class PerformanceCommandTest
         var run = run("--period", "YTD");
 
         assertMatchesCore(run, coreOverDays("2026-01-01", "2026-10-16"), true);
-        assertThat(meta(run).get("from").getAsString(), is("2026-01-01"));
-        assertThat(meta(run).get("period").getAsString(), is("YTD"));
+        assertThat(run.meta().get("from").getAsString(), is("2026-01-01"));
+        assertThat(run.meta().get("period").getAsString(), is("YTD"));
     }
 
     @Test
@@ -244,7 +230,7 @@ public class PerformanceCommandTest
             var run = run("--period", code);
 
             assertThat(code + ": " + run.stdout, run.exitCode, is(2));
-            assertThat(code, run.json().getAsJsonObject().get("code").getAsString(), is("invalid-option-value"));
+            assertThat(code, run.code(), is("invalid-option-value"));
         }
     }
 
@@ -259,7 +245,7 @@ public class PerformanceCommandTest
             var run = run(args.toArray(String[]::new));
 
             assertThat(run.stdout, run.exitCode, is(2));
-            assertThat(run.json().getAsJsonObject().get("code").getAsString(), is("conflicting-options"));
+            assertThat(run.code(), is("conflicting-options"));
         }
     }
 
@@ -271,7 +257,7 @@ public class PerformanceCommandTest
             var run = run(args);
 
             assertThat(run.stdout, run.exitCode, is(2));
-            assertThat(run.json().getAsJsonObject().get("code").getAsString(), is("period-required"));
+            assertThat(run.code(), is("period-required"));
         }
     }
 
@@ -281,7 +267,7 @@ public class PerformanceCommandTest
         var run = run("--from", "2026-06-30", "--to", "2026-06-29");
 
         assertThat(run.stdout, run.exitCode, is(2));
-        assertThat(run.json().getAsJsonObject().get("code").getAsString(), is("invalid-date-range"));
+        assertThat(run.code(), is("invalid-date-range"));
     }
 
     @Test
@@ -290,7 +276,7 @@ public class PerformanceCommandTest
         var run = run("--period", "S2026-10-16");
 
         assertThat(run.stdout, run.exitCode, is(2));
-        assertThat(run.json().getAsJsonObject().get("code").getAsString(), is("invalid-date-range"));
+        assertThat(run.code(), is("invalid-date-range"));
     }
 
     @Test
@@ -298,7 +284,7 @@ public class PerformanceCommandTest
     {
         var run = run("--from", "2026-01-01", "--to", "2026-09-30");
 
-        assertThat(meta(run).get("costMethod").getAsString(), is("fifo"));
+        assertThat(run.meta().get("costMethod").getAsString(), is("fifo"));
         assertMatchesCore(run, coreOverDays("2026-01-01", "2026-09-30"), true);
     }
 
@@ -312,10 +298,11 @@ public class PerformanceCommandTest
         assertMatchesCore(fifo, index, true);
         assertMatchesCore(movingAverage, index, false);
 
-        assertThat(meta(movingAverage).get("costMethod").getAsString(), is("moving-average"));
-        assertThat(data(movingAverage).get("realizedCapitalGains").getAsBigDecimal()
-                        .compareTo(data(fifo).get("realizedCapitalGains").getAsBigDecimal()) != 0, is(true));
-        assertThat(data(movingAverage).get("irr").getAsBigDecimal().compareTo(data(fifo).get("irr").getAsBigDecimal()),
+        assertThat(movingAverage.meta().get("costMethod").getAsString(), is("moving-average"));
+        assertThat(movingAverage.data().get("realizedCapitalGains").getAsBigDecimal()
+                        .compareTo(fifo.data().get("realizedCapitalGains").getAsBigDecimal()) != 0, is(true));
+        assertThat(movingAverage.data().get("irr").getAsBigDecimal()
+                        .compareTo(fifo.data().get("irr").getAsBigDecimal()),
                         is(0));
     }
 
@@ -325,19 +312,7 @@ public class PerformanceCommandTest
         var run = run("--from", "2026-01-01", "--cost-method", "lifo");
 
         assertThat(run.stdout, run.exitCode, is(2));
-        assertThat(run.json().getAsJsonObject().get("code").getAsString(), is("invalid-option-value"));
-    }
-
-    private static List<JsonObject> warnings(CliRun run, String code)
-    {
-        var all = run.json().getAsJsonObject().getAsJsonArray("warnings");
-        var found = new ArrayList<JsonObject>();
-        if (all != null)
-            all.forEach(w -> {
-                if (w.getAsJsonObject().get("code").getAsString().equals(code))
-                    found.add(w.getAsJsonObject());
-            });
-        return found;
+        assertThat(run.code(), is("invalid-option-value"));
     }
 
     private void addDollarAccount()
@@ -352,7 +327,7 @@ public class PerformanceCommandTest
         var run = run("--from", "2026-01-01", "--to", "2026-09-30");
 
         assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(run.json().getAsJsonObject().getAsJsonArray("warnings").size(), is(0));
+        assertThat(run.warnings().size(), is(0));
     }
 
     /** A rate every five days, so that no day is more than the stale threshold after one. */
@@ -366,7 +341,7 @@ public class PerformanceCommandTest
 
     private static void assertFiguresAreLeftOut(CliRun run)
     {
-        assertThat(data(run).keySet(), is(Set.of("currencyCode")));
+        assertThat(run.data().keySet(), is(Set.of("currencyCode")));
     }
 
     @Test
@@ -380,12 +355,12 @@ public class PerformanceCommandTest
 
         assertThat(run.stdout, run.exitCode, is(0));
         assertFiguresAreLeftOut(run);
-        assertThat(data(run).get("currencyCode").getAsString(), is("EUR"));
-        var missing = warnings(run, "exchange-rate-missing");
+        assertThat(run.data().get("currencyCode").getAsString(), is("EUR"));
+        var missing = run.warnings("exchange-rate-missing");
         assertThat(missing.size(), is(1));
         assertThat(missing.get(0).get("baseCurrency").getAsString(), is("USD"));
         assertThat(missing.get(0).get("termCurrency").getAsString(), is("EUR"));
-        assertThat(warnings(run, "exchange-rate-cache-unavailable").size(), is(1));
+        assertThat(run.warnings("exchange-rate-cache-unavailable").size(), is(1));
     }
 
     @Test
@@ -399,7 +374,7 @@ public class PerformanceCommandTest
 
         assertThat(run.stdout, run.exitCode, is(0));
         assertFiguresAreLeftOut(run);
-        var missing = warnings(run, "exchange-rate-missing");
+        var missing = run.warnings("exchange-rate-missing");
         assertThat(missing.size(), is(1));
         assertThat(missing.get(0).get("count").getAsInt(), is(28));
     }
@@ -414,11 +389,11 @@ public class PerformanceCommandTest
         var run = run(Map.of("PP_ECB_RATES", cache.toString()), "--from", "2026-01-01", "--to", "2026-09-30");
 
         assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(data(run).has("absoluteGain"), is(true));
-        var stale = warnings(run, "stale-exchange-rate");
+        assertThat(run.data().has("absoluteGain"), is(true));
+        var stale = run.warnings("stale-exchange-rate");
         assertThat(stale.size(), is(1));
         assertThat(stale.get(0).get("baseCurrency").getAsString(), is("USD"));
-        assertThat(warnings(run, "exchange-rate-missing").size(), is(0));
+        assertThat(run.warnings("exchange-rate-missing").size(), is(0));
     }
 
     @Test
@@ -431,8 +406,8 @@ public class PerformanceCommandTest
         var run = run(Map.of("PP_ECB_RATES", cache.toString()), "--from", "2026-01-01", "--to", "2026-09-30");
 
         assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(data(run).has("absoluteGain"), is(true));
-        assertThat(run.json().getAsJsonObject().getAsJsonArray("warnings").size(), is(0));
+        assertThat(run.data().has("absoluteGain"), is(true));
+        assertThat(run.warnings().size(), is(0));
     }
 
     @Test
@@ -446,7 +421,7 @@ public class PerformanceCommandTest
                         "2026-09-30");
 
         assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(warnings(run, "exchange-rate-missing").size(), is(0));
+        assertThat(run.warnings("exchange-rate-missing").size(), is(0));
     }
 
     @Test
@@ -459,10 +434,10 @@ public class PerformanceCommandTest
         var run = run(Map.of("PP_ECB_RATES", cache.toString()), "--period", "Y2026");
 
         assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(meta(run).get("to").getAsString(), is("2026-12-31"));
-        assertThat(data(run).has("absoluteGain"), is(true));
-        assertThat(warnings(run, "stale-exchange-rate").size(), is(0));
-        assertThat(warnings(run, "exchange-rate-missing").size(), is(0));
+        assertThat(run.meta().get("to").getAsString(), is("2026-12-31"));
+        assertThat(run.data().has("absoluteGain"), is(true));
+        assertThat(run.warnings("stale-exchange-rate").size(), is(0));
+        assertThat(run.warnings("exchange-rate-missing").size(), is(0));
     }
 
     @Test
@@ -477,10 +452,10 @@ public class PerformanceCommandTest
 
         assertThat(run.stdout, run.exitCode, is(0));
         assertFiguresAreLeftOut(run);
-        var missing = warnings(run, "exchange-rate-missing");
+        var missing = run.warnings("exchange-rate-missing");
         assertThat(missing.size(), is(1));
         assertThat(missing.get(0).get("baseCurrency").getAsString(), is("USD"));
-        assertThat(warnings(run, "stale-exchange-rate").size(), is(0));
+        assertThat(run.warnings("stale-exchange-rate").size(), is(0));
     }
 
     @Test
@@ -497,11 +472,11 @@ public class PerformanceCommandTest
 
         var snapshot = new ClientPerformanceSnapshot(client, CoreRates.converter("USD", usd),
                         Interval.of(LocalDate.parse("2025-12-31"), LocalDate.parse("2026-09-30")));
-        assertThat(meta(run).get("currency").getAsString(), is("USD"));
-        assertThat(data(run).get("currencyCode").getAsString(), is("USD"));
-        assertThat(data(run).get("finalValue").getAsBigDecimal()
+        assertThat(run.meta().get("currency").getAsString(), is("USD"));
+        assertThat(run.data().get("currencyCode").getAsString(), is("USD"));
+        assertThat(run.data().get("finalValue").getAsBigDecimal()
                         .compareTo(amount(snapshot.getValue(CategoryType.FINAL_VALUE).getAmount())), is(0));
-        assertThat(data(run).get("absoluteGain").getAsBigDecimal()
+        assertThat(run.data().get("absoluteGain").getAsBigDecimal()
                         .compareTo(amount(snapshot.getAbsoluteDelta().getAmount())), is(0));
     }
 }

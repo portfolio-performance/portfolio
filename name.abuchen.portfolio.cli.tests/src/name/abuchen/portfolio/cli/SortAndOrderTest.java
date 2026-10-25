@@ -18,8 +18,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.google.gson.JsonObject;
-
 import name.abuchen.portfolio.junit.AccountBuilder;
 import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
@@ -38,33 +36,21 @@ public class SortAndOrderTest
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
+    private final CliFixture cli = new CliFixture(folder);
+
     private static final Instant JAN = Instant.parse("2026-01-10T08:00:00Z");
     private static final Instant FEB = Instant.parse("2026-02-10T08:30:15Z");
     private static final Instant MAR = Instant.parse("2026-03-10T09:00:00Z");
 
     private CliRun run(Client client, String command, String... options) throws IOException
     {
-        var file = ClientFiles.xml(folder.getRoot().toPath(), client);
-
-        var args = new ArrayList<String>(List.of(command, "--file", file.getPath()));
-        args.addAll(List.of(options));
-        return CliRun.run(args.toArray(String[]::new));
-    }
-
-    private static JsonObject data(CliRun run)
-    {
-        return run.json().getAsJsonObject().getAsJsonObject("data");
-    }
-
-    private static JsonObject meta(CliRun run)
-    {
-        return run.json().getAsJsonObject().getAsJsonObject("meta");
+        return cli.save(client).run(command, options);
     }
 
     private static List<String> values(CliRun run, String member)
     {
         var values = new ArrayList<String>();
-        for (var item : data(run).getAsJsonArray("items"))
+        for (var item : run.items())
             values.add(item.getAsJsonObject().get(member).getAsString());
         return values;
     }
@@ -86,7 +72,7 @@ public class SortAndOrderTest
         cashAccount(client, "dated", FEB);
         cashAccount(client, "undated", null);
 
-        var items = data(run(client, "cash-accounts")).getAsJsonArray("items");
+        var items = run(client, "cash-accounts").data().getAsJsonArray("items");
 
         assertThat(items.get(0).getAsJsonObject().get("updatedAt").getAsString(), is("2026-02-10T08:30:15Z"));
         assertThat(items.get(1).getAsJsonObject().has("updatedAt"), is(false));
@@ -211,11 +197,11 @@ public class SortAndOrderTest
         var client = new Client();
         cashAccount(client, "a", null);
 
-        var byDefault = meta(run(client, "cash-accounts"));
+        var byDefault = run(client, "cash-accounts").meta();
         assertThat(byDefault.get("sort").getAsString(), is("name"));
         assertThat(byDefault.get("order").getAsString(), is("asc"));
 
-        var explicit = meta(run(client, "cash-accounts", "--sort", "updatedAt", "--order", "desc"));
+        var explicit = run(client, "cash-accounts", "--sort", "updatedAt", "--order", "desc").meta();
         assertThat(explicit.get("sort").getAsString(), is("updatedAt"));
         assertThat(explicit.get("order").getAsString(), is("desc"));
     }
@@ -228,7 +214,7 @@ public class SortAndOrderTest
 
         var sort = run(client, "cash-accounts", "--sort", "date");
         assertThat(sort.exitCode, is(2));
-        var problem = sort.json().getAsJsonObject();
+        var problem = sort.problem();
         assertThat(problem.get("code").getAsString(), is("invalid-option-value"));
         assertThat(problem.get("option").getAsString(), is("sort"));
         assertThat(problem.get("value").getAsString(), is("date"));
@@ -236,7 +222,7 @@ public class SortAndOrderTest
 
         var order = run(client, "cash-accounts", "--order", "up");
         assertThat(order.exitCode, is(2));
-        problem = order.json().getAsJsonObject();
+        problem = order.problem();
         assertThat(problem.get("code").getAsString(), is("invalid-option-value"));
         assertThat(problem.get("option").getAsString(), is("order"));
         assertThat(problem.get("detail").getAsString(), containsString("asc, desc"));
@@ -263,9 +249,9 @@ public class SortAndOrderTest
         var run = run(client, "transactions", "--order", "desc", "--limit", "2");
 
         assertThat(values(run, "date"), contains("2026-03-05", "2026-02-05"));
-        assertThat(data(run).get("total").getAsInt(), is(3));
-        assertThat(meta(run).get("sort").getAsString(), is("date"));
-        assertThat(meta(run).get("order").getAsString(), is("desc"));
+        assertThat(run.data().get("total").getAsInt(), is(3));
+        assertThat(run.meta().get("sort").getAsString(), is("date"));
+        assertThat(run.meta().get("order").getAsString(), is("desc"));
     }
 
     @Test
@@ -285,7 +271,7 @@ public class SortAndOrderTest
 
         var run = run(client, "transactions", "--sort", "updatedAt", "--order", "desc");
 
-        var items = data(run).getAsJsonArray("items");
+        var items = run.items();
         assertThat(items.get(0).getAsJsonObject().get("id").getAsString(),
                         is(buy.getPortfolioTransaction().getUUID()));
         assertThat(items.get(0).getAsJsonObject().get("updatedAt").getAsString(), is("2026-03-10T09:00:00Z"));
@@ -306,7 +292,7 @@ public class SortAndOrderTest
 
         var run = run(client, "transactions", "--sort", "updatedAt");
 
-        var items = data(run).getAsJsonArray("items");
+        var items = run.items();
         assertThat(items.get(0).getAsJsonObject().get("id").getAsString(), is(undated.getUUID()));
         assertThat(items.get(0).getAsJsonObject().has("updatedAt"), is(false));
         assertThat(items.get(1).getAsJsonObject().get("updatedAt").getAsString(), is("2026-02-10T08:30:15Z"));
@@ -345,8 +331,8 @@ public class SortAndOrderTest
         var run = run(client, "transactions", "--sort", "name");
 
         assertThat(run.exitCode, is(2));
-        assertThat(run.json().getAsJsonObject().get("code").getAsString(), is("invalid-option-value"));
-        assertThat(run.json().getAsJsonObject().get("detail").getAsString(), containsString("date, updatedAt"));
+        assertThat(run.code(), is("invalid-option-value"));
+        assertThat(run.problem().get("detail").getAsString(), containsString("date, updatedAt"));
     }
 
     // --- prices and taxonomies
@@ -373,12 +359,12 @@ public class SortAndOrderTest
 
         assertThat(values(ascending, "date"), contains("2026-01-02", "2026-01-03", "2026-01-04"));
         assertThat(values(descending, "date"), contains("2026-01-04", "2026-01-03", "2026-01-02"));
-        assertThat(meta(descending).get("sort").getAsString(), is("date"));
-        assertThat(meta(descending).get("order").getAsString(), is("desc"));
+        assertThat(descending.meta().get("sort").getAsString(), is("date"));
+        assertThat(descending.meta().get("order").getAsString(), is("desc"));
 
         var invalid = run(client, "prices", "--instrument", security.getUUID(), "--sort", "value");
         assertThat(invalid.exitCode, is(2));
-        assertThat(invalid.json().getAsJsonObject().get("detail").getAsString(), containsString("date"));
+        assertThat(invalid.problem().get("detail").getAsString(), containsString("date"));
     }
 
     @Test
@@ -392,7 +378,7 @@ public class SortAndOrderTest
         Function<CliRun, List<String>> names = run -> values(run, "name");
 
         assertThat(names.apply(run(client, "taxonomies")), contains("Regions", "Asset classes", "Industries"));
-        assertThat(meta(run(client, "taxonomies")).get("sort").getAsString(), is("position"));
+        assertThat(run(client, "taxonomies").meta().get("sort").getAsString(), is("position"));
         assertThat(names.apply(run(client, "taxonomies", "--order", "desc")),
                         contains("Industries", "Asset classes", "Regions"));
         assertThat(names.apply(run(client, "taxonomies", "--sort", "name")),
@@ -402,7 +388,7 @@ public class SortAndOrderTest
 
         var invalid = run(client, "taxonomies", "--sort", "updatedAt");
         assertThat(invalid.exitCode, is(2));
-        assertThat(invalid.json().getAsJsonObject().get("code").getAsString(), is("invalid-option-value"));
+        assertThat(invalid.code(), is("invalid-option-value"));
     }
 
     @Test

@@ -13,9 +13,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
 import name.abuchen.portfolio.junit.AccountBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.model.Client;
@@ -29,23 +26,11 @@ public class PricesCommandTest
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
+    private final CliFixture cli = new CliFixture(folder);
+
     private CliRun run(Client client, String... options) throws IOException
     {
-        var file = ClientFiles.xml(folder.getRoot().toPath(), client);
-
-        var args = new ArrayList<String>(List.of("prices", "--file", file.getPath()));
-        args.addAll(List.of(options));
-        return CliRun.run(args.toArray(String[]::new));
-    }
-
-    private static JsonObject data(CliRun run)
-    {
-        return run.json().getAsJsonObject().getAsJsonObject("data");
-    }
-
-    private static JsonArray items(CliRun run)
-    {
-        return data(run).getAsJsonArray("items");
+        return cli.save(client).run("prices", options);
     }
 
     private static Security instrument(Client client, String name, String currency)
@@ -69,7 +54,7 @@ public class PricesCommandTest
 
         assertThat(run.stdout, run.exitCode, is(0));
 
-        var instrument = data(run).getAsJsonObject("instrument");
+        var instrument = run.data().getAsJsonObject("instrument");
         assertThat(instrument.keySet(), is(Set.of("uuid", "name", "currencyCode")));
         assertThat(instrument.get("uuid").getAsString(), is(security.getUUID()));
         assertThat(instrument.get("name").getAsString(), is("ACME"));
@@ -79,19 +64,19 @@ public class PricesCommandTest
         assertThat(run.stdout.contains("\"value\":0.00000001"), is(true));
         assertThat(run.stdout.contains("\"value\":123.45000000"), is(true));
 
-        var items = items(run);
+        var items = run.items();
         assertThat(items.size(), is(2));
         assertThat(items.get(0).getAsJsonObject().get("date").getAsString(), is("2026-10-13"));
         assertThat(items.get(1).getAsJsonObject().get("date").getAsString(), is("2026-10-14"));
         assertThat(items.get(1).getAsJsonObject().get("value").getAsBigDecimal().toPlainString(),
                         is("123.45000000"));
 
-        var latest = data(run).getAsJsonObject("latest");
+        var latest = run.data().getAsJsonObject("latest");
         assertThat(latest.get("date").getAsString(), is("2026-10-14"));
         assertThat(latest.get("value").getAsBigDecimal().toPlainString(), is("123.45000000"));
 
-        assertThat(data(run).get("total").getAsInt(), is(2));
-        assertThat(data(run).has("nextOffset"), is(false));
+        assertThat(run.data().get("total").getAsInt(), is(2));
+        assertThat(run.data().has("nextOffset"), is(false));
     }
 
     @Test
@@ -104,22 +89,17 @@ public class PricesCommandTest
 
         var noPrices = run(client, "--instrument", empty.getUUID());
         assertThat(noPrices.stdout, noPrices.exitCode, is(0));
-        assertThat(data(noPrices).has("latest"), is(false));
-        assertThat(items(noPrices).size(), is(0));
-        assertThat(data(noPrices).get("total").getAsInt(), is(0));
+        assertThat(noPrices.data().has("latest"), is(false));
+        assertThat(noPrices.items().size(), is(0));
+        assertThat(noPrices.data().get("total").getAsInt(), is(0));
 
         var onlyFuture = run(client, "--instrument", future.getUUID());
-        assertThat(data(onlyFuture).has("latest"), is(false));
-        assertThat(items(onlyFuture).size(), is(0));
+        assertThat(onlyFuture.data().has("latest"), is(false));
+        assertThat(onlyFuture.items().size(), is(0));
 
         var withLaterTo = run(client, "--instrument", future.getUUID(), "--to", "2026-12-31");
-        assertThat(data(withLaterTo).has("latest"), is(false));
-        assertThat(items(withLaterTo).size(), is(1));
-    }
-
-    private static JsonObject problem(CliRun run)
-    {
-        return run.json().getAsJsonObject();
+        assertThat(withLaterTo.data().has("latest"), is(false));
+        assertThat(withLaterTo.items().size(), is(1));
     }
 
     private static Security priced(Client client, String name, String... dates)
@@ -137,7 +117,7 @@ public class PricesCommandTest
     private static List<String> dates(CliRun run)
     {
         var dates = new ArrayList<String>();
-        items(run).forEach(item -> dates.add(item.getAsJsonObject().get("date").getAsString()));
+        run.items().forEach(item -> dates.add(item.getAsJsonObject().get("date").getAsString()));
         return dates;
     }
 
@@ -147,9 +127,9 @@ public class PricesCommandTest
         var run = run(new Client());
 
         assertThat(run.exitCode, is(2));
-        assertThat(problem(run).get("code").getAsString(), is("option-required"));
-        assertThat(problem(run).get("status").getAsInt(), is(400));
-        assertThat(problem(run).get("option").getAsString(), is("instrument"));
+        assertThat(run.code(), is("option-required"));
+        assertThat(run.problem().get("status").getAsInt(), is(400));
+        assertThat(run.problem().get("option").getAsString(), is("instrument"));
     }
 
     @Test
@@ -166,7 +146,7 @@ public class PricesCommandTest
             var run = run(client, "--instrument", reference);
 
             assertThat(run.stdout, run.exitCode, is(0));
-            assertThat(data(run).getAsJsonObject("instrument").get("uuid").getAsString(), is(security.getUUID()));
+            assertThat(run.data().getAsJsonObject("instrument").get("uuid").getAsString(), is(security.getUUID()));
         }
     }
 
@@ -179,7 +159,7 @@ public class PricesCommandTest
 
         var run = run(client, "--instrument", index.getUUID());
 
-        assertThat(data(run).getAsJsonObject("instrument").keySet(), is(Set.of("uuid", "name")));
+        assertThat(run.data().getAsJsonObject("instrument").keySet(), is(Set.of("uuid", "name")));
     }
 
     @Test
@@ -188,10 +168,10 @@ public class PricesCommandTest
         var run = run(new Client(), "--instrument", "nothing");
 
         assertThat(run.exitCode, is(1));
-        assertThat(problem(run).get("code").getAsString(), is("reference-not-found"));
-        assertThat(problem(run).get("status").getAsInt(), is(404));
-        assertThat(problem(run).get("option").getAsString(), is("instrument"));
-        assertThat(problem(run).get("value").getAsString(), is("nothing"));
+        assertThat(run.code(), is("reference-not-found"));
+        assertThat(run.problem().get("status").getAsInt(), is(404));
+        assertThat(run.problem().get("option").getAsString(), is("instrument"));
+        assertThat(run.problem().get("value").getAsString(), is("nothing"));
     }
 
     @Test
@@ -204,10 +184,10 @@ public class PricesCommandTest
         var run = run(client, "--instrument", "TWIN");
 
         assertThat(run.exitCode, is(1));
-        assertThat(problem(run).get("code").getAsString(), is("reference-ambiguous"));
-        assertThat(problem(run).get("status").getAsInt(), is(409));
+        assertThat(run.code(), is("reference-ambiguous"));
+        assertThat(run.problem().get("status").getAsInt(), is(409));
         var uuids = new ArrayList<String>();
-        problem(run).getAsJsonArray("candidates")
+        run.problem().getAsJsonArray("candidates")
                         .forEach(c -> uuids.add(c.getAsJsonObject().get("uuid").getAsString()));
         assertThat(uuids.size(), is(2));
         assertThat(Set.copyOf(uuids), is(Set.of(first.getUUID(), second.getUUID())));
@@ -221,7 +201,7 @@ public class PricesCommandTest
 
         var run = run(client, "--instrument", account.getUUID());
 
-        assertThat(problem(run).get("code").getAsString(), is("reference-not-found"));
+        assertThat(run.code(), is("reference-not-found"));
     }
 
     @Test
@@ -238,9 +218,9 @@ public class PricesCommandTest
                 var run = run(client, "--instrument", security.getUUID(), option + "=" + bad);
 
                 assertThat(option + " " + bad, run.exitCode, is(2));
-                assertThat(problem(run).get("code").getAsString(), is("invalid-option-value"));
-                assertThat(problem(run).get("option").getAsString(), is(option.substring(2)));
-                assertThat(problem(run).get("value").getAsString(), is(bad));
+                assertThat(run.code(), is("invalid-option-value"));
+                assertThat(run.problem().get("option").getAsString(), is(option.substring(2)));
+                assertThat(run.problem().get("value").getAsString(), is(bad));
             }
         }
     }
@@ -254,10 +234,10 @@ public class PricesCommandTest
         var run = run(client, "--instrument", security.getUUID(), "--from", "2026-02-01", "--to", "2026-01-31");
 
         assertThat(run.exitCode, is(2));
-        assertThat(problem(run).get("code").getAsString(), is("invalid-date-range"));
-        assertThat(problem(run).get("status").getAsInt(), is(400));
-        assertThat(problem(run).get("from").getAsString(), is("2026-02-01"));
-        assertThat(problem(run).get("to").getAsString(), is("2026-01-31"));
+        assertThat(run.code(), is("invalid-date-range"));
+        assertThat(run.problem().get("status").getAsInt(), is(400));
+        assertThat(run.problem().get("from").getAsString(), is("2026-02-01"));
+        assertThat(run.problem().get("to").getAsString(), is("2026-01-31"));
     }
 
     @Test
@@ -268,8 +248,8 @@ public class PricesCommandTest
 
         var run = run(client, "--instrument", security.getUUID(), "--from", "2026-10-17");
 
-        assertThat(problem(run).get("code").getAsString(), is("invalid-date-range"));
-        assertThat(problem(run).get("to").getAsString(), is("2026-10-16"));
+        assertThat(run.code(), is("invalid-date-range"));
+        assertThat(run.problem().get("to").getAsString(), is("2026-10-16"));
     }
 
     @Test
@@ -282,10 +262,10 @@ public class PricesCommandTest
 
         assertThat(run.stdout, run.exitCode, is(0));
         assertThat(dates(run), is(List.of("2026-01-02", "2026-01-03")));
-        assertThat(data(run).get("total").getAsInt(), is(2));
-        assertThat(data(run).getAsJsonObject("latest").get("date").getAsString(), is("2026-10-14"));
+        assertThat(run.data().get("total").getAsInt(), is(2));
+        assertThat(run.data().getAsJsonObject("latest").get("date").getAsString(), is("2026-10-14"));
 
-        var meta = run.json().getAsJsonObject().getAsJsonObject("meta");
+        var meta = run.meta();
         assertThat(meta.get("from").getAsString(), is("2026-01-02"));
         assertThat(meta.get("to").getAsString(), is("2026-01-03"));
     }
@@ -300,7 +280,7 @@ public class PricesCommandTest
 
         assertThat(dates(run), is(List.of("2026-10-15", "2026-10-16")));
 
-        var meta = run.json().getAsJsonObject().getAsJsonObject("meta");
+        var meta = run.meta();
         assertThat(meta.get("to").getAsString(), is("2026-10-16"));
         assertThat(meta.has("from"), is(false));
         assertThat(meta.get("asOf").getAsString(), is("2026-10-16"));
@@ -318,16 +298,16 @@ public class PricesCommandTest
 
         var first = run(client, "--instrument", security.getUUID(), "--limit", "2");
         assertThat(dates(first), is(List.of("2026-01-01", "2026-01-02")));
-        assertThat(data(first).get("total").getAsInt(), is(5));
-        assertThat(data(first).get("nextOffset").getAsInt(), is(2));
+        assertThat(first.data().get("total").getAsInt(), is(5));
+        assertThat(first.data().get("nextOffset").getAsInt(), is(2));
 
         var last = run(client, "--instrument", security.getUUID(), "--limit", "2", "--offset", "4");
         assertThat(dates(last), is(List.of("2026-01-05")));
-        assertThat(data(last).has("nextOffset"), is(false));
+        assertThat(last.data().has("nextOffset"), is(false));
 
         var invalid = run(client, "--instrument", security.getUUID(), "--limit", "0");
         assertThat(invalid.exitCode, is(2));
-        assertThat(problem(invalid).get("code").getAsString(), is("invalid-option-value"));
+        assertThat(invalid.code(), is("invalid-option-value"));
     }
 
     @Test
@@ -340,14 +320,9 @@ public class PricesCommandTest
         var run = run(client, "--instrument", security.getUUID());
 
         assertThat(dates(run), is(List.of("2026-10-13", "2026-10-14", "2026-10-16")));
-        assertThat(data(run).getAsJsonObject("latest").get("date").getAsString(), is("2026-10-16"));
-        assertThat(data(run).getAsJsonObject("latest").get("value").getAsBigDecimal().toPlainString(),
+        assertThat(run.data().getAsJsonObject("latest").get("date").getAsString(), is("2026-10-16"));
+        assertThat(run.data().getAsJsonObject("latest").get("value").getAsBigDecimal().toPlainString(),
                         is("2.50000000"));
-    }
-
-    private static JsonArray warnings(CliRun run)
-    {
-        return run.json().getAsJsonObject().getAsJsonArray("warnings");
     }
 
     @Test
@@ -359,8 +334,8 @@ public class PricesCommandTest
         var run = run(client, "--instrument", security.getUUID());
 
         assertThat(run.exitCode, is(0));
-        assertThat(warnings(run).size(), is(1));
-        var warning = warnings(run).get(0).getAsJsonObject();
+        assertThat(run.warnings().size(), is(1));
+        var warning = run.warnings().get(0).getAsJsonObject();
         assertThat(warning.get("code").getAsString(), is("stale-price"));
         assertThat(warning.get("detail").getAsString().isBlank(), is(false));
         assertThat(warning.get("instrument").getAsString(), is(security.getUUID()));
@@ -375,8 +350,8 @@ public class PricesCommandTest
         var seven = priced(client, "Seven", "2026-10-09");
         var eight = priced(client, "Eight", "2026-10-08");
 
-        assertThat(warnings(run(client, "--instrument", seven.getUUID())).size(), is(0));
-        assertThat(warnings(run(client, "--instrument", eight.getUUID())).size(), is(1));
+        assertThat(run(client, "--instrument", seven.getUUID()).warnings().size(), is(0));
+        assertThat(run(client, "--instrument", eight.getUUID()).warnings().size(), is(1));
     }
 
     @Test
@@ -395,10 +370,10 @@ public class PricesCommandTest
         latestFeedWins.setLatestFeed("YAHOO");
 
         for (var security : List.of(retired, manual, manualLatestFeed))
-            assertThat(security.getName(), warnings(run(client, "--instrument", security.getUUID())).size(), is(0));
+            assertThat(security.getName(), run(client, "--instrument", security.getUUID()).warnings().size(), is(0));
 
         // the latest feed takes precedence over the historic feed
-        assertThat(warnings(run(client, "--instrument", latestFeedWins.getUUID())).size(), is(1));
+        assertThat(run(client, "--instrument", latestFeedWins.getUUID()).warnings().size(), is(1));
     }
 
     @Test
@@ -408,7 +383,7 @@ public class PricesCommandTest
         var none = priced(client, "None");
         var future = priced(client, "Future", "2026-11-01");
 
-        assertThat(warnings(run(client, "--instrument", none.getUUID())).size(), is(0));
-        assertThat(warnings(run(client, "--instrument", future.getUUID())).size(), is(0));
+        assertThat(run(client, "--instrument", none.getUUID()).warnings().size(), is(0));
+        assertThat(run(client, "--instrument", future.getUUID()).warnings().size(), is(0));
     }
 }

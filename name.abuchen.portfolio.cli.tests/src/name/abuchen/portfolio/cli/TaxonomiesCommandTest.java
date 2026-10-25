@@ -39,6 +39,8 @@ public class TaxonomiesCommandTest
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
+    private final CliFixture cli = new CliFixture(folder);
+
     private Client client;
 
     @Before
@@ -49,16 +51,7 @@ public class TaxonomiesCommandTest
 
     private CliRun run(String... options) throws IOException
     {
-        var file = ClientFiles.xml(folder.getRoot().toPath(), client);
-
-        var args = new ArrayList<String>(List.of("taxonomies", "--file", file.getPath()));
-        args.addAll(List.of(options));
-        return CliRun.run(args.toArray(String[]::new));
-    }
-
-    private static JsonObject data(CliRun run)
-    {
-        return run.json().getAsJsonObject().getAsJsonObject("data");
+        return cli.save(client).run("taxonomies", options);
     }
 
     private static List<JsonObject> objects(JsonArray array)
@@ -90,8 +83,8 @@ public class TaxonomiesCommandTest
         var run = run();
         assertThat(run.stdout, run.exitCode, is(0));
 
-        var items = objects(data(run).getAsJsonArray("items"));
-        assertThat(data(run).get("total").getAsInt(), is(2));
+        var items = objects(run.items());
+        assertThat(run.data().get("total").getAsInt(), is(2));
 
         // file order, not alphabetical
         assertThat(items.stream().map(i -> i.get("name").getAsString()).toList(), is(List.of("Regions", "Asset classes")));
@@ -111,7 +104,7 @@ public class TaxonomiesCommandTest
         var germany = child(europe, "Germany", 0);
         germany.setWeight(percent(33.5));
 
-        var tree = objects(data(run()).getAsJsonArray("items").get(0).getAsJsonObject()
+        var tree = objects(run().data().getAsJsonArray("items").get(0).getAsJsonObject()
                         .getAsJsonArray("classifications"));
 
         var top = tree.get(0);
@@ -139,7 +132,7 @@ public class TaxonomiesCommandTest
         var first = child(taxonomy.getRoot(), "same", 2);
         var second = child(taxonomy.getRoot(), "SAME", 2);
 
-        var tree = data(run()).getAsJsonArray("items").get(0).getAsJsonObject().getAsJsonArray("classifications");
+        var tree = run().data().getAsJsonArray("items").get(0).getAsJsonObject().getAsJsonArray("classifications");
 
         assertThat(names(tree).subList(0, 3), is(List.of("zeta", "Alpha", "beta")));
 
@@ -169,7 +162,7 @@ public class TaxonomiesCommandTest
         assign(europe, cash);
         child(taxonomy.getRoot(), "Bonds");
 
-        var item = data(run()).getAsJsonArray("items").get(0).getAsJsonObject();
+        var item = run().data().getAsJsonArray("items").get(0).getAsJsonObject();
 
         var direct = objects(classification(item, "Equity").getAsJsonArray("assignments"));
         assertThat(direct.stream().map(a -> a.get("name").getAsString()).toList(), is(List.of("Alpha", "Retired")));
@@ -194,7 +187,7 @@ public class TaxonomiesCommandTest
         keyed.setNote("A note");
         child(taxonomy.getRoot(), "Plain");
 
-        var item = data(run()).getAsJsonArray("items").get(0).getAsJsonObject();
+        var item = run().data().getAsJsonArray("items").get(0).getAsJsonObject();
 
         assertThat(classification(item, "Keyed").get("key").getAsString(), is("K1"));
         assertThat(classification(item, "Keyed").get("note").getAsString(), is("A note"));
@@ -211,12 +204,12 @@ public class TaxonomiesCommandTest
         taxonomy(client, "Three");
 
         var run = run("--limit", "2");
-        var data = data(run);
+        var data = run.data();
         assertThat(data.get("total").getAsInt(), is(3));
         assertThat(data.getAsJsonArray("items").size(), is(2));
         assertThat(data.get("nextOffset").getAsInt(), is(2));
 
-        var last = data(run("--limit", "2", "--offset", "2"));
+        var last = run("--limit", "2", "--offset", "2").data();
         assertThat(names(last.getAsJsonArray("items")), is(List.of("Three")));
         assertThat(last.has("nextOffset"), is(false));
     }

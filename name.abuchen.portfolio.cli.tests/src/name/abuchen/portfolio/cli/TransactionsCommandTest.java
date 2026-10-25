@@ -36,6 +36,8 @@ public class TransactionsCommandTest
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
+    private final CliFixture cli = new CliFixture(folder);
+
     private Client client;
     private Security acme;
     private Account cash;
@@ -55,32 +57,18 @@ public class TransactionsCommandTest
 
     private CliRun run(String... options) throws IOException
     {
-        var file = ClientFiles.xml(folder.getRoot().toPath(), client);
-
-        var args = new ArrayList<String>(List.of("transactions", "--file", file.getPath()));
-        args.addAll(List.of(options));
-        return CliRun.run(args.toArray(String[]::new));
-    }
-
-    private static JsonObject data(CliRun run)
-    {
-        return run.json().getAsJsonObject().getAsJsonObject("data");
-    }
-
-    private static JsonArray items(CliRun run)
-    {
-        return data(run).getAsJsonArray("items");
+        return cli.save(client).run("transactions", options);
     }
 
     private static JsonObject item(CliRun run, int index)
     {
-        return items(run).get(index).getAsJsonObject();
+        return run.items().get(index).getAsJsonObject();
     }
 
     private static List<String> ids(CliRun run)
     {
         var ids = new ArrayList<String>();
-        items(run).forEach(i -> ids.add(i.getAsJsonObject().get("id").getAsString()));
+        run.items().forEach(i -> ids.add(i.getAsJsonObject().get("id").getAsString()));
         return ids;
     }
 
@@ -112,7 +100,7 @@ public class TransactionsCommandTest
         var run = run();
 
         assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(data(run).get("total").getAsInt(), is(1));
+        assertThat(run.data().get("total").getAsInt(), is(1));
 
         var buy = item(run, 0);
         assertThat(text(buy, "id"), is(entry.getPortfolioTransaction().getUUID()));
@@ -232,7 +220,7 @@ public class TransactionsCommandTest
         var run = run();
 
         assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(items(run).size(), is(3));
+        assertThat(run.items().size(), is(3));
 
         assertThat(text(item(run, 0), "type"), is("SELL"));
         assertThat(text(item(run, 0), "id"), is(sell.getPortfolioTransaction().getUUID()));
@@ -268,7 +256,7 @@ public class TransactionsCommandTest
         var run = run();
 
         assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(items(run).size(), is(types.size()));
+        assertThat(run.items().size(), is(types.size()));
         for (var i = 0; i < types.size(); i++)
         {
             var record = item(run, i);
@@ -322,7 +310,7 @@ public class TransactionsCommandTest
         var run = run();
 
         assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(data(run).get("total").getAsInt(), is(1));
+        assertThat(run.data().get("total").getAsInt(), is(1));
 
         var transfer = item(run, 0);
         assertThat(text(transfer, "type"), is("TRANSFER"));
@@ -369,7 +357,7 @@ public class TransactionsCommandTest
         var run = run();
 
         assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(data(run).get("total").getAsInt(), is(1));
+        assertThat(run.data().get("total").getAsInt(), is(1));
 
         var transfer = item(run, 0);
         assertThat(text(transfer, "type"), is("TRANSFER"));
@@ -424,7 +412,7 @@ public class TransactionsCommandTest
         var run = run();
 
         assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(items(run).size(), is(4));
+        assertThat(run.items().size(), is(4));
 
         var buy = item(run, 0);
         assertThat(text(buy, "type"), is("BUY"));
@@ -449,7 +437,7 @@ public class TransactionsCommandTest
         assertThat(text(in, "type"), is("TRANSFER_IN"));
         assertThat(text(in, "id"), is(cashTransfer.getTargetTransaction().getUUID()));
         assertThat(text(in, "cashAccount"), is(savings.getUUID()));
-        assertThat(run.json().getAsJsonObject().getAsJsonArray("warnings").size(), is(0));
+        assertThat(run.warnings().size(), is(0));
     }
 
     @Test
@@ -473,18 +461,18 @@ public class TransactionsCommandTest
 
         var firstPage = run("--limit", "2");
         assertThat(ids(firstPage), is(expected.subList(0, 2)));
-        assertThat(data(firstPage).get("total").getAsInt(), is(6));
-        assertThat(data(firstPage).get("nextOffset").getAsInt(), is(2));
-        assertThat(firstPage.json().getAsJsonObject().getAsJsonObject("meta").get("limit").getAsInt(), is(2));
-        assertThat(firstPage.json().getAsJsonObject().getAsJsonObject("meta").get("offset").getAsInt(), is(0));
+        assertThat(firstPage.data().get("total").getAsInt(), is(6));
+        assertThat(firstPage.data().get("nextOffset").getAsInt(), is(2));
+        assertThat(firstPage.meta().get("limit").getAsInt(), is(2));
+        assertThat(firstPage.meta().get("offset").getAsInt(), is(0));
 
         var lastPage = run("--limit", "2", "--offset", "4");
         assertThat(ids(lastPage), is(expected.subList(4, 6)));
-        assertThat(data(lastPage).has("nextOffset"), is(false));
+        assertThat(lastPage.data().has("nextOffset"), is(false));
 
         var beyond = run("--offset", "99");
-        assertThat(items(beyond).size(), is(0));
-        assertThat(data(beyond).get("total").getAsInt(), is(6));
+        assertThat(beyond.items().size(), is(0));
+        assertThat(beyond.data().get("total").getAsInt(), is(6));
     }
 
     @Test
@@ -493,7 +481,7 @@ public class TransactionsCommandTest
         var run = run("--limit", "0");
 
         assertThat(run.exitCode, is(2));
-        var problem = run.json().getAsJsonObject();
+        var problem = run.problem();
         assertThat(text(problem, "code"), is("invalid-option-value"));
         assertThat(text(problem, "option"), is("limit"));
     }
@@ -511,14 +499,14 @@ public class TransactionsCommandTest
         var ranged = run("--from", "2026-01-10", "--to", "2026-01-20");
         assertThat(ranged.stdout, ranged.exitCode, is(0));
         assertThat(ids(ranged), contains(first.getUUID(), last.getUUID()));
-        var meta = ranged.json().getAsJsonObject().getAsJsonObject("meta");
+        var meta = ranged.meta();
         assertThat(text(meta, "from"), is("2026-01-10"));
         assertThat(text(meta, "to"), is("2026-01-20"));
 
         var defaulted = run();
         assertThat(ids(defaulted),
                         contains(before.getUUID(), first.getUUID(), last.getUUID(), after.getUUID(), today.getUUID()));
-        var defaultedMeta = defaulted.json().getAsJsonObject().getAsJsonObject("meta");
+        var defaultedMeta = defaulted.meta();
         assertThat(text(defaultedMeta, "to"), is("2026-10-16"));
         assertThat(defaultedMeta.has("from"), is(false));
 
@@ -532,7 +520,7 @@ public class TransactionsCommandTest
         var run = run("--from", "2026-02-01", "--to", "2026-01-01");
 
         assertThat(run.exitCode, is(2));
-        var problem = run.json().getAsJsonObject();
+        var problem = run.problem();
         assertThat(text(problem, "code"), is("invalid-date-range"));
         assertThat(text(problem, "from"), is("2026-02-01"));
         assertThat(text(problem, "to"), is("2026-01-01"));
@@ -555,7 +543,7 @@ public class TransactionsCommandTest
         var byCash = run("--cash-account", cash.getUUID());
         assertThat(ids(byCash), contains(buy.getPortfolioTransaction().getUUID(),
                         cashTransfer.getSourceTransaction().getUUID()));
-        assertThat(text(byCash.json().getAsJsonObject().getAsJsonObject("meta"), "cashAccount"), is(cash.getUUID()));
+        assertThat(text(byCash.meta(), "cashAccount"), is(cash.getUUID()));
 
         var bySavings = run("--cash-account", "Savings");
         assertThat(ids(bySavings), contains(deposit.getUUID(), cashTransfer.getSourceTransaction().getUUID()));
@@ -566,13 +554,13 @@ public class TransactionsCommandTest
 
         var byOther = run("--investment-account", "Other depot");
         assertThat(ids(byOther), contains(securityTransfer.getSourceTransaction().getUUID()));
-        assertThat(text(byOther.json().getAsJsonObject().getAsJsonObject("meta"), "investmentAccount"),
+        assertThat(text(byOther.meta(), "investmentAccount"),
                         is(other.getUUID()));
 
         // the two kinds don't mix up: a cash account UUID is not an investment account
         var wrongKind = run("--investment-account", cash.getUUID());
         assertThat(wrongKind.exitCode, is(1));
-        assertThat(text(wrongKind.json().getAsJsonObject(), "code"), is("reference-not-found"));
+        assertThat(text(wrongKind.problem(), "code"), is("reference-not-found"));
     }
 
     @Test
@@ -594,16 +582,16 @@ public class TransactionsCommandTest
 
         var byUuid = run("--instrument", acme.getUUID());
         assertThat(ids(byUuid), contains(buy.getPortfolioTransaction().getUUID(), dividend.getUUID(), tax.getUUID()));
-        assertThat(text(byUuid.json().getAsJsonObject().getAsJsonObject("meta"), "instrument"), is(acme.getUUID()));
+        assertThat(text(byUuid.meta(), "instrument"), is(acme.getUUID()));
 
         var byIsin = run("--instrument", "DE000OTHER00");
         assertThat(ids(byIsin), contains(fee.getUUID()));
-        assertThat(text(byIsin.json().getAsJsonObject().getAsJsonObject("meta"), "instrument"), is(other.getUUID()));
+        assertThat(text(byIsin.meta(), "instrument"), is(other.getUUID()));
 
         var unknown = run("--instrument", "nothing");
         assertThat(unknown.exitCode, is(1));
-        assertThat(text(unknown.json().getAsJsonObject(), "code"), is("reference-not-found"));
-        assertThat(text(unknown.json().getAsJsonObject(), "option"), is("instrument"));
+        assertThat(text(unknown.problem(), "code"), is("reference-not-found"));
+        assertThat(text(unknown.problem(), "option"), is("instrument"));
     }
 
     @Test
@@ -619,7 +607,7 @@ public class TransactionsCommandTest
         var buysAndSells = run("--type", "buy,SELL,Buy");
         assertThat(ids(buysAndSells),
                         contains(buy.getPortfolioTransaction().getUUID(), sell.getPortfolioTransaction().getUUID()));
-        assertThat(strings(buysAndSells.json().getAsJsonObject().getAsJsonObject("meta").getAsJsonArray("types")),
+        assertThat(strings(buysAndSells.meta().getAsJsonArray("types")),
                         contains("BUY", "SELL"));
 
         var deposits = run("--type", "DEPOSIT");
@@ -627,7 +615,7 @@ public class TransactionsCommandTest
 
         var orphans = run("--type", "transfer_out");
         assertThat(ids(orphans), contains(orphan.getSourceTransaction().getUUID()));
-        assertThat(data(orphans).get("total").getAsInt(), is(1));
+        assertThat(orphans.data().get("total").getAsInt(), is(1));
     }
 
     @Test
@@ -638,7 +626,7 @@ public class TransactionsCommandTest
             var run = run("--type", value);
 
             assertThat(value, run.exitCode, is(2));
-            var problem = run.json().getAsJsonObject();
+            var problem = run.problem();
             assertThat(text(problem, "code"), is("invalid-option-value"));
             assertThat(text(problem, "option"), is("type"));
             assertThat(text(problem, "value"), is(value));
@@ -659,6 +647,6 @@ public class TransactionsCommandTest
 
         assertThat(run.stdout, run.exitCode, is(0));
         assertThat(ids(run), contains(buy.getPortfolioTransaction().getUUID(), dividend.getUUID()));
-        assertThat(data(run).get("total").getAsInt(), is(2));
+        assertThat(run.data().get("total").getAsInt(), is(2));
     }
 }

@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -27,8 +28,6 @@ import name.abuchen.portfolio.model.ClientFactory;
 public class WriteFormatsTest
 {
     static final String PASSWORD = "s3cr3t-Pa55word";
-    static final String ADD_ACME = "{\"operations\":[{\"operation\":\"instrument.add\",\"name\":\"ACME\"}]}";
-
     @FunctionalInterface
     interface Fixture
     {
@@ -51,6 +50,8 @@ public class WriteFormatsTest
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
+    private final CliFixture cli = new CliFixture(folder);
+
     private final String format;
     private final Fixture fixture;
 
@@ -63,14 +64,10 @@ public class WriteFormatsTest
     @Test
     public void keepsTheFormatAndReopensWithThePassword() throws IOException
     {
-        var clientFolder = folder.newFolder("client").toPath();
-        var file = fixture.create(clientFolder);
+        var file = fixture.create(cli.clientFolder());
         var original = Files.readAllBytes(file.toPath());
-        var input = folder.newFile("batch.json");
-        Files.writeString(input.toPath(), ADD_ACME);
 
-        var run = CliRun.run(Map.of("PP_PASSWORD", PASSWORD), "apply", "--file", file.getPath(), "--input",
-                        input.getPath());
+        var run = cli.use(file).applyWith(Map.of("PP_PASSWORD", PASSWORD), List.of(), CliFixture.ADD_ACME);
 
         assertThat(run.stdout, run.exitCode, is(0));
         assertThat(format(file), is(format));
@@ -79,7 +76,7 @@ public class WriteFormatsTest
         assertThat(reloaded.getSecurities().stream().map(s -> s.getName()).toList(), hasItem("ACME"));
         assertThat(reloaded.getSecurities().size(), is(3));
 
-        var backup = Path.of(run.json().getAsJsonObject().getAsJsonObject("meta").get("backupPath").getAsString());
+        var backup = Path.of(run.meta().get("backupPath").getAsString());
         assertThat(Files.readAllBytes(backup), is(original));
         assertThat(format(backup.toFile()), is(format));
     }
@@ -88,6 +85,6 @@ public class WriteFormatsTest
     {
         var info = CliRun.run(Map.of("PP_PASSWORD", PASSWORD), "info", "--file", file.getPath());
         assertThat(info.stdout, info.exitCode, is(0));
-        return info.json().getAsJsonObject().getAsJsonObject("data").get("format").getAsString();
+        return info.data().get("format").getAsString();
     }
 }

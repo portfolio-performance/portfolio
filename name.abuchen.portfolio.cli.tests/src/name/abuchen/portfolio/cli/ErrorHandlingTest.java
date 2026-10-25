@@ -14,8 +14,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.google.gson.JsonObject;
-
 import name.abuchen.portfolio.model.Client;
 
 public class ErrorHandlingTest
@@ -28,20 +26,13 @@ public class ErrorHandlingTest
         return folder.getRoot().toPath();
     }
 
-    private static JsonObject problem(CliRun run)
-    {
-        var json = run.json().getAsJsonObject();
-        assertThat(json.has("data"), is(false));
-        return json;
-    }
-
     @Test
     public void missingFileOptionIsAUsageError()
     {
         var run = CliRun.run("info");
 
         assertThat(run.exitCode, is(2));
-        assertThat(problem(run).get("code").getAsString(), is("file-required"));
+        assertThat(run.code(), is("file-required"));
     }
 
     @Test
@@ -50,7 +41,7 @@ public class ErrorHandlingTest
         var run = CliRun.run("info", "--file", dir().resolve("missing.xml").toString());
 
         assertThat(run.exitCode, is(1));
-        assertThat(problem(run).get("code").getAsString(), is("file-not-found"));
+        assertThat(run.code(), is("file-not-found"));
     }
 
     @Test
@@ -61,7 +52,7 @@ public class ErrorHandlingTest
         var run = CliRun.run("info", "--file", file.toString());
 
         assertThat(run.exitCode, is(1));
-        assertThat(problem(run).get("code").getAsString(), is("file-unreadable"));
+        assertThat(run.code(), is("file-unreadable"));
     }
 
     @Test
@@ -70,7 +61,7 @@ public class ErrorHandlingTest
         var run = CliRun.run("frobnicate");
 
         assertThat(run.exitCode, is(2));
-        assertThat(problem(run).get("code").getAsString(), is("unknown-command"));
+        assertThat(run.code(), is("unknown-command"));
     }
 
     @Test
@@ -79,7 +70,7 @@ public class ErrorHandlingTest
         var run = CliRun.run("info", "--file", ClientFiles.xml(dir()).getPath(), "--bogus", "1");
 
         assertThat(run.exitCode, is(2));
-        assertThat(problem(run).get("code").getAsString(), is("unknown-option"));
+        assertThat(run.code(), is("unknown-option"));
     }
 
     @Test
@@ -88,7 +79,7 @@ public class ErrorHandlingTest
         var run = CliRun.run("info", "--file");
 
         assertThat(run.exitCode, is(2));
-        assertThat(problem(run).get("code").getAsString(), is("option-value-required"));
+        assertThat(run.code(), is("option-value-required"));
     }
 
     @Test
@@ -97,7 +88,7 @@ public class ErrorHandlingTest
         var run = CliRun.run("info", "--file", ClientFiles.xml(dir()).getPath(), "--password", "secret");
 
         assertThat(run.exitCode, is(2));
-        assertThat(problem(run).get("code").getAsString(), is("unknown-option"));
+        assertThat(run.code(), is("unknown-option"));
         assertThat(run.stdout.contains("secret"), is(false));
         assertThat(run.stderr.contains("secret"), is(false));
     }
@@ -107,7 +98,7 @@ public class ErrorHandlingTest
     {
         var run = CliRun.run("frobnicate");
 
-        var problem = problem(run);
+        var problem = run.problem();
         assertThat(problem.get("title").getAsString().isEmpty(), is(false));
         assertThat(problem.get("detail").getAsString().isEmpty(), is(false));
         assertThat(problem.get("status").getAsInt(), is(400));
@@ -133,7 +124,7 @@ public class ErrorHandlingTest
     {
         assertThat(run.exitCode, is(1));
 
-        var problem = problem(run);
+        var problem = run.problem();
         assertThat(problem.get("code").getAsString(), is("file-version-unsupported"));
         assertThat(problem.get("fileVersion").getAsInt(), is(ClientFiles.NEWER_VERSION));
         assertThat(problem.get("maxSupportedVersion").getAsInt(), is(Client.CURRENT_VERSION));

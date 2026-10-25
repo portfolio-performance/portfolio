@@ -5,23 +5,18 @@ import static org.hamcrest.Matchers.is;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
-import com.google.gson.JsonObject;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
@@ -39,6 +34,7 @@ public class RestoreCommandTest
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
+    private final CliFixture cli = new CliFixture(folder);
     private Path clientFolder;
     private File file;
     private Set<String> originalSecurities;
@@ -46,8 +42,8 @@ public class RestoreCommandTest
     @Before
     public void setUp() throws IOException
     {
-        clientFolder = folder.newFolder("client").toPath();
-        file = ClientFiles.xml(clientFolder);
+        clientFolder = cli.clientFolder();
+        file = cli.use(ClientFiles.xml(clientFolder)).file();
         originalSecurities = securities(file, null);
     }
 
@@ -57,81 +53,49 @@ public class RestoreCommandTest
         return client.getSecurities().stream().map(Security::getUUID).collect(Collectors.toSet());
     }
 
-    private CliRun apply(File target) throws IOException
+    /** Adds an instrument, so that there is a backup to restore. */
+    private CliRun apply() throws IOException
     {
-        var input = Files.createTempFile(folder.getRoot().toPath(), "batch", ".json");
-        Files.writeString(input, "{\"operations\":[{\"operation\":\"instrument.add\",\"name\":\"ACME\"}]}",
-                        StandardCharsets.UTF_8);
-        var run = CliRun.run("apply", "--file", target.getPath(), "--input", input.toString());
+        var run = cli.apply(CliFixture.ADD_ACME);
         assertThat(run.stdout, run.exitCode, is(0));
         return run;
-    }
-
-    private CliRun restore(String... more)
-    {
-        return restore(file, more);
-    }
-
-    private static CliRun restore(File target, String... more)
-    {
-        var args = new ArrayList<>(List.of("restore", "--file", target.getPath()));
-        args.addAll(List.of(more));
-        return CliRun.run(args.toArray(String[]::new));
-    }
-
-    private static JsonObject meta(CliRun run)
-    {
-        return run.json().getAsJsonObject().getAsJsonObject("meta");
-    }
-
-    private static String code(CliRun run)
-    {
-        return run.json().getAsJsonObject().get("code").getAsString();
-    }
-
-    private static List<String> listing(Path root) throws IOException
-    {
-        try (Stream<Path> paths = Files.walk(root))
-        {
-            return paths.map(p -> root.relativize(p).toString().replace('\\', '/')).sorted().toList();
-        }
     }
 
     @Test
     public void bringsTheClientFileBackToItsStateBeforeApply() throws IOException
     {
-        var applied = apply(file);
+        var applied = apply();
         assertThat(securities(file, null).size(), is(originalSecurities.size() + 1));
 
-        var run = restore("--backup", meta(applied).get("backupPath").getAsString());
+        var run = cli.run("restore", "--backup", applied.meta().get("backupPath").getAsString());
 
         assertThat(run.stdout, run.exitCode, is(0));
         assertThat(securities(file, null), is(originalSecurities));
-        assertThat(meta(run).get("dryRun").getAsBoolean(), is(false));
+        assertThat(run.meta().get("dryRun").getAsBoolean(), is(false));
     }
 
     @Test
     public void backsUpTheFileItReplacesAndReportsThatBackup() throws IOException
     {
-        var applied = apply(file);
+        var applied = apply();
         var afterApply = securities(file, null);
 
-        var run = restore("--backup", meta(applied).get("backupPath").getAsString());
+        var run = cli.run("restore", "--backup", applied.meta().get("backupPath").getAsString());
 
         assertThat(run.stdout, run.exitCode, is(0));
         var backup = clientFolder.resolve("backups").resolve(RESTORE_BACKUP);
-        assertThat(meta(run).get("backupPath").getAsString(), is(backup.toAbsolutePath().toString()));
+        assertThat(run.meta().get("backupPath").getAsString(), is(backup.toAbsolutePath().toString()));
         assertThat(securities(backup.toFile(), null), is(afterApply));
     }
 
     @Test
     public void aRestoreCanItselfBeUndone() throws IOException
     {
-        var applied = apply(file);
+        var applied = apply();
         var afterApply = securities(file, null);
-        var restored = restore("--backup", meta(applied).get("backupPath").getAsString());
+        var restored = cli.run("restore", "--backup", applied.meta().get("backupPath").getAsString());
 
-        var undone = restore("--backup", meta(restored).get("backupPath").getAsString());
+        var undone = cli.run("restore", "--backup", restored.meta().get("backupPath").getAsString());
 
         assertThat(undone.stdout, undone.exitCode, is(0));
         assertThat(securities(file, null), is(afterApply));
@@ -142,12 +106,12 @@ public class RestoreCommandTest
     {
         var original = Files.readAllBytes(file.toPath());
 
-        var run = restore("--backup", clientFolder.resolve("backups").resolve("nope.xml").toString());
+        var run = cli.run("restore", "--backup", clientFolder.resolve("backups").resolve("nope.xml").toString());
 
         assertThat(run.exitCode, is(1));
-        assertThat(code(run), is("backup-not-found"));
+        assertThat(run.code(), is("backup-not-found"));
         assertThat(Files.readAllBytes(file.toPath()), is(original));
-        assertThat(listing(clientFolder), is(List.of("", "client.xml")));
+        assertThat(ClientFiles.listing(clientFolder), is(List.of("", "client.xml")));
     }
 
     @Test
@@ -156,35 +120,35 @@ public class RestoreCommandTest
         var original = Files.readAllBytes(file.toPath());
         var newer = ClientFiles.newerXml(folder.newFolder("newer").toPath());
 
-        var run = restore("--backup", newer.getPath());
+        var run = cli.run("restore", "--backup", newer.getPath());
 
         assertThat(run.exitCode, is(1));
-        assertThat(code(run), is("file-version-unsupported"));
+        assertThat(run.code(), is("file-version-unsupported"));
         assertThat(Files.readAllBytes(file.toPath()), is(original));
-        assertThat(listing(clientFolder), is(List.of("", "client.xml")));
+        assertThat(ClientFiles.listing(clientFolder), is(List.of("", "client.xml")));
     }
 
     @Test
     public void aHeldLockAbortsTheRestore() throws IOException
     {
-        var applied = apply(file);
+        var applied = apply();
         var afterApply = Files.readAllBytes(file.toPath());
         var lock = Files.writeString(clientFolder.resolve(".client.xml.pp-cli.lock"), "4711");
 
-        var run = restore("--backup", meta(applied).get("backupPath").getAsString());
+        var run = cli.run("restore", "--backup", applied.meta().get("backupPath").getAsString());
 
         assertThat(run.exitCode, is(1));
-        assertThat(code(run), is("file-locked"));
+        assertThat(run.code(), is("file-locked"));
         assertThat(Files.readAllBytes(file.toPath()), is(afterApply));
         assertThat(Files.exists(lock), is(true));
-        assertThat(listing(clientFolder), is(List.of("", ".client.xml.pp-cli.lock", "backups",
+        assertThat(ClientFiles.listing(clientFolder), is(List.of("", ".client.xml.pp-cli.lock", "backups",
                         "backups/" + APPLY_BACKUP, "client.xml")));
     }
 
     @Test
     public void aFileChangedBeforeTheRenameAbortsTheRestore() throws IOException
     {
-        var applied = apply(file);
+        var applied = apply();
         var environment = new WriteEnvironment()
         {
             @Override
@@ -202,29 +166,30 @@ public class RestoreCommandTest
         };
 
         var run = CliRun.runWith(environment, "Linux", "restore", "--file", file.getPath(), "--backup",
-                        meta(applied).get("backupPath").getAsString());
+                        applied.meta().get("backupPath").getAsString());
 
         assertThat(run.exitCode, is(1));
-        assertThat(code(run), is("file-changed"));
+        assertThat(run.code(), is("file-changed"));
         assertThat(Files.readString(file.toPath()).endsWith("<!-- saved by the app -->"), is(true));
-        assertThat(listing(clientFolder), is(List.of("", "backups", "backups/" + APPLY_BACKUP, "client.xml")));
+        assertThat(ClientFiles.listing(clientFolder),
+                        is(List.of("", "backups", "backups/" + APPLY_BACKUP, "client.xml")));
     }
 
     @Test
     public void aDryRunReportsTheWouldBeBackupAndCreatesNothing() throws IOException
     {
-        var applied = apply(file);
+        var applied = apply();
         var afterApply = Files.readAllBytes(file.toPath());
-        var before = listing(clientFolder);
+        var before = ClientFiles.listing(clientFolder);
 
-        var run = restore("--backup", meta(applied).get("backupPath").getAsString(), "--dry-run");
+        var run = cli.run("restore", "--backup", applied.meta().get("backupPath").getAsString(), "--dry-run");
 
         assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(meta(run).get("dryRun").getAsBoolean(), is(true));
-        assertThat(meta(run).get("backupPath").getAsString(),
+        assertThat(run.meta().get("dryRun").getAsBoolean(), is(true));
+        assertThat(run.meta().get("backupPath").getAsString(),
                         is(clientFolder.resolve("backups").resolve(RESTORE_BACKUP).toAbsolutePath().toString()));
         assertThat(Files.readAllBytes(file.toPath()), is(afterApply));
-        assertThat(listing(clientFolder), is(before));
+        assertThat(ClientFiles.listing(clientFolder), is(before));
     }
 
     @Test
@@ -233,14 +198,11 @@ public class RestoreCommandTest
         var password = "secret";
         var encrypted = ClientFiles.xmlAes256(folder.newFolder("encrypted").toPath(), password);
         var original = securities(encrypted, password.toCharArray());
-        var input = Files.createTempFile(folder.getRoot().toPath(), "batch", ".json");
-        Files.writeString(input, "{\"operations\":[{\"operation\":\"instrument.add\",\"name\":\"ACME\"}]}");
-        var applied = CliRun.run(Map.of(CommandContext.PASSWORD_VARIABLE, password), "apply", "--file",
-                        encrypted.getPath(), "--input", input.toString());
+        var env = Map.of(CommandContext.PASSWORD_VARIABLE, password);
+        var applied = cli.use(encrypted).applyWith(env, List.of(), CliFixture.ADD_ACME);
         assertThat(applied.stdout, applied.exitCode, is(0));
 
-        var run = CliRun.run(Map.of(CommandContext.PASSWORD_VARIABLE, password), "restore", "--file",
-                        encrypted.getPath(), "--backup", meta(applied).get("backupPath").getAsString());
+        var run = cli.run(env, "restore", "--backup", applied.meta().get("backupPath").getAsString());
 
         assertThat(run.stdout, run.exitCode, is(0));
         assertThat(securities(encrypted, password.toCharArray()), is(original));

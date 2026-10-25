@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
@@ -41,6 +39,8 @@ public class HoldingsCommandTest
 {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
+
+    private final CliFixture cli = new CliFixture(folder);
 
     private Client client;
     private Security alpha;
@@ -80,11 +80,7 @@ public class HoldingsCommandTest
 
     private CliRun run(Map<String, String> env, String... options) throws IOException
     {
-        var file = ClientFiles.xml(folder.getRoot().toPath(), client);
-
-        var args = new ArrayList<String>(List.of("holdings", "--file", file.getPath()));
-        args.addAll(List.of(options));
-        return CliRun.runOn("Linux", env, args.toArray(String[]::new));
+        return cli.save(client).run(env, "holdings", options);
     }
 
     /** With the ECB cache of this test. */
@@ -93,14 +89,9 @@ public class HoldingsCommandTest
         return run(Map.of("PP_ECB_RATES", cache.toString()), options);
     }
 
-    private static JsonObject data(CliRun run)
-    {
-        return run.json().getAsJsonObject().getAsJsonObject("data");
-    }
-
     private static JsonArray blocks(CliRun run)
     {
-        return data(run).getAsJsonArray("holdings");
+        return run.data().getAsJsonArray("holdings");
     }
 
     private static JsonArray items(JsonObject block)
@@ -213,7 +204,7 @@ public class HoldingsCommandTest
         assertThat(byInstrument(items, alpha).get("amount").getAsBigDecimal().compareTo(
                         amount(snapshot.getPositionsBySecurity().get(alpha).calculateValue().getAmount())), is(0));
 
-        assertThat(meta(run).get("investmentAccount").getAsString(), is(depot2.getUUID()));
+        assertThat(run.meta().get("investmentAccount").getAsString(), is(depot2.getUUID()));
     }
 
     @Test
@@ -253,8 +244,8 @@ public class HoldingsCommandTest
     {
         var run = run("--date", "2026-03-01", "--by-account=yes");
         assertThat(run.exitCode, is(2));
-        assertThat(run.json().getAsJsonObject().get("code").getAsString(), is("invalid-option-value"));
-        assertThat(run.json().getAsJsonObject().get("option").getAsString(), is("by-account"));
+        assertThat(run.code(), is("invalid-option-value"));
+        assertThat(run.problem().get("option").getAsString(), is("by-account"));
     }
 
     @Test
@@ -268,7 +259,7 @@ public class HoldingsCommandTest
         assertThat(run.stdout, run.exitCode, is(0));
 
         var snapshot = core("EUR", "2026-03-01");
-        var items = data(run).getAsJsonObject("cash").getAsJsonArray("items");
+        var items = run.data().getAsJsonObject("cash").getAsJsonArray("items");
         assertThat(items.size(), is(2));
 
         var first = items.get(0).getAsJsonObject();
@@ -309,13 +300,13 @@ public class HoldingsCommandTest
         assertThat(total.get("amount").getAsBigDecimal().compareTo(
                         amount(snapshot.getJointPortfolio().getValue().getAmount())), is(0));
 
-        var cashTotal = data(run).getAsJsonObject("cash").getAsJsonObject("total");
+        var cashTotal = run.data().getAsJsonObject("cash").getAsJsonObject("total");
         assertThat(cashTotal.get("currencyCode").getAsString(), is("EUR"));
         assertThat(cashTotal.get("amount").getAsBigDecimal().compareTo(
                         amount(snapshot.getAccounts().get(0).getFunds().getAmount())), is(0));
 
-        assertThat(meta(run).get("date").getAsString(), is("2026-03-01"));
-        assertThat(meta(run).get("currency").getAsString(), is("EUR"));
+        assertThat(run.meta().get("date").getAsString(), is("2026-03-01"));
+        assertThat(run.meta().get("currency").getAsString(), is("EUR"));
     }
 
     @Test
@@ -323,23 +314,7 @@ public class HoldingsCommandTest
     {
         var run = run();
         assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(meta(run).get("date").getAsString(), is("2026-10-16"));
-    }
-
-    private static JsonObject meta(CliRun run)
-    {
-        return run.json().getAsJsonObject().getAsJsonObject("meta");
-    }
-
-    private static List<JsonObject> warnings(CliRun run, String code)
-    {
-        var warnings = new ArrayList<JsonObject>();
-        for (var warning : run.json().getAsJsonObject().getAsJsonArray("warnings"))
-        {
-            if (warning.getAsJsonObject().get("code").getAsString().equals(code))
-                warnings.add(warning.getAsJsonObject());
-        }
-        return warnings;
+        assertThat(run.meta().get("date").getAsString(), is("2026-10-16"));
     }
 
     /** A USD instrument in a USD depot with USD cash, valued in a EUR file. */
@@ -391,19 +366,19 @@ public class HoldingsCommandTest
         assertThat(block.getAsJsonObject("total").get("amount").getAsBigDecimal()
                         .compareTo(amount(core.getJointPortfolio().getValue().getAmount())), is(0));
 
-        var cashItems = data(run).getAsJsonObject("cash").getAsJsonArray("items");
+        var cashItems = run.data().getAsJsonObject("cash").getAsJsonArray("items");
         var dollars = cashItems.get(1).getAsJsonObject();
         assertThat(dollars.get("name").getAsString(), is("Dollars"));
         var coreFunds = core.getAccounts().stream().filter(a -> a.getAccount().getName().equals("Dollars"))
                         .findFirst().orElseThrow().getFunds();
         assertThat(dollars.getAsJsonObject("converted").get("amount").getAsBigDecimal()
                         .compareTo(amount(coreFunds.getAmount())), is(0));
-        assertThat(data(run).getAsJsonObject("cash").getAsJsonObject("total").get("amount").getAsBigDecimal()
+        assertThat(run.data().getAsJsonObject("cash").getAsJsonObject("total").get("amount").getAsBigDecimal()
                         .compareTo(amount(core.getAccounts().stream().mapToLong(a -> a.getFunds().getAmount()).sum())),
                         is(0));
 
-        assertThat(meta(run).getAsJsonObject("exchangeRates").get("path").getAsString(), is(cache.toString()));
-        assertThat(run.json().getAsJsonObject().getAsJsonArray("warnings").size(), is(0));
+        assertThat(run.meta().getAsJsonObject("exchangeRates").get("path").getAsString(), is(cache.toString()));
+        assertThat(run.warnings().size(), is(0));
     }
 
     @Test
@@ -414,7 +389,7 @@ public class HoldingsCommandTest
 
         var run = runWithCache("--date", "2026-03-01", "--currency", "USD");
         assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(meta(run).get("currency").getAsString(), is("USD"));
+        assertThat(run.meta().get("currency").getAsString(), is("USD"));
 
         var core = ClientSnapshot.create(client, CoreRates.converter("USD", usd), LocalDate.parse("2026-03-01"));
         var block = blocks(run).get(0).getAsJsonObject();
@@ -444,11 +419,11 @@ public class HoldingsCommandTest
         assertThat(byInstrument(items(block), alpha).has("converted"), is(true));
         assertThat(block.has("total"), is(false));
 
-        var cashSection = data(run).getAsJsonObject("cash");
+        var cashSection = run.data().getAsJsonObject("cash");
         assertThat(cashSection.has("total"), is(false));
         assertThat(cashSection.getAsJsonArray("items").get(0).getAsJsonObject().has("converted"), is(true));
 
-        var missing = warnings(run, "exchange-rate-missing");
+        var missing = run.warnings("exchange-rate-missing");
         assertThat(missing.size(), is(1));
         assertThat(missing.get(0).get("baseCurrency").getAsString(), is("USD"));
         assertThat(missing.get(0).get("termCurrency").getAsString(), is("EUR"));
@@ -482,9 +457,9 @@ public class HoldingsCommandTest
         assertThat(run.stdout, run.exitCode, is(0));
 
         assertThat(blocks(run).get(0).getAsJsonObject().has("total"), is(true));
-        assertThat(data(run).getAsJsonObject("cash").has("total"), is(true));
-        assertThat(run.json().getAsJsonObject().getAsJsonArray("warnings").size(), is(0));
-        var emptyAccount = data(run).getAsJsonObject("cash").getAsJsonArray("items").get(1).getAsJsonObject();
+        assertThat(run.data().getAsJsonObject("cash").has("total"), is(true));
+        assertThat(run.warnings().size(), is(0));
+        var emptyAccount = run.data().getAsJsonObject("cash").getAsJsonArray("items").get(1).getAsJsonObject();
         assertThat(emptyAccount.get("name").getAsString(), is("Empty dollars"));
         assertThat(emptyAccount.has("converted"), is(false));
     }
@@ -502,7 +477,7 @@ public class HoldingsCommandTest
         var block = blocks(run).get(0).getAsJsonObject();
         assertThat(block.has("total"), is(true));
 
-        var stale = warnings(run, "stale-exchange-rate");
+        var stale = run.warnings("stale-exchange-rate");
         assertThat(stale.size(), is(1));
         assertThat(stale.get(0).get("baseCurrency").getAsString(), is("USD"));
         assertThat(stale.get(0).get("termCurrency").getAsString(), is("EUR"));
@@ -518,10 +493,10 @@ public class HoldingsCommandTest
         var run = run("--date", "2026-03-01");
         assertThat(run.stdout, run.exitCode, is(0));
 
-        assertThat(warnings(run, "exchange-rate-cache-unavailable").size(), is(1));
-        assertThat(warnings(run, "exchange-rate-missing").size(), is(1));
+        assertThat(run.warnings("exchange-rate-cache-unavailable").size(), is(1));
+        assertThat(run.warnings("exchange-rate-missing").size(), is(1));
         assertThat(blocks(run).get(0).getAsJsonObject().has("total"), is(false));
-        assertThat(meta(run).has("exchangeRates"), is(false));
+        assertThat(run.meta().has("exchangeRates"), is(false));
     }
 
     @Test
@@ -531,14 +506,14 @@ public class HoldingsCommandTest
         var run = run("--date", "2026-03-20");
         assertThat(run.stdout, run.exitCode, is(0));
 
-        var stale = warnings(run, "stale-price");
+        var stale = run.warnings("stale-price");
         assertThat(stale.size(), is(2));
         assertThat(stale.get(0).get("instrument").getAsString(), is(alpha.getUUID()));
         assertThat(stale.get(0).get("date").getAsString(), is("2026-03-01"));
         assertThat(stale.get(0).get("ageDays").getAsInt(), is(19));
 
         var current = run("--date", "2026-03-05");
-        assertThat(warnings(current, "stale-price").size(), is(0));
+        assertThat(current.warnings("stale-price").size(), is(0));
     }
 
     @Test
@@ -546,8 +521,8 @@ public class HoldingsCommandTest
     {
         var run = run("--currency", "XXY");
         assertThat(run.exitCode, is(2));
-        assertThat(run.json().getAsJsonObject().get("code").getAsString(), is("invalid-option-value"));
-        assertThat(run.json().getAsJsonObject().get("option").getAsString(), is("currency"));
+        assertThat(run.code(), is("invalid-option-value"));
+        assertThat(run.problem().get("option").getAsString(), is("currency"));
     }
 
     private void sellBetaAndBuyGammaLater()

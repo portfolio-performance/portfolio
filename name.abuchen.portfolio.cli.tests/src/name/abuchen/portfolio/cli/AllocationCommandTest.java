@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.StreamSupport;
@@ -52,6 +51,8 @@ public class AllocationCommandTest
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
+
+    private final CliFixture cli = new CliFixture(folder);
 
     private Client client;
     private Security alpha;
@@ -107,11 +108,7 @@ public class AllocationCommandTest
 
     private CliRun run(Map<String, String> env, String... options) throws IOException
     {
-        var file = ClientFiles.xml(folder.getRoot().toPath(), client);
-
-        var args = new ArrayList<String>(List.of("allocation", "--file", file.getPath()));
-        args.addAll(List.of(options));
-        return CliRun.runOn("Linux", env, args.toArray(String[]::new));
+        return cli.save(client).run(env, "allocation", options);
     }
 
     private CliRun runClasses() throws IOException
@@ -124,19 +121,9 @@ public class AllocationCommandTest
         return run("--taxonomy", classes.getId(), "--date", date);
     }
 
-    private static JsonObject data(CliRun run)
-    {
-        return run.json().getAsJsonObject().getAsJsonObject("data");
-    }
-
-    private static JsonObject meta(CliRun run)
-    {
-        return run.json().getAsJsonObject().getAsJsonObject("meta");
-    }
-
     private static List<JsonObject> rows(CliRun run)
     {
-        return StreamSupport.stream(data(run).getAsJsonArray("items").spliterator(), false)
+        return StreamSupport.stream(run.items().spliterator(), false)
                         .map(JsonElement::getAsJsonObject).toList();
     }
 
@@ -187,7 +174,7 @@ public class AllocationCommandTest
     {
         var run = runClasses();
 
-        assertDecimal(data(run).get("total"), "100222");
+        assertDecimal(run.data().get("total"), "100222");
         assertDecimal(row(run, "Equity").get("value"), "1311");
         assertDecimal(row(run, "Europe").get("value"), "1200");
         assertDecimal(row(run, "America").get("value"), "0");
@@ -259,8 +246,8 @@ public class AllocationCommandTest
         var run = run("--taxonomy", "Nope", "--date", DATE);
 
         assertThat(run.stdout, run.exitCode, is(1));
-        assertThat(run.json().getAsJsonObject().get("code").getAsString(), is("reference-not-found"));
-        assertThat(run.json().getAsJsonObject().get("option").getAsString(), is("taxonomy"));
+        assertThat(run.code(), is("reference-not-found"));
+        assertThat(run.problem().get("option").getAsString(), is("taxonomy"));
     }
 
     @Test
@@ -270,8 +257,8 @@ public class AllocationCommandTest
 
         var run = run("--taxonomy", "Classes", "--date", DATE);
         assertThat(run.stdout, run.exitCode, is(1));
-        assertThat(run.json().getAsJsonObject().get("code").getAsString(), is("reference-ambiguous"));
-        assertThat(run.json().getAsJsonObject().getAsJsonArray("candidates").size(), is(2));
+        assertThat(run.code(), is("reference-ambiguous"));
+        assertThat(run.problem().getAsJsonArray("candidates").size(), is(2));
 
         var byUuid = run("--taxonomy", twin.getId(), "--date", DATE);
         assertThat(byUuid.stdout, byUuid.exitCode, is(0));
@@ -286,17 +273,6 @@ public class AllocationCommandTest
         assertThat(run.stdout, run.exitCode, is(2));
     }
 
-    private List<JsonObject> warnings(CliRun run, String code)
-    {
-        var warnings = new ArrayList<JsonObject>();
-        for (var warning : run.json().getAsJsonObject().getAsJsonArray("warnings"))
-        {
-            if (warning.getAsJsonObject().get("code").getAsString().equals(code))
-                warnings.add(warning.getAsJsonObject());
-        }
-        return warnings;
-    }
-
     @Test
     public void metaEchoesTheDateTheCurrencyAndTheResolvedTaxonomy() throws IOException
     {
@@ -304,11 +280,11 @@ public class AllocationCommandTest
 
         assertThat(run.stdout, run.exitCode, is(0));
         // the clock says 2026-10-16
-        assertThat(meta(run).get("date").getAsString(), is("2026-10-16"));
-        assertThat(meta(run).get("currency").getAsString(), is("EUR"));
-        assertThat(meta(run).getAsJsonObject("taxonomy").get("uuid").getAsString(), is(classes.getId()));
-        assertThat(meta(run).getAsJsonObject("taxonomy").get("name").getAsString(), is("Classes"));
-        assertThat(meta(run).has("exchangeRates"), is(false));
+        assertThat(run.meta().get("date").getAsString(), is("2026-10-16"));
+        assertThat(run.meta().get("currency").getAsString(), is("EUR"));
+        assertThat(run.meta().getAsJsonObject("taxonomy").get("uuid").getAsString(), is(classes.getId()));
+        assertThat(run.meta().getAsJsonObject("taxonomy").get("name").getAsString(), is("Classes"));
+        assertThat(run.meta().has("exchangeRates"), is(false));
     }
 
     @Test
@@ -321,11 +297,11 @@ public class AllocationCommandTest
         var run = run(Map.of("PP_ECB_RATES", cache.toString()), "--taxonomy", "Classes", "--date", DATE, "--currency",
                         "USD");
         assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(meta(run).get("currency").getAsString(), is("USD"));
-        assertThat(meta(run).getAsJsonObject("exchangeRates").get("path").getAsString(), is(cache.toString()));
+        assertThat(run.meta().get("currency").getAsString(), is("USD"));
+        assertThat(run.meta().getAsJsonObject("exchangeRates").get("path").getAsString(), is(cache.toString()));
 
         var core = ClientSnapshot.create(client, CoreRates.converter("USD", usd), LocalDate.parse(DATE));
-        assertThat(data(run).get("total").getAsBigDecimal()
+        assertThat(run.data().get("total").getAsBigDecimal()
                         .compareTo(amount(core.getMonetaryAssets().getAmount())), is(0));
 
         for (var category : core.groupByTaxonomy(classes).asList())
@@ -367,7 +343,7 @@ public class AllocationCommandTest
         var run = run(Map.of("PP_ECB_RATES", cache.toString()), "--taxonomy", "Classes", "--date", DATE);
         assertThat(run.stdout, run.exitCode, is(0));
 
-        assertThat(data(run).has("total"), is(false));
+        assertThat(run.data().has("total"), is(false));
         assertThat(rows(run).size(), is(6));
         for (var row : rows(run))
         {
@@ -377,7 +353,7 @@ public class AllocationCommandTest
         assertThat(row(run, "Europe").get("uuid").getAsString(), is(europe.getId()));
         assertThat(rows(run).get(5).get("unassigned").getAsBoolean(), is(true));
 
-        var missing = warnings(run, "exchange-rate-missing");
+        var missing = run.warnings("exchange-rate-missing");
         assertThat(missing.size(), is(1));
         assertThat(missing.get(0).get("baseCurrency").getAsString(), is("USD"));
         assertThat(missing.get(0).get("termCurrency").getAsString(), is("EUR"));
@@ -393,7 +369,7 @@ public class AllocationCommandTest
         var run = run("--taxonomy", "Plain");
         assertThat(run.stdout, run.exitCode, is(0));
 
-        assertDecimal(data(run).get("total"), "0");
+        assertDecimal(run.data().get("total"), "0");
         assertThat(rows(run).size(), is(2));
         for (var row : rows(run))
         {
@@ -420,7 +396,7 @@ public class AllocationCommandTest
         var run = runClasses();
         assertThat(run.stdout, run.exitCode, is(0));
 
-        assertDecimal(data(run).get("total"), "700");
+        assertDecimal(run.data().get("total"), "700");
         assertDecimal(row(run, "Unassigned").get("value"), "-500");
         assertThat(row(run, "Unassigned").get("share").getAsDouble(), closeTo(-500.0 / 700.0, 1e-12));
         assertThat(row(run, "Only").get("share").getAsDouble(), closeTo(1200.0 / 700.0, 1e-12));
@@ -447,7 +423,7 @@ public class AllocationCommandTest
                             is(0));
         }
 
-        var warnings = warnings(run, "over-assigned");
+        var warnings = run.warnings("over-assigned");
         assertThat(warnings.size(), is(1));
         assertThat(warnings.get(0).get("instrument").getAsString(), is(alpha.getUUID()));
         assertDecimal(warnings.get(0).get("totalWeight"), "1.5");
@@ -460,7 +436,7 @@ public class AllocationCommandTest
         assign(bonds, cash);
         assign(empty, cash, 20);
 
-        var warnings = warnings(runClasses(), "over-assigned");
+        var warnings = runClasses().warnings("over-assigned");
 
         assertThat(warnings.size(), is(1));
         assertThat(warnings.get(0).get("cashAccount").getAsString(), is(cash.getUUID()));
@@ -477,7 +453,7 @@ public class AllocationCommandTest
 
         var run = runClasses();
 
-        assertThat(warnings(run, "over-assigned").size(), is(0));
+        assertThat(run.warnings("over-assigned").size(), is(0));
     }
 
     @Test
@@ -486,13 +462,13 @@ public class AllocationCommandTest
         var run = runClassesAt("2026-03-20");
         assertThat(run.stdout, run.exitCode, is(0));
 
-        var stale = warnings(run, "stale-price");
+        var stale = run.warnings("stale-price");
         assertThat(stale.size(), is(2));
         assertThat(stale.stream().map(w -> w.get("instrument").getAsString()).sorted().toList(),
                         is(List.of(alpha.getUUID(), beta.getUUID()).stream().sorted().toList()));
         assertThat(stale.get(0).get("ageDays").getAsInt(), is(19));
 
-        assertThat(warnings(runClasses(), "stale-price").size(), is(0));
+        assertThat(runClasses().warnings("stale-price").size(), is(0));
     }
 
     @Test

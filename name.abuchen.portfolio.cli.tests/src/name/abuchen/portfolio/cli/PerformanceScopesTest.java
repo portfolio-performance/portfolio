@@ -53,6 +53,8 @@ public class PerformanceScopesTest
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
+    private final CliFixture cli = new CliFixture(folder);
+
     private Client client;
     private Security alpha;
     private Security beta;
@@ -107,11 +109,7 @@ public class PerformanceScopesTest
 
     private CliRun run(String... options) throws IOException
     {
-        var file = ClientFiles.xml(folder.getRoot().toPath(), client);
-
-        var args = new ArrayList<String>(List.of("performance", "--file", file.getPath()));
-        args.addAll(List.of(options));
-        return CliRun.runOn("Linux", Map.of(), args.toArray(String[]::new));
+        return cli.save(client).run("performance", options);
     }
 
     private CliRun runOverTheYear(String... options) throws IOException
@@ -119,16 +117,6 @@ public class PerformanceScopesTest
         var args = new ArrayList<String>(List.of("--from", FROM, "--to", TO));
         args.addAll(List.of(options));
         return run(args.toArray(String[]::new));
-    }
-
-    private static JsonObject data(CliRun run)
-    {
-        return run.json().getAsJsonObject().getAsJsonObject("data");
-    }
-
-    private static JsonObject meta(CliRun run)
-    {
-        return run.json().getAsJsonObject().getAsJsonObject("meta");
     }
 
     private static Interval interval()
@@ -150,7 +138,7 @@ public class PerformanceScopesTest
     {
         assertThat(run.stdout, run.exitCode, is(0));
 
-        var data = data(run);
+        var data = run.data();
         var snapshot = index.getClientPerformanceSnapshot(true).orElseThrow();
 
         assertThat(data.get("irr").getAsDouble(), closeTo(snapshot.getPerformanceIRR(), EPSILON));
@@ -166,8 +154,8 @@ public class PerformanceScopesTest
         var run = runOverTheYear();
 
         assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(meta(run).getAsJsonObject("scope").keySet(), is(Set.of("kind")));
-        assertThat(meta(run).getAsJsonObject("scope").get("kind").getAsString(), is("client"));
+        assertThat(run.meta().getAsJsonObject("scope").keySet(), is(Set.of("kind")));
+        assertThat(run.meta().getAsJsonObject("scope").get("kind").getAsString(), is("client"));
     }
 
     @Test
@@ -177,7 +165,7 @@ public class PerformanceScopesTest
 
         assertMatchesCore(run, PerformanceIndex.        forPortfolio(client, converter(), depot, interval(), new ArrayList<>()));
 
-        var scope = meta(run).getAsJsonObject("scope");
+        var scope = run.meta().getAsJsonObject("scope");
         assertThat(scope.get("kind").getAsString(), is("investment-account"));
         assertThat(scope.get("uuid").getAsString(), is(depot.getUUID()));
         assertThat(scope.get("name").getAsString(), is("Depot"));
@@ -190,7 +178,7 @@ public class PerformanceScopesTest
         var byName = runOverTheYear("--investment-account", "Depot Two");
         var byUuid = runOverTheYear("--investment-account", depotTwo.getUUID());
 
-        assertThat(data(byName), is(data(byUuid)));
+        assertThat(byName.data(), is(byUuid.data()));
     }
 
     @Test
@@ -204,7 +192,7 @@ public class PerformanceScopesTest
         assertThat(PerformanceIndex.forPortfolio(client, converter(), depot, interval(), new ArrayList<>())
                         .getFinalAccumulatedPercentage() != index.getFinalAccumulatedPercentage(), is(true));
 
-        var scope = meta(run).getAsJsonObject("scope");
+        var scope = run.meta().getAsJsonObject("scope");
         assertThat(scope.get("uuid").getAsString(), is(depot.getUUID()));
         assertThat(scope.getAsJsonObject("referenceCashAccount").get("uuid").getAsString(), is(cash.getUUID()));
         assertThat(scope.getAsJsonObject("referenceCashAccount").get("name").getAsString(), is("Cash"));
@@ -220,7 +208,7 @@ public class PerformanceScopesTest
         var run = runOverTheYear("--investment-account", "Orphan", "--with-reference-cash-account");
 
         assertThat(run.stdout, run.exitCode, is(1));
-        var error = run.json().getAsJsonObject();
+        var error = run.problem();
         assertThat(error.get("code").getAsString(), is("no-reference-cash-account"));
         assertThat(error.get("status").getAsInt(), is(422));
         assertThat(error.get("uuid").getAsString(), is(orphan.getUUID()));
@@ -232,7 +220,7 @@ public class PerformanceScopesTest
         var run = runOverTheYear("--with-reference-cash-account");
 
         assertThat(run.stdout, run.exitCode, is(2));
-        assertThat(run.json().getAsJsonObject().get("code").getAsString(), is("option-required"));
+        assertThat(run.code(), is("option-required"));
     }
 
     @Test
@@ -243,7 +231,7 @@ public class PerformanceScopesTest
         assertMatchesCore(run, PerformanceIndex.forAccount(client, converter(), cashTwo, interval(),
                         new ArrayList<>()));
 
-        var scope = meta(run).getAsJsonObject("scope");
+        var scope = run.meta().getAsJsonObject("scope");
         assertThat(scope.get("kind").getAsString(), is("cash-account"));
         assertThat(scope.get("uuid").getAsString(), is(cashTwo.getUUID()));
         assertThat(scope.get("name").getAsString(), is("Cash Two"));
@@ -257,7 +245,7 @@ public class PerformanceScopesTest
         assertMatchesCore(run, PerformanceIndex.forInvestment(client, converter(), alpha, interval(),
                         new ArrayList<>()));
 
-        var scope = meta(run).getAsJsonObject("scope");
+        var scope = run.meta().getAsJsonObject("scope");
         assertThat(scope.get("kind").getAsString(), is("instrument"));
         assertThat(scope.get("uuid").getAsString(), is(alpha.getUUID()));
         assertThat(scope.get("name").getAsString(), is("Alpha"));
@@ -269,11 +257,11 @@ public class PerformanceScopesTest
         var run = runOverTheYear("--instrument", quiet.getUUID());
 
         assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(data(run).keySet(), is(Set.of("currencyCode")));
-        assertThat(data(run).get("currencyCode").getAsString(), is("EUR"));
-        assertThat(meta(run).getAsJsonObject("scope").get("kind").getAsString(), is("instrument"));
+        assertThat(run.data().keySet(), is(Set.of("currencyCode")));
+        assertThat(run.data().get("currencyCode").getAsString(), is("EUR"));
+        assertThat(run.meta().getAsJsonObject("scope").get("kind").getAsString(), is("instrument"));
 
-        var warnings = warnings(run, "no-activity-in-period");
+        var warnings = run.warnings("no-activity-in-period");
         assertThat(warnings.size(), is(1));
         assertThat(warnings.get(0).get("uuid").getAsString(), is(quiet.getUUID()));
         assertThat(warnings.get(0).get("name").getAsString(), is("Quiet"));
@@ -284,13 +272,13 @@ public class PerformanceScopesTest
     {
         var before = run("--from", "2025-06-01", "--to", "2025-12-31", "--instrument", "Alpha");
         assertThat(before.stdout, before.exitCode, is(0));
-        assertThat(warnings(before, "no-activity-in-period").size(), is(1));
+        assertThat(before.warnings("no-activity-in-period").size(), is(1));
 
         // no transaction in the period, but 15 shares are held at its start and end
         var held = run("--from", "2026-03-02", "--to", "2026-06-30", "--instrument", "Alpha");
         assertThat(held.stdout, held.exitCode, is(0));
-        assertThat(warnings(held, "no-activity-in-period").size(), is(0));
-        assertThat(data(held).get("finalValue").getAsBigDecimal().signum(), is(1));
+        assertThat(held.warnings("no-activity-in-period").size(), is(0));
+        assertThat(held.data().get("finalValue").getAsBigDecimal().signum(), is(1));
     }
 
     @Test
@@ -309,26 +297,16 @@ public class PerformanceScopesTest
                 var run = runOverTheYear(args.toArray(String[]::new));
 
                 assertThat(args + ": " + run.stdout, run.exitCode, is(2));
-                assertThat(args.toString(), run.json().getAsJsonObject().get("code").getAsString(),
+                assertThat(args.toString(), run.code(),
                                 is("conflicting-options"));
             }
         }
     }
 
-    private static List<JsonObject> warnings(CliRun run, String code)
-    {
-        var found = new ArrayList<JsonObject>();
-        run.json().getAsJsonObject().getAsJsonArray("warnings").forEach(w -> {
-            if (w.getAsJsonObject().get("code").getAsString().equals(code))
-                found.add(w.getAsJsonObject());
-        });
-        return found;
-    }
-
     private static List<JsonObject> items(CliRun run)
     {
         var found = new ArrayList<JsonObject>();
-        data(run).getAsJsonArray("items").forEach(item -> found.add(item.getAsJsonObject()));
+        run.items().forEach(item -> found.add(item.getAsJsonObject()));
         return found;
     }
 
@@ -373,9 +351,9 @@ public class PerformanceScopesTest
         var run = run("--from", "2026-03-02", "--to", TO, "--by", "instrument");
 
         assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(data(run).keySet(), is(Set.of("currencyCode", "items")));
-        assertThat(data(run).get("currencyCode").getAsString(), is("EUR"));
-        assertThat(meta(run).getAsJsonObject("scope").get("kind").getAsString(), is("client"));
+        assertThat(run.data().keySet(), is(Set.of("currencyCode", "items")));
+        assertThat(run.data().get("currencyCode").getAsString(), is("EUR"));
+        assertThat(run.meta().getAsJsonObject("scope").get("kind").getAsString(), is("client"));
 
         var interval = Interval.of(LocalDate.parse("2026-03-01"), LocalDate.parse(TO));
         var core = coreSnapshot(client, interval);
@@ -402,7 +380,7 @@ public class PerformanceScopesTest
         assertThat(items(run).stream().map(item -> item.get("name").getAsString()).toList(),
                         is(List.of("Alpha", "Beta")));
         assertThat(item(run, alpha).get("dividends").getAsBigDecimal().compareTo(new BigDecimal("50")), is(0));
-        assertThat(warnings(run, "no-activity-in-period").size(), is(0));
+        assertThat(run.warnings("no-activity-in-period").size(), is(0));
     }
 
     @Test
@@ -440,7 +418,7 @@ public class PerformanceScopesTest
         var run = runOverTheYear("--investment-account", "Depot Two", "--by", "instrument");
 
         assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(meta(run).getAsJsonObject("scope").get("uuid").getAsString(), is(depotTwo.getUUID()));
+        assertThat(run.meta().getAsJsonObject("scope").get("uuid").getAsString(), is(depotTwo.getUUID()));
 
         var narrowed = new PortfolioClientFilter(depotTwo).filter(client);
         var core = coreSnapshot(narrowed, interval());
@@ -460,7 +438,7 @@ public class PerformanceScopesTest
 
         var narrowed = new PortfolioClientFilter(depot, cash).filter(client);
         assertItemMatchesCore(item(with, alpha), coreSnapshot(narrowed, interval()).getRecord(alpha).orElseThrow());
-        assertThat(meta(with).getAsJsonObject("scope").has("referenceCashAccount"), is(true));
+        assertThat(with.meta().getAsJsonObject("scope").has("referenceCashAccount"), is(true));
     }
 
     @Test
@@ -469,7 +447,7 @@ public class PerformanceScopesTest
         var run = runOverTheYear("--by", "account");
 
         assertThat(run.stdout, run.exitCode, is(2));
-        assertThat(run.json().getAsJsonObject().get("code").getAsString(), is("invalid-option-value"));
+        assertThat(run.code(), is("invalid-option-value"));
     }
 
     @Test
@@ -501,14 +479,13 @@ public class PerformanceScopesTest
     private CliRun runWithoutRates() throws IOException
     {
         var missingCache = folder.getRoot().toPath().resolve("missing").resolve("ecb_exchange_rates.pb");
-        return CliRun.runOn("Linux", Map.of("PP_ECB_RATES", missingCache.toString()), "performance", "--file",
-                        ClientFiles.xml(folder.getRoot().toPath(), client).getPath(), "--from", FROM, "--to", TO,
-                        "--by", "instrument");
+        return cli.save(client).run(Map.of("PP_ECB_RATES", missingCache.toString()), "performance", "--from", FROM,
+                        "--to", TO, "--by", "instrument");
     }
 
     private static int pairCount(CliRun run, String base, String term)
     {
-        return warnings(run, "exchange-rate-missing").stream()
+        return run.warnings("exchange-rate-missing").stream()
                         .filter(w -> w.get("baseCurrency").getAsString().equals(base)
                                         && w.get("termCurrency").getAsString().equals(term))
                         .mapToInt(w -> w.get("count").getAsInt()).sum();
@@ -535,7 +512,7 @@ public class PerformanceScopesTest
         assertThat(item(run, alpha).has("ttwror"), is(true));
         assertThat(item(run, beta).has("absoluteGain"), is(true));
 
-        var missing = warnings(run, "exchange-rate-missing");
+        var missing = run.warnings("exchange-rate-missing");
         // the instrument costs euros and is valued in dollars: both directions are needed
         assertThat(missing.toString(), missing.isEmpty(), is(false));
         for (var warning : missing)
@@ -550,7 +527,7 @@ public class PerformanceScopesTest
 
         for (var item : items(run))
             assertThat(item.get("name").getAsString(), item.has("absoluteGain"), is(true));
-        assertThat(run.json().getAsJsonObject().getAsJsonArray("warnings").size(), is(0));
+        assertThat(run.warnings().size(), is(0));
     }
 
     @Test
@@ -564,7 +541,7 @@ public class PerformanceScopesTest
             var run = runOverTheYear(args.toArray(String[]::new));
 
             assertThat(scope + ": " + run.stdout, run.exitCode, is(2));
-            assertThat(scope.toString(), run.json().getAsJsonObject().get("code").getAsString(),
+            assertThat(scope.toString(), run.code(),
                             is("conflicting-options"));
         }
     }

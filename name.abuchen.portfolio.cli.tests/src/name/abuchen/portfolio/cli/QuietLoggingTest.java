@@ -5,8 +5,6 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,12 +24,14 @@ public class QuietLoggingTest
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
+    private final CliFixture cli = new CliFixture(folder);
+
     private Path file;
 
     @Before
     public void setUp() throws IOException
     {
-        file = ClientFiles.xml(folder.getRoot().toPath()).toPath();
+        file = cli.use(ClientFiles.xml(cli.clientFolder())).file().toPath();
     }
 
     private static void assertSingleJsonDocument(CliRun run)
@@ -44,7 +44,7 @@ public class QuietLoggingTest
     @Test
     public void infoWritesNothingToStderrByDefault()
     {
-        var run = CliRun.run("info", "--file", file.toString());
+        var run = cli.run("info");
 
         assertThat(run.exitCode, is(0));
         assertThat(run.stderr, is(""));
@@ -58,9 +58,7 @@ public class QuietLoggingTest
      */
     private CliRun applyLoggingFromCore(String... more) throws IOException
     {
-        var input = Files.writeString(folder.getRoot().toPath().resolve("batch.json"),
-                        "{\"operations\":[{\"operation\":\"instrument.add\",\"name\":\"ACME\"}]}",
-                        StandardCharsets.UTF_8);
+        var input = cli.batch(CliFixture.ADD_ACME);
         var logging = new WriteEnvironment()
         {
             @Override
@@ -106,7 +104,7 @@ public class QuietLoggingTest
     @Test
     public void verboseRunOfInfoStillHoldsOnlyJsonOnStdout()
     {
-        var run = CliRun.run("info", "--file", file.toString(), "--verbose");
+        var run = cli.run("info", "--verbose");
 
         assertThat(run.exitCode, is(0));
         assertSingleJsonDocument(run);
@@ -125,18 +123,16 @@ public class QuietLoggingTest
     @Test
     public void verboseIsASwitchWithoutValue()
     {
-        var run = CliRun.run("info", "--file", file.toString(), "--verbose=true");
+        var run = cli.run("info", "--verbose=true");
 
         assertThat(run.exitCode, is(2));
-        assertThat(run.json().getAsJsonObject().get("code").getAsString(), is("invalid-option-value"));
+        assertThat(run.code(), is("invalid-option-value"));
     }
 
     @Test
     public void internalErrorStillWritesItsStackTraceToStderr() throws IOException
     {
-        var input = Files.writeString(folder.getRoot().toPath().resolve("batch.json"),
-                        "{\"operations\":[{\"operation\":\"instrument.add\",\"name\":\"ACME\"}]}",
-                        StandardCharsets.UTF_8);
+        var input = cli.batch(CliFixture.ADD_ACME);
         var failingProbe = new WriteEnvironment()
         {
             @Override
@@ -151,7 +147,7 @@ public class QuietLoggingTest
 
         assertThat(run.exitCode, is(1));
         assertThat(run.stderr, containsString("java.lang.IllegalStateException: boom"));
-        assertThat(run.json().getAsJsonObject().get("code").getAsString(), is("internal-error"));
+        assertThat(run.code(), is("internal-error"));
         assertSingleJsonDocument(run);
     }
 }
