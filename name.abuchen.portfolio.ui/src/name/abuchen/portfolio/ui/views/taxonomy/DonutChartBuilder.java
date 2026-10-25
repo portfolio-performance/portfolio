@@ -50,7 +50,7 @@ public class DonutChartBuilder
             Node childNode = rootNode.addChild(id, getMoney(pair.getRight()).getAmount() / Values.Amount.divider());
             childNode.setData(pair.getRight());
 
-            Color color = Colors.getColor(ColorConversion.hex2RGB(pair.getLeft().getColor()));
+            Color color = Colors.getColor(ColorConversion.ensureVisible(ColorConversion.hex2RGB(pair.getLeft().getColor())));
             id2color.put(id, color);
         });
 

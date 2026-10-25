@@ -94,6 +94,44 @@ public class ColorConversionTest
     }
 
     @Test
+    public void testEnsureVisibleKeepsSaturatedColors()
+    {
+        RGB rgb = new RGB(18, 52, 86);
+        assertEquals(rgb, ColorConversion.ensureVisible(rgb));
+    }
+
+    @Test
+    public void testEnsureVisibleFixesNearWhiteColors()
+    {
+        RGB visible = ColorConversion.ensureVisible(new RGB(255, 255, 255));
+        float[] hsb = visible.getHSB();
+        assertTrue(hsb[1] >= 0.3f);
+        assertTrue(hsb[2] <= 0.85f);
+        assertTrue(visible.red != visible.green || visible.green != visible.blue);
+    }
+
+    @Test
+    public void testEnsureVisibleFixesNearBlackColors()
+    {
+        RGB visible = ColorConversion.ensureVisible(new RGB(10, 10, 10));
+        float[] hsb = visible.getHSB();
+        assertTrue(hsb[1] >= 0.3f);
+        assertTrue(hsb[2] >= 0.35f);
+    }
+
+    @Test
+    public void testEnsureVisibleFixesDarkSaturatedColors()
+    {
+        // nearly black red (#010000) is saturated but invisible on a dark
+        // background (issue #2829)
+        RGB visible = ColorConversion.ensureVisible(new RGB(1, 0, 0));
+        float[] hsb = visible.getHSB();
+        assertTrue(hsb[2] >= 0.35f);
+        assertTrue(hsb[1] >= 0.3f);
+        assertEquals(0f, hsb[0], 0.5f); // the hue (red) is preserved
+    }
+
+    @Test
     public void testBrighterRGB()
     {
         RGB rgb = new RGB(1, 2, 3);
