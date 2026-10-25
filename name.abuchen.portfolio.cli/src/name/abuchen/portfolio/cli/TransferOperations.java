@@ -26,21 +26,21 @@ final class TransferOperations
 
     static void add(OperationContext context)
     {
-        TransactionOperations.refuse(context, "investmentAccount", "cashAccount", "units", "grossAmount",
-                        "exDate");
+        var input = new TransactionInput(context);
+
+        input.refuse("investmentAccount", "cashAccount", "units", "grossAmount", "exDate");
 
         var kind = parseKind(context);
         var security = kind == TransactionRecord.TransferKind.CASH ? null
-                        : TransactionOperations.parseInstrument(context, true,
-                                        kind == TransactionRecord.TransferKind.SECURITY);
+                        : input.instrument(true, kind == TransactionRecord.TransferKind.SECURITY);
         if (kind == TransactionRecord.TransferKind.CASH)
         {
-            TransactionOperations.refuse(context, "instrument", "shares");
+            input.refuse("instrument", "shares");
             addCash(context);
         }
         else if (kind == TransactionRecord.TransferKind.SECURITY)
         {
-            TransactionOperations.refuse(context, "targetAmount", "exchangeRate");
+            input.refuse("targetAmount", "exchangeRate");
             addSecurity(context, security);
         }
     }
@@ -67,14 +67,14 @@ final class TransferOperations
 
     private static void addSecurity(OperationContext context, Security security)
     {
-        var input = context.input();
+        var input = new TransactionInput(context);
 
-        var from = TransactionOperations.parseInvestmentAccount(context, "from");
-        var to = TransactionOperations.parseInvestmentAccount(context, "to");
+        var from = input.investmentAccount("from");
+        var to = input.investmentAccount("to");
         rejectSameAccount(context, from, to);
 
-        var dateTime = TransactionOperations.parseDateTime(context);
-        var currencyCode = TransactionOperations.parseCurrency(context, null);
+        var dateTime = input.dateTime();
+        var currencyCode = input.currency(null);
         if (currencyCode != null && security != null && !currencyCode.equals(security.getCurrencyCode()))
         {
             context.fail("currencyCode", "currency-mismatch",
@@ -82,8 +82,8 @@ final class TransferOperations
                                             + currencyCode + ".");
             currencyCode = null;
         }
-        var amount = TransactionOperations.parseAmount(context, "amount", Values.Amount);
-        var shares = TransactionOperations.parseAmount(context, "shares", Values.Share);
+        var amount = input.amount("amount", Values.Amount);
+        var shares = input.amount("shares", Values.Share);
         var note = input.text("note");
         var source = input.text("source");
 
@@ -106,15 +106,15 @@ final class TransferOperations
 
     private static void addCash(OperationContext context)
     {
-        var input = context.input();
+        var input = new TransactionInput(context);
 
-        var from = TransactionOperations.parseCashAccount(context, "from");
-        var to = TransactionOperations.parseCashAccount(context, "to");
+        var from = input.cashAccount("from");
+        var to = input.cashAccount("to");
         rejectSameAccount(context, from, to);
 
-        var dateTime = TransactionOperations.parseDateTime(context);
-        var currencyCode = TransactionOperations.parseCurrency(context, from);
-        var amount = TransactionOperations.parseAmount(context, "amount", Values.Amount);
+        var dateTime = input.dateTime();
+        var currencyCode = input.currency(from);
+        var amount = input.amount("amount", Values.Amount);
         var note = input.text("note");
         var source = input.text("source");
 
@@ -123,12 +123,12 @@ final class TransferOperations
         BigDecimal rate = null;
         if (crossCurrency)
         {
-            targetAmount = TransactionOperations.parseAmount(context, "targetAmount", Values.Amount);
+            targetAmount = input.amount("targetAmount", Values.Amount);
             rate = checkedRate(context, amount, targetAmount, from.getCurrencyCode(), to.getCurrencyCode());
         }
         else if (from != null && to != null)
         {
-            TransactionOperations.refuse(context, "targetAmount", "exchangeRate");
+            input.refuse("targetAmount", "exchangeRate");
         }
 
         if (context.failed() || from == null || to == null || dateTime == null || currencyCode == null

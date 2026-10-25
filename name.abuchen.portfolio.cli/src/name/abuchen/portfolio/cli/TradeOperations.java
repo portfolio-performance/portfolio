@@ -19,24 +19,24 @@ final class TradeOperations
 
     static void add(OperationContext context, PortfolioTransaction.Type type)
     {
-        var input = context.input();
+        var input = new TransactionInput(context);
         var delivery = type == PortfolioTransaction.Type.DELIVERY_INBOUND
                         || type == PortfolioTransaction.Type.DELIVERY_OUTBOUND;
 
-        TransactionOperations.refuse(context, "kind", "from", "to", "targetAmount", "exchangeRate", "exDate");
+        input.refuse("kind", "from", "to", "targetAmount", "exchangeRate", "exDate");
         if (delivery)
-            TransactionOperations.refuse(context, "cashAccount");
+            input.refuse("cashAccount");
 
-        var portfolio = TransactionOperations.parseInvestmentAccount(context);
-        var account = delivery ? null : TransactionOperations.parseCashAccount(context);
-        var dateTime = TransactionOperations.parseDateTime(context);
-        var currencyCode = TransactionOperations.parseCurrency(context, account);
-        var amount = TransactionOperations.parseAmount(context, "amount", Values.Amount);
-        var security = TransactionOperations.parseInstrument(context, true, true);
-        var shares = TransactionOperations.parseAmount(context, "shares", Values.Share);
-        var units = TransactionOperations.parseUnits(context, currencyCode, security);
+        var portfolio = input.investmentAccount();
+        var account = delivery ? null : input.cashAccount();
+        var dateTime = input.dateTime();
+        var currencyCode = input.currency(account);
+        var amount = input.amount("amount", Values.Amount);
+        var security = input.instrument(true, true);
+        var shares = input.amount("shares", Values.Share);
+        var units = input.units(currencyCode, security);
 
-        TransactionOperations.parseGrossAmount(context, type.isLiquidation(), amount, units);
+        input.grossAmount(type.isLiquidation(), amount, units);
 
         var note = input.text("note");
         var source = input.text("source");
