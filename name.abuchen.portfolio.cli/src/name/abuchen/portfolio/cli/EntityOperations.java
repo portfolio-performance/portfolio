@@ -268,16 +268,12 @@ final class EntityOperations<T>
         }
 
         var uuid = member.getAsString();
-        var found = definition.all().apply(context.client()).stream()
-                        .filter(e -> uuid.equals(definition.uuid().apply(e)) && context.existedBeforeBatch(e))
-                        .findFirst();
-        if (found.isEmpty())
-        {
-            context.fail(UUID_MEMBER, "reference-not-found", "No " + kind + " with UUID " + uuid + " in the file.");
+        var found = context.input().find(UUID_MEMBER, uuid,
+                        new EntityKind<>(kind, definition.all(), definition.uuid()));
+        if (found == null)
             return null;
-        }
 
-        return context.claim(UUID_MEMBER, uuid) ? found.get() : null;
+        return context.claim(UUID_MEMBER, uuid) ? found : null;
     }
 
     /**

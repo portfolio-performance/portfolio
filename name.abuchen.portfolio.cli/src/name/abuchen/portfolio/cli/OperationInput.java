@@ -146,6 +146,25 @@ final class OperationInput
     }
 
     /**
+     * The existing entity whose UUID is the member, or null after reporting
+     * that the member is missing, is not a string or names no such entity.
+     */
+    <T> T existing(String member, EntityKind<T> kind, String requiredMessage)
+    {
+        var uuid = requiredText(member, requiredMessage);
+        return uuid == null ? null : find(member, uuid, kind);
+    }
+
+    /** The existing entity with the UUID, which the member gave, or null after reporting that there is none. */
+    <T> T find(String member, String uuid, EntityKind<T> kind)
+    {
+        var found = kind.find(context, uuid);
+        if (found.isEmpty())
+            fail(member, "reference-not-found", "No " + kind.noun() + " with UUID " + uuid + " in the file.");
+        return found.orElse(null);
+    }
+
+    /**
      * Hands a reader of each object in the array member to the consumer, in
      * order, and reports each element that is not an object.
      *

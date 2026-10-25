@@ -318,8 +318,7 @@ final class TransactionOperations
 
     static Account parseCashAccount(OperationContext context, String member)
     {
-        return find(context, member, "A transaction needs " + member + ".", "cash account",
-                        context.client().getAccounts(), Account::getUUID);
+        return context.input().existing(member, EntityKind.CASH_ACCOUNT, "A transaction needs " + member + ".");
     }
 
     static Portfolio parseInvestmentAccount(OperationContext context)
@@ -329,26 +328,7 @@ final class TransactionOperations
 
     static Portfolio parseInvestmentAccount(OperationContext context, String member)
     {
-        return find(context, member, "A transaction needs " + member + ".", "investment account",
-                        context.client().getPortfolios(), Portfolio::getUUID);
-    }
-
-    /** The entity of the UUID given in the member, which must have been in the file before the batch. */
-    static <T> T find(OperationContext context, String member, String requiredMessage, String noun,
-                    List<T> candidates, Function<T, String> uuidOf)
-    {
-        var uuid = context.input().requiredText(member, requiredMessage);
-        if (uuid == null)
-            return null;
-
-        var found = candidates.stream().filter(c -> uuid.equals(uuidOf.apply(c)) && context.existedBeforeBatch(c))
-                        .findFirst();
-        if (found.isEmpty())
-        {
-            context.fail(member, "reference-not-found", "No " + noun + " with UUID " + uuid + " in the file.");
-            return null;
-        }
-        return found.get();
+        return context.input().existing(member, EntityKind.INVESTMENT_ACCOUNT, "A transaction needs " + member + ".");
     }
 
     static LocalDateTime parseDateTime(OperationContext context)
@@ -422,14 +402,7 @@ final class TransactionOperations
             return null;
         }
 
-        var found = context.client().getSecurities().stream()
-                        .filter(s -> uuid.equals(s.getUUID()) && context.existedBeforeBatch(s)).findFirst();
-        if (found.isEmpty())
-        {
-            context.fail("instrument", "reference-not-found", "No instrument with UUID " + uuid + " in the file.");
-            return null;
-        }
-        return found.get();
+        return context.input().find("instrument", uuid, EntityKind.INSTRUMENT);
     }
 
     private static Long parseShares(OperationContext context, Type type)

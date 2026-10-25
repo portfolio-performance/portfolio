@@ -89,15 +89,12 @@ final class TaxonomyOperations
 
     private static Taxonomy parseTaxonomy(OperationContext context)
     {
-        return TransactionOperations.find(context, "taxonomy", "This operation needs the taxonomy.",
-                        "taxonomy", context.client().getTaxonomies(), Taxonomy::getId);
+        return context.input().existing("taxonomy", EntityKind.TAXONOMY, "This operation needs the taxonomy.");
     }
 
     private static Security parseInstrument(OperationContext context)
     {
-        return TransactionOperations.find(context, "instrument",
-                        "This operation needs the instrument.", "instrument", context.client().getSecurities(),
-                        Security::getUUID);
+        return context.input().existing("instrument", EntityKind.INSTRUMENT, "This operation needs the instrument.");
     }
 
     /** The placements, or null if the list itself is unusable; problems of single entries are reported. */

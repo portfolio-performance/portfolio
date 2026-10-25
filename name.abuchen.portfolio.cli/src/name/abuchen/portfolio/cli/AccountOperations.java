@@ -2,7 +2,6 @@ package name.abuchen.portfolio.cli;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
@@ -74,8 +73,8 @@ final class AccountOperations
 
     private static void validateInvestment(OperationContext context, Map<String, Object> values, Portfolio existing)
     {
-        if (values.get(REFERENCE) instanceof String uuid && referenceFor(context, uuid).isEmpty())
-            context.fail(REFERENCE, "reference-not-found", "No cash account with UUID " + uuid + " in the file.");
+        if (values.get(REFERENCE) instanceof String uuid)
+            context.input().find(REFERENCE, uuid, EntityKind.CASH_ACCOUNT);
     }
 
     private static Object referenceUuid(Portfolio portfolio)
@@ -86,13 +85,6 @@ final class AccountOperations
     /** The validator has already made sure that the cash account exists. */
     private static void setReference(OperationContext context, Portfolio portfolio, Object uuid)
     {
-        portfolio.setReferenceAccount(referenceFor(context, (String) uuid).orElseThrow());
-    }
-
-    /** The cash account with the UUID, if it was in the file before the batch. */
-    private static Optional<Account> referenceFor(OperationContext context, String uuid)
-    {
-        return context.client().getAccounts().stream()
-                        .filter(a -> uuid.equals(a.getUUID()) && context.existedBeforeBatch(a)).findFirst();
+        portfolio.setReferenceAccount(EntityKind.CASH_ACCOUNT.find(context, (String) uuid).orElseThrow());
     }
 }

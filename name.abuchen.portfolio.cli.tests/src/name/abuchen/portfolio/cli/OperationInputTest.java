@@ -14,6 +14,7 @@ import org.junit.Test;
 import com.google.gson.JsonParser;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
 
 /**
@@ -28,7 +29,8 @@ public class OperationInputTest
     private static final Schema PROBE_SCHEMA = Schema.object("A probe.")
                     .property(ApplyBatch.OPERATION_MEMBER, Schema.enumOf("Operation name.", List.of("probe")))
                     .optionalProperty("name", Schema.string("A name."))
-                    .optionalProperty("items", Schema.array("Items.", ITEM_SCHEMA));
+                    .optionalProperty("items", Schema.array("Items.", ITEM_SCHEMA))
+                    .optionalProperty("instrument", Schema.string("UUID of an instrument."));
 
     private final Client client = new Client();
     private final List<Object> values = new ArrayList<>();
@@ -156,5 +158,43 @@ public class OperationInputTest
                         context -> values.add(context.input().eachObject("items", "", item -> values.add(item)))),
                         contains("items/invalid-type/The items must be an array."));
         assertThat(values, contains(false, false));
+    }
+
+    @Test
+    public void anExistingEntityIsFoundByItsUuid()
+    {
+        var security = new Security("ACME", "EUR");
+        client.addSecurity(security);
+
+        var failures = run("{\"operation\":\"probe\",\"instrument\":\"" + security.getUUID() + "\"}",
+                        context -> values.add(context.input().existing("instrument", EntityKind.INSTRUMENT,
+                                        "A probe needs an instrument.")));
+
+        assertThat(failures, is(empty()));
+        assertThat(values, contains(security));
+    }
+
+    @Test
+    public void anEntityAddedEarlierInTheBatchIsNotAnExistingEntity()
+    {
+        var added = new Security("ACME", "EUR");
+
+        var failures = run("{\"operation\":\"probe\",\"instrument\":\"" + added.getUUID() + "\"}", context -> {
+            context.client().addSecurity(added);
+            values.add(context.input().existing("instrument", EntityKind.INSTRUMENT, "A probe needs an instrument."));
+        });
+
+        assertThat(failures, contains("instrument/reference-not-found/No instrument with UUID " + added.getUUID()
+                        + " in the file."));
+        assertThat(values, contains((Object) null));
+    }
+
+    @Test
+    public void aMissingExistingEntityIsRequired()
+    {
+        assertThat(run("{\"operation\":\"probe\"}",
+                        context -> context.input().existing("instrument", EntityKind.INSTRUMENT,
+                                        "A probe needs an instrument.")),
+                        contains("instrument/required/A probe needs an instrument."));
     }
 }
