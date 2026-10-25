@@ -97,6 +97,10 @@ _Avoid_: custom field, property
 A string an agent uses to name one **Master data** entity or **Taxonomy**: its UUID (canonical), or as a read-only convenience an ISIN, ticker or exact name. Unrelated to **Reference cash account**.
 _Avoid_: identifier, selector, lookup key
 
+**Existing entity**:
+A **Master data** entity, **Taxonomy** or **Transaction record** that a write operation names by UUID and that was already in the **Client file** when the batch started; one created by an earlier operation of the same batch is not existing. Unlike a **Reference**, it is always a UUID.
+_Avoid_: pre-batch entity, reference (on the write side), target
+
 **Price**:
 The value of one unit of an **Instrument** on a date, in the instrument's currency.
 _Avoid_: quote, rate
