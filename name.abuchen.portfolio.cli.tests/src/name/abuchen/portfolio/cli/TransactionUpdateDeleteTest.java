@@ -3,16 +3,21 @@ package name.abuchen.portfolio.cli;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThrows;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
+import com.google.gson.JsonParser;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -421,6 +426,40 @@ public class TransactionUpdateDeleteTest
         assertThat(run.exitCode, is(1));
         assertThat(run.failure(0).get("operationIndex").getAsInt(), is(1));
         assertThat(run.failure(0).get("code").getAsString(), is("duplicate-target"));
+    }
+
+    /**
+     * A record created by an earlier operation of the batch is not an existing
+     * entity, so it can't be changed in the same batch. The CLI can't name such
+     * a record, because a new UUID is only known from the response; a probe
+     * operation creates one with a known UUID instead.
+     */
+    @Test
+    public void refusesToChangeARecordCreatedEarlierInTheBatch()
+    {
+        for (var operation : List.of("transaction.update", "transaction.delete"))
+        {
+            var deposit = new AccountTransaction(TransactionFixtures.at("2026-03-02"), "EUR", 100_000, null,
+                            AccountTransaction.Type.DEPOSIT);
+            var probe = new OperationSpec("probe", "Adds the deposit.",
+                            Schema.object("A probe.").property(ApplyBatch.OPERATION_MEMBER,
+                                            Schema.enumOf("Operation name.", List.of("probe"))),
+                            context -> eur.addTransaction(deposit));
+            var specs = new ArrayList<>(TransactionOperations.ALL);
+            specs.add(probe);
+
+            var batch = JsonParser.parseString("[{\"operation\":\"probe\"},{\"operation\":\"" + operation
+                            + "\",\"uuid\":\"" + deposit.getUUID() + "\"}]").getAsJsonArray();
+            var e = assertThrows(CliException.class, () -> ApplyBatch.run(client, batch, specs));
+
+            @SuppressWarnings("unchecked")
+            var failures = (List<Map<String, Object>>) e.toProblem().get("failures");
+            assertThat(operation, failures.size(), is(1));
+            assertThat(failures.get(0).get("field"), is("uuid"));
+            assertThat(failures.get(0).get("code"), is("reference-not-found"));
+            assertThat(failures.get(0).get("message"),
+                            is("No transaction with UUID " + deposit.getUUID() + " in the file."));
+        }
     }
 
     @Test

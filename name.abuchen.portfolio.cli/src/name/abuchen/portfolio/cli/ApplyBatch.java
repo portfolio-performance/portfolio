@@ -36,6 +36,8 @@ final class ApplyBatch
         existedBeforeBatch.addAll(client.getAccounts());
         existedBeforeBatch.addAll(client.getPortfolios());
         existedBeforeBatch.addAll(client.getTaxonomies());
+        client.getAccounts().forEach(account -> existedBeforeBatch.addAll(account.getTransactions()));
+        client.getPortfolios().forEach(portfolio -> existedBeforeBatch.addAll(portfolio.getTransactions()));
     }
 
     /**

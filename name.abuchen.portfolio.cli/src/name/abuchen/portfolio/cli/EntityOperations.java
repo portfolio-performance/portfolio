@@ -269,7 +269,7 @@ final class EntityOperations<T>
 
         var uuid = member.getAsString();
         var found = context.input().find(UUID_MEMBER, uuid,
-                        new EntityKind<>(kind, definition.all(), definition.uuid()));
+                        EntityKind.of(kind, definition.all(), definition.uuid()));
         if (found == null)
             return null;
 

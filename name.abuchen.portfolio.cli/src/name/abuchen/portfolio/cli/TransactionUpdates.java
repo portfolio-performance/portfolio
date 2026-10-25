@@ -97,16 +97,11 @@ final class TransactionUpdates
             return null;
         }
 
-        var uuid = member.getAsString();
-        var client = context.client();
-        var found = TransactionRecord.allOf(client).stream().filter(r -> r.sides().contains(uuid)).findFirst();
-        if (found.isEmpty())
-        {
-            context.fail(UUID_MEMBER, "reference-not-found", "No transaction with UUID " + uuid + " in the file.");
+        var record = context.input().find(UUID_MEMBER, member.getAsString(), EntityKind.TRANSACTION_RECORD);
+        if (record == null)
             return null;
-        }
 
-        var record = found.get();
+        var client = context.client();
         for (var side : record.sides())
         {
             if (!context.claim(UUID_MEMBER, side))
