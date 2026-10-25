@@ -14,6 +14,7 @@ import org.junit.Test;
 import com.google.gson.JsonParser;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.money.Values;
 
 /**
  * The reading of one operation's input, seen from an operation in a batch: the
@@ -22,9 +23,12 @@ import name.abuchen.portfolio.model.Client;
 @SuppressWarnings("nls")
 public class OperationInputTest
 {
+    private static final Schema ITEM_SCHEMA = Schema.object("An item.").property("size", Schema.number("A size."));
+
     private static final Schema PROBE_SCHEMA = Schema.object("A probe.")
                     .property(ApplyBatch.OPERATION_MEMBER, Schema.enumOf("Operation name.", List.of("probe")))
-                    .optionalProperty("name", Schema.string("A name."));
+                    .optionalProperty("name", Schema.string("A name."))
+                    .optionalProperty("items", Schema.array("Items.", ITEM_SCHEMA));
 
     private final Client client = new Client();
     private final List<Object> values = new ArrayList<>();
@@ -62,5 +66,95 @@ public class OperationInputTest
     {
         assertThat(run("{\"operation\":\"probe\",\"name\":\"x\"}", context -> {
         }), is(empty()));
+    }
+
+    @Test
+    public void aBlankOrMissingTextIsReadAsNull()
+    {
+        var failures = run("{\"operation\":\"probe\",\"name\":\"  \"}", context -> {
+            values.add(context.input().text("name"));
+            values.add(context.input().text("note"));
+        });
+
+        assertThat(failures, is(empty()));
+        assertThat(values, contains(null, null));
+    }
+
+    @Test
+    public void aTextThatIsNotAStringIsAnInvalidType()
+    {
+        var failures = run("{\"operation\":\"probe\",\"name\":7}", context -> values.add(context.input().text("name")));
+
+        assertThat(failures, contains("name/invalid-type/The name must be a string."));
+        assertThat(values, contains((Object) null));
+    }
+
+    @Test
+    public void aRequiredTextThatIsMissingOrBlankIsRequiredButAWrongTypeIsReportedOnce()
+    {
+        assertThat(run("{\"operation\":\"probe\",\"name\":\"\"}",
+                        context -> context.input().requiredText("name", "A probe needs a name.")),
+                        contains("name/required/A probe needs a name."));
+        assertThat(run("{\"operation\":\"probe\"}",
+                        context -> context.input().requiredText("name", "A probe needs a name.")),
+                        contains("name/required/A probe needs a name."));
+        assertThat(run("{\"operation\":\"probe\",\"name\":[]}",
+                        context -> context.input().requiredText("name", "A probe needs a name.")),
+                        contains("name/invalid-type/The name must be a string."));
+    }
+
+    @Test
+    public void aNumberMustBeANumberAndPositiveIfAsked()
+    {
+        assertThat(run("{\"operation\":\"probe\",\"name\":\"7\"}",
+                        context -> context.input().number("name", null, false)),
+                        contains("name/invalid-type/The name must be a number."));
+        assertThat(run("{\"operation\":\"probe\",\"name\":0}", context -> context.input().number("name", null, true)),
+                        contains("name/not-positive/The name must be positive."));
+        assertThat(run("{\"operation\":\"probe\"}", context -> context.input().number("name", "A probe needs a name.", true)),
+                        contains("name/required/A probe needs a name."));
+        assertThat(run("{\"operation\":\"probe\"}", context -> context.input().number("name", null, true)), is(empty()));
+    }
+
+    @Test
+    public void anAmountIsReadAsStoredUnitsAndRefusesMorePrecisionThanIsStored()
+    {
+        assertThat(run("{\"operation\":\"probe\",\"name\":12.34}",
+                        context -> values.add(context.input().amount("name", Values.Amount, true, null))),
+                        is(empty()));
+        assertThat(values, contains(1234L));
+
+        assertThat(run("{\"operation\":\"probe\",\"name\":12.345}",
+                        context -> context.input().amount("name", Values.Amount, true, null)),
+                        contains("name/invalid-amount/The name has more decimal places than are stored."));
+    }
+
+    @Test
+    public void aNestedObjectReportsItsFailuresUnderItsPathInOrder()
+    {
+        var failures = run("{\"operation\":\"probe\",\"items\":[{\"size\":\"big\",\"colour\":1},7,{\"size\":0}]}",
+                        context -> values.add(context.input().eachObject("items", "An item must be a JSON object.",
+                                        item -> {
+                                            item.rejectUnknownFields(ITEM_SCHEMA);
+                                            item.number("size", "An item needs a size.", true);
+                                        })));
+
+        assertThat(failures, contains("items[0].colour/unknown-field/The object has no field 'colour'.",
+                        "items[0].size/invalid-type/The size must be a number.",
+                        "items[1]/invalid-type/An item must be a JSON object.",
+                        "items[2].size/not-positive/The size must be positive."));
+        assertThat(values, contains(true));
+    }
+
+    @Test
+    public void anArrayMemberThatIsMissingIsUnusableAndOneThatIsNotAnArrayIsAnInvalidType()
+    {
+        assertThat(run("{\"operation\":\"probe\"}",
+                        context -> values.add(context.input().eachObject("items", "", item -> values.add(item)))),
+                        is(empty()));
+        assertThat(run("{\"operation\":\"probe\",\"items\":{}}",
+                        context -> values.add(context.input().eachObject("items", "", item -> values.add(item)))),
+                        contains("items/invalid-type/The items must be an array."));
+        assertThat(values, contains(false, false));
     }
 }

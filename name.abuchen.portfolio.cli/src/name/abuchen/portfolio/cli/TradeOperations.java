@@ -19,27 +19,27 @@ final class TradeOperations
 
     static void add(OperationContext context, PortfolioTransaction.Type type)
     {
-        var input = context.input().json();
+        var input = context.input();
         var delivery = type == PortfolioTransaction.Type.DELIVERY_INBOUND
                         || type == PortfolioTransaction.Type.DELIVERY_OUTBOUND;
 
-        TransactionOperations.refuse(context, input, "kind", "from", "to", "targetAmount", "exchangeRate", "exDate");
+        TransactionOperations.refuse(context, "kind", "from", "to", "targetAmount", "exchangeRate", "exDate");
         if (delivery)
-            TransactionOperations.refuse(context, input, "cashAccount");
+            TransactionOperations.refuse(context, "cashAccount");
 
-        var portfolio = TransactionOperations.parseInvestmentAccount(context, input);
-        var account = delivery ? null : TransactionOperations.parseCashAccount(context, input);
-        var dateTime = TransactionOperations.parseDateTime(context, input);
-        var currencyCode = TransactionOperations.parseCurrency(context, input, account);
-        var amount = TransactionOperations.parseAmount(context, input, "amount", Values.Amount, true);
-        var security = TransactionOperations.parseInstrument(context, input, true, true);
-        var shares = TransactionOperations.parseAmount(context, input, "shares", Values.Share, true);
-        var units = TransactionOperations.parseUnits(context, input, currencyCode, security);
+        var portfolio = TransactionOperations.parseInvestmentAccount(context);
+        var account = delivery ? null : TransactionOperations.parseCashAccount(context);
+        var dateTime = TransactionOperations.parseDateTime(context);
+        var currencyCode = TransactionOperations.parseCurrency(context, account);
+        var amount = TransactionOperations.parseAmount(context, "amount", Values.Amount);
+        var security = TransactionOperations.parseInstrument(context, true, true);
+        var shares = TransactionOperations.parseAmount(context, "shares", Values.Share);
+        var units = TransactionOperations.parseUnits(context, currencyCode, security);
 
-        TransactionOperations.parseGrossAmount(context, input, type.isLiquidation(), amount, units);
+        TransactionOperations.parseGrossAmount(context, type.isLiquidation(), amount, units);
 
-        var note = TransactionOperations.parseText(context, input, "note");
-        var source = TransactionOperations.parseText(context, input, "source");
+        var note = input.text("note");
+        var source = input.text("source");
 
         if (context.failed() || portfolio == null || dateTime == null || currencyCode == null || amount == null
                         || security == null || shares == null || !delivery && account == null)

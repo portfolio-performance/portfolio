@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.gson.JsonObject;
 
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Security;
@@ -24,6 +23,11 @@ final class TaxonomyOperations
 {
     private static final String OP = "taxonomy.assign";
 
+    private static final Schema ASSIGNMENT = Schema.object("The share of the instrument that is placed in one classification.")
+                    .property("classification", Schema.string("UUID of a leaf classification of the taxonomy."))
+                    .property("weight", Schema.number(
+                                    "Positive fraction of one, e.g. 0.6 for 60%, with at most four decimal places."));
+
     static final OperationSpec ASSIGN = new OperationSpec(OP,
                     "Replaces the complete assignment of one instrument within one existing taxonomy. The assignments list names classifications by UUID, each with a weight as a fraction of one, as in the taxonomies output; an empty list removes the instrument from the taxonomy. Weights must be positive and at most 100% in total, a classification may appear only once, and only leaf classifications, those that no other classification names as its parent, can be used. The response is one updated change, with the assignments before and after, whose uuid is the instrument.",
                     schema(), TaxonomyOperations::assign);
@@ -36,18 +40,13 @@ final class TaxonomyOperations
 
     private static Schema schema()
     {
-        var assignment = Schema.object("The share of the instrument that is placed in one classification.")
-                        .property("classification", Schema.string("UUID of a leaf classification of the taxonomy."))
-                        .property("weight", Schema.number(
-                                        "Positive fraction of one, e.g. 0.6 for 60%, with at most four decimal places."));
-
         return Schema.object("The complete assignment of one instrument within one taxonomy.")
                         .property(ApplyBatch.OPERATION_MEMBER, Schema.enumOf("Operation name.", List.of(OP)))
                         .property("taxonomy", Schema.string("UUID of the taxonomy."))
                         .property("instrument", Schema.string("UUID of the instrument."))
                         .property("assignments", Schema.array(
                                         "The classifications to place the instrument in; empty to remove it from the taxonomy.",
-                                        assignment));
+                                        ASSIGNMENT));
     }
 
     static void assign(OperationContext context)
@@ -90,13 +89,13 @@ final class TaxonomyOperations
 
     private static Taxonomy parseTaxonomy(OperationContext context)
     {
-        return TransactionOperations.find(context, context.input().json(), "taxonomy", "This operation needs the taxonomy.",
+        return TransactionOperations.find(context, "taxonomy", "This operation needs the taxonomy.",
                         "taxonomy", context.client().getTaxonomies(), Taxonomy::getId);
     }
 
     private static Security parseInstrument(OperationContext context)
     {
-        return TransactionOperations.find(context, context.input().json(), "instrument",
+        return TransactionOperations.find(context, "instrument",
                         "This operation needs the instrument.", "instrument", context.client().getSecurities(),
                         Security::getUUID);
     }
@@ -104,15 +103,10 @@ final class TaxonomyOperations
     /** The placements, or null if the list itself is unusable; problems of single entries are reported. */
     private static List<Placement> parsePlacements(OperationContext context, Taxonomy taxonomy)
     {
-        var element = context.input().json().get("assignments");
-        if (element == null || element.isJsonNull())
+        var input = context.input();
+        if (!input.has("assignments"))
         {
             context.fail("assignments", "required", "This operation needs the assignments; an empty list removes the instrument.");
-            return null;
-        }
-        if (!element.isJsonArray())
-        {
-            context.fail("assignments", "invalid-type", "The assignments must be an array.");
             return null;
         }
 
@@ -120,49 +114,39 @@ final class TaxonomyOperations
 
         var placements = new ArrayList<Placement>();
         var seen = new HashSet<String>();
-        var total = BigDecimal.ZERO;
-        var array = element.getAsJsonArray();
-        for (var index = 0; index < array.size(); index++)
-        {
-            var field = "assignments[" + index + "]";
-            if (!array.get(index).isJsonObject())
-            {
-                context.fail(field, "invalid-type", "An assignment must be a JSON object.");
-                continue;
-            }
+        var usable = input.eachObject("assignments", "An assignment must be a JSON object.", entry -> {
+            entry.rejectUnknownFields(ASSIGNMENT);
 
-            var entry = array.get(index).getAsJsonObject();
-            context.rejectUnknownFields(entry, field, Set.of("classification", "weight"));
-
-            var classification = parseClassification(context, entry, field, nodes, seen);
-            var weight = parseWeight(context, entry, field);
+            var classification = parseClassification(entry, nodes, seen);
+            var weight = parseWeight(entry);
             if (classification != null && weight != null)
-            {
                 placements.add(new Placement(classification, weight));
-                total = total.add(BigDecimal.valueOf(weight));
-            }
-        }
+        });
+        if (!usable)
+            return null;
 
+        var total = placements.stream().map(p -> BigDecimal.valueOf(p.weight())).reduce(BigDecimal.ZERO,
+                        BigDecimal::add);
         if (total.compareTo(BigDecimal.valueOf(Classification.ONE_HUNDRED_PERCENT)) > 0)
             context.fail("assignments", "weight-total-exceeded", "The weights add up to more than 100%.");
         return placements;
     }
 
-    private static Classification parseClassification(OperationContext context, JsonObject entry, String field,
-                    List<TaxonomyTree.Node> nodes, Set<String> seen)
+    private static Classification parseClassification(OperationInput entry, List<TaxonomyTree.Node> nodes,
+                    Set<String> seen)
     {
-        var member = field + ".classification";
-        var element = entry.get("classification");
-        if (element != null && !element.isJsonNull() && !OperationContext.isText(element))
+        var member = "classification";
+        var element = entry.json().get(member);
+        if (entry.has(member) && !OperationContext.isText(element))
         {
-            context.fail(member, "invalid-type", "The classification must be a string.");
+            entry.fail(member, "invalid-type", "The classification must be a string.");
             return null;
         }
 
-        var uuid = element == null || element.isJsonNull() ? "" : element.getAsString().trim();
+        var uuid = entry.has(member) ? element.getAsString().trim() : "";
         if (uuid.isEmpty())
         {
-            context.fail(member, "required", "An assignment needs a classification.");
+            entry.fail(member, "required", "An assignment needs a classification.");
             return null;
         }
 
@@ -173,29 +157,28 @@ final class TaxonomyOperations
         var found = nodes.stream().filter(n -> uuid.equals(n.uuid())).findFirst();
         if (found.isEmpty())
         {
-            context.fail(member, "reference-not-found", "No classification with UUID " + uuid + " in the taxonomy.");
+            entry.fail(member, "reference-not-found", "No classification with UUID " + uuid + " in the taxonomy.");
             return null;
         }
 
         var classification = found.get().classification();
         if (!seen.add(uuid))
         {
-            context.fail(member, "duplicate-classification", "The classification is already listed above.");
+            entry.fail(member, "duplicate-classification", "The classification is already listed above.");
             return null;
         }
         if (!classification.getChildren().isEmpty())
         {
-            context.fail(member, "not-a-leaf", "Only a classification without children can hold an assignment.");
+            entry.fail(member, "not-a-leaf", "Only a classification without children can hold an assignment.");
             return null;
         }
         return classification;
     }
 
     /** The weight as stored in the file, or null after reporting why not. */
-    private static Integer parseWeight(OperationContext context, JsonObject entry, String field)
+    private static Integer parseWeight(OperationInput entry)
     {
-        var value = TransactionOperations.parseNumber(context, entry, field + ".weight", "weight",
-                        "An assignment needs a weight.", true);
+        var value = entry.number("weight", "An assignment needs a weight.", true);
         if (value == null)
             return null;
 
@@ -205,7 +188,7 @@ final class TaxonomyOperations
         }
         catch (ArithmeticException e)
         {
-            context.fail(field + ".weight", "invalid-amount",
+            entry.fail("weight", "invalid-amount",
                             "The weight has more decimal places than are stored; use at most four.");
             return null;
         }

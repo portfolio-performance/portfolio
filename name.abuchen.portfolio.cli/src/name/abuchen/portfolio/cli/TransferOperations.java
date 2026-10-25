@@ -26,30 +26,28 @@ final class TransferOperations
 
     static void add(OperationContext context)
     {
-        var input = context.input().json();
-
-        TransactionOperations.refuse(context, input, "investmentAccount", "cashAccount", "units", "grossAmount",
+        TransactionOperations.refuse(context, "investmentAccount", "cashAccount", "units", "grossAmount",
                         "exDate");
 
         var kind = parseKind(context);
         var security = kind == TransactionRecord.TransferKind.CASH ? null
-                        : TransactionOperations.parseInstrument(context, input, true,
+                        : TransactionOperations.parseInstrument(context, true,
                                         kind == TransactionRecord.TransferKind.SECURITY);
         if (kind == TransactionRecord.TransferKind.CASH)
         {
-            TransactionOperations.refuse(context, input, "instrument", "shares");
+            TransactionOperations.refuse(context, "instrument", "shares");
             addCash(context);
         }
         else if (kind == TransactionRecord.TransferKind.SECURITY)
         {
-            TransactionOperations.refuse(context, input, "targetAmount", "exchangeRate");
+            TransactionOperations.refuse(context, "targetAmount", "exchangeRate");
             addSecurity(context, security);
         }
     }
 
     private static TransactionRecord.TransferKind parseKind(OperationContext context)
     {
-        var kind = TransactionOperations.parseText(context, context.input().json(), "kind");
+        var kind = context.input().text("kind");
         var kinds = String.join(", ", TransactionRecord.TransferKind.ids());
         if (kind == null)
         {
@@ -69,14 +67,14 @@ final class TransferOperations
 
     private static void addSecurity(OperationContext context, Security security)
     {
-        var input = context.input().json();
+        var input = context.input();
 
-        var from = TransactionOperations.parseInvestmentAccount(context, input, "from");
-        var to = TransactionOperations.parseInvestmentAccount(context, input, "to");
+        var from = TransactionOperations.parseInvestmentAccount(context, "from");
+        var to = TransactionOperations.parseInvestmentAccount(context, "to");
         rejectSameAccount(context, from, to);
 
-        var dateTime = TransactionOperations.parseDateTime(context, input);
-        var currencyCode = TransactionOperations.parseCurrency(context, input, null);
+        var dateTime = TransactionOperations.parseDateTime(context);
+        var currencyCode = TransactionOperations.parseCurrency(context, null);
         if (currencyCode != null && security != null && !currencyCode.equals(security.getCurrencyCode()))
         {
             context.fail("currencyCode", "currency-mismatch",
@@ -84,10 +82,10 @@ final class TransferOperations
                                             + currencyCode + ".");
             currencyCode = null;
         }
-        var amount = TransactionOperations.parseAmount(context, input, "amount", Values.Amount, true);
-        var shares = TransactionOperations.parseAmount(context, input, "shares", Values.Share, true);
-        var note = TransactionOperations.parseText(context, input, "note");
-        var source = TransactionOperations.parseText(context, input, "source");
+        var amount = TransactionOperations.parseAmount(context, "amount", Values.Amount);
+        var shares = TransactionOperations.parseAmount(context, "shares", Values.Share);
+        var note = input.text("note");
+        var source = input.text("source");
 
         if (context.failed() || from == null || to == null || security == null || dateTime == null
                         || currencyCode == null || amount == null || shares == null)
@@ -108,29 +106,29 @@ final class TransferOperations
 
     private static void addCash(OperationContext context)
     {
-        var input = context.input().json();
+        var input = context.input();
 
-        var from = TransactionOperations.parseCashAccount(context, input, "from");
-        var to = TransactionOperations.parseCashAccount(context, input, "to");
+        var from = TransactionOperations.parseCashAccount(context, "from");
+        var to = TransactionOperations.parseCashAccount(context, "to");
         rejectSameAccount(context, from, to);
 
-        var dateTime = TransactionOperations.parseDateTime(context, input);
-        var currencyCode = TransactionOperations.parseCurrency(context, input, from);
-        var amount = TransactionOperations.parseAmount(context, input, "amount", Values.Amount, true);
-        var note = TransactionOperations.parseText(context, input, "note");
-        var source = TransactionOperations.parseText(context, input, "source");
+        var dateTime = TransactionOperations.parseDateTime(context);
+        var currencyCode = TransactionOperations.parseCurrency(context, from);
+        var amount = TransactionOperations.parseAmount(context, "amount", Values.Amount);
+        var note = input.text("note");
+        var source = input.text("source");
 
         var crossCurrency = from != null && to != null && !from.getCurrencyCode().equals(to.getCurrencyCode());
         Long targetAmount = null;
         BigDecimal rate = null;
         if (crossCurrency)
         {
-            targetAmount = TransactionOperations.parseAmount(context, input, "targetAmount", Values.Amount, true);
+            targetAmount = TransactionOperations.parseAmount(context, "targetAmount", Values.Amount);
             rate = checkedRate(context, amount, targetAmount, from.getCurrencyCode(), to.getCurrencyCode());
         }
         else if (from != null && to != null)
         {
-            TransactionOperations.refuse(context, input, "targetAmount", "exchangeRate");
+            TransactionOperations.refuse(context, "targetAmount", "exchangeRate");
         }
 
         if (context.failed() || from == null || to == null || dateTime == null || currencyCode == null
@@ -163,9 +161,9 @@ final class TransferOperations
     private static BigDecimal checkedRate(OperationContext context, Long amount, Long targetAmount, String fromCurrency,
                     String toCurrency)
     {
-        var input = context.input().json();
-        var supplied = TransactionOperations.rawNumber(input, "exchangeRate");
-        if (input.has("exchangeRate") && !input.get("exchangeRate").isJsonNull() && supplied == null)
+        var input = context.input();
+        var supplied = input.rawNumber("exchangeRate");
+        if (input.has("exchangeRate") && supplied == null)
         {
             context.fail("exchangeRate", "invalid-type", "The exchangeRate must be a number.");
             return null;

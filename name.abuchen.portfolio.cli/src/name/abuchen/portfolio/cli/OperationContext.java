@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -134,16 +133,6 @@ final class OperationContext
     boolean failed()
     {
         return failureCount > 0;
-    }
-
-    /** Reports every member of a nested object that is not known, under the given field prefix. */
-    void rejectUnknownFields(JsonObject object, String prefix, Set<String> known)
-    {
-        for (var member : object.keySet())
-        {
-            if (!known.contains(member))
-                fail(prefix + "." + member, "unknown-field", "The object has no field '" + member + "'.");
-        }
     }
 
     /**

@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.cli;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -14,8 +13,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 import name.abuchen.portfolio.datatransfer.ImportAction;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
@@ -72,6 +69,15 @@ final class TransactionOperations
 
     private static final List<String> UNIT_TYPES = List.of("FEE", "TAX", "GROSS_VALUE");
 
+    private static final Schema UNIT = Schema.object("A fee, tax or forex gross value, in the shape the transactions output uses.")
+                    .property("type", Schema.enumOf("Kind of unit.", UNIT_TYPES))
+                    .property("amount", Schema.number("Positive amount, in the transaction's currency."))
+                    .property("currencyCode", Schema.string("ISO currency code of amount; the transaction's currency."))
+                    .optionalProperty("forexAmount", Schema.number("Original amount in the instrument's currency."))
+                    .optionalProperty("forexCurrencyCode", Schema.string("ISO currency code of forexAmount."))
+                    .optionalProperty("exchangeRate", Schema.number(
+                                    "Positive, unrounded: forexAmount times exchangeRate is approximately amount."));
+
     /** The failure code for a member that the kind of transaction doesn't take. */
     private static final Map<String, String> NOT_ALLOWED = Map.ofEntries(
                     Map.entry("cashAccount", "cash-account-not-allowed"),
@@ -104,15 +110,6 @@ final class TransactionOperations
 
     private static Schema schema(boolean update)
     {
-        var unit = Schema.object("A fee, tax or forex gross value, in the shape the transactions output uses.")
-                        .property("type", Schema.enumOf("Kind of unit.", UNIT_TYPES))
-                        .property("amount", Schema.number("Positive amount, in the transaction's currency."))
-                        .property("currencyCode", Schema.string("ISO currency code of amount; the transaction's currency."))
-                        .optionalProperty("forexAmount", Schema.number("Original amount in the instrument's currency."))
-                        .optionalProperty("forexCurrencyCode", Schema.string("ISO currency code of forexAmount."))
-                        .optionalProperty("exchangeRate", Schema.number(
-                                        "Positive, unrounded: forexAmount times exchangeRate is approximately amount."));
-
         var schema = Schema.object(update ? UPDATE_DESCRIPTION : "A transaction, in the shape the transactions output uses.")
                         .property(ApplyBatch.OPERATION_MEMBER,
                                         Schema.enumOf("Operation name.", List.of(update ? UPDATE_OP : OP)));
@@ -150,7 +147,7 @@ final class TransactionOperations
                                         "Positive number of shares. Required for BUY, SELL, deliveries and security transfers; accepted on a dividend; refused otherwise."))
                         .optional("units", Schema.array(
                                         "Fees, taxes and the forex gross value an instrument in another currency needs. Taxes are accepted only on DIVIDENDS and INTEREST and fees only on DIVIDENDS, as in core's import check; refused on transfers.",
-                                        unit))
+                                        UNIT))
                         .optional("exDate", Schema.string(
                                         "ISO ex-date; accepted only on a dividend with an instrument and never after the date."))
                         .optional("grossAmount", Schema.number(
@@ -182,9 +179,7 @@ final class TransactionOperations
 
     static void add(OperationContext context)
     {
-        var input = context.input().json();
-
-        var name = parseTypeName(context, input);
+        var name = parseTypeName(context);
         if (TransactionRecord.TRANSFER.equals(name))
             TransferOperations.add(context);
         else if (name != null && PORTFOLIO_TYPES.contains(name))
@@ -195,25 +190,25 @@ final class TransactionOperations
 
     private static void addCash(OperationContext context, Type type)
     {
-        var input = context.input().json();
+        var input = context.input();
 
-        refuse(context, input, "investmentAccount", "kind", "from", "to", "targetAmount", "exchangeRate");
+        refuse(context, "investmentAccount", "kind", "from", "to", "targetAmount", "exchangeRate");
 
-        var account = parseCashAccount(context, input);
-        var dateTime = parseDateTime(context, input);
-        var currencyCode = parseCurrency(context, input, account);
-        var amount = parseAmount(context, input, "amount", Values.Amount, true);
-        var security = parseInstrument(context, input, type == null || SECURITY_ALLOWED.contains(type),
+        var account = parseCashAccount(context);
+        var dateTime = parseDateTime(context);
+        var currencyCode = parseCurrency(context, account);
+        var amount = parseAmount(context, "amount", Values.Amount);
+        var security = parseInstrument(context, type == null || SECURITY_ALLOWED.contains(type),
                         type != null && SECURITY_REQUIRED.contains(type));
-        var shares = parseShares(context, input, type);
-        var units = parseUnits(context, input, currencyCode, security);
-        var exDate = exDate(context, input, type, security, dateTime);
+        var shares = parseShares(context, type);
+        var units = parseUnits(context, currencyCode, security);
+        var exDate = exDate(context, type, security, dateTime);
 
         if (type != null)
-            parseGrossAmount(context, input, type.isCredit(), amount, units);
+            parseGrossAmount(context, type.isCredit(), amount, units);
 
-        var note = parseText(context, input, "note");
-        var source = parseText(context, input, "source");
+        var note = input.text("note");
+        var source = input.text("source");
 
         if (context.failed() || type == null || account == null || dateTime == null || currencyCode == null
                         || amount == null)
@@ -281,19 +276,19 @@ final class TransactionOperations
     }
 
     /** Reports a failure for each of the members that is present, because the kind of transaction doesn't take it. */
-    static void refuse(OperationContext context, JsonObject input, String... members)
+    static void refuse(OperationContext context, String... members)
     {
         for (var member : members)
         {
-            if (input.has(member) && !input.get(member).isJsonNull())
+            if (context.input().has(member))
                 context.fail(member, NOT_ALLOWED.get(member),
                                 "This kind of transaction must not have " + member + ".");
         }
     }
 
-    private static String parseTypeName(OperationContext context, JsonObject input)
+    private static String parseTypeName(OperationContext context)
     {
-        var member = input.get("type");
+        var member = context.input().json().get("type");
         if (member == null || member.isJsonNull())
         {
             context.fail("type", "required", "A transaction needs a type.");
@@ -316,38 +311,35 @@ final class TransactionOperations
         return name;
     }
 
-    static Account parseCashAccount(OperationContext context, JsonObject input)
+    static Account parseCashAccount(OperationContext context)
     {
-        return parseCashAccount(context, input, "cashAccount");
+        return parseCashAccount(context, "cashAccount");
     }
 
-    static Account parseCashAccount(OperationContext context, JsonObject input, String member)
+    static Account parseCashAccount(OperationContext context, String member)
     {
-        return find(context, input, member, "A transaction needs " + member + ".", "cash account",
+        return find(context, member, "A transaction needs " + member + ".", "cash account",
                         context.client().getAccounts(), Account::getUUID);
     }
 
-    static Portfolio parseInvestmentAccount(OperationContext context, JsonObject input)
+    static Portfolio parseInvestmentAccount(OperationContext context)
     {
-        return parseInvestmentAccount(context, input, "investmentAccount");
+        return parseInvestmentAccount(context, "investmentAccount");
     }
 
-    static Portfolio parseInvestmentAccount(OperationContext context, JsonObject input, String member)
+    static Portfolio parseInvestmentAccount(OperationContext context, String member)
     {
-        return find(context, input, member, "A transaction needs " + member + ".", "investment account",
+        return find(context, member, "A transaction needs " + member + ".", "investment account",
                         context.client().getPortfolios(), Portfolio::getUUID);
     }
 
     /** The entity of the UUID given in the member, which must have been in the file before the batch. */
-    static <T> T find(OperationContext context, JsonObject input, String member, String requiredMessage,
-                    String noun, List<T> candidates, Function<T, String> uuidOf)
+    static <T> T find(OperationContext context, String member, String requiredMessage, String noun,
+                    List<T> candidates, Function<T, String> uuidOf)
     {
-        var uuid = parseText(context, input, member);
+        var uuid = context.input().requiredText(member, requiredMessage);
         if (uuid == null)
-        {
-            requireText(context, input, member, requiredMessage);
             return null;
-        }
 
         var found = candidates.stream().filter(c -> uuid.equals(uuidOf.apply(c)) && context.existedBeforeBatch(c))
                         .findFirst();
@@ -359,14 +351,12 @@ final class TransactionOperations
         return found.get();
     }
 
-    static LocalDateTime parseDateTime(OperationContext context, JsonObject input)
+    static LocalDateTime parseDateTime(OperationContext context)
     {
-        var date = parseText(context, input, "date");
+        var input = context.input();
+        var date = input.requiredText("date", "A transaction needs a date.");
         if (date == null)
-        {
-            requireText(context, input, "date", "A transaction needs a date.");
             return null;
-        }
 
         LocalDate day;
         try
@@ -379,7 +369,7 @@ final class TransactionOperations
             return null;
         }
 
-        var timeText = parseText(context, input, "time");
+        var timeText = input.text("time");
         if (timeText == null)
             return day.atStartOfDay();
 
@@ -394,14 +384,11 @@ final class TransactionOperations
         }
     }
 
-    static String parseCurrency(OperationContext context, JsonObject input, Account account)
+    static String parseCurrency(OperationContext context, Account account)
     {
-        var code = parseText(context, input, "currencyCode");
+        var code = context.input().requiredText("currencyCode", "A transaction needs a currency.");
         if (code == null)
-        {
-            requireText(context, input, "currencyCode", "A transaction needs a currency.");
             return null;
-        }
 
         if (!CurrencyUnit.containsCurrencyCode(code))
         {
@@ -418,13 +405,10 @@ final class TransactionOperations
         return code;
     }
 
-    static Security parseInstrument(OperationContext context, JsonObject input, boolean allowed, boolean required)
+    static Security parseInstrument(OperationContext context, boolean allowed, boolean required)
     {
-        var uuid = parseText(context, input, "instrument");
-        var present = input.has("instrument") && !input.get("instrument").isJsonNull()
-                        && OperationContext.isText(input.get("instrument")) && uuid != null;
-
-        if (!present)
+        var uuid = context.input().text("instrument");
+        if (uuid == null)
         {
             if (required)
                 context.fail("instrument", "required", "This kind of transaction needs an instrument.");
@@ -448,9 +432,9 @@ final class TransactionOperations
         return found.get();
     }
 
-    private static Long parseShares(OperationContext context, JsonObject input, Type type)
+    private static Long parseShares(OperationContext context, Type type)
     {
-        if (!input.has("shares") || input.get("shares").isJsonNull())
+        if (!context.input().has("shares"))
             return null;
 
         if (type != null && !SHARES_ALLOWED.contains(type))
@@ -458,17 +442,18 @@ final class TransactionOperations
             context.fail("shares", "shares-not-allowed", type + " must not have shares.");
             return null;
         }
-        return parseAmount(context, input, "shares", Values.Share, true);
+        return parseAmount(context, "shares", Values.Share);
     }
 
     /** The valid ex-date to store, or null if it is absent or refused. */
-    private static LocalDate exDate(OperationContext context, JsonObject input, Type type, Security security,
-                    LocalDateTime dateTime)
+    private static LocalDate exDate(OperationContext context, Type type, Security security, LocalDateTime dateTime)
     {
-        if (!input.has("exDate") || input.get("exDate").isJsonNull())
+        var input = context.input();
+        if (!input.has("exDate"))
             return null;
 
-        if (!OperationContext.isText(input.get("exDate")))
+        var text = input.json().get("exDate");
+        if (!OperationContext.isText(text))
         {
             context.fail("exDate", "invalid-type", "The ex-date must be a string.");
             return null;
@@ -483,12 +468,11 @@ final class TransactionOperations
         LocalDate ex;
         try
         {
-            ex = LocalDate.parse(input.get("exDate").getAsString());
+            ex = LocalDate.parse(text.getAsString());
         }
         catch (DateTimeParseException e)
         {
-            context.fail("exDate", "invalid-date",
-                            "'" + input.get("exDate").getAsString() + "' is not an ISO date (yyyy-MM-dd).");
+            context.fail("exDate", "invalid-date", "'" + text.getAsString() + "' is not an ISO date (yyyy-MM-dd).");
             return null;
         }
 
@@ -500,13 +484,12 @@ final class TransactionOperations
         return ex;
     }
 
-    static void parseGrossAmount(OperationContext context, JsonObject input, boolean credit, Long amount,
-                    List<Transaction.Unit> units)
+    static void parseGrossAmount(OperationContext context, boolean credit, Long amount, List<Transaction.Unit> units)
     {
-        if (!input.has("grossAmount") || input.get("grossAmount").isJsonNull())
+        if (!context.input().has("grossAmount"))
             return;
 
-        var gross = parseAmount(context, input, "grossAmount", Values.Amount, false);
+        var gross = context.input().amount("grossAmount", Values.Amount, false, "A transaction needs grossAmount.");
         if (gross == null || amount == null)
             return;
 
@@ -520,72 +503,50 @@ final class TransactionOperations
                             "The gross amount does not reconcile with the amount, fees and taxes.");
     }
 
-    static List<Transaction.Unit> parseUnits(OperationContext context, JsonObject input, String currencyCode,
-                    Security security)
+    static List<Transaction.Unit> parseUnits(OperationContext context, String currencyCode, Security security)
     {
         var units = new ArrayList<Transaction.Unit>();
 
-        if (input.has("units") && !input.get("units").isJsonNull())
-        {
-            if (!input.get("units").isJsonArray())
-            {
-                context.fail("units", "invalid-type", "The units must be an array.");
-            }
-            else
-            {
-                var array = input.get("units").getAsJsonArray();
-                for (var i = 0; i < array.size(); i++)
-                {
-                    var unit = parseUnit(context, array.get(i), i, currencyCode, security);
-                    if (unit != null)
-                        units.add(unit);
-                }
-            }
-        }
+        context.input().eachObject("units", "A unit must be a JSON object.", input -> {
+            var unit = parseUnit(input, currencyCode, security);
+            if (unit != null)
+                units.add(unit);
+        });
 
         requireForexGrossValue(context, currencyCode, security, units);
         return units;
     }
 
-    private static Transaction.Unit parseUnit(OperationContext context, JsonElement element, int index,
-                    String currencyCode, Security security)
+    private static Transaction.Unit parseUnit(OperationInput unit, String currencyCode, Security security)
     {
-        var field = "units[" + index + "]";
-        if (!element.isJsonObject())
-        {
-            context.fail(field, "invalid-type", "A unit must be a JSON object.");
-            return null;
-        }
+        unit.rejectUnknownFields(UNIT);
 
-        var unit = element.getAsJsonObject();
-        context.rejectUnknownFields(unit, field,
-                        Set.of("type", "amount", "currencyCode", "forexAmount", "forexCurrencyCode", "exchangeRate"));
-
-        var typeName = text(unit, "type");
+        var typeName = unit.rawText("type");
         if (typeName == null || !UNIT_TYPES.contains(typeName))
         {
-            context.fail(field + ".type", "unsupported-unit-type",
+            unit.fail("type", "unsupported-unit-type",
                             "A unit type must be one of " + String.join(", ", UNIT_TYPES) + ".");
             return null;
         }
         var unitType = Transaction.Unit.Type.valueOf(typeName);
 
-        var amount = number(context, unit, field + ".amount", "amount", Values.Amount, true);
-        var unitCurrency = text(unit, "currencyCode");
+        var amount = unit.amount("amount", Values.Amount, true, null);
+        var unitCurrency = unit.rawText("currencyCode");
         if (unitCurrency == null)
-            context.fail(field + ".currencyCode", "required", "A unit needs a currency.");
+            unit.fail("currencyCode", "required", "A unit needs a currency.");
         else if (currencyCode != null && !unitCurrency.equals(currencyCode))
-            context.fail(field + ".currencyCode", "currency-mismatch",
+            unit.fail("currencyCode", "currency-mismatch",
                             "A unit must be in the transaction's currency " + currencyCode + ".");
 
-        var hasForex = unit.has("forexAmount") || unit.has("forexCurrencyCode") || unit.has("exchangeRate");
-        var forexAmount = number(context, unit, field + ".forexAmount", "forexAmount", Values.Amount, true);
-        var forexCurrency = text(unit, "forexCurrencyCode");
-        var rate = rawNumber(unit, "exchangeRate");
+        var json = unit.json();
+        var hasForex = json.has("forexAmount") || json.has("forexCurrencyCode") || json.has("exchangeRate");
+        var forexAmount = unit.amount("forexAmount", Values.Amount, true, null);
+        var forexCurrency = unit.rawText("forexCurrencyCode");
+        var rate = unit.rawNumber("exchangeRate");
 
         if (unitType == Transaction.Unit.Type.GROSS_VALUE && !hasForex)
         {
-            context.fail(field, "forex-required", "A GROSS_VALUE unit needs forexAmount, forexCurrencyCode and exchangeRate.");
+            unit.fail("", "forex-required", "A GROSS_VALUE unit needs forexAmount, forexCurrencyCode and exchangeRate.");
             return null;
         }
 
@@ -593,25 +554,25 @@ final class TransactionOperations
         {
             if (forexAmount == null || forexCurrency == null || rate == null)
             {
-                context.fail(field, "forex-incomplete",
+                unit.fail("", "forex-incomplete",
                                 "forexAmount, forexCurrencyCode and exchangeRate are given together or not at all.");
                 return null;
             }
             if (rate.signum() <= 0)
             {
-                context.fail(field + ".exchangeRate", "not-positive", "The exchange rate must be positive.");
+                unit.fail("exchangeRate", "not-positive", "The exchange rate must be positive.");
                 return null;
             }
             if (!forexCurrency.equals(currencyCode) && !CurrencyUnit.containsCurrencyCode(forexCurrency))
             {
-                context.fail(field + ".forexCurrencyCode", "invalid-currency",
+                unit.fail("forexCurrencyCode", "invalid-currency",
                                 "'" + forexCurrency + "' is not a known ISO currency code.");
                 return null;
             }
             if (unitType != Transaction.Unit.Type.GROSS_VALUE && security != null
                             && !forexCurrency.equals(security.getCurrencyCode()))
             {
-                context.fail(field + ".forexCurrencyCode", "forex-currency-mismatch",
+                unit.fail("forexCurrencyCode", "forex-currency-mismatch",
                                 "A fee or tax may carry forex only in the instrument's currency "
                                                 + security.getCurrencyCode() + ".");
                 return null;
@@ -632,7 +593,7 @@ final class TransactionOperations
         var forexMoney = Money.of(forexCurrency, forexAmount);
         if (!Transaction.Unit.isWithinRoundingTolerance(amountMoney, forexMoney, rate))
         {
-            context.fail(field, "forex-mismatch",
+            unit.fail("", "forex-mismatch",
                             "forexAmount times exchangeRate is not amount within core's rounding tolerance.");
             return null;
         }
@@ -657,91 +618,9 @@ final class TransactionOperations
                                             + "; add a GROSS_VALUE unit with its forex amount and exchange rate.");
     }
 
-    /** Reads a positive stored value at the given precision, reporting any problem on {@code field}. */
-    static Long parseAmount(OperationContext context, JsonObject input, String field, Values<Long> values,
-                    boolean positive)
+    /** A positive amount of a transaction, read at the given precision; a missing one is required. */
+    static Long parseAmount(OperationContext context, String member, Values<Long> values)
     {
-        return number(context, input, field, field, values, positive);
-    }
-
-    private static Long number(OperationContext context, JsonObject input, String field, String member,
-                    Values<Long> values, boolean positive)
-    {
-        var value = parseNumber(context, input, field, member,
-                        field.equals(member) ? "A transaction needs " + member + "." : null, positive);
-        if (value == null)
-            return null;
-
-        var stored = Decimals.toStored(value, values);
-        if (stored.isEmpty())
-        {
-            context.fail(field, "invalid-amount", "The " + member + " has more decimal places than are stored.");
-            return null;
-        }
-        return stored.get();
-    }
-
-    /**
-     * The member as a number, or null after reporting on {@code field} that it
-     * is not a number, is not positive if that is required, or is absent and a
-     * {@code requiredMessage} was given.
-     */
-    static BigDecimal parseNumber(OperationContext context, JsonObject input, String field, String member,
-                    String requiredMessage, boolean positive)
-    {
-        var value = rawNumber(input, member);
-        if (value == null)
-        {
-            if (input.has(member) && !input.get(member).isJsonNull())
-                context.fail(field, "invalid-type", "The " + member + " must be a number.");
-            else if (requiredMessage != null)
-                context.fail(field, "required", requiredMessage);
-            return null;
-        }
-
-        if (positive && value.signum() <= 0)
-        {
-            context.fail(field, "not-positive", "The " + member + " must be positive.");
-            return null;
-        }
-        return value;
-    }
-
-    /** The member as a number, or null if it is absent or not a number; reports nothing. */
-    static BigDecimal rawNumber(JsonObject input, String member)
-    {
-        var element = input.get(member);
-        return element != null && element.isJsonPrimitive() && element.getAsJsonPrimitive().isNumber()
-                        ? element.getAsBigDecimal()
-                        : null;
-    }
-
-    /** The string value of the member, or null if it is absent, null, blank or not a string. */
-    private static String text(JsonObject input, String member)
-    {
-        var element = input.get(member);
-        if (element == null || !OperationContext.isText(element))
-            return null;
-        var text = element.getAsString();
-        return text.isBlank() ? null : text;
-    }
-
-    static String parseText(OperationContext context, JsonObject input, String member)
-    {
-        var element = input.get(member);
-        if (element != null && !element.isJsonNull() && !OperationContext.isText(element))
-        {
-            context.fail(member, "invalid-type", "The " + member + " must be a string.");
-            return null;
-        }
-        return text(input, member);
-    }
-
-    /** Reports {@code required} for a text member that is absent or blank; a wrong type is already reported. */
-    private static void requireText(OperationContext context, JsonObject input, String member, String message)
-    {
-        var element = input.get(member);
-        if (element == null || element.isJsonNull() || OperationContext.isText(element))
-            context.fail(member, "required", message);
+        return context.input().amount(member, values, true, "A transaction needs " + member + ".");
     }
 }
