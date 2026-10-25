@@ -25,10 +25,10 @@ import name.abuchen.portfolio.money.Values;
 /**
  * The <code>transaction.add</code> operation. This class takes the cash-account
  * events (deposits, removals, interest, dividends, fees, taxes and their
- * refunds), dispatches the other types to {@link TradeOperations} and
- * {@link TransferOperations}, which read their input through {@link TransactionInput}. The input
- * mirrors the <code>transactions</code> output, so an agent can send back what
- * it read. Every rule reports a field-level failure, and the whole batch stays
+ * refunds) and dispatches the other types to {@link TradeOperations} and
+ * {@link TransferOperations}. All of them read their input through
+ * {@link TransactionInput}. The input mirrors the <code>transactions</code>
+ * output, so an agent can send back what it read. Every rule reports a field-level failure, and the whole batch stays
  * atomic because nothing is added to the model until the operation is clean.
  */
 final class TransactionOperations
@@ -38,7 +38,6 @@ final class TransactionOperations
 
     private static final String UPDATE_DESCRIPTION = "The fields of a transaction to change, in the shape the transactions output uses. Only the fields present change; null clears an optional field.";
 
-    
     /** The transaction types this operation records, in the published order. */
     private static final List<String> TYPE_NAMES = List.of("DEPOSIT", "REMOVAL", "INTEREST", "INTEREST_CHARGE",
                     "DIVIDENDS", "FEES", "FEES_REFUND", "TAXES", "TAX_REFUND", "BUY", "SELL", "DELIVERY_INBOUND",

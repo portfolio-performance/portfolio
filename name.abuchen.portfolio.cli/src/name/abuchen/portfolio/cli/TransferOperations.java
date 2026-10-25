@@ -36,12 +36,12 @@ final class TransferOperations
         if (kind == TransactionRecord.TransferKind.CASH)
         {
             input.refuse("instrument", "shares");
-            addCash(context);
+            addCash(context, input);
         }
         else if (kind == TransactionRecord.TransferKind.SECURITY)
         {
             input.refuse("targetAmount", "exchangeRate");
-            addSecurity(context, security);
+            addSecurity(context, input, security);
         }
     }
 
@@ -65,10 +65,8 @@ final class TransferOperations
         return null;
     }
 
-    private static void addSecurity(OperationContext context, Security security)
+    private static void addSecurity(OperationContext context, TransactionInput input, Security security)
     {
-        var input = new TransactionInput(context);
-
         var from = input.investmentAccount("from");
         var to = input.investmentAccount("to");
         rejectSameAccount(context, from, to);
@@ -104,10 +102,8 @@ final class TransferOperations
         TransactionOperations.commit(context, BuiltRecord.of(entry));
     }
 
-    private static void addCash(OperationContext context)
+    private static void addCash(OperationContext context, TransactionInput input)
     {
-        var input = new TransactionInput(context);
-
         var from = input.cashAccount("from");
         var to = input.cashAccount("to");
         rejectSameAccount(context, from, to);
