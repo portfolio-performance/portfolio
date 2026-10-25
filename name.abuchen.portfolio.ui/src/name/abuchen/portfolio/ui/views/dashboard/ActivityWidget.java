@@ -196,8 +196,6 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
     private Chart chart;
     private TimelineChartToolTip toolTip;
 
-    private CurrencyConverter converter;
-
     public ActivityWidget(Widget widget, DashboardData data)
     {
         super(widget, data);
@@ -208,8 +206,6 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
         addConfig(new ChartTypeConfig(this));
         addConfig(new TransactionFilterConfig(this));
         addConfig(new ChartHeightConfig(this));
-
-        this.converter = data.getCurrencyConverter();
     }
 
     @Override
@@ -399,6 +395,10 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
     private void createSeries(ChartType chartType, Interval interval, List<TransactionPair<?>> transactions,
                     PortfolioTransaction.Type type, Color color)
     {
+        // the converter is looked up on demand because the base currency might
+        // have changed since the widget was created
+        CurrencyConverter converter = getDashboardData().getCurrencyConverter();
+
         var barSeries = (IBarSeries<?>) chart.getSeriesSet().createSeries(SeriesType.BAR, type.toString());
         barSeries.setDescription(type.toString());
         List<Year> years = interval.getYears();
