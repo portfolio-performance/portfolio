@@ -358,7 +358,8 @@ public class DataSeriesSet
                         return;
 
                     availableSeries.add(new DataSeries(DataSeries.Type.CLASSIFICATION, taxonomy, classification,
-                                    classification.getName(), ColorConversion.hex2RGB(classification.getColor())));
+                                    classification.getName(),
+                                    ColorConversion.ensureVisible(ColorConversion.hex2RGB(classification.getColor()))));
                 }
             });
         }

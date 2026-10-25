@@ -94,6 +94,32 @@ public class ColorConversionTest
     }
 
     @Test
+    public void testEnsureVisibleKeepsSaturatedColors()
+    {
+        RGB rgb = new RGB(18, 52, 86);
+        assertEquals(rgb, ColorConversion.ensureVisible(rgb));
+    }
+
+    @Test
+    public void testEnsureVisibleFixesNearWhiteColors()
+    {
+        RGB visible = ColorConversion.ensureVisible(new RGB(255, 255, 255));
+        float[] hsb = visible.getHSB();
+        assertTrue(hsb[1] >= 0.3f);
+        assertTrue(hsb[2] <= 0.85f);
+        assertTrue(visible.red != visible.green || visible.green != visible.blue);
+    }
+
+    @Test
+    public void testEnsureVisibleFixesNearBlackColors()
+    {
+        RGB visible = ColorConversion.ensureVisible(new RGB(10, 10, 10));
+        float[] hsb = visible.getHSB();
+        assertTrue(hsb[1] >= 0.3f);
+        assertTrue(hsb[2] >= 0.35f);
+    }
+
+    @Test
     public void testBrighterRGB()
     {
         RGB rgb = new RGB(1, 2, 3);

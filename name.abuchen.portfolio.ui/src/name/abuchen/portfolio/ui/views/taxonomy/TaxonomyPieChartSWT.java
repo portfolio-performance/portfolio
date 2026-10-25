@@ -163,8 +163,8 @@ public class TaxonomyPieChartSWT implements IPieChart
                 Node childNode = node.addChild(id, child.getActual().getAmount() / Values.Amount.divider());
                 childNode.setData(child);
 
-                Color color = Colors.getColor(ColorConversion.hex2RGB(
-                                child.isAssignment() ? ColorConversion.brighter(parentColor) : child.getColor()));
+                Color color = Colors.getColor(ColorConversion.ensureVisible(ColorConversion.hex2RGB(
+                                child.isAssignment() ? ColorConversion.brighter(parentColor) : child.getColor())));
                 id2color.put(id, color);
 
                 if (!child.getChildren().isEmpty())
