@@ -2387,6 +2387,50 @@ public class ScalableCapitalPDFExtractorTest
     }
 
     @Test
+    public void testKontoauszug07()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(5L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(5));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2026-08-31"), //
+                        hasSource("Kontoauszug07.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 7.36), hasGrossValue("EUR", 10.00), //
+                        hasTaxes("EUR", 2.50 + 0.14), hasFees("EUR", 0.00))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2026-09-10"), hasAmount("EUR", 300.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Abhebung vom Geldkonto"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2026-09-19"), hasAmount("EUR", 50.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Abhebung vom Geldkonto"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-09-25"), hasAmount("EUR", 200.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-09-25"), hasAmount("EUR", 100.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisung"))));
+    }
+
+    @Test
     public void testAccountStatement01()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
