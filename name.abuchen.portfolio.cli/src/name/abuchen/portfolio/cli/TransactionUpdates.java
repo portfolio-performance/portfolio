@@ -4,7 +4,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -70,8 +69,6 @@ final class TransactionUpdates
 
     private static void delete(OperationContext context)
     {
-        context.rejectUnknownFields(Set.of(ApplyBatch.OPERATION_MEMBER, UUID_MEMBER));
-
         var existing = find(context);
         if (existing == null)
             return;
@@ -88,7 +85,7 @@ final class TransactionUpdates
     /** The record with a side of the given UUID, claimed for this operation; null after reporting why not. */
     private static Existing find(OperationContext context)
     {
-        var member = context.input().get(UUID_MEMBER);
+        var member = context.input().json().get(UUID_MEMBER);
         if (member == null || member.isJsonNull())
         {
             context.fail(UUID_MEMBER, "required", "This operation needs the UUID of a side of the transaction.");
@@ -127,7 +124,7 @@ final class TransactionUpdates
         if (record.kind().isPresent())
             merged.remove("units"); // a transfer takes none, and the rendered empty list would be refused
 
-        for (var member : context.input().entrySet())
+        for (var member : context.input().json().entrySet())
         {
             var name = member.getKey();
             if (name.equals(ApplyBatch.OPERATION_MEMBER) || name.equals(UUID_MEMBER))

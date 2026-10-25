@@ -5,14 +5,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -112,17 +109,11 @@ final class EntityOperations<T>
 
     private final Definition<T> definition;
     private final String kind;
-    private final Set<String> addMembers;
-    private final Set<String> updateMembers;
 
     EntityOperations(Definition<T> definition)
     {
         this.definition = definition;
         this.kind = definition.entity().replace('-', ' ');
-        this.addMembers = Stream.concat(Stream.of(ApplyBatch.OPERATION_MEMBER),
-                        definition.fields().stream().map(Field::name)).collect(Collectors.toUnmodifiableSet());
-        this.updateMembers = Stream.concat(addMembers.stream(), Stream.of(UUID_MEMBER))
-                        .collect(Collectors.toUnmodifiableSet());
     }
 
     OperationSpec addOperation()
@@ -187,7 +178,6 @@ final class EntityOperations<T>
 
     private void add(OperationContext context)
     {
-        context.rejectUnknownFields(addMembers);
         var values = read(context);
 
         for (var field : definition.fields())
@@ -220,8 +210,6 @@ final class EntityOperations<T>
 
     private void update(OperationContext context)
     {
-        context.rejectUnknownFields(updateMembers);
-
         var entity = find(context);
         var values = read(context);
 
@@ -267,7 +255,7 @@ final class EntityOperations<T>
     /** The entity named by <code>uuid</code>, or null after reporting why not. */
     private T find(OperationContext context)
     {
-        var member = context.input().get(UUID_MEMBER);
+        var member = context.input().json().get(UUID_MEMBER);
         if (member == null || member.isJsonNull())
         {
             context.fail(UUID_MEMBER, "required", "An update needs the UUID of the " + kind + ".");
@@ -299,7 +287,7 @@ final class EntityOperations<T>
     private Map<String, Object> read(OperationContext context)
     {
         var values = new LinkedHashMap<String, Object>();
-        var input = context.input();
+        var input = context.input().json();
 
         for (var field : definition.fields())
         {

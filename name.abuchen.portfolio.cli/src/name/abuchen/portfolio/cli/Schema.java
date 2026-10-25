@@ -152,6 +152,12 @@ final class Schema
         return lines;
     }
 
+    /** Whether this object has a member of that name. */
+    boolean declares(String member)
+    {
+        return properties.containsKey(member);
+    }
+
     /** The names of the members that are required or, if <code>required</code> is false, optional. */
     List<String> memberNames(boolean required)
     {

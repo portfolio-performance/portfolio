@@ -55,7 +55,7 @@ final class OperationContext
 
     private final ApplyBatch batch;
     private final int index;
-    private final JsonObject input;
+    private final OperationInput input;
     private final List<Change> created;
     private final List<Change> updated;
     private final List<Change> deleted;
@@ -66,7 +66,7 @@ final class OperationContext
     {
         this.batch = batch;
         this.index = index;
-        this.input = input;
+        this.input = new OperationInput(this, input);
         this.created = new ArrayList<>();
         this.updated = new ArrayList<>();
         this.deleted = new ArrayList<>();
@@ -77,7 +77,7 @@ final class OperationContext
     {
         this.batch = outer.batch;
         this.index = outer.index;
-        this.input = input;
+        this.input = new OperationInput(this, input);
         this.created = outer.created;
         this.updated = outer.updated;
         this.deleted = outer.deleted;
@@ -111,7 +111,7 @@ final class OperationContext
         return batch.client();
     }
 
-    JsonObject input()
+    OperationInput input()
     {
         return input;
     }
@@ -134,16 +134,6 @@ final class OperationContext
     boolean failed()
     {
         return failureCount > 0;
-    }
-
-    /** Reports every member of the input that the operation does not know. */
-    void rejectUnknownFields(Set<String> known)
-    {
-        for (var member : input.keySet())
-        {
-            if (!known.contains(member))
-                fail(member, "unknown-field", "The operation has no field '" + member + "'.");
-        }
     }
 
     /** Reports every member of a nested object that is not known, under the given field prefix. */

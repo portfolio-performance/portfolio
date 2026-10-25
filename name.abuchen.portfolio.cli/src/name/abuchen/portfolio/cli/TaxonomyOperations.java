@@ -24,9 +24,6 @@ final class TaxonomyOperations
 {
     private static final String OP = "taxonomy.assign";
 
-    private static final Set<String> KNOWN = Set.of(ApplyBatch.OPERATION_MEMBER, "taxonomy", "instrument",
-                    "assignments");
-
     static final OperationSpec ASSIGN = new OperationSpec(OP,
                     "Replaces the complete assignment of one instrument within one existing taxonomy. The assignments list names classifications by UUID, each with a weight as a fraction of one, as in the taxonomies output; an empty list removes the instrument from the taxonomy. Weights must be positive and at most 100% in total, a classification may appear only once, and only leaf classifications, those that no other classification names as its parent, can be used. The response is one updated change, with the assignments before and after, whose uuid is the instrument.",
                     schema(), TaxonomyOperations::assign);
@@ -55,8 +52,6 @@ final class TaxonomyOperations
 
     static void assign(OperationContext context)
     {
-        context.rejectUnknownFields(KNOWN);
-
         var taxonomy = parseTaxonomy(context);
         var instrument = parseInstrument(context);
         var placements = parsePlacements(context, taxonomy);
@@ -95,13 +90,13 @@ final class TaxonomyOperations
 
     private static Taxonomy parseTaxonomy(OperationContext context)
     {
-        return TransactionOperations.find(context, context.input(), "taxonomy", "This operation needs the taxonomy.",
+        return TransactionOperations.find(context, context.input().json(), "taxonomy", "This operation needs the taxonomy.",
                         "taxonomy", context.client().getTaxonomies(), Taxonomy::getId);
     }
 
     private static Security parseInstrument(OperationContext context)
     {
-        return TransactionOperations.find(context, context.input(), "instrument",
+        return TransactionOperations.find(context, context.input().json(), "instrument",
                         "This operation needs the instrument.", "instrument", context.client().getSecurities(),
                         Security::getUUID);
     }
@@ -109,7 +104,7 @@ final class TaxonomyOperations
     /** The placements, or null if the list itself is unusable; problems of single entries are reported. */
     private static List<Placement> parsePlacements(OperationContext context, Taxonomy taxonomy)
     {
-        var element = context.input().get("assignments");
+        var element = context.input().json().get("assignments");
         if (element == null || element.isJsonNull())
         {
             context.fail("assignments", "required", "This operation needs the assignments; an empty list removes the instrument.");

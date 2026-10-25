@@ -83,6 +83,7 @@ final class ApplyBatch
             return context.result(String.valueOf(name));
         }
 
+        context.input().rejectUnknownFields(spec.get().input());
         spec.get().handler().apply(context);
         return context.result(name);
     }

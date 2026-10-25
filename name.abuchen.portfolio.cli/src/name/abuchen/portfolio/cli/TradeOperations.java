@@ -19,7 +19,7 @@ final class TradeOperations
 
     static void add(OperationContext context, PortfolioTransaction.Type type)
     {
-        var input = context.input();
+        var input = context.input().json();
         var delivery = type == PortfolioTransaction.Type.DELIVERY_INBOUND
                         || type == PortfolioTransaction.Type.DELIVERY_OUTBOUND;
 

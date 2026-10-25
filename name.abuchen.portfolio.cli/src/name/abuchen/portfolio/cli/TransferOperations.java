@@ -26,7 +26,7 @@ final class TransferOperations
 
     static void add(OperationContext context)
     {
-        var input = context.input();
+        var input = context.input().json();
 
         TransactionOperations.refuse(context, input, "investmentAccount", "cashAccount", "units", "grossAmount",
                         "exDate");
@@ -49,7 +49,7 @@ final class TransferOperations
 
     private static TransactionRecord.TransferKind parseKind(OperationContext context)
     {
-        var kind = TransactionOperations.parseText(context, context.input(), "kind");
+        var kind = TransactionOperations.parseText(context, context.input().json(), "kind");
         var kinds = String.join(", ", TransactionRecord.TransferKind.ids());
         if (kind == null)
         {
@@ -69,7 +69,7 @@ final class TransferOperations
 
     private static void addSecurity(OperationContext context, Security security)
     {
-        var input = context.input();
+        var input = context.input().json();
 
         var from = TransactionOperations.parseInvestmentAccount(context, input, "from");
         var to = TransactionOperations.parseInvestmentAccount(context, input, "to");
@@ -108,7 +108,7 @@ final class TransferOperations
 
     private static void addCash(OperationContext context)
     {
-        var input = context.input();
+        var input = context.input().json();
 
         var from = TransactionOperations.parseCashAccount(context, input, "from");
         var to = TransactionOperations.parseCashAccount(context, input, "to");
@@ -163,7 +163,7 @@ final class TransferOperations
     private static BigDecimal checkedRate(OperationContext context, Long amount, Long targetAmount, String fromCurrency,
                     String toCurrency)
     {
-        var input = context.input();
+        var input = context.input().json();
         var supplied = TransactionOperations.rawNumber(input, "exchangeRate");
         if (input.has("exchangeRate") && !input.get("exchangeRate").isJsonNull() && supplied == null)
         {

@@ -72,10 +72,6 @@ final class TransactionOperations
 
     private static final List<String> UNIT_TYPES = List.of("FEE", "TAX", "GROSS_VALUE");
 
-    private static final Set<String> KNOWN = Set.of(ApplyBatch.OPERATION_MEMBER, "type", "cashAccount",
-                    "investmentAccount", "date", "time", "amount", "currencyCode", "instrument", "shares", "units",
-                    "exDate", "grossAmount", "note", "source", "kind", "from", "to", "targetAmount", "exchangeRate");
-
     /** The failure code for a member that the kind of transaction doesn't take. */
     private static final Map<String, String> NOT_ALLOWED = Map.ofEntries(
                     Map.entry("cashAccount", "cash-account-not-allowed"),
@@ -186,8 +182,7 @@ final class TransactionOperations
 
     static void add(OperationContext context)
     {
-        context.rejectUnknownFields(KNOWN);
-        var input = context.input();
+        var input = context.input().json();
 
         var name = parseTypeName(context, input);
         if (TransactionRecord.TRANSFER.equals(name))
@@ -200,7 +195,7 @@ final class TransactionOperations
 
     private static void addCash(OperationContext context, Type type)
     {
-        var input = context.input();
+        var input = context.input().json();
 
         refuse(context, input, "investmentAccount", "kind", "from", "to", "targetAmount", "exchangeRate");
 
