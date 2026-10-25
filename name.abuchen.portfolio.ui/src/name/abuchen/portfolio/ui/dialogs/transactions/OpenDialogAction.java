@@ -4,7 +4,6 @@ import java.text.MessageFormat;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.widgets.Shell;
@@ -96,8 +95,12 @@ public class OpenDialogAction extends Action
             return;
         }
 
-        Object activeShell = owner.getContext().get(IServiceConstants.ACTIVE_SHELL);
-        if (activeShell instanceof Shell shell && shell.isDisposed())
+        // The transaction dialogs inject the active shell, which is not defined
+        // in the context of a view. The dialog is therefore created on top of
+        // the shell that hosts the view. If that shell is disposed no dialog can
+        // be shown, and creating it would fail (#620).
+        Shell parentShell = owner.getControl().getShell();
+        if (parentShell.isDisposed())
         {
             PortfolioPlugin.log(MessageFormat.format( // NOSONAR
                             "Skipped opening transaction dialog of type {0}: parent shell is already disposed", //$NON-NLS-1$
@@ -105,7 +108,7 @@ public class OpenDialogAction extends Action
             return;
         }
 
-        AbstractTransactionDialog dialog = owner.make(type, parameters);
+        AbstractTransactionDialog dialog = owner.make(type, parentShell, parameters);
 
         if (prepare != null)
             ((Consumer<AbstractTransactionDialog>) prepare).accept(dialog);
