@@ -63,21 +63,24 @@ public class ColorConversion
 
     /**
      * Returns a color that stays visible against a light and dark background.
-     * Colors close to white or black (saturation below 0.3) get a minimum
-     * saturation and a brightness in the middle range.
+     * Unsaturated bright colors (close to white) and colors close to black get
+     * a minimum saturation and a brightness in the middle range. Colors that
+     * are already visible keep their hue and saturation.
      */
     public static RGB ensureVisible(RGB rgb)
     {
         float[] hsb = rgb.getHSB();
+        float hue = hsb[0], saturation = hsb[1], brightness = hsb[2];
 
-        if (hsb[1] >= 0.3f)
-            return rgb;
+        // close to white: invisible on light backgrounds (only for unsaturated
+        // colors, saturated bright colors remain visible)
+        if (brightness > 0.75f && saturation < 0.3f)
+            return new RGB(hue, 0.35f, 0.8f);
 
-        if (hsb[2] > 0.75f) // close to white: invisible on light backgrounds
-            return new RGB(hsb[0], 0.35f, 0.8f);
-
-        if (hsb[2] < 0.3f) // close to black: invisible on dark backgrounds
-            return new RGB(hsb[0], 0.35f, 0.45f);
+        // close to black: invisible on dark backgrounds, regardless of the
+        // saturation of the color
+        if (brightness < 0.3f)
+            return new RGB(hue, Math.max(0.35f, saturation), 0.45f);
 
         return rgb;
     }
