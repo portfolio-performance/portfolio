@@ -34,7 +34,6 @@ import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.PortfolioPerformanceFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.AuthenticationRequiredDialog;
 import name.abuchen.portfolio.ui.jobs.AbstractClientJob;
 import name.abuchen.portfolio.ui.jobs.priceupdate.Task.HistoricalTask;
@@ -52,12 +51,6 @@ public class UpdatePricesJob extends AbstractClientJob
     }
 
     private static final int UI_PROGRESS_UPDATE_INTERVAL = 300;
-
-    /**
-     * Default minimum time in milliseconds between two recalculations of the
-     * views while the price update is running.
-     */
-    public static final int DEFAULT_RECALCULATION_INTERVAL = 3000;
 
     private final Set<Target> target;
     private final Predicate<Security> filter;
@@ -161,12 +154,11 @@ public class UpdatePricesJob extends AbstractClientJob
         var jobs = groups.stream().map(group -> new RunTaskGroupJob(group.getKey(), group.getValue(), request))
                         .toList();
 
-        // recalculating the views is expensive: mark the client dirty only if
-        // the configured interval has passed. The dirty flag of the request is
+        // recalculating the views is expensive: mark the client dirty at most
+        // once per adaptive throttle interval. The dirty flag of the request is
         // kept until then. After the update, the client is always marked dirty
         // (see finally block).
-        var throttle = new RecalculationThrottle(readRecalculationInterval(), UI_PROGRESS_UPDATE_INTERVAL / 2,
-                        currentMillis());
+        var throttle = new RecalculationThrottle(currentMillis());
 
         // start periodic UI updates
         ScheduledFuture<?> periodicUpdate = scheduler.scheduleAtFixedRate(() -> {
@@ -176,7 +168,13 @@ public class UpdatePricesJob extends AbstractClientJob
             if (throttle.isDue(now) && request.getAndResetDirty())
             {
                 request.getClient().markDirty();
-                throttle.recalculated(now);
+                throttle.recalculationStarted(now);
+
+                // the recalculation runs synchronously on the UI thread
+                // (ClientInput.scheduleDirty -> applyPendingDirty): an asyncExec
+                // posted right after markDirty() runs once the recalculation
+                // has finished and provides its duration to the throttle
+                Display.getDefault().asyncExec(() -> throttle.recalculationFinished(currentMillis()));
             }
         }, 0, UI_PROGRESS_UPDATE_INTERVAL, TimeUnit.MILLISECONDS);
 
@@ -209,15 +207,6 @@ public class UpdatePricesJob extends AbstractClientJob
     private static long currentMillis()
     {
         return TimeUnit.NANOSECONDS.toMillis(System.nanoTime());
-    }
-
-    private static int readRecalculationInterval()
-    {
-        var plugin = PortfolioPlugin.getDefault();
-        if (plugin == null)
-            return DEFAULT_RECALCULATION_INTERVAL;
-
-        return plugin.getPreferenceStore().getInt(UIConstants.Preferences.UPDATE_QUOTES_RECALCULATION_INTERVAL);
     }
 
     private List<Task> prepareHistoricalTasks(PriceUpdateRequest request, List<Security> securities)
