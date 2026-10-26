@@ -155,7 +155,9 @@ final class ReportingCurrency
     /**
      * An amount of a record that may carry its own rate. Rates are tried in
      * order: the identity for the same currency, the record's own rate, then
-     * the rate series.
+     * the rate series. It takes a code and an amount rather than a
+     * {@link Money}, which refuses the empty code a record without a currency
+     * is listed with.
      *
      * @param own
      *            the record's own rate from its currency into the reporting

@@ -287,14 +287,14 @@ final class TransactionsCommand
                         primary.getAmount(), ownRate(record, reporting.code()));
     }
 
-    /** The record's own rate into the target currency: that of its forex unit or of its transfer. */
-    private static Optional<BigDecimal> ownRate(TransactionRecord record, String target)
+    /** The record's own rate into the reporting currency: that of its forex unit or of its transfer. */
+    private static Optional<BigDecimal> ownRate(TransactionRecord record, String reportingCode)
     {
         var forex = record.primary().getUnits().filter(unit -> unit.getType() == Transaction.Unit.Type.GROSS_VALUE)
-                        .filter(unit -> unit.getForex() != null && target.equals(unit.getForex().getCurrencyCode()))
+                        .filter(unit -> unit.getForex() != null && reportingCode.equals(unit.getForex().getCurrencyCode()))
                         .map(Transaction.Unit::getExchangeRate);
 
-        var transfer = record.crossCurrencyIncoming().filter(incoming -> target.equals(incoming.getCurrencyCode()))
+        var transfer = record.crossCurrencyIncoming().filter(incoming -> reportingCode.equals(incoming.getCurrencyCode()))
                         .flatMap(incoming -> record.primary().getUnit(Transaction.Unit.Type.GROSS_VALUE))
                         .map(Transaction.Unit::getExchangeRate);
 
