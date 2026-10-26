@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.query;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -13,6 +13,19 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
+import name.abuchen.portfolio.cli.CliException;
+import name.abuchen.portfolio.cli.CommandContext;
+import name.abuchen.portfolio.cli.CommandSpec;
+import name.abuchen.portfolio.cli.DateRange;
+import name.abuchen.portfolio.cli.Decimals;
+import name.abuchen.portfolio.cli.MasterData;
+import name.abuchen.portfolio.cli.OptionSpec;
+import name.abuchen.portfolio.cli.Paging;
+import name.abuchen.portfolio.cli.ReferenceOption;
+import name.abuchen.portfolio.cli.Response;
+import name.abuchen.portfolio.cli.ResponseMeta;
+import name.abuchen.portfolio.cli.Schema;
+import name.abuchen.portfolio.cli.Sorting;
 import name.abuchen.portfolio.cli.currency.ReportingCurrency;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
@@ -76,7 +89,7 @@ public final class TransactionsCommand
                                     Schema.string(null)))
                     .optionalProperty("exchangeRates", ReportingCurrency.ratesMetaSchema());
 
-    static final CommandSpec SPEC = new CommandSpec("transactions",
+    public static final CommandSpec SPEC = new CommandSpec("transactions",
                     "Business events as transaction records, each joining the sides of a buy, sell or transfer, filtered by date range, account, instrument and type.",
                     true,
                     List.of(INVESTMENT_ACCOUNT.spec(), CASH_ACCOUNT.spec(), INSTRUMENT.spec(), TYPE, FROM, TO,

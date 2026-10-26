@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.query;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -9,6 +9,18 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import name.abuchen.portfolio.cli.CliException;
+import name.abuchen.portfolio.cli.CommandContext;
+import name.abuchen.portfolio.cli.CommandSpec;
+import name.abuchen.portfolio.cli.Decimals;
+import name.abuchen.portfolio.cli.MasterData;
+import name.abuchen.portfolio.cli.MinorUnits;
+import name.abuchen.portfolio.cli.OptionSpec;
+import name.abuchen.portfolio.cli.ReferenceOption;
+import name.abuchen.portfolio.cli.Response;
+import name.abuchen.portfolio.cli.ResponseMeta;
+import name.abuchen.portfolio.cli.Schema;
+import name.abuchen.portfolio.cli.WarningSpec;
 import name.abuchen.portfolio.cli.currency.Prices;
 import name.abuchen.portfolio.cli.currency.ReportingCurrency;
 import name.abuchen.portfolio.cli.currency.StalePrices;
@@ -31,7 +43,7 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
  * the total that contains it is left out rather than stated incompletely, and
  * the missing rate is reported as a warning.
  */
-final class HoldingsCommand
+public final class HoldingsCommand
 {
     private static final OptionSpec DATE = OptionSpec.date("date",
                     "Day to value the holdings at. Defaults to today. Holdings use the prices on or before this day, and conversions the rates on or before it.");
@@ -112,7 +124,7 @@ final class HoldingsCommand
     private static final List<WarningSpec> WARNINGS = Stream
                     .concat(Stream.of(Prices.STALE_PRICE), ReportingCurrency.WARNINGS.stream()).toList();
 
-    static final CommandSpec SPEC = new CommandSpec("holdings",
+    public static final CommandSpec SPEC = new CommandSpec("holdings",
                     "What is held at a date and what it is worth: holdings aggregated across investment accounts, or per account, with cash balances in a separate section, in the base currency or --currency.",
                     true, List.of(DATE, INVESTMENT_ACCOUNT.spec(), BY_ACCOUNT, INCLUDE_ZERO, CURRENCY), DATA, META,
                     WARNINGS, HoldingsCommand::execute);

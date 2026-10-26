@@ -27,7 +27,7 @@ public record ReferenceOption<T>(OptionSpec spec, References.Kind<T> kind)
         return of(name, description, References.CASH_ACCOUNT);
     }
 
-    static ReferenceOption<Taxonomy> taxonomy(String name, String description)
+    public static ReferenceOption<Taxonomy> taxonomy(String name, String description)
     {
         return of(name, description, References.TAXONOMY);
     }
@@ -40,7 +40,7 @@ public record ReferenceOption<T>(OptionSpec spec, References.Kind<T> kind)
     }
 
     /** The same option, but the parser rejects a command line without it. */
-    ReferenceOption<T> asRequired()
+    public ReferenceOption<T> asRequired()
     {
         return new ReferenceOption<>(spec.asRequired(), kind);
     }

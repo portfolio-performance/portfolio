@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.query;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -6,11 +6,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import name.abuchen.portfolio.cli.CommandSpec;
+import name.abuchen.portfolio.cli.MasterData;
+import name.abuchen.portfolio.cli.MasterDataList;
+import name.abuchen.portfolio.cli.MinorUnits;
+import name.abuchen.portfolio.cli.Schema;
+import name.abuchen.portfolio.cli.TableColumn;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 
-final class InstrumentsCommand
+public final class InstrumentsCommand
 {
     private static final Schema ATTRIBUTE = Schema.object("A user-defined attribute that has a value.")
                     .property("id", Schema.string("Attribute type id."))
@@ -33,10 +39,10 @@ final class InstrumentsCommand
                     .property("attributes", Schema.array("User-defined attributes that have a value.", ATTRIBUTE))
                     .optionalProperty("updatedAt", MasterData.UPDATED_AT);
 
-    static final MasterDataList.Source<Security> SOURCE = new MasterDataList.Source<Security>(Client::getSecurities,
-                    Security::getUUID, Security::getName, InstrumentsCommand::renderer);
+    public static final MasterDataList.Source<Security> SOURCE = new MasterDataList.Source<Security>(
+                    Client::getSecurities, Security::getUUID, Security::getName, InstrumentsCommand::renderer);
 
-    static final CommandSpec SPEC = MasterDataList.command("instruments",
+    public static final CommandSpec SPEC = MasterDataList.command("instruments",
                     "Instruments (securities, indices, exchange rates): UUID, name, currency, ISIN, ticker, WKN, note, retired flag and attributes",
                     ITEM,
                     List.of(TableColumn.of("uuid", "UUID"), TableColumn.capped("name", "Name", 40),

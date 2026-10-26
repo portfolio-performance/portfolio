@@ -31,20 +31,20 @@ public record DateRange(Optional<LocalDate> from, LocalDate to)
         return new DateRange(from, to);
     }
 
-    boolean contains(LocalDate day)
+    public boolean contains(LocalDate day)
     {
         return (from.isEmpty() || !day.isBefore(from.get())) && !day.isAfter(to);
     }
 
     /** Adds <code>from</code>, if given, and <code>to</code>. */
-    void putInto(Map<String, Object> meta)
+    public void putInto(Map<String, Object> meta)
     {
         from.ifPresent(date -> meta.put("from", date.toString()));
         meta.put("to", to.toString());
     }
 
     /** Declares the members {@link #putInto} adds. */
-    static Schema declareIn(Schema meta)
+    public static Schema declareIn(Schema meta)
     {
         return meta.optionalProperty("from", Schema.string("First day of the range, as given. Absent if not given."))
                         .property("to", Schema.string("Last day of the range: as given, otherwise today."));

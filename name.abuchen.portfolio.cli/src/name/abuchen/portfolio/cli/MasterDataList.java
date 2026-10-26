@@ -15,7 +15,7 @@ import name.abuchen.portfolio.model.Client;
  * command. A command only says what its entities are and how to render one;
  * the options, sorting, paging, response shape and meta come from here.
  */
-final class MasterDataList
+public final class MasterDataList
 {
     /**
      * What a list command contributes.
@@ -29,7 +29,7 @@ final class MasterDataList
      * @param renderer
      *            prepares, per client, how one entity is rendered
      */
-    record Source<T>(Function<Client, List<T>> entities, Function<T, String> uuid, Function<T, String> name,
+    public record Source<T>(Function<Client, List<T>> entities, Function<T, String> uuid, Function<T, String> name,
                     Function<Client, Function<T, Map<String, Object>>> renderer)
     {
         /** Name (case-insensitive, ordinal), then UUID. */
@@ -53,7 +53,7 @@ final class MasterDataList
      * @param updatedAt
      *            the last modified time of an entity; null if core has none
      */
-    static <T> CommandSpec command(String name, String summary, Schema item, List<TableColumn> columns,
+    public static <T> CommandSpec command(String name, String summary, Schema item, List<TableColumn> columns,
                     Source<T> source, Function<T, Instant> updatedAt)
     {
         var sort = sortSpec(source, updatedAt);

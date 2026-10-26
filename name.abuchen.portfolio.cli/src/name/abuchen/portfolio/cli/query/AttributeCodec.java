@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.query;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
+import name.abuchen.portfolio.cli.Decimals;
+import name.abuchen.portfolio.cli.MasterData;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.AttributeType.AmountConverter;
 import name.abuchen.portfolio.model.AttributeType.AmountPlainConverter;

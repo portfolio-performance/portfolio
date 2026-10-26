@@ -9,7 +9,7 @@ public final class CoreVersion
      * The upstream release the bundled core is built from. Bump it together
      * with the core when updating the CLI.
      */
-    static final String PINNED_UPSTREAM_TAG = "0.89.0";
+    public static final String PINNED_UPSTREAM_TAG = "0.89.0";
 
     /** The newest client file version this core can read and write. */
     public static final int MAX_SUPPORTED_FILE_VERSION = Client.CURRENT_VERSION;

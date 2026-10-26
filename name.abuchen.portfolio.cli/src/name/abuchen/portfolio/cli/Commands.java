@@ -12,6 +12,15 @@ import name.abuchen.portfolio.cli.apply.RestoreCommand;
 import name.abuchen.portfolio.cli.apply.TaxonomyOperations;
 import name.abuchen.portfolio.cli.apply.TransactionOperations;
 import name.abuchen.portfolio.cli.performance.PerformanceCommand;
+import name.abuchen.portfolio.cli.query.AllocationCommand;
+import name.abuchen.portfolio.cli.query.CashAccountsCommand;
+import name.abuchen.portfolio.cli.query.HoldingsCommand;
+import name.abuchen.portfolio.cli.query.InfoCommand;
+import name.abuchen.portfolio.cli.query.InstrumentsCommand;
+import name.abuchen.portfolio.cli.query.InvestmentAccountsCommand;
+import name.abuchen.portfolio.cli.query.PricesCommand;
+import name.abuchen.portfolio.cli.query.TaxonomiesCommand;
+import name.abuchen.portfolio.cli.query.TransactionsCommand;
 
 /** The single list of declared commands. */
 public final class Commands

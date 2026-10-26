@@ -1,12 +1,19 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.query;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import name.abuchen.portfolio.cli.CliException;
+import name.abuchen.portfolio.cli.CommandContext;
+import name.abuchen.portfolio.cli.CommandSpec;
+import name.abuchen.portfolio.cli.CoreVersion;
+import name.abuchen.portfolio.cli.Response;
+import name.abuchen.portfolio.cli.ResponseMeta;
+import name.abuchen.portfolio.cli.Schema;
 import name.abuchen.portfolio.cli.file.FileFormat;
 
-final class InfoCommand
+public final class InfoCommand
 {
     private static final Schema DATA = Schema.object("Facts about the client file.")
                     .property("fileVersion", Schema.integer("Version of the file as read."))
@@ -25,7 +32,7 @@ final class InfoCommand
                     .property("pinnedUpstreamTag",
                                     Schema.string("Upstream release the bundled core is built from."));
 
-    static final CommandSpec SPEC = new CommandSpec("info",
+    public static final CommandSpec SPEC = new CommandSpec("info",
                     "File version, supported version ceiling, format, base currency and entity counts.", true,
                     List.of(), DATA, ResponseMeta.SCHEMA, InfoCommand::execute);
 

@@ -9,11 +9,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import name.abuchen.portfolio.cli.BuiltRecord;
 import name.abuchen.portfolio.cli.Schema;
-import name.abuchen.portfolio.cli.TransactionRecord;
-import name.abuchen.portfolio.cli.TransactionShape;
-import name.abuchen.portfolio.cli.TransactionsCommand;
+import name.abuchen.portfolio.cli.query.BuiltRecord;
+import name.abuchen.portfolio.cli.query.TransactionRecord;
+import name.abuchen.portfolio.cli.query.TransactionShape;
+import name.abuchen.portfolio.cli.query.TransactionsCommand;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;

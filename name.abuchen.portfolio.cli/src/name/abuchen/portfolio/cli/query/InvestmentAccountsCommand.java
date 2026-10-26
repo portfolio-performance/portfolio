@@ -1,13 +1,18 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.query;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import name.abuchen.portfolio.cli.CommandSpec;
+import name.abuchen.portfolio.cli.MasterData;
+import name.abuchen.portfolio.cli.MasterDataList;
+import name.abuchen.portfolio.cli.Schema;
+import name.abuchen.portfolio.cli.TableColumn;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 
-final class InvestmentAccountsCommand
+public final class InvestmentAccountsCommand
 {
     private static final Schema ITEM = Schema.object("An investment account that holds instruments.")
                     .property("uuid", Schema.string("Canonical UUID."))
@@ -18,10 +23,11 @@ final class InvestmentAccountsCommand
                     .property("retired", Schema.bool("Whether the account is retired."))
                     .optionalProperty("updatedAt", MasterData.UPDATED_AT);
 
-    static final MasterDataList.Source<Portfolio> SOURCE = new MasterDataList.Source<Portfolio>(Client::getPortfolios,
-                    Portfolio::getUUID, Portfolio::getName, client -> InvestmentAccountsCommand::render);
+    public static final MasterDataList.Source<Portfolio> SOURCE = new MasterDataList.Source<Portfolio>(
+                    Client::getPortfolios, Portfolio::getUUID, Portfolio::getName,
+                    client -> InvestmentAccountsCommand::render);
 
-    static final CommandSpec SPEC = MasterDataList.command("investment-accounts",
+    public static final CommandSpec SPEC = MasterDataList.command("investment-accounts",
                     "Investment accounts: UUID, name, reference cash account, note and retired flag", ITEM,
                     List.of(TableColumn.of("uuid", "UUID"), TableColumn.capped("name", "Name", 40),
                                     TableColumn.of("referenceCashAccount", "Reference cash account"),

@@ -20,7 +20,7 @@ public final class ResponseMeta
     /** For commands that don't read a client file. */
     static final Schema AS_OF_SCHEMA = envelope().property("asOf", AS_OF);
 
-    static final Schema SCHEMA = fileEnvelope();
+    public static final Schema SCHEMA = fileEnvelope();
 
     private ResponseMeta()
     {
@@ -33,7 +33,7 @@ public final class ResponseMeta
     }
 
     /** A fresh copy each call, so a command can add members of its own. */
-    static Schema pagedSchema(Sorting.Spec<?> sort)
+    public static Schema pagedSchema(Sorting.Spec<?> sort)
     {
         return Sorting.declareIn(fileEnvelope().property("limit", Schema.integer("Page size used."))
                         .property("offset", Schema.integer("Index of the first item returned.")), sort);
@@ -64,7 +64,7 @@ public final class ResponseMeta
         return meta;
     }
 
-    static Map<String, Object> paged(CommandContext context, Client client, Paging paging, Sorting<?> sorting)
+    public static Map<String, Object> paged(CommandContext context, Client client, Paging paging, Sorting<?> sorting)
     {
         var meta = of(context, client);
         meta.put("limit", paging.limit());

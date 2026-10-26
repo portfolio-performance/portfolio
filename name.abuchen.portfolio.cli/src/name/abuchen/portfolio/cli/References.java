@@ -8,6 +8,10 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import name.abuchen.portfolio.cli.query.CashAccountsCommand;
+import name.abuchen.portfolio.cli.query.InstrumentsCommand;
+import name.abuchen.portfolio.cli.query.InvestmentAccountsCommand;
+import name.abuchen.portfolio.cli.query.TaxonomiesCommand;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;

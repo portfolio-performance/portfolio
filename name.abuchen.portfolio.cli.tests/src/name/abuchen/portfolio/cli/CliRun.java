@@ -58,7 +58,7 @@ public final class CliRun
     }
 
     /** Runs as if on the operating system with the given <code>os.name</code>. */
-    static CliRun runOn(String osName, Map<String, String> env, String... args)
+    public static CliRun runOn(String osName, Map<String, String> env, String... args)
     {
         return execute(osName, WriteEnvironment.SYSTEM, env, "", args);
     }
@@ -94,7 +94,7 @@ public final class CliRun
         return run;
     }
 
-    JsonElement json()
+    public JsonElement json()
     {
         return JsonParser.parseString(stdout);
     }

@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.query;
 
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -6,12 +6,26 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import name.abuchen.portfolio.cli.CliException;
+import name.abuchen.portfolio.cli.CommandContext;
+import name.abuchen.portfolio.cli.CommandSpec;
+import name.abuchen.portfolio.cli.DateRange;
+import name.abuchen.portfolio.cli.Decimals;
+import name.abuchen.portfolio.cli.MasterData;
+import name.abuchen.portfolio.cli.MinorUnits;
+import name.abuchen.portfolio.cli.OptionSpec;
+import name.abuchen.portfolio.cli.Paging;
+import name.abuchen.portfolio.cli.ReferenceOption;
+import name.abuchen.portfolio.cli.Response;
+import name.abuchen.portfolio.cli.ResponseMeta;
+import name.abuchen.portfolio.cli.Schema;
+import name.abuchen.portfolio.cli.Sorting;
 import name.abuchen.portfolio.cli.currency.Prices;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
 
-final class PricesCommand
+public final class PricesCommand
 {
     private static final ReferenceOption<Security> INSTRUMENT = ReferenceOption.instrument("instrument",
                     "Instrument to read.")
@@ -45,7 +59,7 @@ final class PricesCommand
 
     private static final Schema META = DateRange.declareIn(ResponseMeta.pagedSchema(SORT));
 
-    static final CommandSpec SPEC = new CommandSpec("prices",
+    public static final CommandSpec SPEC = new CommandSpec("prices",
                     "Price history of one instrument by date, ascending unless --order desc, within an optional date range, with its latest price.",
                     true,
                     List.of(INSTRUMENT.spec(), FROM, TO, Paging.LIMIT, Paging.OFFSET, SORT.sortOption(),

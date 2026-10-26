@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.query;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -7,6 +7,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import name.abuchen.portfolio.cli.CliException;
+import name.abuchen.portfolio.cli.CommandContext;
+import name.abuchen.portfolio.cli.CommandSpec;
+import name.abuchen.portfolio.cli.Decimals;
+import name.abuchen.portfolio.cli.MasterData;
+import name.abuchen.portfolio.cli.MasterDataList;
+import name.abuchen.portfolio.cli.Paging;
+import name.abuchen.portfolio.cli.Response;
+import name.abuchen.portfolio.cli.ResponseMeta;
+import name.abuchen.portfolio.cli.Schema;
+import name.abuchen.portfolio.cli.Sorting;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
@@ -17,7 +28,7 @@ import name.abuchen.portfolio.model.Taxonomy;
  * shows them, each with its classification tree flattened in pre-order and the
  * direct assignments of every classification.
  */
-final class TaxonomiesCommand
+public final class TaxonomiesCommand
 {
     private static final Schema ASSIGNMENT = Schema.object("One instrument or cash account placed in a classification.")
                     .optionalProperty("instrument", Schema.string("UUID of the instrument. Present for an instrument."))
@@ -48,15 +59,15 @@ final class TaxonomiesCommand
                                     CLASSIFICATION));
 
     /** What a reference to a taxonomy matches; taxonomies are listed in file order, not through {@link MasterDataList}. */
-    static final MasterDataList.Source<Taxonomy> SOURCE = new MasterDataList.Source<Taxonomy>(Client::getTaxonomies,
-                    Taxonomy::getId, Taxonomy::getName, client -> TaxonomiesCommand::render);
+    public static final MasterDataList.Source<Taxonomy> SOURCE = new MasterDataList.Source<Taxonomy>(
+                    Client::getTaxonomies, Taxonomy::getId, Taxonomy::getName, client -> TaxonomiesCommand::render);
 
     /** The natural order is the position the app shows; <code>name</code> is an alphabetical alternative. */
     private static final Sorting.Spec<Taxonomy> SORT = Sorting.Spec.of(Taxonomy::getId, "position",
                     new Sorting.Field<Taxonomy>("position", client -> Comparator.comparingInt(client.getTaxonomies()::indexOf)),
                     Sorting.Field.of("name", MasterData.byName(Taxonomy::getName)));
 
-    static final CommandSpec SPEC = new CommandSpec("taxonomies",
+    public static final CommandSpec SPEC = new CommandSpec("taxonomies",
                     "Taxonomies in the order the app shows them (--sort position, the default) or by name, each with its classification tree flattened in pre-order: UUID, name, parent, path, target weight and direct assignments. --order desc reverses.",
                     true, Stream.concat(Paging.OPTIONS.stream(), SORT.options().stream()).toList(),
                     Paging.pageSchema("A page of the taxonomies.", ITEM), ResponseMeta.pagedSchema(SORT),

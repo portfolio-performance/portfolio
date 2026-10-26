@@ -6,7 +6,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.TreeMap;
 
-import name.abuchen.portfolio.cli.BuiltRecord;
+import name.abuchen.portfolio.cli.query.BuiltRecord;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;

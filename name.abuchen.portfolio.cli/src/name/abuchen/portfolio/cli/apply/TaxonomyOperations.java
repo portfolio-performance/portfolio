@@ -10,7 +10,7 @@ import java.util.Set;
 
 import name.abuchen.portfolio.cli.Decimals;
 import name.abuchen.portfolio.cli.Schema;
-import name.abuchen.portfolio.cli.TaxonomyTree;
+import name.abuchen.portfolio.cli.query.TaxonomyTree;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;

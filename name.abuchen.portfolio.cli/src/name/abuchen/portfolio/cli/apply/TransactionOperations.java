@@ -9,11 +9,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
-import name.abuchen.portfolio.cli.BuiltRecord;
 import name.abuchen.portfolio.cli.Schema;
-import name.abuchen.portfolio.cli.TransactionRecord;
-import name.abuchen.portfolio.cli.TransactionShape;
-import name.abuchen.portfolio.cli.TransactionsCommand;
+import name.abuchen.portfolio.cli.query.BuiltRecord;
+import name.abuchen.portfolio.cli.query.TransactionRecord;
+import name.abuchen.portfolio.cli.query.TransactionShape;
+import name.abuchen.portfolio.cli.query.TransactionsCommand;
 import name.abuchen.portfolio.datatransfer.ImportAction;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.actions.CheckForexGrossValueAction;

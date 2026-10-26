@@ -38,7 +38,7 @@ public final class TaxonomyFixtures
     }
 
     /** Percentages of the file are stored as fixed-point weights. */
-    static int percent(double percent)
+    public static int percent(double percent)
     {
         return (int) Math.round(percent * Classification.ONE_HUNDRED_PERCENT / 100);
     }

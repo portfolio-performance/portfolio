@@ -31,7 +31,7 @@ public final class Schema
     }
 
     /** A value that may be any of the given scalar types, e.g. string or number. */
-    static Schema oneOfTypes(String description, String... types)
+    public static Schema oneOfTypes(String description, String... types)
     {
         var schema = new Schema(types[0], description);
         schema.alternativeTypes = List.of(types);
@@ -70,7 +70,7 @@ public final class Schema
      * that a value added upstream still conforms. Rendered as the standard
      * <code>examples</code> annotation, which no validator enforces.
      */
-    static Schema openEnumOf(String description, List<String> knownValues)
+    public static Schema openEnumOf(String description, List<String> knownValues)
     {
         var schema = new Schema("string", description);
         schema.knownValues = List.copyOf(knownValues);

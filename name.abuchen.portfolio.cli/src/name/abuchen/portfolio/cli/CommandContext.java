@@ -55,7 +55,7 @@ public final class CommandContext
      * @throws CliException
      *             a usage error if the value is not a valid ISO date
      */
-    Optional<LocalDate> date(OptionSpec option) throws CliException
+    public Optional<LocalDate> date(OptionSpec option) throws CliException
     {
         return option.parseDate(raw(option, OptionSpec.IsoDate.class));
     }

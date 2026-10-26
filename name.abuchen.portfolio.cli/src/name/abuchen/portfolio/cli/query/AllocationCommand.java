@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.query;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -10,6 +10,18 @@ import java.util.Map;
 import java.util.OptionalLong;
 import java.util.stream.Stream;
 
+import name.abuchen.portfolio.cli.CliException;
+import name.abuchen.portfolio.cli.CommandContext;
+import name.abuchen.portfolio.cli.CommandSpec;
+import name.abuchen.portfolio.cli.Decimals;
+import name.abuchen.portfolio.cli.MasterData;
+import name.abuchen.portfolio.cli.OptionSpec;
+import name.abuchen.portfolio.cli.ReferenceOption;
+import name.abuchen.portfolio.cli.Response;
+import name.abuchen.portfolio.cli.ResponseMeta;
+import name.abuchen.portfolio.cli.Schema;
+import name.abuchen.portfolio.cli.Warning;
+import name.abuchen.portfolio.cli.WarningSpec;
 import name.abuchen.portfolio.cli.currency.Prices;
 import name.abuchen.portfolio.cli.currency.ReportingCurrency;
 import name.abuchen.portfolio.cli.currency.StalePrices;
@@ -36,7 +48,7 @@ import name.abuchen.portfolio.snapshot.ClientSnapshot;
  * As in <code>holdings</code>, a figure that needs a missing exchange rate
  * can't be trusted, so no value, share or total is stated then.
  */
-final class AllocationCommand
+public final class AllocationCommand
 {
     private static final ReferenceOption<Taxonomy> TAXONOMY = ReferenceOption.taxonomy("taxonomy",
                     "Taxonomy to allocate by. List the taxonomies with the taxonomies command.")
@@ -83,7 +95,7 @@ final class AllocationCommand
     private static final List<WarningSpec> WARNINGS = Stream
                     .concat(Stream.of(Prices.STALE_PRICE, OVER_ASSIGNED), ReportingCurrency.WARNINGS.stream()).toList();
 
-    static final CommandSpec SPEC = new CommandSpec("allocation",
+    public static final CommandSpec SPEC = new CommandSpec("allocation",
                     "How the value of the client splits across the classifications of one taxonomy at a date: one flat row per classification at every depth plus an unassigned row, with value and share in the base currency or --currency.",
                     true, List.of(TAXONOMY.spec(), DATE, CURRENCY), DATA, META, WARNINGS, AllocationCommand::execute);
 

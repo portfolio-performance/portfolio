@@ -6,25 +6,25 @@ import java.util.OptionalInt;
 import java.util.function.Function;
 
 /** The page requested by <code>--limit</code> and <code>--offset</code>. */
-record Paging(int limit, long offset)
+public record Paging(int limit, long offset)
 {
     static final int DEFAULT_LIMIT = 200;
     static final int MAX_LIMIT = 1000;
 
-    static final OptionSpec LIMIT = OptionSpec.integer("limit", "n", "Maximum number of items to return.",
+    public static final OptionSpec LIMIT = OptionSpec.integer("limit", "n", "Maximum number of items to return.",
                     DEFAULT_LIMIT, 1, (long) MAX_LIMIT);
 
-    static final OptionSpec OFFSET = OptionSpec.integer("offset", "n",
+    public static final OptionSpec OFFSET = OptionSpec.integer("offset", "n",
                     "Number of items to skip; continue with nextOffset of the previous page.", 0, 0, null);
 
     /** Both paging options, to declare on a list command. */
-    static final List<OptionSpec> OPTIONS = List.of(LIMIT, OFFSET);
+    public static final List<OptionSpec> OPTIONS = List.of(LIMIT, OFFSET);
 
     /** One page of a list, and where the next one starts. */
-    record Page<T>(List<T> items, int total, OptionalInt nextOffset)
+    public record Page<T>(List<T> items, int total, OptionalInt nextOffset)
     {
         /** Adds <code>items</code>, <code>total</code> and, unless this is the last page, <code>nextOffset</code>. */
-        void putInto(Map<String, Object> data, Function<T, ?> renderer)
+        public void putInto(Map<String, Object> data, Function<T, ?> renderer)
         {
             data.put("items", items.stream().map(renderer).toList());
             data.put("total", total);
@@ -33,7 +33,7 @@ record Paging(int limit, long offset)
     }
 
     /** The members {@link Page#putInto} adds, for a command to extend with its own. */
-    static Schema pageSchema(String description, Schema item)
+    public static Schema pageSchema(String description, Schema item)
     {
         return Schema.object(description).property("items", Schema.array("The items of this page.", item))
                         .property("total", Schema.integer("Number of items in the whole list."))
@@ -41,7 +41,7 @@ record Paging(int limit, long offset)
                                         Schema.integer("Offset of the next page. Absent on the last page."));
     }
 
-    static Paging parse(CommandContext context) throws CliException
+    public static Paging parse(CommandContext context) throws CliException
     {
         var limit = context.integer(LIMIT);
         var offset = context.integer(OFFSET);
@@ -49,7 +49,7 @@ record Paging(int limit, long offset)
     }
 
     /** Cuts this page out of the complete, already ordered list. */
-    <T> Page<T> of(List<T> ordered)
+    public <T> Page<T> of(List<T> ordered)
     {
         var total = ordered.size();
         if (offset >= total)

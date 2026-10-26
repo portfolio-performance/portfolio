@@ -8,9 +8,9 @@ import java.util.function.Function;
 /** Field rules shared by the master-data list commands. */
 public final class MasterData
 {
-    static final String UPDATED_AT_MEMBER = "updatedAt";
+    public static final String UPDATED_AT_MEMBER = "updatedAt";
 
-    static final Schema UPDATED_AT = Schema.string(
+    public static final Schema UPDATED_AT = Schema.string(
                     "When the entity last changed in the file, as an ISO-8601 UTC instant to the second, for example 2026-10-24T15:04:57Z. Absent if the file has none.");
 
     private MasterData()
@@ -24,7 +24,7 @@ public final class MasterData
     }
 
     /** Name, case-insensitive and ordinal. */
-    static <T> Comparator<T> byName(Function<T, String> name)
+    public static <T> Comparator<T> byName(Function<T, String> name)
     {
         return Comparator.comparing((T entity) -> orEmpty(name.apply(entity)), String.CASE_INSENSITIVE_ORDER);
     }
@@ -36,7 +36,7 @@ public final class MasterData
     }
 
     /** Adds <code>updatedAt</code>, the last modified time, unless core has none. */
-    static void putUpdatedAt(Map<String, Object> json, Instant updatedAt)
+    public static void putUpdatedAt(Map<String, Object> json, Instant updatedAt)
     {
         Sorting.lastModified(updatedAt).ifPresent(instant -> json.put(UPDATED_AT_MEMBER, instant.toString()));
     }
@@ -48,7 +48,7 @@ public final class MasterData
         json.put("name", orEmpty(name));
     }
 
-    static boolean isSet(String value)
+    public static boolean isSet(String value)
     {
         return value != null && !value.isBlank();
     }

@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.query;
 
 import java.util.List;
 import java.util.Map;
@@ -9,6 +9,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.google.gson.JsonObject;
+
+import name.abuchen.portfolio.cli.MasterData;
+import name.abuchen.portfolio.cli.MinorUnits;
+import name.abuchen.portfolio.cli.Schema;
 
 /**
  * The members of a {@link TransactionRecord} and of its units, each declared
