@@ -437,6 +437,7 @@ public class Messages extends NLS
     public static String EditWizardMasterDataMsgDuplicateClassification;
     public static String EditWizardMasterDataMsgWeightEqualsZero;
     public static String EditWizardMasterDataMsgWeightNot100Percent;
+    public static String EditWizardMasterDataSelectClassification;
     public static String EditWizardMasterDataTitle;
     public static String EditWizardMasterDataUnlink;
     public static String EditWizardMasterDataUnlink_ToolTip;

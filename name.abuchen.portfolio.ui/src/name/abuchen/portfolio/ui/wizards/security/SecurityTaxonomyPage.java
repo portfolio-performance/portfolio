@@ -11,17 +11,18 @@ import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.ValidationStatusProvider;
 import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.core.databinding.observable.value.WritableValue;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.MultiValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
-import org.eclipse.jface.databinding.viewers.typed.ViewerProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerComparator;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ControlAdapter;
@@ -34,6 +35,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 
 import name.abuchen.portfolio.model.Classification;
@@ -42,6 +44,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityModel.ClassificationLink;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityModel.SortOrder;
@@ -263,7 +266,7 @@ public class SecurityTaxonomyPage extends AbstractPage
                     if (left == null)
                         return -1;
 
-                    return designation.getElements().indexOf(right) - designation.getElements().indexOf(left);
+                    return designation.indexOf(right) - designation.indexOf(left);
                 });
                 break;
             case NAME:
@@ -318,7 +321,7 @@ public class SecurityTaxonomyPage extends AbstractPage
         GridDataFactory.fillDefaults().applyTo(block);
         GridLayoutFactory.fillDefaults().numColumns(2).applyTo(block);
 
-        addDropDown(block, designation, classificationObservables);
+        addDropDown(block, designation, link, classificationObservables);
         addDeleteButton(block, designation, link);
     }
 
@@ -332,7 +335,7 @@ public class SecurityTaxonomyPage extends AbstractPage
         GridLayoutFactory.fillDefaults().numColumns(3).applyTo(block);
 
         addSpinner(block, link, weightObservables);
-        addDropDown(block, designation, classificationObservables);
+        addDropDown(block, designation, link, classificationObservables);
         addDeleteButton(block, designation, link);
     }
 
@@ -400,23 +403,81 @@ public class SecurityTaxonomyPage extends AbstractPage
         }
     }
 
-    private void addDropDown(Composite block, TaxonomyDesignation designation,
+    private void addDropDown(Composite block, TaxonomyDesignation designation, final ClassificationLink link,
                     List<IObservableValue<?>> classificationObservables)
     {
-        final ComboViewer combo = new ComboViewer(block, SWT.READ_ONLY);
-        combo.setContentProvider(ArrayContentProvider.getInstance());
-        combo.setLabelProvider(new LabelProvider()
+        Composite picker = new Composite(block, SWT.NONE);
+        picker.setBackground(block.getBackground());
+        GridDataFactory.fillDefaults().applyTo(picker);
+        GridLayoutFactory.fillDefaults().numColumns(2).equalWidth(false).applyTo(picker);
+
+        Label selectedClassification = new Label(picker, SWT.NONE);
+        selectedClassification.setBackground(picker.getBackground());
+        GridDataFactory.fillDefaults().hint(350, SWT.DEFAULT).applyTo(selectedClassification);
+
+        Link select = new Link(picker, SWT.UNDERLINE_LINK);
+        select.setText(Messages.EditWizardMasterDataSelectClassification);
+        GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).applyTo(select);
+
+        var observable = new WritableValue<>(link.getClassification(), Classification.class);
+        updateLabel(selectedClassification, observable.getValue(), designation);
+        observable.addValueChangeListener(e -> updateLabel(selectedClassification, e.diff.getNewValue(), designation));
+
+        select.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            Classification selected = selectClassification(block.getShell(), designation, observable.getValue());
+            if (selected != null)
+                observable.setValue(selected);
+        }));
+
+        classificationObservables.add(observable);
+    }
+
+    private Classification selectClassification(Shell shell, TaxonomyDesignation designation, Classification current)
+    {
+        ListSelectionDialog dialog = new ListSelectionDialog(shell, new LabelProvider()
         {
             @Override
             public String getText(Object element)
             {
-                return ((Classification) element).getPathName(false, 80);
+                return designation.getPathName((Classification) element);
             }
         });
-        combo.setInput(designation.getElements());
-        GridDataFactory.fillDefaults().grab(false, false).applyTo(combo.getControl());
 
-        classificationObservables.add(ViewerProperties.singleSelection().observe(combo));
+        dialog.setTitle(designation.getTaxonomy().getName());
+        dialog.setMultiSelection(false);
+        dialog.setElements(designation.getElements());
+        dialog.setInitialSelection(current);
+        dialog.setViewerComparator(new ViewerComparator()
+        {
+            @Override
+            public int compare(Viewer viewer, Object e1, Object e2)
+            {
+                if (designation.getSortOrder() == SortOrder.NAME)
+                    return TextUtil.compare(((Classification) e1).getName(), ((Classification) e2).getName());
+
+                return Integer.compare(designation.indexOf((Classification) e1),
+                                designation.indexOf((Classification) e2));
+            }
+        });
+
+        if (dialog.open() != Window.OK)
+            return null;
+
+        Object[] result = dialog.getResult();
+        return result.length > 0 ? (Classification) result[0] : null;
+    }
+
+    private void updateLabel(Label label, Classification classification, TaxonomyDesignation designation)
+    {
+        if (classification == null)
+        {
+            label.setText(""); //$NON-NLS-1$
+            label.setToolTipText(null);
+            return;
+        }
+
+        label.setText(designation.getPathName(classification));
+        label.setToolTipText(TextUtil.tooltip(classification.getPathName(false)));
     }
 
     private void addDeleteButton(final Composite block, final TaxonomyDesignation designation,
