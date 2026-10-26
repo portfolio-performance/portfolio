@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.file;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
  * {@link #SYSTEM}; tests substitute one to reach failures that arguments and
  * files can't produce.
  */
-interface WriteEnvironment
+public interface WriteEnvironment
 {
     WriteEnvironment SYSTEM = new WriteEnvironment()
     {

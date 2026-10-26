@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.file;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -16,7 +16,7 @@ import name.abuchen.portfolio.model.ClientFactory;
  * flags package-private, so the CLI detects the format itself from the file
  * extension and magic bytes, mirroring core's own rules.
  */
-enum FileFormat
+public enum FileFormat
 {
     XML("xml"), XML_ID_REFERENCES("xml-id-references"), XML_ZIP("xml-zip"), BINARY("binary"), XML_AES256(
                     "xml-aes256"), XML_AES128("xml-aes128"), BINARY_AES256("binary-aes256"), BINARY_AES128(
@@ -32,7 +32,7 @@ enum FileFormat
         this.id = id;
     }
 
-    String id()
+    public String id()
     {
         return id;
     }

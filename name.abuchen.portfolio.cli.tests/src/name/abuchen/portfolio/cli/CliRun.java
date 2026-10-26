@@ -20,18 +20,20 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import name.abuchen.portfolio.cli.file.WriteEnvironment;
+
 /**
  * Runs the CLI in-process the way an agent would: arguments, environment and
  * stdin in; stdout, stderr and the exit code out. Every successful run must
  * keep the {@link ResponseContract}, or the test fails right there.
  */
-final class CliRun
+public final class CliRun
 {
-    static final Clock CLOCK = Clock.fixed(Instant.parse("2026-10-16T12:00:00Z"), ZoneOffset.UTC);
+    public static final Clock CLOCK = Clock.fixed(Instant.parse("2026-10-16T12:00:00Z"), ZoneOffset.UTC);
 
-    final int exitCode;
-    final String stdout;
-    final String stderr;
+    public final int exitCode;
+    public final String stdout;
+    public final String stderr;
 
     private CliRun(int exitCode, String stdout, String stderr)
     {
@@ -40,17 +42,17 @@ final class CliRun
         this.stderr = stderr;
     }
 
-    static CliRun run(String... args)
+    public static CliRun run(String... args)
     {
         return run(Map.of(), args);
     }
 
-    static CliRun run(Map<String, String> env, String... args)
+    public static CliRun run(Map<String, String> env, String... args)
     {
         return runWithStdin(env, "", args);
     }
 
-    static CliRun runWithStdin(Map<String, String> env, String stdin, String... args)
+    public static CliRun runWithStdin(Map<String, String> env, String stdin, String... args)
     {
         return execute(System.getProperty("os.name", ""), WriteEnvironment.SYSTEM, env, stdin, args);
     }
@@ -62,7 +64,7 @@ final class CliRun
     }
 
     /** Runs with a file system and process probe the test controls. */
-    static CliRun runWith(WriteEnvironment environment, String osName, String... args)
+    public static CliRun runWith(WriteEnvironment environment, String osName, String... args)
     {
         return execute(osName, environment, Map.of(), "", args);
     }
@@ -97,12 +99,12 @@ final class CliRun
         return JsonParser.parseString(stdout);
     }
 
-    JsonObject data()
+    public JsonObject data()
     {
         return json().getAsJsonObject().getAsJsonObject("data");
     }
 
-    JsonObject meta()
+    public JsonObject meta()
     {
         return json().getAsJsonObject().getAsJsonObject("meta");
     }
@@ -113,7 +115,7 @@ final class CliRun
         return data().getAsJsonArray("items");
     }
 
-    JsonArray warnings()
+    public JsonArray warnings()
     {
         return json().getAsJsonObject().getAsJsonArray("warnings");
     }
@@ -130,7 +132,7 @@ final class CliRun
     }
 
     /** Empty for a failed run, which has no warnings. */
-    List<String> warningCodes()
+    public List<String> warningCodes()
     {
         var codes = new ArrayList<String>();
         var warnings = warnings();
@@ -140,7 +142,7 @@ final class CliRun
     }
 
     /** The problem+json document of a failed run. */
-    JsonObject problem()
+    public JsonObject problem()
     {
         var json = json().getAsJsonObject();
         if (json.has("data"))
@@ -149,7 +151,7 @@ final class CliRun
     }
 
     /** The error code of a failed run. */
-    String code()
+    public String code()
     {
         return problem().get("code").getAsString();
     }

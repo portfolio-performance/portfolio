@@ -23,10 +23,10 @@ import name.abuchen.portfolio.model.ClientFactory;
  * the tests. Batches are written to a separate folder, so the client folder
  * holds only the file and what the CLI writes next to it (backups, lock).
  */
-final class CliFixture
+public final class CliFixture
 {
     /** The simplest successful write. */
-    static final String ADD_ACME = "{\"operation\":\"instrument.add\",\"name\":\"ACME\"}";
+    public static final String ADD_ACME = "{\"operation\":\"instrument.add\",\"name\":\"ACME\"}";
 
     private static final String OS_NAME = "Linux";
 
@@ -37,31 +37,31 @@ final class CliFixture
      * Can be created as a field next to its {@link TemporaryFolder} rule: the
      * folders are only made on first use, once the rule has run.
      */
-    CliFixture(TemporaryFolder folder)
+    public CliFixture(TemporaryFolder folder)
     {
         this.folder = folder;
     }
 
     /** Writes the client as plain XML and makes it the file to run against. */
-    CliFixture save(Client client) throws IOException
+    public CliFixture save(Client client) throws IOException
     {
         file = ClientFiles.xml(clientFolder(), client);
         return this;
     }
 
     /** Makes a file written elsewhere the file to run against. */
-    CliFixture use(File file)
+    public CliFixture use(File file)
     {
         this.file = file;
         return this;
     }
 
-    File file()
+    public File file()
     {
         return file;
     }
 
-    Path clientFolder()
+    public Path clientFolder()
     {
         return subfolder("client");
     }
@@ -83,7 +83,7 @@ final class CliFixture
         }
     }
 
-    CliRun run(String command, String... options)
+    public CliRun run(String command, String... options)
     {
         return run(Map.of(), command, options);
     }
@@ -95,19 +95,19 @@ final class CliFixture
         return CliRun.runOn(OS_NAME, env, args.toArray(String[]::new));
     }
 
-    CliRun apply(String... operations) throws IOException
+    public CliRun apply(String... operations) throws IOException
     {
         return applyWith(List.of(), operations);
     }
 
     /** Applies the operations with further options, such as <code>--dry-run</code>. */
-    CliRun applyWith(List<String> options, String... operations) throws IOException
+    public CliRun applyWith(List<String> options, String... operations) throws IOException
     {
         return applyWith(Map.of(), options, operations);
     }
 
     /** Applies the operations with an environment, such as <code>PP_PASSWORD</code>, and further options. */
-    CliRun applyWith(Map<String, String> env, List<String> options, String... operations) throws IOException
+    public CliRun applyWith(Map<String, String> env, List<String> options, String... operations) throws IOException
     {
         var all = new ArrayList<>(List.of("--input", batch(operations).toString()));
         all.addAll(options);
@@ -115,7 +115,7 @@ final class CliFixture
     }
 
     /** Writes the operations as a batch file for <code>apply --input</code>. */
-    Path batch(String... operations) throws IOException
+    public Path batch(String... operations) throws IOException
     {
         return input("{\"operations\":[" + String.join(",", operations) + "]}");
     }

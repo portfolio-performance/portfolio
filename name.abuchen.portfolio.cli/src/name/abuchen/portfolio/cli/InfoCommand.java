@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import name.abuchen.portfolio.cli.file.FileFormat;
+
 final class InfoCommand
 {
     private static final Schema DATA = Schema.object("Facts about the client file.")

@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
  * and {@link #parseDate} enforce them, so the two can't drift. A required
  * option is checked by the argument parser.
  */
-record OptionSpec(String name, String valueName, String description, Type type, boolean required)
+public record OptionSpec(String name, String valueName, String description, Type type, boolean required)
 {
     /** How the value of an option is read. */
     sealed interface Type permits Text, IsoDate, IntegerDomain, Flag, Choice, Reference
@@ -70,12 +70,12 @@ record OptionSpec(String name, String valueName, String description, Type type, 
 
     private static final Pattern ISO_DATE = Pattern.compile("[0-9]{4}-[0-9]{2}-[0-9]{2}");
 
-    OptionSpec(String name, String valueName, String description)
+    public OptionSpec(String name, String valueName, String description)
     {
         this(name, valueName, description, new Text(), false);
     }
 
-    static OptionSpec integer(String name, String valueName, String description, long defaultValue, long minimum,
+    public static OptionSpec integer(String name, String valueName, String description, long defaultValue, long minimum,
                     Long maximum)
     {
         return new OptionSpec(name, valueName, description, new IntegerDomain(defaultValue, minimum, maximum), false);
@@ -93,7 +93,7 @@ record OptionSpec(String name, String valueName, String description, Type type, 
     }
 
     /** A switch such as <code>--include-zero</code>, given without a value. */
-    static OptionSpec flag(String name, String description)
+    public static OptionSpec flag(String name, String description)
     {
         return new OptionSpec(name, "", description, new Flag(), false);
     }
@@ -110,7 +110,7 @@ record OptionSpec(String name, String valueName, String description, Type type, 
     }
 
     /** The usage error for a value of this option that is not <code>expected</code>. */
-    CliException invalid(String text, String expected)
+    public CliException invalid(String text, String expected)
     {
         return CliException.usage("invalid-option-value", "Invalid option value",
                         "Option '--" + name + "' must be " + expected + ".").with("option", name).with("value",

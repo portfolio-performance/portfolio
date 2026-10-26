@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.file;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 
+import name.abuchen.portfolio.cli.CliException;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 
@@ -16,7 +17,7 @@ import name.abuchen.portfolio.model.ClientFactory;
  * Loads a client file through core. Every load runs the version guard, for
  * every command.
  */
-final class ClientLoader
+public final class ClientLoader
 {
     private ClientLoader()
     {
@@ -26,7 +27,7 @@ final class ClientLoader
      * A client file that passed the version guard but is not loaded yet, so a
      * writer can take its lock in between. Holds the password until closed.
      */
-    static final class OpenedFile implements AutoCloseable
+    public static final class OpenedFile implements AutoCloseable
     {
         private final File file;
         private final FileFormat format;
@@ -39,12 +40,12 @@ final class ClientLoader
             this.password = password;
         }
 
-        File file()
+        public File file()
         {
             return file;
         }
 
-        LoadedClient load() throws CliException
+        public LoadedClient load() throws CliException
         {
             return load(file);
         }
@@ -74,7 +75,7 @@ final class ClientLoader
          * file and its backups need the password only once. The other file
          * passes the version guard too.
          */
-        OpenedFile openRelated(String path) throws CliException
+        public OpenedFile openRelated(String path) throws CliException
         {
             return open(path, () -> password == null ? null : password.clone());
         }
@@ -86,7 +87,7 @@ final class ClientLoader
         }
     }
 
-    static LoadedClient load(String path, Supplier<char[]> passwords) throws CliException
+    public static LoadedClient load(String path, Supplier<char[]> passwords) throws CliException
     {
         try (var opened = open(path, passwords))
         {
@@ -98,7 +99,7 @@ final class ClientLoader
      * Runs the checks that need no loading: the file exists, the password is
      * given and the version stored in the file is supported.
      */
-    static OpenedFile open(String path, Supplier<char[]> passwords) throws CliException
+    public static OpenedFile open(String path, Supplier<char[]> passwords) throws CliException
     {
         var file = new File(path);
 

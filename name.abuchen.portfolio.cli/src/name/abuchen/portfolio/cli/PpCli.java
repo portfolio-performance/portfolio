@@ -10,6 +10,8 @@ import java.util.Map;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import name.abuchen.portfolio.cli.file.WriteEnvironment;
+
 /**
  * The AI-agent command line. {@link #execute} is the single in-process entry
  * point; {@link #main} only adapts the process to it.

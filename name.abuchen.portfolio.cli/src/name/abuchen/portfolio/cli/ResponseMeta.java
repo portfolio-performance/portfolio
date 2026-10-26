@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import name.abuchen.portfolio.cli.file.SafeWrite;
 import name.abuchen.portfolio.model.Client;
 
 /**

@@ -1,8 +1,8 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.file;
 
 import name.abuchen.portfolio.model.Client;
 
 /** A client file that passed the version guard. */
-record LoadedClient(Client client, FileFormat format)
+public record LoadedClient(Client client, FileFormat format)
 {
 }

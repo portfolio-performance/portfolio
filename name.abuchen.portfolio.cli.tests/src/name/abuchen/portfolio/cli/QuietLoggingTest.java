@@ -14,6 +14,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import name.abuchen.portfolio.cli.file.WriteEnvironment;
+
 /**
  * Core logs status lines such as "Loaded ... with [XML]" to the console. The
  * CLI keeps them off stderr unless <code>--verbose</code> is given, so that a

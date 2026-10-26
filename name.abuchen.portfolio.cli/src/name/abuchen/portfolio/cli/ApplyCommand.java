@@ -12,6 +12,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
+import name.abuchen.portfolio.cli.file.SafeWrite;
+
 /**
  * <code>pp-cli apply</code>: applies a batch of write operations atomically
  * to the client file, or previews it with <code>--dry-run</code>.

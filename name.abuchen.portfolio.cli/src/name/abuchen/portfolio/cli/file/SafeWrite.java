@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.file;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,6 +23,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.cli.CliException;
+import name.abuchen.portfolio.cli.CommandContext;
+import name.abuchen.portfolio.cli.OptionSpec;
+import name.abuchen.portfolio.cli.Warning;
+import name.abuchen.portfolio.cli.WarningSpec;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 
@@ -31,7 +36,7 @@ import name.abuchen.portfolio.model.ClientFactory;
  * temp file and rename it over the original. Any failure before the rename
  * leaves the client file untouched. A dry run stops before any side effect.
  */
-final class SafeWrite
+public final class SafeWrite
 {
     private static final String BACKUP_FOLDER = "backups";
     private static final DateTimeFormatter TIMESTAMP = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
@@ -52,10 +57,10 @@ final class SafeWrite
                     "The file was written by an older version and is saved at the current file version, which an older desktop app can no longer open. With --dry-run this is what a write would do.");
 
     /** The options every command that writes the client file declares. */
-    static final List<OptionSpec> OPTIONS = List.of(BACKUP_DIR, KEEP, FORCE);
+    public static final List<OptionSpec> OPTIONS = List.of(BACKUP_DIR, KEEP, FORCE);
 
     /** The warnings every command that writes the client file can emit. */
-    static final List<WarningSpec> WARNINGS = List.of(MIGRATED, ConsistencyCheck.PRE_EXISTING, OPEN_IN_APP);
+    public static final List<WarningSpec> WARNINGS = List.of(MIGRATED, ConsistencyCheck.PRE_EXISTING, OPEN_IN_APP);
 
     /**
      * @param backupDir
@@ -71,7 +76,7 @@ final class SafeWrite
     }
 
     /** Reads the options of the write sequence; <code>dryRun</code> is the command's own switch. */
-    static Settings settings(CommandContext context, boolean dryRun) throws CliException
+    public static Settings settings(CommandContext context, boolean dryRun) throws CliException
     {
         Path backupDir = null;
         var raw = context.text(BACKUP_DIR);
@@ -96,7 +101,7 @@ final class SafeWrite
 
     /** The change to make to the loaded model; it fails with a {@link CliException} to refuse the write. */
     @FunctionalInterface
-    interface Mutation<R>
+    public interface Mutation<R>
     {
         R apply(Client client) throws CliException;
     }
@@ -106,7 +111,7 @@ final class SafeWrite
      * another model altogether.
      */
     @FunctionalInterface
-    interface Plan<R>
+    public interface Plan<R>
     {
         Planned<R> apply(Client loaded) throws CliException;
     }
@@ -118,7 +123,7 @@ final class SafeWrite
      *            the file whose consistency issues are the ones the write may
      *            not add to: the file as it was, or the file restored from
      */
-    record Planned<R>(Client client, R result, File baseline)
+    public record Planned<R>(Client client, R result, File baseline)
     {
     }
 
@@ -129,7 +134,7 @@ final class SafeWrite
      * @param warnings
      *            conditions that didn't stop the write
      */
-    record Outcome<R>(R result, Path backup, int fileVersionBefore, int fileVersionAfter, boolean dryRun,
+    public record Outcome<R>(R result, Path backup, int fileVersionBefore, int fileVersionAfter, boolean dryRun,
                     List<Warning> warnings)
     {
     }
@@ -164,7 +169,7 @@ final class SafeWrite
      * @param opened
      *            a file that passed the version guard
      */
-    static <R> Outcome<R> run(ClientLoader.OpenedFile opened, Settings settings, Mutation<R> change)
+    public static <R> Outcome<R> run(ClientLoader.OpenedFile opened, Settings settings, Mutation<R> change)
                     throws CliException
     {
         return replace(opened, settings, client -> new Planned<>(client, change.apply(client), opened.file()));
@@ -177,7 +182,7 @@ final class SafeWrite
      * @param opened
      *            a file that passed the version guard
      */
-    static <R> Outcome<R> replace(ClientLoader.OpenedFile opened, Settings settings, Plan<R> plan)
+    public static <R> Outcome<R> replace(ClientLoader.OpenedFile opened, Settings settings, Plan<R> plan)
                     throws CliException
     {
         var file = opened.file().toPath().toAbsolutePath();

@@ -9,20 +9,20 @@ import java.util.Map;
  * machine-readable extensions, and is reported in the <code>warnings</code> of
  * the response envelope.
  */
-final class Warning
+public final class Warning
 {
     private final String code;
     private final String detail;
     private final Map<String, Object> extensions = new LinkedHashMap<>();
 
-    Warning(String code, String detail)
+    public Warning(String code, String detail)
     {
         this.code = code;
         this.detail = detail;
     }
 
     /** Adds a machine-readable field next to <code>code</code> and <code>detail</code>. */
-    Warning with(String name, Object value)
+    public Warning with(String name, Object value)
     {
         extensions.put(name, value);
         return this;

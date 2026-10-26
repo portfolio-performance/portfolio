@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.file;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
@@ -21,6 +21,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import name.abuchen.portfolio.cli.CliFixture;
+import name.abuchen.portfolio.cli.CliRun;
+import name.abuchen.portfolio.cli.ClientFiles;
 import name.abuchen.portfolio.model.ClientFactory;
 
 /** A write keeps the file in the format it has, with the password it was loaded with. */

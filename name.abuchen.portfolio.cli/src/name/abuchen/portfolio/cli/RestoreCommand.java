@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import name.abuchen.portfolio.cli.file.SafeWrite;
+
 /**
  * <code>pp-cli restore</code>: rolls the client file back to a backup through
  * the same safe-write sequence as <code>apply</code>, so the restore itself

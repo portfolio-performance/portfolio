@@ -10,15 +10,18 @@ import java.time.LocalDate;
 import java.util.Map;
 import java.util.Optional;
 
+import name.abuchen.portfolio.cli.file.ClientLoader;
+import name.abuchen.portfolio.cli.file.LoadedClient;
+import name.abuchen.portfolio.cli.file.WriteEnvironment;
 import name.abuchen.portfolio.model.Client;
 
 /**
  * Everything a command gets from the outside world: parsed options, the
  * environment, stdin, stderr, the clock and the name of the operating system.
  */
-final class CommandContext
+public final class CommandContext
 {
-    static final String PASSWORD_VARIABLE = "PP_PASSWORD";
+    public static final String PASSWORD_VARIABLE = "PP_PASSWORD";
 
     private final Map<String, String> options;
     private final Map<String, String> env;
@@ -63,7 +66,7 @@ final class CommandContext
      * @throws CliException
      *             a usage error if the value is not an integer in the range
      */
-    long integer(OptionSpec option) throws CliException
+    public long integer(OptionSpec option) throws CliException
     {
         return option.parseInteger(raw(option, OptionSpec.IntegerDomain.class));
     }
@@ -80,7 +83,7 @@ final class CommandContext
     }
 
     /** The value of a free-form option as given, or empty if it is absent. */
-    Optional<String> text(OptionSpec option)
+    public Optional<String> text(OptionSpec option)
     {
         return raw(option, OptionSpec.Text.class);
     }
@@ -110,7 +113,7 @@ final class CommandContext
     }
 
     /** Whether the switch was given. */
-    boolean flag(OptionSpec option)
+    public boolean flag(OptionSpec option)
     {
         return raw(option, OptionSpec.Flag.class).isPresent();
     }
@@ -125,18 +128,18 @@ final class CommandContext
         return stdin;
     }
 
-    Clock clock()
+    public Clock clock()
     {
         return clock;
     }
 
     /** The <code>os.name</code> of the running system. */
-    String osName()
+    public String osName()
     {
         return osName;
     }
 
-    WriteEnvironment writeEnvironment()
+    public WriteEnvironment writeEnvironment()
     {
         return writeEnvironment;
     }

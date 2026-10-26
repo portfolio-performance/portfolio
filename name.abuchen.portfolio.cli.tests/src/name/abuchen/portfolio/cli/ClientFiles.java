@@ -26,12 +26,12 @@ import name.abuchen.portfolio.model.SaveFlag;
  * Builds small client files in the format under test. Every call writes a new
  * file, so tests never share fixtures.
  */
-final class ClientFiles
+public final class ClientFiles
 {
     static final int NEWER_VERSION = Client.CURRENT_VERSION + 29;
 
     /** Core treats encrypted headers further ahead than 20 as a wrong password. */
-    static final int NEWER_ENCRYPTED_VERSION = Client.CURRENT_VERSION + 5;
+    public static final int NEWER_ENCRYPTED_VERSION = Client.CURRENT_VERSION + 5;
 
     private static final byte[] BINARY_SIGNATURE = "PPPBV1".getBytes(StandardCharsets.US_ASCII);
 
@@ -43,7 +43,7 @@ final class ClientFiles
      * Every path below the folder, relative, with forward slashes and sorted;
      * the folder itself is the empty string.
      */
-    static List<String> listing(Path folder) throws IOException
+    public static List<String> listing(Path folder) throws IOException
     {
         try (Stream<Path> paths = Files.walk(folder))
         {
@@ -52,7 +52,7 @@ final class ClientFiles
     }
 
     /** One instrument, one investment account, one cash account, two records. */
-    static Client sampleClient()
+    public static Client sampleClient()
     {
         var client = new Client();
 
@@ -80,22 +80,22 @@ final class ClientFiles
         return file;
     }
 
-    static File xml(Path folder) throws IOException
+    public static File xml(Path folder) throws IOException
     {
         return write(folder, "client.xml", EnumSet.of(SaveFlag.XML));
     }
 
-    static File xmlWithIdReferences(Path folder) throws IOException
+    public static File xmlWithIdReferences(Path folder) throws IOException
     {
         return write(folder, "client.xml", EnumSet.of(SaveFlag.XML, SaveFlag.ID_REFERENCES));
     }
 
-    static File xmlZip(Path folder) throws IOException
+    public static File xmlZip(Path folder) throws IOException
     {
         return write(folder, "client.zip", EnumSet.of(SaveFlag.XML, SaveFlag.COMPRESSED));
     }
 
-    static File binary(Path folder) throws IOException
+    public static File binary(Path folder) throws IOException
     {
         return write(folder, "client.portfolio", EnumSet.of(SaveFlag.BINARY, SaveFlag.COMPRESSED));
     }
@@ -108,23 +108,23 @@ final class ClientFiles
         return file;
     }
 
-    static File xmlAes256(Path folder, String password) throws IOException
+    public static File xmlAes256(Path folder, String password) throws IOException
     {
         return encrypted(folder, password, SaveFlag.XML, SaveFlag.AES256);
     }
 
-    static File xmlAes128(Path folder, String password) throws IOException
+    public static File xmlAes128(Path folder, String password) throws IOException
     {
         return encrypted(folder, password, SaveFlag.XML, SaveFlag.AES128);
     }
 
-    static File binaryAes256(Path folder, String password) throws IOException
+    public static File binaryAes256(Path folder, String password) throws IOException
     {
         return encrypted(folder, password, SaveFlag.BINARY, SaveFlag.AES256);
     }
 
     /** Core writes the version from the client, which only core can set. */
-    static File newerEncrypted(Path folder, String password) throws IOException
+    public static File newerEncrypted(Path folder, String password) throws IOException
     {
         var client = sampleClient();
         try

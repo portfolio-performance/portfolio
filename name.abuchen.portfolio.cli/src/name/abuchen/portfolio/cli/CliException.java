@@ -37,24 +37,24 @@ public class CliException extends Exception
         return new CliException(code, title, detail, 400, EXIT_USAGE, null);
     }
 
-    static CliException failure(String code, String title, String detail, int status)
+    public static CliException failure(String code, String title, String detail, int status)
     {
         return new CliException(code, title, detail, status, EXIT_FAILURE, null);
     }
 
-    static CliException failure(String code, String title, String detail, int status, Throwable cause)
+    public static CliException failure(String code, String title, String detail, int status, Throwable cause)
     {
         return new CliException(code, title, detail, status, EXIT_FAILURE, cause);
     }
 
     /** Adds a machine-readable field next to the standard problem members. */
-    CliException with(String name, Object value)
+    public CliException with(String name, Object value)
     {
         extensions.put(name, value);
         return this;
     }
 
-    String getCode()
+    public String getCode()
     {
         return code;
     }
@@ -64,7 +64,7 @@ public class CliException extends Exception
         return exitCode;
     }
 
-    Map<String, Object> toProblem()
+    public Map<String, Object> toProblem()
     {
         var problem = new LinkedHashMap<String, Object>();
         problem.put("type", "urn:pp-cli:error:" + code);

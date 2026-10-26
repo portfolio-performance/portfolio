@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.file;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -14,6 +14,8 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import name.abuchen.portfolio.cli.CliException;
+import name.abuchen.portfolio.cli.CoreVersion;
 import name.abuchen.portfolio.model.ClientFactory;
 
 /**
