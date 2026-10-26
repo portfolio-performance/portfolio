@@ -122,10 +122,12 @@ public class SkillDriftTest
                                 + (command != null ? " for " + command : ""));
         }
 
+        // a dotted name is either an operation or a member path in a response, e.g. converted.amount
         var token = span.strip();
         if (OPERATION.matcher(token).matches()
-                        && Commands.OPERATIONS.stream().noneMatch(o -> o.name().equals(token)))
-            problems.add(where + "unknown operation");
+                        && Commands.OPERATIONS.stream().noneMatch(o -> o.name().equals(token))
+                        && responseMembers().stream().noneMatch(m -> m.equals(token) || m.endsWith("." + token)))
+            problems.add(where + "neither an operation nor a response member");
 
         if (CODE.matcher(token).matches() && !token.equals("pp-cli") && !codes(commands).contains(token))
             problems.add(where + "unknown error or warning code");
@@ -160,6 +162,32 @@ public class SkillDriftTest
         var all = new HashSet<String>();
         Commands.ALL.forEach(c -> c.options().forEach(o -> all.add(o.name())));
         return all;
+    }
+
+    /** The dotted path of every member in any command's data or meta, arrays stepped through. */
+    private static Set<String> responseMembers()
+    {
+        var members = new HashSet<String>();
+        for (var command : Commands.ALL)
+        {
+            collectMembers(command.dataSchema().toJson(), "", members);
+            collectMembers(command.metaSchema().toJson(), "", members);
+        }
+        return members;
+    }
+
+    private static void collectMembers(Object schema, String prefix, Set<String> members)
+    {
+        if (!(schema instanceof Map<?, ?> json))
+            return;
+        collectMembers(json.get("items"), prefix, members);
+        if (json.get("properties") instanceof Map<?, ?> properties)
+        {
+            properties.forEach((name, member) -> {
+                members.add(prefix + name);
+                collectMembers(member, prefix + name + ".", members);
+            });
+        }
     }
 
     private static List<String> codeSpans(String markdown)
