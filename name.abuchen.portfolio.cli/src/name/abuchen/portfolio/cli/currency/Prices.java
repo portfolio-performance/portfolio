@@ -1,20 +1,23 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.currency;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
+import name.abuchen.portfolio.cli.MasterData;
+import name.abuchen.portfolio.cli.Warning;
+import name.abuchen.portfolio.cli.WarningSpec;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.online.QuoteFeed;
 
 /** Rules about an instrument's prices that more than one command relies on. */
-final class Prices
+public final class Prices
 {
     /** A latest price older than this many calendar days is stale. */
     static final int STALE_AFTER_DAYS = 7;
 
-    static final WarningSpec STALE_PRICE = new WarningSpec("stale-price",
+    public static final WarningSpec STALE_PRICE = new WarningSpec("stale-price",
                     "The latest price is more than " + STALE_AFTER_DAYS
                                     + " days old. Not emitted for retired instruments, instruments with a manual quote feed or instruments without a price.");
 
@@ -28,7 +31,7 @@ final class Prices
      * dated on or before that day, where core would return a zero placeholder or
      * a future-dated price.
      */
-    static Optional<SecurityPrice> latest(Security security, LocalDate asOf)
+    public static Optional<SecurityPrice> latest(Security security, LocalDate asOf)
     {
         var hasPriceUpToToday = security.getPricesIncludingLatest().stream()
                         .anyMatch(price -> !price.getDate().isAfter(asOf));
@@ -53,7 +56,7 @@ final class Prices
     }
 
     /** The {@link #STALE_PRICE} warning, if the latest price is stale. */
-    static Optional<Warning> staleWarning(Security security, SecurityPrice latest, LocalDate asOf)
+    public static Optional<Warning> staleWarning(Security security, SecurityPrice latest, LocalDate asOf)
     {
         if (!isStale(security, latest, asOf))
             return Optional.empty();

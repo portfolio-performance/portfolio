@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.currency;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -7,6 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import name.abuchen.portfolio.cli.CliException;
+import name.abuchen.portfolio.cli.CommandContext;
+import name.abuchen.portfolio.cli.Decimals;
+import name.abuchen.portfolio.cli.OptionSpec;
+import name.abuchen.portfolio.cli.Schema;
+import name.abuchen.portfolio.cli.Warning;
+import name.abuchen.portfolio.cli.WarningSpec;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -21,14 +28,14 @@ import name.abuchen.portfolio.money.Values;
  * reports the <code>exchangeRates</code> meta member and the rate warnings.
  * The rates themselves come from {@link ExchangeRates}.
  */
-final class ReportingCurrency
+public final class ReportingCurrency
 {
     /** The warnings of a command that converts. */
-    static final List<WarningSpec> WARNINGS = List.of(ExchangeRates.MISSING, ExchangeRates.STALE,
+    public static final List<WarningSpec> WARNINGS = List.of(ExchangeRates.MISSING, ExchangeRates.STALE,
                     ExchangeRates.CACHE_UNAVAILABLE);
 
     /** The warnings of a command whose converter core drives, which counts days rather than records. */
-    static final List<WarningSpec> WARNINGS_COUNTING_DAYS = List.of(
+    public static final List<WarningSpec> WARNINGS_COUNTING_DAYS = List.of(
                     new WarningSpec(ExchangeRates.MISSING.code(),
                                     "No usable exchange rate was found for a currency pair on a day core needed it, so the figures are left out. Carries baseCurrency, termCurrency and the count of days without a rate."),
                     new WarningSpec(ExchangeRates.STALE.code(),
@@ -37,23 +44,23 @@ final class ReportingCurrency
                     ExchangeRates.CACHE_UNAVAILABLE);
 
     /** The currency code of <code>--currency</code>, validated before the client is loaded. */
-    record Requested(Optional<String> code)
+    public record Requested(Optional<String> code)
     {
         /** The currency given, otherwise the base currency of the client. */
-        ReportingCurrency orBase(CommandContext context, Client client)
+        public ReportingCurrency orBase(CommandContext context, Client client)
         {
             return new ReportingCurrency(code.orElse(client.getBaseCurrency()), context, client);
         }
 
         /** The currency given, if any; for a command without a default. */
-        Optional<ReportingCurrency> ifGiven(CommandContext context, Client client)
+        public Optional<ReportingCurrency> ifGiven(CommandContext context, Client client)
         {
             return code.map(c -> new ReportingCurrency(c, context, client));
         }
     }
 
     /** An amount and, if one was found, the rate into the reporting currency. */
-    static final class Figure
+    public static final class Figure
     {
         private final long amount;
         private final boolean needsRate;
@@ -90,7 +97,7 @@ final class ReportingCurrency
     }
 
     /** The <code>--currency</code> option, described as the command uses it. */
-    static OptionSpec option(String description)
+    public static OptionSpec option(String description)
     {
         return new OptionSpec("currency", "code", description);
     }
@@ -101,7 +108,7 @@ final class ReportingCurrency
      * @throws CliException
      *             <code>invalid-option-value</code> if core doesn't know the currency
      */
-    static Requested requested(CommandContext context, OptionSpec option) throws CliException
+    public static Requested requested(CommandContext context, OptionSpec option) throws CliException
     {
         var raw = context.text(option);
         if (raw.isPresent() && CurrencyUnit.getInstance(raw.get()) == null)
@@ -112,7 +119,7 @@ final class ReportingCurrency
     }
 
     /** The meta member describing the cache, to add to a converting command's meta schema. */
-    static Schema ratesMetaSchema()
+    public static Schema ratesMetaSchema()
     {
         return Schema.object("The ECB cache of the desktop app. Present only if the cache was read.")
                         .property("path", Schema.string("The cache file."))
@@ -121,7 +128,7 @@ final class ReportingCurrency
     }
 
     /** The schema of the <code>converted</code> member of a converting command's figures. */
-    static Schema convertedSchema(String description)
+    public static Schema convertedSchema(String description)
     {
         return Schema.object(description)
                         .property("currencyCode", Schema.string("The ISO currency code asked for."))
@@ -134,7 +141,7 @@ final class ReportingCurrency
     }
 
     /** The ISO code of the reporting currency. */
-    String code()
+    public String code()
     {
         return code;
     }
@@ -144,7 +151,7 @@ final class ReportingCurrency
      * the rate series. Zero in another currency needs no rate, so none is
      * looked up and none is warned about.
      */
-    Figure figure(LocalDate day, Money value)
+    public Figure figure(LocalDate day, Money value)
     {
         if (value.isZero() && !code.equals(value.getCurrencyCode()))
             return new Figure(0, false, Optional.empty());
@@ -163,7 +170,7 @@ final class ReportingCurrency
      *            the record's own rate from its currency into the reporting
      *            currency, if it has one
      */
-    Figure figure(LocalDate day, String currencyCode, long amount, Optional<BigDecimal> own)
+    public Figure figure(LocalDate day, String currencyCode, long amount, Optional<BigDecimal> own)
     {
         if (currencyCode.equals(code))
             return new Figure(amount, true, Optional.of(new ExchangeRates.Rate(BigDecimal.ONE, day, ExchangeRates.Source.IDENTITY)));
@@ -177,14 +184,14 @@ final class ReportingCurrency
      * Whether every value has its rate, or needs none. Every value is looked
      * up, so that every missing rate is reported.
      */
-    boolean allRated(LocalDate day, List<Money> values)
+    public boolean allRated(LocalDate day, List<Money> values)
     {
         var figures = values.stream().map(value -> figure(day, value)).toList();
         return figures.stream().noneMatch(Figure::spoilsTotal);
     }
 
     /** The total of the figures, unless one of them lacks its rate. */
-    Optional<Map<String, Object>> total(List<Figure> figures)
+    public Optional<Map<String, Object>> total(List<Figure> figures)
     {
         if (figures.stream().anyMatch(Figure::spoilsTotal))
             return Optional.empty();
@@ -197,7 +204,7 @@ final class ReportingCurrency
     }
 
     /** Adds the member <code>converted</code>, if the figure has its rate. */
-    void putConvertedInto(Map<String, Object> json, Figure figure)
+    public void putConvertedInto(Map<String, Object> json, Figure figure)
     {
         figure.rate.ifPresent(rate -> {
             var converted = new LinkedHashMap<String, Object>();
@@ -215,25 +222,25 @@ final class ReportingCurrency
      * rate of 1.0 where it finds none, so it serves only figures whose rates
      * are checked another way, or none are needed.
      */
-    CurrencyConverter coreConverter()
+    public CurrencyConverter coreConverter()
     {
         return rates.converter(code);
     }
 
     /** Core's converter, checked rate by rate; see {@link StrictConverter}. Days after today are checked as today. */
-    StrictConverter strictConverter()
+    public StrictConverter strictConverter()
     {
         return new StrictConverter(rates, coreConverter(), today);
     }
 
     /** Adds the meta member <code>exchangeRates</code>, if the cache was read. */
-    void putRatesInto(Map<String, Object> meta)
+    public void putRatesInto(Map<String, Object> meta)
     {
         rates.putCacheInto(meta);
     }
 
     /** The warnings about the rates looked up so far; see {@link ExchangeRates#warnings()}. */
-    List<Warning> warnings()
+    public List<Warning> warnings()
     {
         return rates.warnings();
     }

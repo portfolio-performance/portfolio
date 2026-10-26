@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import name.abuchen.portfolio.cli.currency.EcbCache;
+
 /**
  * Plain-text help for <code>--help</code>, generated from everything declared
  * in {@link Commands}: commands, options, response schemas, write operations

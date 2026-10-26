@@ -32,7 +32,7 @@ public class CliException extends Exception
         this.exitCode = exitCode;
     }
 
-    static CliException usage(String code, String title, String detail)
+    public static CliException usage(String code, String title, String detail)
     {
         return new CliException(code, title, detail, 400, EXIT_USAGE, null);
     }

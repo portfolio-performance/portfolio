@@ -16,10 +16,10 @@ import com.google.protobuf.CodedOutputStream;
  * the way core does, field by field, so that tests don't depend on core's
  * unexported generated classes.
  */
-final class EcbCacheFiles
+public final class EcbCacheFiles
 {
     /** The rates of one currency pair, by date; the value is the number of term units per base unit. */
-    static final class Series
+    public static final class Series
     {
         private final String base;
         private final String term;
@@ -31,7 +31,7 @@ final class EcbCacheFiles
             this.term = term;
         }
 
-        Series rate(String date, String value)
+        public Series rate(String date, String value)
         {
             rates.put(LocalDate.parse(date), new BigDecimal(value));
             return this;
@@ -57,13 +57,13 @@ final class EcbCacheFiles
     {
     }
 
-    static Series series(String base, String term)
+    public static Series series(String base, String term)
     {
         return new Series(base, term);
     }
 
     /** Writes the cache to the given file, creating its folders. */
-    static Path write(Path file, Series... series) throws IOException
+    public static Path write(Path file, Series... series) throws IOException
     {
         var out = new ByteArrayOutputStream();
         var message = CodedOutputStream.newInstance(out);

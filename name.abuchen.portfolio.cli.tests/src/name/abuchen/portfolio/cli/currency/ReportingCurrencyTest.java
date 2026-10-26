@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.currency;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -24,6 +24,12 @@ import org.junit.rules.TemporaryFolder;
 
 import com.google.gson.JsonPrimitive;
 
+import name.abuchen.portfolio.cli.CliException;
+import name.abuchen.portfolio.cli.CliRun;
+import name.abuchen.portfolio.cli.CommandContext;
+import name.abuchen.portfolio.cli.EcbCacheFiles;
+import name.abuchen.portfolio.cli.OptionSpec;
+import name.abuchen.portfolio.cli.Warning;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.Money;
 

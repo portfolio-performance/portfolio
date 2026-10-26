@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.currency;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -13,6 +13,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
+import name.abuchen.portfolio.cli.CommandContext;
+import name.abuchen.portfolio.cli.Warning;
+import name.abuchen.portfolio.cli.WarningSpec;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;

@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 /** Field rules shared by the master-data list commands. */
-final class MasterData
+public final class MasterData
 {
     static final String UPDATED_AT_MEMBER = "updatedAt";
 
@@ -18,7 +18,7 @@ final class MasterData
     }
 
     /** The name is always emitted; a null name becomes the empty string. */
-    static String orEmpty(String value)
+    public static String orEmpty(String value)
     {
         return value == null ? "" : value;
     }
@@ -30,7 +30,7 @@ final class MasterData
     }
 
     /** Name (case-insensitive, ordinal), then UUID. */
-    static <T> Comparator<T> byNameThenUuid(Function<T, String> name, Function<T, String> uuid)
+    public static <T> Comparator<T> byNameThenUuid(Function<T, String> name, Function<T, String> uuid)
     {
         return byName(name).thenComparing(entity -> orEmpty(uuid.apply(entity)));
     }

@@ -10,6 +10,9 @@ import java.util.Map;
 import java.util.OptionalLong;
 import java.util.stream.Stream;
 
+import name.abuchen.portfolio.cli.currency.Prices;
+import name.abuchen.portfolio.cli.currency.ReportingCurrency;
+import name.abuchen.portfolio.cli.currency.StalePrices;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.InvestmentVehicle;

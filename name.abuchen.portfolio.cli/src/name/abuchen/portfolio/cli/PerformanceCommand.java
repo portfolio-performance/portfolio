@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import name.abuchen.portfolio.cli.currency.ReportingCurrency;
+import name.abuchen.portfolio.cli.currency.StrictConverter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;

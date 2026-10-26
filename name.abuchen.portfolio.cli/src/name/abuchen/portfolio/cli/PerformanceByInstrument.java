@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import name.abuchen.portfolio.cli.currency.StrictConverter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.snapshot.security.CalculationLineItem;

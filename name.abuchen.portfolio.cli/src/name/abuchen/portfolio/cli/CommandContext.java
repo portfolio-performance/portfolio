@@ -31,7 +31,7 @@ public final class CommandContext
     private final String osName;
     private final WriteEnvironment writeEnvironment;
 
-    CommandContext(Map<String, String> options, Map<String, String> env, InputStream stdin, PrintStream stderr,
+    public CommandContext(Map<String, String> options, Map<String, String> env, InputStream stdin, PrintStream stderr,
                     Clock clock, String osName, WriteEnvironment writeEnvironment)
     {
         this.options = options;
@@ -118,7 +118,7 @@ public final class CommandContext
         return raw(option, OptionSpec.Flag.class).isPresent();
     }
 
-    Optional<String> env(String name)
+    public Optional<String> env(String name)
     {
         return Optional.ofNullable(env.get(name));
     }

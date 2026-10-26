@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.currency;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -19,7 +19,7 @@ import name.abuchen.portfolio.money.ExchangeRate;
  * not, the figures must not be reported. A day after today is checked as
  * today, as no rate is dated later.
  */
-final class StrictConverter implements CurrencyConverter
+public final class StrictConverter implements CurrencyConverter
 {
     private record Need(LocalDate day, String fromCurrency, String toCurrency)
     {
@@ -49,7 +49,7 @@ final class StrictConverter implements CurrencyConverter
     }
 
     /** Whether core found a rate for everything it converted since the start or the last {@link #reset()}. */
-    boolean isComplete()
+    public boolean isComplete()
     {
         return unrated.isEmpty();
     }
@@ -59,7 +59,7 @@ final class StrictConverter implements CurrencyConverter
      * do not depend on the rates another record lacked. A rate already looked
      * up is not looked up, and so not warned about, again.
      */
-    void reset()
+    public void reset()
     {
         unrated.clear();
     }

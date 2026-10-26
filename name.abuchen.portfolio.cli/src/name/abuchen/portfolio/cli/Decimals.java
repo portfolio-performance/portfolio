@@ -12,7 +12,7 @@ import name.abuchen.portfolio.money.Values;
  * Encodes stored fixed-point values as JSON decimals. Core's own formatting is
  * locale dependent and is deliberately avoided.
  */
-final class Decimals
+public final class Decimals
 {
     private Decimals()
     {
@@ -41,7 +41,7 @@ final class Decimals
     }
 
     /** The stored value scaled by the precision of the given values, e.g. a quote. */
-    static JsonPrimitive of(long stored, Values<Long> values)
+    public static JsonPrimitive of(long stored, Values<Long> values)
     {
         return of(BigDecimal.valueOf(stored, values.precision()));
     }
@@ -51,7 +51,7 @@ final class Decimals
      * form. Wrapped so that Gson writes 0.00000001 rather than BigDecimal's
      * 1E-8.
      */
-    static JsonPrimitive of(BigDecimal value)
+    public static JsonPrimitive of(BigDecimal value)
     {
         return new JsonPrimitive(new PlainDecimal(value));
     }

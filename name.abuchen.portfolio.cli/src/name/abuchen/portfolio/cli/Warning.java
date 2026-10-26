@@ -28,7 +28,7 @@ public final class Warning
         return this;
     }
 
-    String code()
+    public String code()
     {
         return code;
     }
@@ -38,7 +38,7 @@ public final class Warning
         return detail;
     }
 
-    Map<String, Object> toJson()
+    public Map<String, Object> toJson()
     {
         var json = new LinkedHashMap<String, Object>();
         json.put("code", code);

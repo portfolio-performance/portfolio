@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.currency;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -38,10 +38,10 @@ import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
  * Anything unexpected makes the whole cache unavailable rather than producing
  * wrong figures.
  */
-final class EcbCache
+public final class EcbCache
 {
     /** Names the cache file and wins outright over the default location. */
-    static final String VARIABLE = "PP_ECB_RATES";
+    public static final String VARIABLE = "PP_ECB_RATES";
 
     private static final String FILE_NAME = "ecb_exchange_rates.pb";
 

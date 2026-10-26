@@ -11,7 +11,7 @@ import java.util.Map;
  * same declaration is rendered by <code>--help</code> and checked against
  * real output by the consistency test.
  */
-final class Schema
+public final class Schema
 {
     private final String type;
     private final String description;
@@ -38,7 +38,7 @@ final class Schema
         return schema;
     }
 
-    static Schema string(String description)
+    public static Schema string(String description)
     {
         return new Schema("string", description);
     }
@@ -48,7 +48,7 @@ final class Schema
         return new Schema("integer", description);
     }
 
-    static Schema number(String description)
+    public static Schema number(String description)
     {
         return new Schema("number", description);
     }
@@ -58,7 +58,7 @@ final class Schema
         return new Schema("boolean", description);
     }
 
-    static Schema enumOf(String description, List<String> values)
+    public static Schema enumOf(String description, List<String> values)
     {
         var schema = new Schema("string", description);
         schema.enumValues = List.copyOf(values);
@@ -84,7 +84,7 @@ final class Schema
         return schema;
     }
 
-    static Schema object(String description)
+    public static Schema object(String description)
     {
         return new Schema("object", description);
     }
@@ -98,7 +98,7 @@ final class Schema
     }
 
     /** Adds a property that must be present. */
-    Schema property(String name, Schema schema)
+    public Schema property(String name, Schema schema)
     {
         properties.put(name, schema);
         required.add(name);
@@ -106,7 +106,7 @@ final class Schema
     }
 
     /** Adds a property that may be absent. */
-    Schema optionalProperty(String name, Schema schema)
+    public Schema optionalProperty(String name, Schema schema)
     {
         properties.put(name, schema);
         return this;

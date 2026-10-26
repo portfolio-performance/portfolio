@@ -9,6 +9,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import name.abuchen.portfolio.cli.currency.Prices;
+import name.abuchen.portfolio.cli.currency.ReportingCurrency;
+import name.abuchen.portfolio.cli.currency.StalePrices;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
