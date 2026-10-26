@@ -205,7 +205,7 @@ final class PerformanceScope
         var given = new ArrayList<String>();
         for (var option : List.of(INVESTMENT_ACCOUNT, CASH_ACCOUNT, INSTRUMENT))
         {
-            if (context.option(option.name()).isPresent())
+            if (context.given(option))
                 given.add("--" + option.name());
         }
         if (given.size() > 1)
@@ -216,7 +216,7 @@ final class PerformanceScope
                             .with("options", given);
 
         var withReferenceCashAccount = context.flag(WITH_REFERENCE_CASH_ACCOUNT);
-        var accountValue = context.option(INVESTMENT_ACCOUNT.name());
+        var accountValue = context.text(INVESTMENT_ACCOUNT);
         if (withReferenceCashAccount && accountValue.isEmpty())
             throw CliException.usage("option-required", "Option required",
                             "Option '--" + WITH_REFERENCE_CASH_ACCOUNT.name() + "' needs the option '--"
@@ -234,12 +234,12 @@ final class PerformanceScope
             return new PerformanceScope(new OneInvestmentAccount(account, withReferenceCashAccount));
         }
 
-        var cashValue = context.option(CASH_ACCOUNT.name());
+        var cashValue = context.text(CASH_ACCOUNT);
         if (cashValue.isPresent())
             return new PerformanceScope(
                             new OneCashAccount(References.cashAccount(client, CASH_ACCOUNT.name(), cashValue.get())));
 
-        var instrumentValue = context.option(INSTRUMENT.name());
+        var instrumentValue = context.text(INSTRUMENT);
         if (instrumentValue.isPresent())
             return new PerformanceScope(new OneInstrument(
                             References.instrument(client, INSTRUMENT.name(), instrumentValue.get())));

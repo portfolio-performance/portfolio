@@ -95,10 +95,10 @@ final class AllocationCommand
 
     private static Response execute(CommandContext context) throws CliException
     {
-        var date = DATE.parseDate(context.option(DATE.name())).orElse(LocalDate.now(context.clock()));
+        var date = context.date(DATE).orElse(LocalDate.now(context.clock()));
         var requested = ReportingCurrency.requested(context, CURRENCY);
         var client = context.loadClient().client();
-        var taxonomy = References.taxonomy(client, TAXONOMY.name(), context.option(TAXONOMY.name()).orElseThrow());
+        var taxonomy = References.taxonomy(client, TAXONOMY.name(), context.text(TAXONOMY).orElseThrow());
 
         var reporting = requested.orBase(context, client);
         var snapshot = ClientSnapshot.create(client, reporting.coreConverter(), date);

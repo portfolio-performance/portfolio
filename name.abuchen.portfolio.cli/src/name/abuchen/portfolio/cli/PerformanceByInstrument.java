@@ -35,7 +35,7 @@ final class PerformanceByInstrument
      */
     static boolean requested(CommandContext context) throws CliException
     {
-        var value = context.option(BY.name());
+        var value = context.text(BY);
         if (value.isPresent() && !INSTRUMENT.equals(value.get()))
             throw BY.invalid(value.get(), "'" + INSTRUMENT + "'");
         return value.isPresent();

@@ -70,8 +70,8 @@ record Sorting<T>(Spec<T> spec, String field, boolean descending)
 
         Sorting<T> parse(CommandContext context) throws CliException
         {
-            var field = sortOption().parseChoice(context.option("sort"));
-            var order = ORDER.parseChoice(context.option(ORDER.name()));
+            var field = context.choice(sortOption());
+            var order = context.choice(ORDER);
             return new Sorting<>(this, field, DESCENDING.equals(order));
         }
     }

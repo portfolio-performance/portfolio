@@ -139,14 +139,14 @@ final class HoldingsCommand
 
     private static Response execute(CommandContext context) throws CliException
     {
-        var date = DATE.parseDate(context.option(DATE.name())).orElse(LocalDate.now(context.clock()));
+        var date = context.date(DATE).orElse(LocalDate.now(context.clock()));
         var requested = ReportingCurrency.requested(context, CURRENCY);
         var client = context.loadClient().client();
 
         var filter = Optional.<Portfolio>empty();
-        if (context.option(INVESTMENT_ACCOUNT.name()).isPresent())
+        if (context.given(INVESTMENT_ACCOUNT))
             filter = Optional.of(References.investmentAccount(client, INVESTMENT_ACCOUNT.name(),
-                            context.option(INVESTMENT_ACCOUNT.name()).get()));
+                            context.text(INVESTMENT_ACCOUNT).get()));
 
         var reporting = requested.orBase(context, client);
         var snapshot = ClientSnapshot.create(client, reporting.coreConverter(), date);

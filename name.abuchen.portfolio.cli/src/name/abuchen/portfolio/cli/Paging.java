@@ -43,8 +43,8 @@ record Paging(int limit, long offset)
 
     static Paging parse(CommandContext context) throws CliException
     {
-        var limit = LIMIT.parseInteger(context.option(LIMIT.name()));
-        var offset = OFFSET.parseInteger(context.option(OFFSET.name()));
+        var limit = context.integer(LIMIT);
+        var offset = context.integer(OFFSET);
         return new Paging((int) limit, offset);
     }
 

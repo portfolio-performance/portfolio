@@ -61,7 +61,7 @@ final class PricesCommand
         var asOf = LocalDate.now(context.clock());
 
         var client = context.loadClient().client();
-        var security = References.instrument(client, INSTRUMENT.name(), context.option(INSTRUMENT.name()).orElseThrow());
+        var security = References.instrument(client, INSTRUMENT.name(), context.text(INSTRUMENT).orElseThrow());
 
         var history = security.getPricesIncludingLatest().stream().filter(price -> range.contains(price.getDate()))
                         .toList();

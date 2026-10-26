@@ -103,7 +103,7 @@ final class ReportingCurrency
      */
     static Requested requested(CommandContext context, OptionSpec option) throws CliException
     {
-        var raw = context.option(option.name());
+        var raw = context.text(option);
         if (raw.isPresent() && CurrencyUnit.getInstance(raw.get()) == null)
             throw CliException.usage("invalid-option-value", "Invalid option value",
                             "Option '--" + option.name() + "' must be an ISO currency code known to core.")

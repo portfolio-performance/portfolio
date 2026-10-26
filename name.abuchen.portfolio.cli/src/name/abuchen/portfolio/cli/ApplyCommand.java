@@ -78,7 +78,7 @@ final class ApplyCommand
 
     private static JsonArray readOperations(CommandContext context) throws CliException
     {
-        var source = context.option(INPUT.name()).orElseThrow();
+        var source = context.text(INPUT).orElseThrow();
 
         String text;
         try

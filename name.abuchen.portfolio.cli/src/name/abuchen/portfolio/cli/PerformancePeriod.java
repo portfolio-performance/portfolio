@@ -46,7 +46,7 @@ record PerformancePeriod(LocalDate firstDay, LocalDate lastDay, Optional<String>
      */
     static PerformancePeriod resolve(CommandContext context) throws CliException
     {
-        var code = context.option(PERIOD.name());
+        var code = context.text(PERIOD);
         if (code.isPresent())
             return fromCode(context, code.get());
 
@@ -59,7 +59,7 @@ record PerformancePeriod(LocalDate firstDay, LocalDate lastDay, Optional<String>
 
     private static PerformancePeriod fromCode(CommandContext context, String code) throws CliException
     {
-        if (context.option(FROM.name()).isPresent() || context.option(TO.name()).isPresent())
+        if (context.given(FROM) || context.given(TO))
             throw CliException.usage("conflicting-options", "Conflicting options",
                             "Option '--" + PERIOD.name() + "' cannot be combined with '--" + FROM.name() + "' or '--"
                                             + TO.name() + "'.")

@@ -74,7 +74,7 @@ final class SafeWrite
     static Settings settings(CommandContext context, boolean dryRun) throws CliException
     {
         Path backupDir = null;
-        var raw = context.option(BACKUP_DIR.name());
+        var raw = context.text(BACKUP_DIR);
         if (raw.isPresent())
         {
             try
@@ -89,7 +89,7 @@ final class SafeWrite
             }
         }
 
-        var keep = (int) KEEP.parseInteger(context.option(KEEP.name()));
+        var keep = (int) context.integer(KEEP);
         return new Settings(context.clock(), dryRun, backupDir, keep, context.flag(FORCE), context.osName(),
                         context.writeEnvironment());
     }

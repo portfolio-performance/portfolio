@@ -50,7 +50,7 @@ enum CostMethod
      */
     static CostMethod parse(CommandContext context) throws CliException
     {
-        var raw = context.option(OPTION.name());
+        var raw = context.text(OPTION);
         if (raw.isEmpty())
             return FIFO;
 

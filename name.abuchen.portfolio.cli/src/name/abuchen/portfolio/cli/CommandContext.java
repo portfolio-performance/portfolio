@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Clock;
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.Optional;
 
@@ -37,9 +38,58 @@ final class CommandContext
         this.writeEnvironment = writeEnvironment;
     }
 
-    Optional<String> option(String name)
+    /** Whether the option was given, whatever its type; its value is not checked. */
+    boolean given(OptionSpec option)
     {
-        return Optional.ofNullable(options.get(name));
+        return options.containsKey(option.name());
+    }
+
+    /**
+     * The value of a date option, or empty if it is absent.
+     *
+     * @throws CliException
+     *             a usage error if the value is not a valid ISO date
+     */
+    Optional<LocalDate> date(OptionSpec option) throws CliException
+    {
+        return option.parseDate(raw(option, OptionSpec.IsoDate.class));
+    }
+
+    /**
+     * The value of an integer option: the default when it is absent.
+     *
+     * @throws CliException
+     *             a usage error if the value is not an integer in the range
+     */
+    long integer(OptionSpec option) throws CliException
+    {
+        return option.parseInteger(raw(option, OptionSpec.IntegerDomain.class));
+    }
+
+    /**
+     * The value of a choice option: the default when it is absent.
+     *
+     * @throws CliException
+     *             a usage error if the value is not one of the choices
+     */
+    String choice(OptionSpec option) throws CliException
+    {
+        return option.parseChoice(raw(option, OptionSpec.Choice.class));
+    }
+
+    /** The value of a free-form option as given, or empty if it is absent. */
+    Optional<String> text(OptionSpec option)
+    {
+        return raw(option, OptionSpec.Text.class);
+    }
+
+    /** The raw value of an option declared as <code>type</code>. */
+    private Optional<String> raw(OptionSpec option, Class<? extends OptionSpec.Type> type)
+    {
+        if (!type.isInstance(option.type()))
+            throw new IllegalArgumentException(
+                            "Option '--" + option.name() + "' is not of type " + type.getSimpleName());
+        return Optional.ofNullable(options.get(option.name()));
     }
 
     /** Whether the switch was given. */
@@ -91,7 +141,7 @@ final class CommandContext
 
     private String clientPath() throws CliException
     {
-        return option(OptionSpec.FILE.name()).filter(p -> !p.isBlank())
+        return text(OptionSpec.FILE).filter(p -> !p.isBlank())
                         .or(() -> env("PP_FILE").filter(p -> !p.isBlank()))
                         .orElseThrow(() -> CliException.usage("file-required", "Client file required",
                                         "Pass --file <path> or set the PP_FILE environment variable."));

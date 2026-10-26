@@ -106,7 +106,7 @@ final class TransactionsCommand
         var paging = Paging.parse(context);
         var sorting = SORT.parse(context);
         var range = DateRange.parse(context, FROM, TO);
-        var types = parseTypes(context.option(TYPE.name()));
+        var types = parseTypes(context.text(TYPE));
         var requested = ReportingCurrency.requested(context, CURRENCY);
 
         var client = context.loadClient().client();
@@ -149,7 +149,7 @@ final class TransactionsCommand
     private static <T> Optional<T> resolve(CommandContext context, OptionSpec option, Client client,
                     Resolver<T> resolver) throws CliException
     {
-        var value = context.option(option.name());
+        var value = context.text(option);
         return value.isPresent() ? Optional.of(resolver.resolve(client, option.name(), value.get()))
                         : Optional.empty();
     }

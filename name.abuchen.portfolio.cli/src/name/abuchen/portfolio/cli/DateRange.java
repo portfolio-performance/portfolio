@@ -18,8 +18,8 @@ record DateRange(Optional<LocalDate> from, LocalDate to)
      */
     static DateRange parse(CommandContext context, OptionSpec fromOption, OptionSpec toOption) throws CliException
     {
-        var from = fromOption.parseDate(context.option(fromOption.name()));
-        var to = toOption.parseDate(context.option(toOption.name())).orElse(LocalDate.now(context.clock()));
+        var from = context.date(fromOption);
+        var to = context.date(toOption).orElse(LocalDate.now(context.clock()));
 
         if (from.isPresent() && from.get().isAfter(to))
             throw CliException.usage("invalid-date-range", "Invalid date range",

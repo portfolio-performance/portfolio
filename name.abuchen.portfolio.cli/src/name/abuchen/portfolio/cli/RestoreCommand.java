@@ -60,7 +60,7 @@ final class RestoreCommand
 
     private static Path backupFile(CommandContext context) throws CliException
     {
-        var raw = context.option(BACKUP.name()).orElseThrow();
+        var raw = context.text(BACKUP).orElseThrow();
         try
         {
             if (raw.isBlank())
