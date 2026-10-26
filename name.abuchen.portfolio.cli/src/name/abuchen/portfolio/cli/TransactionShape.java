@@ -17,15 +17,16 @@ import com.google.gson.JsonObject;
  * input schemas are derived from the same entries, so the input mirrors the
  * output by construction.
  */
-final class TransactionShape
+public final class TransactionShape
 {
     /** The types of a record, in the order they are published. */
-    static final List<String> TYPES = List.of("BUY", "SELL", "DEPOSIT", "REMOVAL", "INTEREST", "INTEREST_CHARGE",
+    public static final List<String> TYPES = List.of("BUY", "SELL", "DEPOSIT", "REMOVAL", "INTEREST", "INTEREST_CHARGE",
                     "DIVIDENDS", "FEES", "FEES_REFUND", "TAXES", "TAX_REFUND", "DELIVERY_INBOUND", "DELIVERY_OUTBOUND",
                     TransactionRecord.TRANSFER);
 
     /** The types that are recorded in an investment account, as opposed to a cash account. */
-    static final Set<String> INVESTMENT_ACCOUNT_TYPES = Set.of("BUY", "SELL", "DELIVERY_INBOUND", "DELIVERY_OUTBOUND");
+    public static final Set<String> INVESTMENT_ACCOUNT_TYPES = Set.of("BUY", "SELL", "DELIVERY_INBOUND",
+                    "DELIVERY_OUTBOUND");
 
     /** What an orphaned side can add under its raw core type. */
     private static final List<String> ORPHAN_TYPES = List.of("TRANSFER_IN", "TRANSFER_OUT");
@@ -33,7 +34,7 @@ final class TransactionShape
     /** Every type a record can be read as: {@link #TYPES}, then those of orphaned sides. */
     static final List<String> FILTERABLE_TYPES = Stream.concat(TYPES.stream(), ORPHAN_TYPES.stream()).toList();
 
-    static final List<String> UNIT_TYPES = List.of("FEE", "TAX", "GROSS_VALUE");
+    public static final List<String> UNIT_TYPES = List.of("FEE", "TAX", "GROSS_VALUE");
 
     /** Whether the output has the member. */
     enum OutputPresence
@@ -65,7 +66,7 @@ final class TransactionShape
      * @param inputType
      *            the schema of the value as input, given its description
      */
-    record Member(String name, Function<String, Schema> outputType, Function<String, Schema> inputType,
+    public record Member(String name, Function<String, Schema> outputType, Function<String, Schema> inputType,
                     Output output, Input input)
     {
         Member(String name, Function<String, Schema> type, Output output, Input input)
@@ -164,18 +165,20 @@ final class TransactionShape
                     UNIT_MEMBERS, Member::declareOutput);
 
     /** A fee, tax or forex gross value as input. */
-    static final Schema UNIT_INPUT = declare(
+    public static final Schema UNIT_INPUT = declare(
                     Schema.object("A fee, tax or forex gross value, in the shape the transactions output uses."),
                     UNIT_MEMBERS, Member::declareInput);
 
     static final Member ID = new Member("id", Schema::string,
                     always("UUID of the investment-account side of a buy or sell, the outgoing side of a transfer, else of the transaction."),
                     derived());
-    static final Member TYPE = new Member("type", description -> Schema.openEnumOf(description, FILTERABLE_TYPES),
+    public static final Member TYPE = new Member("type",
+                    description -> Schema.openEnumOf(description, FILTERABLE_TYPES),
                     always("Core's transaction type. An open enum: new values may appear. An intact transfer is TRANSFER; a side without its partner keeps its raw type, e.g. TRANSFER_OUT."),
                     required("Transaction type. TRANSFER needs a kind, from and to; BUY and SELL need an investmentAccount and a cashAccount; deliveries need an investmentAccount; the others need a cashAccount."))
                     .inputAs(description -> Schema.enumOf(description, TYPES));
-    static final Member KIND = new Member("kind", description -> Schema.enumOf(description, TransactionRecord.TransferKind.ids()),
+    public static final Member KIND = new Member("kind",
+                    description -> Schema.enumOf(description, TransactionRecord.TransferKind.ids()),
                     sometimes("Of a TRANSFER."),
                     optional("Of a TRANSFER only: cash or security."));
     static final Member DATE = new Member("date", Schema::string,
@@ -232,7 +235,7 @@ final class TransactionShape
     static final Member SOURCE = new Member("source", Schema::string,
                     sometimes("Where the record was imported from."),
                     optional("Where the record came from."));
-    static final Member UPDATED_AT = new Member(MasterData.UPDATED_AT_MEMBER, Schema::string,
+    public static final Member UPDATED_AT = new Member(MasterData.UPDATED_AT_MEMBER, Schema::string,
                     sometimes("When the record last changed: the latest of its sides, as an ISO-8601 UTC instant such as 2026-10-24T15:04:57Z. Absent if none has one."),
                     derived());
     static final Member UNITS = new Member("units", description -> Schema.array(description, UNIT_OUTPUT),
@@ -299,7 +302,7 @@ final class TransactionShape
     }
 
     /** Declares the members of a record that are input on the object, as an add takes them. */
-    static Schema declareInput(Schema object)
+    public static Schema declareInput(Schema object)
     {
         return declare(object, MEMBERS, Member::declareInput);
     }
@@ -309,13 +312,13 @@ final class TransactionShape
      * update takes them: every one is optional, and the optional ones can be
      * cleared with null.
      */
-    static Schema declarePatch(Schema object)
+    public static Schema declarePatch(Schema object)
     {
         return declare(object, MEMBERS, Member::declarePatch);
     }
 
     /** The input members of a record as output, which is the input that adds the same record again. */
-    static JsonObject inputOf(JsonObject record)
+    public static JsonObject inputOf(JsonObject record)
     {
         var input = new JsonObject();
         for (var member : record.entrySet())

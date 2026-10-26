@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.apply;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -9,6 +9,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import name.abuchen.portfolio.cli.BuiltRecord;
+import name.abuchen.portfolio.cli.Schema;
+import name.abuchen.portfolio.cli.TransactionRecord;
+import name.abuchen.portfolio.cli.TransactionShape;
+import name.abuchen.portfolio.cli.TransactionsCommand;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;

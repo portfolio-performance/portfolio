@@ -18,26 +18,26 @@ import name.abuchen.portfolio.money.Money;
  * Builds the joined entries that the shared JUnit builders don't cover:
  * records in other currencies, with a time of day, and transfers.
  */
-final class TransactionFixtures
+public final class TransactionFixtures
 {
     private TransactionFixtures()
     {
     }
 
-    static LocalDateTime at(String dateTime)
+    public static LocalDateTime at(String dateTime)
     {
         return dateTime.indexOf('T') < 0 ? LocalDateTime.parse(dateTime + "T00:00") : LocalDateTime.parse(dateTime);
     }
 
     /** Amounts are in minor units: 100_500 is 1005.00. */
-    static BuySellEntry buy(Portfolio portfolio, Account account, Security security, String dateTime, long shares,
-                    long amount)
+    public static BuySellEntry buy(Portfolio portfolio, Account account, Security security, String dateTime,
+                    long shares, long amount)
     {
         return buySell(PortfolioTransaction.Type.BUY, portfolio, account, security, dateTime, shares, amount);
     }
 
-    static BuySellEntry sell(Portfolio portfolio, Account account, Security security, String dateTime, long shares,
-                    long amount)
+    public static BuySellEntry sell(Portfolio portfolio, Account account, Security security, String dateTime,
+                    long shares, long amount)
     {
         return buySell(PortfolioTransaction.Type.SELL, portfolio, account, security, dateTime, shares, amount);
     }
@@ -55,14 +55,14 @@ final class TransactionFixtures
         return entry;
     }
 
-    static AccountTransaction cash(Account account, AccountTransaction.Type type, String dateTime, long amount)
+    public static AccountTransaction cash(Account account, AccountTransaction.Type type, String dateTime, long amount)
     {
         var transaction = new AccountTransaction(at(dateTime), account.getCurrencyCode(), amount, null, type);
         account.addTransaction(transaction);
         return transaction;
     }
 
-    static AccountTransferEntry cashTransfer(Account from, Account to, String dateTime, long amount)
+    public static AccountTransferEntry cashTransfer(Account from, Account to, String dateTime, long amount)
     {
         var entry = new AccountTransferEntry(from, to);
         entry.setDate(at(dateTime));
@@ -77,7 +77,7 @@ final class TransactionFixtures
      * as a gross value unit on the outgoing side: its amount is the outgoing
      * amount, its forex the incoming one.
      */
-    static AccountTransferEntry crossCurrencyTransfer(Account from, Account to, String dateTime, long amount,
+    public static AccountTransferEntry crossCurrencyTransfer(Account from, Account to, String dateTime, long amount,
                     long targetAmount, String rate)
     {
         var entry = new AccountTransferEntry(from, to);
@@ -91,8 +91,8 @@ final class TransactionFixtures
         return entry;
     }
 
-    static PortfolioTransferEntry securityTransfer(Portfolio from, Portfolio to, Security security, String dateTime,
-                    long shares, long amount)
+    public static PortfolioTransferEntry securityTransfer(Portfolio from, Portfolio to, Security security,
+                    String dateTime, long shares, long amount)
     {
         var entry = new PortfolioTransferEntry(from, to);
         entry.setDate(at(dateTime));

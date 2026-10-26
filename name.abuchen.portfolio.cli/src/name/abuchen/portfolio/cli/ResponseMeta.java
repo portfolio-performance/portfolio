@@ -74,7 +74,7 @@ public final class ResponseMeta
     }
 
     /** The meta of a write: file versions, backup and whether it was only a preview. */
-    static Schema writeSchema()
+    public static Schema writeSchema()
     {
         return envelope().property("fileVersionBefore", Schema.integer("Version of the file as read."))
                         .property("fileVersionAfter", Schema.integer("Version the file has after the write."))
@@ -84,7 +84,7 @@ public final class ResponseMeta
                                         "Where the backup of the original file is, or with a dry run would be, written."));
     }
 
-    static Map<String, Object> written(CommandContext context, SafeWrite.Outcome<?> outcome)
+    public static Map<String, Object> written(CommandContext context, SafeWrite.Outcome<?> outcome)
     {
         var meta = new LinkedHashMap<String, Object>();
         meta.put("fileVersionBefore", outcome.fileVersionBefore());

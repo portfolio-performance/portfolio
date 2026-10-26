@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.apply;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -12,13 +12,21 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
+import name.abuchen.portfolio.cli.CliException;
+import name.abuchen.portfolio.cli.CommandContext;
+import name.abuchen.portfolio.cli.CommandSpec;
+import name.abuchen.portfolio.cli.Commands;
+import name.abuchen.portfolio.cli.OptionSpec;
+import name.abuchen.portfolio.cli.Response;
+import name.abuchen.portfolio.cli.ResponseMeta;
+import name.abuchen.portfolio.cli.Schema;
 import name.abuchen.portfolio.cli.file.SafeWrite;
 
 /**
  * <code>pp-cli apply</code>: applies a batch of write operations atomically
  * to the client file, or previews it with <code>--dry-run</code>.
  */
-final class ApplyCommand
+public final class ApplyCommand
 {
     private static final OptionSpec INPUT = new OptionSpec("input", "file|-",
                     "JSON document {\"operations\": [...]} to apply: a file, or - for stdin. If stdin carries the batch, give the password of an encrypted file through PP_PASSWORD.")
@@ -43,7 +51,7 @@ final class ApplyCommand
                                     .property("updated", Schema.array("Entities the operation changed.", CHANGE))
                                     .property("deleted", Schema.array("Entities the operation deleted.", CHANGE))));
 
-    static final CommandSpec SPEC = new CommandSpec("apply",
+    public static final CommandSpec SPEC = new CommandSpec("apply",
                     "Applies a batch of write operations atomically; see the operations list. Writes by default, keeping the file's format, after saving a backup in a backups folder next to it (--backup-dir, --keep). A write is refused, with nothing changed, if it would introduce a consistency issue that core's checker did not already find, if the file changed on disk since it was read, or on macOS if the file is open in another program (unless --force). On any validation failure nothing is written and every failure is reported with operationIndex, field, code and message.",
                     true, applyOptions(), DATA, ResponseMeta.writeSchema(), SafeWrite.WARNINGS,
                     ApplyCommand::execute);

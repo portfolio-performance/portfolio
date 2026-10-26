@@ -28,7 +28,7 @@ import name.abuchen.portfolio.money.Values;
  * {@link TransactionRecord}, filtered, ordered by date-time then id, paged, and
  * on request with the amount converted into another currency.
  */
-final class TransactionsCommand
+public final class TransactionsCommand
 {
     private static final DateTimeFormatter TIME = DateTimeFormatter.ofPattern("HH:mm");
 
@@ -186,7 +186,7 @@ final class TransactionsCommand
     }
 
     /** The record's fields as written, without the {@code --currency} conversion; also the shape writes return. */
-    static Map<String, Object> render(TransactionRecord record, Client client)
+    public static Map<String, Object> render(TransactionRecord record, Client client)
     {
         return render(record, new AccountNames(client));
     }

@@ -43,7 +43,7 @@ public final class Schema
         return new Schema("string", description);
     }
 
-    static Schema integer(String description)
+    public static Schema integer(String description)
     {
         return new Schema("integer", description);
     }
@@ -90,7 +90,7 @@ public final class Schema
     }
 
     /** An object whose members aren't constrained, e.g. an embedded schema. */
-    static Schema anyObject(String description)
+    public static Schema anyObject(String description)
     {
         var schema = new Schema("object", description);
         schema.freeform = true;
@@ -113,7 +113,7 @@ public final class Schema
     }
 
     /** Allows <code>null</code> in addition to the declared type. */
-    Schema nullable()
+    public Schema nullable()
     {
         this.nullable = true;
         return this;
@@ -153,7 +153,7 @@ public final class Schema
     }
 
     /** Whether this object has a member of that name. */
-    boolean declares(String member)
+    public boolean declares(String member)
     {
         return properties.containsKey(member);
     }

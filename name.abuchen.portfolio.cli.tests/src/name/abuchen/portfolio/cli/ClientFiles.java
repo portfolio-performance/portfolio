@@ -28,7 +28,7 @@ import name.abuchen.portfolio.model.SaveFlag;
  */
 public final class ClientFiles
 {
-    static final int NEWER_VERSION = Client.CURRENT_VERSION + 29;
+    public static final int NEWER_VERSION = Client.CURRENT_VERSION + 29;
 
     /** Core treats encrypted headers further ahead than 20 as a wrong password. */
     public static final int NEWER_ENCRYPTED_VERSION = Client.CURRENT_VERSION + 5;
@@ -144,7 +144,7 @@ public final class ClientFiles
         return file;
     }
 
-    static File newerXml(Path folder) throws IOException
+    public static File newerXml(Path folder) throws IOException
     {
         var file = xml(folder);
         var content = Files.readString(file.toPath(), StandardCharsets.UTF_8);

@@ -28,7 +28,7 @@ public final class Decimals
      * The decimal read back as the stored minor units of the given values, e.g.
      * cents, or empty if it carries more decimal places than those values keep.
      */
-    static Optional<Long> toStored(BigDecimal value, Values<Long> values)
+    public static Optional<Long> toStored(BigDecimal value, Values<Long> values)
     {
         try
         {

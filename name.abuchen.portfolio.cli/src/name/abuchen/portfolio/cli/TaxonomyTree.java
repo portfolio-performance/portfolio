@@ -16,7 +16,7 @@ import name.abuchen.portfolio.model.Taxonomy;
  * left out, and the rest is flattened in pre-order, siblings by the rank the
  * app shows them in, then name (case-insensitive, ordinal), then UUID.
  */
-final class TaxonomyTree
+public final class TaxonomyTree
 {
     /**
      * A classification and where it sits.
@@ -27,9 +27,9 @@ final class TaxonomyTree
      *            names of the ancestors, top level first, excluding the
      *            classification itself
      */
-    record Node(Classification classification, Optional<Classification> parent, List<String> path)
+    public record Node(Classification classification, Optional<Classification> parent, List<String> path)
     {
-        String uuid()
+        public String uuid()
         {
             return classification.getId();
         }
@@ -53,7 +53,7 @@ final class TaxonomyTree
     {
     }
 
-    static List<Node> preOrder(Taxonomy taxonomy)
+    public static List<Node> preOrder(Taxonomy taxonomy)
     {
         var nodes = new ArrayList<Node>();
         collect(taxonomy.getRoot(), false, List.of(), nodes);
@@ -74,7 +74,7 @@ final class TaxonomyTree
     }
 
     /** A weight of the file as a fraction of one, unrounded. */
-    static BigDecimal fraction(int weight)
+    public static BigDecimal fraction(int weight)
     {
         return BigDecimal.valueOf(weight).divide(BigDecimal.valueOf(Classification.ONE_HUNDRED_PERCENT))
                         .stripTrailingZeros();

@@ -66,7 +66,7 @@ public final class CliFixture
         return subfolder("client");
     }
 
-    Path inputFolder()
+    public Path inputFolder()
     {
         return subfolder("input");
     }
@@ -121,7 +121,7 @@ public final class CliFixture
     }
 
     /** Writes any text, well-formed or not, as an input file. */
-    Path input(String text) throws IOException
+    public Path input(String text) throws IOException
     {
         var input = Files.createTempFile(inputFolder(), "batch", ".json");
         Files.writeString(input, text, StandardCharsets.UTF_8);
@@ -129,7 +129,7 @@ public final class CliFixture
     }
 
     /** Reads the file back as the desktop app would. */
-    Client reload() throws IOException
+    public Client reload() throws IOException
     {
         return ClientFactory.load(file, null, new NullProgressMonitor());
     }

@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.apply;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -15,6 +15,7 @@ import org.junit.rules.TemporaryFolder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import name.abuchen.portfolio.cli.CliFixture;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;

@@ -1,10 +1,11 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.apply;
 
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 
+import name.abuchen.portfolio.cli.TransactionRecord;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;

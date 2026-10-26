@@ -8,14 +8,14 @@ import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Taxonomy;
 
 /** Small taxonomies for the tests of <code>taxonomies</code> and <code>allocation</code>. */
-final class TaxonomyFixtures
+public final class TaxonomyFixtures
 {
     private TaxonomyFixtures()
     {
     }
 
     /** An empty taxonomy: just its root. */
-    static Taxonomy taxonomy(Client client, String name)
+    public static Taxonomy taxonomy(Client client, String name)
     {
         var taxonomy = new Taxonomy(name);
         taxonomy.setRootNode(new Classification(UUID.randomUUID().toString(), name));
@@ -24,7 +24,7 @@ final class TaxonomyFixtures
     }
 
     /** A classification under the parent; the rank is the position the app shows it at. */
-    static Classification child(Classification parent, String name, int rank)
+    public static Classification child(Classification parent, String name, int rank)
     {
         var classification = new Classification(parent, UUID.randomUUID().toString(), name);
         classification.setRank(rank);
@@ -32,7 +32,7 @@ final class TaxonomyFixtures
         return classification;
     }
 
-    static Classification child(Classification parent, String name)
+    public static Classification child(Classification parent, String name)
     {
         return child(parent, name, parent.getChildren().size());
     }
@@ -43,12 +43,12 @@ final class TaxonomyFixtures
         return (int) Math.round(percent * Classification.ONE_HUNDRED_PERCENT / 100);
     }
 
-    static void assign(Classification classification, InvestmentVehicle vehicle, double percent)
+    public static void assign(Classification classification, InvestmentVehicle vehicle, double percent)
     {
         classification.addAssignment(new Classification.Assignment(vehicle, percent(percent)));
     }
 
-    static void assign(Classification classification, InvestmentVehicle vehicle)
+    public static void assign(Classification classification, InvestmentVehicle vehicle)
     {
         assign(classification, vehicle, 100);
     }

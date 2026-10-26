@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.apply;
 
 import java.time.Instant;
 import java.util.List;
@@ -9,7 +9,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.util.Isin;
 
 /** The write operations on instruments. Fields are named as in the <code>instruments</code> output. */
-final class InstrumentOperations
+public final class InstrumentOperations
 {
     private static final EntityOperations<Security> OPERATIONS = new EntityOperations<>(
                     new EntityOperations.Definition<Security>("instrument", //
@@ -40,7 +40,7 @@ final class InstrumentOperations
 
     static final OperationSpec ADD = OPERATIONS.addOperation();
     static final OperationSpec UPDATE = OPERATIONS.updateOperation();
-    static final List<OperationSpec> ALL = List.of(ADD, UPDATE);
+    public static final List<OperationSpec> ALL = List.of(ADD, UPDATE);
 
     private InstrumentOperations()
     {

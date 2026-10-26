@@ -104,7 +104,7 @@ public record OptionSpec(String name, String valueName, String description, Type
     }
 
     /** The same option, but the parser rejects a command line without it. */
-    OptionSpec asRequired()
+    public OptionSpec asRequired()
     {
         return new OptionSpec(name, valueName, description, type, true);
     }

@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import name.abuchen.portfolio.cli.apply.ApplyCommand;
+import name.abuchen.portfolio.cli.apply.OperationSpec;
 import name.abuchen.portfolio.cli.currency.EcbCache;
 
 /**

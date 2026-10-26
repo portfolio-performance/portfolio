@@ -4,10 +4,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import name.abuchen.portfolio.cli.apply.AccountOperations;
+import name.abuchen.portfolio.cli.apply.ApplyCommand;
+import name.abuchen.portfolio.cli.apply.InstrumentOperations;
+import name.abuchen.portfolio.cli.apply.OperationSpec;
+import name.abuchen.portfolio.cli.apply.RestoreCommand;
+import name.abuchen.portfolio.cli.apply.TaxonomyOperations;
+import name.abuchen.portfolio.cli.apply.TransactionOperations;
 import name.abuchen.portfolio.cli.performance.PerformanceCommand;
 
 /** The single list of declared commands. */
-final class Commands
+public final class Commands
 {
     static final List<CommandSpec> ALL = List.of(InfoCommand.SPEC, InstrumentsCommand.SPEC,
                     InvestmentAccountsCommand.SPEC, CashAccountsCommand.SPEC, PricesCommand.SPEC,
@@ -15,7 +22,7 @@ final class Commands
                     AllocationCommand.SPEC, ApplyCommand.SPEC, RestoreCommand.SPEC);
 
     /** Write operations, applied by the <code>apply</code> command. */
-    static final List<OperationSpec> OPERATIONS = Stream.of(InstrumentOperations.ALL, AccountOperations.ALL,
+    public static final List<OperationSpec> OPERATIONS = Stream.of(InstrumentOperations.ALL, AccountOperations.ALL,
                     TransactionOperations.ALL, TaxonomyOperations.ALL).flatMap(List::stream).toList();
 
     private Commands()

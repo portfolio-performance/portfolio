@@ -157,18 +157,18 @@ public final class CliRun
     }
 
     /** The field failures of a <code>validation-failed</code> problem. */
-    JsonArray failures()
+    public JsonArray failures()
     {
         return problem().getAsJsonArray("failures");
     }
 
-    JsonObject failure(int index)
+    public JsonObject failure(int index)
     {
         return failures().get(index).getAsJsonObject();
     }
 
     /** Each field failure as <code>operationIndex:field:code</code>. */
-    List<String> failureKeys()
+    public List<String> failureKeys()
     {
         var keys = new ArrayList<String>();
         for (var element : failures())
@@ -181,25 +181,25 @@ public final class CliRun
     }
 
     /** The result of the operation at the index of an applied batch. */
-    JsonObject result(int index)
+    public JsonObject result(int index)
     {
         return data().getAsJsonArray("results").get(index).getAsJsonObject();
     }
 
     /** The record the first operation of an applied batch created. */
-    JsonObject created()
+    public JsonObject created()
     {
         return first("created");
     }
 
     /** The record the first operation of an applied batch updated. */
-    JsonObject updated()
+    public JsonObject updated()
     {
         return first("updated");
     }
 
     /** The record the first operation of an applied batch deleted. */
-    JsonObject deleted()
+    public JsonObject deleted()
     {
         return first("deleted");
     }
@@ -210,7 +210,7 @@ public final class CliRun
     }
 
     /** Asserts that the batch was refused for one field failure first. */
-    void assertRefused(String field, String code)
+    public void assertRefused(String field, String code)
     {
         assertThat(stdout, exitCode, is(1));
         assertThat(code(), is("validation-failed"));

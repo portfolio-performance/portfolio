@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.apply;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import name.abuchen.portfolio.cli.Decimals;
+import name.abuchen.portfolio.cli.Schema;
+import name.abuchen.portfolio.cli.TaxonomyTree;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
@@ -18,7 +21,7 @@ import name.abuchen.portfolio.model.Taxonomy;
  * classification, seen from the instrument: the classification and the weight
  * as a fraction.
  */
-final class TaxonomyOperations
+public final class TaxonomyOperations
 {
     private static final String OP = "taxonomy.assign";
 
@@ -31,7 +34,7 @@ final class TaxonomyOperations
                     "Replaces the complete assignment of one instrument within one existing taxonomy. The assignments list names classifications by UUID, each with a weight as a fraction of one, as in the taxonomies output; an empty list removes the instrument from the taxonomy. Weights must be positive and at most 100% in total, a classification may appear only once, and only leaf classifications, those that no other classification names as its parent, can be used. The response is one updated change, with the assignments before and after, whose uuid is the instrument.",
                     schema(), TaxonomyOperations::assign);
 
-    static final List<OperationSpec> ALL = List.of(ASSIGN);
+    public static final List<OperationSpec> ALL = List.of(ASSIGN);
 
     private TaxonomyOperations()
     {

@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.apply;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -13,6 +13,8 @@ import org.junit.Test;
 
 import com.google.gson.JsonParser;
 
+import name.abuchen.portfolio.cli.CliException;
+import name.abuchen.portfolio.cli.Schema;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;

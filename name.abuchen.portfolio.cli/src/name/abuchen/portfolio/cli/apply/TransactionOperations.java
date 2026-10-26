@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.apply;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -9,6 +9,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
+import name.abuchen.portfolio.cli.BuiltRecord;
+import name.abuchen.portfolio.cli.Schema;
+import name.abuchen.portfolio.cli.TransactionRecord;
+import name.abuchen.portfolio.cli.TransactionShape;
+import name.abuchen.portfolio.cli.TransactionsCommand;
 import name.abuchen.portfolio.datatransfer.ImportAction;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.actions.CheckForexGrossValueAction;
@@ -31,7 +36,7 @@ import name.abuchen.portfolio.money.Values;
  * output, so an agent can send back what it read. Every rule reports a field-level failure, and the whole batch stays
  * atomic because nothing is added to the model until the operation is clean.
  */
-final class TransactionOperations
+public final class TransactionOperations
 {
     private static final String OP = "transaction.add";
     private static final String UPDATE_OP = "transaction.update";
@@ -61,7 +66,7 @@ final class TransactionOperations
                     "Changes a whole transaction record, found by the UUID of either of its sides. Only the fields present change; null clears an optional field. The patch is overlaid on the current record and then validated exactly like an add, so a partial edit can't bypass validation and nothing is recomputed: fees, taxes and forex units that no longer fit a changed amount or shares are refused with a field-level error. The type, and the kind of a transfer, can't change; delete the record and add a new one. Both sides stay in step and keep their UUIDs. The response is one updated change, with before and after for the changed fields, whose uuid is the record id. A change that would make an investment account's holding of an instrument negative at the end of any date is refused.",
                     schema(true), TransactionUpdates::update);
 
-    static final List<OperationSpec> ALL = List.of(ADD, UPDATE, TransactionUpdates.DELETE);
+    public static final List<OperationSpec> ALL = List.of(ADD, UPDATE, TransactionUpdates.DELETE);
 
     private TransactionOperations()
     {

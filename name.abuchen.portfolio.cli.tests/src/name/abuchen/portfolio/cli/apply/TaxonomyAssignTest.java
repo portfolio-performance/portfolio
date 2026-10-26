@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.apply;
 
 import static name.abuchen.portfolio.cli.TaxonomyFixtures.assign;
 import static name.abuchen.portfolio.cli.TaxonomyFixtures.child;
@@ -24,6 +24,8 @@ import org.junit.rules.TemporaryFolder;
 
 import com.google.gson.JsonElement;
 
+import name.abuchen.portfolio.cli.CliFixture;
+import name.abuchen.portfolio.cli.CliRun;
 import name.abuchen.portfolio.junit.AccountBuilder;
 import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;

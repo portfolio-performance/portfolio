@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.apply;
 
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
@@ -7,6 +7,13 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import name.abuchen.portfolio.cli.CliException;
+import name.abuchen.portfolio.cli.CommandContext;
+import name.abuchen.portfolio.cli.CommandSpec;
+import name.abuchen.portfolio.cli.OptionSpec;
+import name.abuchen.portfolio.cli.Response;
+import name.abuchen.portfolio.cli.ResponseMeta;
+import name.abuchen.portfolio.cli.Schema;
 import name.abuchen.portfolio.cli.file.SafeWrite;
 
 /**
@@ -14,7 +21,7 @@ import name.abuchen.portfolio.cli.file.SafeWrite;
  * the same safe-write sequence as <code>apply</code>, so the restore itself
  * leaves a backup and can be undone.
  */
-final class RestoreCommand
+public final class RestoreCommand
 {
     private static final OptionSpec BACKUP = new OptionSpec("backup", "path",
                     "Backup to restore: the backupPath that apply or an earlier restore reported. There is no command that lists backups.")
@@ -25,7 +32,7 @@ final class RestoreCommand
     private static final Schema DATA = Schema.object("The outcome of the restore.").property("restoredFrom",
                     Schema.string("Absolute path of the backup the client file was restored from."));
 
-    static final CommandSpec SPEC = new CommandSpec("restore",
+    public static final CommandSpec SPEC = new CommandSpec("restore",
                     "Rolls the client file back to a backup, as written by apply or an earlier restore. Follows the same safe-write sequence as apply, including a backup of the file it replaces, reported in meta.backupPath, so a restore can itself be undone. Refused, with nothing changed, if the backup is missing, unreadable or has a newer file version than this pp-cli supports, if it would introduce a consistency issue that the backup did not already have, or if the file changed on disk since it was read. The file keeps the format of the backup.",
                     true, restoreOptions(), DATA, ResponseMeta.writeSchema(), SafeWrite.WARNINGS,
                     RestoreCommand::execute);

@@ -42,24 +42,24 @@ import name.abuchen.portfolio.model.Transaction;
  * @param incoming
  *            the incoming side of a transfer
  */
-record TransactionRecord(String id, String type, Optional<TransferKind> kind, Transaction primary,
+public record TransactionRecord(String id, String type, Optional<TransferKind> kind, Transaction primary,
                 List<String> sides, Optional<String> investmentAccount, Optional<String> cashAccount,
                 Optional<String> from, Optional<String> to, Optional<Transaction> incoming)
 {
-    static final String TRANSFER = "TRANSFER";
+    public static final String TRANSFER = "TRANSFER";
 
     /** What a transfer moves. */
-    enum TransferKind
+    public enum TransferKind
     {
         CASH, SECURITY;
 
         /** The name published in the output. */
-        String id()
+        public String id()
         {
             return name().toLowerCase(Locale.ROOT);
         }
 
-        static List<String> ids()
+        public static List<String> ids()
         {
             return Arrays.stream(values()).map(TransferKind::id).toList();
         }
@@ -128,7 +128,7 @@ record TransactionRecord(String id, String type, Optional<TransferKind> kind, Tr
     }
 
     /** The side with the given UUID, with the account or portfolio it is in. */
-    static Optional<BuiltRecord.Side> sideOf(Client client, String uuid)
+    public static Optional<BuiltRecord.Side> sideOf(Client client, String uuid)
     {
         var accounts = accountOwners(client).entrySet().stream()
                         .map(e -> new BuiltRecord.Side(e.getKey(), e.getValue()));
@@ -139,7 +139,7 @@ record TransactionRecord(String id, String type, Optional<TransferKind> kind, Tr
     }
 
     /** All records of the client, in no particular order. */
-    static List<TransactionRecord> allOf(Client client)
+    public static List<TransactionRecord> allOf(Client client)
     {
         var accountOwners = accountOwners(client);
         var portfolioOwners = portfolioOwners(client);

@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.apply;
 
 import java.util.List;
 import java.util.Map;
@@ -12,7 +12,7 @@ import name.abuchen.portfolio.model.Portfolio;
  * named as in the <code>cash-accounts</code> and
  * <code>investment-accounts</code> outputs.
  */
-final class AccountOperations
+public final class AccountOperations
 {
     private static final String REFERENCE = "referenceCashAccount";
 
@@ -56,7 +56,7 @@ final class AccountOperations
     static final OperationSpec INVESTMENT_ADD = INVESTMENT.addOperation();
     static final OperationSpec INVESTMENT_UPDATE = INVESTMENT.updateOperation();
 
-    static final List<OperationSpec> ALL = List.of(CASH_ADD, CASH_UPDATE, INVESTMENT_ADD, INVESTMENT_UPDATE);
+    public static final List<OperationSpec> ALL = List.of(CASH_ADD, CASH_UPDATE, INVESTMENT_ADD, INVESTMENT_UPDATE);
 
     private AccountOperations()
     {

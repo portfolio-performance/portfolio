@@ -123,7 +123,7 @@ public final class CommandContext
         return Optional.ofNullable(env.get(name));
     }
 
-    InputStream stdin()
+    public InputStream stdin()
     {
         return stdin;
     }
@@ -154,7 +154,7 @@ public final class CommandContext
      * Checks the client file named by <code>--file</code> or PP_FILE without
      * loading it; the caller closes it.
      */
-    ClientLoader.OpenedFile openClient() throws CliException
+    public ClientLoader.OpenedFile openClient() throws CliException
     {
         return ClientLoader.open(clientPath(), this::password);
     }
