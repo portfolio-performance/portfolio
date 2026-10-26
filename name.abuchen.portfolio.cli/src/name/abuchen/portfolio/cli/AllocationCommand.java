@@ -104,12 +104,11 @@ final class AllocationCommand
         var snapshot = ClientSnapshot.create(client, reporting.coreConverter(), date);
 
         var holdings = new ArrayList<Holding>();
-        var stalePrices = new LinkedHashMap<Security, Warning>();
+        var stalePrices = new StalePrices(date);
         for (var position : snapshot.getJointPortfolio().getPositions())
         {
             holdings.add(new Holding(position.getInvestmentVehicle(), position.calculateValue()));
-            Prices.staleWarning(position.getSecurity(), position.getPrice(), date)
-                            .ifPresent(warning -> stalePrices.putIfAbsent(position.getSecurity(), warning));
+            stalePrices.note(position.getSecurity(), position.getPrice());
         }
         for (var account : snapshot.getAccounts())
         {
@@ -147,7 +146,7 @@ final class AllocationCommand
         reporting.putRatesInto(meta);
 
         var response = Response.of(data, meta);
-        stalePrices.values().forEach(response::warn);
+        stalePrices.warnings().forEach(response::warn);
         overAssigned(taxonomy, holdings).forEach(response::warn);
         reporting.warnings().forEach(response::warn);
         return response;

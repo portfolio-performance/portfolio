@@ -167,14 +167,13 @@ final class HoldingsCommand
         }
 
         var includeZero = context.flag(INCLUDE_ZERO);
-        var stalePrices = new LinkedHashMap<Security, Warning>();
+        var stalePrices = new StalePrices(date);
 
         var holdings = new ArrayList<Map<String, Object>>();
         for (var block : blocks)
         {
             var rows = rows(block, date, includeZero);
-            rows.forEach(row -> row.price().flatMap(price -> Prices.staleWarning(row.security(), price, date))
-                            .ifPresent(warning -> stalePrices.putIfAbsent(row.security(), warning)));
+            rows.forEach(row -> row.price().ifPresent(price -> stalePrices.note(row.security(), price)));
             holdings.add(render(block, rows, date, reporting));
         }
 
@@ -189,7 +188,7 @@ final class HoldingsCommand
         reporting.putRatesInto(meta);
 
         var response = Response.of(data, meta);
-        stalePrices.values().forEach(response::warn);
+        stalePrices.warnings().forEach(response::warn);
         reporting.warnings().forEach(response::warn);
         return response;
     }

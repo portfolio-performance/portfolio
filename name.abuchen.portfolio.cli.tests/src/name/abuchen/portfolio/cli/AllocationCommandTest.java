@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.StreamSupport;
 
 import org.junit.Before;
@@ -469,6 +470,29 @@ public class AllocationCommandTest
         assertThat(stale.get(0).get("ageDays").getAsInt(), is(19));
 
         assertThat(runClasses().warnings("stale-price").size(), is(0));
+    }
+
+    @Test
+    public void stalePriceWarningsComeInInstrumentNameOrder() throws IOException
+    {
+        // five more instruments, added out of name order; with Alpha and Beta a chance pass is 1 in 5040
+        var byName = new TreeMap<String, String>(Map.of("Alpha", alpha.getUUID(), "Beta", beta.getUUID()));
+        var more = new PortfolioBuilder(cash);
+        for (var name : List.of("Echo", "Charlie", "Golf", "Delta", "Foxtrot"))
+        {
+            var security = new SecurityBuilder().addTo(client);
+            security.setName(name);
+            security.addPrice(new SecurityPrice(LocalDate.parse("2026-03-01"), PortfolioBuilder.quoteOf(10)));
+            more.buyPrice(security, "2026-01-04", 1, 10);
+            byName.put(name, security.getUUID());
+        }
+        more.addTo(client);
+
+        var run = runClassesAt("2026-03-20");
+        assertThat(run.stdout, run.exitCode, is(0));
+
+        var instruments = run.warnings("stale-price").stream().map(w -> w.get("instrument").getAsString()).toList();
+        assertThat(instruments, is(List.copyOf(byName.values())));
     }
 
     @Test

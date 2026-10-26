@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
@@ -514,6 +515,23 @@ public class HoldingsCommandTest
 
         var current = run("--date", "2026-03-05");
         assertThat(current.warnings("stale-price").size(), is(0));
+    }
+
+    @Test
+    public void stalePriceWarningsComeInInstrumentNameOrderAcrossAccounts() throws IOException
+    {
+        // Another's block comes before Depot's, yet Zulu's warning comes last
+        var zulu = new SecurityBuilder().addTo(client);
+        zulu.setName("Zulu");
+        zulu.addPrice(new SecurityPrice(LocalDate.parse("2026-03-01"), PortfolioBuilder.quoteOf(10)));
+        var another = new PortfolioBuilder(cash).buyPrice(zulu, "2026-01-04", 1, 10).addTo(client);
+        another.setName("Another");
+
+        var run = run("--date", "2026-03-20", "--by-account");
+        assertThat(run.stdout, run.exitCode, is(0));
+
+        var instruments = run.warnings("stale-price").stream().map(w -> w.get("instrument").getAsString()).toList();
+        assertThat(instruments, is(List.of(alpha.getUUID(), beta.getUUID(), zulu.getUUID())));
     }
 
     @Test
