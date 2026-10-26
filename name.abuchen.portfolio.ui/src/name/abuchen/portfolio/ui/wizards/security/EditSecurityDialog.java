@@ -71,14 +71,17 @@ public class EditSecurityDialog extends Dialog
             @Override
             public void onValidationStatusChanged(IStatus status)
             {
-                boolean isOK = status.getSeverity() == IStatus.OK;
+                // the validators of the taxonomy page only exist once its tab
+                // has been opened, so the assignments are always checked on the
+                // model as well to keep error message and OK button in sync
+                IStatus combined = status.isOK() ? model.validateAssignments() : status;
 
                 if (errorMessage != null && !errorMessage.isDisposed())
-                    errorMessage.setText(isOK ? "" : status.getMessage()); //$NON-NLS-1$
+                    errorMessage.setText(combined.isOK() ? "" : combined.getMessage()); //$NON-NLS-1$
 
                 Button button = getButton(OK);
                 if (button != null && !button.isDisposed())
-                    button.setEnabled(isOK);
+                    button.setEnabled(combined.isOK());
             }
         };
     }
@@ -121,7 +124,9 @@ public class EditSecurityDialog extends Dialog
         // When creating the binding helper, the ok button does not yet exist.
         // Make sure that it has the correct initial enablement state as the
         // data loaded might not validate.
-        getButton(OK).setEnabled("".equals(errorMessage.getText())); //$NON-NLS-1$
+        IStatus status = model.validateAssignments();
+        errorMessage.setText(status.isOK() ? "" : status.getMessage()); //$NON-NLS-1$
+        getButton(OK).setEnabled(status.isOK());
 
         return contents;
     }
@@ -198,10 +203,12 @@ public class EditSecurityDialog extends Dialog
             @Override
             public void widgetSelected(SelectionEvent e)
             {
+                var page = showPage((CTabItem) e.item);
+
                 if (current != null)
                     current.afterPage();
 
-                current = (AbstractPage) ((CTabItem) e.item).getData();
+                current = page;
                 current.beforePage();
             }
         });
@@ -215,18 +222,35 @@ public class EditSecurityDialog extends Dialog
         tabFolder.setSelection(showQuoteConfigurationInitially ? 3 : 0);
 
         // selection event not fired for initial selection
-        ((AbstractPage) tabFolder.getSelection().getData()).beforePage();
+        var initial = showPage(tabFolder.getSelection());
+        initial.beforePage();
     }
 
     private void addPage(AbstractPage page, Image image)
     {
-        page.createControl(tabFolder);
-
         CTabItem item = new CTabItem(tabFolder, SWT.NONE);
         item.setImage(image);
-        item.setControl(page.getControl());
         item.setText(page.getTitle());
         item.setData(page);
+    }
+
+    /*
+     * The controls of a page are created when its tab is opened. Creating all
+     * pages up-front realizes the widgets of all hidden tabs, including the
+     * native combo boxes that carry hundreds of items.
+     */
+    private AbstractPage showPage(CTabItem item)
+    {
+        AbstractPage page = (AbstractPage) item.getData();
+
+        if (page.getControl() == null)
+        {
+            page.createControl(tabFolder);
+            item.setControl(page.getControl());
+            tabFolder.layout(true);
+        }
+
+        return page;
     }
 
     @Override
@@ -239,6 +263,15 @@ public class EditSecurityDialog extends Dialog
     protected void okPressed()
     {
         ((AbstractPage) tabFolder.getSelection().getData()).afterPage();
+
+        // the taxonomy validators are created with the controls of the tab,
+        // which might never have been opened -> validate the model directly
+        IStatus assignments = model.validateAssignments();
+        if (!assignments.isOK())
+        {
+            errorMessage.setText(assignments.getMessage());
+            return;
+        }
 
         Security security = model.getSecurity();
 

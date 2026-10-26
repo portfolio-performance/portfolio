@@ -11,6 +11,7 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
@@ -67,6 +68,7 @@ public class ListSelectionDialog extends Dialog
 
     private Object[] elements;
     private Object[] selected;
+    private Object initialSelection;
 
     private TableViewer tableViewer;
     private ElementFilter elementFilter;
@@ -101,6 +103,16 @@ public class ListSelectionDialog extends Dialog
     public void setElements(List<?> elements)
     {
         this.elements = elements.toArray();
+    }
+
+    /**
+     * Pre-selects the given element in the virtual table when the dialog is
+     * opened. Without a selection the result stays empty, which callers treat
+     * as "no change".
+     */
+    public void setInitialSelection(Object initialSelection)
+    {
+        this.initialSelection = initialSelection;
     }
 
     public Object[] getResult()
@@ -194,6 +206,9 @@ public class ListSelectionDialog extends Dialog
         tableViewer.setContentProvider(ArrayContentProvider.getInstance());
         tableViewer.addFilter(elementFilter);
         tableViewer.setInput(elements);
+
+        if (initialSelection != null)
+            tableViewer.setSelection(new StructuredSelection(initialSelection));
 
         tableViewer.setComparator(viewerComparator != null ? viewerComparator : new ViewerComparator());
 
