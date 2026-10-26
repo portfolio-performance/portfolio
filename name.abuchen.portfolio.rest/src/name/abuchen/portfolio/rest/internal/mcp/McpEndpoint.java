@@ -381,7 +381,8 @@ public final class McpEndpoint
                                 plan.get().dropped());
                 if (smaller.length() <= maxChars)
                     return smaller;
-                return capWithAdvice(smaller, McpEnvelope.oversizeAdvice(tool), maxChars);
+                // the dropped groups are not advice any more: they are already gone
+                return capWithAdvice(smaller, McpEnvelope.oversizeAdvice(tool, plan.get().dropped()), maxChars);
             }
             catch (Exception e)
             {

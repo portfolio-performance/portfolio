@@ -203,6 +203,25 @@ public class McpEnvelopeTest
     }
 
     /**
+     * Advice for a report that was already narrowed cannot name the groups it
+     * already dropped: following that advice re-sends the same oversized request.
+     * Only what still changes the question is left to suggest.
+     */
+    @Test
+    public void testAdviceAfterANarrowingDoesNotRepeatTheNarrowing()
+    {
+        var after = McpEnvelope.oversizeAdvice(PERFORMANCE, List.of("timeWeighted", "risk"));
+
+        assertThat(after, containsString("already re-requested without `timeWeighted` and `risk`"));
+        assertThat(after, not(containsString("ask again without them")));
+        assertThat(after, containsString("shorten the interval"));
+        assertThat(after, containsString("pp_get_instrument_performance"));
+
+        // without a narrowing the groups are still there, so dropping them is the advice
+        assertThat(McpEnvelope.oversizeAdvice(PERFORMANCE), containsString("ask again without them"));
+    }
+
+    /**
      * Measured: without this the cash accounts are dropped from a ranking, and
      * in a real file they can be the largest positions in it.
      */

@@ -2,6 +2,7 @@ package name.abuchen.portfolio.rest.internal.mcp;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
@@ -244,9 +245,13 @@ public class McpToolCallTest
         assertThat(instruments, containsString("ask the user which part of the portfolio they mean"));
     }
 
-    /** the advice for a performance report names the groups that dominate its size */
+    /**
+     * A report that was narrowed to fit and still did not fit cannot be told to
+     * narrow it again: the advice has to name what is left to change instead, and
+     * it has to survive the cut, which is the part a model acts on.
+     */
     @Test
-    public void testTheOversizeAdviceForAPerformanceReportNamesWhatToDrop()
+    public void testTheAdviceAfterANarrowedReportNamesWhatIsLeftToChange()
     {
         var account = new AccountBuilder().addTo(client);
 
@@ -268,8 +273,11 @@ public class McpToolCallTest
 
         assertThat(result.length(), is(McpEndpoint.MAX_RESULT_CHARS));
         assertThat(result, containsString("TRUNCATED"));
+        assertThat(result, containsString("already re-requested without"));
+        assertThat(result, containsString("`timeWeighted`"));
+        assertThat(result, not(containsString("ask again without them")));
         assertThat(result, containsString("pp_get_instrument_performance"));
-        assertThat(result, containsString("timeWeighted"));
+        assertThat(result, endsWith("one instrument at a time."));
     }
 
     /** and an ordinary portfolio stays well below the cap */

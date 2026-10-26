@@ -248,6 +248,27 @@ public final class McpEnvelope
      */
     public static String oversizeAdvice(McpTool tool)
     {
+        return oversizeAdvice(tool, List.of());
+    }
+
+    /**
+     * The same advice for a report that was already narrowed, naming the groups
+     * that were dropped on the way.
+     * <p/>
+     * Those groups cannot be advice any more. Telling the reader to drop what the
+     * answer already dropped asks for the same oversized request again, and the
+     * only constraints left are the ones that change the question: a shorter
+     * interval, or one instrument instead of all of them.
+     */
+    public static String oversizeAdvice(McpTool tool, List<String> alreadyDropped)
+    {
+        if ("pp_list_instrument_performance".equals(tool.name()) && !alreadyDropped.isEmpty())
+        {
+            return "This report was already re-requested without " + joinedNames(alreadyDropped)
+                    + ", and it still did not fit. Dropping those groups again changes nothing: shorten the interval, "
+                    + "or use pp_get_instrument_performance for one instrument at a time.";
+        }
+
         return switch (tool.name())
         {
             case "pp_list_trades" -> "This portfolio has more trades than fit in one answer. Ask for "
@@ -268,6 +289,16 @@ public final class McpEnvelope
             default -> "This response is larger than one answer can carry. Ask a narrower question rather than "
                             + "retrying the same one.";
         };
+    }
+
+    /** the dropped groups spelled out, the last one joined with "and" */
+    private static String joinedNames(List<String> names)
+    {
+        var spelled = names.stream().map(name -> "`" + name + "`").toList();
+        if (spelled.size() == 1)
+            return spelled.get(0);
+
+        return String.join(", ", spelled.subList(0, spelled.size() - 1)) + " and " + spelled.get(spelled.size() - 1);
     }
 
     /**
