@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.cli;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -11,9 +12,10 @@ import com.google.gson.JsonObject;
 
 /**
  * The members of a {@link TransactionRecord} and of its units, each declared
- * once for both directions: how <code>transactions</code> shows it and how
- * <code>transaction.add</code> takes it. The read and write schemas are derived
- * from the same entries, so the input mirrors the output by construction.
+ * once for both directions: as output, how <code>transactions</code> shows it,
+ * and as input, how <code>transaction.add</code> takes it. The output and
+ * input schemas are derived from the same entries, so the input mirrors the
+ * output by construction.
  */
 final class TransactionShape
 {
@@ -33,91 +35,104 @@ final class TransactionShape
 
     static final List<String> UNIT_TYPES = List.of("FEE", "TAX", "GROSS_VALUE");
 
-    /** Whether a record shows the member. */
-    enum Read
+    /** Whether the output has the member. */
+    enum OutputPresence
     {
         ALWAYS, SOMETIMES, NEVER
     }
 
-    /** Whether an add takes the member; a derived one follows from the others. */
-    enum Write
+    /** Whether the input has the member; a derived one follows from the others. */
+    enum InputPresence
     {
         REQUIRED, OPTIONAL, DERIVED
     }
 
-    /** How a record shows a member, and what the member means there. */
-    record Shown(Read presence, String description)
+    /** A member as output: whether it is there, and what it means. */
+    record Output(OutputPresence presence, String description)
     {
     }
 
-    /** How an add takes a member, and the rules for writing it. */
-    record Taken(Write presence, String description)
+    /** A member as input: whether it must be given, and the rules for it. */
+    record Input(InputPresence presence, String description)
     {
     }
 
     /**
      * One member, with a description for each direction.
      *
-     * @param schemaOf
-     *            the schema of the value, given its description
-     * @param inputSchemaOf
-     *            the schema of the value when written, where it differs
+     * @param outputType
+     *            the schema of the value as output, given its description
+     * @param inputType
+     *            the schema of the value as input, given its description
      */
-    record Member(String name, Function<String, Schema> schemaOf, Function<String, Schema> inputSchemaOf,
-                    Shown shown, Taken taken)
+    record Member(String name, Function<String, Schema> outputType, Function<String, Schema> inputType,
+                    Output output, Input input)
     {
-        Member(String name, Function<String, Schema> schemaOf, Shown shown, Taken taken)
+        Member(String name, Function<String, Schema> type, Output output, Input input)
         {
-            this(name, schemaOf, schemaOf, shown, taken);
+            this(name, type, type, output, input);
         }
 
-        Member takenAs(Function<String, Schema> schema)
+        /** The member with a different schema as input than as output. */
+        Member inputAs(Function<String, Schema> type)
         {
-            return new Member(name, schemaOf, schema, shown, taken);
+            return new Member(name, outputType, type, output, input);
         }
 
         boolean isInput()
         {
-            return taken.presence() != Write.DERIVED;
+            return input.presence() != InputPresence.DERIVED;
         }
 
-        /** Declares the member on the object as a record shows it, if it does. */
-        private void declareShown(Schema object)
+        /** Declares the member on the object as output, if it is. */
+        private void declareOutput(Schema object)
         {
-            if (shown.presence() == Read.NEVER)
+            if (output.presence() == OutputPresence.NEVER)
                 return;
 
-            var value = schemaOf.apply(shown.description());
-            if (shown.presence() == Read.ALWAYS)
+            var value = outputType.apply(output.description());
+            if (output.presence() == OutputPresence.ALWAYS)
                 object.property(name, value);
             else
                 object.optionalProperty(name, value);
         }
 
-        /** Declares the member on the object as an add takes it, if it does. */
+        /** Declares the member on the object as the input of an add, if it is input. */
         private void declareInput(Schema object)
         {
             if (!isInput())
                 return;
 
-            var value = inputSchemaOf.apply(taken.description());
-            if (taken.presence() == Write.REQUIRED)
+            var value = inputType.apply(input.description());
+            if (input.presence() == InputPresence.REQUIRED)
                 object.property(name, value);
             else
                 object.optionalProperty(name, value);
         }
 
         /**
-         * Declares the member on the object as an update takes it, if it
-         * does: never required, and an optional one can be cleared with null.
+         * Declares the member on the object as the input of an update, if it
+         * is input: never required, and an optional one can be cleared with
+         * null.
          */
         private void declarePatch(Schema object)
         {
             if (!isInput())
                 return;
 
-            var value = inputSchemaOf.apply(taken.description());
-            object.optionalProperty(name, taken.presence() == Write.OPTIONAL ? value.nullable() : value);
+            var value = inputType.apply(input.description());
+            object.optionalProperty(name, input.presence() == InputPresence.OPTIONAL ? value.nullable() : value);
+        }
+    }
+
+    /** A UUID member and the name member that goes with it, present exactly when it is. */
+    record NamedUuid(Member uuid, Member name)
+    {
+        /** Puts the UUID and the name next to it. */
+        void put(Map<String, Object> json, String uuidValue, String nameValue)
+        {
+            json.put(uuid.name(), uuidValue);
+            json.put(name.name(), nameValue);
         }
     }
 
@@ -130,10 +145,10 @@ final class TransactionShape
     static final Member UNIT_CURRENCY_CODE = new Member("currencyCode", Schema::string,
                     always("ISO currency code of the amount." + MinorUnits.CONVERTED_WITH_CURRENCY_OPTION),
                     required("ISO currency code of amount; the transaction's currency."));
-    static final Member FOREX_AMOUNT = new Member("forexAmount", Schema::number,
+    static final Member UNIT_FOREX_AMOUNT = new Member("forexAmount", Schema::number,
                     sometimes("Original amount in a foreign currency." + MinorUnits.CONVERTED_WITH_CURRENCY_OPTION),
                     optional("Original amount in the instrument's currency."));
-    static final Member FOREX_CURRENCY_CODE = new Member("forexCurrencyCode", Schema::string,
+    static final Member UNIT_FOREX_CURRENCY_CODE = new Member("forexCurrencyCode", Schema::string,
                     sometimes("ISO currency code of forexAmount." + MinorUnits.CONVERTED_WITH_CURRENCY_OPTION),
                     optional("ISO currency code of forexAmount."));
     static final Member UNIT_EXCHANGE_RATE = new Member("exchangeRate", Schema::number,
@@ -141,10 +156,15 @@ final class TransactionShape
                     optional("Positive, unrounded: forexAmount times exchangeRate is approximately amount."));
 
     private static final List<Member> UNIT_MEMBERS = List.of(UNIT_TYPE, UNIT_AMOUNT, UNIT_CURRENCY_CODE,
-                    FOREX_AMOUNT, FOREX_CURRENCY_CODE, UNIT_EXCHANGE_RATE);
+                    UNIT_FOREX_AMOUNT, UNIT_FOREX_CURRENCY_CODE, UNIT_EXCHANGE_RATE);
 
-    /** A fee, tax or forex gross value in the input. */
-    static final Schema UNIT = declare(
+    /** A fee, tax or forex gross value as output. */
+    private static final Schema UNIT_OUTPUT = declare(Schema.object(
+                    "A fee, tax or gross value of the record, in the shape that transaction writes accept."),
+                    UNIT_MEMBERS, Member::declareOutput);
+
+    /** A fee, tax or forex gross value as input. */
+    static final Schema UNIT_INPUT = declare(
                     Schema.object("A fee, tax or forex gross value, in the shape the transactions output uses."),
                     UNIT_MEMBERS, Member::declareInput);
 
@@ -154,7 +174,7 @@ final class TransactionShape
     static final Member TYPE = new Member("type", description -> Schema.openEnumOf(description, FILTERABLE_TYPES),
                     always("Core's transaction type. An open enum: new values may appear. An intact transfer is TRANSFER; a side without its partner keeps its raw type, e.g. TRANSFER_OUT."),
                     required("Transaction type. TRANSFER needs a kind, from and to; BUY and SELL need an investmentAccount and a cashAccount; deliveries need an investmentAccount; the others need a cashAccount."))
-                    .takenAs(description -> Schema.enumOf(description, TYPES));
+                    .inputAs(description -> Schema.enumOf(description, TYPES));
     static final Member KIND = new Member("kind", description -> Schema.enumOf(description, TransactionRecord.TransferKind.ids()),
                     sometimes("Of a TRANSFER."),
                     optional("Of a TRANSFER only: cash or security."));
@@ -182,29 +202,24 @@ final class TransactionShape
     static final Member EXCHANGE_RATE = new Member("exchangeRate", Schema::number,
                     sometimes("Of a cross-currency cash transfer with a rate: unrounded as stored, targetAmount times exchangeRate is approximately amount."),
                     optional("Of a cross-currency cash transfer: optional, only checked against core's rounding tolerance. The stored rate is always amount divided by targetAmount and is returned in the record."));
-    static final Member INSTRUMENT = new Member("instrument", Schema::string,
+    static final NamedUuid INSTRUMENT = named(new Member("instrument", Schema::string,
                     sometimes("UUID of the instrument."),
-                    optional("UUID of the instrument. Required for DIVIDENDS, BUY, SELL, deliveries and security transfers; optional for fees and taxes; refused for deposits, removals, interest and cash transfers."));
-    static final Member INSTRUMENT_NAME = nameOf(INSTRUMENT);
+                    optional("UUID of the instrument. Required for DIVIDENDS, BUY, SELL, deliveries and security transfers; optional for fees and taxes; refused for deposits, removals, interest and cash transfers.")));
     static final Member SHARES = new Member("shares", Schema::number,
                     sometimes("Number of shares."),
                     optional("Positive number of shares. Required for BUY, SELL, deliveries and security transfers; accepted on a dividend; refused otherwise."));
-    static final Member INVESTMENT_ACCOUNT = new Member("investmentAccount", Schema::string,
+    static final NamedUuid INVESTMENT_ACCOUNT = named(new Member("investmentAccount", Schema::string,
                     sometimes("UUID of the investment account."),
-                    optional("UUID of the investment account; it must already be in the file. Required for BUY, SELL and deliveries; refused for cash-account events and transfers."));
-    static final Member INVESTMENT_ACCOUNT_NAME = nameOf(INVESTMENT_ACCOUNT);
-    static final Member CASH_ACCOUNT = new Member("cashAccount", Schema::string,
+                    optional("UUID of the investment account; it must already be in the file. Required for BUY, SELL and deliveries; refused for cash-account events and transfers.")));
+    static final NamedUuid CASH_ACCOUNT = named(new Member("cashAccount", Schema::string,
                     sometimes("UUID of the cash account."),
-                    optional("UUID of the cash account; it must already be in the file. Required for cash-account events, BUY and SELL; refused for deliveries and transfers."));
-    static final Member CASH_ACCOUNT_NAME = nameOf(CASH_ACCOUNT);
-    static final Member FROM = new Member("from", Schema::string,
+                    optional("UUID of the cash account; it must already be in the file. Required for cash-account events, BUY and SELL; refused for deliveries and transfers.")));
+    static final NamedUuid FROM = named(new Member("from", Schema::string,
                     sometimes("Of a TRANSFER: UUID of the account it leaves."),
-                    optional("Of a TRANSFER only: UUID of the account it leaves, a cash account for a cash transfer and an investment account for a security transfer. Must differ from to."));
-    static final Member FROM_NAME = nameOf(FROM);
-    static final Member TO = new Member("to", Schema::string,
+                    optional("Of a TRANSFER only: UUID of the account it leaves, a cash account for a cash transfer and an investment account for a security transfer. Must differ from to.")));
+    static final NamedUuid TO = named(new Member("to", Schema::string,
                     sometimes("Of a TRANSFER: UUID of the account it enters."),
-                    optional("Of a TRANSFER only: UUID of the account it enters, of the same kind as from."));
-    static final Member TO_NAME = nameOf(TO);
+                    optional("Of a TRANSFER only: UUID of the account it enters, of the same kind as from.")));
     static final Member EX_DATE = new Member("exDate", Schema::string,
                     sometimes("ISO ex-date of a dividend."),
                     optional("ISO ex-date; accepted only on a dividend with an instrument and never after the date."));
@@ -220,18 +235,19 @@ final class TransactionShape
     static final Member UPDATED_AT = new Member(MasterData.UPDATED_AT_MEMBER, Schema::string,
                     sometimes("When the record last changed: the latest of its sides, as an ISO-8601 UTC instant such as 2026-10-24T15:04:57Z. Absent if none has one."),
                     derived());
-    static final Member UNITS = new Member("units", description -> Schema.array(description, unitSchema()),
+    static final Member UNITS = new Member("units", description -> Schema.array(description, UNIT_OUTPUT),
                     always("Fees, taxes and forex of the record; empty if none."),
                     optional("Fees, taxes and the forex gross value an instrument in another currency needs. Taxes are accepted only on DIVIDENDS and INTEREST and fees only on DIVIDENDS, as in core's import check; refused on transfers."))
-                    .takenAs(description -> Schema.array(description, UNIT));
+                    .inputAs(description -> Schema.array(description, UNIT_INPUT));
 
-    /** The members of a record, in the order it shows them. */
+    /** The members of a record, in the order the output has them. */
     private static final List<Member> MEMBERS = List.of(ID, TYPE, KIND, DATE, TIME, SIDES, AMOUNT, CURRENCY_CODE,
-                    TARGET_AMOUNT, TARGET_CURRENCY_CODE, EXCHANGE_RATE, INSTRUMENT, INSTRUMENT_NAME, SHARES,
-                    INVESTMENT_ACCOUNT, INVESTMENT_ACCOUNT_NAME, CASH_ACCOUNT, CASH_ACCOUNT_NAME, FROM, FROM_NAME, TO,
-                    TO_NAME, EX_DATE, GROSS_AMOUNT, NOTE, SOURCE, UPDATED_AT, UNITS);
+                    TARGET_AMOUNT, TARGET_CURRENCY_CODE, EXCHANGE_RATE, INSTRUMENT.uuid(), INSTRUMENT.name(), SHARES,
+                    INVESTMENT_ACCOUNT.uuid(), INVESTMENT_ACCOUNT.name(), CASH_ACCOUNT.uuid(), CASH_ACCOUNT.name(),
+                    FROM.uuid(), FROM.name(), TO.uuid(), TO.name(), EX_DATE, GROSS_AMOUNT, NOTE, SOURCE, UPDATED_AT,
+                    UNITS);
 
-    /** The names of the members of a record that an add takes. */
+    /** The names of the members of a record that are input. */
     private static final Set<String> INPUT = MEMBERS.stream().filter(Member::isInput).map(Member::name)
                     .collect(Collectors.toUnmodifiableSet());
 
@@ -239,69 +255,66 @@ final class TransactionShape
     {
     }
 
-    private static Shown always(String description)
+    private static Output always(String description)
     {
-        return new Shown(Read.ALWAYS, description);
+        return new Output(OutputPresence.ALWAYS, description);
     }
 
-    private static Shown sometimes(String description)
+    private static Output sometimes(String description)
     {
-        return new Shown(Read.SOMETIMES, description);
+        return new Output(OutputPresence.SOMETIMES, description);
     }
 
-    private static Shown never()
+    private static Output never()
     {
-        return new Shown(Read.NEVER, null);
+        return new Output(OutputPresence.NEVER, null);
     }
 
-    private static Taken required(String description)
+    private static Input required(String description)
     {
-        return new Taken(Write.REQUIRED, description);
+        return new Input(InputPresence.REQUIRED, description);
     }
 
-    private static Taken optional(String description)
+    private static Input optional(String description)
     {
-        return new Taken(Write.OPTIONAL, description);
+        return new Input(InputPresence.OPTIONAL, description);
     }
 
-    private static Taken derived()
+    private static Input derived()
     {
-        return new Taken(Write.DERIVED, null);
+        return new Input(InputPresence.DERIVED, null);
     }
 
-    /** The name that goes with a UUID member: present exactly when that member is. */
-    private static Member nameOf(Member uuid)
+    private static NamedUuid named(Member uuid)
     {
-        return new Member(uuid.name() + "Name", Schema::string,
+        return new NamedUuid(uuid, new Member(uuid.name() + "Name", Schema::string,
                         sometimes("Name for " + uuid.name() + ", empty if none. Present exactly when it is."),
-                        derived());
+                        derived()));
     }
 
-    /** A record as <code>transactions</code> shows it. */
+    /** A record as output. */
     static Schema recordSchema(String description)
     {
-        return declare(Schema.object(description), MEMBERS, Member::declareShown);
+        return declare(Schema.object(description), MEMBERS, Member::declareOutput);
     }
 
-    /** Declares the members of a record that an add takes on the object. */
+    /** Declares the members of a record that are input on the object, as an add takes them. */
     static Schema declareInput(Schema object)
     {
         return declare(object, MEMBERS, Member::declareInput);
     }
 
     /**
-     * Declares the members of a record that an update takes on the object:
-     * every one is optional, and the optional ones can be cleared with null.
+     * Declares the members of a record that are input on the object, as an
+     * update takes them: every one is optional, and the optional ones can be
+     * cleared with null.
      */
     static Schema declarePatch(Schema object)
     {
         return declare(object, MEMBERS, Member::declarePatch);
     }
 
-    /**
-     * The members of a record as <code>transactions</code> shows it that an
-     * add takes, which is the input that adds the same record again.
-     */
+    /** The input members of a record as output, which is the input that adds the same record again. */
     static JsonObject inputOf(JsonObject record)
     {
         var input = new JsonObject();
@@ -309,19 +322,12 @@ final class TransactionShape
         {
             var name = member.getKey();
             var value = member.getValue();
-            // an empty list of units is the same as none, and a transfer refuses any
+            // the output has "units": [] for a record without units, but a
+            // transfer refuses the member even when it is empty, so leave it out
             if (INPUT.contains(name) && !(name.equals(UNITS.name()) && value.getAsJsonArray().isEmpty()))
                 input.add(name, value);
         }
         return input;
-    }
-
-    /** A fee, tax or gross value as a record shows it. */
-    static Schema unitSchema()
-    {
-        return declare(Schema.object(
-                        "A fee, tax or gross value of the record, in the shape that transaction writes accept."),
-                        UNIT_MEMBERS, Member::declareShown);
     }
 
     private static Schema declare(Schema object, List<Member> members, BiConsumer<Member, Schema> how)

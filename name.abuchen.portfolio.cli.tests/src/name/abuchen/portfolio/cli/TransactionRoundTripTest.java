@@ -23,10 +23,21 @@ import name.abuchen.portfolio.model.Security;
 /**
  * The input of <code>transaction.add</code> mirrors the <code>transactions</code>
  * output: a record read from one file, without the members that add derives,
- * adds the same record to another file with the same master data.
+ * adds the same record to another file with the same master data. An update
+ * overlays its patch on the record in that shape, so an empty patch changes
+ * nothing.
  */
 public class TransactionRoundTripTest
 {
+    /**
+     * The members of a record that an add takes, written out here rather than
+     * taken from the catalog, so that a member the catalog wrongly marks as
+     * derived is missing from the copy.
+     */
+    private static final List<String> INPUT = List.of("type", "kind", "date", "time", "amount", "currencyCode",
+                    "targetAmount", "exchangeRate", "instrument", "shares", "investmentAccount", "cashAccount", "from",
+                    "to", "exDate", "note", "source", "units");
+
     /** Members that identify the stored sides or say when they were written, so they differ between files. */
     private static final List<String> IDENTITY = List.of("id", "sides", "updatedAt");
 
@@ -161,12 +172,17 @@ public class TransactionRoundTripTest
         return run.items();
     }
 
-    /** The record as add input: the members that add takes, as the update overlay uses them too. */
+    /** The record as add input: its input members, without an empty list of units, which a transfer refuses. */
     private static String asInput(JsonObject record)
     {
         var input = new JsonObject();
         input.addProperty(ApplyBatch.OPERATION_MEMBER, TransactionOperations.ADD.name());
-        TransactionShape.inputOf(record).entrySet().forEach(member -> input.add(member.getKey(), member.getValue()));
+        for (var name : INPUT)
+        {
+            var value = record.get(name);
+            if (value != null && !(value.isJsonArray() && value.getAsJsonArray().isEmpty()))
+                input.add(name, value);
+        }
         return input.toString();
     }
 
@@ -199,5 +215,24 @@ public class TransactionRoundTripTest
             var actual = withoutIdentity(copies.get(i).getAsJsonObject());
             assertThat(expected.get("type").getAsString(), actual, is(expected));
         }
+    }
+
+    @Test
+    public void everyTypeOfRecordUpdatedWithAnEmptyPatchStaysTheSame() throws IOException
+    {
+        var seeded = source.apply(everyType().toArray(String[]::new));
+        assertThat(seeded.stdout, seeded.exitCode, is(0));
+
+        var before = records(source);
+        var patches = new ArrayList<String>();
+        before.forEach(record -> patches.add("{\"operation\":\"transaction.update\",\"uuid\":\""
+                        + record.getAsJsonObject().get("id").getAsString() + "\"}"));
+        var updated = source.apply(patches.toArray(String[]::new));
+        assertThat(updated.stdout, updated.exitCode, is(0));
+
+        var after = records(source);
+        assertThat(after.size(), is(before.size()));
+        for (var i = 0; i < before.size(); i++)
+            assertThat(before.get(i).getAsJsonObject().get("type").getAsString(), after.get(i), is(before.get(i)));
     }
 }

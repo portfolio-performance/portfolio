@@ -203,7 +203,7 @@ final class TransactionInput
 
     private static Transaction.Unit unit(OperationInput unit, String currencyCode, Security security)
     {
-        unit.rejectUnknownFields(TransactionShape.UNIT);
+        unit.rejectUnknownFields(TransactionShape.UNIT_INPUT);
 
         var typeName = unit.rawText("type");
         if (typeName == null || !TransactionShape.UNIT_TYPES.contains(typeName))

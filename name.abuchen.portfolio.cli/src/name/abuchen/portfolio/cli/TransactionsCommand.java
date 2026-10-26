@@ -237,17 +237,15 @@ final class TransactionsCommand
 
         if (primary.getSecurity() != null)
         {
-            json.put(TransactionShape.INSTRUMENT.name(), primary.getSecurity().getUUID());
-            json.put(TransactionShape.INSTRUMENT_NAME.name(), MasterData.orEmpty(primary.getSecurity().getName()));
+            TransactionShape.INSTRUMENT.put(json, primary.getSecurity().getUUID(),
+                            MasterData.orEmpty(primary.getSecurity().getName()));
         }
         if (record.hasShares())
             json.put(TransactionShape.SHARES.name(), Decimals.of(primary.getShares(), Values.Share));
-        putAccount(json, TransactionShape.INVESTMENT_ACCOUNT, TransactionShape.INVESTMENT_ACCOUNT_NAME,
-                        record.investmentAccount(), names);
-        putAccount(json, TransactionShape.CASH_ACCOUNT, TransactionShape.CASH_ACCOUNT_NAME, record.cashAccount(),
-                        names);
-        putAccount(json, TransactionShape.FROM, TransactionShape.FROM_NAME, record.from(), names);
-        putAccount(json, TransactionShape.TO, TransactionShape.TO_NAME, record.to(), names);
+        putAccount(json, TransactionShape.INVESTMENT_ACCOUNT, record.investmentAccount(), names);
+        putAccount(json, TransactionShape.CASH_ACCOUNT, record.cashAccount(), names);
+        putAccount(json, TransactionShape.FROM, record.from(), names);
+        putAccount(json, TransactionShape.TO, record.to(), names);
         if (primary instanceof AccountTransaction account && account.getExDate() != null
                         && account.getType() == AccountTransaction.Type.DIVIDENDS)
             json.put(TransactionShape.EX_DATE.name(), account.getExDate().toLocalDate().toString());
@@ -262,14 +260,11 @@ final class TransactionsCommand
         return json;
     }
 
-    /** The UUID under the member and the name under its name member, if there is an account. */
-    private static void putAccount(Map<String, Object> json, TransactionShape.Member member,
-                    TransactionShape.Member name, Optional<String> uuid, AccountNames names)
+    /** The UUID and the name next to it, if there is an account. */
+    private static void putAccount(Map<String, Object> json, TransactionShape.NamedUuid member,
+                    Optional<String> uuid, AccountNames names)
     {
-        uuid.ifPresent(value -> {
-            json.put(member.name(), value);
-            json.put(name.name(), names.of(value));
-        });
+        uuid.ifPresent(value -> member.put(json, value, names.of(value)));
     }
 
     private static Map<String, Object> render(Transaction.Unit unit)
@@ -280,8 +275,8 @@ final class TransactionsCommand
         json.put(TransactionShape.UNIT_CURRENCY_CODE.name(), unit.getAmount().getCurrencyCode());
         if (unit.getForex() != null)
         {
-            json.put(TransactionShape.FOREX_AMOUNT.name(), Decimals.amount(unit.getForex()));
-            json.put(TransactionShape.FOREX_CURRENCY_CODE.name(), unit.getForex().getCurrencyCode());
+            json.put(TransactionShape.UNIT_FOREX_AMOUNT.name(), Decimals.amount(unit.getForex()));
+            json.put(TransactionShape.UNIT_FOREX_CURRENCY_CODE.name(), unit.getForex().getCurrencyCode());
             json.put(TransactionShape.UNIT_EXCHANGE_RATE.name(), Decimals.of(unit.getExchangeRate()));
         }
         return json;
