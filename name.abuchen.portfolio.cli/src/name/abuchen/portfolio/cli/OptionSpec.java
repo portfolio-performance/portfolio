@@ -81,7 +81,7 @@ public record OptionSpec(String name, String valueName, String description, Type
         return new OptionSpec(name, valueName, description, new IntegerDomain(defaultValue, minimum, maximum), false);
     }
 
-    static OptionSpec date(String name, String description)
+    public static OptionSpec date(String name, String description)
     {
         return new OptionSpec(name, "yyyy-MM-dd", description, new IsoDate(), false);
     }

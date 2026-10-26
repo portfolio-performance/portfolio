@@ -1,10 +1,15 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.performance;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import name.abuchen.portfolio.cli.CliException;
+import name.abuchen.portfolio.cli.CommandContext;
+import name.abuchen.portfolio.cli.DateRange;
+import name.abuchen.portfolio.cli.OptionSpec;
+import name.abuchen.portfolio.cli.Schema;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.util.Interval;
 

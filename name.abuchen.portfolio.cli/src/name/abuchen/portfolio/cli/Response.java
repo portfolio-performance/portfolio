@@ -9,14 +9,14 @@ import java.util.Map;
  * The result of a successful command: the <code>{data, meta, warnings}</code>
  * envelope.
  */
-record Response(Object data, Map<String, Object> meta, List<Warning> warnings)
+public record Response(Object data, Map<String, Object> meta, List<Warning> warnings)
 {
-    static Response of(Object data, Map<String, Object> meta)
+    public static Response of(Object data, Map<String, Object> meta)
     {
         return new Response(data, meta, new ArrayList<>());
     }
 
-    Response warn(Warning warning)
+    public Response warn(Warning warning)
     {
         warnings.add(warning);
         return this;

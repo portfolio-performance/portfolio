@@ -10,6 +10,8 @@ import java.util.List;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.cli.performance.PerformanceCommand;
+
 /**
  * Which error codes a command's help lists, in process: the codes that follow
  * from its declared options apply to any command that declares such an

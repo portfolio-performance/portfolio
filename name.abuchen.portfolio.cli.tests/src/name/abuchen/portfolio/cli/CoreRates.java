@@ -14,7 +14,7 @@ import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 
 /** Core's own currency converter over the same rates as an ECB cache file, as an oracle for the CLI's conversions. */
-final class CoreRates
+public final class CoreRates
 {
     private static final class TestProvider implements ExchangeRateProvider
     {
@@ -90,7 +90,7 @@ final class CoreRates
     }
 
     /** What core itself computes over the given rates. */
-    static CurrencyConverter converter(String term, EcbCacheFiles.Series... series)
+    public static CurrencyConverter converter(String term, EcbCacheFiles.Series... series)
     {
         var provider = new TestProvider();
 

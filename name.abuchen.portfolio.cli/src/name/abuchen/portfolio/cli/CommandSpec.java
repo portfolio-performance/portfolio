@@ -10,25 +10,25 @@ import java.util.List;
  * command can emit. A command that declares table columns also accepts
  * <code>--format table</code>; its data must then be a page of items.
  */
-record CommandSpec(String name, String summary, boolean usesClientFile, List<OptionSpec> declaredOptions,
+public record CommandSpec(String name, String summary, boolean usesClientFile, List<OptionSpec> declaredOptions,
                 Schema dataSchema, Schema metaSchema, List<WarningSpec> warnings, List<TableColumn> tableColumns,
                 CommandHandler handler)
 {
     @FunctionalInterface
-    interface CommandHandler
+    public interface CommandHandler
     {
         Response execute(CommandContext context) throws CliException;
     }
 
     /** A command with warnings that can only answer in JSON. */
-    CommandSpec(String name, String summary, boolean usesClientFile, List<OptionSpec> declaredOptions,
+    public CommandSpec(String name, String summary, boolean usesClientFile, List<OptionSpec> declaredOptions,
                     Schema dataSchema, Schema metaSchema, List<WarningSpec> warnings, CommandHandler handler)
     {
         this(name, summary, usesClientFile, declaredOptions, dataSchema, metaSchema, warnings, List.of(), handler);
     }
 
     /** A command that emits no warnings and can only answer in JSON. */
-    CommandSpec(String name, String summary, boolean usesClientFile, List<OptionSpec> declaredOptions,
+    public CommandSpec(String name, String summary, boolean usesClientFile, List<OptionSpec> declaredOptions,
                     Schema dataSchema, Schema metaSchema, CommandHandler handler)
     {
         this(name, summary, usesClientFile, declaredOptions, dataSchema, metaSchema, List.of(), handler);

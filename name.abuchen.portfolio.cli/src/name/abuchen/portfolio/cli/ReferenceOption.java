@@ -10,19 +10,19 @@ import name.abuchen.portfolio.model.Taxonomy;
  * {@link CommandContext#reference}. Commands declare its {@link #spec()}; a
  * command that declares one can fail with the reference error codes.
  */
-record ReferenceOption<T>(OptionSpec spec, References.Kind<T> kind)
+public record ReferenceOption<T>(OptionSpec spec, References.Kind<T> kind)
 {
-    static ReferenceOption<Security> instrument(String name, String description)
+    public static ReferenceOption<Security> instrument(String name, String description)
     {
         return of(name, description, References.INSTRUMENT);
     }
 
-    static ReferenceOption<Portfolio> investmentAccount(String name, String description)
+    public static ReferenceOption<Portfolio> investmentAccount(String name, String description)
     {
         return of(name, description, References.INVESTMENT_ACCOUNT);
     }
 
-    static ReferenceOption<Account> cashAccount(String name, String description)
+    public static ReferenceOption<Account> cashAccount(String name, String description)
     {
         return of(name, description, References.CASH_ACCOUNT);
     }
@@ -45,7 +45,7 @@ record ReferenceOption<T>(OptionSpec spec, References.Kind<T> kind)
         return new ReferenceOption<>(spec.asRequired(), kind);
     }
 
-    String name()
+    public String name()
     {
         return spec.name();
     }

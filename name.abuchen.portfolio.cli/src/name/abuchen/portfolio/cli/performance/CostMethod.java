@@ -1,7 +1,12 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.performance;
 
 import java.util.Arrays;
 import java.util.List;
+
+import name.abuchen.portfolio.cli.CliException;
+import name.abuchen.portfolio.cli.CommandContext;
+import name.abuchen.portfolio.cli.OptionSpec;
+import name.abuchen.portfolio.cli.Schema;
 
 /** How capital gains are costed: the value of the <code>--cost-method</code> option. */
 enum CostMethod

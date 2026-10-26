@@ -12,7 +12,7 @@ import name.abuchen.portfolio.model.Client;
  * and the date the command ran. List commands add the resolved paging and
  * sorting.
  */
-final class ResponseMeta
+public final class ResponseMeta
 {
     private static final Schema FILE_VERSION = Schema.integer("Version of the file as read.");
     private static final Schema AS_OF = Schema.string("ISO date the command ran, from the clock.");
@@ -27,7 +27,7 @@ final class ResponseMeta
     }
 
     /** A fresh copy each call, so a command can add members of its own. */
-    static Schema fileSchema()
+    public static Schema fileSchema()
     {
         return fileEnvelope();
     }
@@ -56,7 +56,7 @@ final class ResponseMeta
         return meta;
     }
 
-    static Map<String, Object> of(CommandContext context, Client client)
+    public static Map<String, Object> of(CommandContext context, Client client)
     {
         var meta = new LinkedHashMap<String, Object>();
         meta.put("fileVersion", client.getFileVersionAfterRead());

@@ -44,7 +44,7 @@ public final class CommandContext
     }
 
     /** Whether the option was given, whatever its type; its value is not checked. */
-    boolean given(OptionSpec option)
+    public boolean given(OptionSpec option)
     {
         return options.containsKey(option.name());
     }
@@ -95,7 +95,7 @@ public final class CommandContext
      *             a usage error if the value is blank, or a failure if no
      *             entity or several match it
      */
-    <T> Optional<T> reference(ReferenceOption<T> option, Client client) throws CliException
+    public <T> Optional<T> reference(ReferenceOption<T> option, Client client) throws CliException
     {
         var value = raw(option.spec(), OptionSpec.Reference.class);
         if (value.isEmpty())
@@ -145,7 +145,7 @@ public final class CommandContext
     }
 
     /** Loads the client file named by <code>--file</code> or PP_FILE. */
-    LoadedClient loadClient() throws CliException
+    public LoadedClient loadClient() throws CliException
     {
         return ClientLoader.load(clientPath(), this::password);
     }

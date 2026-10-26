@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import name.abuchen.portfolio.cli.performance.PerformanceCommand;
+
 /** The single list of declared commands. */
 final class Commands
 {

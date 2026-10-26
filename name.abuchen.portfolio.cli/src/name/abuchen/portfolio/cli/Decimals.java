@@ -19,7 +19,7 @@ public final class Decimals
     }
 
     /** The stored amount of the money, scaled by the precision of amounts. */
-    static JsonPrimitive amount(Money money)
+    public static JsonPrimitive amount(Money money)
     {
         return of(money.getAmount(), Values.Amount);
     }

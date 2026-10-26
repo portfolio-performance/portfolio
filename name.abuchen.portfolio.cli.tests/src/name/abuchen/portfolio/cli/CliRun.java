@@ -110,7 +110,7 @@ public final class CliRun
     }
 
     /** The items of a list response. */
-    JsonArray items()
+    public JsonArray items()
     {
         return data().getAsJsonArray("items");
     }
@@ -120,7 +120,7 @@ public final class CliRun
         return json().getAsJsonObject().getAsJsonArray("warnings");
     }
 
-    List<JsonObject> warnings(String code)
+    public List<JsonObject> warnings(String code)
     {
         var matching = new ArrayList<JsonObject>();
         for (var warning : warnings())

@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.performance;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -8,6 +8,17 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import name.abuchen.portfolio.cli.CliException;
+import name.abuchen.portfolio.cli.CommandContext;
+import name.abuchen.portfolio.cli.CommandSpec;
+import name.abuchen.portfolio.cli.Decimals;
+import name.abuchen.portfolio.cli.MasterData;
+import name.abuchen.portfolio.cli.OptionSpec;
+import name.abuchen.portfolio.cli.Response;
+import name.abuchen.portfolio.cli.ResponseMeta;
+import name.abuchen.portfolio.cli.Schema;
+import name.abuchen.portfolio.cli.Warning;
+import name.abuchen.portfolio.cli.WarningSpec;
 import name.abuchen.portfolio.cli.currency.ReportingCurrency;
 import name.abuchen.portfolio.cli.currency.StrictConverter;
 import name.abuchen.portfolio.model.Client;
@@ -27,7 +38,7 @@ import name.abuchen.portfolio.snapshot.PerformanceIndex;
  * checks every rate core asks for. If one is missing, no figure is reported
  * (ADR 0005); a stale rate is used and warned about.
  */
-final class PerformanceCommand
+public final class PerformanceCommand
 {
     private static final OptionSpec CURRENCY = ReportingCurrency.option(
                     "ISO currency of the figures. Defaults to the base currency of the file.");
@@ -85,7 +96,7 @@ final class PerformanceCommand
     private static final List<WarningSpec> WARNINGS = Stream
                     .concat(Stream.of(NO_ACTIVITY), ReportingCurrency.WARNINGS_COUNTING_DAYS.stream()).toList();
 
-    static final CommandSpec SPEC = new CommandSpec("performance",
+    public static final CommandSpec SPEC = new CommandSpec("performance",
                     "IRR, TTWROR and gains of the whole client, one investment account (optionally with its reference cash account), one cash account or one instrument over a period (--from and --to, or --period), by FIFO or moving-average cost, in the base currency or --currency; or with --by instrument, one record per instrument active in the period.",
                     true, options(), DATA, META, WARNINGS, PerformanceCommand::execute);
 

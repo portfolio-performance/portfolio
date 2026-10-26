@@ -88,7 +88,7 @@ public final class CliFixture
         return run(Map.of(), command, options);
     }
 
-    CliRun run(Map<String, String> env, String command, String... options)
+    public CliRun run(Map<String, String> env, String command, String... options)
     {
         var args = new ArrayList<>(List.of(command, "--file", file.getPath()));
         args.addAll(List.of(options));

@@ -53,7 +53,7 @@ public final class Schema
         return new Schema("number", description);
     }
 
-    static Schema bool(String description)
+    public static Schema bool(String description)
     {
         return new Schema("boolean", description);
     }
@@ -77,7 +77,7 @@ public final class Schema
         return schema;
     }
 
-    static Schema array(String description, Schema items)
+    public static Schema array(String description, Schema items)
     {
         var schema = new Schema("array", description);
         schema.items = items;

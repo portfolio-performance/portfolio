@@ -9,14 +9,15 @@ import java.util.Optional;
  * absent <code>--from</code> means no lower bound; <code>--to</code> defaults
  * to today from the injected clock.
  */
-record DateRange(Optional<LocalDate> from, LocalDate to)
+public record DateRange(Optional<LocalDate> from, LocalDate to)
 {
     /**
      * @throws CliException
      *             <code>invalid-option-value</code> for a malformed date,
      *             <code>invalid-date-range</code> if the range is empty
      */
-    static DateRange parse(CommandContext context, OptionSpec fromOption, OptionSpec toOption) throws CliException
+    public static DateRange parse(CommandContext context, OptionSpec fromOption, OptionSpec toOption)
+                    throws CliException
     {
         var from = context.date(fromOption);
         var to = context.date(toOption).orElse(LocalDate.now(context.clock()));

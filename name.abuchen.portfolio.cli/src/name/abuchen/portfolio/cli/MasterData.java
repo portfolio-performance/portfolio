@@ -42,7 +42,7 @@ public final class MasterData
     }
 
     /** The uuid and name every reference to an entity carries. */
-    static void putIdentity(Map<String, Object> json, String uuid, String name)
+    public static void putIdentity(Map<String, Object> json, String uuid, String name)
     {
         json.put("uuid", uuid);
         json.put("name", orEmpty(name));
@@ -54,7 +54,7 @@ public final class MasterData
     }
 
     /** Adds the field unless the value is null or blank. Values are emitted untrimmed. */
-    static void putIfSet(Map<String, Object> json, String name, String value)
+    public static void putIfSet(Map<String, Object> json, String name, String value)
     {
         if (isSet(value))
             json.put(name, value);
