@@ -36,6 +36,7 @@ import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DropDown;
+import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartCSVExporter;
@@ -45,6 +46,7 @@ import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesChartLegend;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesConfigurator;
 import name.abuchen.portfolio.ui.views.dataseries.PerformanceChartSeriesBuilder;
+import name.abuchen.portfolio.ui.views.dataseries.PerformanceMetric;
 import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
 import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
@@ -56,12 +58,14 @@ import name.abuchen.portfolio.util.Interval;
 public class PerformanceChartView extends AbstractHistoricView
 {
     private static final String KEY_AGGREGATION_PERIOD = "performance-chart-aggregation-period"; //$NON-NLS-1$
+    private static final String KEY_PERFORMANCE_METRIC = "performance-chart-metric"; //$NON-NLS-1$
 
     private TimelineChart chart;
     private DataSeriesConfigurator picker;
     private ChartViewConfig chartViewConfig;
 
     private Aggregation.Period aggregationPeriod;
+    private PerformanceMetric performanceMetric = PerformanceMetric.TTWROR;
 
     private PerformanceChartSeriesBuilder seriesBuilder;
 
@@ -83,7 +87,19 @@ public class PerformanceChartView extends AbstractHistoricView
             }
             catch (IllegalArgumentException ignore)
             {
-                // ignore if key is not a valid aggregation period
+                PortfolioPlugin.log(ignore);
+            }
+        }
+
+        key = getPreferenceStore().getString(KEY_PERFORMANCE_METRIC);
+        if (key != null && key.length() > 0)
+        {
+            try
+            {
+                performanceMetric = PerformanceMetric.valueOf(key);
+            }
+            catch (IllegalArgumentException ignore)
+            {
                 PortfolioPlugin.log(ignore);
             }
         }
@@ -102,8 +118,24 @@ public class PerformanceChartView extends AbstractHistoricView
         super.addButtons(toolBar);
         toolBar.add(new AggregationPeriodDropDown());
         toolBar.add(new ExportDropDown());
-        toolBar.add(new DropDown(Messages.MenuConfigureChart, Images.CONFIG, SWT.NONE,
-                        manager -> picker.configMenuAboutToShow(manager)));
+        toolBar.add(new DropDown(Messages.MenuConfigureChart, Images.CONFIG, SWT.NONE, manager -> {
+            manager.add(new LabelOnly(Messages.LabelPerformanceMetric));
+
+            for (PerformanceMetric metric : PerformanceMetric.values())
+            {
+                Action action = new SimpleAction(metric.toString(), a -> {
+                    performanceMetric = metric;
+                    getPreferenceStore().setValue(KEY_PERFORMANCE_METRIC, metric.name());
+                    updateChart();
+                });
+                action.setChecked(performanceMetric == metric);
+                manager.add(action);
+            }
+
+            manager.add(new Separator());
+            manager.add(new LabelOnly(Messages.LabelDataSeries));
+            picker.configMenuAboutToShow(manager);
+        }));
     }
 
     @Override
@@ -121,13 +153,11 @@ public class PerformanceChartView extends AbstractHistoricView
         chart.getToolTip().reverseLabels(true);
 
         DataSeriesCache cache = make(DataSeriesCache.class);
-        seriesBuilder = new PerformanceChartSeriesBuilder(chart, cache);
+        seriesBuilder = new PerformanceChartSeriesBuilder(chart, cache, performanceMetric);
 
         picker = new DataSeriesConfigurator(this, DataSeries.UseCase.PERFORMANCE);
         if (chartViewConfig != null)
         {
-            // do *not* update reporting period as it changes the default for
-            // all other views as well --> unexpected UX
             picker.activate(chartViewConfig.getUUID());
         }
 
@@ -191,6 +221,7 @@ public class PerformanceChartView extends AbstractHistoricView
             for (ISeries<?> s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
 
+            seriesBuilder = new PerformanceChartSeriesBuilder(chart, seriesBuilder.getCache(), performanceMetric);
             setChartSeries();
 
             chart.adjustRange();
@@ -201,7 +232,6 @@ public class PerformanceChartView extends AbstractHistoricView
         }
         chart.redraw();
 
-        // re-layout in case chart legend changed
         chart.getParent().layout(true);
     }
 
