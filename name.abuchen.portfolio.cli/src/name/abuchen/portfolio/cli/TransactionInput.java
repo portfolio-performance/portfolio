@@ -26,18 +26,6 @@ final class TransactionInput
 {
     private static final DateTimeFormatter TIME = DateTimeFormatter.ofPattern("HH:mm");
 
-    private static final List<String> UNIT_TYPES = List.of("FEE", "TAX", "GROSS_VALUE");
-
-    /** A fee, tax or forex gross value in the input. */
-    static final Schema UNIT = Schema.object("A fee, tax or forex gross value, in the shape the transactions output uses.")
-                    .property("type", Schema.enumOf("Kind of unit.", UNIT_TYPES))
-                    .property("amount", Schema.number("Positive amount, in the transaction's currency."))
-                    .property("currencyCode", Schema.string("ISO currency code of amount; the transaction's currency."))
-                    .optionalProperty("forexAmount", Schema.number("Original amount in the instrument's currency."))
-                    .optionalProperty("forexCurrencyCode", Schema.string("ISO currency code of forexAmount."))
-                    .optionalProperty("exchangeRate", Schema.number(
-                                    "Positive, unrounded: forexAmount times exchangeRate is approximately amount."));
-
     /** The failure code for a member that the kind of transaction doesn't take. */
     private static final Map<String, String> NOT_ALLOWED = Map.ofEntries(
                     Map.entry("cashAccount", "cash-account-not-allowed"),
@@ -215,13 +203,13 @@ final class TransactionInput
 
     private static Transaction.Unit unit(OperationInput unit, String currencyCode, Security security)
     {
-        unit.rejectUnknownFields(UNIT);
+        unit.rejectUnknownFields(TransactionShape.UNIT);
 
         var typeName = unit.rawText("type");
-        if (typeName == null || !UNIT_TYPES.contains(typeName))
+        if (typeName == null || !TransactionShape.UNIT_TYPES.contains(typeName))
         {
             unit.fail("type", "unsupported-unit-type",
-                            "A unit type must be one of " + String.join(", ", UNIT_TYPES) + ".");
+                            "A unit type must be one of " + String.join(", ", TransactionShape.UNIT_TYPES) + ".");
             return null;
         }
         var unitType = Transaction.Unit.Type.valueOf(typeName);

@@ -38,11 +38,6 @@ final class TransactionOperations
 
     private static final String UPDATE_DESCRIPTION = "The fields of a transaction to change, in the shape the transactions output uses. Only the fields present change; null clears an optional field.";
 
-    /** The transaction types this operation records, in the published order. */
-    private static final List<String> TYPE_NAMES = List.of("DEPOSIT", "REMOVAL", "INTEREST", "INTEREST_CHARGE",
-                    "DIVIDENDS", "FEES", "FEES_REFUND", "TAXES", "TAX_REFUND", "BUY", "SELL", "DELIVERY_INBOUND",
-                    "DELIVERY_OUTBOUND", TransactionRecord.TRANSFER);
-
     /** The types that are recorded in an investment account, as opposed to a cash account. */
     private static final Set<String> PORTFOLIO_TYPES = Set.of("BUY", "SELL", "DELIVERY_INBOUND", "DELIVERY_OUTBOUND");
 
@@ -87,7 +82,7 @@ final class TransactionOperations
         new Members(schema, update)
                         .required("type", Schema.enumOf(
                                         "Transaction type. TRANSFER needs a kind, from and to; BUY and SELL need an investmentAccount and a cashAccount; deliveries need an investmentAccount; the others need a cashAccount.",
-                                        TYPE_NAMES))
+                                        TransactionShape.TYPES))
                         .optional("kind", Schema.enumOf("Of a TRANSFER only: cash or security.",
                                         TransactionRecord.TransferKind.ids()))
                         .optional("cashAccount", Schema.string(
@@ -114,7 +109,7 @@ final class TransactionOperations
                                         "Positive number of shares. Required for BUY, SELL, deliveries and security transfers; accepted on a dividend; refused otherwise."))
                         .optional("units", Schema.array(
                                         "Fees, taxes and the forex gross value an instrument in another currency needs. Taxes are accepted only on DIVIDENDS and INTEREST and fees only on DIVIDENDS, as in core's import check; refused on transfers.",
-                                        TransactionInput.UNIT))
+                                        TransactionShape.UNIT))
                         .optional("exDate", Schema.string(
                                         "ISO ex-date; accepted only on a dividend with an instrument and never after the date."))
                         .optional("grossAmount", Schema.number(
@@ -257,11 +252,11 @@ final class TransactionOperations
         }
 
         var name = member.getAsString();
-        if (!TYPE_NAMES.contains(name))
+        if (!TransactionShape.TYPES.contains(name))
         {
             context.fail("type", "unsupported-type", "'" + name
                             + "' is not a transaction type this operation adds. Supported: "
-                            + String.join(", ", TYPE_NAMES) + ".");
+                            + String.join(", ", TransactionShape.TYPES) + ".");
             return null;
         }
         return name;

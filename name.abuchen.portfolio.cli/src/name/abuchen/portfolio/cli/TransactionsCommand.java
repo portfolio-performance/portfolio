@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
@@ -31,17 +30,6 @@ import name.abuchen.portfolio.money.Values;
  */
 final class TransactionsCommand
 {
-    /** The types of a record, in the order they are published. */
-    private static final List<String> TYPES = List.of("BUY", "SELL", "DEPOSIT", "REMOVAL", "INTEREST",
-                    "INTEREST_CHARGE", "DIVIDENDS", "FEES", "FEES_REFUND", "TAXES", "TAX_REFUND", "DELIVERY_INBOUND",
-                    "DELIVERY_OUTBOUND", TransactionRecord.TRANSFER);
-
-    /** What an orphaned side can add under its raw core type. */
-    private static final List<String> ORPHAN_TYPES = List.of("TRANSFER_IN", "TRANSFER_OUT");
-
-    private static final List<String> FILTERABLE_TYPES = Stream.concat(TYPES.stream(),
-                    ORPHAN_TYPES.stream()).toList();
-
     private static final DateTimeFormatter TIME = DateTimeFormatter.ofPattern("HH:mm");
 
     private static final OptionSpec INVESTMENT_ACCOUNT = new OptionSpec("investment-account", "ref",
@@ -65,19 +53,6 @@ final class TransactionsCommand
     private static final OptionSpec CURRENCY = new OptionSpec("currency", "code",
                     "Adds converted to every record: its amount in this ISO currency, with rate, date and source. amount stays in the record's currency.");
 
-    private static Schema unit()
-    {
-        return Schema.object(
-                        "A fee, tax or gross value of the record, in the shape that transaction writes accept.")
-                        .property("type", Schema.enumOf("Kind of unit.", List.of("FEE", "TAX", "GROSS_VALUE")))
-                        .property("amount", Schema.number("Amount in the currency of the record." + MinorUnits.CONVERTED_WITH_CURRENCY_OPTION))
-                        .property("currencyCode", Schema.string("ISO currency code of the amount." + MinorUnits.CONVERTED_WITH_CURRENCY_OPTION))
-                        .optionalProperty("forexAmount", Schema.number("Original amount in a foreign currency." + MinorUnits.CONVERTED_WITH_CURRENCY_OPTION))
-                        .optionalProperty("forexCurrencyCode", Schema.string("ISO currency code of forexAmount." + MinorUnits.CONVERTED_WITH_CURRENCY_OPTION))
-                        .optionalProperty("exchangeRate", Schema.number(
-                                        "Unrounded as stored: forexAmount times exchangeRate is approximately amount."));
-    }
-
     /** The name that goes with a UUID member: present exactly when that member is. */
     private static Schema nameOf(String idMember)
     {
@@ -91,7 +66,7 @@ final class TransactionsCommand
                                         "UUID of the investment-account side of a buy or sell, the outgoing side of a transfer, else of the transaction."))
                         .property("type", Schema.openEnumOf(
                                         "Core's transaction type. An open enum: new values may appear. An intact transfer is TRANSFER; a side without its partner keeps its raw type, e.g. TRANSFER_OUT.",
-                                        FILTERABLE_TYPES))
+                                        TransactionShape.FILTERABLE_TYPES))
                         .optionalProperty("kind", Schema.enumOf("Of a TRANSFER.",
                                         TransactionRecord.TransferKind.ids()))
                         .property("date", Schema.string("ISO date."))
@@ -124,7 +99,7 @@ final class TransactionsCommand
                         .optionalProperty("source", Schema.string("Where the record was imported from."))
                         .optionalProperty("updatedAt", Schema.string(
                                         "When the record last changed: the latest of its sides, as an ISO-8601 UTC instant such as 2026-10-24T15:04:57Z. Absent if none has one."))
-                        .property("units", Schema.array("Fees, taxes and forex of the record; empty if none.", unit()))
+                        .property("units", Schema.array("Fees, taxes and forex of the record; empty if none.", TransactionShape.unitSchema()))
                         .optionalProperty("converted", ExchangeRates.convertedSchema(
                                         "The amount in the currency asked for with --currency. Absent if no rate was found."));
     }
@@ -201,7 +176,7 @@ final class TransactionsCommand
         cashAccount.ifPresent(account -> meta.put("cashAccount", account.getUUID()));
         instrument.ifPresent(security -> meta.put("instrument", security.getUUID()));
         if (!types.isEmpty())
-            meta.put("types", FILTERABLE_TYPES.stream().filter(types::contains).toList());
+            meta.put("types", TransactionShape.FILTERABLE_TYPES.stream().filter(types::contains).toList());
         rates.putCacheInto(meta);
 
         var response = Response.of(data, meta);
@@ -234,10 +209,10 @@ final class TransactionsCommand
         for (var item : raw.get().split(",", -1))
         {
             var type = item.trim().toUpperCase(Locale.ROOT);
-            if (!FILTERABLE_TYPES.contains(type))
+            if (!TransactionShape.FILTERABLE_TYPES.contains(type))
                 throw CliException.usage("invalid-option-value", "Invalid option value",
                                 "Option '--" + TYPE.name() + "' must be a comma-separated list of: "
-                                                + String.join(", ", FILTERABLE_TYPES) + ".")
+                                                + String.join(", ", TransactionShape.FILTERABLE_TYPES) + ".")
                                 .with("option", TYPE.name()).with("value", raw.get());
             types.add(type);
         }
