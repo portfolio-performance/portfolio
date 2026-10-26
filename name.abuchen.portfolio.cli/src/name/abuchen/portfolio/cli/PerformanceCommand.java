@@ -1,12 +1,12 @@
 package name.abuchen.portfolio.cli;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
@@ -27,7 +27,7 @@ import name.abuchen.portfolio.snapshot.PerformanceIndex;
  */
 final class PerformanceCommand
 {
-    private static final OptionSpec CURRENCY = new OptionSpec("currency", "code",
+    private static final OptionSpec CURRENCY = ReportingCurrency.option(
                     "ISO currency of the figures. Defaults to the base currency of the file.");
 
     /** A value or gain of the performance snapshot, as the output names it. */
@@ -75,19 +75,13 @@ final class PerformanceCommand
     private static final Schema META = PerformanceScope.declareIn(PerformancePeriod.declareIn(ResponseMeta.fileSchema()))
                     .property("costMethod", CostMethod.schema())
                     .property("currency", Schema.string("The reporting currency: as given, otherwise the base currency."))
-                    .optionalProperty("exchangeRates", ExchangeRates.metaSchema());
+                    .optionalProperty("exchangeRates", ReportingCurrency.ratesMetaSchema());
 
     private static final WarningSpec NO_ACTIVITY = new WarningSpec("no-activity-in-period",
                     "The instrument of --instrument was not held at the start or end of the period and had no transaction in it, so no figure is reported. Carries the uuid and name of the instrument.");
 
-    /** The warnings of <code>performance</code>: those of {@link ExchangeRates}, with a count of days. */
-    private static final List<WarningSpec> WARNINGS = List.of(NO_ACTIVITY,
-                    new WarningSpec(ExchangeRates.MISSING.code(),
-                                    "No usable exchange rate was found for a currency pair on a day core needed it, so the figures are left out. Carries baseCurrency, termCurrency and the count of days without a rate."),
-                    new WarningSpec(ExchangeRates.STALE.code(),
-                                    "An exchange rate more than " + Prices.STALE_AFTER_DAYS
-                                                    + " days before the day needed was used. Carries baseCurrency, termCurrency, the count of days and the maxAgeDays."),
-                    ExchangeRates.CACHE_UNAVAILABLE);
+    private static final List<WarningSpec> WARNINGS = Stream
+                    .concat(Stream.of(NO_ACTIVITY), ReportingCurrency.WARNINGS_COUNTING_DAYS.stream()).toList();
 
     static final CommandSpec SPEC = new CommandSpec("performance",
                     "IRR, TTWROR and gains of the whole client, one investment account (optionally with its reference cash account), one cash account or one instrument over a period (--from and --to, or --period), by FIFO or moving-average cost, in the base currency or --currency; or with --by instrument, one record per instrument active in the period.",
@@ -111,19 +105,18 @@ final class PerformanceCommand
     {
         var period = PerformancePeriod.resolve(context);
         var costMethod = CostMethod.parse(context);
-        var requested = ExchangeRates.parseCurrency(CURRENCY, context.option(CURRENCY.name()));
+        var requested = ReportingCurrency.requested(context, CURRENCY);
         var client = context.loadClient().client();
         var scope = PerformanceScope.resolve(context, client);
         Optional<Client> breakdown = Optional.empty();
         if (PerformanceByInstrument.requested(context))
             breakdown = Optional.of(scope.narrowed(client).orElseThrow(PerformanceByInstrument::unsupportedScope));
 
-        var currency = requested.orElse(client.getBaseCurrency());
-        var rates = new ExchangeRates(context, client);
-        var converter = new StrictConverter(rates, rates.converter(currency), LocalDate.now(context.clock()));
+        var reporting = requested.orBase(context, client);
+        var converter = reporting.strictConverter();
 
         var data = new LinkedHashMap<String, Object>();
-        data.put("currencyCode", currency);
+        data.put("currencyCode", reporting.code());
 
         Optional<Security> quiet = Optional.empty();
         if (breakdown.isPresent())
@@ -132,7 +125,7 @@ final class PerformanceCommand
         }
         else
         {
-            quiet = scope.quietInstrument(client, rates.converter(currency), period.interval());
+            quiet = scope.quietInstrument(client, reporting.coreConverter(), period.interval());
             if (quiet.isEmpty())
             {
                 var index = scope.index(client, converter, period.interval());
@@ -149,8 +142,8 @@ final class PerformanceCommand
         period.putInto(meta);
         scope.putInto(meta);
         meta.put("costMethod", costMethod.id());
-        meta.put("currency", currency);
-        rates.putCacheInto(meta);
+        meta.put("currency", reporting.code());
+        reporting.putRatesInto(meta);
 
         var response = Response.of(data, meta);
         quiet.ifPresent(security -> response.warn(new Warning(NO_ACTIVITY.code(),
@@ -158,7 +151,7 @@ final class PerformanceCommand
                                         + "' was not held at the start or end of the period and had no transaction in it.")
                                                         .with("uuid", security.getUUID())
                                                         .with("name", MasterData.orEmpty(security.getName()))));
-        rates.warnings().forEach(response::warn);
+        reporting.warnings().forEach(response::warn);
         return response;
     }
 

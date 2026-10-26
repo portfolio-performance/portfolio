@@ -42,7 +42,7 @@ final class AllocationCommand
     private static final OptionSpec DATE = OptionSpec.date("date",
                     "Day to value the allocation at. Defaults to today. Valuation uses the prices on or before this day, and conversions the rates on or before it.");
 
-    private static final OptionSpec CURRENCY = new OptionSpec("currency", "code",
+    private static final OptionSpec CURRENCY = ReportingCurrency.option(
                     "ISO currency of the values and the total. Defaults to the base currency of the file.");
 
     static final WarningSpec OVER_ASSIGNED = new WarningSpec("over-assigned",
@@ -75,10 +75,10 @@ final class AllocationCommand
                     .property("taxonomy", Schema.object("The taxonomy the reference resolved to.")
                                     .property("uuid", Schema.string("Canonical UUID."))
                                     .property("name", Schema.string("Taxonomy name; empty if the file has none.")))
-                    .optionalProperty("exchangeRates", ExchangeRates.metaSchema());
+                    .optionalProperty("exchangeRates", ReportingCurrency.ratesMetaSchema());
 
     private static final List<WarningSpec> WARNINGS = Stream
-                    .concat(Stream.of(Prices.STALE_PRICE, OVER_ASSIGNED), ExchangeRates.WARNINGS.stream()).toList();
+                    .concat(Stream.of(Prices.STALE_PRICE, OVER_ASSIGNED), ReportingCurrency.WARNINGS.stream()).toList();
 
     static final CommandSpec SPEC = new CommandSpec("allocation",
                     "How the value of the client splits across the classifications of one taxonomy at a date: one flat row per classification at every depth plus an unassigned row, with value and share in the base currency or --currency.",
@@ -96,13 +96,12 @@ final class AllocationCommand
     private static Response execute(CommandContext context) throws CliException
     {
         var date = DATE.parseDate(context.option(DATE.name())).orElse(LocalDate.now(context.clock()));
-        var requested = ExchangeRates.parseCurrency(CURRENCY, context.option(CURRENCY.name()));
+        var requested = ReportingCurrency.requested(context, CURRENCY);
         var client = context.loadClient().client();
         var taxonomy = References.taxonomy(client, TAXONOMY.name(), context.option(TAXONOMY.name()).orElseThrow());
 
-        var currency = requested.orElse(client.getBaseCurrency());
-        var rates = new ExchangeRates(context, client);
-        var snapshot = ClientSnapshot.create(client, rates.converter(currency), date);
+        var reporting = requested.orBase(context, client);
+        var snapshot = ClientSnapshot.create(client, reporting.coreConverter(), date);
 
         var holdings = new ArrayList<Holding>();
         var stalePrices = new LinkedHashMap<Security, Warning>();
@@ -119,17 +118,7 @@ final class AllocationCommand
                 holdings.add(new Holding(account.getAccount(), account.getUnconvertedFunds()));
         }
 
-        // look every rate up, so that all missing ones are reported
-        var ratesFound = true;
-        for (var holding : holdings)
-        {
-            var value = holding.value();
-            if (value.isZero() && !currency.equals(value.getCurrencyCode()))
-                continue;
-
-            if (rates.lookup(date, value.getCurrencyCode(), currency).isEmpty())
-                ratesFound = false;
-        }
+        var ratesFound = reporting.allRated(date, holdings.stream().map(Holding::value).toList());
 
         var nodes = TaxonomyTree.preOrder(taxonomy);
         var items = new ArrayList<Map<String, Object>>();
@@ -151,16 +140,16 @@ final class AllocationCommand
 
         var meta = ResponseMeta.of(context, client);
         meta.put("date", date.toString());
-        meta.put("currency", currency);
+        meta.put("currency", reporting.code());
         var reference = new LinkedHashMap<String, Object>();
         MasterData.putIdentity(reference, taxonomy.getId(), taxonomy.getName());
         meta.put("taxonomy", reference);
-        rates.putCacheInto(meta);
+        reporting.putRatesInto(meta);
 
         var response = Response.of(data, meta);
         stalePrices.values().forEach(response::warn);
         overAssigned(taxonomy, holdings).forEach(response::warn);
-        rates.warnings().forEach(response::warn);
+        reporting.warnings().forEach(response::warn);
         return response;
     }
 
