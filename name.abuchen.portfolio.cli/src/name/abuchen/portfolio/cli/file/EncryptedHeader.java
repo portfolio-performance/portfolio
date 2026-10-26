@@ -14,8 +14,8 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import name.abuchen.portfolio.cli.CliException;
 import name.abuchen.portfolio.cli.CoreVersion;
+import name.abuchen.portfolio.cli.command.CliException;
 import name.abuchen.portfolio.model.ClientFactory;
 
 /**

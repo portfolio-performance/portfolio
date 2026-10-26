@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.command;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +35,7 @@ public record CommandSpec(String name, String summary, boolean usesClientFile, L
     }
 
     /** The global options this command accepts besides its declared ones. */
-    List<OptionSpec> sharedOptions()
+    public List<OptionSpec> sharedOptions()
     {
         var options = new ArrayList<OptionSpec>();
         if (usesClientFile)
@@ -46,20 +46,20 @@ public record CommandSpec(String name, String summary, boolean usesClientFile, L
     }
 
     /** All options the parser accepts, including the shared ones. */
-    List<OptionSpec> options()
+    public List<OptionSpec> options()
     {
         var options = new ArrayList<OptionSpec>(declaredOptions);
         options.addAll(sharedOptions());
         return options;
     }
 
-    boolean accepts(String optionName)
+    public boolean accepts(String optionName)
     {
         return options().stream().anyMatch(o -> o.name().equals(optionName));
     }
 
     /** The accepted option of that name. */
-    OptionSpec option(String optionName)
+    public OptionSpec option(String optionName)
     {
         return options().stream().filter(o -> o.name().equals(optionName)).findFirst().orElseThrow();
     }

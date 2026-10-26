@@ -5,8 +5,8 @@ import java.util.function.Consumer;
 
 import com.google.gson.JsonObject;
 
-import name.abuchen.portfolio.cli.Decimals;
-import name.abuchen.portfolio.cli.Schema;
+import name.abuchen.portfolio.cli.command.Decimals;
+import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.money.Values;
 
 /**

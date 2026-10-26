@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.command;
 
 /**
  * One column of a table: which member of a rendered JSON item it shows and

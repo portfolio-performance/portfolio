@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.command;
 
 import java.math.BigDecimal;
 import java.util.Optional;

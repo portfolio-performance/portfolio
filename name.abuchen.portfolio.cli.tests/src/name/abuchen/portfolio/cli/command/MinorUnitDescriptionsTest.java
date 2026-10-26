@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.command;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -13,6 +13,9 @@ import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import org.junit.Test;
+
+import name.abuchen.portfolio.cli.CliRun;
+import name.abuchen.portfolio.cli.Commands;
 
 /**
  * An agent once quoted holdings in ILA (agorot) as if they were ILS. The

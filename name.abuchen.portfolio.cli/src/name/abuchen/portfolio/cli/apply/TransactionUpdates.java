@@ -9,7 +9,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import name.abuchen.portfolio.cli.Schema;
+import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.cli.query.BuiltRecord;
 import name.abuchen.portfolio.cli.query.TransactionRecord;
 import name.abuchen.portfolio.cli.query.TransactionShape;

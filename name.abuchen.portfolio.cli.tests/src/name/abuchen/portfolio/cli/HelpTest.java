@@ -14,6 +14,10 @@ import org.junit.Test;
 
 import com.google.gson.JsonObject;
 
+import name.abuchen.portfolio.cli.command.CommandSpec;
+import name.abuchen.portfolio.cli.command.OptionSpec;
+import name.abuchen.portfolio.cli.command.OutputFormat;
+
 public class HelpTest
 {
     /**

@@ -7,13 +7,13 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import name.abuchen.portfolio.cli.CliException;
-import name.abuchen.portfolio.cli.CommandContext;
-import name.abuchen.portfolio.cli.CommandSpec;
-import name.abuchen.portfolio.cli.OptionSpec;
-import name.abuchen.portfolio.cli.Response;
-import name.abuchen.portfolio.cli.ResponseMeta;
-import name.abuchen.portfolio.cli.Schema;
+import name.abuchen.portfolio.cli.command.CliException;
+import name.abuchen.portfolio.cli.command.CommandContext;
+import name.abuchen.portfolio.cli.command.CommandSpec;
+import name.abuchen.portfolio.cli.command.OptionSpec;
+import name.abuchen.portfolio.cli.command.Response;
+import name.abuchen.portfolio.cli.command.ResponseMeta;
+import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.cli.file.SafeWrite;
 
 /**

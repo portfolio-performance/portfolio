@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.command;
 
 import java.io.PrintStream;
 import java.util.List;
@@ -15,7 +15,7 @@ import com.github.freva.asciitable.OverflowBehaviour;
  * <code>meta</code> is dropped. The library counts UTF-16 characters, so wide
  * characters (CJK, emoji) may misalign.
  */
-final class TableFormat
+public final class TableFormat
 {
     /** Index of the header separator's line and joint characters in the library's border array. */
     private static final int HEADER_COLUMN_SEPARATOR = 5;
@@ -30,7 +30,7 @@ final class TableFormat
     {
     }
 
-    static void print(PrintStream stdout, PrintStream stderr, Response response, List<TableColumn> columns)
+    public static void print(PrintStream stdout, PrintStream stderr, Response response, List<TableColumn> columns)
     {
         var data = (Map<?, ?>) response.data();
         var items = (List<?>) data.get("items");

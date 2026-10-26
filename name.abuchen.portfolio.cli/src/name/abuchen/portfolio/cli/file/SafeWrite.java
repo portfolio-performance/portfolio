@@ -23,11 +23,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-import name.abuchen.portfolio.cli.CliException;
-import name.abuchen.portfolio.cli.CommandContext;
-import name.abuchen.portfolio.cli.OptionSpec;
-import name.abuchen.portfolio.cli.Warning;
-import name.abuchen.portfolio.cli.WarningSpec;
+import name.abuchen.portfolio.cli.command.CliException;
+import name.abuchen.portfolio.cli.command.CommandContext;
+import name.abuchen.portfolio.cli.command.OptionSpec;
+import name.abuchen.portfolio.cli.command.Warning;
+import name.abuchen.portfolio.cli.command.WarningSpec;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 

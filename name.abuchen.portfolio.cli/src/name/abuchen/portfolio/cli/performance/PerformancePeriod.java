@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import name.abuchen.portfolio.cli.CliException;
-import name.abuchen.portfolio.cli.CommandContext;
-import name.abuchen.portfolio.cli.DateRange;
-import name.abuchen.portfolio.cli.OptionSpec;
-import name.abuchen.portfolio.cli.Schema;
+import name.abuchen.portfolio.cli.command.CliException;
+import name.abuchen.portfolio.cli.command.CommandContext;
+import name.abuchen.portfolio.cli.command.DateRange;
+import name.abuchen.portfolio.cli.command.OptionSpec;
+import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.util.Interval;
 

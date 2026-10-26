@@ -10,9 +10,9 @@ import java.util.stream.Stream;
 
 import com.google.gson.JsonObject;
 
-import name.abuchen.portfolio.cli.MasterData;
-import name.abuchen.portfolio.cli.MinorUnits;
-import name.abuchen.portfolio.cli.Schema;
+import name.abuchen.portfolio.cli.command.MasterData;
+import name.abuchen.portfolio.cli.command.MinorUnits;
+import name.abuchen.portfolio.cli.command.Schema;
 
 /**
  * The members of a {@link TransactionRecord} and of its units, each declared

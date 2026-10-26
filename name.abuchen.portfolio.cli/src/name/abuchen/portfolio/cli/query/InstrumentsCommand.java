@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import name.abuchen.portfolio.cli.CommandSpec;
-import name.abuchen.portfolio.cli.MasterData;
-import name.abuchen.portfolio.cli.MasterDataList;
-import name.abuchen.portfolio.cli.MinorUnits;
-import name.abuchen.portfolio.cli.Schema;
-import name.abuchen.portfolio.cli.TableColumn;
+import name.abuchen.portfolio.cli.command.CommandSpec;
+import name.abuchen.portfolio.cli.command.MasterData;
+import name.abuchen.portfolio.cli.command.MasterDataList;
+import name.abuchen.portfolio.cli.command.MinorUnits;
+import name.abuchen.portfolio.cli.command.Schema;
+import name.abuchen.portfolio.cli.command.TableColumn;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;

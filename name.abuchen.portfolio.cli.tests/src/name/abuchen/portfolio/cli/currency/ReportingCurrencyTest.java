@@ -24,12 +24,12 @@ import org.junit.rules.TemporaryFolder;
 
 import com.google.gson.JsonPrimitive;
 
-import name.abuchen.portfolio.cli.CliException;
 import name.abuchen.portfolio.cli.CliRun;
-import name.abuchen.portfolio.cli.CommandContext;
 import name.abuchen.portfolio.cli.EcbCacheFiles;
-import name.abuchen.portfolio.cli.OptionSpec;
-import name.abuchen.portfolio.cli.Warning;
+import name.abuchen.portfolio.cli.command.CliException;
+import name.abuchen.portfolio.cli.command.CommandContext;
+import name.abuchen.portfolio.cli.command.OptionSpec;
+import name.abuchen.portfolio.cli.command.Warning;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.Money;
 

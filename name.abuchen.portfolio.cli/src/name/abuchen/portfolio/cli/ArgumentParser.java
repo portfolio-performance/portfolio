@@ -4,6 +4,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import name.abuchen.portfolio.cli.command.CliException;
+import name.abuchen.portfolio.cli.command.CommandSpec;
+
 /** Turns raw arguments into a command and its option values. */
 final class ArgumentParser
 {

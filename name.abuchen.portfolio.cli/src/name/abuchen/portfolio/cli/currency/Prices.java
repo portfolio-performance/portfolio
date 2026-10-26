@@ -4,9 +4,9 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
-import name.abuchen.portfolio.cli.MasterData;
-import name.abuchen.portfolio.cli.Warning;
-import name.abuchen.portfolio.cli.WarningSpec;
+import name.abuchen.portfolio.cli.command.MasterData;
+import name.abuchen.portfolio.cli.command.Warning;
+import name.abuchen.portfolio.cli.command.WarningSpec;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.online.QuoteFeed;

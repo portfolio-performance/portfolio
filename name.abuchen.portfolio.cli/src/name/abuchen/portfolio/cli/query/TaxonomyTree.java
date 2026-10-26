@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import name.abuchen.portfolio.cli.MasterData;
+import name.abuchen.portfolio.cli.command.MasterData;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Taxonomy;
 

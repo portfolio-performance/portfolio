@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import name.abuchen.portfolio.cli.Decimals;
-import name.abuchen.portfolio.cli.Schema;
+import name.abuchen.portfolio.cli.command.Decimals;
+import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.cli.query.TaxonomyTree;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Security;

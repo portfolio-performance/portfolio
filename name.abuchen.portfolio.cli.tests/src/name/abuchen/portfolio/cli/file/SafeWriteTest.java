@@ -25,11 +25,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import name.abuchen.portfolio.cli.CliException;
 import name.abuchen.portfolio.cli.CliFixture;
 import name.abuchen.portfolio.cli.CliRun;
 import name.abuchen.portfolio.cli.ClientFiles;
-import name.abuchen.portfolio.cli.CommandContext;
+import name.abuchen.portfolio.cli.command.CliException;
+import name.abuchen.portfolio.cli.command.CommandContext;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;

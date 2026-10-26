@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.command;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -22,7 +22,7 @@ public record Response(Object data, Map<String, Object> meta, List<Warning> warn
         return this;
     }
 
-    Map<String, Object> toEnvelope()
+    public Map<String, Object> toEnvelope()
     {
         var envelope = new LinkedHashMap<String, Object>();
         envelope.put("data", data);

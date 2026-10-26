@@ -21,7 +21,7 @@ import org.junit.rules.TemporaryFolder;
 import name.abuchen.portfolio.cli.CliFixture;
 import name.abuchen.portfolio.cli.CliRun;
 import name.abuchen.portfolio.cli.ClientFiles;
-import name.abuchen.portfolio.cli.CommandContext;
+import name.abuchen.portfolio.cli.command.CommandContext;
 import name.abuchen.portfolio.cli.file.WriteEnvironment;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;

@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
-import name.abuchen.portfolio.cli.Schema;
+import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.cli.query.BuiltRecord;
 import name.abuchen.portfolio.cli.query.TransactionRecord;
 import name.abuchen.portfolio.cli.query.TransactionShape;

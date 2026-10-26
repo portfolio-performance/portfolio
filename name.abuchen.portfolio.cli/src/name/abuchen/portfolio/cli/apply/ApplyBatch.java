@@ -12,7 +12,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import name.abuchen.portfolio.cli.CliException;
+import name.abuchen.portfolio.cli.command.CliException;
 import name.abuchen.portfolio.model.Client;
 
 /**

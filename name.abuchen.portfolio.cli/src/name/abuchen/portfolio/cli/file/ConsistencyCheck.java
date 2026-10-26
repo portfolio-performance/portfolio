@@ -8,9 +8,9 @@ import java.util.Map;
 
 import name.abuchen.portfolio.checks.Checker;
 import name.abuchen.portfolio.checks.Issue;
-import name.abuchen.portfolio.cli.CliException;
-import name.abuchen.portfolio.cli.Warning;
-import name.abuchen.portfolio.cli.WarningSpec;
+import name.abuchen.portfolio.cli.command.CliException;
+import name.abuchen.portfolio.cli.command.Warning;
+import name.abuchen.portfolio.cli.command.WarningSpec;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;

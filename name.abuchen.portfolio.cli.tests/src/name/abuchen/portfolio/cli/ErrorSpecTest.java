@@ -10,6 +10,10 @@ import java.util.List;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.cli.command.CommandSpec;
+import name.abuchen.portfolio.cli.command.OptionSpec;
+import name.abuchen.portfolio.cli.command.ReferenceOption;
+import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.cli.performance.PerformanceCommand;
 
 /**

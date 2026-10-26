@@ -7,6 +7,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import name.abuchen.portfolio.cli.command.Schema;
+
 /**
  * Validates a JSON value against the schema subset that {@link Schema}
  * renders: type (or a list of types), enum, properties, required,

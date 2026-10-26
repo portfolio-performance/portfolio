@@ -2,6 +2,10 @@ package name.abuchen.portfolio.cli;
 
 import java.util.List;
 
+import name.abuchen.portfolio.cli.command.CliException;
+import name.abuchen.portfolio.cli.command.CommandSpec;
+import name.abuchen.portfolio.cli.command.OptionSpec;
+
 /**
  * Declares an error code the tool can fail with; <code>--help</code>
  * publishes it. Every code passed to {@link CliException} must be listed in

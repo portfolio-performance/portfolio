@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 
-import name.abuchen.portfolio.cli.CliException;
+import name.abuchen.portfolio.cli.command.CliException;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 

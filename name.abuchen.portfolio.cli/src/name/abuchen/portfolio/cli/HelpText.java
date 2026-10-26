@@ -8,6 +8,12 @@ import java.util.Set;
 
 import name.abuchen.portfolio.cli.apply.ApplyCommand;
 import name.abuchen.portfolio.cli.apply.OperationSpec;
+import name.abuchen.portfolio.cli.command.CliException;
+import name.abuchen.portfolio.cli.command.CommandContext;
+import name.abuchen.portfolio.cli.command.CommandSpec;
+import name.abuchen.portfolio.cli.command.MinorUnits;
+import name.abuchen.portfolio.cli.command.OptionSpec;
+import name.abuchen.portfolio.cli.command.OutputFormat;
 import name.abuchen.portfolio.cli.currency.EcbCache;
 
 /**

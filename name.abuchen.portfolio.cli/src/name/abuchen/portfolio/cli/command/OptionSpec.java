@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.command;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
@@ -21,32 +21,32 @@ public record OptionSpec(String name, String valueName, String description, Type
     }
 
     /** A reference to one entity of a kind; declared through {@link ReferenceOption}. */
-    record Reference(String label) implements Type
+    public record Reference(String label) implements Type
     {
     }
 
     /** One of a fixed set of values; <code>--help</code> publishes them. */
-    record Choice(List<String> values, String defaultValue) implements Type
+    public record Choice(List<String> values, String defaultValue) implements Type
     {
     }
 
     /** A switch that takes no value: present or absent. */
-    record Flag() implements Type
+    public record Flag() implements Type
     {
     }
 
     /** A free-form value. */
-    record Text() implements Type
+    public record Text() implements Type
     {
     }
 
     /** An ISO <code>yyyy-MM-dd</code> date. */
-    record IsoDate() implements Type
+    public record IsoDate() implements Type
     {
     }
 
     /** The default and inclusive range of an integer option. The maximum may be null (unbounded). */
-    record IntegerDomain(long defaultValue, long minimum, Long maximum) implements Type
+    public record IntegerDomain(long defaultValue, long minimum, Long maximum) implements Type
     {
         boolean contains(long value)
         {
@@ -59,10 +59,10 @@ public record OptionSpec(String name, String valueName, String description, Type
         }
     }
 
-    static final OptionSpec FILE = new OptionSpec("file", "path",
+    public static final OptionSpec FILE = new OptionSpec("file", "path",
                     "Client file to read. Falls back to the PP_FILE environment variable.");
 
-    static final OptionSpec VERBOSE = flag("verbose",
+    public static final OptionSpec VERBOSE = flag("verbose",
                     "Show core's INFO and OK status messages on stderr, such as the line logged when a file is loaded; hidden by default. Warnings and errors always show; stdout is unaffected.");
 
     // Long.parseLong alone would accept a leading '+' and non-ASCII digits
@@ -98,7 +98,7 @@ public record OptionSpec(String name, String valueName, String description, Type
         return new OptionSpec(name, "", description, new Flag(), false);
     }
 
-    boolean isFlag()
+    public boolean isFlag()
     {
         return type instanceof Flag;
     }

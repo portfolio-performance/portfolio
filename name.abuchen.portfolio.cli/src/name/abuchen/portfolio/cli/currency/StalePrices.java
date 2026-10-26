@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import name.abuchen.portfolio.cli.MasterData;
-import name.abuchen.portfolio.cli.Warning;
+import name.abuchen.portfolio.cli.command.MasterData;
+import name.abuchen.portfolio.cli.command.Warning;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 

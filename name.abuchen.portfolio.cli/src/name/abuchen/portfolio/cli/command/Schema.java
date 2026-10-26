@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.command;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -120,7 +120,7 @@ public final class Schema
     }
 
     /** The description of the value itself, or null if there is none. */
-    String description()
+    public String description()
     {
         return description;
     }
@@ -130,7 +130,7 @@ public final class Schema
      * (<code>name (type, facts) description</code>) with nested members
      * indented below it.
      */
-    List<String> helpLines(int indent)
+    public List<String> helpLines(int indent)
     {
         var lines = new ArrayList<String>();
         for (var entry : properties.entrySet())
@@ -159,7 +159,7 @@ public final class Schema
     }
 
     /** The names of the members that are required or, if <code>required</code> is false, optional. */
-    List<String> memberNames(boolean required)
+    public List<String> memberNames(boolean required)
     {
         return properties.keySet().stream().filter(name -> this.required.contains(name) == required).toList();
     }
@@ -181,7 +181,7 @@ public final class Schema
         return items != null ? items.element() : this;
     }
 
-    Map<String, Object> toJson()
+    public Map<String, Object> toJson()
     {
         var json = new LinkedHashMap<String, Object>();
         json.put("type", alternativeTypes != null ? alternativeTypes : nullable ? List.of(type, "null") : type);

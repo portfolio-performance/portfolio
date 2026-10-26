@@ -10,6 +10,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
+import name.abuchen.portfolio.cli.command.OutputFormat;
+import name.abuchen.portfolio.cli.command.Schema;
+import name.abuchen.portfolio.cli.command.WarningSpec;
+
 /**
  * What the per-command help promises about a successful response: an envelope
  * of <code>data</code>, <code>meta</code> and <code>warnings</code>, whose data

@@ -20,6 +20,9 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.cli.command.CommandSpec;
+import name.abuchen.portfolio.cli.command.OptionSpec;
+
 /**
  * Keeps the <code>pp-cli</code> agent skill honest: every command, option,
  * operation, error or warning code and environment variable that the skill

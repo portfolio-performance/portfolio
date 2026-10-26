@@ -4,11 +4,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import name.abuchen.portfolio.cli.CommandSpec;
-import name.abuchen.portfolio.cli.MasterData;
-import name.abuchen.portfolio.cli.MasterDataList;
-import name.abuchen.portfolio.cli.Schema;
-import name.abuchen.portfolio.cli.TableColumn;
+import name.abuchen.portfolio.cli.command.CommandSpec;
+import name.abuchen.portfolio.cli.command.MasterData;
+import name.abuchen.portfolio.cli.command.MasterDataList;
+import name.abuchen.portfolio.cli.command.Schema;
+import name.abuchen.portfolio.cli.command.TableColumn;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 

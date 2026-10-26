@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.command;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -15,7 +15,7 @@ public class CliException extends Exception
     static final int EXIT_USAGE = 2;
 
     /** Exit code for every other failure. */
-    static final int EXIT_FAILURE = 1;
+    public static final int EXIT_FAILURE = 1;
 
     private final String code;
     private final String title;
@@ -59,7 +59,7 @@ public class CliException extends Exception
         return code;
     }
 
-    int getExitCode()
+    public int getExitCode()
     {
         return exitCode;
     }

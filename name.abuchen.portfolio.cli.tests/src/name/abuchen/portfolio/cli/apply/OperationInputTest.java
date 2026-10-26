@@ -13,8 +13,8 @@ import org.junit.Test;
 
 import com.google.gson.JsonParser;
 
-import name.abuchen.portfolio.cli.CliException;
-import name.abuchen.portfolio.cli.Schema;
+import name.abuchen.portfolio.cli.command.CliException;
+import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;

@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.command;
 
 import java.util.List;
 
@@ -25,11 +25,11 @@ public final class MinorUnits
                     + " This command does not convert: holdings has the market value in the reporting currency in converted.";
 
     /** Every wording above; help shows each in full once and then points back to it. */
-    static final List<String> NOTES = List.of(CONVERTED_NEXT_TO_IT, CONVERTED_WITH_CURRENCY_OPTION,
+    public static final List<String> NOTES = List.of(CONVERTED_NEXT_TO_IT, CONVERTED_WITH_CURRENCY_OPTION,
                     CONVERTED_BY_HOLDINGS);
 
     /** What help shows in place of a note it has already shown. */
-    static final String AS_ABOVE = " Minor units: as above.";
+    public static final String AS_ABOVE = " Minor units: as above.";
 
     private MinorUnits()
     {

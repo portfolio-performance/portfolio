@@ -5,12 +5,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import name.abuchen.portfolio.cli.CliException;
-import name.abuchen.portfolio.cli.CommandContext;
-import name.abuchen.portfolio.cli.Decimals;
-import name.abuchen.portfolio.cli.MasterData;
-import name.abuchen.portfolio.cli.OptionSpec;
-import name.abuchen.portfolio.cli.Schema;
+import name.abuchen.portfolio.cli.command.CliException;
+import name.abuchen.portfolio.cli.command.CommandContext;
+import name.abuchen.portfolio.cli.command.Decimals;
+import name.abuchen.portfolio.cli.command.MasterData;
+import name.abuchen.portfolio.cli.command.OptionSpec;
+import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.cli.currency.StrictConverter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.MoneyCollectors;

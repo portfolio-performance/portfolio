@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import name.abuchen.portfolio.cli.CliException;
-import name.abuchen.portfolio.cli.CommandContext;
-import name.abuchen.portfolio.cli.MasterData;
-import name.abuchen.portfolio.cli.OptionSpec;
-import name.abuchen.portfolio.cli.ReferenceOption;
-import name.abuchen.portfolio.cli.Schema;
+import name.abuchen.portfolio.cli.command.CliException;
+import name.abuchen.portfolio.cli.command.CommandContext;
+import name.abuchen.portfolio.cli.command.MasterData;
+import name.abuchen.portfolio.cli.command.OptionSpec;
+import name.abuchen.portfolio.cli.command.ReferenceOption;
+import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;

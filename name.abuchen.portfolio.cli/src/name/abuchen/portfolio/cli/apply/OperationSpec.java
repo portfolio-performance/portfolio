@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.cli.apply;
 
-import name.abuchen.portfolio.cli.Schema;
+import name.abuchen.portfolio.cli.command.Schema;
 
 /**
  * Declares a write operation once: its name, the schema of the input an
