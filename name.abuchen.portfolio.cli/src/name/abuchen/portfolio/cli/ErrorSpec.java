@@ -6,7 +6,9 @@ import java.util.List;
  * Declares an error code the tool can fail with; <code>--help</code>
  * publishes it. Every code passed to {@link CliException} must be listed in
  * {@link #ALL}. The scope says which commands can return it, so that a
- * command's help lists only its own codes.
+ * command's help lists only its own codes. Where a code follows from an
+ * option, the scope derives from the declared options, so a new option can't
+ * leave its codes out.
  */
 record ErrorSpec(String code, String description, Scope scope, List<String> commands)
 {
@@ -19,6 +21,10 @@ record ErrorSpec(String code, String description, Scope scope, List<String> comm
         EVERY_COMMAND,
         /** Any command that reads a client file. */
         CLIENT_FILE,
+        /** Any command that declares a reference option. */
+        REFERENCE_OPTION,
+        /** Any command that declares a required option, and the named commands. */
+        REQUIRED_OPTION,
         /** Only the named commands. */
         COMMANDS
     }
@@ -38,6 +44,21 @@ record ErrorSpec(String code, String description, Scope scope, List<String> comm
         return new ErrorSpec(code, description, Scope.CLIENT_FILE, List.of());
     }
 
+    static ErrorSpec referenceOption(String code, String description)
+    {
+        return new ErrorSpec(code, description, Scope.REFERENCE_OPTION, List.of());
+    }
+
+    /**
+     * @param alsoCommands
+     *            commands that raise the code for an option that is required
+     *            only together with another one, which no declaration states
+     */
+    static ErrorSpec requiredOption(String code, String description, String... alsoCommands)
+    {
+        return new ErrorSpec(code, description, Scope.REQUIRED_OPTION, List.of(alsoCommands));
+    }
+
     static ErrorSpec of(String code, String description, String... commands)
     {
         return new ErrorSpec(code, description, Scope.COMMANDS, List.of(commands));
@@ -50,6 +71,10 @@ record ErrorSpec(String code, String description, Scope scope, List<String> comm
             case GLOBAL -> false;
             case EVERY_COMMAND -> true;
             case CLIENT_FILE -> command.usesClientFile();
+            case REFERENCE_OPTION -> command.options().stream()
+                            .anyMatch(option -> option.type() instanceof OptionSpec.Reference);
+            case REQUIRED_OPTION -> command.options().stream().anyMatch(OptionSpec::required)
+                            || commands.contains(command.name());
             case COMMANDS -> commands.contains(command.name());
         };
     }
@@ -60,8 +85,9 @@ record ErrorSpec(String code, String description, Scope scope, List<String> comm
                     everyCommand("unexpected-argument", "An argument is not an option; options look like --name value."),
                     everyCommand("unknown-option", "The command has no such option."),
                     everyCommand("option-value-required", "An option that takes a value was given without one."),
-                    of("option-required", "A required option is missing, or an option needs another option.", "prices",
-                                    "performance", "allocation", "apply", "restore"),
+                    // performance: --with-reference-cash-account needs --investment-account
+                    requiredOption("option-required", "A required option is missing, or an option needs another option.",
+                                    "performance"),
                     everyCommand("invalid-option-value",
                                     "An option value is not accepted, including an unknown operation after apply --help; the detail states the expected value."),
                     of("conflicting-options", "Options were combined that can't be used together.", "performance"),
@@ -82,10 +108,9 @@ record ErrorSpec(String code, String description, Scope scope, List<String> comm
                     clientFile("incorrect-password", "The client file could not be decrypted with the given password."),
 
                     // references
-                    of("reference-not-found", "No entity of the expected kind matches the reference.", "prices",
-                                    "transactions", "holdings", "performance", "allocation"),
-                    of("reference-ambiguous", "The reference matches several entities; candidates lists their UUIDs.",
-                                    "prices", "transactions", "holdings", "performance", "allocation"),
+                    referenceOption("reference-not-found", "No entity of the expected kind matches the reference."),
+                    referenceOption("reference-ambiguous",
+                                    "The reference matches several entities; candidates lists their UUIDs."),
                     of("no-reference-cash-account", "The investment account has no reference cash account to include.",
                                     "performance"),
 

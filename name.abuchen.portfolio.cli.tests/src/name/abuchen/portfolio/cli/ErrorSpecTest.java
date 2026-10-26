@@ -1,0 +1,58 @@
+package name.abuchen.portfolio.cli;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+
+import java.util.List;
+
+import org.junit.Test;
+
+/**
+ * Which error codes a command's help lists, in process: the codes that follow
+ * from its declared options apply to any command that declares such an
+ * option, including one no hand-written list names.
+ */
+public class ErrorSpecTest
+{
+    private static final OptionSpec TEXT = new OptionSpec("name", "text", "A text.");
+
+    @Test
+    public void aCommandWithAReferenceOptionCanFailToResolveIt()
+    {
+        var withReference = probe(ReferenceOption.instrument("instrument", "An instrument.").spec());
+
+        assertThat(codes(withReference), hasItems("reference-not-found", "reference-ambiguous"));
+        assertThat(codes(probe(TEXT)), not(hasItem("reference-not-found")));
+        assertThat(codes(probe(TEXT)), not(hasItem("reference-ambiguous")));
+    }
+
+    @Test
+    public void aCommandWithARequiredOptionCanFailWithoutIt()
+    {
+        assertThat(codes(probe(TEXT.asRequired())), hasItem("option-required"));
+        assertThat(codes(probe(TEXT)), not(hasItem("option-required")));
+    }
+
+    @Test
+    public void performanceCanFailWithOptionRequiredThoughNoneOfItsOptionsIsRequired()
+    {
+        assertThat(PerformanceCommand.SPEC.options().stream().anyMatch(OptionSpec::required),
+                        is(false));
+        assertThat(codes(PerformanceCommand.SPEC), hasItem("option-required"));
+    }
+
+    /** A command no hand-written list can name. */
+    private static CommandSpec probe(OptionSpec option)
+    {
+        return new CommandSpec("probe", "A probe.", true, List.of(option), Schema.object("Data."),
+                        Schema.object("Meta."), context -> null);
+    }
+
+    private static List<String> codes(CommandSpec command)
+    {
+        return ErrorSpec.ALL.stream().filter(e -> e.appliesTo(command)).map(ErrorSpec::code).toList();
+    }
+}
