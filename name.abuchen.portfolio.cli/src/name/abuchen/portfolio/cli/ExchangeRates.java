@@ -16,18 +16,17 @@ import java.util.Optional;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
-import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 import name.abuchen.portfolio.money.FixedExchangeRateTimeSeries;
-import name.abuchen.portfolio.money.Values;
 
 /**
- * The CLI's exchange-rate source for one command run (ADR 0005). Beside the
- * rates a transaction carries itself, which the command reads, it offers the
- * rates core knows from exchange-rate instruments in the client file and the
- * desktop app's ECB cache, read-only. Core's built-in ECB snapshot and its
- * silent fallback rate of 1.0 are never used.
+ * The CLI's exchange-rate source for one command run (ADR 0005), behind
+ * {@link ReportingCurrency}. Beside the rates a transaction carries itself,
+ * which the command reads, it offers the rates core knows from exchange-rate
+ * instruments in the client file and the desktop app's ECB cache, read-only.
+ * Core's built-in ECB snapshot and its silent fallback rate of 1.0 are never
+ * used.
  * <p>
  * Core labels a chained rate with the requested date and answers a date before
  * the first rate with that later rate. This helper therefore looks up every step
@@ -66,9 +65,6 @@ final class ExchangeRates
 
     static final WarningSpec CACHE_UNAVAILABLE = new WarningSpec("exchange-rate-cache-unavailable",
                     "The desktop app's ECB rate cache is missing, unreadable or invalid, so it is not used. Carries the path if known and a reason: not-configured, not-found, unreadable or unparsable.");
-
-    /** The warnings of every command that converts. */
-    static final List<WarningSpec> WARNINGS = List.of(MISSING, STALE, CACHE_UNAVAILABLE);
 
     private static final String CORE_ECB_PROVIDER = "name.abuchen.portfolio.money.impl.ECBExchangeRateProvider";
 
@@ -154,55 +150,6 @@ final class ExchangeRates
     {
         this.context = context;
         this.client = client;
-    }
-
-    /** The meta member describing the cache, to add to a converting command's meta schema. */
-    static Schema metaSchema()
-    {
-        return Schema.object("The ECB cache of the desktop app. Present only if the cache was read.")
-                        .property("path", Schema.string("The cache file."))
-                        .optionalProperty("latestRateDate",
-                                        Schema.string("ISO date of the newest rate in the cache; open the desktop app to refresh it."));
-    }
-
-    /** The schema of the <code>converted</code> member of a converting command's figures. */
-    static Schema convertedSchema(String description)
-    {
-        return Schema.object(description)
-                        .property("currencyCode", Schema.string("The ISO currency code asked for."))
-                        .property("amount", Schema.number("The amount converted, rounded to minor units like core does."))
-                        .property("rate", Schema.number("Unrounded factor from the native to the converted currency."))
-                        .property("rateDate", Schema.string("ISO date of the rate; of the oldest if chained."))
-                        .property("rateSource", Schema.enumOf(
-                                        "Where the rate comes from: transaction is the record's own forex unit or transfer rate, instrument an exchange-rate instrument of the file, ecb the desktop app's ECB cache, fixed one of core's fixed pairs such as GBX to GBP.",
-                                        Source.ids()));
-    }
-
-    /** The <code>converted</code> member for an amount converted with a rate. */
-    static Map<String, Object> converted(String targetCurrency, long convertedAmount, Rate rate)
-    {
-        var json = new LinkedHashMap<String, Object>();
-        json.put("currencyCode", targetCurrency);
-        json.put("amount", Decimals.of(convertedAmount, Values.Amount));
-        json.put("rate", Decimals.of(rate.value()));
-        json.put("rateDate", rate.date().toString());
-        json.put("rateSource", rate.source().id());
-        return json;
-    }
-
-    /**
-     * The value of a <code>--currency</code> option, if given.
-     *
-     * @throws CliException
-     *             <code>invalid-option-value</code> if core doesn't know the currency
-     */
-    static Optional<String> parseCurrency(OptionSpec option, Optional<String> raw) throws CliException
-    {
-        if (raw.isPresent() && CurrencyUnit.getInstance(raw.get()) == null)
-            throw CliException.usage("invalid-option-value", "Invalid option value",
-                            "Option '--" + option.name() + "' must be an ISO currency code known to core.")
-                            .with("option", option.name()).with("value", raw.get());
-        return raw;
     }
 
     /**
