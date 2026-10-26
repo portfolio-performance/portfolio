@@ -49,12 +49,12 @@ package name.abuchen.portfolio.ui.jobs.priceupdate;
      * Returns true if the views may be recalculated at the given time. Never
      * due while a recalculation is in flight.
      */
-    /* package */ boolean isDue(long now)
+    /* package */ synchronized boolean isDue(long now)
     {
         return !inFlight && now >= nextDue;
     }
 
-    /* package */ void recalculationStarted(long now)
+    /* package */ synchronized void recalculationStarted(long now)
     {
         this.inFlight = true;
         this.startedAt = now;
@@ -63,8 +63,13 @@ package name.abuchen.portfolio.ui.jobs.priceupdate;
     /**
      * Called once the recalculation has finished. The longer it took, the
      * longer the next recalculation is delayed.
+     * <p/>
+     * This method is called on the UI thread, while {@link #isDue(long)} and
+     * {@link #recalculationStarted(long)} are called on the scheduler thread
+     * of the price update job. The methods are synchronized so that the state
+     * changes as one unit and the scheduler always sees the updated deadline.
      */
-    /* package */ void recalculationFinished(long now)
+    /* package */ synchronized void recalculationFinished(long now)
     {
         this.inFlight = false;
 
