@@ -10,6 +10,8 @@ import java.time.LocalDate;
 import java.util.Map;
 import java.util.Optional;
 
+import name.abuchen.portfolio.model.Client;
+
 /**
  * Everything a command gets from the outside world: parsed options, the
  * environment, stdin, stderr, the clock and the name of the operating system.
@@ -81,6 +83,21 @@ final class CommandContext
     Optional<String> text(OptionSpec option)
     {
         return raw(option, OptionSpec.Text.class);
+    }
+
+    /**
+     * The entity a reference option names, or empty if it is absent.
+     *
+     * @throws CliException
+     *             a usage error if the value is blank, or a failure if no
+     *             entity or several match it
+     */
+    <T> Optional<T> reference(ReferenceOption<T> option, Client client) throws CliException
+    {
+        var value = raw(option.spec(), OptionSpec.Reference.class);
+        if (value.isEmpty())
+            return Optional.empty();
+        return Optional.of(References.resolve(option.kind(), client, option.name(), value.get()));
     }
 
     /** The raw value of an option declared as <code>type</code>. */

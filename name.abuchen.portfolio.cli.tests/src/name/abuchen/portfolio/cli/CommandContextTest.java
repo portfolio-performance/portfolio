@@ -2,6 +2,7 @@ package name.abuchen.portfolio.cli;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThrows;
 
 import java.io.ByteArrayInputStream;
@@ -13,6 +14,10 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.junit.Test;
+
+import name.abuchen.portfolio.junit.SecurityBuilder;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
 
 /**
  * The typed option accessors of the command context, in process: what each
@@ -29,6 +34,9 @@ public class CommandContextTest
                     "asc");
 
     private static final OptionSpec NAME = new OptionSpec("name", "text", "A text.");
+
+    private static final ReferenceOption<Security> INSTRUMENT = ReferenceOption.instrument("instrument",
+                    "An instrument.");
 
     @Test
     public void dateIsEmptyWhenAbsentAndParsedWhenGiven() throws CliException
@@ -72,6 +80,34 @@ public class CommandContextTest
     }
 
     @Test
+    public void referenceIsEmptyWhenAbsentAndResolvedWhenGiven() throws CliException
+    {
+        var client = new Client();
+        var acme = instrument(client, "ACME Corp");
+        instrument(client, "Other");
+
+        assertThat(context(Map.of()).reference(INSTRUMENT, client), is(Optional.empty()));
+        assertThat(context(Map.of("instrument", "acme corp")).reference(INSTRUMENT, client).get(),
+                        is(sameInstance(acme)));
+    }
+
+    @Test
+    public void referenceThatMatchesNoneOrSeveralFails()
+    {
+        var client = new Client();
+        instrument(client, "Acme");
+        instrument(client, "ACME");
+
+        var notFound = assertThrows(CliException.class,
+                        () -> context(Map.of("instrument", "Other")).reference(INSTRUMENT, client));
+        assertThat(notFound.getCode(), is("reference-not-found"));
+
+        var ambiguous = assertThrows(CliException.class,
+                        () -> context(Map.of("instrument", "acme")).reference(INSTRUMENT, client));
+        assertThat(ambiguous.getCode(), is("reference-ambiguous"));
+    }
+
+    @Test
     public void givenSaysWhetherAnOptionIsPresentWithoutReadingItsValue()
     {
         assertThat(context(Map.of()).given(DATE), is(false));
@@ -87,6 +123,13 @@ public class CommandContextTest
         assertThrows(IllegalArgumentException.class, () -> context.integer(NAME));
         assertThrows(IllegalArgumentException.class, () -> context.choice(NAME));
         assertThrows(IllegalArgumentException.class, () -> context.text(DATE));
+    }
+
+    private static Security instrument(Client client, String name)
+    {
+        var security = new SecurityBuilder().addTo(client);
+        security.setName(name);
+        return security;
     }
 
     private static CommandContext context(Map<String, String> options)

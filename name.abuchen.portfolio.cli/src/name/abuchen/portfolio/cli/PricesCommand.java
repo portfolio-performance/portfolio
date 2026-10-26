@@ -12,7 +12,7 @@ import name.abuchen.portfolio.money.Values;
 
 final class PricesCommand
 {
-    private static final OptionSpec INSTRUMENT = new OptionSpec("instrument", "ref",
+    private static final ReferenceOption<Security> INSTRUMENT = ReferenceOption.instrument("instrument",
                     "Instrument to read.")
                                     .asRequired();
 
@@ -46,7 +46,7 @@ final class PricesCommand
 
     static final CommandSpec SPEC = new CommandSpec("prices",
                     "Price history of one instrument by date, ascending unless --order desc, within an optional date range, with its latest price.",
-                    true, List.of(INSTRUMENT, FROM, TO, Paging.LIMIT, Paging.OFFSET, SORT.sortOption(), Sorting.ORDER), DATA, META,
+                    true, List.of(INSTRUMENT.spec(), FROM, TO, Paging.LIMIT, Paging.OFFSET, SORT.sortOption(), Sorting.ORDER), DATA, META,
                     List.of(Prices.STALE_PRICE), PricesCommand::execute);
 
     private PricesCommand()
@@ -61,7 +61,7 @@ final class PricesCommand
         var asOf = LocalDate.now(context.clock());
 
         var client = context.loadClient().client();
-        var security = References.instrument(client, INSTRUMENT.name(), context.text(INSTRUMENT).orElseThrow());
+        var security = context.reference(INSTRUMENT, client).orElseThrow();
 
         var history = security.getPricesIncludingLatest().stream().filter(price -> range.contains(price.getDate()))
                         .toList();

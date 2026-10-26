@@ -246,6 +246,9 @@ final class HelpText
             case OptionSpec.Text text ->
             {
             }
+            case OptionSpec.Reference reference ->
+            {
+            }
         }
         return facts.isEmpty() ? "" : " (" + String.join(", ", facts) + ")";
     }

@@ -23,20 +23,20 @@ import name.abuchen.portfolio.util.Interval;
  */
 final class PerformanceScope
 {
-    private static final OptionSpec INVESTMENT_ACCOUNT = new OptionSpec("investment-account", "ref",
-                    "Report this investment account only. One scope option at most.");
+    private static final ReferenceOption<Portfolio> INVESTMENT_ACCOUNT = ReferenceOption.investmentAccount(
+                    "investment-account", "Report this investment account only. One scope option at most.");
 
-    private static final OptionSpec CASH_ACCOUNT = new OptionSpec("cash-account", "ref",
+    private static final ReferenceOption<Account> CASH_ACCOUNT = ReferenceOption.cashAccount("cash-account",
                     "Report this cash account only. One scope option at most.");
 
-    private static final OptionSpec INSTRUMENT = new OptionSpec("instrument", "ref",
+    private static final ReferenceOption<Security> INSTRUMENT = ReferenceOption.instrument("instrument",
                     "Report this instrument only. One scope option at most.");
 
     private static final OptionSpec WITH_REFERENCE_CASH_ACCOUNT = OptionSpec.flag("with-reference-cash-account",
                     "Report the investment account together with its reference cash account. Only with --investment-account; fails with no-reference-cash-account if the account has none.");
 
-    static final List<OptionSpec> OPTIONS = List.of(INVESTMENT_ACCOUNT, CASH_ACCOUNT, INSTRUMENT,
-                    WITH_REFERENCE_CASH_ACCOUNT);
+    static final List<OptionSpec> OPTIONS = List.of(INVESTMENT_ACCOUNT.spec(), CASH_ACCOUNT.spec(),
+                    INSTRUMENT.spec(), WITH_REFERENCE_CASH_ACCOUNT);
 
     /** The kinds of scope, as <code>meta.scope.kind</code> names them. */
     private enum Kind
@@ -203,7 +203,7 @@ final class PerformanceScope
     static PerformanceScope resolve(CommandContext context, Client client) throws CliException
     {
         var given = new ArrayList<String>();
-        for (var option : List.of(INVESTMENT_ACCOUNT, CASH_ACCOUNT, INSTRUMENT))
+        for (var option : List.of(INVESTMENT_ACCOUNT.spec(), CASH_ACCOUNT.spec(), INSTRUMENT.spec()))
         {
             if (context.given(option))
                 given.add("--" + option.name());
@@ -216,16 +216,17 @@ final class PerformanceScope
                             .with("options", given);
 
         var withReferenceCashAccount = context.flag(WITH_REFERENCE_CASH_ACCOUNT);
-        var accountValue = context.text(INVESTMENT_ACCOUNT);
-        if (withReferenceCashAccount && accountValue.isEmpty())
+        var investmentAccount = context.reference(INVESTMENT_ACCOUNT, client);
+        if (withReferenceCashAccount && investmentAccount.isEmpty())
             throw CliException.usage("option-required", "Option required",
                             "Option '--" + WITH_REFERENCE_CASH_ACCOUNT.name() + "' needs the option '--"
-                                            + INVESTMENT_ACCOUNT.name() + " <" + INVESTMENT_ACCOUNT.valueName() + ">'.")
+                                            + INVESTMENT_ACCOUNT.name() + " <" + INVESTMENT_ACCOUNT.spec().valueName()
+                                            + ">'.")
                             .with("option", INVESTMENT_ACCOUNT.name());
 
-        if (accountValue.isPresent())
+        if (investmentAccount.isPresent())
         {
-            var account = References.investmentAccount(client, INVESTMENT_ACCOUNT.name(), accountValue.get());
+            var account = investmentAccount.get();
             if (withReferenceCashAccount && account.getReferenceAccount() == null)
                 throw CliException.failure("no-reference-cash-account", "No reference cash account",
                                 "The investment account '" + MasterData.orEmpty(account.getName())
@@ -234,15 +235,13 @@ final class PerformanceScope
             return new PerformanceScope(new OneInvestmentAccount(account, withReferenceCashAccount));
         }
 
-        var cashValue = context.text(CASH_ACCOUNT);
-        if (cashValue.isPresent())
-            return new PerformanceScope(
-                            new OneCashAccount(References.cashAccount(client, CASH_ACCOUNT.name(), cashValue.get())));
+        var cashAccount = context.reference(CASH_ACCOUNT, client);
+        if (cashAccount.isPresent())
+            return new PerformanceScope(new OneCashAccount(cashAccount.get()));
 
-        var instrumentValue = context.text(INSTRUMENT);
-        if (instrumentValue.isPresent())
-            return new PerformanceScope(new OneInstrument(
-                            References.instrument(client, INSTRUMENT.name(), instrumentValue.get())));
+        var instrument = context.reference(INSTRUMENT, client);
+        if (instrument.isPresent())
+            return new PerformanceScope(new OneInstrument(instrument.get()));
 
         return new PerformanceScope(new WholeClient());
     }

@@ -16,7 +16,12 @@ import java.util.regex.Pattern;
 record OptionSpec(String name, String valueName, String description, Type type, boolean required)
 {
     /** How the value of an option is read. */
-    sealed interface Type permits Text, IsoDate, IntegerDomain, Flag, Choice
+    sealed interface Type permits Text, IsoDate, IntegerDomain, Flag, Choice, Reference
+    {
+    }
+
+    /** A reference to one entity of a kind; declared through {@link ReferenceOption}. */
+    record Reference(String label) implements Type
     {
     }
 

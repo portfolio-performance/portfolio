@@ -31,13 +31,13 @@ final class TransactionsCommand
 {
     private static final DateTimeFormatter TIME = DateTimeFormatter.ofPattern("HH:mm");
 
-    private static final OptionSpec INVESTMENT_ACCOUNT = new OptionSpec("investment-account", "ref",
-                    "Only records with a side in this investment account.");
+    private static final ReferenceOption<Portfolio> INVESTMENT_ACCOUNT = ReferenceOption.investmentAccount(
+                    "investment-account", "Only records with a side in this investment account.");
 
-    private static final OptionSpec CASH_ACCOUNT = new OptionSpec("cash-account", "ref",
+    private static final ReferenceOption<Account> CASH_ACCOUNT = ReferenceOption.cashAccount("cash-account",
                     "Only records with a side in this cash account.");
 
-    private static final OptionSpec INSTRUMENT = new OptionSpec("instrument", "ref",
+    private static final ReferenceOption<Security> INSTRUMENT = ReferenceOption.instrument("instrument",
                     "Only records of this instrument, including its dividends, fees and taxes.");
 
     private static final OptionSpec TYPE = new OptionSpec("type", "types",
@@ -78,7 +78,7 @@ final class TransactionsCommand
     static final CommandSpec SPEC = new CommandSpec("transactions",
                     "Business events as transaction records, each joining the sides of a buy, sell or transfer, filtered by date range, account, instrument and type.",
                     true,
-                    List.of(INVESTMENT_ACCOUNT, CASH_ACCOUNT, INSTRUMENT, TYPE, FROM, TO, CURRENCY, Paging.LIMIT,
+                    List.of(INVESTMENT_ACCOUNT.spec(), CASH_ACCOUNT.spec(), INSTRUMENT.spec(), TYPE, FROM, TO, CURRENCY, Paging.LIMIT,
                                     Paging.OFFSET, SORT.sortOption(), Sorting.ORDER),
                     DATA, META, ReportingCurrency.WARNINGS, TransactionsCommand::execute);
 
@@ -112,9 +112,9 @@ final class TransactionsCommand
         var client = context.loadClient().client();
         var reporting = requested.ifGiven(context, client);
 
-        var investmentAccount = resolve(context, INVESTMENT_ACCOUNT, client, References::investmentAccount);
-        var cashAccount = resolve(context, CASH_ACCOUNT, client, References::cashAccount);
-        var instrument = resolve(context, INSTRUMENT, client, References::instrument);
+        var investmentAccount = context.reference(INVESTMENT_ACCOUNT, client);
+        var cashAccount = context.reference(CASH_ACCOUNT, client);
+        var instrument = context.reference(INSTRUMENT, client);
 
         var filter = new Filter(range, investmentAccount, cashAccount, instrument, types);
         var records = sorting.sort(client, TransactionRecord.allOf(client).stream().filter(filter::test).toList());
@@ -137,21 +137,6 @@ final class TransactionsCommand
         var response = Response.of(data, meta);
         reporting.ifPresent(currency -> currency.warnings().forEach(response::warn));
         return response;
-    }
-
-    @FunctionalInterface
-    private interface Resolver<T>
-    {
-        T resolve(Client client, String option, String value) throws CliException;
-    }
-
-    /** What the option refers to, or empty if the option is absent. */
-    private static <T> Optional<T> resolve(CommandContext context, OptionSpec option, Client client,
-                    Resolver<T> resolver) throws CliException
-    {
-        var value = context.text(option);
-        return value.isPresent() ? Optional.of(resolver.resolve(client, option.name(), value.get()))
-                        : Optional.empty();
     }
 
     /** The upper-cased types of the comma-separated list; empty if the option is absent. */

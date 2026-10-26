@@ -35,7 +35,7 @@ import name.abuchen.portfolio.snapshot.ClientSnapshot;
  */
 final class AllocationCommand
 {
-    private static final OptionSpec TAXONOMY = new OptionSpec("taxonomy", "ref",
+    private static final ReferenceOption<Taxonomy> TAXONOMY = ReferenceOption.taxonomy("taxonomy",
                     "Taxonomy to allocate by. List the taxonomies with the taxonomies command.")
                                     .asRequired();
 
@@ -82,7 +82,7 @@ final class AllocationCommand
 
     static final CommandSpec SPEC = new CommandSpec("allocation",
                     "How the value of the client splits across the classifications of one taxonomy at a date: one flat row per classification at every depth plus an unassigned row, with value and share in the base currency or --currency.",
-                    true, List.of(TAXONOMY, DATE, CURRENCY), DATA, META, WARNINGS, AllocationCommand::execute);
+                    true, List.of(TAXONOMY.spec(), DATE, CURRENCY), DATA, META, WARNINGS, AllocationCommand::execute);
 
     /** Something owned that takes part in the allocation, and what it is worth in its own currency. */
     private record Holding(InvestmentVehicle vehicle, Money value)
@@ -98,7 +98,7 @@ final class AllocationCommand
         var date = context.date(DATE).orElse(LocalDate.now(context.clock()));
         var requested = ReportingCurrency.requested(context, CURRENCY);
         var client = context.loadClient().client();
-        var taxonomy = References.taxonomy(client, TAXONOMY.name(), context.text(TAXONOMY).orElseThrow());
+        var taxonomy = context.reference(TAXONOMY, client).orElseThrow();
 
         var reporting = requested.orBase(context, client);
         var snapshot = ClientSnapshot.create(client, reporting.coreConverter(), date);

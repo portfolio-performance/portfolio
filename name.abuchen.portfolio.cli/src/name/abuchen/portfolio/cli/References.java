@@ -36,7 +36,7 @@ final class References
      * @param details
      *            adds the kind-specific fields of a candidate
      */
-    private record Kind<T>(MasterDataList.Source<T> source, String label, List<Field<T>> fields,
+    record Kind<T>(MasterDataList.Source<T> source, String label, List<Field<T>> fields,
                     Predicate<T> retired, BiConsumer<T, Map<String, Object>> details)
     {
         Kind(MasterDataList.Source<T> source, String label, List<Field<T>> fields, Predicate<T> retired)
@@ -56,7 +56,7 @@ final class References
         }
     }
 
-    private static final Kind<Security> INSTRUMENT = new Kind<>(InstrumentsCommand.SOURCE, "instrument",
+    static final Kind<Security> INSTRUMENT = new Kind<>(InstrumentsCommand.SOURCE, "instrument",
                     List.of(new Field<>("isin", Security::getIsin),
                                     new Field<>("tickerSymbol", Security::getTickerSymbol),
                                     new Field<>("name", Security::getName)),
@@ -66,46 +66,31 @@ final class References
                         MasterData.putIfSet(json, "currencyCode", security.getCurrencyCode());
                     });
 
-    private static final Kind<Portfolio> INVESTMENT_ACCOUNT = new Kind<>(InvestmentAccountsCommand.SOURCE,
+    static final Kind<Portfolio> INVESTMENT_ACCOUNT = new Kind<>(InvestmentAccountsCommand.SOURCE,
                     "investment account", List.of(new Field<>("name", Portfolio::getName)), Portfolio::isRetired);
 
-    private static final Kind<Account> CASH_ACCOUNT = new Kind<>(CashAccountsCommand.SOURCE, "cash account",
+    static final Kind<Account> CASH_ACCOUNT = new Kind<>(CashAccountsCommand.SOURCE, "cash account",
                     List.of(new Field<>("name", Account::getName)), Account::isRetired,
                     (account, json) -> MasterData.putIfSet(json, "currencyCode", account.getCurrencyCode()));
 
     /** Taxonomies are never retired, so their candidates carry no such flag. */
-    private static final Kind<Taxonomy> TAXONOMY = new Kind<>(TaxonomiesCommand.SOURCE, "taxonomy",
+    static final Kind<Taxonomy> TAXONOMY = new Kind<>(TaxonomiesCommand.SOURCE, "taxonomy",
                     List.of(new Field<>("name", Taxonomy::getName)), null);
 
     private References()
     {
     }
 
-    /** By UUID, ISIN, ticker or name. */
-    static Security instrument(Client client, String option, String value) throws CliException
-    {
-        return resolve(INSTRUMENT, client, option, value);
-    }
-
-    /** By UUID or name. */
-    static Portfolio investmentAccount(Client client, String option, String value) throws CliException
-    {
-        return resolve(INVESTMENT_ACCOUNT, client, option, value);
-    }
-
-    /** By UUID or name. */
-    static Account cashAccount(Client client, String option, String value) throws CliException
-    {
-        return resolve(CASH_ACCOUNT, client, option, value);
-    }
-
-    /** By UUID or name. */
-    static Taxonomy taxonomy(Client client, String option, String value) throws CliException
-    {
-        return resolve(TAXONOMY, client, option, value);
-    }
-
-    private static <T> T resolve(Kind<T> kind, Client client, String option, String value) throws CliException
+    /**
+     * The one entity of the kind that <code>value</code>, given for
+     * <code>option</code>, names. Instruments match by UUID, ISIN, ticker or
+     * name; the other kinds by UUID or name.
+     *
+     * @throws CliException
+     *             a usage error if the value is blank, or a failure if no
+     *             entity or several match it
+     */
+    static <T> T resolve(Kind<T> kind, Client client, String option, String value) throws CliException
     {
         if (value.isBlank())
             throw CliException.usage("invalid-option-value", "Invalid option value",
