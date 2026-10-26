@@ -42,7 +42,7 @@ final class HoldingsCommand
     private static final OptionSpec INCLUDE_ZERO = OptionSpec.flag("include-zero",
                     "Also list instruments held before the date and fully sold by it, with zero shares. They are hidden by default.");
 
-    private static final OptionSpec CURRENCY = new OptionSpec("currency", "code",
+    private static final OptionSpec CURRENCY = ReportingCurrency.option(
                     "ISO currency of the totals and converted amounts. Defaults to the base currency of the file. Amounts stay in their native currency as well.");
 
     private static Schema total(String description)
@@ -64,7 +64,7 @@ final class HoldingsCommand
                                                         + MinorUnits.CONVERTED_NEXT_TO_IT)))
                         .property("amount", Schema.number("Market value in the currency of the instrument." + MinorUnits.CONVERTED_NEXT_TO_IT))
                         .property("currencyCode", Schema.string("ISO currency code of the instrument." + MinorUnits.CONVERTED_NEXT_TO_IT))
-                        .optionalProperty("converted", ExchangeRates.convertedSchema(
+                        .optionalProperty("converted", ReportingCurrency.convertedSchema(
                                         "The market value in the reporting currency, at the rate of the date. Absent if no rate was found."));
     }
 
@@ -75,7 +75,7 @@ final class HoldingsCommand
                         .property("name", Schema.string("Account name; empty if the file has none."))
                         .property("amount", Schema.number("Balance at the date in the currency of the account."))
                         .property("currencyCode", Schema.string("ISO currency code of the account."))
-                        .optionalProperty("converted", ExchangeRates.convertedSchema(
+                        .optionalProperty("converted", ReportingCurrency.convertedSchema(
                                         "The balance in the reporting currency, at the rate of the date. Absent if no rate was found."));
     }
 
@@ -103,10 +103,10 @@ final class HoldingsCommand
                     .property("date", Schema.string("The day the holdings are valued at: as given, otherwise today."))
                     .property("currency", Schema.string("The reporting currency of the totals: as given, otherwise the base currency."))
                     .optionalProperty("investmentAccount", Schema.string("UUID the investment-account filter resolved to."))
-                    .optionalProperty("exchangeRates", ExchangeRates.metaSchema());
+                    .optionalProperty("exchangeRates", ReportingCurrency.ratesMetaSchema());
 
     private static final List<WarningSpec> WARNINGS = Stream
-                    .concat(Stream.of(Prices.STALE_PRICE), ExchangeRates.WARNINGS.stream()).toList();
+                    .concat(Stream.of(Prices.STALE_PRICE), ReportingCurrency.WARNINGS.stream()).toList();
 
     static final CommandSpec SPEC = new CommandSpec("holdings",
                     "What is held at a date and what it is worth: holdings aggregated across investment accounts, or per account, with cash balances in a separate section, in the base currency or --currency.",
@@ -137,57 +137,10 @@ final class HoldingsCommand
         }
     }
 
-    /** An amount and, if one was found, the rate into the reporting currency. */
-    private record Figure(Money value, Optional<ExchangeRates.Rate> rate)
-    {
-        /** Nothing to convert needs no rate, so a missing one does not spoil a total. */
-        boolean spoilsTotal()
-        {
-            return rate.isEmpty() && !value.isZero();
-        }
-
-        long converted()
-        {
-            return rate.map(r -> r.convert(value.getAmount())).orElse(0L);
-        }
-    }
-
-    /** What every figure of one run is valued with. */
-    private record Valuation(LocalDate date, String currency, ExchangeRates rates)
-    {
-        Figure figure(Money value)
-        {
-            // converting nothing needs no rate, so don't look one up (and don't warn about it)
-            if (value.isZero() && !currency.equals(value.getCurrencyCode()))
-                return new Figure(value, Optional.empty());
-
-            return new Figure(value, rates.lookup(date, value.getCurrencyCode(), currency));
-        }
-
-        /** The total of the figures, unless one of them lacks its rate. */
-        Optional<Map<String, Object>> total(List<Figure> figures)
-        {
-            if (figures.stream().anyMatch(Figure::spoilsTotal))
-                return Optional.empty();
-
-            var sum = figures.stream().mapToLong(Figure::converted).sum();
-            var json = new LinkedHashMap<String, Object>();
-            json.put("currencyCode", currency);
-            json.put("amount", Decimals.of(sum, Values.Amount));
-            return Optional.of(json);
-        }
-
-        void putConverted(Map<String, Object> json, Figure figure)
-        {
-            figure.rate().ifPresent(
-                            rate -> json.put("converted", ExchangeRates.converted(currency, figure.converted(), rate)));
-        }
-    }
-
     private static Response execute(CommandContext context) throws CliException
     {
         var date = DATE.parseDate(context.option(DATE.name())).orElse(LocalDate.now(context.clock()));
-        var requested = ExchangeRates.parseCurrency(CURRENCY, context.option(CURRENCY.name()));
+        var requested = ReportingCurrency.requested(context, CURRENCY);
         var client = context.loadClient().client();
 
         var filter = Optional.<Portfolio>empty();
@@ -195,10 +148,8 @@ final class HoldingsCommand
             filter = Optional.of(References.investmentAccount(client, INVESTMENT_ACCOUNT.name(),
                             context.option(INVESTMENT_ACCOUNT.name()).get()));
 
-        var currency = requested.orElse(client.getBaseCurrency());
-        var rates = new ExchangeRates(context, client);
-        var valuation = new Valuation(date, currency, rates);
-        var snapshot = ClientSnapshot.create(client, rates.converter(currency), date);
+        var reporting = requested.orBase(context, client);
+        var snapshot = ClientSnapshot.create(client, reporting.coreConverter(), date);
 
         var blocks = new ArrayList<Block>();
         if (context.flag(BY_ACCOUNT) || filter.isPresent())
@@ -224,22 +175,22 @@ final class HoldingsCommand
             var rows = rows(block, date, includeZero);
             rows.forEach(row -> row.price().flatMap(price -> Prices.staleWarning(row.security(), price, date))
                             .ifPresent(warning -> stalePrices.putIfAbsent(row.security(), warning)));
-            holdings.add(render(block, rows, valuation));
+            holdings.add(render(block, rows, date, reporting));
         }
 
         var data = new LinkedHashMap<String, Object>();
         data.put("holdings", holdings);
-        data.put("cash", renderCash(snapshot.getAccounts(), valuation));
+        data.put("cash", renderCash(snapshot.getAccounts(), date, reporting));
 
         var meta = ResponseMeta.of(context, client);
         meta.put("date", date.toString());
-        meta.put("currency", currency);
+        meta.put("currency", reporting.code());
         filter.ifPresent(account -> meta.put("investmentAccount", account.getUUID()));
-        rates.putCacheInto(meta);
+        reporting.putRatesInto(meta);
 
         var response = Response.of(data, meta);
         stalePrices.values().forEach(response::warn);
-        rates.warnings().forEach(response::warn);
+        reporting.warnings().forEach(response::warn);
         return response;
     }
 
@@ -260,7 +211,8 @@ final class HoldingsCommand
         return rows;
     }
 
-    private static Map<String, Object> render(Block block, List<Row> rows, Valuation valuation)
+    private static Map<String, Object> render(Block block, List<Row> rows, LocalDate date,
+                    ReportingCurrency reporting)
     {
         var json = new LinkedHashMap<String, Object>();
         block.account().ifPresent(account -> {
@@ -270,20 +222,20 @@ final class HoldingsCommand
             json.put("investmentAccount", reference);
         });
 
-        var figures = new ArrayList<Figure>();
+        var figures = new ArrayList<ReportingCurrency.Figure>();
         var items = new ArrayList<Map<String, Object>>();
         for (var row : rows)
         {
-            var figure = valuation.figure(row.value());
+            var figure = reporting.figure(date, row.value());
             figures.add(figure);
-            items.add(render(row, figure, valuation));
+            items.add(render(row, figure, reporting));
         }
         json.put("items", items);
-        valuation.total(figures).ifPresent(total -> json.put("total", total));
+        reporting.total(figures).ifPresent(total -> json.put("total", total));
         return json;
     }
 
-    private static Map<String, Object> render(Row row, Figure figure, Valuation valuation)
+    private static Map<String, Object> render(Row row, ReportingCurrency.Figure figure, ReportingCurrency reporting)
     {
         var security = row.security();
 
@@ -299,35 +251,37 @@ final class HoldingsCommand
         });
         json.put("amount", Decimals.amount(row.value()));
         json.put("currencyCode", row.value().getCurrencyCode());
-        valuation.putConverted(json, figure);
+        reporting.putConvertedInto(json, figure);
         return json;
     }
 
-    private static Map<String, Object> renderCash(List<AccountSnapshot> snapshots, Valuation valuation)
+    private static Map<String, Object> renderCash(List<AccountSnapshot> snapshots, LocalDate date,
+                    ReportingCurrency reporting)
     {
         var sorted = snapshots.stream().sorted(MasterData.byNameThenUuid((AccountSnapshot s) -> s.getAccount().getName(),
                         s -> s.getAccount().getUUID())).toList();
 
-        var figures = new ArrayList<Figure>();
+        var figures = new ArrayList<ReportingCurrency.Figure>();
         var items = new ArrayList<Map<String, Object>>();
         for (var snapshot : sorted)
         {
             var account = snapshot.getAccount();
-            var figure = valuation.figure(snapshot.getUnconvertedFunds());
+            var funds = snapshot.getUnconvertedFunds();
+            var figure = reporting.figure(date, funds);
             figures.add(figure);
 
             var json = new LinkedHashMap<String, Object>();
             json.put("cashAccount", account.getUUID());
             json.put("name", MasterData.orEmpty(account.getName()));
-            json.put("amount", Decimals.amount(figure.value()));
-            json.put("currencyCode", figure.value().getCurrencyCode());
-            valuation.putConverted(json, figure);
+            json.put("amount", Decimals.amount(funds));
+            json.put("currencyCode", funds.getCurrencyCode());
+            reporting.putConvertedInto(json, figure);
             items.add(json);
         }
 
         var cash = new LinkedHashMap<String, Object>();
         cash.put("items", items);
-        valuation.total(figures).ifPresent(total -> cash.put("total", total));
+        reporting.total(figures).ifPresent(total -> cash.put("total", total));
         return cash;
     }
 }

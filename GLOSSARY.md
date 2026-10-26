@@ -113,6 +113,10 @@ _Avoid_: current quote, last quote
 A **Latest price** old enough that figures based on it need a caveat.
 _Avoid_: outdated quote, old price
 
+**Reporting currency**:
+The one currency a command states totals and converted amounts in: the one the user names, otherwise the **Client**'s base currency where the command has a default.
+_Avoid_: target currency, display currency, converted currency
+
 **Transaction record**:
 One business event as shown to and edited by agents: a buy or sell with both its **Investment account** side and its **Cash account** side, or a transfer with its from and to accounts. It is created, changed and deleted as a whole, never one side at a time.
 _Avoid_: leg, cross entry, half-transaction
