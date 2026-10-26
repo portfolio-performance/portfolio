@@ -215,70 +215,74 @@ final class TransactionsCommand
         var currencyCode = MasterData.orEmpty(primary.getCurrencyCode());
 
         var json = new LinkedHashMap<String, Object>();
-        json.put("id", record.id());
-        json.put("type", record.type());
-        record.kind().ifPresent(kind -> json.put("kind", kind.id()));
-        json.put("date", dateTime.toLocalDate().toString());
+        json.put(TransactionShape.ID.name(), record.id());
+        json.put(TransactionShape.TYPE.name(), record.type());
+        record.kind().ifPresent(kind -> json.put(TransactionShape.KIND.name(), kind.id()));
+        json.put(TransactionShape.DATE.name(), dateTime.toLocalDate().toString());
         if (!dateTime.toLocalTime().equals(LocalTime.MIDNIGHT))
-            json.put("time", dateTime.format(TIME));
-        json.put("sides", record.sides());
-        json.put("amount", Decimals.of(primary.getAmount(), Values.Amount));
-        json.put("currencyCode", currencyCode);
+            json.put(TransactionShape.TIME.name(), dateTime.format(TIME));
+        json.put(TransactionShape.SIDES.name(), record.sides());
+        json.put(TransactionShape.AMOUNT.name(), Decimals.of(primary.getAmount(), Values.Amount));
+        json.put(TransactionShape.CURRENCY_CODE.name(), currencyCode);
 
         var crossCurrency = record.crossCurrencyIncoming();
         var transferRate = crossCurrency.flatMap(incoming -> primary.getUnit(Transaction.Unit.Type.GROSS_VALUE)
                         .filter(unit -> unit.getForex().getCurrencyCode().equals(incoming.getCurrencyCode())));
         crossCurrency.ifPresent(incoming -> {
-            json.put("targetAmount", Decimals.of(incoming.getAmount(), Values.Amount));
-            json.put("targetCurrencyCode", MasterData.orEmpty(incoming.getCurrencyCode()));
+            json.put(TransactionShape.TARGET_AMOUNT.name(), Decimals.of(incoming.getAmount(), Values.Amount));
+            json.put(TransactionShape.TARGET_CURRENCY_CODE.name(), MasterData.orEmpty(incoming.getCurrencyCode()));
         });
-        transferRate.ifPresent(unit -> json.put("exchangeRate", Decimals.of(unit.getExchangeRate())));
+        transferRate.ifPresent(
+                        unit -> json.put(TransactionShape.EXCHANGE_RATE.name(), Decimals.of(unit.getExchangeRate())));
 
         if (primary.getSecurity() != null)
         {
-            json.put("instrument", primary.getSecurity().getUUID());
-            json.put("instrumentName", MasterData.orEmpty(primary.getSecurity().getName()));
+            json.put(TransactionShape.INSTRUMENT.name(), primary.getSecurity().getUUID());
+            json.put(TransactionShape.INSTRUMENT_NAME.name(), MasterData.orEmpty(primary.getSecurity().getName()));
         }
         if (record.hasShares())
-            json.put("shares", Decimals.of(primary.getShares(), Values.Share));
-        putAccount(json, "investmentAccount", record.investmentAccount(), names);
-        putAccount(json, "cashAccount", record.cashAccount(), names);
-        putAccount(json, "from", record.from(), names);
-        putAccount(json, "to", record.to(), names);
+            json.put(TransactionShape.SHARES.name(), Decimals.of(primary.getShares(), Values.Share));
+        putAccount(json, TransactionShape.INVESTMENT_ACCOUNT, TransactionShape.INVESTMENT_ACCOUNT_NAME,
+                        record.investmentAccount(), names);
+        putAccount(json, TransactionShape.CASH_ACCOUNT, TransactionShape.CASH_ACCOUNT_NAME, record.cashAccount(),
+                        names);
+        putAccount(json, TransactionShape.FROM, TransactionShape.FROM_NAME, record.from(), names);
+        putAccount(json, TransactionShape.TO, TransactionShape.TO_NAME, record.to(), names);
         if (primary instanceof AccountTransaction account && account.getExDate() != null
                         && account.getType() == AccountTransaction.Type.DIVIDENDS)
-            json.put("exDate", account.getExDate().toLocalDate().toString());
-        MasterData.putIfSet(json, "note", primary.getNote());
-        MasterData.putIfSet(json, "source", primary.getSource());
+            json.put(TransactionShape.EX_DATE.name(), account.getExDate().toLocalDate().toString());
+        MasterData.putIfSet(json, TransactionShape.NOTE.name(), primary.getNote());
+        MasterData.putIfSet(json, TransactionShape.SOURCE.name(), primary.getSource());
         record.updatedAt().ifPresent(instant -> MasterData.putUpdatedAt(json, instant));
 
-        json.put("units", primary.getUnits().filter(unit -> transferRate.isEmpty() || unit != transferRate.get())
-                        .map(TransactionsCommand::render).toList());
+        json.put(TransactionShape.UNITS.name(),
+                        primary.getUnits().filter(unit -> transferRate.isEmpty() || unit != transferRate.get())
+                                        .map(TransactionsCommand::render).toList());
 
         return json;
     }
 
-    /** The UUID under the member and the name next to it, if there is an account. */
-    private static void putAccount(Map<String, Object> json, String member, Optional<String> uuid,
-                    AccountNames names)
+    /** The UUID under the member and the name under its name member, if there is an account. */
+    private static void putAccount(Map<String, Object> json, TransactionShape.Member member,
+                    TransactionShape.Member name, Optional<String> uuid, AccountNames names)
     {
         uuid.ifPresent(value -> {
-            json.put(member, value);
-            json.put(member + "Name", names.of(value));
+            json.put(member.name(), value);
+            json.put(name.name(), names.of(value));
         });
     }
 
     private static Map<String, Object> render(Transaction.Unit unit)
     {
         var json = new LinkedHashMap<String, Object>();
-        json.put("type", unit.getType().name());
-        json.put("amount", Decimals.amount(unit.getAmount()));
-        json.put("currencyCode", unit.getAmount().getCurrencyCode());
+        json.put(TransactionShape.UNIT_TYPE.name(), unit.getType().name());
+        json.put(TransactionShape.UNIT_AMOUNT.name(), Decimals.amount(unit.getAmount()));
+        json.put(TransactionShape.UNIT_CURRENCY_CODE.name(), unit.getAmount().getCurrencyCode());
         if (unit.getForex() != null)
         {
-            json.put("forexAmount", Decimals.amount(unit.getForex()));
-            json.put("forexCurrencyCode", unit.getForex().getCurrencyCode());
-            json.put("exchangeRate", Decimals.of(unit.getExchangeRate()));
+            json.put(TransactionShape.FOREX_AMOUNT.name(), Decimals.amount(unit.getForex()));
+            json.put(TransactionShape.FOREX_CURRENCY_CODE.name(), unit.getForex().getCurrencyCode());
+            json.put(TransactionShape.UNIT_EXCHANGE_RATE.name(), Decimals.of(unit.getExchangeRate()));
         }
         return json;
     }

@@ -22,8 +22,8 @@ import name.abuchen.portfolio.model.Security;
 
 /**
  * The input of <code>transaction.add</code> mirrors the <code>transactions</code>
- * output: a record read from one file, without the members that add doesn't
- * declare, adds the same record to another file with the same master data.
+ * output: a record read from one file, without the members that add derives,
+ * adds the same record to another file with the same master data.
  */
 public class TransactionRoundTripTest
 {
@@ -42,8 +42,8 @@ public class TransactionRoundTripTest
     private String eurAccount;
     private String eurSavings;
     private String usdAccount;
-    private String depot;
-    private String otherDepot;
+    private String broker;
+    private String otherBroker;
     private String eurInstrument;
     private String usdInstrument;
 
@@ -54,16 +54,16 @@ public class TransactionRoundTripTest
         var eur = cashAccount(client, "EUR Cash", "EUR");
         var usd = cashAccount(client, "USD Cash", "USD");
         var savings = cashAccount(client, "EUR Savings", "EUR");
-        var first = investmentAccount(client, "Depot", eur);
-        var second = investmentAccount(client, "Other depot", eur);
+        var first = investmentAccount(client, "Broker", eur);
+        var second = investmentAccount(client, "Other broker", eur);
         var eurSecurity = instrument(client, "EUR Stock", "EUR");
         var usdSecurity = instrument(client, "USD Stock", "USD");
 
         eurAccount = eur.getUUID();
         eurSavings = savings.getUUID();
         usdAccount = usd.getUUID();
-        depot = first.getUUID();
-        otherDepot = second.getUUID();
+        broker = first.getUUID();
+        otherBroker = second.getUUID();
         eurInstrument = eurSecurity.getUUID();
         usdInstrument = usdSecurity.getUUID();
 
@@ -104,22 +104,22 @@ public class TransactionRoundTripTest
         return List.of(
                         cash("DEPOSIT", "2026-01-02\",\"time\":\"09:30", "10000.00",
                                         ",\"note\":\"salary\",\"source\":\"bank.pdf\""),
-                        "{\"operation\":\"transaction.add\",\"type\":\"BUY\",\"investmentAccount\":\"" + depot
+                        "{\"operation\":\"transaction.add\",\"type\":\"BUY\",\"investmentAccount\":\"" + broker
                                         + "\",\"cashAccount\":\"" + eurAccount
                                         + "\",\"date\":\"2026-01-05\",\"instrument\":\"" + eurInstrument
                                         + "\",\"shares\":10,\"amount\":1005.00,\"currencyCode\":\"EUR\","
                                         + "\"units\":[{\"type\":\"FEE\",\"amount\":5.00,\"currencyCode\":\"EUR\"}]}",
                         "{\"operation\":\"transaction.add\",\"type\":\"DELIVERY_INBOUND\",\"investmentAccount\":\""
-                                        + depot + "\",\"date\":\"2026-01-06\",\"instrument\":\"" + usdInstrument
+                                        + broker + "\",\"date\":\"2026-01-06\",\"instrument\":\"" + usdInstrument
                                         + "\",\"shares\":5,\"amount\":500.00,\"currencyCode\":\"USD\"}",
-                        "{\"operation\":\"transaction.add\",\"type\":\"SELL\",\"investmentAccount\":\"" + depot
+                        "{\"operation\":\"transaction.add\",\"type\":\"SELL\",\"investmentAccount\":\"" + broker
                                         + "\",\"cashAccount\":\"" + eurAccount
                                         + "\",\"date\":\"2026-02-05\",\"instrument\":\"" + eurInstrument
                                         + "\",\"shares\":4,\"amount\":395.00,\"currencyCode\":\"EUR\","
                                         + "\"units\":[{\"type\":\"FEE\",\"amount\":3.00,\"currencyCode\":\"EUR\"},"
                                         + "{\"type\":\"TAX\",\"amount\":2.00,\"currencyCode\":\"EUR\"}]}",
                         "{\"operation\":\"transaction.add\",\"type\":\"DELIVERY_OUTBOUND\",\"investmentAccount\":\""
-                                        + depot + "\",\"date\":\"2026-02-06\",\"instrument\":\"" + usdInstrument
+                                        + broker + "\",\"date\":\"2026-02-06\",\"instrument\":\"" + usdInstrument
                                         + "\",\"shares\":1,\"amount\":100.00,\"currencyCode\":\"USD\"}",
                         cash("DIVIDENDS", "2026-03-01", "9.00", ",\"instrument\":\"" + usdInstrument
                                         + "\",\"shares\":4,\"exDate\":\"2026-02-25\",\"units\":["
@@ -142,7 +142,7 @@ public class TransactionRoundTripTest
                                         + "\",\"date\":\"2026-03-10\",\"amount\":100.00,\"currencyCode\":\"EUR\","
                                         + "\"targetAmount\":110.00}",
                         "{\"operation\":\"transaction.add\",\"type\":\"TRANSFER\",\"kind\":\"security\",\"from\":\""
-                                        + depot + "\",\"to\":\"" + otherDepot
+                                        + broker + "\",\"to\":\"" + otherBroker
                                         + "\",\"date\":\"2026-03-11\",\"instrument\":\"" + eurInstrument
                                         + "\",\"shares\":2,\"amount\":200.00,\"currencyCode\":\"EUR\"}");
     }
@@ -161,21 +161,12 @@ public class TransactionRoundTripTest
         return run.items();
     }
 
-    /** The record as add input: only the members that add declares, and no empty list of units. */
+    /** The record as add input: the members that add takes, as the update overlay uses them too. */
     private static String asInput(JsonObject record)
     {
         var input = new JsonObject();
         input.addProperty(ApplyBatch.OPERATION_MEMBER, TransactionOperations.ADD.name());
-        for (var member : record.entrySet())
-        {
-            var name = member.getKey();
-            var value = member.getValue();
-            if (!TransactionOperations.ADD.input().declares(name))
-                continue;
-            if (value.isJsonArray() && value.getAsJsonArray().isEmpty())
-                continue;
-            input.add(name, value);
-        }
+        TransactionShape.inputOf(record).entrySet().forEach(member -> input.add(member.getKey(), member.getValue()));
         return input.toString();
     }
 

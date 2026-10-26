@@ -8,6 +8,8 @@ import java.util.function.Function;
 /** Field rules shared by the master-data list commands. */
 final class MasterData
 {
+    static final String UPDATED_AT_MEMBER = "updatedAt";
+
     static final Schema UPDATED_AT = Schema.string(
                     "When the entity last changed in the file, as an ISO-8601 UTC instant to the second, for example 2026-10-24T15:04:57Z. Absent if the file has none.");
 
@@ -36,7 +38,7 @@ final class MasterData
     /** Adds <code>updatedAt</code>, the last modified time, unless core has none. */
     static void putUpdatedAt(Map<String, Object> json, Instant updatedAt)
     {
-        Sorting.lastModified(updatedAt).ifPresent(instant -> json.put("updatedAt", instant.toString()));
+        Sorting.lastModified(updatedAt).ifPresent(instant -> json.put(UPDATED_AT_MEMBER, instant.toString()));
     }
 
     /** The uuid and name every reference to an entity carries. */

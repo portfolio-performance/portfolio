@@ -38,9 +38,6 @@ final class TransactionOperations
 
     private static final String UPDATE_DESCRIPTION = "The fields of a transaction to change, in the shape the transactions output uses. Only the fields present change; null clears an optional field.";
 
-    /** The types that are recorded in an investment account, as opposed to a cash account. */
-    private static final Set<String> PORTFOLIO_TYPES = Set.of("BUY", "SELL", "DELIVERY_INBOUND", "DELIVERY_OUTBOUND");
-
     /** A security is accepted on these; on the others it is refused. */
     private static final Set<Type> SECURITY_ALLOWED = EnumSet.of(Type.DIVIDENDS, Type.TAXES, Type.TAX_REFUND,
                     Type.FEES, Type.FEES_REFUND);
@@ -79,7 +76,7 @@ final class TransactionOperations
             schema.property(TransactionUpdates.UUID_MEMBER,
                             Schema.string("UUID of either side of the record to change."));
 
-        return TransactionShape.declareInput(schema, update);
+        return update ? TransactionShape.declarePatch(schema) : TransactionShape.declareInput(schema);
     }
 
     static void add(OperationContext context)
@@ -87,7 +84,7 @@ final class TransactionOperations
         var name = parseTypeName(context);
         if (TransactionRecord.TRANSFER.equals(name))
             TransferOperations.add(context);
-        else if (name != null && PORTFOLIO_TYPES.contains(name))
+        else if (name != null && TransactionShape.INVESTMENT_ACCOUNT_TYPES.contains(name))
             TradeOperations.add(context, PortfolioTransaction.Type.valueOf(name));
         else
             addCash(context, name == null ? null : Type.valueOf(name));

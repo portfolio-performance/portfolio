@@ -110,16 +110,8 @@ final class TransactionUpdates
     /** The current record in the shape of an add, with the members of the patch laid over it. */
     private static JsonObject overlay(OperationContext context, TransactionRecord record)
     {
-        var merged = new JsonObject();
-        var rendered = GSON.toJsonTree(TransactionsCommand.render(record, context.client())).getAsJsonObject();
-        for (var member : rendered.entrySet())
-        {
-            var value = member.getValue();
-            // an empty list of units is the same as none, and a transfer refuses any
-            if (TransactionShape.isInput(member.getKey())
-                            && !(value.isJsonArray() && value.getAsJsonArray().isEmpty()))
-                merged.add(member.getKey(), value);
-        }
+        var merged = TransactionShape.inputOf(
+                        GSON.toJsonTree(TransactionsCommand.render(record, context.client())).getAsJsonObject());
 
         for (var member : context.input().json().entrySet())
         {
@@ -127,12 +119,12 @@ final class TransactionUpdates
             if (name.equals(ApplyBatch.OPERATION_MEMBER) || name.equals(UUID_MEMBER))
                 continue;
 
-            if (name.equals("type") && differs(member.getValue(), record.type()))
-                context.fail("type", "type-immutable",
+            if (name.equals(TransactionShape.TYPE.name()) && differs(member.getValue(), record.type()))
+                context.fail(TransactionShape.TYPE.name(), "type-immutable",
                                 "The type of a record can't change; delete it and add a new one.");
-            else if (name.equals("kind") && record.kind().isPresent()
+            else if (name.equals(TransactionShape.KIND.name()) && record.kind().isPresent()
                             && differs(member.getValue(), record.kind().get().id()))
-                context.fail("kind", "kind-immutable",
+                context.fail(TransactionShape.KIND.name(), "kind-immutable",
                                 "The kind of a transfer can't change; delete it and add a new one.");
             else
                 merged.add(name, member.getValue());
@@ -176,7 +168,7 @@ final class TransactionUpdates
         var changedAfter = new LinkedHashMap<String, Object>();
         var members = new LinkedHashSet<>(before.keySet());
         members.addAll(after.keySet());
-        members.remove("updatedAt"); // set by every write, so never what the patch changed
+        members.remove(TransactionShape.UPDATED_AT.name()); // set by every write, so never what the patch changed
         for (var member : members)
         {
             if (!sameJson(before.get(member), after.get(member)))
