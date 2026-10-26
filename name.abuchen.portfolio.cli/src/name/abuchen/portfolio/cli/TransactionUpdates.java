@@ -32,10 +32,6 @@ final class TransactionUpdates
 
     private static final Gson GSON = new Gson();
 
-    /** Members of the rendered record that an add doesn't take: they are derived from the others. */
-    private static final List<String> NOT_INPUT = List.of("id", "sides", "targetCurrencyCode", "instrumentName",
-                    "investmentAccountName", "cashAccountName", "fromName", "toName", "updatedAt");
-
     static final OperationSpec DELETE = new OperationSpec("transaction.delete",
                     "Deletes a whole transaction record, both sides, found by the UUID of either of its sides. The response is one deleted change whose uuid is the record id, with the record as it was in before. A delete that would make an investment account's holding of an instrument negative at the end of any date, by removing a buy or a delivery or transfer into it, is refused.",
                     Schema.object("The record to delete.")
@@ -114,10 +110,16 @@ final class TransactionUpdates
     /** The current record in the shape of an add, with the members of the patch laid over it. */
     private static JsonObject overlay(OperationContext context, TransactionRecord record)
     {
-        var merged = GSON.toJsonTree(TransactionsCommand.render(record, context.client())).getAsJsonObject();
-        NOT_INPUT.forEach(merged::remove);
-        if (record.kind().isPresent())
-            merged.remove("units"); // a transfer takes none, and the rendered empty list would be refused
+        var merged = new JsonObject();
+        var rendered = GSON.toJsonTree(TransactionsCommand.render(record, context.client())).getAsJsonObject();
+        for (var member : rendered.entrySet())
+        {
+            var value = member.getValue();
+            // an empty list of units is the same as none, and a transfer refuses any
+            if (TransactionShape.isInput(member.getKey())
+                            && !(value.isJsonArray() && value.getAsJsonArray().isEmpty()))
+                merged.add(member.getKey(), value);
+        }
 
         for (var member : context.input().json().entrySet())
         {

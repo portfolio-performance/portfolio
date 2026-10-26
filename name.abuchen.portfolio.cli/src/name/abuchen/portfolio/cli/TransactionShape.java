@@ -198,6 +198,12 @@ final class TransactionShape
         return writeSchema(object, MEMBERS, update);
     }
 
+    /** Whether an add takes the member of the record, as opposed to deriving it from the others. */
+    static boolean isInput(String member)
+    {
+        return MEMBERS.stream().anyMatch(m -> m.name().equals(member) && m.isInput());
+    }
+
     /** A fee, tax or gross value as a record shows it. */
     static Schema unitSchema()
     {
