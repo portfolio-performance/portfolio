@@ -53,53 +53,9 @@ final class TransactionsCommand
     private static final OptionSpec CURRENCY = new OptionSpec("currency", "code",
                     "Adds converted to every record: its amount in this ISO currency, with rate, date and source. amount stays in the record's currency.");
 
-    /** The name that goes with a UUID member: present exactly when that member is. */
-    private static Schema nameOf(String idMember)
-    {
-        return Schema.string("Name for " + idMember + ", empty if none. Present exactly when it is.");
-    }
-
     private static Schema recordSchema()
     {
-        return Schema.object("One business event.")
-                        .property("id", Schema.string(
-                                        "UUID of the investment-account side of a buy or sell, the outgoing side of a transfer, else of the transaction."))
-                        .property("type", Schema.openEnumOf(
-                                        "Core's transaction type. An open enum: new values may appear. An intact transfer is TRANSFER; a side without its partner keeps its raw type, e.g. TRANSFER_OUT.",
-                                        TransactionShape.FILTERABLE_TYPES))
-                        .optionalProperty("kind", Schema.enumOf("Of a TRANSFER.",
-                                        TransactionRecord.TransferKind.ids()))
-                        .property("date", Schema.string("ISO date."))
-                        .optionalProperty("time", Schema.string("HH:mm; absent if the stored time is midnight."))
-                        .property("sides", Schema.array("UUIDs of every side of the event, id first.",
-                                        Schema.string(null)))
-                        .property("amount", Schema.number(
-                                        "Net amount as stored, of the investment-account side of a buy or sell and the outgoing side of a transfer."
-                                        + MinorUnits.CONVERTED_WITH_CURRENCY_OPTION))
-                        .property("currencyCode", Schema.string("ISO currency code of amount." + MinorUnits.CONVERTED_WITH_CURRENCY_OPTION))
-                        .optionalProperty("targetAmount",
-                                        Schema.number("Amount of the incoming side of a cross-currency transfer."))
-                        .optionalProperty("targetCurrencyCode",
-                                        Schema.string("ISO currency code of targetAmount."))
-                        .optionalProperty("exchangeRate", Schema.number(
-                                        "Of a cross-currency cash transfer with a rate: unrounded as stored, targetAmount times exchangeRate is approximately amount."))
-                        .optionalProperty("instrument", Schema.string("UUID of the instrument."))
-                        .optionalProperty("instrumentName", nameOf("instrument"))
-                        .optionalProperty("shares", Schema.number("Number of shares."))
-                        .optionalProperty("investmentAccount", Schema.string("UUID of the investment account."))
-                        .optionalProperty("investmentAccountName", nameOf("investmentAccount"))
-                        .optionalProperty("cashAccount", Schema.string("UUID of the cash account."))
-                        .optionalProperty("cashAccountName", nameOf("cashAccount"))
-                        .optionalProperty("from", Schema.string("Of a TRANSFER: UUID of the account it leaves."))
-                        .optionalProperty("fromName", nameOf("from"))
-                        .optionalProperty("to", Schema.string("Of a TRANSFER: UUID of the account it enters."))
-                        .optionalProperty("toName", nameOf("to"))
-                        .optionalProperty("exDate", Schema.string("ISO ex-date of a dividend."))
-                        .optionalProperty("note", Schema.string("The note."))
-                        .optionalProperty("source", Schema.string("Where the record was imported from."))
-                        .optionalProperty("updatedAt", Schema.string(
-                                        "When the record last changed: the latest of its sides, as an ISO-8601 UTC instant such as 2026-10-24T15:04:57Z. Absent if none has one."))
-                        .property("units", Schema.array("Fees, taxes and forex of the record; empty if none.", TransactionShape.unitSchema()))
+        return TransactionShape.recordSchema("One business event.")
                         .optionalProperty("converted", ExchangeRates.convertedSchema(
                                         "The amount in the currency asked for with --currency. Absent if no rate was found."));
     }

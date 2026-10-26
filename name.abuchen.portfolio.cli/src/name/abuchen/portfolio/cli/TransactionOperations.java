@@ -79,64 +79,7 @@ final class TransactionOperations
             schema.property(TransactionUpdates.UUID_MEMBER,
                             Schema.string("UUID of either side of the record to change."));
 
-        new Members(schema, update)
-                        .required("type", Schema.enumOf(
-                                        "Transaction type. TRANSFER needs a kind, from and to; BUY and SELL need an investmentAccount and a cashAccount; deliveries need an investmentAccount; the others need a cashAccount.",
-                                        TransactionShape.TYPES))
-                        .optional("kind", Schema.enumOf("Of a TRANSFER only: cash or security.",
-                                        TransactionRecord.TransferKind.ids()))
-                        .optional("cashAccount", Schema.string(
-                                        "UUID of the cash account; it must already be in the file. Required for cash-account events, BUY and SELL; refused for deliveries and transfers."))
-                        .optional("investmentAccount", Schema.string(
-                                        "UUID of the investment account; it must already be in the file. Required for BUY, SELL and deliveries; refused for cash-account events and transfers."))
-                        .optional("from", Schema.string(
-                                        "Of a TRANSFER only: UUID of the account it leaves, a cash account for a cash transfer and an investment account for a security transfer. Must differ from to."))
-                        .optional("to", Schema.string(
-                                        "Of a TRANSFER only: UUID of the account it enters, of the same kind as from."))
-                        .required("date", Schema.string("ISO date of the event."))
-                        .optional("time", Schema.string("HH:mm; omit for midnight."))
-                        .required("amount", Schema.number(
-                                        "Positive net amount. Of a BUY or SELL in the cash account's currency, of a cash transfer in the currency of from, of a security transfer in the instrument's currency."))
-                        .required("currencyCode", Schema.string(
-                                        "ISO currency code of amount: the cash account's, or for a transfer the currency of from (cash) or of the instrument (security). A delivery may use any currency; if it is not the instrument's, a GROSS_VALUE unit is required."))
-                        .optional("targetAmount", Schema.number(
-                                        "Of a cash transfer between accounts of different currencies: positive, in the currency of to. Refused when the currencies are the same."))
-                        .optional("exchangeRate", Schema.number(
-                                        "Of a cross-currency cash transfer: optional, only checked against core's rounding tolerance. The stored rate is always amount divided by targetAmount and is returned in the record."))
-                        .optional("instrument", Schema.string(
-                                        "UUID of the instrument. Required for DIVIDENDS, BUY, SELL, deliveries and security transfers; optional for fees and taxes; refused for deposits, removals, interest and cash transfers."))
-                        .optional("shares", Schema.number(
-                                        "Positive number of shares. Required for BUY, SELL, deliveries and security transfers; accepted on a dividend; refused otherwise."))
-                        .optional("units", Schema.array(
-                                        "Fees, taxes and the forex gross value an instrument in another currency needs. Taxes are accepted only on DIVIDENDS and INTEREST and fees only on DIVIDENDS, as in core's import check; refused on transfers.",
-                                        TransactionShape.UNIT))
-                        .optional("exDate", Schema.string(
-                                        "ISO ex-date; accepted only on a dividend with an instrument and never after the date."))
-                        .optional("grossAmount", Schema.number(
-                                        "Optional cross-check: amount plus or minus fees and taxes (for a BUY or inbound delivery amount minus them). Refused if it does not reconcile and on transfers; amount stays authoritative."))
-                        .optional("note", Schema.string("Note."))
-                        .optional("source", Schema.string("Where the record came from."));
-
-        return schema;
-    }
-
-    /** Declares the members of the input; of an update every member is optional and the optional ones can be cleared with null. */
-    private record Members(Schema schema, boolean update)
-    {
-        Members required(String name, Schema type)
-        {
-            if (update)
-                schema.optionalProperty(name, type);
-            else
-                schema.property(name, type);
-            return this;
-        }
-
-        Members optional(String name, Schema type)
-        {
-            schema.optionalProperty(name, update ? type.nullable() : type);
-            return this;
-        }
+        return TransactionShape.declareInput(schema, update);
     }
 
     static void add(OperationContext context)
