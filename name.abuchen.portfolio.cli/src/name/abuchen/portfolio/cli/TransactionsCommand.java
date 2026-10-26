@@ -2,7 +2,6 @@ package name.abuchen.portfolio.cli;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -50,13 +49,13 @@ final class TransactionsCommand
     private static final OptionSpec TO = OptionSpec.date("to",
                     "Last day of the range, inclusive. Defaults to today.");
 
-    private static final OptionSpec CURRENCY = new OptionSpec("currency", "code",
+    private static final OptionSpec CURRENCY = ReportingCurrency.option(
                     "Adds converted to every record: its amount in this ISO currency, with rate, date and source. amount stays in the record's currency.");
 
     private static Schema recordSchema()
     {
         return TransactionShape.recordSchema("One business event.")
-                        .optionalProperty("converted", ExchangeRates.convertedSchema(
+                        .optionalProperty("converted", ReportingCurrency.convertedSchema(
                                         "The amount in the currency asked for with --currency. Absent if no rate was found."));
     }
 
@@ -74,14 +73,14 @@ final class TransactionsCommand
                     .optionalProperty("instrument", Schema.string("UUID the instrument filter resolved to."))
                     .optionalProperty("types", Schema.array("The type filter: upper case, without duplicates, in the published order.",
                                     Schema.string(null)))
-                    .optionalProperty("exchangeRates", ExchangeRates.metaSchema());
+                    .optionalProperty("exchangeRates", ReportingCurrency.ratesMetaSchema());
 
     static final CommandSpec SPEC = new CommandSpec("transactions",
                     "Business events as transaction records, each joining the sides of a buy, sell or transfer, filtered by date range, account, instrument and type.",
                     true,
                     List.of(INVESTMENT_ACCOUNT, CASH_ACCOUNT, INSTRUMENT, TYPE, FROM, TO, CURRENCY, Paging.LIMIT,
                                     Paging.OFFSET, SORT.sortOption(), Sorting.ORDER),
-                    DATA, META, ExchangeRates.WARNINGS, TransactionsCommand::execute);
+                    DATA, META, ReportingCurrency.WARNINGS, TransactionsCommand::execute);
 
     private TransactionsCommand()
     {
@@ -108,9 +107,10 @@ final class TransactionsCommand
         var sorting = SORT.parse(context);
         var range = DateRange.parse(context, FROM, TO);
         var types = parseTypes(context.option(TYPE.name()));
-        var currency = ExchangeRates.parseCurrency(CURRENCY, context.option(CURRENCY.name()));
+        var requested = ReportingCurrency.requested(context, CURRENCY);
 
         var client = context.loadClient().client();
+        var reporting = requested.ifGiven(context, client);
 
         var investmentAccount = resolve(context, INVESTMENT_ACCOUNT, client, References::investmentAccount);
         var cashAccount = resolve(context, CASH_ACCOUNT, client, References::cashAccount);
@@ -120,23 +120,22 @@ final class TransactionsCommand
         var records = sorting.sort(client, TransactionRecord.allOf(client).stream().filter(filter::test).toList());
         var page = paging.of(records);
 
-        var rates = new ExchangeRates(context, client);
         var names = new AccountNames(client);
         var data = new LinkedHashMap<String, Object>();
-        page.putInto(data, record -> render(record, names, currency, rates));
+        page.putInto(data, record -> render(record, names, reporting));
 
         var meta = ResponseMeta.paged(context, client, paging, sorting);
         range.putInto(meta);
-        currency.ifPresent(code -> meta.put("currency", code));
+        reporting.ifPresent(currency -> meta.put("currency", currency.code()));
         investmentAccount.ifPresent(account -> meta.put("investmentAccount", account.getUUID()));
         cashAccount.ifPresent(account -> meta.put("cashAccount", account.getUUID()));
         instrument.ifPresent(security -> meta.put("instrument", security.getUUID()));
         if (!types.isEmpty())
             meta.put("types", TransactionShape.FILTERABLE_TYPES.stream().filter(types::contains).toList());
-        rates.putCacheInto(meta);
+        reporting.ifPresent(currency -> currency.putRatesInto(meta));
 
         var response = Response.of(data, meta);
-        rates.warnings().forEach(response::warn);
+        reporting.ifPresent(currency -> currency.warnings().forEach(response::warn));
         return response;
     }
 
@@ -176,12 +175,10 @@ final class TransactionsCommand
     }
 
     private static Map<String, Object> render(TransactionRecord record, AccountNames names,
-                    Optional<String> currency, ExchangeRates rates)
+                    Optional<ReportingCurrency> reporting)
     {
-        var currencyCode = MasterData.orEmpty(record.primary().getCurrencyCode());
         var json = render(record, names);
-        currency.flatMap(target -> convert(record, currencyCode, target, rates))
-                        .ifPresent(converted -> json.put("converted", converted));
+        reporting.ifPresent(currency -> currency.putConvertedInto(json, figure(record, currency)));
         return json;
     }
 
@@ -282,28 +279,17 @@ final class TransactionsCommand
         return json;
     }
 
-    /**
-     * The amount in the target currency, or empty if no rate was found. Rates
-     * are tried in order: the same currency, the record's own rate, then the
-     * rate series of {@link ExchangeRates}.
-     */
-    private static Optional<Map<String, Object>> convert(TransactionRecord record, String currencyCode, String target,
-                    ExchangeRates rates)
+    /** The amount of the record on its day, with the record's own rate into the reporting currency if it has one. */
+    private static ReportingCurrency.Figure figure(TransactionRecord record, ReportingCurrency reporting)
     {
-        var day = record.primary().getDateTime().toLocalDate();
-
-        var rate = ownRate(record, currencyCode, target, day).or(() -> rates.series(day, currencyCode, target));
-
-        return rate.map(r -> ExchangeRates.converted(target, r.convert(record.primary().getAmount()), r));
+        var primary = record.primary();
+        return reporting.figure(primary.getDateTime().toLocalDate(), MasterData.orEmpty(primary.getCurrencyCode()),
+                        primary.getAmount(), ownRate(record, reporting.code()));
     }
 
-    /** The rate that needs no series: same currency, or the record's own forex unit or transfer rate. */
-    private static Optional<ExchangeRates.Rate> ownRate(TransactionRecord record, String currencyCode, String target,
-                    LocalDate day)
+    /** The record's own rate into the target currency: that of its forex unit or of its transfer. */
+    private static Optional<BigDecimal> ownRate(TransactionRecord record, String target)
     {
-        if (currencyCode.equals(target))
-            return Optional.of(new ExchangeRates.Rate(BigDecimal.ONE, day, ExchangeRates.Source.IDENTITY));
-
         var forex = record.primary().getUnits().filter(unit -> unit.getType() == Transaction.Unit.Type.GROSS_VALUE)
                         .filter(unit -> unit.getForex() != null && target.equals(unit.getForex().getCurrencyCode()))
                         .map(Transaction.Unit::getExchangeRate);
@@ -312,8 +298,8 @@ final class TransactionsCommand
                         .flatMap(incoming -> record.primary().getUnit(Transaction.Unit.Type.GROSS_VALUE))
                         .map(Transaction.Unit::getExchangeRate);
 
+        // the stored rate converts into the record's currency, so the inverse converts out of it
         return forex.findFirst().or(() -> transfer).filter(stored -> stored.signum() != 0)
-                        .map(stored -> new ExchangeRates.Rate(BigDecimal.ONE.divide(stored, 10, RoundingMode.HALF_DOWN),
-                                        day, ExchangeRates.Source.TRANSACTION));
+                        .map(stored -> BigDecimal.ONE.divide(stored, 10, RoundingMode.HALF_DOWN));
     }
 }
