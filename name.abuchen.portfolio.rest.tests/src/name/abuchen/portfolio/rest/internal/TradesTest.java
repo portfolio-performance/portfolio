@@ -68,6 +68,29 @@ public class TradesTest
         return client;
     }
 
+    /**
+     * The trades response carries `fxWarnings` like every computed report: empty
+     * when nothing fell back, and naming the pair whose amounts were converted
+     * at 1:1 because the file has no rates for it.
+     */
+    @Test
+    public void testFxWarningsEmptyWhenNothingFallsBack()
+    {
+        assertThat(trades(closedTrade()).get("fxWarnings").getAsJsonArray().size(), is(0));
+    }
+
+    @Test
+    public void testFxWarningsNameCurrencyWithoutRates()
+    {
+        var client = closedTrade();
+        new AccountBuilder("ARS").deposit_("2026-01-01", Values.Amount.factorize(100)).addTo(client);
+
+        var warnings = trades(client).get("fxWarnings").getAsJsonArray();
+        assertThat(warnings.size(), is(1));
+        assertThat(warnings.get(0).getAsJsonObject().get("currency").getAsString(), is("ARS"));
+        assertThat(warnings.get(0).getAsJsonObject().get("reason").getAsString(), is("no-series"));
+    }
+
     @Test
     public void testClosedTrade()
     {

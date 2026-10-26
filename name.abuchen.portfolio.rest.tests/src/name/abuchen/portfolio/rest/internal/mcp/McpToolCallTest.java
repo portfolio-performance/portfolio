@@ -42,6 +42,7 @@ public class McpToolCallTest
 
     private IEclipsePreferences node;
     private Router router;
+    private FakeHost host;
     private Client client;
     private Security security;
     private String fileId;
@@ -59,7 +60,7 @@ public class McpToolCallTest
         registry.setAlias(FILE, "sample");
         fileId = registry.byPath(FILE).orElseThrow().uuid();
 
-        var host = new FakeHost(List.of(new FakeHost.FakeOpenFile(FILE, "mcp", client)));
+        host = new FakeHost(List.of(new FakeHost.FakeOpenFile(FILE, "mcp", client)));
         router = ApiRoutes.create(registry, host,
                         new PairingService(new ClientStore(Path.of("target", "unused-client-store")), host));
     }
@@ -119,6 +120,39 @@ public class McpToolCallTest
         var unknownEntity = text(call("pp_get_instrument", "{\"file\":\"sample\",\"uuid\":\"no-such-uuid\"}"));
         assertThat(unknownEntity, containsString("The file is shared"));
         assertThat(unknownEntity, containsString("will not start working"));
+    }
+
+    /**
+     * The prose tells a model what to do; the trailer states the same fact as
+     * data. A 404 is never retryable — the same id will not start working — and
+     * a locked server is, once the user has closed their dialog.
+     */
+    @Test
+    public void testARefusalSaysWhetherTryingAgainCanHelp()
+    {
+        var notFound = text(call("pp_get_instrument", "{\"file\":\"sample\",\"uuid\":\"no-such-uuid\"}"));
+        assertThat(notFound, containsString("retryable: no"));
+        assertThat(notFound, containsString("reasonCode: not-found"));
+        assertThat(notFound, not(containsString("retryAfterSeconds")));
+
+        // only a write is refused while the user edits; reads still answer
+        host.setUserEditing(true);
+        var locked = text(call("pp_update_instrument",
+                        "{\"file\":\"sample\",\"uuid\":\"" + security.getUUID() + "\",\"note\":\"seen\"}"));
+        assertThat(locked, containsString("retryable: yes"));
+        assertThat(locked, containsString("reasonCode: user-interaction"));
+        assertThat(locked, containsString("retryAfterSeconds: 5"));
+    }
+
+    /** the listing names the value to send as `file`, which is what stops a guess */
+    @Test
+    public void testTheFileListingNamesTheAddressToSend()
+    {
+        var files = text(call("pp_list_files", "{}"));
+        assertThat(files, containsString("\"use\":\"sample\""));
+
+        // and that value is what a tool accepts
+        assertThat(isError(call("pp_list_instruments", "{\"file\":\"sample\"}")), is(false));
     }
 
     @Test

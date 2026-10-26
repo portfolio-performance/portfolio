@@ -35,6 +35,36 @@ public class PerformanceTest
     }
 
     /**
+     * A performance report is computed in one reporting currency, and a currency
+     * the file holds without rates is converted at 1:1 - so the report carries
+     * `fxWarnings`, always present and empty when every pair has rates. ARS is
+     * the example because no shipped provider has a series for it.
+     */
+    @Test
+    public void testFxWarningsNameCurrencyWithoutRates()
+    {
+        var client = new Client();
+        new AccountBuilder("EUR").deposit_("2024-01-01", Values.Amount.factorize(1000)).addTo(client);
+        new AccountBuilder("ARS").deposit_("2024-01-01", Values.Amount.factorize(500)).addTo(client);
+
+        var result = perf(client, "2024-01-01", "2024-12-31", null, null);
+
+        var warnings = result.get("fxWarnings").getAsJsonArray();
+        assertThat(warnings.size(), is(1));
+        assertThat(warnings.get(0).getAsJsonObject().get("currency").getAsString(), is("ARS"));
+        assertThat(warnings.get(0).getAsJsonObject().get("reason").getAsString(), is("no-series"));
+    }
+
+    @Test
+    public void testFxWarningsEmptyWhenTheFileIsSingleCurrency()
+    {
+        var client = heldPosition();
+
+        var result = perf(client, "2024-01-01", "2024-12-31", null, null);
+        assertThat(result.get("fxWarnings").getAsJsonArray().size(), is(0));
+    }
+
+    /**
      * A position bought before the interval and held throughout: its value
      * rises 1000 → 1200 over the year with no trades, so the entire change is
      * an unrealized capital gain, TTWROR is 20 %, and the breakdown reconciles.

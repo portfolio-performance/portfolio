@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.function.Function;
 
@@ -145,6 +146,10 @@ public final class EntityJson
         json.addProperty("id", access.uuid()); //$NON-NLS-1$
         if (access.alias() != null)
             json.addProperty("alias", access.alias()); //$NON-NLS-1$
+        // the one value a caller must send as {file}: an alias exists only when the
+        // user assigned one, and the label is never an address - naming the value
+        // is what stops a client guessing between the two
+        json.addProperty("use", access.alias() != null ? access.alias() : access.uuid()); //$NON-NLS-1$
         json.addProperty("label", file.getLabel()); //$NON-NLS-1$
         json.addProperty("path", file.getPath()); //$NON-NLS-1$
         return json;
@@ -166,12 +171,12 @@ public final class EntityJson
         var items = new JsonArray();
         snapshot.getAssetPositions() //
                         .sorted(new AssetPosition.ByDescription()) //
-                        .forEach(position -> items.add(toJson(position, total)));
+                        .forEach(position -> items.add(toJson(position, total, snapshot.getTime())));
         json.add("items", items); //$NON-NLS-1$
         return json;
     }
 
-    private static JsonObject toJson(AssetPosition position, Money totalAssets)
+    private static JsonObject toJson(AssetPosition position, Money totalAssets, LocalDate valuationDate)
     {
         var security = position.getSecurity();
         var vehicle = position.getInvestmentVehicle();
@@ -197,6 +202,18 @@ public final class EntityJson
             if (securityPrice.getDate() != null)
                 price.addProperty("date", securityPrice.getDate().toString()); //$NON-NLS-1$
             json.add("price", price); //$NON-NLS-1$
+
+            // the same staleness as `price.date`, but decided rather than left to
+            // the caller to compare two dates: `priceStale` says the quote predates
+            // the valuation date, `priceAgeDays` says by how much. A quote dated
+            // after the valuation date is younger than it, not stale.
+            var priceDate = securityPrice.getDate();
+            if (priceDate != null)
+            {
+                var ageDays = ChronoUnit.DAYS.between(priceDate, valuationDate);
+                json.addProperty("priceStale", ageDays > 0); //$NON-NLS-1$
+                json.addProperty("priceAgeDays", Math.max(0L, ageDays)); //$NON-NLS-1$
+            }
         }
 
         json.add("valuation", toJson(position.getValuation())); //$NON-NLS-1$
@@ -483,6 +500,19 @@ public final class EntityJson
         json.add("instrument", reference(warning.instrument())); //$NON-NLS-1$
         json.addProperty("code", warning.code()); //$NON-NLS-1$
         json.addProperty("message", warning.message()); //$NON-NLS-1$
+        return json;
+    }
+
+    /**
+     * One currency pair that was converted at 1:1 because there is nothing to
+     * convert with. See {@link FxWarnings} for what the two reasons mean.
+     */
+    public static JsonObject toJson(FxWarnings.Warning warning)
+    {
+        var json = new JsonObject();
+        json.addProperty("currency", warning.currency()); //$NON-NLS-1$
+        json.addProperty("reportingCurrency", warning.reportingCurrency()); //$NON-NLS-1$
+        json.addProperty("reason", warning.reason()); //$NON-NLS-1$
         return json;
     }
 

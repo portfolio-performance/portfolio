@@ -53,7 +53,7 @@ public final class TradesHandler
                     String groupingParam, String costMethodParam, String taxesAndFeesParam, String currencyParam)
     {
         var params = parse(client, statusParam, groupingParam, costMethodParam, taxesAndFeesParam, currencyParam);
-        return respond(collect(client, factory, client.getSecurities(), params), params);
+        return respond(collect(client, factory, client.getSecurities(), params), params, client, factory);
     }
 
     public static JsonElement forInstrument(Client client, ExchangeRateProviderFactory factory, String uuid,
@@ -66,7 +66,7 @@ public final class TradesHandler
         var params = parse(client, statusParam, groupingParam, costMethodParam, taxesAndFeesParam, currencyParam);
 
         // sub-collection: an untraded instrument has an empty list, not a 404
-        return respond(collect(client, factory, List.of(security), params), params);
+        return respond(collect(client, factory, List.of(security), params), params, client, factory);
     }
 
     private static Params parse(Client client, String statusParam, String groupingParam, String costMethodParam,
@@ -142,7 +142,8 @@ public final class TradesHandler
         };
     }
 
-    private static JsonElement respond(Collected collected, Params params)
+    private static JsonElement respond(Collected collected, Params params, Client client,
+                    ExchangeRateProviderFactory factory)
     {
         var items = new JsonArray();
         for (var trade : collected.trades())
@@ -153,6 +154,7 @@ public final class TradesHandler
             warnings.add(EntityJson.toJson(warning));
 
         var json = EntityJson.tradesContext(params);
+        FxWarnings.attach(json, client, factory);
         // always present so clients can detect partial success
         json.add("warnings", warnings); //$NON-NLS-1$
         json.add("items", items); //$NON-NLS-1$

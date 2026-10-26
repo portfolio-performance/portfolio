@@ -402,8 +402,13 @@ paths:
                     items:
                       - id: 5f3c1e2a-0b7d-4a1e-9c2f-8d6b3a1e0f42
                         alias: main
+                        use: main
                         label: portfolio.xml
                         path: /Users/me/portfolio.xml
+                      - id: 9a2d7c30-4e18-4b27-8f35-6c04d1b7e2a9
+                        use: 9a2d7c30-4e18-4b27-8f35-6c04d1b7e2a9
+                        label: depot.xml
+                        path: /Users/me/depot.xml
         "400":
           $ref: "#/components/responses/BadRequest"
         "401":
@@ -767,7 +772,7 @@ paths:
             application/json:
               schema:
                 type: object
-                required: [date, reportingCurrency, totalAssets, items]
+                required: [date, reportingCurrency, totalAssets, fxWarnings, items]
                 properties:
                   date:
                     type: string
@@ -783,6 +788,8 @@ paths:
                       `currencyCode` (its own declared currency).
                   totalAssets:
                     $ref: "#/components/schemas/MonetaryValue"
+                  fxWarnings:
+                    $ref: "#/components/schemas/FxWarnings"
                   items:
                     type: array
                     items:
@@ -793,12 +800,15 @@ paths:
                     date: "2026-07-20"
                     reportingCurrency: EUR
                     totalAssets: { value: 1600, currency: EUR }
+                    fxWarnings: []
                     items:
                       - type: instrument
                         uuid: 8a1e0c4b-2f5d-4e6a-b1c3-7d9f0a2e4c68
                         name: Apple Inc.
                         shares: 10
                         price: { value: 110.5, currency: USD, date: "2026-07-17" }
+                        priceStale: true
+                        priceAgeDays: 3
                         valuation: { value: 1100, currency: EUR }
                         localValuation: { value: 1105, currency: USD }
                         weight: 0.6875
@@ -912,6 +922,7 @@ paths:
                       currencyGains: { value: 210, currency: EUR }
                       netDeposits: { value: 5000, currency: EUR }
                       closingValue: { value: 111390, currency: EUR }
+                    fxWarnings: []
         "400":
           $ref: "#/components/responses/BadRequest"
         "401":
@@ -991,6 +1002,7 @@ paths:
                     taxesAndFees: included
                     metrics:
                       [valuation, gains, income, expenses, moneyWeighted, timeWeighted, risk]
+                    fxWarnings: []
                     items:
                       - uuid: 5c1a0b7e-3d4f-4a2b-9c8e-1f0a2b3c4d5e
                         name: iShares Core MSCI World
@@ -1079,6 +1091,14 @@ paths:
                     costMethod: fifo
                     taxesAndFees: included
                     metrics: [valuation]
+                    # one pair with nothing to convert with: its ARS amounts are
+                    # shown at face value, not exchanged into EUR. USD would be
+                    # the more familiar example, but the built-in ECB series
+                    # covers it, so it would not be a fallback.
+                    fxWarnings:
+                      - currency: ARS
+                        reportingCurrency: EUR
+                        reason: no-series
                     uuid: 5c1a0b7e-3d4f-4a2b-9c8e-1f0a2b3c4d5e
                     name: iShares Core MSCI World
                     currencyCode: USD
@@ -1167,6 +1187,7 @@ paths:
                     grouping: combined
                     valuationDate: "2026-08-27"
                     status: [open, closed]
+                    fxWarnings: []
                     warnings: []
                     items:
                       - status: closed
@@ -1268,6 +1289,7 @@ paths:
                     grouping: combined
                     valuationDate: "2026-08-27"
                     status: [open, closed]
+                    fxWarnings: []
                     warnings: []
                     items:
                       - status: closed
@@ -1320,8 +1342,10 @@ components:
       in: path
       required: true
       description: |
-        A file's `id` or `alias`, as returned by `GET /v1/files`. An alias that
-        matches several records is rejected `409 ambiguous-alias`; use the `id`.
+        The file's `use` value, as returned by `GET /v1/files`: its `alias` when
+        the user assigned one, otherwise its `id`. Send it exactly — a `label` is
+        a display name and never an address. An alias that matches several
+        records is rejected `409 ambiguous-alias`; use the `id`.
       schema:
         type: string
     Uuid:
@@ -1509,6 +1533,7 @@ components:
           grouping,
           valuationDate,
           status,
+          fxWarnings,
           warnings,
           items,
         ]
@@ -1542,6 +1567,8 @@ components:
           items:
             type: string
             enum: [open, closed]
+        fxWarnings:
+          $ref: "#/components/schemas/FxWarnings"
         warnings:
           type: array
           description: |
@@ -1730,16 +1757,22 @@ components:
     File:
       type: object
       description: An open, enabled portfolio file you may address.
-      required: [id, label, path]
+      required: [id, label, path, use]
       properties:
         id:
           type: string
           description: |
-            Stable identity of the file, keyed by path. Address the file by this or
-            by `alias`.
+            Stable identity of the file, keyed by path. Address the file by this
+            or by `alias`; `use` names which of the two to send.
         alias:
           type: string
           description: Optional human-friendly handle the user assigned to the file.
+        use:
+          type: string
+          description: |
+            The value to pass as the `{file}` path parameter: `alias` when one is
+            set, otherwise `id`. Included so a caller never has to choose between
+            the two, which is where a wrong guess costs a `404`.
         label:
           type: string
           description: The file's display label in the application.
@@ -1979,6 +2012,42 @@ components:
           format: date
           description: The date the price is from.
 
+    FxWarning:
+      type: object
+      description: |
+        One currency pair a report converted at a rate of 1 because the file has
+        nothing to convert with — amounts of `currency` are shown at face value in
+        `reportingCurrency`, not exchanged.
+      required: [currency, reportingCurrency, reason]
+      properties:
+        currency:
+          type: string
+          description: The currency the amounts are natively in, shown unconverted.
+        reportingCurrency:
+          type: string
+          description: The currency the report is expressed in.
+        reason:
+          type: string
+          description: |
+            **Open set:** further reasons may be added within v1; treat an unknown
+            one as "this pair was converted at 1:1, for a reason not described
+            here". `no-series` — no exchange rate series exists for the pair at
+            all. `no-rate` — a series exists but holds no rates, so it answers no
+            date. Both are independent of the date; neither is the case where a
+            series holds rates and answers a date before its first quote with that
+            first quote, which is a different inaccuracy and not reported here.
+          x-extensible-enum: [no-series, no-rate]
+
+    FxWarnings:
+      type: array
+      description: |
+        Every currency pair this report converted at 1:1 because nothing to
+        convert with was configured. Always present, empty when every pair has
+        rates — the same rule as `warnings` on a computed collection, so a client
+        can tell "nothing fell back" apart from "this report did not look".
+      items:
+        $ref: "#/components/schemas/FxWarning"
+
     Holding:
       type: object
       description: |
@@ -2007,6 +2076,20 @@ components:
           allOf:
             - $ref: "#/components/schemas/Price"
           description: Instruments only.
+        priceStale:
+          type: boolean
+          description: |
+            Instruments only. Whether the quote behind this valuation predates the
+            response's `date` — a stale price, or a valuation that fell back to the
+            price of the last transaction. The same fact as `price.date` compared
+            against `date`, stated instead of left to the caller to compute.
+            `false` when the quote is dated on or after `date`.
+        priceAgeDays:
+          type: integer
+          description: |
+            Instruments only. Whole days between `price.date` and the response's
+            `date`; never negative, so a quote dated after `date` reads 0 rather
+            than implying the valuation happened before it.
         valuation:
           allOf:
             - $ref: "#/components/schemas/MonetaryValue"
@@ -2033,6 +2116,7 @@ components:
         - ttwror
         - irr
         - breakdown
+        - fxWarnings
       properties:
         openingDate:
           type: string
@@ -2070,6 +2154,8 @@ components:
             for the interval.
         breakdown:
           $ref: "#/components/schemas/PerformanceBreakdown"
+        fxWarnings:
+          $ref: "#/components/schemas/FxWarnings"
 
     PerformanceBreakdown:
       type: object
@@ -2133,8 +2219,9 @@ components:
       type: object
       description: |
         The interval and the parameters a per-instrument report was computed
-        with. All six are echoed, so that a stored or forwarded response stays
-        interpretable — three of them move the numbers.
+        with, plus the currency pairs it converted at 1:1. All six parameters are
+        echoed, so that a stored or forwarded response stays interpretable —
+        three of them move the numbers.
       required:
         - openingDate
         - closingDate
@@ -2142,6 +2229,7 @@ components:
         - costMethod
         - taxesAndFees
         - metrics
+        - fxWarnings
       properties:
         openingDate:
           type: string
@@ -2175,6 +2263,8 @@ components:
             type: string
             enum:
               [valuation, gains, income, expenses, moneyWeighted, timeWeighted, risk]
+        fxWarnings:
+          $ref: "#/components/schemas/FxWarnings"
 
     InstrumentPerformance:
       type: object

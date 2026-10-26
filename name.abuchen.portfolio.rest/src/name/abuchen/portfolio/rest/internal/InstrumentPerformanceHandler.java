@@ -52,8 +52,10 @@ public final class InstrumentPerformanceHandler
                     String closingDateParam, String currencyParam, String costMethodParam, String taxesAndFeesParam,
                     String metricsParam)
     {
-        return list(client, converters(factory), openingDateParam, closingDateParam, currencyParam, costMethodParam,
-                        taxesAndFeesParam, metricsParam);
+        var report = list(client, converters(factory), openingDateParam, closingDateParam, currencyParam,
+                        costMethodParam, taxesAndFeesParam, metricsParam).getAsJsonObject();
+        FxWarnings.attach(report, client, factory);
+        return report;
     }
 
     /* package */ static JsonElement list(Client client, Function<String, CurrencyConverter> converters,
@@ -83,8 +85,10 @@ public final class InstrumentPerformanceHandler
                     String openingDateParam, String closingDateParam, String currencyParam, String costMethodParam,
                     String taxesAndFeesParam, String metricsParam)
     {
-        return get(client, converters(factory), uuid, openingDateParam, closingDateParam, currencyParam,
-                        costMethodParam, taxesAndFeesParam, metricsParam);
+        var report = get(client, converters(factory), uuid, openingDateParam, closingDateParam, currencyParam,
+                        costMethodParam, taxesAndFeesParam, metricsParam).getAsJsonObject();
+        FxWarnings.attach(report, client, factory);
+        return report;
     }
 
     /* package */ static JsonElement get(Client client, Function<String, CurrencyConverter> converters, String uuid,

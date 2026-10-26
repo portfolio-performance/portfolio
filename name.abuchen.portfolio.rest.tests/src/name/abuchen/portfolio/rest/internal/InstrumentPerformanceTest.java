@@ -98,6 +98,9 @@ public class InstrumentPerformanceTest
 
         // a position held all year with no flows returns its bare 20 %
         assertThat(item.get("timeWeighted").getAsJsonObject().get("ttwror").getAsDouble(), closeTo(0.20, 1e-6));
+
+        // EUR reported in EUR: nothing fell back, but the array is still there
+        assertThat(result.get("fxWarnings").getAsJsonArray().size(), is(0));
     }
 
     /** all six parameters are echoed, so the numbers are self-describing */
@@ -114,6 +117,23 @@ public class InstrumentPerformanceTest
 
         assertThat(groupNames(result), is(List.of("valuation", "gains", "income", "expenses", "moneyWeighted",
                         "timeWeighted", "risk")));
+    }
+
+    /**
+     * A report in a currency the file has no rates for shows those amounts at
+     * face value, and names the pair: the echo of `reportingCurrency` alone
+     * would leave the reader assuming the exchange rate had been applied.
+     */
+    @Test
+    public void testFxWarningsNameThePairWithoutRates()
+    {
+        var result = list(heldPosition(), OPENING, CLOSING, "ARS", null, null, "valuation");
+
+        var warnings = result.get("fxWarnings").getAsJsonArray();
+        assertThat(warnings.size(), is(1));
+        assertThat(warnings.get(0).getAsJsonObject().get("currency").getAsString(), is("EUR"));
+        assertThat(warnings.get(0).getAsJsonObject().get("reportingCurrency").getAsString(), is("ARS"));
+        assertThat(warnings.get(0).getAsJsonObject().get("reason").getAsString(), is("no-series"));
     }
 
     /** the echo states the value that was applied, not an omitted property */

@@ -53,7 +53,7 @@ public final class McpEnvelope
 
     /** everything the guidance depends on, collected in one walk of the payload */
     private record Scan(boolean hasFractions, boolean hasNulls, boolean hasLocalDateTimes, boolean hasCashAccounts,
-                    JsonArray warnings)
+                    JsonArray warnings, JsonArray fxWarnings)
     {
     }
 
@@ -81,6 +81,17 @@ public final class McpEnvelope
                             + ".** Part of this computation failed, so the figures below are incomplete. Name what was "
                             + "skipped in your answer instead of presenting the totals as if they were whole.\n"
                             + found.warnings());
+        }
+
+        // unconverted money is the second outcome that changes what every figure
+        // below means, so it is stated before them, not as a footer note
+        if (found.fxWarnings().size() > 0)
+        {
+            sections.add("**Converted at 1:1, not at an exchange rate.** " + found.fxWarnings().size()
+                    + " currency pair" + (found.fxWarnings().size() == 1 ? "" : "s")
+                    + " in this report have nothing to convert with, so amounts in those currencies were multiplied by "
+                    + "1 and are shown at face value. Say that they are unconverted; do not present them as if the "
+                    + "exchange rate had been applied. The pairs:\n" + found.fxWarnings());
         }
 
         if (!droppedMetrics.isEmpty())
@@ -155,17 +166,22 @@ public final class McpEnvelope
 
     private static Scan scan(JsonElement payload)
     {
-        var warnings = new JsonArray();
-        if (payload.isJsonObject())
-        {
-            var top = payload.getAsJsonObject().get("warnings");
-            if (top != null && top.isJsonArray())
-                warnings = top.getAsJsonArray();
-        }
+        var warnings = topLevelArray(payload, "warnings"); //$NON-NLS-1$
+        var fxWarnings = topLevelArray(payload, "fxWarnings"); //$NON-NLS-1$
 
         var flags = new boolean[4];
         visit(payload, flags);
-        return new Scan(flags[0], flags[1], flags[2], flags[3], warnings);
+        return new Scan(flags[0], flags[1], flags[2], flags[3], warnings, fxWarnings);
+    }
+
+    /** an always-present collection field of a report, empty when it is absent */
+    private static JsonArray topLevelArray(JsonElement payload, String key)
+    {
+        if (!payload.isJsonObject())
+            return new JsonArray();
+
+        var value = payload.getAsJsonObject().get(key);
+        return value != null && value.isJsonArray() ? value.getAsJsonArray() : new JsonArray();
     }
 
     /** {@code flags} is fractions, nulls, local date-times, cash accounts - in that order */
@@ -242,6 +258,13 @@ public final class McpEnvelope
                             + "mean.";
             case "pp_list_holdings" -> "This portfolio has more positions than fit in one answer. Ask the user which "
                             + "part of it they mean, and use pp_get_instrument for individual positions.";
+            case "pp_list_instrument_performance" -> "This report has more instruments than fit in one answer. The "
+                            + "`timeWeighted` and `risk` groups carry a daily series per instrument and dominate the "
+                            + "size: ask again without them, or use pp_get_instrument_performance for single "
+                            + "instruments. A shorter interval helps too.";
+            case "pp_get_overall_performance" -> "This response is larger than one answer can carry, and it cannot be "
+                            + "narrowed further. Read the `breakdown` figures you need from what is above, say the "
+                            + "rest was cut, and use pp_list_instrument_performance for a per-instrument view.";
             default -> "This response is larger than one answer can carry. Ask a narrower question rather than "
                             + "retrying the same one.";
         };

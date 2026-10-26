@@ -68,6 +68,13 @@ public final class McpExplain
 
     public static String explainProblem(ApiException problem, Context context)
     {
+        // the prose tells a model what to do; the trailer states the same thing
+        // as data, so a client can act on it instead of reading between sentences
+        return describeProblem(problem, context) + hints(problem);
+    }
+
+    private static String describeProblem(ApiException problem, Context context)
+    {
         var tool = context.toolName();
         var detail = problem.getDetail() != null ? problem.getDetail() : problem.getMessage();
 
@@ -171,5 +178,24 @@ public final class McpExplain
     {
         var header = problem.getHeaders().get("Retry-After");
         return header == null ? "" : " — it asked to be left for " + header + " seconds";
+    }
+
+    /**
+     * The machine-readable trailer of a refusal: whether trying again can ever
+     * help, and which problem this is.
+     * <p/>
+     * Retryable means only that the same call may succeed later without changing
+     * anything - a dialog closing, a cooldown passing, a file being opened. It is
+     * not permission to retry in a loop: the prose above names who has to act.
+     * A 404 is never retryable, and neither is a rejection that names a field.
+     */
+    private static String hints(ApiException problem)
+    {
+        var retryable = problem.getStatus() == 423 || problem.getStatus() == 429
+                        || "file-not-open".equals(problem.getType()); //$NON-NLS-1$
+
+        var trailer = "\n\nretryable: " + (retryable ? "yes" : "no") + " · reasonCode: " + problem.getType(); //$NON-NLS-1$
+        var header = problem.getHeaders().get("Retry-After"); //$NON-NLS-1$
+        return header == null ? trailer : trailer + " · retryAfterSeconds: " + header; //$NON-NLS-1$
     }
 }

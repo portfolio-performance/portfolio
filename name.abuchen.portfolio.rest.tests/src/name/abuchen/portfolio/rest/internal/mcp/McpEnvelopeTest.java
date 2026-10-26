@@ -2,7 +2,9 @@ package name.abuchen.portfolio.rest.internal.mcp;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.not;
 
 import java.util.List;
@@ -69,6 +71,41 @@ public class McpEnvelopeTest
 
         assertThat(rendered.startsWith("**Partial result — 1 warning.**"), is(true));
         assertThat(rendered, containsString("no-rate"));
+    }
+
+    /**
+     * Money that was never converted is the other outcome that changes what
+     * every figure below means, so it is stated before the payload rather than
+     * as a footer note.
+     */
+    @Test
+    public void testUnconvertedMoneyIsStatedBeforeThePayload()
+    {
+        var rendered = render(HOLDINGS,
+                        "{\"items\":[],\"fxWarnings\":[{\"currency\":\"USD\",\"reportingCurrency\":\"EUR\",\"reason\":\"no-series\"}]}");
+
+        assertThat(rendered.startsWith("**Converted at 1:1, not at an exchange rate.**"), is(true));
+        assertThat(rendered, containsString("no-series"));
+        assertThat(rendered, containsString("shown at face value"));
+        assertThat(rendered.indexOf("Converted at 1:1"), is(lessThan(rendered.indexOf("\"items\""))));
+    }
+
+    /** every report carries the array, empty or not; an empty one adds no text */
+    @Test
+    public void testAnEmptyFxWarningsArrayAddsNothing()
+    {
+        assertThat(render(HOLDINGS, "{\"items\":[],\"fxWarnings\":[]}"), not(containsString("1:1")));
+    }
+
+    /** a failed computation still leads; the unconverted pairs follow it */
+    @Test
+    public void testWarningsStillLeadWhenBothArePresent()
+    {
+        var rendered = render(TRADES,
+                        "{\"items\":[],\"warnings\":[{\"code\":\"incomplete\"}],\"fxWarnings\":[{\"currency\":\"USD\",\"reportingCurrency\":\"EUR\",\"reason\":\"no-rate\"}]}");
+
+        assertThat(rendered.startsWith("**Partial result"), is(true));
+        assertThat(rendered.indexOf("Converted at 1:1"), is(greaterThan(rendered.indexOf("Partial result"))));
     }
 
     @Test
@@ -155,7 +192,14 @@ public class McpEnvelopeTest
     {
         assertThat(McpEnvelope.oversizeAdvice(TRADES), containsString("pp_list_instrument_trades"));
         assertThat(McpEnvelope.oversizeAdvice(INSTRUMENTS), containsString("pp_get_instrument"));
-        assertThat(McpEnvelope.oversizeAdvice(PERFORMANCE), containsString("narrower question"));
+        // the two performance reports, which the metrics narrowing does not reach
+        assertThat(McpEnvelope.oversizeAdvice(PERFORMANCE), containsString("pp_get_instrument_performance"));
+        assertThat(McpEnvelope.oversizeAdvice(PERFORMANCE), containsString("timeWeighted"));
+        assertThat(McpEnvelope.oversizeAdvice(McpTools.byName("pp_get_overall_performance").orElseThrow()),
+                        containsString("cannot be narrowed further"));
+        // a tool with nothing specific to say still gets the honest default
+        assertThat(McpEnvelope.oversizeAdvice(McpTools.byName("pp_get_instrument").orElseThrow()),
+                        containsString("narrower question"));
     }
 
     /**

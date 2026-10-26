@@ -54,6 +54,8 @@ public final class PerformanceHandler
                         .getFinalAccumulatedPercentage();
         var irr = performance.getPerformanceIRR();
 
-        return EntityJson.performance(openingDate, closingDate, currency, costMethod, ttwror, irr, performance);
+        var report = EntityJson.performance(openingDate, closingDate, currency, costMethod, ttwror, irr, performance);
+        FxWarnings.attach(report, client, factory);
+        return report;
     }
 }

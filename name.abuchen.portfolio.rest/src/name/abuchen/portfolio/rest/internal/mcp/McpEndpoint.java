@@ -214,16 +214,17 @@ public final class McpEndpoint
                             + "\n\nAsk the user to open Preferences → MCP Server & REST API in Portfolio Performance, "
                             + "add a client there, and copy the token it shows once into this connector's "
                             + "`Authorization` header as `Bearer <token>`. Nothing can be read or changed until they "
-                            + "have.");
+                            + "have." + hint("no-token", true));
         }
 
         var name = params.has("name") && params.get("name").isJsonPrimitive() ? params.get("name").getAsString() : null;
         if (name == null)
-            return toolError("A tool call needs a `name`.");
+            return toolError("A tool call needs a `name`." + hint("no-tool-name", false));
 
         var found = McpTools.byName(name);
         if (found.isEmpty())
-            return toolError("There is no tool called `" + name + "` here. Call tools/list to see what there is.");
+            return toolError("There is no tool called `" + name + "` here. Call tools/list to see what there is."
+                            + hint("unknown-tool", false));
 
         var tool = found.get();
         var arguments = params.has("arguments") && params.get("arguments").isJsonObject()
@@ -232,11 +233,11 @@ public final class McpEndpoint
 
         var rejected = rejectUnknownArguments(tool, arguments);
         if (rejected != null)
-            return toolError(rejected);
+            return toolError(rejected + hint("unknown-argument", false));
 
         var missing = missingArguments(tool, arguments);
         if (!missing.isEmpty())
-            return toolError(explainMissing(router, tool, missing));
+            return toolError(explainMissing(router, tool, missing) + hint("missing-argument", false));
 
         try
         {
@@ -252,8 +253,20 @@ public final class McpEndpoint
             PortfolioLog.error(e);
             return toolError("Portfolio Performance hit an internal error handling " + tool.name()
                             + ". Nothing the user did caused this, and retrying the same call will probably fail the "
-                            + "same way.");
+                            + "same way." + hint("internal-error", false));
         }
+    }
+
+    /**
+     * The machine-readable trailer of a refusal this endpoint raised itself.
+     * {@link McpExplain} adds the same trailer for a problem the REST layer
+     * raised; without it, a connector-level refusal would be the only kind a
+     * client could not act on as data. Retryable means only that the same call
+     * may succeed later unchanged - here, after the user has added a token.
+     */
+    private static String hint(String reasonCode, boolean retryable)
+    {
+        return "\n\nretryable: " + (retryable ? "yes" : "no") + " · reasonCode: " + reasonCode; //$NON-NLS-1$
     }
 
     /**
