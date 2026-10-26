@@ -136,6 +136,23 @@ public class InstrumentPerformanceTest
         assertThat(warnings.get(0).getAsJsonObject().get("reason").getAsString(), is("no-series"));
     }
 
+    /**
+     * The file's other currencies are not this report's business. An account in a
+     * currency no instrument in the response is about is not money that was
+     * converted, and naming it would point the reader at amounts that are not
+     * there - which the file's whole currency list did.
+     */
+    @Test
+    public void testFxWarningsDoNotNameCurrenciesTheReportNeverConverted()
+    {
+        var client = heldPosition();
+        new AccountBuilder("ARS").deposit_("2024-01-01", Values.Amount.factorize(100)).addTo(client);
+
+        assertThat(list(client).get("fxWarnings").getAsJsonArray().size(), is(0));
+        assertThat(item(client, instrumentOf(client).getUUID(), null).get("fxWarnings").getAsJsonArray().size(),
+                        is(0));
+    }
+
     /** the echo states the value that was applied, not an omitted property */
     @Test
     public void testDefaultsAreEchoedAsAppliedValues()

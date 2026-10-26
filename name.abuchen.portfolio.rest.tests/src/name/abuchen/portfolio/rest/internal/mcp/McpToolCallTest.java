@@ -20,9 +20,12 @@ import org.junit.Test;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import name.abuchen.portfolio.junit.AccountBuilder;
+import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.rest.ApiRoutes;
 import name.abuchen.portfolio.rest.ClientStore;
 import name.abuchen.portfolio.rest.FileAccessRegistry;
@@ -221,6 +224,52 @@ public class McpToolCallTest
         assertThat(text(result).length(), is(McpEndpoint.MAX_RESULT_CHARS));
         assertThat(text(result), containsString("TRUNCATED"));
         assertThat(text(result), containsString("ask for a narrower question"));
+    }
+
+    /**
+     * The advice is the part that tells a model to ask smaller, so it has to
+     * survive the cut. Appending it after the cap put it past the limit where
+     * nothing reads it, and the marker alone only says the answer was cut.
+     */
+    @Test
+    public void testTheOversizeAdviceSurvivesTheCut()
+    {
+        for (int ii = 0; ii < 200; ii++)
+            new SecurityBuilder().addTo(client).setName("ACME " + ii + " " + "x".repeat(600));
+
+        var instruments = text(call("pp_list_instruments", "{\"file\":\"sample\"}"));
+
+        assertThat(instruments.length(), is(McpEndpoint.MAX_RESULT_CHARS));
+        assertThat(instruments, containsString("pp_get_instrument"));
+        assertThat(instruments, containsString("ask the user which part of the portfolio they mean"));
+    }
+
+    /** the advice for a performance report names the groups that dominate its size */
+    @Test
+    public void testTheOversizeAdviceForAPerformanceReportNamesWhatToDrop()
+    {
+        var account = new AccountBuilder().addTo(client);
+
+        // an instrument the interval never touched is not in the report at all,
+        // so the fixture has to trade each one to make the report large
+        for (int ii = 0; ii < 200; ii++)
+        {
+            var security = new SecurityBuilder().addPrice("2024-06-01", Values.Quote.factorize(1000)).addTo(client);
+            security.setName("ACME " + ii + " " + "x".repeat(600));
+
+            new PortfolioBuilder(account) //
+                            .buy(security, "2024-02-01", Values.Share.factorize(10), Values.Amount.factorize(1000)) //
+                            .sell(security, "2024-09-01", Values.Share.factorize(10), Values.Amount.factorize(1200)) //
+                            .addTo(client);
+        }
+
+        var result = text(call("pp_list_instrument_performance",
+                        "{\"file\":\"sample\",\"openingDate\":\"2024-01-01\",\"closingDate\":\"2024-12-31\"}"));
+
+        assertThat(result.length(), is(McpEndpoint.MAX_RESULT_CHARS));
+        assertThat(result, containsString("TRUNCATED"));
+        assertThat(result, containsString("pp_get_instrument_performance"));
+        assertThat(result, containsString("timeWeighted"));
     }
 
     /** and an ordinary portfolio stays well below the cap */

@@ -70,25 +70,50 @@ public class TradesTest
 
     /**
      * The trades response carries `fxWarnings` like every computed report: empty
-     * when nothing fell back, and naming the pair whose amounts were converted
-     * at 1:1 because the file has no rates for it.
+     * when nothing fell back, and naming the pair whose amounts were converted at
+     * 1:1 because the file has no rates for it. The currency has to be one the
+     * trades themselves are in - ARS, which no shipped provider quotes; USD would
+     * resolve through the built-in ECB series and never fall back.
      */
     @Test
-    public void testFxWarningsEmptyWhenNothingFallsBack()
+    public void testFxWarningsNameTheCurrencyTheTradesConverted()
     {
-        assertThat(trades(closedTrade()).get("fxWarnings").getAsJsonArray().size(), is(0));
-    }
+        var client = new Client();
 
-    @Test
-    public void testFxWarningsNameCurrencyWithoutRates()
-    {
-        var client = closedTrade();
-        new AccountBuilder("ARS").deposit_("2026-01-01", Values.Amount.factorize(100)).addTo(client);
+        var security = new SecurityBuilder("ARS") //
+                        .addPrice("2026-07-01", Values.Quote.factorize(130)) //
+                        .addTo(client);
+        security.setName("ACME ARS");
+
+        var account = new AccountBuilder() //
+                        .deposit_("2026-01-01", Values.Amount.factorize(5000)) //
+                        .addTo(client);
+
+        new PortfolioBuilder(account) //
+                        .buy(security, "2026-01-15", Values.Share.factorize(10), Values.Amount.factorize(1000)) //
+                        .sell(security, "2026-03-16", Values.Share.factorize(10), Values.Amount.factorize(1300)) //
+                        .addTo(client);
 
         var warnings = trades(client).get("fxWarnings").getAsJsonArray();
         assertThat(warnings.size(), is(1));
         assertThat(warnings.get(0).getAsJsonObject().get("currency").getAsString(), is("ARS"));
         assertThat(warnings.get(0).getAsJsonObject().get("reason").getAsString(), is("no-series"));
+    }
+
+    /**
+     * A cash account in some other currency is not money this report converted.
+     * Naming it would tell the reader about unconverted amounts that are nowhere
+     * in the response - which is what the whole file's currency list did.
+     */
+    @Test
+    public void testFxWarningsDoNotNameACurrencyTheTradesNeverTouched()
+    {
+        var client = closedTrade();
+        new AccountBuilder("ARS").deposit_("2026-01-01", Values.Amount.factorize(100)).addTo(client);
+
+        assertThat(trades(client).get("fxWarnings").getAsJsonArray().size(), is(0));
+        assertThat(forInstrument(client, client.getSecurities().get(0).getUUID()).get("fxWarnings").getAsJsonArray()
+                        .size(), is(0));
     }
 
     @Test

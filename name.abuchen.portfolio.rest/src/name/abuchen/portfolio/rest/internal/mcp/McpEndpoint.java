@@ -381,7 +381,7 @@ public final class McpEndpoint
                                 plan.get().dropped());
                 if (smaller.length() <= maxChars)
                     return smaller;
-                return McpEnvelope.cap(smaller + "\n\n" + McpEnvelope.oversizeAdvice(tool), maxChars);
+                return capWithAdvice(smaller, McpEnvelope.oversizeAdvice(tool), maxChars);
             }
             catch (Exception e)
             {
@@ -392,7 +392,18 @@ public final class McpEndpoint
             }
         }
 
-        return McpEnvelope.cap(rendered + "\n\n" + McpEnvelope.oversizeAdvice(tool), maxChars);
+        return capWithAdvice(rendered, McpEnvelope.oversizeAdvice(tool), maxChars);
+    }
+
+    /**
+     * Truncates a body and appends the advice that tells the model what to ask
+     * for instead. The advice is cut from the budget first: appended to a capped
+     * body it would land past the limit, and the one part of a truncated answer
+     * that must survive is the part saying how to get the rest.
+     */
+    private static String capWithAdvice(String body, String advice, int maxChars)
+    {
+        return McpEnvelope.cap(body, maxChars - advice.length() - 2) + "\n\n" + advice; //$NON-NLS-1$
     }
 
     /** a 204 carries nothing to render; {@code pp_delete_instrument} is the one */

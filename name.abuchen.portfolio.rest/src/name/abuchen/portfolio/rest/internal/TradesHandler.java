@@ -53,7 +53,7 @@ public final class TradesHandler
                     String groupingParam, String costMethodParam, String taxesAndFeesParam, String currencyParam)
     {
         var params = parse(client, statusParam, groupingParam, costMethodParam, taxesAndFeesParam, currencyParam);
-        return respond(collect(client, factory, client.getSecurities(), params), params, client, factory);
+        return respond(collect(client, factory, client.getSecurities(), params), params, factory);
     }
 
     public static JsonElement forInstrument(Client client, ExchangeRateProviderFactory factory, String uuid,
@@ -66,7 +66,7 @@ public final class TradesHandler
         var params = parse(client, statusParam, groupingParam, costMethodParam, taxesAndFeesParam, currencyParam);
 
         // sub-collection: an untraded instrument has an empty list, not a 404
-        return respond(collect(client, factory, List.of(security), params), params, client, factory);
+        return respond(collect(client, factory, List.of(security), params), params, factory);
     }
 
     private static Params parse(Client client, String statusParam, String groupingParam, String costMethodParam,
@@ -87,7 +87,7 @@ public final class TradesHandler
         return new Params(status, grouping, costMethod, taxesAndFees, currency, LocalDate.now());
     }
 
-    /* package */ record Collected(List<Trade> trades, List<Warning> warnings)
+    /* package */ record Collected(List<Trade> trades, List<Warning> warnings, List<String> currencies)
     {
     }
 
@@ -101,6 +101,9 @@ public final class TradesHandler
 
         var trades = new ArrayList<Trade>();
         var warnings = new ArrayList<Warning>();
+        // the currencies this response converted: the securities whose trades it
+        // shows, not every currency the file happens to use
+        var currencies = new ArrayList<String>();
 
         // the collector keeps no state between securities
         var collector = new TradeCollector(client, converter, params.grouping(), snapshotCache);
@@ -112,7 +115,10 @@ public final class TradesHandler
                 for (var trade : collector.collect(security))
                 {
                     if (params.status().contains(TradeStatus.of(trade)))
+                    {
                         trades.add(trade);
+                        currencies.add(trade.getSecurity().getCurrencyCode());
+                    }
                 }
             }
             catch (TradeCollectorException e)
@@ -124,7 +130,7 @@ public final class TradesHandler
         // stable sort keeps the collector's order within one security
         trades.sort(Comparator.comparing(t -> t.getSecurity().getName(), TextUtil::compare));
 
-        return new Collected(trades, warnings);
+        return new Collected(trades, warnings, currencies);
     }
 
     private static Warning warning(Security security, TradeCollectorException e)
@@ -142,8 +148,7 @@ public final class TradesHandler
         };
     }
 
-    private static JsonElement respond(Collected collected, Params params, Client client,
-                    ExchangeRateProviderFactory factory)
+    private static JsonElement respond(Collected collected, Params params, ExchangeRateProviderFactory factory)
     {
         var items = new JsonArray();
         for (var trade : collected.trades())
@@ -154,7 +159,9 @@ public final class TradesHandler
             warnings.add(EntityJson.toJson(warning));
 
         var json = EntityJson.tradesContext(params);
-        FxWarnings.attach(json, client, factory);
+        // only the currencies of the trades in this response: a cash account in
+        // some other currency is not money this report converted
+        FxWarnings.attach(json, collected.currencies(), factory);
         // always present so clients can detect partial success
         json.add("warnings", warnings); //$NON-NLS-1$
         json.add("items", items); //$NON-NLS-1$

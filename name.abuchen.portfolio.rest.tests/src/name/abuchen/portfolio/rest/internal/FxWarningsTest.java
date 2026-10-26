@@ -6,6 +6,8 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -101,6 +103,32 @@ public class FxWarningsTest
         new AccountBuilder("EUR").deposit_("2026-01-01", Values.Amount.factorize(100)).addTo(client);
 
         assertThat(FxWarnings.list(client, factory(client), CurrencyUnit.EUR), is(empty()));
+    }
+
+    /**
+     * A report that covers part of the file names only the currencies it
+     * converted. The file's currency list would add an account this report never
+     * valued, and the reader would hunt for amounts that are not in the response.
+     */
+    @Test
+    public void testScopedListNamesOnlyTheCurrenciesOfTheReport()
+    {
+        var client = new Client();
+        new AccountBuilder("ARS").deposit_("2026-01-01", Values.Amount.factorize(100)).addTo(client);
+
+        assertThat(FxWarnings.list(List.of("EUR"), factory(client), CurrencyUnit.EUR), is(empty()));
+        assertThat(FxWarnings.list(List.of("ARS"), factory(client), CurrencyUnit.EUR),
+                        contains(new FxWarnings.Warning("ARS", "EUR", "no-series")));
+    }
+
+    /** a scoped list skips the reporting currency, a currency named twice and one it does not know */
+    @Test
+    public void testScopedListSkipsTheReportingCurrencyAndDuplicates()
+    {
+        var client = new Client();
+
+        assertThat(FxWarnings.list(Arrays.asList("EUR", "EUR", null), factory(client), CurrencyUnit.EUR), is(empty()));
+        assertThat(FxWarnings.list(List.of("ARS", "ARS"), factory(client), CurrencyUnit.EUR).size(), is(1));
     }
 
     /** a currency the application does not know is skipped, not reported */

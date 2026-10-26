@@ -4,11 +4,15 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.CostMethod;
@@ -54,8 +58,42 @@ public final class InstrumentPerformanceHandler
     {
         var report = list(client, converters(factory), openingDateParam, closingDateParam, currencyParam,
                         costMethodParam, taxesAndFeesParam, metricsParam).getAsJsonObject();
-        FxWarnings.attach(report, client, factory);
+        FxWarnings.attach(report, currenciesOf(report, client), factory);
         return report;
+    }
+
+    /**
+     * The currencies this report converted: the instruments it is about. The
+     * collection covers every instrument the interval touched and the item route
+     * exactly one, so neither names a currency whose amounts never reached the
+     * response - which the file's currency list would, since it includes cash
+     * accounts no instrument report values.
+     */
+    private static List<String> currenciesOf(JsonObject report, Client client)
+    {
+        var currencyByUuid = new HashMap<String, String>();
+        for (var security : client.getSecurities())
+            currencyByUuid.put(security.getUUID(), security.getCurrencyCode());
+
+        var currencies = new ArrayList<String>();
+
+        if (report.has("items") && report.get("items").isJsonArray()) //$NON-NLS-1$
+        {
+            for (JsonElement item : report.get("items").getAsJsonArray()) //$NON-NLS-1$
+                currencies.add(currencyOf(item, currencyByUuid));
+        }
+        else if (report.has("uuid")) //$NON-NLS-1$
+            currencies.add(currencyByUuid.get(report.get("uuid").getAsString())); //$NON-NLS-1$
+
+        return currencies;
+    }
+
+    private static String currencyOf(JsonElement item, Map<String, String> currencyByUuid)
+    {
+        if (!item.isJsonObject() || !item.getAsJsonObject().has("uuid")) //$NON-NLS-1$
+            return null;
+
+        return currencyByUuid.get(item.getAsJsonObject().get("uuid").getAsString()); //$NON-NLS-1$
     }
 
     /* package */ static JsonElement list(Client client, Function<String, CurrencyConverter> converters,
@@ -87,7 +125,7 @@ public final class InstrumentPerformanceHandler
     {
         var report = get(client, converters(factory), uuid, openingDateParam, closingDateParam, currencyParam,
                         costMethodParam, taxesAndFeesParam, metricsParam).getAsJsonObject();
-        FxWarnings.attach(report, client, factory);
+        FxWarnings.attach(report, currenciesOf(report, client), factory);
         return report;
     }
 

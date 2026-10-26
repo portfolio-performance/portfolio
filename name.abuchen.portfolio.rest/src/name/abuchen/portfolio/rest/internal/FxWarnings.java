@@ -2,7 +2,9 @@ package name.abuchen.portfolio.rest.internal;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -29,6 +31,11 @@ import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
  * shape for every amount, so the report says it once as {@code fxWarnings}: always
  * present, empty when nothing fell back - the same rule as {@code warnings} on a
  * computed collection.
+ * <p/>
+ * The currencies named are the ones the report converted, not the ones the file
+ * happens to use. A report covering part of the file - trades of one instrument,
+ * the performance of one instrument - would otherwise warn about money that never
+ * reached the response.
  */
 public final class FxWarnings
 {
@@ -48,28 +55,40 @@ public final class FxWarnings
     }
 
     /**
-     * Adds {@code fxWarnings} to a report whose context has already echoed its
-     * {@code reportingCurrency}. Reading the currency back out of the payload is
-     * what makes the warning describe the currency the numbers were actually
-     * computed in, not the one the caller spelled.
+     * Adds {@code fxWarnings} to a report that covers the whole file, whose
+     * conversion therefore touches every currency the file uses.
      */
     public static void attach(JsonObject report, Client client, ExchangeRateProviderFactory factory)
     {
-        var currency = report.get("reportingCurrency"); //$NON-NLS-1$
-        report.add("fxWarnings", check(client, factory, currency != null ? currency.getAsString() : null)); //$NON-NLS-1$
+        attach(report, currenciesOf(client), factory);
     }
 
-    /** one entry per currency the file uses that is not the reporting currency */
-    public static JsonArray check(Client client, ExchangeRateProviderFactory factory, String reportingCurrency)
+    /**
+     * Adds {@code fxWarnings} to a report that covers part of the file, naming
+     * only the currencies it converted.
+     * <p/>
+     * Reading the {@code reportingCurrency} back out of the payload - rather than
+     * taking it from the caller - is what makes the warning describe the currency
+     * the numbers were computed in, including a value the handler defaulted.
+     */
+    public static void attach(JsonObject report, Collection<String> currencies, ExchangeRateProviderFactory factory)
+    {
+        var currency = report.get("reportingCurrency"); //$NON-NLS-1$
+        report.add("fxWarnings", check(currencies, factory, currency != null ? currency.getAsString() : null)); //$NON-NLS-1$
+    }
+
+    /** one entry per converted currency that is not the reporting currency */
+    public static JsonArray check(Collection<String> currencies, ExchangeRateProviderFactory factory,
+                    String reportingCurrency)
     {
         var warnings = new JsonArray();
-        for (var warning : list(client, factory, reportingCurrency))
+        for (var warning : list(currencies, factory, reportingCurrency))
             warnings.add(EntityJson.toJson(warning));
         return warnings;
     }
 
-    /** the pairs in {@code client}'s currency order, which is sorted */
-    /* package */ static List<Warning> list(Client client, ExchangeRateProviderFactory factory,
+    /** the converted currencies in code order, duplicates dropped - a report stays reproducible */
+    /* package */ static List<Warning> list(Collection<String> currencies, ExchangeRateProviderFactory factory,
                     String reportingCurrency)
     {
         if (reportingCurrency == null)
@@ -77,22 +96,45 @@ public final class FxWarnings
 
         var warnings = new ArrayList<Warning>();
 
-        for (CurrencyUnit unit : client.getUsedCurrencies())
-        {
-            String currency = unit.getCurrencyCode();
-            if (currency == null || currency.equals(reportingCurrency))
-                continue;
+        currencies.stream() //
+                        .filter(Objects::nonNull) //
+                        .distinct() //
+                        .sorted() //
+                        .forEach(currency -> {
+                            if (currency.equals(reportingCurrency))
+                                return;
 
-            var reason = reasonOf(factory.getTimeSeries(currency, reportingCurrency));
-            if (reason != null)
-                warnings.add(new Warning(currency, reportingCurrency, reason));
-        }
+                            var reason = reasonOf(factory.getTimeSeries(currency, reportingCurrency));
+                            if (reason != null)
+                                warnings.add(new Warning(currency, reportingCurrency, reason));
+                        });
 
         return warnings;
     }
 
+    /** every currency the file uses, in the order {@link Client} already sorts */
+    /* package */ static List<Warning> list(Client client, ExchangeRateProviderFactory factory,
+                    String reportingCurrency)
+    {
+        return list(currenciesOf(client), factory, reportingCurrency);
+    }
+
+    private static List<String> currenciesOf(Client client)
+    {
+        return client.getUsedCurrencies().stream() //
+                        .map(CurrencyUnit::getCurrencyCode) //
+                        .toList();
+    }
+
     /**
      * Why this pair converts at 1:1, or null when it converts properly.
+     * <p/>
+     * Whether a series answers is the same at every date: one holding rates
+     * answers any date by clamping to its first or last quote, one holding none
+     * answers nothing, and the placeholder answers everything with 1. So a
+     * report's valuation date cannot change this verdict - and the date that does
+     * change the number, one before the first quote, is the case above that is
+     * deliberately not reported.
      * <p/>
      * The placeholder the factory substitutes for a missing pair is the only exact
      * marker for "no series": a series holding no rates answers nothing, and an
