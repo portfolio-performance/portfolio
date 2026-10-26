@@ -86,8 +86,8 @@ record ErrorSpec(String code, String description, Scope scope, List<String> comm
                     everyCommand("unknown-option", "The command has no such option."),
                     everyCommand("option-value-required", "An option that takes a value was given without one."),
                     // performance: --with-reference-cash-account needs --investment-account
-                    requiredOption("option-required", "A required option is missing, or an option needs another option.",
-                                    "performance"),
+                    requiredOption("option-required",
+                                    "A required option is missing, or an option needs another option.", "performance"),
                     everyCommand("invalid-option-value",
                                     "An option value is not accepted, including an unknown operation after apply --help; the detail states the expected value."),
                     of("conflicting-options", "Options were combined that can't be used together.", "performance"),

@@ -46,8 +46,10 @@ final class PricesCommand
 
     static final CommandSpec SPEC = new CommandSpec("prices",
                     "Price history of one instrument by date, ascending unless --order desc, within an optional date range, with its latest price.",
-                    true, List.of(INSTRUMENT.spec(), FROM, TO, Paging.LIMIT, Paging.OFFSET, SORT.sortOption(), Sorting.ORDER), DATA, META,
-                    List.of(Prices.STALE_PRICE), PricesCommand::execute);
+                    true,
+                    List.of(INSTRUMENT.spec(), FROM, TO, Paging.LIMIT, Paging.OFFSET, SORT.sortOption(),
+                                    Sorting.ORDER),
+                    DATA, META, List.of(Prices.STALE_PRICE), PricesCommand::execute);
 
     private PricesCommand()
     {

@@ -78,8 +78,8 @@ final class TransactionsCommand
     static final CommandSpec SPEC = new CommandSpec("transactions",
                     "Business events as transaction records, each joining the sides of a buy, sell or transfer, filtered by date range, account, instrument and type.",
                     true,
-                    List.of(INVESTMENT_ACCOUNT.spec(), CASH_ACCOUNT.spec(), INSTRUMENT.spec(), TYPE, FROM, TO, CURRENCY, Paging.LIMIT,
-                                    Paging.OFFSET, SORT.sortOption(), Sorting.ORDER),
+                    List.of(INVESTMENT_ACCOUNT.spec(), CASH_ACCOUNT.spec(), INSTRUMENT.spec(), TYPE, FROM, TO,
+                                    CURRENCY, Paging.LIMIT, Paging.OFFSET, SORT.sortOption(), Sorting.ORDER),
                     DATA, META, ReportingCurrency.WARNINGS, TransactionsCommand::execute);
 
     private TransactionsCommand()

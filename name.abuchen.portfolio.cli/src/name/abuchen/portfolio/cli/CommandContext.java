@@ -112,7 +112,7 @@ final class CommandContext
     /** Whether the switch was given. */
     boolean flag(OptionSpec option)
     {
-        return options.containsKey(option.name());
+        return raw(option, OptionSpec.Flag.class).isPresent();
     }
 
     Optional<String> env(String name)

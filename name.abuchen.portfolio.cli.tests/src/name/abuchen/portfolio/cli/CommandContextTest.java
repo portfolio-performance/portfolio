@@ -123,6 +123,10 @@ public class CommandContextTest
         assertThrows(IllegalArgumentException.class, () -> context.integer(NAME));
         assertThrows(IllegalArgumentException.class, () -> context.choice(NAME));
         assertThrows(IllegalArgumentException.class, () -> context.text(DATE));
+        assertThrows(IllegalArgumentException.class, () -> context.text(INSTRUMENT.spec()));
+        assertThrows(IllegalArgumentException.class, () -> context.flag(DATE));
+        assertThrows(IllegalArgumentException.class,
+                        () -> context.reference(new ReferenceOption<>(NAME, References.INSTRUMENT), new Client()));
     }
 
     private static Security instrument(Client client, String name)

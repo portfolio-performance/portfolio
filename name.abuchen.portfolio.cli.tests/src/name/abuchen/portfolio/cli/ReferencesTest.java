@@ -40,10 +40,13 @@ public class ReferencesTest
         var acme = instrument(client, "ACME Corp", "US0000000001", "ACME");
         instrument(client, "Other", "US0000000002", "OTH");
 
-        assertThat(References.resolve(References.INSTRUMENT, client, "instrument", acme.getUUID()), is(sameInstance(acme)));
-        assertThat(References.resolve(References.INSTRUMENT, client, "instrument", "US0000000001"), is(sameInstance(acme)));
+        assertThat(References.resolve(References.INSTRUMENT, client, "instrument", acme.getUUID()),
+                        is(sameInstance(acme)));
+        assertThat(References.resolve(References.INSTRUMENT, client, "instrument", "US0000000001"),
+                        is(sameInstance(acme)));
         assertThat(References.resolve(References.INSTRUMENT, client, "instrument", "ACME"), is(sameInstance(acme)));
-        assertThat(References.resolve(References.INSTRUMENT, client, "instrument", "ACME Corp"), is(sameInstance(acme)));
+        assertThat(References.resolve(References.INSTRUMENT, client, "instrument", "ACME Corp"),
+                        is(sameInstance(acme)));
     }
 
     @Test
@@ -52,12 +55,17 @@ public class ReferencesTest
         var client = new Client();
         var acme = instrument(client, "ACME Corp", "US0000000001", "ACME");
 
-        assertThat(References.resolve(References.INSTRUMENT, client, "instrument", "us0000000001"), is(sameInstance(acme)));
-        assertThat(References.resolve(References.INSTRUMENT, client, "instrument", "acme corp"), is(sameInstance(acme)));
-        assertThat(References.resolve(References.INSTRUMENT, client, "instrument", acme.getUUID().toUpperCase()), is(sameInstance(acme)));
+        assertThat(References.resolve(References.INSTRUMENT, client, "instrument", "us0000000001"),
+                        is(sameInstance(acme)));
+        assertThat(References.resolve(References.INSTRUMENT, client, "instrument", "acme corp"),
+                        is(sameInstance(acme)));
+        assertThat(References.resolve(References.INSTRUMENT, client, "instrument", acme.getUUID().toUpperCase()),
+                        is(sameInstance(acme)));
 
-        assertThrows(CliException.class, () -> References.resolve(References.INSTRUMENT, client, "instrument", " ACME Corp"));
-        assertThrows(CliException.class, () -> References.resolve(References.INSTRUMENT, client, "instrument", "ACME Co"));
+        assertThrows(CliException.class,
+                        () -> References.resolve(References.INSTRUMENT, client, "instrument", " ACME Corp"));
+        assertThrows(CliException.class,
+                        () -> References.resolve(References.INSTRUMENT, client, "instrument", "ACME Co"));
     }
 
     @Test
@@ -67,7 +75,8 @@ public class ReferencesTest
         instrument(client, "Acme", null, null);
         instrument(client, "ACME", null, null);
 
-        var e = assertThrows(CliException.class, () -> References.resolve(References.INSTRUMENT, client, "instrument", "acme"));
+        var e = assertThrows(CliException.class,
+                        () -> References.resolve(References.INSTRUMENT, client, "instrument", "acme"));
 
         assertThat(e.getCode(), is("reference-ambiguous"));
     }
@@ -79,7 +88,8 @@ public class ReferencesTest
         var target = instrument(client, "Target", null, null);
         instrument(client, target.getUUID(), null, null);
 
-        assertThat(References.resolve(References.INSTRUMENT, client, "instrument", target.getUUID()), is(sameInstance(target)));
+        assertThat(References.resolve(References.INSTRUMENT, client, "instrument", target.getUUID()),
+                        is(sameInstance(target)));
     }
 
     @Test
@@ -89,7 +99,8 @@ public class ReferencesTest
         var byTicker = instrument(client, "Software AG", null, "SAP");
         var byName = instrument(client, "SAP", null, null);
 
-        var e = assertThrows(CliException.class, () -> References.resolve(References.INSTRUMENT, client, "instrument", "SAP"));
+        var e = assertThrows(CliException.class,
+                        () -> References.resolve(References.INSTRUMENT, client, "instrument", "SAP"));
 
         assertThat(e.getCode(), is("reference-ambiguous"));
         var candidates = (List<?>) problem(e).get("candidates");
@@ -117,7 +128,8 @@ public class ReferencesTest
         var retired = instrument(client, "Retired", "US0000000001", null);
         retired.setRetired(true);
 
-        var e = assertThrows(CliException.class, () -> References.resolve(References.INSTRUMENT, client, "instrument", "US0000000001"));
+        var e = assertThrows(CliException.class,
+                        () -> References.resolve(References.INSTRUMENT, client, "instrument", "US0000000001"));
 
         assertThat(e.getCode(), is("reference-ambiguous"));
         var candidates = (List<?>) problem(e).get("candidates");
@@ -136,7 +148,8 @@ public class ReferencesTest
         var a = instrument(client, "same", "XX", "T");
         a.setCurrencyCode("");
 
-        var e = assertThrows(CliException.class, () -> References.resolve(References.INSTRUMENT, client, "instrument", "XX"));
+        var e = assertThrows(CliException.class,
+                        () -> References.resolve(References.INSTRUMENT, client, "instrument", "XX"));
 
         var candidates = (List<?>) problem(e).get("candidates");
         var expectedFirst = a.getUUID().compareTo(b.getUUID()) < 0 ? a : b;
@@ -161,7 +174,8 @@ public class ReferencesTest
         instrument(client, null, null, "  ");
         instrument(client, "", "", null);
 
-        var e = assertThrows(CliException.class, () -> References.resolve(References.INSTRUMENT, client, "instrument", "nothing"));
+        var e = assertThrows(CliException.class,
+                        () -> References.resolve(References.INSTRUMENT, client, "instrument", "nothing"));
 
         assertThat(e.getCode(), is("reference-not-found"));
         assertThat(problem(e).get("status"), is(404));
@@ -177,7 +191,8 @@ public class ReferencesTest
     {
         var client = new Client();
 
-        var e = assertThrows(CliException.class, () -> References.resolve(References.INSTRUMENT, client, "instrument", "  "));
+        var e = assertThrows(CliException.class,
+                        () -> References.resolve(References.INSTRUMENT, client, "instrument", "  "));
 
         assertThat(e.getCode(), is("invalid-option-value"));
         assertThat(e.getExitCode(), is(2));
@@ -194,20 +209,25 @@ public class ReferencesTest
         depot.setName("Broker");
         var security = instrument(client, "Main", "US1", null);
 
-        assertThat(References.resolve(References.CASH_ACCOUNT, client, "account", cash.getUUID()), is(sameInstance(cash)));
+        assertThat(References.resolve(References.CASH_ACCOUNT, client, "account", cash.getUUID()),
+                        is(sameInstance(cash)));
         assertThat(References.resolve(References.CASH_ACCOUNT, client, "account", "main"), is(sameInstance(cash)));
-        assertThat(References.resolve(References.INVESTMENT_ACCOUNT, client, "account", depot.getUUID()), is(sameInstance(depot)));
-        assertThat(References.resolve(References.INVESTMENT_ACCOUNT, client, "account", "BROKER"), is(sameInstance(depot)));
+        assertThat(References.resolve(References.INVESTMENT_ACCOUNT, client, "account", depot.getUUID()),
+                        is(sameInstance(depot)));
+        assertThat(References.resolve(References.INVESTMENT_ACCOUNT, client, "account", "BROKER"),
+                        is(sameInstance(depot)));
 
         // a UUID or name of another kind is not found
         assertThat(assertThrows(CliException.class,
-                        () -> References.resolve(References.CASH_ACCOUNT, client, "account", depot.getUUID())).getCode(),
+                        () -> References.resolve(References.CASH_ACCOUNT, client,
+                                        "account", depot.getUUID())).getCode(),
                         is("reference-not-found"));
         assertThat(assertThrows(CliException.class,
                         () -> References.resolve(References.INVESTMENT_ACCOUNT, client, "account", "Main")).getCode(),
                         is("reference-not-found"));
         assertThat(assertThrows(CliException.class,
-                        () -> References.resolve(References.INSTRUMENT, client, "instrument", cash.getUUID())).getCode(),
+                        () -> References.resolve(References.INSTRUMENT, client,
+                                        "instrument", cash.getUUID())).getCode(),
                         is("reference-not-found"));
         assertThat(References.resolve(References.INSTRUMENT, client, "instrument", "Main"), is(sameInstance(security)));
     }
@@ -221,7 +241,8 @@ public class ReferencesTest
         var second = new AccountBuilder().addTo(client);
         second.setName("MAIN");
 
-        var e = assertThrows(CliException.class, () -> References.resolve(References.CASH_ACCOUNT, client, "account", "Main"));
+        var e = assertThrows(CliException.class,
+                        () -> References.resolve(References.CASH_ACCOUNT, client, "account", "Main"));
 
         assertThat(e.getCode(), is("reference-ambiguous"));
         assertThat(e.getMessage(), containsString("Main"));

@@ -34,7 +34,8 @@ final class HoldingsCommand
                     "Day to value the holdings at. Defaults to today. Holdings use the prices on or before this day, and conversions the rates on or before it.");
 
     private static final ReferenceOption<Portfolio> INVESTMENT_ACCOUNT = ReferenceOption.investmentAccount(
-                    "investment-account", "Only the holdings of this investment account. The cash section is not affected.");
+                    "investment-account",
+                    "Only the holdings of this investment account. The cash section is not affected.");
 
     private static final OptionSpec BY_ACCOUNT = OptionSpec.flag("by-account",
                     "Split the holdings into one block per investment account instead of one aggregate.");
@@ -110,8 +111,8 @@ final class HoldingsCommand
 
     static final CommandSpec SPEC = new CommandSpec("holdings",
                     "What is held at a date and what it is worth: holdings aggregated across investment accounts, or per account, with cash balances in a separate section, in the base currency or --currency.",
-                    true, List.of(DATE, INVESTMENT_ACCOUNT.spec(), BY_ACCOUNT, INCLUDE_ZERO, CURRENCY), DATA, META, WARNINGS,
-                    HoldingsCommand::execute);
+                    true, List.of(DATE, INVESTMENT_ACCOUNT.spec(), BY_ACCOUNT, INCLUDE_ZERO, CURRENCY), DATA, META,
+                    WARNINGS, HoldingsCommand::execute);
 
     private HoldingsCommand()
     {
