@@ -247,8 +247,7 @@ public class NewDomainElementHandler
         if (template.isPresent())
         {
             taxonomy = template.get().build();
-            taxonomy.setName(name);
-            taxonomy.getRoot().setName(name);
+            taxonomy.rename(name);
         }
         else
         {

@@ -1,0 +1,59 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.87.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Alpian SA
+Quai du Seujet 18
+1201 Geneva
+Switzerland
+www.alpian.com
+Geneva, 04 August 2026
+DnV
+izDnx
+KiuknDtKFbPH
+fHQdQxAR
+9469
+CH
+Contract Note Buy - SCTRSC26216Q9PFQ
+Dear rMq GaTgz,
+This is to inform you that based on your buy order of 04.08.2026, we have carried out the following transaction:
+Security name: 21Shares Crypto Basket Ind
+ISIN: CH0445689208
+Currency: CHF
+TRANSACTION DETAILS
+Trade date: 04.08.2026
+Value date: 06.08.2026
+Quantity: 31
+Unit gross price: CHF 9.449765983
+Stamp tax duty: CHF 0.22
+Total net amount paid: CHF 293.16
+Total net amount debited: CHF 293.16
+Place of execution: EBS
+EBS
+EBS
+EBS
+EBS
+EBS
+EBS
+EBS
+EBS
+EBS
+EBS
+Time of execution: 2026-08-04-12:36:59
+2026-08-04-12:40:02
+2026-08-04-12:40:03
+2026-08-04-12:40:03
+2026-08-04-12:43:36
+2026-08-04-12:45:51
+2026-08-04-12:46:11
+2026-08-04-12:45:52
+2026-08-04-12:49:44
+2026-08-04-12:50:54
+2026-08-04-12:52:42
+04.08.2026 15:14:59.260 Page 1 of 2
+We remain at your disposal for any additional information.
+Kind regards,
+Alpian SA
+Advice without signature
+Disclaimer: This contract note shall be considered to be approved if no complaint is received by Alpian SA within 30 days.
+04.08.2026 15:14:59.260 Page 2 of 2

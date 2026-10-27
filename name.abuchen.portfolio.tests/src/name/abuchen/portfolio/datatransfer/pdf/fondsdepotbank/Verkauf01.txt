@@ -1,0 +1,72 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.79.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+$FORM=D5012,01,700000004104276791,0,0001,FD501200.PUBXL,01591,03.09.2025,STDDEP,LU0187079347,5050,5050000000094197,J,100001,
+Es betreut Sie:
+xcTmrl lxa
+Tk TCdKFjxYJr 46
+17150 HIFfi
+Telefon: +49 1409 536871
+ServiceCenter:
+Telefon: +49 9281 7258-3000
+Telefax: +49 9281 7258-46118
+E-Mail: info@fondsdepotbank.de
+Frau Servicezeiten:
+kYDGP HhLrA Mo. - Fr.: 8 Uhr bis 20 Uhr
+Alleestr. 355s
+68334 Efemu Datum: Hof, 03. September 2025
+Depotabrechnung Auszug Nr. 5 Seite 1/2
+Fondsdepot Nr. 2224777671
+Depotinhaber/-in: WzXQC UMxUu
+Fondsbezeichnung: Robeco GlobConsTrend D EUR
+ISIN/WKN: LU0187079347/A0CA0W Ertragsverwendung: thesaurierend
+Verwahrart/Lagerort: Wertpapierrechnung/Luxemburg
+Fondsklasse/Teilfreistellung: Aktienfonds/30%
+Transaktion Abrechnungsbetrag Wertermittlungstag Preis je Anteil Abgerechnete Anteile
+Währungsbetrag Bestand alt
+Devisenkurs Bestand neu
+Verkauf 4.859,43 EUR 02.09.2025 379,9100 EUR -12,791
+für Tausch 12,791
+0,000
+Abrechnungsbetrag 4.859,43 EUR
+Kapitalertragsteuer -124,44 EUR
+Solidaritätszuschlag -6,84 EUR
+Kirchensteuer 0,0000% -0,00 EUR
+Transaktionsentgelt inkl. gesetzl. USt -5,00 EUR
+Verbleibende Gutschrift 4.723,15 EUR
+Konto- und Depotabrechnungen, Depot- und Erträgnisaufstellungen, sonstige Auszüge und Anzeigen über die Ausführung von Aufträgen sind
+auf ihre Richtigkeit und Vollständigkeit unverzüglich zu überprüfen. Etwaige Einwendungen sind unverzüglich geltend zu machen. Die Unter-
+lassung rechtzeitiger Einwendungen gilt als Genehmigung. Die vorstehenden girosammelverwahrten/gegen Wertpapierrechnung verwahrten
+Anteile oder Aktien an Investmentvermögen haben wir Ihrem Depot bei Kauf gutgeschrieben/bei Verkauf belastet.
+Dieses Schreiben wurde maschinell erstellt und ist ohne Unterschrift gültig.
+Fondsdepot Bank – Amtsgericht München Kontakt: Vorstand:
+eine Marke der FNZ Bank SE HRB 289 271 Tel.: +49 9281 7258-3000 Peter Karst (Vorsitzender),
+Postanschrift: USt-IdNr.: Fax: +49 9281 7258-46118 Jürgen Fiedler, Philip Laucks,
+95025 Hof DE 813330104 E-Mail: info@fondsdepotbank.de Pamela Schmidt-Fischbach
+Gläubiger-ID Web: www.fondsdepotbank.de Aufsichtsratsvorsitzende:
+DE68ZZZ00000025032 Zvezdana Seeger
+$FORM=D5012,01,700000004104276791,0,0002,FD501200.PUBXL,01591,03.09.2025,STDDEP,LU0187079347,5050,5050000000094197,J,100001,
+Hof, 03. September 2025
+Depotabrechnung Auszug Nr. 5 Seite 2/2
+Fondsdepot Nr. 7162749003
+Depotinhaber/-in: AkLoZ YRPIX
+Fondsbezeichnung: Robeco GlobConsTrend D EUR
+ISIN/WKN: LU0187079347/A0CA0W Ertragsverwendung: thesaurierend
+Verwahrart/Lagerort: Wertpapierrechnung/Luxemburg
+Fondsklasse/Teilfreistellung: Aktienfonds/30%
+Veräußerungsgewinn/-verlust gem. §19 InvStG brutto 711,05 EUR
+davon Gewinne/Verluste aus Anteilen mit Erwerb vor 2009 brutto 0,00 EUR
+abzüglich Teilfreistellung gem. § 20 InvStG 213,28 EUR
+Bemessungsgrundlage netto 497,77 EUR
+Gesamtbemessungsgrundlage 497,77 EUR
+abzüglich Verlustverrechnungstopf 0,00 EUR
+abzüglich Freistellungsauftrag 0,00 EUR
+Bemessungsgrundlage für Steuerabzug 497,77 EUR
+Hinterlegter Freistellungsauftrag 625,00 EUR Verfügbarer Freistellungsauftrag 0,00 EUR
+Verfügbarer Verlustverrechnungstopf 0,00 EUR Verbleibender Verlustverrechnungstopf 0,00 EUR
+Konto- und Depotabrechnungen, Depot- und Erträgnisaufstellungen, sonstige Auszüge und Anzeigen über die Ausführung von Aufträgen sind
+auf ihre Richtigkeit und Vollständigkeit unverzüglich zu überprüfen. Etwaige Einwendungen sind unverzüglich geltend zu machen. Die Unter-
+lassung rechtzeitiger Einwendungen gilt als Genehmigung. Die vorstehenden girosammelverwahrten/gegen Wertpapierrechnung verwahrten
+Anteile oder Aktien an Investmentvermögen haben wir Ihrem Depot bei Kauf gutgeschrieben/bei Verkauf belastet.
+Dieses Schreiben wurde maschinell erstellt und ist ohne Unterschrift gültig.

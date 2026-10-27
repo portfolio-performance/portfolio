@@ -1,0 +1,46 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.85.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+NkZZevp bS Vermögensverwaltungskonto EUR
+Depot-Nr. 9999.2345.6789 / GyVnmCB QcuwBiJw
+IBAN CH75 4423 1222 3877 4167 5
+St.Galler Kantonalbank AG
+St. Leonhardstrasse 25
+9001 St. Gallen
+www.sgkb.ch
+BIC KBSGCH22
+Ihr Kontakt: xPBHs jOilPL LYrRMj uLlneHc bp
+Telefon +41 71 227 38 75
+YAUCuZe 3762
+xPBHs.LYrRMj@sgkb.ch
+1505 YN XK
+St. Gallen, 8. Juli 2026
+Referenznummer 0987763798
+Abrechnung: Ihr Verkauf
+Wir haben für Sie am 28. Mai 2026 verkauft (Details siehe Folgeseite):
+5'500 Ant UBS (Irl) ETF plc - UBS MSCI World
+Valoren-Nr. 110951056
+Small Cap SR UCITS ETF Accum Shs USD
+ISIN IE00BKSCBX74
+Währung Betrag
+Kurs EUR 10.81905
+EUR 59'504.78
+Eidg. Stempelsteuer(CHF -81.66) EUR 89.26
+Fremde Courtage EUR 11.90
+Total EUR 59'403.62 Zu Ihren Gunsten
+Valuta 01.06.2026 EUR 59'403.62
+Die Titel wurden Ihrem Depot entnommen.
+Wir danken für Ihren Auftrag.
+Freundliche Grüsse
+St.Galler Kantonalbank AG
+PrintPreview 4119018 229616414 BP00000000 Seite 1 von 2
+JSpRjmF vk Vermögensverwaltungskonto EUR
+IBAN CH75 4423 1222 3877 4167 5
+Ausführungsdetails
+Die Abrechnung setzt sich wie folgt zusammen:
+Menge Ausführungszeitpunkt Börsenplatz Währung Kurs
+1'516 28.05.2026 13:48:08 Xetra ETFs & ETPs EUR 10.822
+1'922 28.05.2026 13:48:08 Xetra ETFs & ETPs EUR 10.82
+2'062 28.05.2026 13:48:08 Xetra ETFs & ETPs EUR 10.816
+PrintPreview 4119018 229616414 BP00000000 Seite 2 von 2

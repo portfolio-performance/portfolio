@@ -1,0 +1,41 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.82.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+bank99 AG, Sitz Wien - Fil. 1082 KONTOAUSZUG
+Handelsgericht Wien FN 76198g vom 31.03.2026
+Alter Saldo per 19.03.2026 0,00
+Summe der Gutschriften 40.854,96
+Summe der Lastschriften 0,00
+bank99 AG, Postfach 100, A-1350 Wien
+Neuer Saldo zu Ihren Gunsten
+MKrVEjU dWjvlpdOY EUR 40.854,96
+TAxajxuLvlaJLEueyI 1
+4145 ycKO
+Konto-Nr.: 78899290142 Bankleitzahl: 19120
+Empfängerhinweis:
+Datum Buchungstext Wert Betrag
+19.03 zRqdzxM lkcSiCYHv 19.03 38.852,86
+IBAN: gI33 3931 7920 0382 3470
+Auftraggeberreferenz: 382824934750XM10608172739392
+BrY WzTuqKxLM
+REF: 307814928358cz23349072053964
+19.03 KZdKROw THqFiOlnU 19.03 0,22
+IBAN: FT32 7047 0282 7196 6611
+Auftraggeberreferenz: 38y6a9C717c14H2Ru35958j9ip8cyo69
+fJlSBuDsL
+REF: XL5w6n387P6J9533Yl786HrM6ls047a9
+27.03 iyTqXBI SCrylbbzl 27.03 2.000,00
+IBAN: De58 1818 7938 4975 3154
+Auftraggeberreferenz: 023164953727kz97681710074162
+KoimJY
+REF: 614752269475YR32170916920381
+31.03 vpgxbXk NyLqpESDT 31.03 1,88
+IBAN: PQ86 2943 6421 5841 0841
+Auftraggeberreferenz: 243HMN7P60w51941129Q40Tl5sSC09kz
+DSfHWDhjM
+REF: 34NGF2Ym9dIP244845yw02L52d40760G
+Neuer Saldo zu Ihren Gunsten 40.854,96
+ey86 9498 7810 9826 4062 SPBAATWW AP 0001 1/1
+IBAN BIC Filiale Auszug Blatt/Gesamt
+C2550 61306 Doknr.: fo38-150-3287262251

@@ -101,6 +101,24 @@ public abstract class AbstractPDFExtractor implements Extractor
         return bankIdentifier;
     }
 
+    /**
+     * Returns the label for the given document.
+     * <p>
+     * Some banks settle the transactions for several brokers (for example the
+     * Baader Bank). Such extractors can override this method and return a
+     * label per broker. The PDF import groups the extracted items by this
+     * label, so that the import wizard remembers the target portfolio and
+     * account per broker.
+     *
+     * @param inputFile
+     *            the document
+     * @return the label of the document, by default {@link #getLabel()}
+     */
+    public String getLabel(PDFInputFile inputFile)
+    {
+        return getLabel();
+    }
+
     /* package */ NumberFormat getNumberFormat()
     {
         return numberFormat;

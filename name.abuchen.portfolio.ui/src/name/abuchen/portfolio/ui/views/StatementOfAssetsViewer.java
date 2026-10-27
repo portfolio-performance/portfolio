@@ -1027,7 +1027,7 @@ public class StatementOfAssetsViewer
 
     private void addAttributeColumns()
     {
-        AttributeColumn.createFor(client, Security.class) //
+        AttributeColumn.createForSecuritiesAndAccounts(client) //
                         .forEach(column -> {
                             if (column.getSorter() != null)
                                 column.getSorter().wrap(ElementComparator::new);
@@ -1560,9 +1560,13 @@ public class StatementOfAssetsViewer
         @Override
         public <T> T adapt(Class<T> type) // NOSONAR
         {
-            if (type == Security.class || type == Attributable.class)
+            if (type == Security.class)
             {
                 return type.cast(getSecurity());
+            }
+            else if (type == Attributable.class)
+            {
+                return type.cast(isAccount() ? getAccount() : getSecurity());
             }
             else if (type == Named.class || type == Annotated.class)
             {

@@ -1,0 +1,21 @@
+PDFBox Version: 3.0.8
+Portfolio Performance Version: 0.89.0
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Wm iCxSt dUTB OLjBU
+KgROr GvPHuxbVr 00 0 W
+94080 wQiCDM
+rIFXz
+UDhC IBuh: ****yNe
+Transactions from 15-09-2026 until 14-10-2026
+Transaction
+Date Time Product ISIN Reference
+exchange Venue Quantity Price Local value Value EUR Exchange AutoFX and/or third
+rate Fee party fees Total EUR
+EUR
+05-10-2026 13:35 ISHARES CORE MSCI WORLD IE00B4L5Y983 TDG XGAT 10 100,0000 EUR -1.000,00 EUR -1.000,00 0,0000 0,00 -1,00 -1.001,00
+UCITS ETF USD (ACC)
+flatexDEGIRO Bank Dutch Branch, trading under the name DEGIRO, is the Dutch branch of flatexDEGIRO Bank SE. flatexDEGIRO Bank www.degiro.es Account statement
+SE is primarily supervised by the German financial regulator (BaFin). In the Netherlands, flatexDEGIRO Bank Dutch Branch is registered clientes@degiro.es
+with DNB and supervised by AFM and DNB. Amstelplein 1 1096 HA 2026-10-14
+Page 1 / 1

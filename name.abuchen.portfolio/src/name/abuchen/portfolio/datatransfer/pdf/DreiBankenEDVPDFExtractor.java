@@ -137,6 +137,13 @@ public class DreiBankenEDVPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
+                        // Extag 10.12.2020
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Extag (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
+                        // @formatter:off
                         // Wertpapierrechnung Wert 23.12.2020 EUR                0,30
                         // @formatter:on
                         .section("currency", "amount") //

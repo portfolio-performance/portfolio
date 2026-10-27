@@ -412,9 +412,20 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
 
     public List<TransactionPair<?>> generateTransactions(CurrencyConverter converter) throws IOException
     {
-        LocalDate transactionDate = getDateOfNextTransactionToBeGenerated();
         List<TransactionPair<?>> newlyCreated = new ArrayList<>();
+        generateTransactions(converter, newlyCreated);
+        return newlyCreated;
+    }
 
+    /**
+     * Generates the transactions due until today and adds them to
+     * {@code newlyCreated}. If an IOException is thrown, the list keeps the
+     * transactions created before the exception.
+     */
+    public void generateTransactions(CurrencyConverter converter, List<TransactionPair<?>> newlyCreated)
+                    throws IOException
+    {
+        LocalDate transactionDate = getDateOfNextTransactionToBeGenerated();
         LocalDate now = LocalDate.now();
 
         while (!transactionDate.isAfter(now))
@@ -426,8 +437,6 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
 
             transactionDate = next(transactionDate);
         }
-
-        return newlyCreated;
     }
 
     private TransactionPair<?> createTransaction(CurrencyConverter converter, LocalDate tDate) throws IOException

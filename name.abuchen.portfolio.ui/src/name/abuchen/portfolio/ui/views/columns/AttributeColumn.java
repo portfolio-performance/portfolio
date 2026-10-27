@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views.columns;
 
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Attributable;
 import name.abuchen.portfolio.model.AttributeType;
@@ -24,8 +26,10 @@ import name.abuchen.portfolio.model.AttributeType.ImageConverter;
 import name.abuchen.portfolio.model.Attributes;
 import name.abuchen.portfolio.model.Bookmark;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.LimitPrice;
 import name.abuchen.portfolio.model.LimitPriceSettings;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
@@ -56,8 +60,8 @@ public class AttributeColumn extends Column
         @Override
         public int compare(Object o1, Object o2)
         {
-            Attributable a1 = Adaptor.adapt(Attributable.class, o1);
-            Attributable a2 = Adaptor.adapt(Attributable.class, o2);
+            Attributable a1 = adapt(attribute, o1);
+            Attributable a2 = adapt(attribute, o2);
 
             if (a1 == null && a2 == null)
                 return 0;
@@ -85,7 +89,7 @@ public class AttributeColumn extends Column
         @Override
         public String getText(Object element)
         {
-            Attributable attributable = Adaptor.adapt(Attributable.class, element);
+            Attributable attributable = adapt(attribute, element);
             if (attributable == null)
                 return null;
 
@@ -116,7 +120,7 @@ public class AttributeColumn extends Column
         {
             if (attribute.getConverter() instanceof ImageConverter)
             {
-                Attributable attributable = Adaptor.adapt(Attributable.class, element);
+                Attributable attributable = adapt(attribute, element);
                 return LogoManager.instance().getAttributeImage(attributable, attribute);
             }
             return null;
@@ -147,7 +151,7 @@ public class AttributeColumn extends Column
 
         private Optional<Boolean> getValue(Object element)
         {
-            Attributable attributable = Adaptor.adapt(Attributable.class, element);
+            Attributable attributable = adapt(attribute, element);
             if (attributable == null)
                 return Optional.empty();
 
@@ -322,7 +326,7 @@ public class AttributeColumn extends Column
 
         private Optional<Bookmark> getValue(Object element)
         {
-            Attributable attributable = Adaptor.adapt(Attributable.class, element);
+            Attributable attributable = adapt(attribute, element);
             if (attributable == null)
                 return Optional.empty();
 
@@ -357,13 +361,21 @@ public class AttributeColumn extends Column
 
     private static final String ID = "attribute$"; //$NON-NLS-1$
 
-    private AttributeColumn(final AttributeType attribute)
+    /**
+     * Prefix for account attribute columns in views that show securities and
+     * accounts. Attribute ids are not unique across targets (for example, the
+     * default logo attribute exists for every target with the id "logo").
+     */
+    private static final String ACCOUNT_ID = ID + "account$"; //$NON-NLS-1$
+
+    private AttributeColumn(String idPrefix, final AttributeType attribute)
     {
-        super(ID + attribute.getId(), attribute.getColumnLabel(), // $NON-NLS-1$
+        super(idPrefix + attribute.getId(), attribute.getColumnLabel(), // $NON-NLS-1$
                         attribute.isNumber() ? SWT.RIGHT : SWT.LEFT, 80);
 
         setMenuLabel(attribute.getName());
         setGroupLabel(Messages.GroupLabelAttributes);
+        setDescription(getDescription(attribute));
         setSorter(ColumnViewerSorter.create(new AttributeComparator(attribute)));
 
         if (attribute.getType() == Boolean.class)
@@ -402,6 +414,64 @@ public class AttributeColumn extends Column
 
     public static Stream<Column> createFor(Client client, Class<? extends Attributable> target)
     {
+        return create(client, target, ID).stream();
+    }
+
+    /**
+     * Creates the attribute columns for views that show both securities and
+     * accounts (for example, the statement of assets). The columns of each
+     * target are introduced by a heading in the column menu.
+     */
+    public static Stream<Column> createForSecuritiesAndAccounts(Client client)
+    {
+        List<Column> securityColumns = create(client, Security.class, ID);
+        if (!securityColumns.isEmpty())
+            securityColumns.get(0).setHeading(getTargetLabel(Security.class));
+
+        List<Column> accountColumns = create(client, Account.class, ACCOUNT_ID);
+        if (!accountColumns.isEmpty())
+            accountColumns.get(0).setHeading(getTargetLabel(Account.class));
+
+        return Stream.concat(securityColumns.stream(), accountColumns.stream());
+    }
+
+    /**
+     * Returns the label used for the attributes of the given target, or null
+     * if the target is not known.
+     */
+    public static String getTargetLabel(Class<? extends Attributable> target)
+    {
+        if (target == Security.class)
+            return Messages.LabelSecurities;
+        else if (target == Account.class)
+            return Messages.LabelAccounts;
+        else if (target == Portfolio.class)
+            return Messages.LabelPortfolios;
+        else if (target == InvestmentPlan.class)
+            return Messages.LabelInvestmentPlans;
+        else
+            return null;
+    }
+
+    private static String getDescription(AttributeType attribute)
+    {
+        var label = attribute.getTarget() != null ? getTargetLabel(attribute.getTarget()) : null;
+        return label != null ? MessageFormat.format(Messages.ColumnAttributeDefinedFor, label) : null;
+    }
+
+    /**
+     * Adapts the element to an attributable, but only if the attribute is
+     * defined for it. Attribute values are stored by attribute id and ids are
+     * not unique across targets.
+     */
+    private static Attributable adapt(AttributeType attribute, Object element)
+    {
+        var attributable = Adaptor.adapt(Attributable.class, element);
+        return attributable != null && attribute.supports(attributable.getClass()) ? attributable : null;
+    }
+
+    private static List<Column> create(Client client, Class<? extends Attributable> target, String idPrefix)
+    {
         return client.getSettings() //
                         .getAttributeTypes() //
                         .filter(a -> a.supports(target)) //
@@ -410,28 +480,29 @@ public class AttributeColumn extends Column
                             List<Column> columns = new ArrayList<>();
 
                             // primary column
-                            Column column = new AttributeColumn(attribute);
+                            Column column = new AttributeColumn(idPrefix, attribute);
                             column.setVisible(false);
                             columns.add(column);
 
                             // secondary column - if applicable
                             if (attribute.getType() == LocalDate.class)
                             {
-                                column = createDaysLeftColumn(attribute);
+                                column = createDaysLeftColumn(idPrefix, attribute);
                                 columns.add(column);
                             }
 
                             return columns.stream();
-                        });
+                        }).toList();
     }
 
-    private static Column createDaysLeftColumn(AttributeType attribute)
+    private static Column createDaysLeftColumn(String idPrefix, AttributeType attribute)
     {
         Column column;
-        column = new Column(ID + attribute.getId() + "-daysbetween", //$NON-NLS-1$
+        column = new Column(idPrefix + attribute.getId() + "-daysbetween", //$NON-NLS-1$
                         attribute.getColumnLabel() + " - " + Messages.ColumnDaysBetweenPostfix, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setMenuLabel(attribute.getName() + " - " + Messages.ColumnDaysBetweenPostfix); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelAttributes);
+        column.setDescription(getDescription(attribute));
         column.setSorter(ColumnViewerSorter.create(new AttributeComparator(attribute)));
         new AttributeEditingSupport(attribute).attachTo(column);
 
@@ -440,7 +511,7 @@ public class AttributeColumn extends Column
             @Override
             public String getText(Object element)
             {
-                Attributable attributable = Adaptor.adapt(Attributable.class, element);
+                Attributable attributable = adapt(attribute, element);
                 if (attributable == null)
                     return null;
 
@@ -451,7 +522,7 @@ public class AttributeColumn extends Column
             @Override
             public String getToolTipText(Object element)
             {
-                Attributable attributable = Adaptor.adapt(Attributable.class, element);
+                Attributable attributable = adapt(attribute, element);
                 if (attributable == null)
                     return null;
 

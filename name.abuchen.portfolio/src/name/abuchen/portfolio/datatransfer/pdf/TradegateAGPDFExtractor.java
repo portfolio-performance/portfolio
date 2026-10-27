@@ -65,9 +65,14 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
                         // WKN A113FG
                         // Wertpapier Xtr.(IE)-MSCI Wrld Con.Staples Registered Shares 1C USD o.N.
                         // Ausführungskurs 43,2500 EUR
+                        //
+                        // ISIN IE0005AJA0P1
+                        // WKN A41L70
+                        // Wertpapier Legal&General ETF-Gl.Qual.Div. Reg.Shs USD Dis. oN
+                        // Ausführungskurs 9,3510 EUR
                         // @formatter:on
                         .section("isin", "wkn", "name", "currency") //
-                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*$") //
+                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])( .*)?$") //
                         .match("^WKN (?<wkn>[A-Z0-9]{6})$") //
                         .match("^Wertpapier (?<name>.*)$") //
                         .match("^Ausf.hrungskurs [\\.,\\d]+ (?<currency>[A-Z]{3})$") //

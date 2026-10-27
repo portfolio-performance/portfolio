@@ -1,0 +1,41 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.5
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Deutsche Bank AG
+24/7-Kundenservice (069) 910-10000
+Max Mustermann 
+Hafenstr. 1 
+99999 Wohnort
+19. Januar 2026
+Ihr Depot Nr. 300 9999999 90 
+Vorabpauschale
+Vermögensverwaltungsmandat
+CorpID: 2027092097800
+Stück WKN ISIN
+44,045400 DBX1DA LU0274211480
+XTRACKERS DAX INHABER-ANTEILE 1C O.N.
+Vorabpauschale Jahreswert (p.St.) 3,3379064100 EUR Kalenderjahr 2025
+Fondsart Aktienfonds (30% Teilfreistellung) Steuerjahr 2026
+Steuerliche Bemessungsgrundlagen zur Vorabpauschale - keine Steuerbescheinigung
+Vorabpauschale vor Teilfreistellung* 30,53 EUR 
+Abzüglich Teilfreistellung der Vorabpauschale 9,16 EUR 
+Vorabpauschale nach Teilfreistellung 21,37 EUR 
+Auf Ihren Freistellungsbetrag angerechnet 21,37 EUR 
+KESt-pflichtige Vorabpauschale 0,00 EUR
+Vorsitzender des Aufsichtsrats: Alexander R. Wynaendts
+Vorstand: Christian Sewing (Vorsitzender), James von Moltke, Raja Akram, Fabrizio Campelli, Marcus Chromik, Bernd Leukert, Alexander von zur Mühlen, Laura Padovani, 
+Claudio de Sanctis, Rebecca Short
+Deutsche Bank Aktiengesellschaft mit Sitz in Frankfurt am Main; Amtsgericht Frankfurt am Main, HRB Nr. 30 000; Umsatzsteuer-Id.-Nr. DE114103379; www.db.com/de 1/2
+TRINCM0001 VOPA 20260117 14630465
+  
+ 
+Hinweise
+Im Steuerabzugsverfahren sind generell die für Privatanleger geltenden Teilfreistellungssätze anzuwenden. Für einkommensteuerpflichtige Anleger, die ihre 
+Anteile im Betriebsvermögen halten, und körperschaftsteuerpflichtige Anleger werden die erhöhten Teilfreistellungssätze erst im Veranlagungsverfahren der 
+Besteuerung zu Grunde gelegt.
+* Unterjährige Anschaffungen des bezogenen Kalenderjahres wurden mit einer anteiligen Vorabpauschale gemäß §18 Abs. 2 InvStG 2018
+(1/12 des Jahreswertes pro Haltemonat) berücksichtigt.
+Kapitalerträge sind einkommensteuerpflichtig!
+Diese Mitteilung wurde maschinell erstellt und wird nicht unterschrieben.
+2/2

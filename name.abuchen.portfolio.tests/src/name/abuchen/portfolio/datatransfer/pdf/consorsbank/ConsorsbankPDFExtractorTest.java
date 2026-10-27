@@ -4005,6 +4005,78 @@ public class ConsorsbankPDFExtractorTest
     }
 
     @Test
+    public void testDividende31()
+    {
+        var extractor = new ConsorsbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende31.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "USD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US1912161007"), hasWkn("850663"), hasTicker(null), //
+                        hasName("COCA-COLA CO., THE Registered Shares DL -,25"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-07-01T00:00"), hasExDate(null), //
+                        hasShares(25.00), //
+                        hasSource("Dividende31.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 11.26), hasGrossValue("USD", 13.25), //
+                        hasTaxes("USD", 1.99), hasFees("USD", 0.00))));
+    }
+
+    @Test
+    public void testDividende31WithSecurityInEUR()
+    {
+        var security = new Security("COCA-COLA CO., THE Registered Shares DL -,25", "EUR");
+        security.setIsin("US1912161007");
+        security.setWkn("850663");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new ConsorsbankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende31.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "USD");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-07-01T00:00"), hasExDate(null), //
+                        hasShares(25.00), //
+                        hasSource("Dividende31.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 11.26), hasGrossValue("USD", 13.25), //
+                        hasForexGrossValue("EUR", 11.56), //
+                        hasTaxes("USD", 1.99), hasFees("USD", 0.00))));
+    }
+
+    @Test
     public void testAnleiheZinsen01()
     {
         var extractor = new ConsorsbankPDFExtractor(new Client());

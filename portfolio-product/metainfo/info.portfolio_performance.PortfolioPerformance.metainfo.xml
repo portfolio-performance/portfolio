@@ -37,6 +37,58 @@
 	    <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.89.0" date="2026-10-11">
+      <description>
+        <ul>
+          <li>Experimental: An MCP endpoint lets AI assistants read and update parts of your portfolio data. This first version does not cover everything yet, and feedback is welcome. It is off by default and can be enabled in the preferences.</li>
+          <li>New: "Open in new window" in the tab context menu opens a copy of the portfolio view in a separate window.</li>
+          <li>New: Deposit account attributes can now be shown as columns in the Statement of Assets and in taxonomies.</li>
+          <li>New: PDF importers for bank99, Charles Schwab, E*TRADE, Robinhood and Volksbank Wien.</li>
+          <li>Improvement: Improved PDF importers for Baader Bank, C24 Bank, DEGIRO, Deutsche Bank, DKB, easybank, Erste Bank, flatex, ING-DiBa, J&amp;T Direktbank (now also J&amp;T Banka Slovakia), Liechtensteinische Landesbank, Postbank, Raiffeisenbank, S-Broker, Scalable Capital, St.Galler Kantonalbank, Targobank and Trade Republic.</li>
+          <li>Improvement: The Trade Republic CSV importer now books deposit fees as separate fee transactions.</li>
+          <li>Improvement: The attribute type "Percent (simple)" has been renamed to "Number (2 decimals)" because the old name incorrectly suggested that the value was a percentage.</li>
+          <li>Fix: Fees charged on dividends are now included in a security's total fees.</li>
+          <li>Fix: For short trades, the moving-average cost is now shown as undefined instead of zero.</li>
+          <li>Fix: The Kraken quote feed now loads historical prices for securities without existing price data.</li>
+          <li xml:lang="de">Experimentell: Über einen MCP-Endpunkt können KI-Assistenten Teile deiner Portfoliodaten lesen und ändern. Diese erste Version deckt noch nicht alles ab und über Feedback freuen wir uns. Die Funktion ist standardmäßig ausgeschaltet und lässt sich in den Einstellungen aktivieren.</li>
+          <li xml:lang="de">Neu: "In neuem Fenster öffnen" im Kontextmenü der Registerkarten öffnet eine Kopie der Portfolioansicht in einem separaten Fenster.</li>
+          <li xml:lang="de">Neu: Attribute von Konten können jetzt als Spalten in der Vermögensaufstellung und in den Klassifizierungen angezeigt werden.</li>
+          <li xml:lang="de">Neu: PDF-Importer für bank99, Charles Schwab, E*TRADE, Robinhood und Volksbank Wien.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für Baader Bank, C24 Bank, DEGIRO, Deutsche Bank, DKB, easybank, Erste Bank, flatex, ING-DiBa, J&amp;T Direktbank (jetzt auch J&amp;T Banka Slowakei), Liechtensteinische Landesbank, Postbank, Raiffeisenbank, S-Broker, Scalable Capital, St.Galler Kantonalbank, Targobank und Trade Republic wurden verbessert.</li>
+          <li xml:lang="de">Verbesserung: Der CSV-Importer für Trade Republic bucht Gebühren bei Einlagen/Einzahlungen jetzt als separate Gebührenbuchungen.</li>
+          <li xml:lang="de">Verbesserung: Der Attributtyp "Prozentzahl (einfach)" heißt jetzt "Zahl (2 Dezimalstellen)", da der alte Name fälschlicherweise einen Prozentwert suggerierte.</li>
+          <li xml:lang="de">Fehlerbehebung: Gebühren auf Dividenden werden jetzt in den Gesamtgebühren eines Wertpapiers berücksichtigt.</li>
+          <li xml:lang="de">Fehlerbehebung: Bei Leerverkäufen (Short-Trades) wird der gleitende Durchschnittseinstand jetzt als undefiniert statt als 0 angezeigt.</li>
+          <li xml:lang="de">Fehlerbehebung: Der Kursanbieter Kraken lädt jetzt historische Kurse auch für Wertpapiere, für die noch keine Kurse vorhanden sind.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.88.0" date="2026-10-04">
+      <description>
+        <ul>
+          <li>New: Sifting is now available as an online provider for historical prices.</li>
+          <li>New: PDF importers for Alpian, Chase, Fondsdepot Bank, Morgan Stanley, Relai and Swisscard AECS.</li>
+          <li>New: The lists of deposit accounts, securities accounts and savings plans can be exported to CSV.</li>
+          <li>Improvement: Enhanced PDF importers for 1822direkt, 3 Banken, Advanzia Bank, Baader Bank, Bison, Consorsbank, DEGIRO, DZ Bank, Hello Bank, HypoVereinsbank, Hypothekarbank Lenzburg, ING-DiBa, LGT Bank, Liberty Vorsorge, Merkur Privatbank, MLP Banking, N26, Norddeutsche Landesbank, Oldenburgische Landesbank, Pictet, Postbank, Questrade, Quirin Privatbank, Schelhammer Capital Bank, Sutor Bank, Swissquote, Tradegate, UBS, Union Investment, V-Bank, Vanguard, VDK Bank, Volksbank, VZ VermögensZentrum, Weberbank and Zürcher Kantonalbank.</li>
+          <li>Improvement: The Yahoo Finance exchange picker now shows a label for FTSE Global Index quotes (.FGI).</li>
+          <li>Improvement: Converting a transaction now keeps the source it was imported from (for example, a buy into a delivery).</li>
+          <li>Fix: Historical prices from AMFI India load again after the provider changed its data format.</li>
+          <li>Fix: Yahoo Finance now uses the correct exchange code for the Saudi Stock Exchange (.SR).</li>
+          <li>Fix: The price preview for the MFAPI quote feed now updates when the scheme code changes.</li>
+          <li>Fix: The main tab area can no longer be detached by accident.</li>
+          <li xml:lang="de">Neu: Sifting steht jetzt als Online-Anbieter für historische Kurse zur Verfügung.</li>
+          <li xml:lang="de">Neu: PDF-Importer für Alpian, Chase, Fondsdepot Bank, Morgan Stanley, Relai und Swisscard AECS.</li>
+          <li xml:lang="de">Neu: Die Listen der Konten, Depots und Sparpläne lassen sich als CSV exportieren.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für 1822direkt, 3 Banken, Advanzia Bank, Baader Bank, Bison, Consorsbank, DEGIRO, DZ Bank, Hello Bank, HypoVereinsbank, Hypothekarbank Lenzburg, ING-DiBa, LGT Bank, Liberty Vorsorge, Merkur Privatbank, MLP Banking, N26, Norddeutsche Landesbank, Oldenburgische Landesbank, Pictet, Postbank, Questrade, Quirin Privatbank, Schelhammer Capital Bank, Sutor Bank, Swissquote, Tradegate, UBS, Union Investment, V-Bank, Vanguard, VDK Bank, Volksbank, VZ VermögensZentrum, Weberbank und Zürcher Kantonalbank wurden verbessert.</li>
+          <li xml:lang="de">Verbesserung: Die Auswahl der Börsenplätze bei Yahoo Finance zeigt jetzt eine Bezeichnung für Kurse des FTSE Global Index (.FGI).</li>
+          <li xml:lang="de">Verbesserung: Beim Umwandeln einer Buchung (zum Beispiel eines Kaufs in eine Einlieferung) bleibt die Quelle des Imports jetzt erhalten.</li>
+          <li xml:lang="de">Fehlerbehebung: Historische Kurse von AMFI India werden wieder geladen, nachdem der Anbieter sein Datenformat geändert hat.</li>
+          <li xml:lang="de">Fehlerbehebung: Yahoo Finance verwendet jetzt das korrekte Börsenkürzel für die saudische Börse (.SR).</li>
+          <li xml:lang="de">Fehlerbehebung: Die Kursvorschau für den Anbieter MFAPI wird jetzt aktualisiert, wenn sich der Scheme Code ändert.</li>
+          <li xml:lang="de">Fehlerbehebung: Der Hauptbereich mit den Registerkarten lässt sich nicht mehr versehentlich abdocken.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.87.0" date="2026-08-16">
       <description>
         <ul>
