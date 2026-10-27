@@ -68,7 +68,7 @@ public final class McpEndpoint
     private static final int MAX_BATCH_MESSAGES = 32;
 
     /** an entity uuid as {@code pp_list_instruments} reports one */
-    private static final Pattern UUID_PATTERN = Pattern.compile( //$NON-NLS-1$
+    private static final Pattern UUID_PATTERN = Pattern.compile(
                     "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}");
 
     private static final String NEWEST_SUPPORTED_PROTOCOL_VERSION = "2025-06-18";
@@ -104,7 +104,7 @@ public final class McpEndpoint
             // target platform has no way to ask for the other behaviour, so the
             // message is read here name by name. A message that names one key
             // twice is a fault in whatever built it, and the caller has to hear it.
-            var reader = new JsonReader(new StringReader(new String(request.body(), StandardCharsets.UTF_8))); //$NON-NLS-1$
+            var reader = new JsonReader(new StringReader(new String(request.body(), StandardCharsets.UTF_8)));
             message = readMessage(reader);
         }
         catch (JsonSyntaxException | IOException e)
@@ -139,13 +139,6 @@ public final class McpEndpoint
     }
 
     /**
-     * The whole body as one JSON value, strict: no trailing content, no repeated
-     * key. Gson's reader would keep the last duplicate silently, and the Gson in
-     * the target platform cannot be told otherwise, so the structure is walked
-     * here. Number literals are handed to Gson so their text survives - an id is
-     * echoed back exactly as the client sent it.
-     */
-    /**
      * What a malformed body announces. Gson appends its own advice to a syntax
      * error - a hint to switch the reader to lenient parsing, plus a documentation
      * link - and that advice is a suggestion to accept the broken message, which is
@@ -156,24 +149,31 @@ public final class McpEndpoint
     {
         var message = e.getMessage();
         if (message == null)
-            return "request body is not valid JSON"; //$NON-NLS-1$
-        var position = message.indexOf(" at line "); //$NON-NLS-1$
+            return "request body is not valid JSON";
+        var position = message.indexOf(" at line ");
         if (position < 0)
-            return "request body is not valid JSON: " + message; //$NON-NLS-1$
+            return "request body is not valid JSON: " + message;
 
         // Gson puts its advice on a second line after the position, so the position
         // is kept and everything from the line break on is dropped
         var end = message.indexOf('\n', position);
         var where = message.substring(position + 1, end < 0 ? message.length() : end);
-        return "request body is not valid JSON, " + where; //$NON-NLS-1$
+        return "request body is not valid JSON, " + where;
     }
 
+    /**
+     * The whole body as one JSON value, strict: no trailing content, no repeated
+     * key. Gson's reader would keep the last duplicate silently, and the Gson in
+     * the target platform cannot be told otherwise, so the structure is walked
+     * here. Number literals are handed to Gson so their text survives - an id is
+     * echoed back exactly as the client sent it.
+     */
     private static JsonElement readMessage(JsonReader reader) throws IOException
     {
         var value = readValue(reader);
 
         if (reader.peek() != JsonToken.END_DOCUMENT)
-            throw new JsonSyntaxException("unexpected content after the JSON message"); //$NON-NLS-1$
+            throw new JsonSyntaxException("unexpected content after the JSON message");
 
         return value;
     }
@@ -186,15 +186,15 @@ public final class McpEndpoint
         {
             case BEGIN_OBJECT -> readObject(reader);
             case BEGIN_ARRAY -> readArray(reader);
-            case STRING -> new JsonPrimitive(reader.nextString()); //$NON-NLS-1$
-            case NUMBER -> JsonParser.parseString(reader.nextString()); //$NON-NLS-1$
-            case BOOLEAN -> new JsonPrimitive(reader.nextBoolean()); //$NON-NLS-1$
+            case STRING -> new JsonPrimitive(reader.nextString());
+            case NUMBER -> JsonParser.parseString(reader.nextString());
+            case BOOLEAN -> new JsonPrimitive(reader.nextBoolean());
             case NULL ->
             {
                 reader.nextNull();
                 yield JsonNull.INSTANCE;
             }
-            default -> throw new JsonSyntaxException("unexpected token " + token); //$NON-NLS-1$
+            default -> throw new JsonSyntaxException("unexpected token " + token);
         };
     }
 
@@ -208,7 +208,7 @@ public final class McpEndpoint
         {
             var name = reader.nextName();
             if (!seen.add(name))
-                throw new JsonSyntaxException("duplicate key \"" + name + "\""); //$NON-NLS-1$ //$NON-NLS-2$
+                throw new JsonSyntaxException("duplicate key \"" + name + "\"");
             object.add(name, readValue(reader));
         }
         reader.endObject();
@@ -412,7 +412,7 @@ public final class McpEndpoint
      */
     private static String hint(String reasonCode, boolean retryable)
     {
-        return "\n\nretryable: " + (retryable ? "yes" : "no") + " · reasonCode: " + reasonCode; //$NON-NLS-1$
+        return "\n\nretryable: " + (retryable ? "yes" : "no") + " · reasonCode: " + reasonCode;
     }
 
     /** the fault behind an unauthenticated call, spelled for the preference page */
@@ -479,7 +479,7 @@ public final class McpEndpoint
      */
     private static String rejectMisshapenArguments(McpTool tool, JsonObject arguments)
     {
-        var properties = tool.inputSchema().getAsJsonObject("properties"); //$NON-NLS-1$
+        var properties = tool.inputSchema().getAsJsonObject("properties");
         if (properties == null)
             return null;
 
@@ -492,14 +492,14 @@ public final class McpEndpoint
 
             var problem = describeMisshapenValue(tool, entry.getKey(), schema.getAsJsonObject(), entry.getValue());
             if (problem != null)
-                problems.add("- " + problem); //$NON-NLS-1$
+                problems.add("- " + problem);
         }
 
         if (problems.isEmpty())
             return null;
 
-        return "Some arguments are not of the shape `" + tool.name() + "` declares:\n" //$NON-NLS-1$
-                        + String.join("\n", problems); //$NON-NLS-1$
+        return "Some arguments are not of the shape `" + tool.name() + "` declares:\n"
+                        + String.join("\n", problems);
     }
 
     private static String describeMisshapenValue(McpTool tool, String argument, JsonObject schema, JsonElement value)
@@ -513,53 +513,53 @@ public final class McpEndpoint
         if (value.isJsonNull() && binding != null && binding.where() == McpTool.Where.QUERY)
             return null;
 
-        var declared = schema.get("type"); //$NON-NLS-1$
+        var declared = schema.get("type");
         if (declared != null && !matchesType(value, declared))
-            return "`" + argument + "` must be " + typesOf(declared) + ", not " + shapeOf(value); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            return "`" + argument + "` must be " + typesOf(declared) + ", not " + shapeOf(value);
 
-        var enumeration = schema.get("enum"); //$NON-NLS-1$
+        var enumeration = schema.get("enum");
         if (enumeration != null && enumeration.isJsonArray() && !holds(enumeration.getAsJsonArray(), value))
-            return "`" + argument + "` must be one of " + namesOf(enumeration.getAsJsonArray()); //$NON-NLS-1$ //$NON-NLS-2$
+            return "`" + argument + "` must be one of " + namesOf(enumeration.getAsJsonArray());
 
-        var minLength = schema.get("minLength"); //$NON-NLS-1$
+        var minLength = schema.get("minLength");
         if (minLength != null && value.isJsonPrimitive() && value.getAsJsonPrimitive().isString()
                         && value.getAsString().length() < minLength.getAsInt())
-            return "`" + argument + "` must not be empty"; //$NON-NLS-1$
+            return "`" + argument + "` must not be empty";
 
-        var items = schema.get("items"); //$NON-NLS-1$
+        var items = schema.get("items");
         if (items != null && items.isJsonObject() && value.isJsonArray())
         {
             var itemSchema = items.getAsJsonObject();
-            var declaredItems = itemSchema.get("type"); //$NON-NLS-1$
-            var permitted = itemSchema.get("enum"); //$NON-NLS-1$
+            var declaredItems = itemSchema.get("type");
+            var permitted = itemSchema.get("enum");
 
             for (JsonElement element : value.getAsJsonArray())
             {
                 if (declaredItems != null && !matchesType(element, declaredItems))
-                    return "`" + argument + "` must hold " + typesOf(declaredItems) + ", not " + shapeOf(element); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    return "`" + argument + "` must hold " + typesOf(declaredItems) + ", not " + shapeOf(element);
 
                 if (permitted != null && permitted.isJsonArray() && !holds(permitted.getAsJsonArray(), element))
-                    return "`" + argument + "` must hold one of " + namesOf(permitted.getAsJsonArray()); //$NON-NLS-1$ //$NON-NLS-2$
+                    return "`" + argument + "` must hold one of " + namesOf(permitted.getAsJsonArray());
             }
         }
 
-        var minItems = schema.get("minItems"); //$NON-NLS-1$
+        var minItems = schema.get("minItems");
         if (minItems != null && value.isJsonArray() && value.getAsJsonArray().size() < minItems.getAsInt())
-            return "`" + argument + "` must hold at least " + minItems.getAsInt() //$NON-NLS-1$
-                    + " value" + (minItems.getAsInt() == 1 ? "" : "s") + "; an empty list names nothing"; //$NON-NLS-1$ //$NON-NLS-2$
+            return "`" + argument + "` must hold at least " + minItems.getAsInt()
+                    + " value" + (minItems.getAsInt() == 1 ? "" : "s") + "; an empty list names nothing";
 
         if (binding != null && binding.where() == McpTool.Where.PATH)
         {
             var text = value.isJsonPrimitive() ? value.getAsString() : value.toString();
             if (text.isBlank())
-                return "`" + argument + "` must name something; a blank value resolves no path"; //$NON-NLS-1$
+                return "`" + argument + "` must name something; a blank value resolves no path";
 
             // A uuid is substituted into a path, and a path whose segment is a
             // reserved literal belongs to another endpoint: "attribute-types"
             // would answer with attribute types instead of one instrument.
-            if ("uuid".equals(binding.wire()) && !UUID_PATTERN.matcher(text).matches()) //$NON-NLS-1$
-                return "`" + argument + "` must be an entity uuid as pp_list_instruments reports it, not `" //$NON-NLS-1$ //$NON-NLS-2$
-                        + text + "`"; //$NON-NLS-1$
+            if ("uuid".equals(binding.wire()) && !UUID_PATTERN.matcher(text).matches())
+                return "`" + argument + "` must be an entity uuid as pp_list_instruments reports it, not `"
+                        + text + "`";
         }
 
         return null;
@@ -584,12 +584,12 @@ public final class McpEndpoint
     {
         return switch (type)
         {
-            case "string" -> value.isJsonPrimitive() && value.getAsJsonPrimitive().isString(); //$NON-NLS-1$
-            case "number", "integer" -> value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber(); //$NON-NLS-1$ //$NON-NLS-2$
-            case "boolean" -> value.isJsonPrimitive() && value.getAsJsonPrimitive().isBoolean(); //$NON-NLS-1$
-            case "array" -> value.isJsonArray(); //$NON-NLS-1$
-            case "object" -> value.isJsonObject(); //$NON-NLS-1$
-            case "null" -> value.isJsonNull(); //$NON-NLS-1$
+            case "string" -> value.isJsonPrimitive() && value.getAsJsonPrimitive().isString();
+            case "number", "integer" -> value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber();
+            case "boolean" -> value.isJsonPrimitive() && value.getAsJsonPrimitive().isBoolean();
+            case "array" -> value.isJsonArray();
+            case "object" -> value.isJsonObject();
+            case "null" -> value.isJsonNull();
             default -> true;
         };
     }
@@ -597,29 +597,29 @@ public final class McpEndpoint
     private static String typesOf(JsonElement declared)
     {
         if (!declared.isJsonArray())
-            return "`" + declared.getAsString() + "`"; //$NON-NLS-1$ //$NON-NLS-2$
+            return "`" + declared.getAsString() + "`";
 
         var names = new ArrayList<String>();
         for (JsonElement type : declared.getAsJsonArray())
-            names.add("`" + type.getAsString() + "`"); //$NON-NLS-1$ //$NON-NLS-2$
+            names.add("`" + type.getAsString() + "`");
 
-        return String.join(" or ", names); //$NON-NLS-1$
+        return String.join(" or ", names);
     }
 
     private static String shapeOf(JsonElement value)
     {
         if (value.isJsonNull())
-            return "null"; //$NON-NLS-1$
+            return "null";
         if (value.isJsonArray())
-            return "an array"; //$NON-NLS-1$
+            return "an array";
         if (value.isJsonObject())
-            return "an object"; //$NON-NLS-1$
+            return "an object";
         if (value.getAsJsonPrimitive().isBoolean())
-            return "a boolean"; //$NON-NLS-1$
+            return "a boolean";
         if (value.getAsJsonPrimitive().isNumber())
-            return "a number"; //$NON-NLS-1$
+            return "a number";
 
-        return "the string `" + value.getAsString() + "`"; //$NON-NLS-1$ //$NON-NLS-2$
+        return "the string `" + value.getAsString() + "`";
     }
 
     private static boolean holds(JsonArray permitted, JsonElement value)
@@ -639,9 +639,9 @@ public final class McpEndpoint
     {
         var names = new ArrayList<String>();
         for (JsonElement element : permitted)
-            names.add("`" + element.getAsString() + "`"); //$NON-NLS-1$ //$NON-NLS-2$
+            names.add("`" + element.getAsString() + "`");
 
-        return String.join(", ", names); //$NON-NLS-1$
+        return String.join(", ", names);
     }
 
     /** a missing {@code file} hands the files back inline, so the model recovers in this same call */
@@ -726,11 +726,15 @@ public final class McpEndpoint
                 return McpEnvelope.render(tool, narrowed, smallerPayload, plan.get().dropped(),
                                 McpEnvelope.oversizeAdvice(tool, plan.get().dropped()), maxChars);
             }
+            catch (ApiException e)
+            {
+                // The narrowed re-request was refused - the UI thread busy, a
+                // deadline passed. The first answer is still true, just too
+                // large, so truncate that rather than losing it.
+            }
             catch (Exception e)
             {
-                // The narrowed re-request failed. The first answer is still
-                // true, just too large, so truncate that rather than losing it
-                // to a transient problem.
+                // the same, but unexpected - worth a log entry
                 PortfolioLog.error(e);
             }
         }

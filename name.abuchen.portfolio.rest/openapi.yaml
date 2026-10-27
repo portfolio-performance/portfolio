@@ -169,6 +169,20 @@ info:
     **normal and temporary**: respect the `Retry-After` header and try again. Reads
     are unaffected.
 
+    ## Busy, slow or overloaded
+
+    Any request may be answered with a `503`, whose `type` says what to do:
+
+    - `ui-busy`: the application did not take the request on within 10 seconds.
+      It was not executed and never will be — retry after `Retry-After`.
+    - `ui-request-underway`: the request was already running when the wait
+      expired and will complete. There is no `Retry-After`: do not send it again,
+      read the state back instead.
+    - `calculation-timeout`: a calculation did not finish within 120 seconds.
+      The same question takes just as long again — ask a smaller one.
+    - `server-busy`: more requests are in flight than the server serves at once.
+      Retry after `Retry-After`.
+
 servers:
   - url: http://127.0.0.1:{port}
     description: Loopback interface of the running application
@@ -366,6 +380,7 @@ paths:
                   value:
                     status: approved
                     token: wZ4mJc9Y3K…
+                    persistent: true
         "400":
           $ref: "#/components/responses/BadRequest"
         "403":
@@ -807,8 +822,9 @@ paths:
                         name: Apple Inc.
                         shares: 10
                         price: { value: 110.5, currency: USD, date: "2026-07-17" }
-                        priceStale: true
+                        priceStale: false
                         priceAgeDays: 3
+                        priceMissedTradingDays: 0
                         valuation: { value: 1100, currency: EUR }
                         localValuation: { value: 1105, currency: USD }
                         weight: 0.6875
@@ -1807,6 +1823,14 @@ components:
           description: |
             The bearer token; present only while `status` is `approved`, and
             delivered exactly once.
+        persistent:
+          type: boolean
+          description: |
+            Present with `token`. Whether the token survives a restart of the
+            application: `false` when the user allowed access for this session
+            only, and when access was allowed permanently but the application
+            could not record it — the token then works until the application
+            quits, and pairing has to be repeated after that.
 
     Instrument:
       type: object
@@ -2017,7 +2041,9 @@ components:
       description: |
         One currency pair a report converted at a rate of 1 because the file has
         nothing to convert with — amounts of `currency` are shown at face value in
-        `reportingCurrency`, not exchanged.
+        `reportingCurrency`, not exchanged. Only pairs the report's calculation
+        actually converted are named: an empty account or an instrument not held
+        never is.
       required: [currency, reportingCurrency, reason]
       properties:
         currency:
@@ -2025,7 +2051,10 @@ components:
           description: The currency the amounts are natively in, shown unconverted.
         reportingCurrency:
           type: string
-          description: The currency the report is expressed in.
+          description: |
+            The currency the amounts were converted into: the report's reporting
+            currency, or an instrument's own currency for the figures stated in
+            it (such as `localValuation`).
         reason:
           type: string
           description: |
@@ -2079,17 +2108,28 @@ components:
         priceStale:
           type: boolean
           description: |
-            Instruments only. Whether the quote behind this valuation predates the
-            response's `date` — a stale price, or a valuation that fell back to the
-            price of the last transaction. The same fact as `price.date` compared
-            against `date`, stated instead of left to the caller to compute.
-            `false` when the quote is dated on or after `date`.
+            Instruments only, when `price.date` is known. Whether the quote behind
+            this valuation is out of date: `true` when more than one trading day
+            passed without a quote (`priceMissedTradingDays` > 1) — a quote feed
+            that stopped, or a valuation that fell back to the price of the last
+            transaction. A weekend or a holiday does not make a quote stale, and
+            one missed trading day is tolerated because funds publish their price
+            a day late.
         priceAgeDays:
           type: integer
           description: |
-            Instruments only. Whole days between `price.date` and the response's
-            `date`; never negative, so a quote dated after `date` reads 0 rather
-            than implying the valuation happened before it.
+            Instruments only, when `price.date` is known. Calendar days between
+            `price.date` and the response's `date`; never negative, so a quote
+            dated after `date` reads 0 rather than implying the valuation happened
+            before it.
+        priceMissedTradingDays:
+          type: integer
+          description: |
+            Instruments only, when `price.date` is known. The trading days strictly
+            between `price.date` and the response's `date`, counted in the
+            instrument's own trade calendar. `date` itself does not count: its
+            close cannot be known before the day is over. On a Sunday, Friday's
+            quote has missed none.
         valuation:
           allOf:
             - $ref: "#/components/schemas/MonetaryValue"
@@ -2547,6 +2587,10 @@ components:
             - https://portfolio-performance.info/rest/problems/pairing-pending
             - https://portfolio-performance.info/rest/problems/pairing-cooldown
             - https://portfolio-performance.info/rest/problems/internal-error
+            - https://portfolio-performance.info/rest/problems/ui-busy
+            - https://portfolio-performance.info/rest/problems/ui-request-underway
+            - https://portfolio-performance.info/rest/problems/calculation-timeout
+            - https://portfolio-performance.info/rest/problems/server-busy
         title:
           type: string
           description: Short, human-readable summary of the problem kind.

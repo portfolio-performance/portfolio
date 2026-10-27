@@ -35,7 +35,14 @@ public class PairingService
     }
 
     /** token is non-null only while status is APPROVED */
-    public record PollResult(PairingStatus status, String token)
+    /**
+     * @param token
+     *            the access token, delivered exactly once with an approval
+     * @param persistent
+     *            whether the token survives a restart: false for a session
+     *            grant, and for a persistent one the client file could not take
+     */
+    public record PollResult(PairingStatus status, String token, boolean persistent)
     {
     }
 
@@ -166,19 +173,21 @@ public class PairingService
         prune(now);
 
         if (pending != null && pending.id.equals(id))
-            return new PollResult(PairingStatus.PENDING, null);
+            return new PollResult(PairingStatus.PENDING, null, false);
 
         var outcome = outcomes.remove(id);
         if (outcome == null)
             throw ApiException.notFound();
 
-        // minted on delivery, not at approval
-        var token = outcome.status() == PairingStatus.APPROVED
-                        ? (outcome.session() ? clientStore.addSessionClient(outcome.clientName) //$NON-NLS-1$
-                                        : clientStore.addPersistentClient(outcome.clientName)) //$NON-NLS-1$
-                        : null;
+        if (outcome.status() != PairingStatus.APPROVED)
+            return new PollResult(outcome.status(), null, false);
 
-        return new PollResult(outcome.status(), token);
+        // minted on delivery, not at approval
+        var token = outcome.session() ? clientStore.addSessionClient(outcome.clientName())
+                        : clientStore.addPersistentClient(outcome.clientName());
+
+        // the client has to learn when a grant it asked to keep will not be kept
+        return new PollResult(outcome.status(), token, clientStore.survivesRestart(token));
     }
 
     private synchronized void decide(String id, PairingStatus decision, boolean session)
@@ -193,17 +202,17 @@ public class PairingService
             // is not a failure of theirs, and a silent return would leave them
             // believing a token was issued - so the log says what happened.
             PortfolioLog.warning("The decision on API access request " + id //$NON-NLS-1$
-                    + " arrived after the request had expired or been decided; nothing was granted");
+                            + " arrived after the request had expired or been decided; nothing was granted"); //$NON-NLS-1$
             return;
         }
 
         if (decision == PairingStatus.APPROVED)
         {
-            outcomes.put(id, new Outcome(PairingStatus.APPROVED, pending.clientName, session, now.plus(OUTCOME_TTL))); //$NON-NLS-1$
+            outcomes.put(id, new Outcome(PairingStatus.APPROVED, pending.clientName, session, now.plus(OUTCOME_TTL)));
         }
         else
         {
-            outcomes.put(id, new Outcome(PairingStatus.DENIED, pending.clientName, false, now.plus(OUTCOME_TTL))); //$NON-NLS-1$
+            outcomes.put(id, new Outcome(PairingStatus.DENIED, pending.clientName, false, now.plus(OUTCOME_TTL)));
             cooldownUntil = now.plus(DECLINE_COOLDOWN);
         }
         pending = null;
@@ -213,8 +222,8 @@ public class PairingService
     {
         if (pending != null && !now.isBefore(pending.expiresAt))
         {
-            outcomes.put(pending.id, new Outcome(PairingStatus.EXPIRED, pending.clientName, false, //$NON-NLS-1$
-                            now.plus(OUTCOME_TTL)));
+            outcomes.put(pending.id,
+                            new Outcome(PairingStatus.EXPIRED, pending.clientName, false, now.plus(OUTCOME_TTL)));
             pending = null;
         }
     }

@@ -475,7 +475,7 @@
       "operationId": "listHoldings",
       "method": "GET",
       "pathTemplate": "/v1/files/{file}/holdings",
-      "description": "The statement of assets: everything the file holds on one date and what it is worth, instrument positions and cash account balances in a single list, each with its share of total assets. This is the only place a cash balance can be read and the only place a position's value can be, because the account tools carry neither.\n\nEach position is valued at the most recent price on or before the date, and that price's own date travels with it, so a quote that has gone stale is visible rather than hidden. Positions already closed by the date drop out; cash accounts stay in even at zero.",
+      "description": "The statement of assets: everything the file holds on one date and what it is worth, instrument positions and cash account balances in a single list, each with its share of total assets. This is the only place a cash balance can be read and the only place a position's value can be, because the account tools carry neither.\n\nEach position is valued at the most recent price on or before the date, and that price's own date travels with it, so a quote that has gone stale is visible rather than hidden. `priceStale` says whether it has: true only when more than one trading day of the instrument's own calendar passed without a quote (`priceMissedTradingDays`), so a weekend or a holiday never makes a price stale. Name a stale price when you report a value built on it. Positions already closed by the date drop out; cash accounts stay in even at zero.",
       "inputSchema": {
         "type": "object",
         "properties": {

@@ -470,6 +470,13 @@ public class RestApiPreferencePage extends PreferencePage
             return;
 
         var token = clientStore.addPersistentClient(dialog.getValue());
+
+        // the token works, but only until the application quits: the user has
+        // to know before copying it into a connector that expects it to last
+        if (!clientStore.survivesRestart(token))
+            MessageDialog.openWarning(getShell(), Messages.PrefTitleRestApi,
+                            Messages.PrefMsgRestApiClientNotPersisted);
+
         new ShowTokenDialog(getShell(), token, currentPort()).open();
         clientsViewer.setInput(clientStore.listClients());
     }

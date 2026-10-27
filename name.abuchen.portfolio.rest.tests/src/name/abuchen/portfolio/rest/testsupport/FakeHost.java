@@ -1,10 +1,12 @@
 package name.abuchen.portfolio.rest.testsupport;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
@@ -53,10 +55,11 @@ public class FakeHost implements HostApplication
 
     private int syncExecDepth = 0;
     private boolean accessedOutsideUIThread = false;
-    private final List<Object> syncExecResults = new ArrayList<>();
-    private CountDownLatch syncExecGate;
-    private int callablesRun;
-    private Throwable callableFailure;
+    // read by tests from another thread than the one that ran the callable
+    private final List<Object> syncExecResults = Collections.synchronizedList(new ArrayList<>());
+    private volatile CountDownLatch syncExecGate;
+    private final AtomicInteger callablesRun = new AtomicInteger();
+    private volatile Throwable callableFailure;
 
     public FakeHost(List<OpenFile> openFiles)
     {
@@ -77,7 +80,7 @@ public class FakeHost implements HostApplication
     /** how many callables actually ran on the UI thread */
     public int callablesRun()
     {
-        return callablesRun;
+        return callablesRun.get();
     }
 
     /** the first exception a syncExec callable raised, if any */
@@ -130,7 +133,7 @@ public class FakeHost implements HostApplication
             if (gate != null)
                 gate.await();
 
-            callablesRun++;
+            callablesRun.incrementAndGet();
 
             try
             {

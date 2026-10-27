@@ -14,6 +14,11 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Before;
@@ -46,6 +51,7 @@ public class RestApiServerTest
         router.add("GET", "/v1/auth/requests/{id}",
                         request -> Response.json(200, JsonParser.parseString("{\"status\":\"pending\"}")));
         router.add("DELETE", "/v1/nocontent", request -> Response.noContent());
+        router.add("POST", "/v1/accepted", request -> new Response(202, null, new byte[0], Map.of()));
 
         server = new RestApiServer(0, TOKEN::equals, router);
         server.start();
@@ -343,9 +349,8 @@ public class RestApiServerTest
     }
 
     /**
-     * A 204 announced as chunked is a response a plain client waits on: the JDK
-     * turns a length of -1 into `Transfer-Encoding: chunked`, and the body that is
-     * supposed to be empty never ends. A 204 carries no body, and must say so.
+     * A 204 carries no body and must not announce one - neither a chunked
+     * stream nor a length.
      */
     @Test
     public void testANoContentResponseAnnouncesNoBody() throws Exception
@@ -355,6 +360,110 @@ public class RestApiServerTest
         assertThat(head, containsString(" 204 "));
         assertThat(head, not(containsString("transfer-encoding")));
         assertThat(head, not(containsString("content-length")));
+    }
+
+    /**
+     * An empty 202 - the answer to an MCP notification - must not announce a
+     * chunked stream either. {@code com.sun.net.httpserver} reads a length of 0
+     * as "chunked", which is why an empty body is sent with -1.
+     */
+    @Test
+    public void testAnEmptyAcceptedResponseIsNotChunked() throws Exception
+    {
+        var head = rawHead("POST", "/v1/accepted", "Bearer " + TOKEN).toLowerCase();
+
+        assertThat(head, containsString(" 202 "));
+        assertThat(head, not(containsString("transfer-encoding")));
+    }
+
+    /**
+     * Requests beyond the bound are refused at once, with a Retry-After, rather
+     * than each holding a thread and a buffered body.
+     */
+    @Test
+    public void testRequestsBeyondTheConcurrencyBoundAreRefused() throws Exception
+    {
+        var entered = new CountDownLatch(2);
+        var release = new CountDownLatch(1);
+
+        var router = new Router();
+        router.add("GET", "/v1/slow", request -> {
+            entered.countDown();
+            release.await(10, TimeUnit.SECONDS);
+            return Response.json(200, JsonParser.parseString("{}"));
+        });
+
+        var bounded = new RestApiServer(0, TOKEN::equals, router, 2, 30_000);
+        bounded.start();
+        try
+        {
+            var pending = new ArrayList<CompletableFuture<HttpResponse<String>>>();
+            for (int ii = 0; ii < 2; ii++)
+                pending.add(http.sendAsync(slow(bounded), HttpResponse.BodyHandlers.ofString()));
+
+            assertThat(entered.await(5, TimeUnit.SECONDS), is(true));
+
+            var refused = http.send(slow(bounded), HttpResponse.BodyHandlers.ofString());
+            assertThat(refused.statusCode(), is(503));
+            assertThat(refused.body(), containsString("server-busy"));
+            assertThat(refused.headers().firstValue("Retry-After").orElse(""), is("1"));
+
+            release.countDown();
+            for (var response : pending)
+                assertThat(response.get(5, TimeUnit.SECONDS).statusCode(), is(200));
+
+            // and the permits come back
+            assertThat(http.send(slow(bounded), HttpResponse.BodyHandlers.ofString()).statusCode(), is(200));
+        }
+        finally
+        {
+            release.countDown();
+            bounded.stop();
+        }
+    }
+
+    /**
+     * A client that announces a body and never sends it is cut off by the
+     * watchdog, and does not keep the server from answering anyone else.
+     */
+    @Test
+    public void testAStalledRequestIsClosedByTheWatchdog() throws Exception
+    {
+        var router = new Router();
+        router.add("POST", "/v1/auth/requests",
+                        request -> Response.json(201, JsonParser.parseString("{\"status\":\"pending\"}")));
+        router.add("GET", "/v1/ping", request -> Response.json(200, JsonParser.parseString("{\"pong\":true}")));
+
+        var guarded = new RestApiServer(0, TOKEN::equals, router, 1, 500);
+        guarded.start();
+        try (var socket = new Socket(InetAddress.getLoopbackAddress(), guarded.getPort()))
+        {
+            var request = "POST /v1/auth/requests HTTP/1.1\r\n" //
+                            + "Host: 127.0.0.1:" + guarded.getPort() + "\r\n" //
+                            + "Content-Length: 100\r\n\r\n{";
+            socket.getOutputStream().write(request.getBytes(StandardCharsets.US_ASCII));
+            socket.getOutputStream().flush();
+            socket.setSoTimeout(5_000);
+
+            // closed without an answer: end of stream, not a timeout
+            assertThat(socket.getInputStream().read(), is(-1));
+
+            // the one permit is free again
+            var response = http.send(HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + guarded.getPort()
+                            + "/v1/ping")).header("Authorization", "Bearer " + TOKEN).GET().build(),
+                            HttpResponse.BodyHandlers.ofString());
+            assertThat(response.statusCode(), is(200));
+        }
+        finally
+        {
+            guarded.stop();
+        }
+    }
+
+    private HttpRequest slow(RestApiServer target)
+    {
+        return HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + target.getPort() + "/v1/slow"))
+                        .header("Authorization", "Bearer " + TOKEN).GET().build();
     }
 
     /** the raw response head, exactly as the wire sent it */

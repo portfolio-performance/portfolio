@@ -199,6 +199,23 @@ public class InstrumentPerformanceTest
         assertThat(currenciesOfWarnings(item(client, security.getUUID(), null)), contains("ARS"));
     }
 
+    /**
+     * A dividend is booked on a cash account, not in the investment account, and
+     * is converted from that account's currency. An account in a currency with
+     * no rates therefore has to be named even though no trade of the instrument
+     * is in it.
+     */
+    @Test
+    public void testFxWarningsNameTheCurrencyOfADividendAccount()
+    {
+        var client = heldPosition();
+        var security = instrumentOf(client);
+        new AccountBuilder("ARS").dividend("2024-06-03", Values.Amount.factorize(50), security).addTo(client);
+
+        assertThat(currenciesOfWarnings(list(client)), contains("ARS"));
+        assertThat(currenciesOfWarnings(item(client, security.getUUID(), null)), contains("ARS"));
+    }
+
     /** the currencies the report's {@code fxWarnings} named */
     private static List<String> currenciesOfWarnings(JsonObject report)
     {

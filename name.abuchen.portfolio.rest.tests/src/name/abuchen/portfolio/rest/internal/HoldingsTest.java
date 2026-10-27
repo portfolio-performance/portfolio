@@ -82,9 +82,11 @@ public class HoldingsTest
         assertThat(price.get("date").getAsString(), is("2026-07-01"));
 
         // the same staleness, decided instead of left to the caller to compare
-        // the two dates: 2026-07-01 is 19 days before the valuation date
+        // the two dates: 2026-07-01 is 19 days before the valuation date, and
+        // twelve trading days passed in between without a quote
         assertThat(instrument.get("priceStale").getAsBoolean(), is(true));
         assertThat(instrument.get("priceAgeDays").getAsLong(), is(19L));
+        assertThat(instrument.get("priceMissedTradingDays").getAsLong(), is(12L));
 
         var valuation = instrument.get("valuation").getAsJsonObject();
         assertThat(valuation.get("value").getAsDouble(), is(1100d));
@@ -98,6 +100,7 @@ public class HoldingsTest
         assertThat(cash.has("price"), is(false));
         assertThat(cash.has("priceStale"), is(false));
         assertThat(cash.has("priceAgeDays"), is(false));
+        assertThat(cash.has("priceMissedTradingDays"), is(false));
         assertThat(cash.get("valuation").getAsJsonObject().get("value").getAsDouble(), is(500d));
         assertThat(cash.get("weight").getAsDouble(), closeTo(0.3125, 1e-10));
     }
@@ -122,6 +125,32 @@ public class HoldingsTest
 
         assertThat(instrument.get("priceStale").getAsBoolean(), is(false));
         assertThat(instrument.get("priceAgeDays").getAsLong(), is(0L));
+    }
+
+    /**
+     * A weekend is not a missed quote: valued on a Sunday, Friday's close is two
+     * days old and as fresh as a quote can be.
+     */
+    @Test
+    public void testFridaysQuoteOnASundayIsNotStale()
+    {
+        var client = new Client();
+
+        var security = new SecurityBuilder() //
+                        .addPrice("2026-10-23", Values.Quote.factorize(110)) //
+                        .addTo(client);
+
+        new PortfolioBuilder() //
+                        .inbound_delivery(security, "2026-01-15", Values.Share.factorize(10),
+                                        Values.Amount.factorize(1000)) //
+                        .addTo(client);
+
+        var holdings = list(client, "2026-10-25", null).getAsJsonObject();
+        var instrument = holdings.get("items").getAsJsonArray().get(0).getAsJsonObject();
+
+        assertThat(instrument.get("priceStale").getAsBoolean(), is(false));
+        assertThat(instrument.get("priceAgeDays").getAsLong(), is(2L));
+        assertThat(instrument.get("priceMissedTradingDays").getAsLong(), is(0L));
     }
 
     /**
@@ -393,6 +422,24 @@ public class HoldingsTest
         var warnings = holdings.get("fxWarnings").getAsJsonArray();
         assertThat(warnings.size(), is(1));
         assertThat(warnings.get(0).getAsJsonObject().get("reason").getAsString(), is("no-rate"));
+    }
+
+    /**
+     * Only money the statement of assets converted is named. An empty account and
+     * a security that is no longer held contribute nothing to it, whatever their
+     * currency, so a warning about them would send the reader looking for
+     * amounts that are not in the response.
+     */
+    @Test
+    public void testFxWarningsDoNotNameCurrenciesTheStatementNeverConverted()
+    {
+        var client = new Client();
+        new AccountBuilder("EUR").deposit_("2026-01-01", Values.Amount.factorize(200)).addTo(client);
+        new AccountBuilder("ARS").addTo(client);
+        new SecurityBuilder("BBD").addPrice("2026-01-01", Values.Quote.factorize(10)).addTo(client);
+
+        var holdings = list(client, "2026-07-20", null).getAsJsonObject();
+        assertThat(holdings.get("fxWarnings").getAsJsonArray().size(), is(0));
     }
 
     @Test

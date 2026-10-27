@@ -2,6 +2,8 @@ package name.abuchen.portfolio.rest.internal.mcp;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 import name.abuchen.portfolio.rest.internal.ApiException;
 
@@ -16,7 +18,12 @@ import name.abuchen.portfolio.rest.internal.ApiException;
 public final class McpExplain
 {
     /** a file as {@code GET /v1/files} reports it */
-    public record FileSummary(String id, String label, String alias)
+    /**
+     * @param use
+     *            the value to send as {@code file}, as {@code GET /v1/files}
+     *            reports it
+     */
+    public record FileSummary(String id, String label, String alias, String use)
     {
     }
 
@@ -67,8 +74,9 @@ public final class McpExplain
         var rows = new ArrayList<String>();
         for (FileSummary file : files)
         {
-            rows.add(file.alias() != null ? "- " + file.label() + " — use `" + file.alias() + "` or `" + file.id() + "`"
-                            : "- " + file.label() + " — use `" + file.id() + "`");
+            // only `use` is offered: naming both values here would undo what the
+            // tool descriptions say about there being one address
+            rows.add("- " + file.label() + " — use `" + file.use() + "`");
         }
         return "These files are available:\n" + String.join("\n", rows);
     }
@@ -139,30 +147,41 @@ public final class McpExplain
 
             case "user-interaction":
                 // Explained, not retried: waiting for the dialog to close
-                // would park one of RestApiServer's two worker threads on a
-                // user, which is the same argument that refuses an SSE stream.
+                // would park a request on a user, which is the same argument
+                // that refuses an SSE stream.
                 return "Portfolio Performance has a dialog open and cannot answer until it is closed"
                                 + retryAfter(problem) + ". Ask the user to finish what they are doing in the "
                                 + "application, then try again.";
 
             case "ui-busy":
-                // The application did not answer on its UI thread within the
-                // bounded wait. Same shape as a dialog refusal, but nobody can
-                // be asked to close anything: whatever is slow has to finish.
-                return "Portfolio Performance did not answer on its UI thread within the bounded wait"
-                                + retryAfter(problem) + ". Something else is holding that thread — a long-running job, "
-                                + "a dialog, or a large file. Try again after a moment; if it keeps failing, say so "
-                                + "rather than retrying in a loop.";
+                // The UI thread did not take the request on within the bounded
+                // wait, and the request will never run. Nobody can be asked to
+                // close anything: whatever is slow has to finish.
+                return "Portfolio Performance did not get to this request on its UI thread within the bounded wait"
+                                + retryAfter(problem) + ", so nothing was read or changed. Something else is holding "
+                                + "that thread - a long-running job or a large file. Try again after a moment; if it "
+                                + "keeps failing, say so rather than retrying in a loop.";
 
             case "ui-request-underway":
-                // The request was already handed to the UI thread when the wait
-                // expired. Whether it ran is not knowable from here, and sending a
-                // write again would apply it twice, so this must not read as a
-                // refusal that was cleanly rolled back.
-                return "Portfolio Performance had already taken this request onto its UI thread when the bounded "
-                                + "wait expired. It may have been executed anyway - do not send the same call again. "
-                                + "Read the file back with the tool that lists or describes what this call would have "
-                                + "changed, and tell the user which state it is in.";
+                // The request was already running on the UI thread when the
+                // wait expired. It will finish, and sending a write again would
+                // apply it twice, so this must not read as a clean refusal.
+                return "Portfolio Performance was already executing this request on its UI thread when the bounded "
+                                + "wait expired, and it will complete - do not send the same call again. Read the file "
+                                + "back with the tool that lists or describes what this call changes, and tell the "
+                                + "user which state it is in.";
+
+            case "calculation-timeout":
+                // asking the same question again takes just as long
+                return "Portfolio Performance could not finish this calculation in time"
+                                + (problem.getDetail() != null ? " - " + problem.getDetail().toLowerCase(Locale.ROOT) : "")
+                                + ". Asking again unchanged will take just as long. Ask a smaller question: a shorter "
+                                + "interval, a single instrument instead of all of them, or only open or only closed "
+                                + "trades.";
+
+            case "server-busy":
+                return "Portfolio Performance is answering too many requests at once" + retryAfter(problem)
+                                + ". Send fewer calls in parallel and try again.";
 
             case "request-too-large":
                 return ("That edit was too large for Portfolio Performance to accept. "
@@ -217,13 +236,15 @@ public final class McpExplain
      */
     private static String hints(ApiException problem)
     {
-        var retryable = !"ui-request-underway".equals(problem.getType()) //$NON-NLS-1$
+        // a 503 is retryable unless it says the request is still running or
+        // would take just as long again
+        var notRetryable = Set.of("ui-request-underway", "calculation-timeout");
+        var retryable = !notRetryable.contains(problem.getType())
                         && (problem.getStatus() == 423 || problem.getStatus() == 429 || problem.getStatus() == 503
-                                || "file-not-open".equals(problem.getType()) //$NON-NLS-1$
-                                || "ui-busy".equals(problem.getType())); //$NON-NLS-1$
+                                        || "file-not-open".equals(problem.getType()));
 
-        var trailer = "\n\nretryable: " + (retryable ? "yes" : "no") + " · reasonCode: " + problem.getType(); //$NON-NLS-1$
-        var header = problem.getHeaders().get("Retry-After"); //$NON-NLS-1$
-        return header == null ? trailer : trailer + " · retryAfterSeconds: " + header; //$NON-NLS-1$
+        var trailer = "\n\nretryable: " + (retryable ? "yes" : "no") + " · reasonCode: " + problem.getType();
+        var header = problem.getHeaders().get("Retry-After");
+        return header == null ? trailer : trailer + " · retryAfterSeconds: " + header;
     }
 }

@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
+import java.nio.file.Files;
 import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
@@ -71,6 +72,7 @@ public class PairingServiceTest
         assertThat(client.isPresent(), is(true));
         assertThat(client.get().session(), is(false));
         assertThat(client.get().name(), is("Claude Code"));
+        assertThat(result.persistent(), is(true));
 
         assertStatusIs(id, 404);
     }
@@ -84,6 +86,27 @@ public class PairingServiceTest
         var result = service.poll(id);
         assertThat(result.status(), is(PairingStatus.APPROVED));
         assertThat(store.authenticate(result.token()).get().session(), is(true));
+        assertThat(result.persistent(), is(false));
+    }
+
+    /**
+     * "Allow always" that the client file could not take is a session grant
+     * after all, and the client that asked to keep its token has to hear that.
+     */
+    @Test
+    public void testAPersistentGrantThatCouldNotBeWrittenSaysSo() throws Exception
+    {
+        Files.createDirectories(tempFolder.getRoot().toPath().resolve("api-clients.json"));
+        var unwritable = new ClientStore(tempFolder.getRoot().toPath(), () -> now);
+        var pairing = new PairingService(unwritable, host, () -> now);
+
+        var id = pairing.create("Claude Code");
+        host.lastAccessRequest().allowAlways();
+
+        var result = pairing.poll(id);
+        assertThat(result.status(), is(PairingStatus.APPROVED));
+        assertThat(result.token(), is(notNullValue()));
+        assertThat(result.persistent(), is(false));
     }
 
     @Test

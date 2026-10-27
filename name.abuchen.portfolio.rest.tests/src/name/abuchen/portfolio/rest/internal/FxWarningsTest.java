@@ -6,20 +6,21 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
 
 import com.google.gson.JsonObject;
 
-import name.abuchen.portfolio.junit.AccountBuilder;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.rest.internal.ConversionRecorder.Pair;
 
 /**
  * What {@link FxWarnings} itself decides. The route tests assert that a report
@@ -32,6 +33,7 @@ import name.abuchen.portfolio.money.Values;
  * bundle but reachable by no provider, which is the state a real file ends up in
  * when a user adds an account in a currency nothing quotes.
  */
+@SuppressWarnings("nls")
 public class FxWarningsTest
 {
     private static ExchangeRateProviderFactory factory(Client client)
@@ -43,9 +45,8 @@ public class FxWarningsTest
     public void testPairWithoutAnySeriesIsReportedAsNoSeries()
     {
         var client = new Client();
-        new AccountBuilder("ARS").deposit_("2026-01-01", Values.Amount.factorize(100)).addTo(client);
 
-        assertThat(FxWarnings.list(client, factory(client), CurrencyUnit.EUR),
+        assertThat(FxWarnings.list(List.of(new Pair("ARS", CurrencyUnit.EUR)), factory(client)),
                         contains(new FxWarnings.Warning("ARS", "EUR", "no-series")));
     }
 
@@ -54,13 +55,11 @@ public class FxWarningsTest
     public void testSeriesWithoutRatesIsReportedAsNoRate()
     {
         var client = new Client();
-        new AccountBuilder("ARS").deposit_("2026-01-01", Values.Amount.factorize(100)).addTo(client);
-
         var rates = new Security("ARS/EUR", "ARS");
         rates.setTargetCurrencyCode(CurrencyUnit.EUR);
         client.addSecurity(rates);
 
-        assertThat(FxWarnings.list(client, factory(client), CurrencyUnit.EUR),
+        assertThat(FxWarnings.list(List.of(new Pair("ARS", CurrencyUnit.EUR)), factory(client)),
                         contains(new FxWarnings.Warning("ARS", "EUR", "no-rate")));
     }
 
@@ -69,14 +68,12 @@ public class FxWarningsTest
     public void testPairWithRatesIsSilent()
     {
         var client = new Client();
-        new AccountBuilder("ARS").deposit_("2026-01-01", Values.Amount.factorize(100)).addTo(client);
-
         var rates = new Security("ARS/EUR", "ARS");
         rates.setTargetCurrencyCode(CurrencyUnit.EUR);
         rates.addPrice(new SecurityPrice(LocalDate.of(2026, 1, 2), Values.Quote.factorize(965)));
         client.addSecurity(rates);
 
-        assertThat(FxWarnings.list(client, factory(client), CurrencyUnit.EUR), is(empty()));
+        assertThat(FxWarnings.list(List.of(new Pair("ARS", CurrencyUnit.EUR)), factory(client)), is(empty()));
     }
 
     /**
@@ -87,102 +84,50 @@ public class FxWarningsTest
     @Test
     public void testInverseAndChainedSeriesAreSilent()
     {
-        var client = new Client();
-        new AccountBuilder("USD").deposit_("2026-01-01", Values.Amount.factorize(100)).addTo(client);
-        new AccountBuilder("GBP").deposit_("2026-01-01", Values.Amount.factorize(100)).addTo(client);
+        var pairs = List.of(new Pair("USD", "EUR"), new Pair("GBP", "EUR"), new Pair("EUR", "USD"),
+                        new Pair("GBP", "USD"));
 
-        assertThat(FxWarnings.list(client, factory(client), CurrencyUnit.EUR), is(empty()));
-        assertThat(FxWarnings.list(client, factory(client), "USD"), is(empty()));
+        assertThat(FxWarnings.list(pairs, factory(new Client())), is(empty()));
     }
 
-    /** the reporting currency is never a fallback for itself */
+    /** the warnings keep the order of the pairs, which the recorder makes stable */
     @Test
-    public void testReportingCurrencyIsNeverReported()
+    public void testWarningsKeepTheOrderOfThePairs()
     {
-        var client = new Client();
-        new AccountBuilder("EUR").deposit_("2026-01-01", Values.Amount.factorize(100)).addTo(client);
+        var warnings = FxWarnings.list(List.of(new Pair("ARS", "EUR"), new Pair("BBD", "EUR")),
+                        factory(new Client()));
 
-        assertThat(FxWarnings.list(client, factory(client), CurrencyUnit.EUR), is(empty()));
-    }
-
-    /**
-     * A report that covers part of the file names only the currencies it
-     * converted. The file's currency list would add an account this report never
-     * valued, and the reader would hunt for amounts that are not in the response.
-     */
-    @Test
-    public void testScopedListNamesOnlyTheCurrenciesOfTheReport()
-    {
-        var client = new Client();
-        new AccountBuilder("ARS").deposit_("2026-01-01", Values.Amount.factorize(100)).addTo(client);
-
-        assertThat(FxWarnings.list(List.of("EUR"), factory(client), CurrencyUnit.EUR), is(empty()));
-        assertThat(FxWarnings.list(List.of("ARS"), factory(client), CurrencyUnit.EUR),
-                        contains(new FxWarnings.Warning("ARS", "EUR", "no-series")));
-    }
-
-    /** a scoped list skips the reporting currency, a currency named twice and one it does not know */
-    @Test
-    public void testScopedListSkipsTheReportingCurrencyAndDuplicates()
-    {
-        var client = new Client();
-
-        assertThat(FxWarnings.list(Arrays.asList("EUR", "EUR", null), factory(client), CurrencyUnit.EUR), is(empty()));
-        assertThat(FxWarnings.list(List.of("ARS", "ARS"), factory(client), CurrencyUnit.EUR).size(), is(1));
-    }
-
-    /** a currency the application does not know is skipped, not reported */
-    @Test
-    public void testCurrencyOutsideTheBundleIsSkipped()
-    {
-        var client = new Client();
-        var account = new AccountBuilder("EUR").addTo(client);
-        account.setCurrencyCode("XXX");
-
-        assertThat(FxWarnings.list(client, factory(client), CurrencyUnit.EUR), is(empty()));
-    }
-
-    /** the order is the file's currency order, so a report is reproducible */
-    @Test
-    public void testWarningsFollowTheFilesCurrencyOrder()
-    {
-        var client = new Client();
-        new AccountBuilder("BBD").deposit_("2026-01-01", Values.Amount.factorize(100)).addTo(client);
-        new AccountBuilder("ARS").deposit_("2026-01-01", Values.Amount.factorize(100)).addTo(client);
-
-        var warnings = FxWarnings.list(client, factory(client), CurrencyUnit.EUR);
         assertThat(warnings.size(), is(2));
         assertThat(warnings.get(0).currency(), is("ARS"));
         assertThat(warnings.get(1).currency(), is("BBD"));
     }
 
     /**
-     * A report that echoes no reporting currency has nothing to describe. The
-     * field is still added, because its absence would read as "this report did
-     * not look" rather than "nothing fell back".
+     * A report that converted nothing still carries the field, because its
+     * absence would read as "this report did not look" rather than "nothing fell
+     * back".
      */
     @Test
-    public void testAttachAddsAnEmptyArrayWithoutAReportingCurrency()
+    public void testAttachAddsAnEmptyArrayWhenNothingWasConverted()
     {
-        var client = new Client();
-        new AccountBuilder("ARS").deposit_("2026-01-01", Values.Amount.factorize(100)).addTo(client);
-
         var report = new JsonObject();
-        FxWarnings.attach(report, client, factory(client));
+        FxWarnings.attach(report, new ConversionRecorder(), factory(new Client()));
 
         assertThat(report.get("fxWarnings").getAsJsonArray().size(), is(0));
     }
 
-    /** the currency the payload echoes is the one the warning describes */
+    /** what a converter was asked to do is what the warning describes */
     @Test
-    public void testAttachNamesTheCurrencyThePayloadEchoes()
+    public void testAttachNamesThePairTheCalculationConverted()
     {
         var client = new Client();
-        new AccountBuilder("ARS").deposit_("2026-01-01", Values.Amount.factorize(100)).addTo(client);
+        var factory = factory(client);
+        var conversions = new ConversionRecorder();
+        var converter = conversions.wrap(new CurrencyConverterImpl(factory, "ARS"));
+        converter.convert(LocalDate.of(2026, 1, 2), Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100)));
 
         var report = new JsonObject();
-        report.addProperty("reportingCurrency", "ARS");
-        FxWarnings.attach(report, client, factory(client));
+        FxWarnings.attach(report, conversions, factory);
 
         var warnings = report.get("fxWarnings").getAsJsonArray();
         assertThat(warnings.size(), is(1));

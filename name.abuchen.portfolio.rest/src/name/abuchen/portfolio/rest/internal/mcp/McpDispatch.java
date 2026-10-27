@@ -92,7 +92,7 @@ public final class McpDispatch
             var item = element.getAsJsonObject();
             var alias = item.get("alias"); //$NON-NLS-1$
             files.add(new McpExplain.FileSummary(item.get("id").getAsString(), item.get("label").getAsString(), //$NON-NLS-1$ //$NON-NLS-2$
-                            alias == null ? null : alias.getAsString()));
+                            alias == null ? null : alias.getAsString(), item.get("use").getAsString())); //$NON-NLS-1$
         }
         return files;
     }
@@ -119,10 +119,9 @@ public final class McpDispatch
      * throughout. Repetition has no representation in a {@code Map<String,
      * String>} and none is declared; McpToolsDriftTest holds that true.
      * <p/>
-     * An empty array is {@code null}, i.e. the parameter is not sent at all: an
-     * empty list has no meaning for {@code metrics} or {@code status}, and
-     * sending {@code metrics=} would be refused as a malformed value rather than
-     * answered with the endpoint's own default.
+     * A {@code null} is not sent at all, so the endpoint applies its own
+     * default. An empty list never gets here: every list argument declares
+     * {@code minItems: 1}, and McpEndpoint refuses an empty one before dispatch.
      */
     private static String asQueryValue(JsonElement value)
     {
@@ -136,6 +135,6 @@ public final class McpDispatch
         for (JsonElement element : (JsonArray) value)
             parts.add(asText(element));
 
-        return parts.isEmpty() ? null : String.join(",", parts); //$NON-NLS-1$
+        return String.join(",", parts); //$NON-NLS-1$
     }
 }

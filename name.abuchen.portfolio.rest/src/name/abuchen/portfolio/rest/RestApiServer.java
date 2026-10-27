@@ -8,6 +8,8 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
@@ -41,13 +43,30 @@ public class RestApiServer
     private static final Set<String> IPV6_LOOPBACK = Set.of("::1", "0:0:0:0:0:0:0:1"); //$NON-NLS-1$ //$NON-NLS-2$
 
     /**
-     * How long one exchange may take before the watchdog closes it. A connection
-     * that sends headers and then stalls cannot be left parked: {@code
-     * com.sun.net.httpserver} has no read timeout, so without a deadline the body
-     * read blocks until EOF - for a stalled client never - and every worker with
-     * it. Closing the exchange closes the socket, which is what unblocks the read.
+     * How long receiving a request, and separately sending its response, may
+     * take before the watchdog closes the connection. {@code
+     * com.sun.net.httpserver} has no socket timeouts: a client that sends its
+     * headers and then stalls blocks the body read until EOF - for a stalled
+     * client never - and one that stops reading blocks the response write the
+     * same way. Closing the exchange closes the socket, which is what unblocks
+     * either.
+     * <p/>
+     * Computing the answer is deliberately not covered: a calculation has its
+     * own, longer deadline that answers with a proper refusal instead of a
+     * dropped connection (see {@link ApiRoutes.Deadlines}).
      */
-    private static final int REQUEST_DEADLINE_SECONDS = 30;
+    private static final int IO_DEADLINE_SECONDS = 30;
+
+    /**
+     * How many requests are served at once. Every request runs on its own
+     * virtual thread, so without a bound any local process could open
+     * connections until the application runs out of memory - each may carry a
+     * body of up to {@link #MAX_REQUEST_BODY}, and the pairing and MCP endpoints
+     * read it before a token is checked. A personal API has one or two clients;
+     * a request beyond the bound is refused at once with a 503 and a
+     * Retry-After rather than queued.
+     */
+    private static final int MAX_CONCURRENT_REQUESTS = 8;
 
     /** the bearer scheme, matched case-insensitively below */
     private static final String BEARER_PREFIX = "Bearer "; //$NON-NLS-1$
@@ -64,6 +83,8 @@ public class RestApiServer
     private final int port;
     private final Predicate<String> tokenValidator;
     private final Router router;
+    private final Semaphore permits;
+    private final long ioDeadlineMillis;
 
     private HttpServer server;
     private ExecutorService executor;
@@ -75,7 +96,7 @@ public class RestApiServer
         @Override
         public Thread newThread(Runnable runnable)
         {
-            var thread = new Thread(runnable, "Portfolio Performance REST API"); //$NON-NLS-1$
+            var thread = new Thread(runnable, "Portfolio Performance REST API watchdog"); //$NON-NLS-1$
             thread.setDaemon(true);
             return thread;
         }
@@ -83,19 +104,27 @@ public class RestApiServer
 
     public RestApiServer(int port, Predicate<String> tokenValidator, Router router)
     {
+        this(port, tokenValidator, router, MAX_CONCURRENT_REQUESTS, TimeUnit.SECONDS.toMillis(IO_DEADLINE_SECONDS));
+    }
+
+    /** for tests: a smaller bound and a shorter watchdog than any real client should see */
+    /* package */ RestApiServer(int port, Predicate<String> tokenValidator, Router router, int maxConcurrentRequests,
+                    long ioDeadlineMillis)
+    {
         this.port = port;
         this.tokenValidator = tokenValidator;
         this.router = router;
+        this.permits = new Semaphore(maxConcurrentRequests);
+        this.ioDeadlineMillis = ioDeadlineMillis;
     }
 
     public void start() throws IOException
     {
         server = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), port), 0);
         server.createContext("/", this::dispatch); //$NON-NLS-1$
-        // one virtual thread per request: a stalled or slow exchange cannot park a
-        // pooled worker and take the whole API down with it. Virtual threads do not
-        // keep the JVM alive, so a shutdown needs no interruption of them; the
-        // watchdog below is a daemon platform thread, which does.
+        // one virtual thread per request, bounded by the permits in dispatch: a
+        // slow exchange cannot park a pooled worker and take the whole API down
+        // with it, and the bound keeps the number of buffered bodies small
         executor = Executors.newThreadPerTaskExecutor(
                         Thread.ofVirtual().name("Portfolio Performance REST API").factory()); //$NON-NLS-1$
         watchdog = Executors.newSingleThreadScheduledExecutor(DAEMON);
@@ -108,8 +137,8 @@ public class RestApiServer
         if (server != null)
         {
             server.stop(0);
-            // interrupt, do not wait: a thread blocked in a read or in the UI
-            // thread must not outlive the server
+            // interrupt, do not wait: a thread blocked in a read or waiting for
+            // the UI thread must not outlive the server
             executor.shutdownNow();
             watchdog.shutdownNow();
             server = null;
@@ -123,7 +152,48 @@ public class RestApiServer
 
     private void dispatch(HttpExchange exchange)
     {
-        var deadline = watchdog.schedule(() -> exchange.close(), REQUEST_DEADLINE_SECONDS, TimeUnit.SECONDS);
+        if (!permits.tryAcquire())
+        {
+            refuseBusy(exchange);
+            return;
+        }
+
+        try
+        {
+            serve(exchange);
+        }
+        finally
+        {
+            permits.release();
+        }
+    }
+
+    /**
+     * Refused before anything is read: the point of the bound is that a request
+     * over it costs nothing but this answer.
+     */
+    private void refuseBusy(HttpExchange exchange)
+    {
+        var sending = watchdog.schedule(exchange::close, ioDeadlineMillis, TimeUnit.MILLISECONDS);
+        try
+        {
+            write(exchange, problem(ApiException.serverBusy()));
+        }
+        catch (IOException e)
+        {
+            // the caller is gone; there is nobody left to tell
+        }
+        finally
+        {
+            sending.cancel(false);
+            exchange.close();
+        }
+    }
+
+    private void serve(HttpExchange exchange)
+    {
+        var receiving = watchdog.schedule(exchange::close, ioDeadlineMillis, TimeUnit.MILLISECONDS);
+        ScheduledFuture<?> sending = null;
 
         try
         {
@@ -139,9 +209,26 @@ public class RestApiServer
                 var authorization = checkAuthorization(exchange, path);
 
                 var match = router.match(exchange.getRequestMethod(), path);
+
+                byte[] body;
+                try
+                {
+                    body = readBody(exchange);
+                }
+                catch (IOException e)
+                {
+                    // the request could not be read - usually the watchdog closed
+                    // a stalled connection. There is nobody left to answer.
+                    return;
+                }
+
+                // received in full; from here on the answer is the handler's to
+                // bound, not the watchdog's
+                receiving.cancel(false);
+
                 var request = new Request(exchange.getRequestMethod(), path, match.pathParams(),
-                                Request.parseQuery(exchange.getRequestURI().getRawQuery()), readBody(exchange),
-                                authorization, exchange.getRequestHeaders().getFirst("User-Agent")); //$NON-NLS-1$
+                                Request.parseQuery(exchange.getRequestURI().getRawQuery()), body, authorization,
+                                exchange.getRequestHeaders().getFirst("User-Agent")); //$NON-NLS-1$
                 response = match.handler().handle(request);
             }
             catch (ApiException e)
@@ -154,15 +241,20 @@ public class RestApiServer
                 response = problem(new ApiException(500, "internal-error", "Internal error")); //$NON-NLS-1$ //$NON-NLS-2$
             }
 
+            receiving.cancel(false);
+            sending = watchdog.schedule(exchange::close, ioDeadlineMillis, TimeUnit.MILLISECONDS);
             write(exchange, response);
         }
         catch (IOException e)
         {
-            PortfolioLog.error(e);
+            // the response could not be written: the caller hung up, or stopped
+            // reading and the watchdog closed the connection
         }
         finally
         {
-            deadline.cancel(false);
+            receiving.cancel(false);
+            if (sending != null)
+                sending.cancel(false);
             exchange.close();
         }
     }
@@ -327,9 +419,11 @@ public class RestApiServer
         if (response.contentType() != null)
             exchange.getResponseHeaders().set("Content-Type", response.contentType()); //$NON-NLS-1$
 
-        // 0, not -1: -1 asks for chunked transfer encoding, and a 204 or a 202
-        // with no body should carry no body at all, not an empty chunked stream
-        var length = response.body().length;
+        // -1 for an empty body: com.sun.net.httpserver reads -1 as "no body" and 0
+        // as "chunked, length unknown" - a 202 sent with 0 would announce an
+        // empty chunked stream, and a 204 with 0 is forced to -1 with a logged
+        // warning on every response
+        var length = response.body().length == 0 ? -1 : response.body().length;
         exchange.sendResponseHeaders(response.status(), length);
         if (response.body().length > 0)
         {

@@ -205,8 +205,10 @@ save.
 | 423 | `user-interaction` | a dialog is open in the app — **retry**, see `Retry-After` |
 | 429 | `pairing-pending` | another pairing request awaits the user — retry after `Retry-After` |
 | 429 | `pairing-cooldown` | a pairing request was declined — retry after `Retry-After` |
-| 503 | `ui-busy` | the app's UI thread was never given the request — **retry**, see `Retry-After` |
-| 503 | `ui-request-underway` | the request was already handed to the UI thread — **do not retry**, read the state back |
+| 503 | `ui-busy` | the app's UI thread did not take the request on in time; it was not executed — **retry**, see `Retry-After` |
+| 503 | `ui-request-underway` | the request was already running on the UI thread and will finish — **do not retry**, read the state back |
+| 503 | `calculation-timeout` | a calculation did not finish in time — ask a smaller question (shorter interval, one instrument) |
+| 503 | `server-busy` | more requests in flight than the server serves at once — retry after `Retry-After` |
 
 Three of these regularly surprise clients:
 
@@ -218,13 +220,19 @@ user did not share.
 than silently clobbered by whatever the dialog writes back on OK. Reads still work. Respect
 `Retry-After` and try again.
 
-**503 says two different things.** The API hands every request that touches the model to the UI
-thread and waits for it with a deadline. `ui-busy` means the UI thread never got the request: it is
-refused, nothing changed, and `Retry-After` is safe to honour. `ui-request-underway` means the
-request had already been handed over when the wait expired — it may still be executed, so there is
-no `Retry-After` and sending it again would apply the same change twice. Read the state back with
-the tool that lists or describes what the call would have changed, and report what is actually
-there.
+**503 says different things.** The API hands every request that touches the model to the UI
+thread and waits for it with a deadline (10 seconds). Whether the request ran is decided on the UI
+thread itself, so the answer is exact: `ui-busy` means the UI thread had not started the request
+when the wait expired — it is refused, will never run, nothing changed, and `Retry-After` is safe to
+honour. `ui-request-underway` means the request was already running — it will complete, so there is
+no `Retry-After` and sending a write again would apply the same change twice. Read the state back
+with the tool that lists or describes what the call changes, and report what is actually there.
+
+Calculations (holdings, performance, trades) run off the UI thread with their own deadline (120
+seconds). `calculation-timeout` means the answer did not come in time; the same question would take
+just as long again, so narrow it. `server-busy` means more requests are in flight than the server
+serves at once (8); it is refused before the body is read, so retrying after `Retry-After` is
+cheap.
 
 ## Computed collections
 
@@ -339,16 +347,18 @@ fails until the new route either has a tool or is listed as one that deliberatel
 
 `Router.match` answers with the **most specific** route of the ones that match, not the first
 registered: a route with fewer placeholders wins. A literal segment therefore reserves a name for
-free — `GET /v1/files/{file}/instruments/attribute-types` cannot shadow
-`GET /v1/files/{file}/instrument-attribute-types`, whichever is added first. Registration order
-only breaks a tie between routes of equal specificity, so adding an endpoint does not silently
-re-route an existing one.
+free — `GET /v1/files/{file}/instruments/attribute-types` is never answered by
+`GET /v1/files/{file}/instruments/{uuid}` with `attribute-types` taken as a uuid, whichever is
+added first. Registration order only breaks a tie between routes of equal specificity, so adding an
+endpoint does not silently re-route an existing one.
 
-Paths are matched after leading and trailing slashes are collapsed, so `/v1/files/` is the same
-route as `/v1/files` — and the same exemption from the bearer check on the pairing endpoints, which
-is decided on the same normalized path. `Authorization` is read case-insensitively (`bearer …` is
-accepted); a header that carries a token under a different scheme is refused as a wrong scheme
-rather than as a missing token, and the preference page says which of the two happened.
+Paths are normalized before routing and before the bearer check, and both see the same result:
+repeated leading slashes collapse into one and trailing slashes are dropped, so `/v1/files/` is the
+same route as `/v1/files`, and `/mcp/` is exempt from the bearer check exactly like `/mcp`. An empty
+segment in the middle (`/v1//files`) stays unmatched. `Authorization` is read case-insensitively
+(`bearer …` is accepted); a header that carries a token under a different scheme is refused as a
+wrong scheme rather than as a missing token, and the preference page says which of the two
+happened.
 
 The drift tests compare the specification with the code; the `openapi-compat` Maven profile
 compares it with the published contract. It runs [oasdiff](https://github.com/oasdiff/oasdiff)

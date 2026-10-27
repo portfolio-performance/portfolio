@@ -87,23 +87,24 @@ public final class TradesHandler
         return new Params(status, grouping, costMethod, taxesAndFees, currency, LocalDate.now());
     }
 
-    /* package */ record Collected(List<Trade> trades, List<Warning> warnings, List<String> currencies)
+    /* package */ record Collected(List<Trade> trades, List<Warning> warnings, ConversionRecorder conversions)
     {
     }
 
     private static Collected collect(Client client, ExchangeRateProviderFactory factory, List<Security> securities,
                     Params params)
     {
-        var converter = new CurrencyConverterImpl(factory, params.currency());
+        // records what computing the trades converted - of every trade of these
+        // instruments, including those a status filter leaves out of the answer,
+        // because the collector has to match all of them
+        var conversions = new ConversionRecorder();
+        var converter = conversions.wrap(new CurrencyConverterImpl(factory, params.currency()));
 
         // moving-average costs share one snapshot cache per request
         var snapshotCache = new SnapshotCache();
 
         var trades = new ArrayList<Trade>();
         var warnings = new ArrayList<Warning>();
-        // the currencies this response converted: the securities whose trades it
-        // shows, not every currency the file happens to use
-        var currencies = new ArrayList<String>();
 
         // the collector keeps no state between securities
         var collector = new TradeCollector(client, converter, params.grouping(), snapshotCache);
@@ -115,17 +116,7 @@ public final class TradesHandler
                 for (var trade : collector.collect(security))
                 {
                     if (params.status().contains(TradeStatus.of(trade)))
-                    {
                         trades.add(trade);
-                        // the exit side is valued at the market price, which is in
-                        // the security's own currency
-                        currencies.add(trade.getSecurity().getCurrencyCode());
-                        // and the entry side is money the converter had to look a
-                        // rate up for: a transaction can be recorded in a currency
-                        // other than the security's, a fee or tax in a third
-                        for (var pair : trade.getTransactions())
-                            ConvertedCurrencies.addFrom(pair.getTransaction(), params.currency(), currencies);
-                    }
                 }
             }
             catch (TradeCollectorException e)
@@ -137,7 +128,7 @@ public final class TradesHandler
         // stable sort keeps the collector's order within one security
         trades.sort(Comparator.comparing(t -> t.getSecurity().getName(), TextUtil::compare));
 
-        return new Collected(trades, warnings, currencies);
+        return new Collected(trades, warnings, conversions);
     }
 
     private static Warning warning(Security security, TradeCollectorException e)
@@ -166,9 +157,9 @@ public final class TradesHandler
             warnings.add(EntityJson.toJson(warning));
 
         var json = EntityJson.tradesContext(params);
-        // only the currencies of the trades in this response: a cash account in
-        // some other currency is not money this report converted
-        FxWarnings.attach(json, collected.currencies(), factory);
+        // after the items: a trade's figures may be computed as it is rendered,
+        // and every pair that was converted on the way has to be seen first
+        FxWarnings.attach(json, collected.conversions(), factory);
         // always present so clients can detect partial success
         json.add("warnings", warnings); //$NON-NLS-1$
         json.add("items", items); //$NON-NLS-1$

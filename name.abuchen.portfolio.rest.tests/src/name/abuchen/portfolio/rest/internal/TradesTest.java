@@ -79,12 +79,42 @@ public class TradesTest
     /**
      * The trades response carries `fxWarnings` like every computed report: empty
      * when nothing fell back, and naming the pair whose amounts were converted at
-     * 1:1 because the file has no rates for it. The currency has to be one the
-     * trades themselves are in - ARS, which no shipped provider quotes; USD would
-     * resolve through the built-in ECB series and never fall back.
+     * 1:1 because the file has no rates for it. An open trade's exit side is a
+     * valuation at the market price, which is in the security's currency - ARS,
+     * which no shipped provider quotes; USD would resolve through the built-in
+     * ECB series and never fall back.
      */
     @Test
-    public void testFxWarningsNameTheCurrencyTheTradesConverted()
+    public void testFxWarningsNameTheCurrencyAnOpenTradeIsValuedIn()
+    {
+        var client = new Client();
+
+        var security = new SecurityBuilder("ARS") //
+                        .addPrice("2026-07-01", Values.Quote.factorize(130)) //
+                        .addTo(client);
+        security.setName("ACME ARS");
+
+        var account = new AccountBuilder() //
+                        .deposit_("2026-01-01", Values.Amount.factorize(5000)) //
+                        .addTo(client);
+
+        new PortfolioBuilder(account) //
+                        .buy(security, "2026-01-15", Values.Share.factorize(10), Values.Amount.factorize(1000)) //
+                        .addTo(client);
+
+        var warnings = trades(client).get("fxWarnings").getAsJsonArray();
+        assertThat(warnings.size(), is(1));
+        assertThat(warnings.get(0).getAsJsonObject().get("currency").getAsString(), is("ARS"));
+        assertThat(warnings.get(0).getAsJsonObject().get("reason").getAsString(), is("no-series"));
+    }
+
+    /**
+     * A closed trade is bought and sold in the account's currency: its exit side
+     * is the sale, not a market price, so the security's own currency was never
+     * converted and must not be named.
+     */
+    @Test
+    public void testFxWarningsDoNotNameTheCurrencyOfAClosedTradesSecurity()
     {
         var client = new Client();
 
@@ -102,10 +132,9 @@ public class TradesTest
                         .sell(security, "2026-03-16", Values.Share.factorize(10), Values.Amount.factorize(1300)) //
                         .addTo(client);
 
-        var warnings = trades(client).get("fxWarnings").getAsJsonArray();
-        assertThat(warnings.size(), is(1));
-        assertThat(warnings.get(0).getAsJsonObject().get("currency").getAsString(), is("ARS"));
-        assertThat(warnings.get(0).getAsJsonObject().get("reason").getAsString(), is("no-series"));
+        var response = trades(client);
+        assertThat(response.get("items").getAsJsonArray().size(), is(1));
+        assertThat(response.get("fxWarnings").getAsJsonArray().size(), is(0));
     }
 
     /**

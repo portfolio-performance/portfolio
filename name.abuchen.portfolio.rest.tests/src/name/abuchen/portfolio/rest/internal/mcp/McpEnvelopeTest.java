@@ -91,6 +91,28 @@ public class McpEnvelopeTest
         assertThat(rendered.indexOf("Converted at 1:1"), is(lessThan(rendered.indexOf("\"items\""))));
     }
 
+    /**
+     * The guidance quotes a bounded number of pairs and refers to the payload
+     * for the rest: the full list is there anyway, and a guidance section
+     * without a bound is the one part of a result the cap cannot cut.
+     */
+    @Test
+    public void testALongWarningListIsQuotedOnlyInPart()
+    {
+        var pairs = new StringBuilder();
+        for (int ii = 0; ii < 25; ii++)
+            pairs.append(ii == 0 ? "" : ",").append("{\"currency\":\"X").append(ii)
+                            .append("\",\"reportingCurrency\":\"EUR\",\"reason\":\"no-series\"}");
+
+        var rendered = render(HOLDINGS, "{\"items\":[],\"fxWarnings\":[" + pairs + "]}");
+        var guidance = rendered.substring(0, rendered.indexOf("{\"items\""));
+
+        assertThat(guidance, containsString("25 currency pairs"));
+        assertThat(guidance, containsString("\"X9\""));
+        assertThat(guidance, not(containsString("\"X10\"")));
+        assertThat(guidance, containsString("(15 more in `fxWarnings` below)"));
+    }
+
     /** every report carries the array, empty or not; an empty one adds no text */
     @Test
     public void testAnEmptyFxWarningsArrayAddsNothing()

@@ -201,6 +201,7 @@ public class ClientStoreTest
 
         assertThat(store.authenticate(token).isPresent(), is(true));
         assertThat(store.listClients().get(0).session(), is(true));
+        assertThat(store.survivesRestart(token), is(false));
 
         // revoking it is complete, because nothing was ever written
         assertThat(store.revoke(store.listClients().get(0).id()), is(true));
@@ -212,6 +213,18 @@ public class ClientStoreTest
      * for this session, but the file still holds the token, so it authenticates
      * again after a restart - and the UI has to be able to tell the user that.
      */
+    @Test
+    public void testOnlyAWrittenPersistentClientSurvivesARestart()
+    {
+        var store = newStore();
+        var persistent = store.addPersistentClient("Claude Code");
+        var session = store.addSessionClient("Script");
+
+        assertThat(store.survivesRestart(persistent), is(true));
+        assertThat(store.survivesRestart(session), is(false));
+        assertThat(store.survivesRestart("not-a-token"), is(false));
+    }
+
     @Test
     public void testRevokeThatCouldNotBeWrittenReportsTheFailure() throws Exception
     {

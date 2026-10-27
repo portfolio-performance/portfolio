@@ -59,10 +59,18 @@ becomes a later thin adapter over the same service layer. The individual decisio
   mid-dialog would be silently clobbered. Reads stay allowed.
 - **The wait for the UI thread is bounded, and the two outcomes are told apart** (503 `ui-busy` vs.
   503 `ui-request-underway`). Parking the worker on a busy UI thread makes the API look dead, so the
-  wait has a deadline. A request the UI thread was *never given* is a refusal and safe to retry
-  (`Retry-After`); a request that was *already handed over* when the deadline passed may still be
-  executed — cancelling does not stop a runnable that has begun — so that one carries no
-  `Retry-After` and must not be resent, because a second write would apply the same change twice.
+  wait has a deadline (10 s). Whether the request ran is decided on the UI thread itself by one
+  compare-and-set against the waiting caller: a request the UI thread had *not started* when the
+  deadline passed is refused, will never run, and is safe to retry (`Retry-After`); a request that
+  was *already running* will complete, so that one carries no `Retry-After` and must not be resent,
+  because a second write would apply the same change twice.
+- **Calculations and the connection have deadlines of their own.** A calculation that does not
+  finish within 120 s is answered with 503 `calculation-timeout` instead of a dropped connection; a
+  progress signal was considered and rejected, because it needs a streamed response (SSE), which this
+  ADR refuses. Receiving a request and sending its response are each bounded by a 30 s watchdog
+  against clients that stall. At most 8 requests are served at once, and one over the bound is
+  refused (503 `server-busy`) before its body is read, so no local process can make the application
+  buffer an arbitrary number of request bodies.
 - **The API vocabulary is deliberately more general than the model** (`Security` → *instrument*,
   `Portfolio` → *investment account*), because the contract cannot be renamed once clients exist.
   Java class names keep the model's vocabulary; the mapping and its rationale are in the README.

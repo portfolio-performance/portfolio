@@ -94,12 +94,12 @@ public class ClientStore
     private final List<JsonObject> restricted = new ArrayList<>();
 
     /**
-     * The file's content when this version cannot read it at all: not valid JSON,
-     * or a shape it does not recognise. Kept verbatim so that a later save does
-     * not write over it - an unreadable file is not an empty one, and the next
-     * save would discard clients the user still has.
+     * Whether the file exists but this version cannot read it: not readable at
+     * all, not valid JSON, or a shape it does not recognise. Such a file is never
+     * saved over - an unreadable file is not an empty one, and a save would
+     * discard clients the user still has.
      */
-    private String unreadable;
+    private boolean unreadable;
 
     public ClientStore(Path directory)
     {
@@ -145,8 +145,8 @@ public class ClientStore
         if (!session && !save())
         {
             entry.session = true;
-            PortfolioLog.warning("Client \"" + name + "\" was added but not persisted; its token dies with " //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                    + "this application run");
+            PortfolioLog.warning("Client \"" + name + "\" was added but not persisted; its token dies with " //$NON-NLS-1$ //$NON-NLS-2$
+                            + "this application run"); //$NON-NLS-1$
         }
         return token;
     }
@@ -181,6 +181,18 @@ public class ClientStore
     }
 
     /**
+     * Whether the client holding this token survives a restart: false for a
+     * session client, and for a persistent one whose entry could not be written
+     * to the file. Changes nothing - unlike {@link #authenticate}, it does not
+     * count as a use of the token.
+     */
+    public synchronized boolean survivesRestart(String token)
+    {
+        var tokenHash = hash(token);
+        return entries.stream().anyMatch(entry -> entry.tokenHash.equals(tokenHash) && !entry.session);
+    }
+
+    /**
      * Removes a client, answering whether the removal reached the file. False
      * means the entry is gone from memory while the file still holds its token
      * hash, so the token authenticates again after a restart - the caller has to
@@ -204,8 +216,8 @@ public class ClientStore
 
         if (!save())
         {
-            PortfolioLog.warning("A revoked client is gone for this run only; its token still authenticates after a " //$NON-NLS-1$ //$NON-NLS-2$
-                    + "restart because the client file could not be written");
+            PortfolioLog.warning("A revoked client is gone for this run only; its token still authenticates after a " //$NON-NLS-1$
+                            + "restart because the client file could not be written"); //$NON-NLS-1$
             return false;
         }
         return true;
@@ -251,7 +263,7 @@ public class ClientStore
             // Cannot read it at all - which is not the same as it being empty.
             // Nothing here may overwrite what we could not see.
             PortfolioLog.error(e);
-            unreadable = "";
+            unreadable = true;
             return;
         }
 
@@ -265,7 +277,7 @@ public class ClientStore
             // not valid JSON at all: log, start empty, and keep the content so
             // that a save does not write over something the user still needs
             PortfolioLog.error(e);
-            unreadable = raw;
+            unreadable = true;
             return;
         }
 
@@ -275,8 +287,8 @@ public class ClientStore
             // a file this version does not recognise: not an empty one. Reading
             // it as empty and then saving would destroy tokens we never saw.
             PortfolioLog.warning("The API client file is not a client list this version understands; its content " //$NON-NLS-1$
-                    + "is kept and will not be overwritten");
-            unreadable = raw;
+                            + "is kept and will not be overwritten"); //$NON-NLS-1$
+            unreadable = true;
             return;
         }
 
@@ -347,10 +359,10 @@ public class ClientStore
      */
     private boolean save()
     {
-        if (unreadable != null)
+        if (unreadable)
         {
             PortfolioLog.warning("Not writing " + FILE_NAME + ": its content is not a client list this version " //$NON-NLS-1$ //$NON-NLS-2$
-                    + "understands, so saving would discard what is in it");
+                            + "understands, so saving would discard what is in it"); //$NON-NLS-1$
             return false;
         }
 

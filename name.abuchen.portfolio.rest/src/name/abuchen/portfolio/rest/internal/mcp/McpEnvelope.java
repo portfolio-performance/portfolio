@@ -33,6 +33,9 @@ public final class McpEnvelope
     private static final Set<String> FRACTION_KEYS = Set.of("ttwror", "ttwrorAnnualized", "irr", "return", "weight",
                     "maxDrawdown", "volatility", "semiVolatility");
 
+    /** how many warnings a guidance section quotes before it refers to the payload */
+    private static final int MAX_QUOTED_ENTRIES = 10;
+
     /** offset-less local date-times, which must not be read as UTC */
     private static final Set<String> LOCAL_DATETIME_KEYS = Set.of("start", "end");
 
@@ -135,7 +138,7 @@ public final class McpEnvelope
                             + (found.warnings().size() == 1 ? "" : "s")
                             + ".** Part of this computation failed, so the figures below are incomplete. Name what was "
                             + "skipped in your answer instead of presenting the totals as if they were whole.\n"
-                            + found.warnings());
+                            + preview(found.warnings(), "warnings"));
         }
 
         // unconverted money is the second outcome that changes what every figure
@@ -146,7 +149,7 @@ public final class McpEnvelope
                     + " currency pair" + (found.fxWarnings().size() == 1 ? "" : "s")
                     + " in this report have nothing to convert with, so amounts in those currencies were multiplied by "
                     + "1 and are shown at face value. Say that they are unconverted; do not present them as if the "
-                    + "exchange rate had been applied. The pairs:\n" + found.fxWarnings());
+                    + "exchange rate had been applied. The pairs:\n" + preview(found.fxWarnings(), "fxWarnings"));
         }
 
         if (!droppedMetrics.isEmpty())
@@ -160,6 +163,24 @@ public final class McpEnvelope
         }
 
         return sections;
+    }
+
+    /**
+     * The entries a guidance section quotes, at most {@link #MAX_QUOTED_ENTRIES}
+     * of them. The full array is in the payload anyway; quoting all of it would
+     * send it twice, and a guidance section without a bound is the one part of a
+     * result the cap cannot cut.
+     */
+    private static String preview(JsonArray entries, String key)
+    {
+        if (entries.size() <= MAX_QUOTED_ENTRIES)
+            return entries.toString();
+
+        var quoted = new JsonArray();
+        for (var ii = 0; ii < MAX_QUOTED_ENTRIES; ii++)
+            quoted.add(entries.get(ii));
+
+        return quoted + "\n(" + (entries.size() - MAX_QUOTED_ENTRIES) + " more in `" + key + "` below)";
     }
 
     /** guidance that applies to this payload, in the order it should be read */
@@ -233,8 +254,8 @@ public final class McpEnvelope
 
     private static Scan scan(JsonElement payload)
     {
-        var warnings = topLevelArray(payload, "warnings"); //$NON-NLS-1$
-        var fxWarnings = topLevelArray(payload, "fxWarnings"); //$NON-NLS-1$
+        var warnings = topLevelArray(payload, "warnings");
+        var fxWarnings = topLevelArray(payload, "fxWarnings");
 
         var flags = new boolean[4];
         visit(payload, flags);

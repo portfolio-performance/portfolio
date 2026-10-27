@@ -60,10 +60,10 @@ public class RouterTest
     }
 
     /**
-     * A literal segment is not a placeholder, so the route with fewer of them
-     * answers whichever was registered first. Registration order must not decide
-     * this: `/v1/files/{file}/instruments/attribute-types` would otherwise steal
-     * the request meant for `/v1/files/{file}/instrument-attribute-types`.
+     * A literal segment is not a placeholder, so of two routes that both match a
+     * path the one with fewer placeholders answers, whichever was registered
+     * first: `/instruments/attribute-types` must not be answered by
+     * `/instruments/{uuid}` as if `attribute-types` were a uuid.
      */
     @Test
     public void testTheMostSpecificRouteWinsRegardlessOfOrder() throws Exception
@@ -71,21 +71,21 @@ public class RouterTest
         var registeredWithWildcardFirst = new Router();
         registeredWithWildcardFirst.add("GET", "/v1/files/{file}/instruments/{uuid}",
                         request -> Response.json(200, JsonParser.parseString("{\"which\":\"instrument\"}")));
-        registeredWithWildcardFirst.add("GET", "/v1/files/{file}/instrument-attribute-types",
+        registeredWithWildcardFirst.add("GET", "/v1/files/{file}/instruments/attribute-types",
                         request -> Response.json(200, JsonParser.parseString("{\"which\":\"attributes\"}")));
 
-        assertThat(answer(registeredWithWildcardFirst, "GET", "/v1/files/abc/instrument-attribute-types"),
+        assertThat(answer(registeredWithWildcardFirst, "GET", "/v1/files/abc/instruments/attribute-types"),
                         containsString("attributes"));
         assertThat(answer(registeredWithWildcardFirst, "GET", "/v1/files/abc/instruments/xyz"),
                         containsString("instrument"));
 
         var registeredWithLiteralFirst = new Router();
-        registeredWithLiteralFirst.add("GET", "/v1/files/{file}/instrument-attribute-types",
+        registeredWithLiteralFirst.add("GET", "/v1/files/{file}/instruments/attribute-types",
                         request -> Response.json(200, JsonParser.parseString("{\"which\":\"attributes\"}")));
         registeredWithLiteralFirst.add("GET", "/v1/files/{file}/instruments/{uuid}",
                         request -> Response.json(200, JsonParser.parseString("{\"which\":\"instrument\"}")));
 
-        assertThat(answer(registeredWithLiteralFirst, "GET", "/v1/files/abc/instrument-attribute-types"),
+        assertThat(answer(registeredWithLiteralFirst, "GET", "/v1/files/abc/instruments/attribute-types"),
                         containsString("attributes"));
         assertThat(answer(registeredWithLiteralFirst, "GET", "/v1/files/abc/instruments/xyz"),
                         containsString("instrument"));

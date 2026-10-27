@@ -268,7 +268,7 @@ public class McpToolCallTest
         payload.addProperty("reportingCurrency", "EUR");
 
         var warnings = new JsonArray();
-        for (int ii = 0; ii < 600; ii++)
+        for (int ii = 0; ii < 1_200; ii++)
         {
             var warning = new JsonObject();
             warning.addProperty("currency", "X" + ii);

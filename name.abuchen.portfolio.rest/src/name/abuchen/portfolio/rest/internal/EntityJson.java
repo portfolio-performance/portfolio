@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.function.Function;
 
@@ -30,6 +29,7 @@ import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.trades.Trade;
+import name.abuchen.portfolio.util.TradeCalendarManager;
 
 /**
  * Maps the model entities to the wire format. The API vocabulary is
@@ -204,15 +204,15 @@ public final class EntityJson
             json.add("price", price); //$NON-NLS-1$
 
             // the same staleness as `price.date`, but decided rather than left to
-            // the caller to compare two dates: `priceStale` says the quote predates
-            // the valuation date, `priceAgeDays` says by how much. A quote dated
-            // after the valuation date is younger than it, not stale.
+            // the caller: measured in the trading days of the instrument's own
+            // calendar, so a weekend or a holiday does not make a quote stale
             var priceDate = securityPrice.getDate();
             if (priceDate != null)
             {
-                var ageDays = ChronoUnit.DAYS.between(priceDate, valuationDate);
-                json.addProperty("priceStale", ageDays > 0); //$NON-NLS-1$
-                json.addProperty("priceAgeDays", Math.max(0L, ageDays)); //$NON-NLS-1$
+                var age = QuoteAge.of(priceDate, valuationDate, TradeCalendarManager.getInstance(security));
+                json.addProperty("priceStale", age.isStale()); //$NON-NLS-1$
+                json.addProperty("priceAgeDays", age.calendarDays()); //$NON-NLS-1$
+                json.addProperty("priceMissedTradingDays", age.missedTradingDays()); //$NON-NLS-1$
             }
         }
 
