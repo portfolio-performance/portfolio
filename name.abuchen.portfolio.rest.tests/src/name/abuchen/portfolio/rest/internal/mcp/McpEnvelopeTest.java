@@ -511,6 +511,40 @@ public class McpEnvelopeTest
         assertThat(McpEnvelope.render(OVERALL, new JsonObject(), exact, List.of()), not(containsString("misses")));
     }
 
+    /**
+     * Measured on a file without any foreign currency: first in, first out
+     * leaves a few cents, moving average none. A gap without currency gains is
+     * rounding, and calling it a currency-conversion residual would be false.
+     */
+    @Test
+    public void testABreakdownResidualWithoutCurrencyGainsIsCalledRounding()
+    {
+        var off = JsonParser.parseString("{\"breakdown\": {" + money("openingValue", "2317.07") + ","
+                        + money("unrealizedCapitalGains", "9392.73") + "," + money("realizedCapitalGains", "-108.75")
+                        + "," + money("income", "1161.25") + "," + money("fees", "-591.54") + ","
+                        + money("taxes", "1.07") + "," + money("currencyGains", "0") + ","
+                        + money("netDeposits", "18690.66") + "," + money("closingValue", "30862.52") + "}}");
+        var rendered = McpEnvelope.render(OVERALL, new JsonObject(), off, List.of());
+
+        assertThat(rendered, containsString("**The breakdown misses `closingValue` by 0.03 EUR.**"));
+        assertThat(rendered, containsString("rounding residual"));
+        assertThat(rendered, not(containsString("currency-conversion residual")));
+    }
+
+    /** with currency gains the gap is the conversion residual the application shows as well */
+    @Test
+    public void testABreakdownResidualWithCurrencyGainsIsCalledConversion()
+    {
+        var off = JsonParser.parseString("{\"breakdown\": {" + money("openingValue", "172656.77") + ","
+                        + money("unrealizedCapitalGains", "14114.54") + "," + money("realizedCapitalGains", "11076.99")
+                        + "," + money("income", "1142.83") + "," + money("fees", "-934.6") + ","
+                        + money("taxes", "-187.35") + "," + money("currencyGains", "29.93") + ","
+                        + money("netDeposits", "24231.3") + "," + money("closingValue", "222140.07") + "}}");
+
+        assertThat(McpEnvelope.render(OVERALL, new JsonObject(), off, List.of()),
+                        containsString("currency-conversion residual"));
+    }
+
     private static String money(String field, String value)
     {
         return "\"" + field + "\": {\"value\": " + value + ", \"currency\": \"EUR\"}";
@@ -580,9 +614,25 @@ public class McpEnvelopeTest
         assertThat(McpEnvelope.oversizeAdvice(TRADES, perLot, payload),
                         containsString("leave `grouping` at `combined`"));
 
+        // a period is offered first, and once set it is not offered again
+        assertThat(unfiltered, containsString("`from` and `to`"));
+        var period = JsonParser.parseString("{\"from\": \"2025-01-01\", \"to\": \"2025-12-31\"}").getAsJsonObject();
+        var withPeriod = McpEnvelope.oversizeAdvice(TRADES, period, payload);
+        assertThat(withPeriod, containsString("period filter is already applied"));
+        assertThat(withPeriod, not(containsString("`from` and `to`")));
+
         // every other tool keeps its own advice whatever the arguments
         assertThat(McpEnvelope.oversizeAdvice(INSTRUMENTS, closed, payload),
                         is(McpEnvelope.oversizeAdvice(INSTRUMENTS)));
+    }
+
+    /** a list cut short is no way to find one instrument, and the advice says what is */
+    @Test
+    public void testInstrumentsAdviceOffersTheQuery()
+    {
+        var advice = McpEnvelope.oversizeAdvice(INSTRUMENTS);
+        assertThat(advice, containsString("`query`"));
+        assertThat(advice, containsString("pp_list_holdings"));
     }
 
     /**

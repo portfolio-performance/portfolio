@@ -280,6 +280,28 @@ public class PerformanceTest
         assertThat(yesterday.get("ttwror").isJsonNull(), is(false));
     }
 
+    /**
+     * Before the file's first transaction there is no capital to measure a
+     * return on. The engines answer 0 there, which would read as a measured
+     * flat result - the returns are null instead, and the breakdown is all 0.
+     */
+    @Test
+    public void testAPeriodBeforeAnyHoldingHasNoReturns()
+    {
+        var result = perf(heldPosition(), "2020-01-01", "2021-01-01", null, null);
+
+        assertThat(result.get("ttwror").isJsonNull(), is(true));
+        assertThat(result.get("irr").isJsonNull(), is(true));
+        var breakdown = result.get("breakdown").getAsJsonObject();
+        assertThat(value(breakdown, "closingValue"), is(0.0));
+        assertReconciles(breakdown);
+
+        // the same file over a period it held something in is measured
+        var held = perf(heldPosition(), "2024-01-01", "2024-12-31", null, null);
+        assertThat(held.get("ttwror").isJsonNull(), is(false));
+        assertThat(held.get("irr").isJsonNull(), is(false));
+    }
+
     /** a closing date up to today is where the time-weighted figure stops, too */
     @Test
     public void testTimeWeightedUntilIsTheClosingDateWhenItIsNotInTheFuture()

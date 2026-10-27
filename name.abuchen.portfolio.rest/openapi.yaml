@@ -443,6 +443,13 @@ paths:
       operationId: listInstruments
       tags: [Instruments]
       summary: List the instruments in a file
+      description: |
+        Every instrument in the file, or with `query` only the ones it finds.
+        A large file can hold hundreds of instruments; `query` is how a client
+        gets from a name, ISIN, WKN or ticker symbol to the `uuid` without
+        reading them all.
+      parameters:
+        - $ref: "#/components/parameters/InstrumentQuery"
       responses:
         "200":
           description: The instruments in the file
@@ -879,10 +886,11 @@ paths:
         closing value:
         `openingValue + unrealizedCapitalGains + realizedCapitalGains + income +
         fees + taxes + currencyGains + netDeposits = closingValue`. `fees` and
-        `taxes` are therefore negative. The identity holds to the cent when no
-        currency conversion is involved; with foreign currencies the terms are
-        converted at the dates they happened and the opening and closing values
-        at the interval's ends, which can leave a small residual — the
+        `taxes` are therefore negative when they cost money, and positive for a
+        refund. The identity usually holds to the cent; first-in-first-out
+        rounding can leave a few cents, and with foreign currencies the terms
+        are converted at the dates they happened and the opening and closing
+        values at the interval's ends, which can leave a larger residual — the
         application's own calculation shows the same figures.
 
         Capital gains are stated before fees and taxes, which stand as terms of
@@ -894,7 +902,8 @@ paths:
         performance-driven change, but is required for the value reconciliation.
 
         `costMethod` chooses how a security's gains split into realized and
-        unrealized; it does not affect their sum, nor the returns.
+        unrealized; it does not affect their sum beyond rounding, nor the
+        returns.
 
         `openingDate` and `closingDate` are **valuation snapshot dates, not a
         record range**. The opening balance is measured as of the end of
@@ -1223,6 +1232,8 @@ paths:
         - $ref: "#/components/parameters/TradeCostMethod"
         - $ref: "#/components/parameters/TradeTaxesAndFees"
         - $ref: "#/components/parameters/ReportingCurrency"
+        - $ref: "#/components/parameters/TradeFrom"
+        - $ref: "#/components/parameters/TradeTo"
       responses:
         "200":
           description: The file's trades
@@ -1325,6 +1336,8 @@ paths:
         - $ref: "#/components/parameters/TradeCostMethod"
         - $ref: "#/components/parameters/TradeTaxesAndFees"
         - $ref: "#/components/parameters/ReportingCurrency"
+        - $ref: "#/components/parameters/TradeFrom"
+        - $ref: "#/components/parameters/TradeTo"
       responses:
         "200":
           description: The instrument's trades
@@ -1514,6 +1527,43 @@ components:
         default: [open, closed]
       style: form
       explode: false
+    InstrumentQuery:
+      name: query
+      in: query
+      required: false
+      description: |
+        Only the instruments this finds: one whose name contains it, or whose
+        ISIN, WKN or ticker symbol equals it — all ignoring case and
+        surrounding whitespace. Omit it to list every instrument; a blank
+        value is rejected `400 invalid-request`.
+      schema:
+        type: string
+        minLength: 1
+    TradeFrom:
+      name: from
+      in: query
+      required: false
+      description: |
+        The first day of the period, as `YYYY-MM-DD`. Only trades still held
+        on or after it are returned: a trade that closed before it is left
+        out, an open one is kept. Omit it for no lower bound. Echoed in the
+        response when given.
+      schema:
+        type: string
+        format: date
+    TradeTo:
+      name: to
+      in: query
+      required: false
+      description: |
+        The last day of the period, as `YYYY-MM-DD`, not before `from`
+        (`invalid-range` otherwise). Only trades that started on or before it
+        are returned. With `from`, this keeps every trade held at some point
+        of the period — closed within it, or open through it. Omit it for no
+        upper bound. Echoed in the response when given.
+      schema:
+        type: string
+        format: date
     TradeGrouping:
       name: grouping
       in: query
@@ -1618,6 +1668,14 @@ components:
           description: |
             The date the open trades were valued at, and the date their holding
             period runs to. Closed trades do not depend on it.
+        from:
+          type: string
+          format: date
+          description: The `from` query parameter, when one was given.
+        to:
+          type: string
+          format: date
+          description: The `to` query parameter, when one was given.
         status:
           type: array
           description: The selected statuses, in declaration order.
@@ -1944,6 +2002,11 @@ components:
             (`locked-by-transactions`), matching the UI's rule.
         isin:
           type: [string, "null"]
+          description: |
+            Checked as the application's ISIN column checks it: surrounding
+            whitespace is ignored, and what is left must be twelve characters
+            with a matching check digit, or the patch is rejected with
+            `invalid-isin`. A blank value clears the ISIN, like `null`.
         wkn:
           type: [string, "null"]
         tickerSymbol:
@@ -2184,6 +2247,13 @@ components:
             known before the day is over. On a Sunday, Friday's quote has missed
             none, and valued at a future date today's quote has missed none
             either.
+        priceManual:
+          type: boolean
+          description: |
+            Instruments only, present and `true` when the instrument is priced
+            by hand (quote feed `MANUAL`). Such a price changes when the user
+            decides, so `priceStale` is never `true` for it however old it is —
+            this field says why; the age fields still say how old it is.
         valuation:
           allOf:
             - $ref: "#/components/schemas/MonetaryValue"
@@ -2194,7 +2264,8 @@ components:
             The holding's fraction of total assets — not a percentage. A cash
             account can hold a negative balance (a loan, a credit card); its
             weight is then negative and the others are divided by the smaller
-            net total, so a weight can exceed 1. The weights always add up to 1.
+            net total, so a weight can exceed 1. The weights always add up to 1,
+            unless total assets are zero - then every weight is 0.
         localValuation:
           allOf:
             - $ref: "#/components/schemas/MonetaryValue"
@@ -2256,15 +2327,18 @@ components:
           description: |
             The true time-weighted rate of return over the interval, as a
             fraction (0.0723 is 7.23 %) — not a percentage. `null` when the
-            model cannot define it for the interval, and when `openingDate` is
-            today or later: such a period has no price movement to measure.
+            model cannot define it for the interval, when `openingDate` is
+            today or later - such a period has no price movement to measure -
+            and when the file held nothing and moved no money at any time in
+            the interval, which leaves no capital to measure a return on.
         irr:
           type: [number, "null"]
           description: |
             The internal (money-weighted) rate of return over the interval, as a
-            fraction — not a percentage. `null` when `openingDate` is today or
-            later, and when the model cannot define it
-            for the interval.
+            fraction — not a percentage, and annualized, so over a period of a
+            few days it can be extreme. `null` when `openingDate` is today or
+            later, when the file held nothing in the interval (see `ttwror`),
+            and when the model cannot define it for the interval.
         breakdown:
           $ref: "#/components/schemas/PerformanceBreakdown"
         fxWarnings:
@@ -2582,10 +2656,16 @@ components:
       properties:
         volatility:
           type: [number, "null"]
-          description: The standard deviation of the return series.
+          description: |
+            The standard deviation of the return series. `null` when the
+            interval has fewer than two daily returns (counted over weekdays up
+            to `timeWeightedUntil`): one return has no spread, and 0 would read
+            as a measured absence of risk.
         semiVolatility:
           type: [number, "null"]
-          description: The standard deviation of the negative returns only.
+          description: |
+            The standard deviation of the negative returns only. `null` under
+            the same condition as `volatility`.
         maxDrawdown:
           type: [number, "null"]
           description: |
@@ -2632,6 +2712,7 @@ components:
             - unknown-currency
             - locked-by-transactions
             - exchange-rate-requires-currency
+            - invalid-isin
             - referenced
             - unknown-attribute
             - attribute-not-applicable

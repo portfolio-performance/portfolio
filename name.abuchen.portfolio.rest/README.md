@@ -134,6 +134,11 @@ identity and enablement.
 
 `isin`, `wkn`, `tickerSymbol` and `note` are omitted when not set.
 
+`?query=` narrows the list to the instruments it finds: a name that contains it, or an ISIN, WKN or
+ticker symbol equal to it — ignoring case and surrounding whitespace. A large file holds more
+instruments than one MCP answer carries, so this is how a client gets from a name to a `uuid`. A
+blank `query` is a `400`.
+
 ### `PATCH /v1/files/{file}/instruments/{uuid}`
 
 A **JSON Merge Patch** (RFC 7386), *not* the full target state: fields you omit stay untouched, and
@@ -151,6 +156,9 @@ UI's own rule), and `attributes` — a nested merge patch over the custom attrib
 attribute id (`null` clears one; see `openapi.yaml`). Everything else — prices, quote feeds,
 events — is read-only in v1.
 
+An `isin` is checked as the application's ISIN column checks it — twelve characters and a matching
+check digit after trimming, or `422 invalid-isin`; a blank value clears it like `null`.
+
 Any field that is unknown or not writable is a **422, never a silent no-op**: a typo must not look
 like success. All violations come back at once so you can fix them in one round-trip.
 
@@ -161,7 +169,8 @@ file dirty. The response header `X-Portfolio-Changed: true|false` says which of 
 
 `204 No Content` on success. **409** if transactions or investment plans reference the instrument —
 deleting it in the application would cascade into transaction history, which the API refuses to do
-on a client's behalf. Watchlist and taxonomy membership do not block the delete.
+on a client's behalf. Watchlist and taxonomy membership do not block the delete. Over MCP the
+result names what was removed: `pp_delete_instrument` reads the instrument before deleting it.
 
 ### `GET /v1/files/{file}/cash-accounts[/{uuid}]`
 
@@ -255,7 +264,8 @@ rules apply to all of them.
 
 **They have no ids.** A computed item gets no `uuid`, and there is no `…/trades/{id}`: an id minted
 per request would not survive the next one. Address such an item by the filter that produced it
-(`GET .../instruments/{uuid}/trades?status=closed`). Ordering carries the weight identity otherwise
+(`GET .../instruments/{uuid}/trades?status=closed`, or `?from=2025-01-01&to=2025-12-31` for the
+trades held at some point of a period). Ordering carries the weight identity otherwise
 would, so these collections sort stably — repeated identical requests return identical lists.
 
 **They can half succeed.** Where the computation runs over independent units and can fail on some of

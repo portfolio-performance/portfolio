@@ -221,6 +221,9 @@ public final class EntityJson
                 json.addProperty("priceStale", !manual && age.isStale()); //$NON-NLS-1$
                 json.addProperty("priceAgeDays", age.calendarDays()); //$NON-NLS-1$
                 json.addProperty("priceMissedTradingDays", age.missedTradingDays()); //$NON-NLS-1$
+                // present only when true: says why an old price is not flagged
+                if (manual)
+                    json.addProperty("priceManual", true); //$NON-NLS-1$
             }
         }
 
@@ -424,9 +427,13 @@ public final class EntityJson
             var drawdown = record.getDrawdown();
             var volatility = record.getVolatility();
 
+            // a spread needs two returns; one would come back as 0, which reads
+            // as a measured absence of risk
+            var spread = CalcParams.hasTwoReturns(params.openingDate(), params.closingDate());
+
             var risk = new JsonObject();
-            risk.add("volatility", ratio(volatility.getStandardDeviation())); //$NON-NLS-1$
-            risk.add("semiVolatility", ratio(volatility.getSemiDeviation())); //$NON-NLS-1$
+            risk.add("volatility", ratio(spread ? volatility.getStandardDeviation() : Double.NaN)); //$NON-NLS-1$
+            risk.add("semiVolatility", ratio(spread ? volatility.getSemiDeviation() : Double.NaN)); //$NON-NLS-1$
             // a positive fraction, as the model reports it - the charts' sign
             // convention is a presentation choice, not the datum
             risk.add("maxDrawdown", ratio(drawdown.getMaxDrawdown())); //$NON-NLS-1$
@@ -518,6 +525,12 @@ public final class EntityJson
             if (params.status().contains(value))
                 status.add(value.getWireName());
         json.add("status", status); //$NON-NLS-1$
+
+        // only when asked for: a response without them covers every trade
+        if (params.from() != null)
+            json.addProperty("from", params.from().toString()); //$NON-NLS-1$
+        if (params.to() != null)
+            json.addProperty("to", params.to().toString()); //$NON-NLS-1$
 
         return json;
     }

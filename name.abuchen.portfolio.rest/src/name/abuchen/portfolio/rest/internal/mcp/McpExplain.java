@@ -108,8 +108,13 @@ public final class McpExplain
                 }
                 if (Boolean.TRUE.equals(context.fileIsShared()))
                 {
-                    return "The file is shared, so what was not found is the entity inside it: " + detail
-                                    + ". Check the id against a listing tool before trying again — the same id will "
+                    // the REST detail is the bare title "Not found", which only
+                    // repeated what the sentence already says
+                    return "The file is shared, so what was not found is the entity inside it"
+                                    + (problem.getDetail() != null ? ": " + problem.getDetail() : "")
+                                    + ". Each kind of id resolves only in its own tools — an instrument uuid in the "
+                                    + "instrument tools, a cash or investment account uuid in the account tools. Check "
+                                    + "the id against the matching listing tool before trying again — the same id will "
                                     + "not start working.";
                 }
                 return "Not found: " + detail;
@@ -132,11 +137,10 @@ public final class McpExplain
                                 + "usable. Use the id instead.\n\n" + describeFiles(context.files());
 
             case "delete-blocked":
-                // not a permissions problem, and no retry helps
-                return ("That instrument cannot be deleted while it is still referenced. "
-                                + (problem.getDetail() != null ? problem.getDetail() : "")
-                                + "\n\nThe user would have to remove the transactions that use it first, in Portfolio "
-                                + "Performance. Do not try again.").trim();
+                // not a permissions problem, and no retry helps. The reasons
+                // travel as field errors, and what the user has to remove
+                // depends on which of them applies.
+                return describeDeleteBlocked(problem);
 
             case "validation":
                 return tool + " was rejected as invalid:\n" + describeFieldErrors(problem, detail);
@@ -205,6 +209,44 @@ public final class McpExplain
     }
 
     /**
+     * Names what keeps the instrument alive - its transactions, an investment
+     * plan, or both - and only asks the user to remove what is actually there.
+     */
+    private static String describeDeleteBlocked(ApiException problem)
+    {
+        var fields = problem.getErrors().stream().map(ApiException.FieldError::field).toList();
+        var transactions = fields.contains("transactions");
+        var plans = fields.contains("plans");
+
+        String reason;
+        String remedy;
+        if (transactions && plans)
+        {
+            reason = "it has transactions and an investment plan uses it";
+            remedy = "delete its transactions and remove it from every investment plan";
+        }
+        else if (plans)
+        {
+            reason = "an investment plan uses it";
+            remedy = "remove it from every investment plan, or delete that plan";
+        }
+        else if (transactions)
+        {
+            reason = "it has transactions";
+            remedy = "delete the transactions that use it";
+        }
+        else
+        {
+            reason = "it is still referenced";
+            remedy = "remove what still refers to it";
+        }
+
+        return "That instrument cannot be deleted because " + reason + ". The user would have to " + remedy
+                        + " first, in Portfolio Performance. Do not try again."
+                        + (problem.getDetail() != null ? "\n\n" + problem.getDetail() : "");
+    }
+
+    /**
      * Field errors pass through nearly verbatim: {@code errors[]} already names
      * the field, the code and the permitted values, and rewriting it would lose
      * that precision.
@@ -224,7 +266,7 @@ public final class McpExplain
     private static String retryAfter(ApiException problem)
     {
         var header = problem.getHeaders().get("Retry-After");
-        return header == null ? "" : " — it asked to be left for " + header + " seconds";
+        return header == null ? "" : " — try again in about " + header + " seconds";
     }
 
     /**

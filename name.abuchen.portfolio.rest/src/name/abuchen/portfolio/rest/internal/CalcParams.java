@@ -83,6 +83,26 @@ public final class CalcParams
     }
 
     /**
+     * Whether an interval has at least two daily returns, which a standard
+     * deviation needs. Counted over weekdays from the day after opening to the
+     * last time-weighted day: a weekend has no quotes and adds no return. One
+     * return has no spread - reporting it as 0 would read as a measured
+     * absence of risk.
+     */
+    public static boolean hasTwoReturns(LocalDate openingDate, LocalDate closingDate)
+    {
+        var until = timeWeightedUntil(closingDate);
+        var count = 0;
+        for (var day = openingDate.plusDays(1); !day.isAfter(until) && count < 2; day = day.plusDays(1))
+        {
+            var weekday = day.getDayOfWeek();
+            if (weekday != java.time.DayOfWeek.SATURDAY && weekday != java.time.DayOfWeek.SUNDAY)
+                count++;
+        }
+        return count >= 2;
+    }
+
+    /**
      * The range constraint depends on the two dates having parsed and on nothing
      * else, so it accumulates with the other violations instead of hiding behind
      * them. Skipped when either date is absent or unparseable - the constraint

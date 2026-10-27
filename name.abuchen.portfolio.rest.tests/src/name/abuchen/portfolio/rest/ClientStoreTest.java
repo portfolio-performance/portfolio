@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.Rule;
@@ -149,6 +150,39 @@ public class ClientStoreTest
         store.addPersistentClient("Claude Code\r\n");
 
         assertThat(store.listClients().get(0).name(), is("Claude Code"));
+    }
+
+    /**
+     * The name is shown in the approval dialog, and whoever asks for access
+     * chooses it: a right-to-left override, a zero-width character or a line
+     * separator must not be able to make it read as another client's name.
+     */
+    @Test
+    public void testInvisibleCharactersAreStrippedFromTheName()
+    {
+        assertThat(ClientStore.sanitizeName("Claude\u202E edoC"), is("Claude edoC"));
+        assertThat(ClientStore.sanitizeName("Cla\u200Bude\u2066 Code\u2069"), is("Claude Code"));
+        assertThat(ClientStore.sanitizeName("Claude\u2028Code\u2029"), is("ClaudeCode"));
+        assertThat(ClientStore.sanitizeName("Büro-PC ✓"), is("Büro-PC ✓"));
+    }
+
+    /**
+     * The file is replaced in one step, so a crash while writing leaves the
+     * previous one intact, and no temporary file is left behind.
+     */
+    @Test
+    public void testSavingLeavesNoTemporaryFile() throws Exception
+    {
+        var store = newStore();
+        var first = store.addPersistentClient("First");
+        store.addPersistentClient("Second");
+
+        try (var files = Files.list(dir()))
+        {
+            assertThat(files.map(p -> p.getFileName().toString()).toList(), is(List.of("api-clients.json")));
+        }
+        assertThat(newStore().authenticate(first).isPresent(), is(true));
+        assertThat(newStore().listClients().size(), is(2));
     }
 
     /**

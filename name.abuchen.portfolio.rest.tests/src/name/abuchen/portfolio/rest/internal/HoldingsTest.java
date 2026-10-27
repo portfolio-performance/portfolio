@@ -82,6 +82,9 @@ public class HoldingsTest
         assertThat(price.get("currency").getAsString(), is("EUR"));
         assertThat(price.get("date").getAsString(), is("2026-07-01"));
 
+        // only a manually priced holding says so
+        assertThat(instrument.has("priceManual"), is(false));
+
         // the same staleness, decided instead of left to the caller to compare
         // the two dates: 2026-07-01 is 19 days before the valuation date, and
         // twelve trading days passed in between without a quote
@@ -181,6 +184,8 @@ public class HoldingsTest
         assertThat(instrument.get("priceStale").getAsBoolean(), is(false));
         assertThat(instrument.get("priceAgeDays").getAsLong(), is(19L));
         assertThat(instrument.get("priceMissedTradingDays").getAsLong(), is(12L));
+        // and it says why the old price is not flagged
+        assertThat(instrument.get("priceManual").getAsBoolean(), is(true));
     }
 
     /**

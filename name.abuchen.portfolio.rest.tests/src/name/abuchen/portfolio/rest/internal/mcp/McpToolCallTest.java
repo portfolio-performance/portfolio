@@ -21,6 +21,7 @@ import org.junit.Test;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 
 import name.abuchen.portfolio.junit.AccountBuilder;
 import name.abuchen.portfolio.junit.PortfolioBuilder;
@@ -129,6 +130,24 @@ public class McpToolCallTest
     }
 
     /**
+     * A uuid is case-insensitive on input, and a stray space around an id is
+     * not part of it: both used to be refused - one as not found, the other as
+     * misshapen.
+     */
+    @Test
+    public void testIdsAreFoundWhateverTheirCaseAndSurroundingSpace()
+    {
+        var upper = text(call("pp_get_instrument",
+                        "{\"file\":\"sample\",\"uuid\":\"" + security.getUUID().toUpperCase() + "\"}"));
+        assertThat(upper, containsString("\"uuid\":\"" + security.getUUID() + "\""));
+
+        var padded = call("pp_get_instrument",
+                        "{\"file\":\" sample \",\"uuid\":\"" + security.getUUID() + " \"}");
+        assertThat(isError(padded), is(false));
+        assertThat(text(padded), containsString("\"uuid\":\"" + security.getUUID() + "\""));
+    }
+
+    /**
      * The prose tells a model what to do; the trailer states the same fact as
      * data. A 404 is never retryable — the same id will not start working — and
      * a locked server is, once the user has closed their dialog.
@@ -202,15 +221,38 @@ public class McpToolCallTest
     }
 
     @Test
-    public void testADeleteHasNoPayloadButStillSaysItIsNotSaved()
+    public void testADeleteNamesWhatItRemovedAndSaysItIsNotSaved()
     {
+        var name = security.getName();
         var result = call("pp_delete_instrument",
                         "{\"file\":\"sample\",\"uuid\":\"" + security.getUUID() + "\"}");
 
         assertThat(isError(result), is(false));
-        assertThat(text(result), containsString("returned nothing to show"));
+        assertThat(text(result), containsString("\"deleted\":true"));
+        assertThat(text(result), containsString("\"uuid\":\"" + security.getUUID() + "\""));
+        assertThat(text(result), containsString("\"name\":" + new JsonPrimitive(name)));
+        assertThat(text(result), not(containsString("returned nothing to show")));
         assertThat(text(result), containsString("not saved to disk"));
         assertThat(client.getSecurities().size(), is(0));
+    }
+
+    /** `query` and the trade period reach their routes as query parameters */
+    @Test
+    public void testQueryAndPeriodArgumentsReachTheirRoutes()
+    {
+        var found = call("pp_list_instruments", "{\"file\":\"sample\",\"query\":\"acm\"}");
+        assertThat(isError(found), is(false));
+        assertThat(text(found), containsString(security.getUUID()));
+
+        var none = text(call("pp_list_instruments", "{\"file\":\"sample\",\"query\":\"zzz\"}"));
+        assertThat(none, containsString("\"items\":[]"));
+
+        var trades = call("pp_list_trades", "{\"file\":\"sample\",\"from\":\"2020-01-01\",\"to\":\"2020-12-31\"}");
+        assertThat(isError(trades), is(false));
+        assertThat(text(trades), containsString("\"from\":\"2020-01-01\""));
+
+        var reversed = text(call("pp_list_trades", "{\"file\":\"sample\",\"from\":\"2021-01-01\",\"to\":\"2020-01-01\"}"));
+        assertThat(reversed, containsString("invalid-range"));
     }
 
     /** an array query argument is comma-joined, which is how the API spells it */
@@ -262,7 +304,7 @@ public class McpToolCallTest
 
         assertThat(instruments.length(), is(lessThanOrEqualTo(McpEndpoint.MAX_RESULT_CHARS)));
         assertThat(instruments, containsString("pp_get_instrument"));
-        assertThat(instruments, containsString("ask the user which part of the portfolio they mean"));
+        assertThat(instruments, containsString("again with `query`"));
         assertThat(instruments, containsString("TRUNCATED"));
     }
 

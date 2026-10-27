@@ -370,9 +370,9 @@ public final class McpEndpoint
                             + hint("unknown-tool", false));
 
         var tool = found.get();
-        var arguments = params.has("arguments") && params.get("arguments").isJsonObject()
+        var arguments = trimPathArguments(tool, params.has("arguments") && params.get("arguments").isJsonObject()
                         ? params.getAsJsonObject("arguments")
-                        : new JsonObject();
+                        : new JsonObject());
 
         var rejected = rejectUnknownArguments(tool, arguments);
         if (rejected != null)
@@ -388,11 +388,27 @@ public final class McpEndpoint
 
         try
         {
+            // A delete answers 204 and nothing else, which leaves a model unable
+            // to say what it removed. The record is read first - through the
+            // same routing table - so the result can name it.
+            var doomed = "DELETE".equals(tool.method()) ? McpDispatch.readBeforeDelete(router, tool, arguments)
+                            : null;
+
             var response = McpDispatch.call(router, tool, arguments);
             // a PATCH says whether a stored value changed, which decides whether
             // the user has anything to save
             var changed = response.headers().get(ApiRoutes.CHANGED_HEADER);
-            return toolResult(fit(router, tool, arguments, payloadOf(response), MAX_RESULT_CHARS,
+
+            var payload = payloadOf(response);
+            if (doomed != null && payload.isJsonNull())
+            {
+                var deleted = new JsonObject();
+                deleted.addProperty("deleted", true);
+                deleted.add("instrument", doomed);
+                payload = deleted;
+            }
+
+            return toolResult(fit(router, tool, arguments, payload, MAX_RESULT_CHARS,
                             changed == null ? null : Boolean.valueOf(changed)));
         }
         catch (ApiException e)
@@ -406,6 +422,32 @@ public final class McpEndpoint
                             + ". Nothing the user did caused this, and retrying the same call will probably fail the "
                             + "same way." + hint("internal-error", false));
         }
+    }
+
+    /**
+     * A file id or an entity uuid with a stray space around it was refused
+     * once as misshapen and once as not found, depending on which argument
+     * carried it. Neither can contain whitespace, so it is dropped before
+     * either check sees it; nothing else about the arguments is touched.
+     */
+    private static JsonObject trimPathArguments(McpTool tool, JsonObject arguments)
+    {
+        JsonObject trimmed = null;
+        for (McpTool.Binding binding : tool.bindings())
+        {
+            if (binding.where() != McpTool.Where.PATH)
+                continue;
+            var value = arguments.get(binding.arg());
+            if (value == null || !value.isJsonPrimitive() || !value.getAsJsonPrimitive().isString())
+                continue;
+            var text = value.getAsString();
+            if (text.strip().equals(text))
+                continue;
+            if (trimmed == null)
+                trimmed = arguments.deepCopy();
+            trimmed.addProperty(binding.arg(), text.strip());
+        }
+        return trimmed != null ? trimmed : arguments;
     }
 
     /**

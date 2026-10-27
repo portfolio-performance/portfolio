@@ -63,6 +63,50 @@ public class McpExplainTest
         assertThat(text, containsString("retryable: yes · reasonCode: server-busy · retryAfterSeconds: 1"));
     }
 
+    /** what blocks the delete decides what the user has to remove - and only that is asked for */
+    @Test
+    public void testDeleteBlockedNamesTheReason()
+    {
+        var byTransactions = explain(ApiException.conflict("delete-blocked", "Instrument is referenced", null,
+                        List.of(new ApiException.FieldError("transactions", "referenced", "instrument has transactions"))));
+        assertThat(byTransactions, containsString("because it has transactions."));
+        assertThat(byTransactions, containsString("delete the transactions that use it"));
+        assertThat(byTransactions, not(containsString("investment plan")));
+        assertThat(byTransactions, containsString("retryable: no · reasonCode: delete-blocked"));
+
+        var byPlan = explain(ApiException.conflict("delete-blocked", "Instrument is referenced", null,
+                        List.of(new ApiException.FieldError("plans", "referenced", "instrument is used by plans"))));
+        assertThat(byPlan, containsString("because an investment plan uses it."));
+        assertThat(byPlan, not(containsString("transactions")));
+
+        var byBoth = explain(ApiException.conflict("delete-blocked", "Instrument is referenced", null,
+                        List.of(new ApiException.FieldError("transactions", "referenced", "t"),
+                                        new ApiException.FieldError("plans", "referenced", "p"))));
+        assertThat(byBoth, containsString("it has transactions and an investment plan uses it"));
+    }
+
+    /** the 404 title is not repeated as if it were a detail */
+    @Test
+    public void testNotFoundInASharedFileDoesNotRepeatItself()
+    {
+        var text = McpExplain.explainProblem(ApiException.notFound(),
+                        new McpExplain.Context("pp_get_instrument", List.of(), Boolean.TRUE, "f"));
+
+        assertThat(text, containsString("what was not found is the entity inside it. "));
+        assertThat(text, not(containsString(": Not found")));
+        assertThat(text, containsString("an instrument uuid in the instrument tools"));
+    }
+
+    /** the wait is a number of seconds to come back after, said as such */
+    @Test
+    public void testUserInteractionSaysWhenToTryAgain()
+    {
+        var text = explain(ApiException.locked());
+
+        assertThat(text, containsString("try again in about "));
+        assertThat(text, not(containsString("asked to be left")));
+    }
+
     /** one address per file, as the tool descriptions say - never "this or that" */
     @Test
     public void testTheFileListOffersOnlyTheUseValue()

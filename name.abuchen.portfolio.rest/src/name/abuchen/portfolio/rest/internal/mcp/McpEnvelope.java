@@ -158,8 +158,8 @@ public final class McpEnvelope
         if (found.fxWarnings().size() > 0)
         {
             sections.add("**Converted at 1:1, not at an exchange rate.** " + found.fxWarnings().size()
-                    + " currency pair" + (found.fxWarnings().size() == 1 ? "" : "s")
-                    + " in this report have nothing to convert with, so amounts in those currencies were multiplied by "
+                    + " currency pair" + (found.fxWarnings().size() == 1 ? " in this report has" : "s in this report have")
+                    + " nothing to convert with, so amounts in those currencies were multiplied by "
                     + "1 and are shown at face value. Say that they are unconverted; do not present them as if the "
                     + "exchange rate had been applied. The pairs:\n" + preview(found.fxWarnings(), "fxWarnings"));
         }
@@ -181,8 +181,9 @@ public final class McpEnvelope
             sections.add("**This period ends in the future.** `closingDate` is " + future.get().closingDate()
                             + ", after today (" + future.get().today() + "). The money figures include the "
                             + "transactions dated up to `closingDate`, valued at the latest known prices; the "
-                            + "time-weighted figures stop at `timeWeightedUntil`, and `irr` spreads the result over "
-                            + "days without any price movement. None of them is a forecast. Use the money figures to "
+                            + "time-weighted figures stop at `timeWeightedUntil`, and `irr`, where it can be computed at "
+                            + "all, spreads the result over days without any price movement - over a very long span it "
+                            + "cannot, and is `null`. None of them is a forecast. Use the money figures to "
                             + "show what planned transactions would do, and say that the returns do not project "
                             + "anything.");
         }
@@ -233,7 +234,7 @@ public final class McpEnvelope
         if (found.hasFractions())
         {
             // the most consequential misreading available
-            notes.add("Rates and weights above are **fractions, not percentages** — multiply by 100 before showing "
+            notes.add("Rates and weights below are **fractions, not percentages** — multiply by 100 before showing "
                             + "one: `0.0723` is 7.23%.");
         }
 
@@ -257,7 +258,7 @@ public final class McpEnvelope
             // measured: without this the cash accounts get dropped from a
             // ranking, and in a real file they can be the largest positions in
             // it - which moves every rank below them, not just one line
-            notes.add("The `cash-account` lines above **are holdings**. A cash balance is a position like any other "
+            notes.add("The `cash-account` lines below **are holdings**. A cash balance is a position like any other "
                             + "and can outrank every security, so include them when ranking, totalling or reporting "
                             + "the largest holdings. If the user asked about securities only, leave them out and say "
                             + "that you did.");
@@ -384,11 +385,22 @@ public final class McpEnvelope
         if (residual.abs().compareTo(new BigDecimal("0.01")) <= 0)
             return Optional.empty();
 
-        return Optional.of("**The breakdown misses `closingValue` by " + residual.toPlainString() + " "
-                        + currencyOf(terms.get("closingValue")) + ".** The terms are converted at the dates they "
-                        + "happened, the opening and closing values at the ends of the interval, and Portfolio "
-                        + "Performance's own calculation shows the same gap. Name it as a currency-conversion residual "
-                        + "rather than presenting the terms as an exact reconciliation.");
+        var gap = "**The breakdown misses `closingValue` by " + residual.toPlainString() + " "
+                        + currencyOf(terms.get("closingValue")) + ".** ";
+
+        // measured: a file with no foreign currency at all leaves a few cents
+        // under first-in-first-out and none under moving average, so a gap
+        // without currency gains is rounding, not an exchange-rate effect
+        var currencyGains = amountOf(terms.get("currencyGains"));
+        if (currencyGains == null || currencyGains.signum() == 0)
+            return Optional.of(gap + "No exchange rate moved any of these terms (`currencyGains` is 0), so this is a "
+                            + "rounding residual of the calculation, not a currency effect. Mention it as a small "
+                            + "rounding difference rather than presenting the terms as an exact reconciliation.");
+
+        return Optional.of(gap + "The terms are converted at the dates they happened, the opening and closing "
+                        + "values at the ends of the interval, and Portfolio Performance's own calculation shows the "
+                        + "same gap. Name it as a currency-conversion residual rather than presenting the terms as an "
+                        + "exact reconciliation.");
     }
 
     /** whether a holdings list has a line valued below zero */
@@ -587,6 +599,14 @@ public final class McpEnvelope
             advice.append(" - ").append(count).append(" in this request");
         advice.append(". ");
 
+        // a period is the narrowing that still answers "what did I trade in
+        // 2025" across the whole file, so it comes first
+        if (hasPeriod(arguments))
+            advice.append("The period filter is already applied and is not enough: shorten `from`/`to`. ");
+        else
+            advice.append("Narrow it to a period with `from` and `to` (YYYY-MM-DD): a trade is in it when it was "
+                            + "held at some point of it. ");
+
         if (isSingleStatus(arguments == null ? null : arguments.get("status")))
             advice.append("The status filter is already applied and is not enough: use ");
         else
@@ -599,6 +619,20 @@ public final class McpEnvelope
             advice.append(", and leave `grouping` at `combined` - `per-lot` makes every purchase a row of its own");
 
         return advice.append(". A whole file of matched trades is never going to fit in one answer.").toString();
+    }
+
+    /** whether the call already set a lower or an upper bound on the period */
+    private static boolean hasPeriod(JsonObject arguments)
+    {
+        if (arguments == null)
+            return false;
+        for (var key : List.of("from", "to"))
+        {
+            var value = arguments.get(key);
+            if (value != null && !value.isJsonNull())
+                return true;
+        }
+        return false;
     }
 
     /** whether a status argument names exactly one status */
@@ -641,9 +675,11 @@ public final class McpEnvelope
         return switch (tool.name())
         {
             case "pp_list_trades" -> tradesAdvice(null, null);
-            case "pp_list_instruments" -> "This file has more instruments than fit in one answer. Ask about specific "
-                            + "instruments with pp_get_instrument, or ask the user which part of the portfolio they "
-                            + "mean.";
+            case "pp_list_instruments" -> "This file has more instruments than fit in one answer, so the list is not "
+                            + "the place to look one up: call pp_list_instruments again with `query` - part of the "
+                            + "name, or the ISIN, WKN or ticker symbol - to get just the matching instruments and their "
+                            + "`uuid`, then pp_get_instrument for one of them. pp_list_holdings names every instrument "
+                            + "currently held.";
             case "pp_list_holdings" -> "This portfolio has more positions than fit in one answer. Ask the user which "
                             + "part of it they mean, and use pp_get_instrument for individual positions.";
             case "pp_list_instrument_performance" -> "This report has more instruments than fit in one answer. What "
@@ -651,7 +687,7 @@ public final class McpEnvelope
                             + "carries a handful of figures whatever is asked for: shorten the interval, or use "
                             + "pp_get_instrument_performance for one instrument at a time.";
             case "pp_get_overall_performance" -> "This response is larger than one answer can carry, and it cannot be "
-                            + "narrowed further. Read the `breakdown` figures you need from what is above, say the "
+                            + "narrowed further. Read the `breakdown` figures you need from what is below, say the "
                             + "rest was cut, and use pp_list_instrument_performance for a per-instrument view.";
             default -> "This response is larger than one answer can carry. Ask a narrower question rather than "
                             + "retrying the same one.";

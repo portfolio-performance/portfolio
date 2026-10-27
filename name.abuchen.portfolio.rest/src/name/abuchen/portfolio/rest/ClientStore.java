@@ -2,8 +2,10 @@ package name.abuchen.portfolio.rest;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -223,15 +225,30 @@ public class ClientStore
         return true;
     }
 
-    /** strips control characters and surrounding whitespace; null becomes empty */
+    /**
+     * Strips control characters, invisible format characters and surrounding
+     * whitespace; null becomes empty. The name is chosen by whoever asks for
+     * access and shown to the user in the approval dialog, so a right-to-left
+     * override or a zero-width character must not be able to make it read as
+     * another client's name.
+     */
     public static String sanitizeName(String name)
     {
         if (name == null)
             return ""; //$NON-NLS-1$
         return name.codePoints() //
                         .filter(cp -> !Character.isISOControl(cp)) //
+                        .filter(cp -> !isInvisible(cp)) //
                         .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append) //
                         .toString().strip();
+    }
+
+    /** bidi controls, zero-width characters and line or paragraph separators */
+    private static boolean isInvisible(int codePoint)
+    {
+        var type = Character.getType(codePoint);
+        return type == Character.FORMAT || type == Character.LINE_SEPARATOR
+                        || type == Character.PARAGRAPH_SEPARATOR;
     }
 
     private static String hash(String token)
@@ -387,8 +404,34 @@ public class ClientStore
         try
         {
             Files.createDirectories(file.getParent());
-            Files.writeString(file, root.toString(), StandardCharsets.UTF_8);
-            restrictToOwner();
+
+            // written next to the file and moved over it: a crash halfway
+            // through leaves the previous file intact rather than a truncated
+            // one, and the permissions are tightened before the content is
+            // visible under the real name
+            // a move replaces an empty directory where the file belongs, which
+            // writing in place never did - that is not a file we may overwrite
+            if (Files.isDirectory(file))
+                throw new IOException(file + " is a directory"); //$NON-NLS-1$
+
+            var temp = file.resolveSibling(file.getFileName() + ".tmp"); //$NON-NLS-1$
+            try
+            {
+                Files.writeString(temp, root.toString(), StandardCharsets.UTF_8);
+                restrictToOwner(temp);
+                try
+                {
+                    Files.move(temp, file, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+                }
+                catch (AtomicMoveNotSupportedException e)
+                {
+                    Files.move(temp, file, StandardCopyOption.REPLACE_EXISTING);
+                }
+            }
+            finally
+            {
+                Files.deleteIfExists(temp);
+            }
             return true;
         }
         catch (IOException e)
@@ -398,11 +441,11 @@ public class ClientStore
         }
     }
 
-    private void restrictToOwner() throws IOException
+    private static void restrictToOwner(Path target) throws IOException
     {
         try
         {
-            Files.setPosixFilePermissions(file, PosixFilePermissions.fromString("rw-------")); //$NON-NLS-1$
+            Files.setPosixFilePermissions(target, PosixFilePermissions.fromString("rw-------")); //$NON-NLS-1$
         }
         catch (UnsupportedOperationException e)
         {

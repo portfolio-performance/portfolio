@@ -70,6 +70,25 @@ public class InstrumentPerformanceTest
     // -- shape and echoes ------------------------------------------------
 
     /**
+     * A standard deviation needs two returns. Monday to Tuesday is one, and a
+     * volatility of 0 would read as a measured absence of risk; Friday to
+     * Tuesday spans two trading days and is measured.
+     */
+    @Test
+    public void testOneDailyReturnHasNoSpread()
+    {
+        var oneDay = onlyItem(list(heldPosition(), "2024-12-30", "2024-12-31", null, null, null, "risk"))
+                        .getAsJsonObject("risk");
+        assertThat(oneDay.get("volatility").isJsonNull(), is(true));
+        assertThat(oneDay.get("semiVolatility").isJsonNull(), is(true));
+        assertThat(oneDay.get("maxDrawdown").isJsonNull(), is(false));
+
+        var twoDays = onlyItem(list(heldPosition(), "2024-12-27", "2024-12-31", null, null, null, "risk"))
+                        .getAsJsonObject("risk");
+        assertThat(twoDays.get("volatility").isJsonNull(), is(false));
+    }
+
+    /**
      * A position carried through the whole interval: 10 shares valued 1000 at
      * the start and 1200 at the end, no trades. Per M1 the cost basis of a
      * carried-in lot is its opening valuation, not what was once paid for it -
