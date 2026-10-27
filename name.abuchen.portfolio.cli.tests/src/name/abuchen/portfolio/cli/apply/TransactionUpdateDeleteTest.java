@@ -341,6 +341,30 @@ public class TransactionUpdateDeleteTest
         assertThat(same.stdout, same.exitCode, is(0));
     }
 
+    /**
+     * A failing operation changes nothing, so later operations of the batch
+     * see the record as it was.
+     */
+    @Test
+    public void leavesTheRecordUnchangedWhenTheTypeOrTheKindIsRefused()
+    {
+        var deposit = TransactionFixtures.cash(eur, AccountTransaction.Type.DEPOSIT, "2026-03-02", 100_000);
+        var transfer = TransactionFixtures.cashTransfer(eur, eurSavings, "2026-03-09", 25_000);
+
+        var batch = JsonParser.parseString("[" + update(deposit.getUUID(), "\"type\":\"REMOVAL\",\"amount\":250.00")
+                        + "," + update(transfer.getSourceTransaction().getUUID(),
+                                        "\"kind\":\"security\",\"amount\":50.00")
+                        + "]").getAsJsonArray();
+        var e = assertThrows(CliException.class, () -> ApplyBatch.run(client, batch, TransactionOperations.ALL));
+
+        @SuppressWarnings("unchecked")
+        var failures = (List<Map<String, Object>>) e.toProblem().get("failures");
+        assertThat(failures.stream().map(f -> f.get("code")).toList(), is(List.of("type-immutable", "kind-immutable")));
+        assertThat(deposit.getAmount(), is(100_000L));
+        assertThat(transfer.getSourceTransaction().getAmount(), is(25_000L));
+        assertThat(transfer.getTargetTransaction().getAmount(), is(25_000L));
+    }
+
     @Test
     public void refusesAnUnknownUuidAnUnknownFieldAndAPatchThatBreaksAnAddRule() throws IOException
     {

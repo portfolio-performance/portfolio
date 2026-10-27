@@ -65,6 +65,10 @@ final class TransactionUpdates
             return;
 
         var merged = overlay(context, existing.record());
+        // the replacing context counts its own failures, so it would not see the overlay's
+        if (context.failed())
+            return;
+
         TransactionOperations.add(context.replacing(merged, existing));
     }
 
