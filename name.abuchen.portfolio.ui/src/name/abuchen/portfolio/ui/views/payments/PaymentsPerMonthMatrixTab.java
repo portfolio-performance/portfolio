@@ -76,6 +76,9 @@ public class PaymentsPerMonthMatrixTab extends PaymentsMatrixTab
     private void createMonthColumn(TableViewer records, TableColumnLayout layout, LocalDate start, int index)
     {
         var column = new TableViewerColumn(records, SWT.RIGHT);
+        // register layout data first: on GTK, configuring the column can trigger a layout
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(50));
+
         column.getColumn().setText(formatter.format(start));
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -103,13 +106,14 @@ public class PaymentsPerMonthMatrixTab extends PaymentsMatrixTab
         });
 
         createSorter((l1, l2) -> Long.compare(l1.getValue(index), l2.getValue(index))).attachTo(records, column);
-
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(50));
     }
 
     protected void createAveragePerMonthColumn(TableViewer records, TableColumnLayout layout, boolean showOnlyFirstYear)
     {
         var column = new TableViewerColumn(records, SWT.RIGHT);
+        // register layout data first: on GTK, configuring the column can trigger a layout
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(200));
+
         column.getColumn().setText(Messages.ColumnAverage);
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -159,8 +163,6 @@ public class PaymentsPerMonthMatrixTab extends PaymentsMatrixTab
 
             return Long.compare(avg1, avg2);
         }).attachTo(records, column);
-
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(200));
     }
 
 }
