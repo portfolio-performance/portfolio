@@ -87,6 +87,7 @@ public class PDFImportAssistant
         extractors.add(new FidelityInternationalPDFExtractor(client));
         extractors.add(new FILFondbankPDFExtractor(client));
         extractors.add(new FindependentAGPDFExtractor(client));
+        extractors.add(new FinecoBankPDFExtractor(client));
         extractors.add(new FinTechGroupBankPDFExtractor(client));
         extractors.add(new FirstradeSecuritiesIncPDFExtractor(client));
         extractors.add(new FondsdepotBankPDFExtractor(client));
