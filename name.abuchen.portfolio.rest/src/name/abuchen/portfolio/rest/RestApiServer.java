@@ -7,6 +7,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -38,6 +41,18 @@ public class RestApiServer
     private static final Set<String> IPV6_LOOPBACK = Set.of("::1", "0:0:0:0:0:0:0:1"); //$NON-NLS-1$ //$NON-NLS-2$
 
     /**
+     * How long one exchange may take before the watchdog closes it. A connection
+     * that sends headers and then stalls cannot be left parked: {@code
+     * com.sun.net.httpserver} has no read timeout, so without a deadline the body
+     * read blocks until EOF - for a stalled client never - and every worker with
+     * it. Closing the exchange closes the socket, which is what unblocks the read.
+     */
+    private static final int REQUEST_DEADLINE_SECONDS = 30;
+
+    /** the bearer scheme, matched case-insensitively below */
+    private static final String BEARER_PREFIX = "Bearer "; //$NON-NLS-1$
+
+    /**
      * The largest request body accepted. Handlers parse JSON, so a body is
      * buffered whole - without a limit any local process could make the
      * application allocate arbitrary amounts of memory, and the pairing
@@ -52,6 +67,19 @@ public class RestApiServer
 
     private HttpServer server;
     private ExecutorService executor;
+    private ScheduledExecutorService watchdog;
+
+    /** daemon threads, so a restart or an app shutdown never leaves a worker parked */
+    private static final ThreadFactory DAEMON = new ThreadFactory()
+    {
+        @Override
+        public Thread newThread(Runnable runnable)
+        {
+            var thread = new Thread(runnable, "Portfolio Performance REST API"); //$NON-NLS-1$
+            thread.setDaemon(true);
+            return thread;
+        }
+    };
 
     public RestApiServer(int port, Predicate<String> tokenValidator, Router router)
     {
@@ -64,7 +92,13 @@ public class RestApiServer
     {
         server = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), port), 0);
         server.createContext("/", this::dispatch); //$NON-NLS-1$
-        executor = Executors.newFixedThreadPool(2);
+        // one virtual thread per request: a stalled or slow exchange cannot park a
+        // pooled worker and take the whole API down with it. Virtual threads do not
+        // keep the JVM alive, so a shutdown needs no interruption of them; the
+        // watchdog below is a daemon platform thread, which does.
+        executor = Executors.newThreadPerTaskExecutor(
+                        Thread.ofVirtual().name("Portfolio Performance REST API").factory()); //$NON-NLS-1$
+        watchdog = Executors.newSingleThreadScheduledExecutor(DAEMON);
         server.setExecutor(executor);
         server.start();
     }
@@ -74,7 +108,10 @@ public class RestApiServer
         if (server != null)
         {
             server.stop(0);
-            executor.shutdown();
+            // interrupt, do not wait: a thread blocked in a read or in the UI
+            // thread must not outlive the server
+            executor.shutdownNow();
+            watchdog.shutdownNow();
             server = null;
         }
     }
@@ -86,6 +123,8 @@ public class RestApiServer
 
     private void dispatch(HttpExchange exchange)
     {
+        var deadline = watchdog.schedule(() -> exchange.close(), REQUEST_DEADLINE_SECONDS, TimeUnit.SECONDS);
+
         try
         {
             Response response;
@@ -93,13 +132,16 @@ public class RestApiServer
             {
                 checkHost(exchange);
                 checkOrigin(exchange);
-                var authorization = checkAuthorization(exchange);
+                // the normalized path is what routing sees, so it is also what the
+                // auth exemption must compare against - /mcp/ routes to the MCP
+                // handler and would otherwise be refused before it can negotiate
+                var path = normalizePath(exchange.getRequestURI().getPath());
+                var authorization = checkAuthorization(exchange, path);
 
-                var match = router.match(exchange.getRequestMethod(), exchange.getRequestURI().getPath());
-                var request = new Request(exchange.getRequestMethod(), exchange.getRequestURI().getPath(),
-                                match.pathParams(), Request.parseQuery(exchange.getRequestURI().getRawQuery()),
-                                readBody(exchange), authorization,
-                                exchange.getRequestHeaders().getFirst("User-Agent")); //$NON-NLS-1$
+                var match = router.match(exchange.getRequestMethod(), path);
+                var request = new Request(exchange.getRequestMethod(), path, match.pathParams(),
+                                Request.parseQuery(exchange.getRequestURI().getRawQuery()), readBody(exchange),
+                                authorization, exchange.getRequestHeaders().getFirst("User-Agent")); //$NON-NLS-1$
                 response = match.handler().handle(request);
             }
             catch (ApiException e)
@@ -120,8 +162,23 @@ public class RestApiServer
         }
         finally
         {
+            deadline.cancel(false);
             exchange.close();
         }
+    }
+
+    /**
+     * The path as the router matches it: a trailing slash is not a second path,
+     * and any number of leading slashes is one path. Both doors must agree about
+     * that or a client with a trailing slash is refused a token-free handshake it
+     * would then be allowed to make. An empty middle segment stays unmatched - a
+     * malformed path is not a route someone registered.
+     */
+    private static String normalizePath(String path)
+    {
+        var leading = path.replaceAll("^/+", "/"); //$NON-NLS-1$ //$NON-NLS-2$
+        var stripped = leading.replaceAll("/+$", ""); //$NON-NLS-1$ //$NON-NLS-2$
+        return stripped.isEmpty() ? "/" : stripped; //$NON-NLS-1$
     }
 
     /**
@@ -199,23 +256,30 @@ public class RestApiServer
      * here either. A token-free {@code initialize} is answered, not refused,
      * and only the handler knows whether the call needed a token.
      */
-    private Request.Authorization checkAuthorization(HttpExchange exchange)
+    private Request.Authorization checkAuthorization(HttpExchange exchange, String path)
     {
-        var path = exchange.getRequestURI().getPath();
         var header = exchange.getRequestHeaders().getFirst("Authorization"); //$NON-NLS-1$
-        var presented = header != null && header.startsWith("Bearer "); //$NON-NLS-1$
 
-        if (presented && tokenValidator.test(header.substring("Bearer ".length()))) //$NON-NLS-1$
+        // the scheme is case-insensitive per RFC 6750, and a header in the wrong
+        // shape is a different fault from no header at all - the preference page
+        // says "no token offered" for both otherwise, which is a misdiagnosis
+        var bearer = header != null && header.regionMatches(true, 0, BEARER_PREFIX, 0, BEARER_PREFIX.length());
+        var token = bearer ? header.substring(BEARER_PREFIX.length()).trim() : null;
+
+        if (token != null && tokenValidator.test(token))
             return Request.Authorization.VALID;
 
-        var authorization = presented ? Request.Authorization.INVALID : Request.Authorization.MISSING;
+        var authorization = token != null ? Request.Authorization.INVALID : Request.Authorization.MISSING;
 
         if (isAuthExempt(path) || RestApiConstants.MCP_ENDPOINT.equals(path))
             return authorization;
 
         // a wrong token never becomes an entry in the client list, so this
         // record is the only trace the user will have of it
-        RejectedConnections.record(path, exchange.getRequestHeaders().getFirst("User-Agent"), presented); //$NON-NLS-1$
+        RejectedConnections.record(path, exchange.getRequestHeaders().getFirst("User-Agent"), //$NON-NLS-1$
+                token != null, token != null ? RejectedConnections.Reason.INVALID_TOKEN
+                        : header != null ? RejectedConnections.Reason.NO_BEARER_SCHEME
+                                : RejectedConnections.Reason.NO_HEADER);
 
         throw ApiException.unauthorized();
     }
@@ -253,7 +317,9 @@ public class RestApiServer
         if (response.contentType() != null)
             exchange.getResponseHeaders().set("Content-Type", response.contentType()); //$NON-NLS-1$
 
-        var length = response.body().length == 0 ? -1 : response.body().length;
+        // 0, not -1: -1 asks for chunked transfer encoding, and a 204 or a 202
+        // with no body should carry no body at all, not an empty chunked stream
+        var length = response.body().length;
         exchange.sendResponseHeaders(response.status(), length);
         if (response.body().length > 0)
         {

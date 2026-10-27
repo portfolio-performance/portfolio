@@ -1,17 +1,24 @@
 package name.abuchen.portfolio.rest.internal.mcp;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.rest.RejectedConnections;
@@ -29,10 +36,10 @@ import name.abuchen.portfolio.rest.internal.VersionHandler;
  * <b>No session model.</b> No {@code Mcp-Session-Id} is issued, responses are
  * plain {@code application/json} whatever {@code Accept} asks for, and
  * {@code GET} and {@code DELETE} fall through to the router's 405 - an SSE
- * stream is a parked request and this server runs a two-thread pool, which is
- * why ADR 0002 already refused long-polling. Everything a session could hold
- * travels per request instead. If a client ever demands a session id, emit a
- * constant one and ignore it coming back.
+ * stream is a parked request, which is why ADR 0002 already refused
+ * long-polling. Everything a session could hold travels per request instead. If
+ * a client ever demands a session id, emit a constant one and ignore it coming
+ * back.
  * <p/>
  * <b>Authorisation is per JSON-RPC method</b> (ADR 0005): {@code initialize},
  * {@code tools/list} and {@code ping} answer without a token, because all they
@@ -51,6 +58,18 @@ public final class McpEndpoint
      * personal portfolio on every collection. Revise on measured evidence.
      */
     public static final int MAX_RESULT_CHARS = 100_000;
+
+    /**
+     * How many JSON-RPC messages one HTTP request may carry. Protocol
+     * 2025-06-18 dropped batching; accepting a batch is leniency, and an
+     * unbounded one is how a single request queues an arbitrary number of tool
+     * calls against the server.
+     */
+    private static final int MAX_BATCH_MESSAGES = 32;
+
+    /** an entity uuid as {@code pp_list_instruments} reports one */
+    private static final Pattern UUID_PATTERN = Pattern.compile( //$NON-NLS-1$
+                    "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}");
 
     private static final String NEWEST_SUPPORTED_PROTOCOL_VERSION = "2025-06-18";
 
@@ -81,13 +100,18 @@ public final class McpEndpoint
         JsonElement message;
         try
         {
-            message = JsonParser.parseString(new String(request.body(), StandardCharsets.UTF_8));
+            // Gson keeps the last of repeated keys silently, and the Gson in the
+            // target platform has no way to ask for the other behaviour, so the
+            // message is read here name by name. A message that names one key
+            // twice is a fault in whatever built it, and the caller has to hear it.
+            var reader = new JsonReader(new StringReader(new String(request.body(), StandardCharsets.UTF_8))); //$NON-NLS-1$
+            message = readMessage(reader);
         }
-        catch (JsonSyntaxException e)
+        catch (JsonSyntaxException | IOException e)
         {
             // A malformed body is a fault in whatever is speaking to us, not
             // something a model ever sees, so it is answered on the wire.
-            return Response.json(400, error(JsonNull.INSTANCE, PARSE_ERROR, "request body is not valid JSON"));
+            return Response.json(400, error(JsonNull.INSTANCE, PARSE_ERROR, describeParseFailure(e)));
         }
 
         if (message.isJsonArray())
@@ -95,6 +119,9 @@ public final class McpEndpoint
             var batch = message.getAsJsonArray();
             if (batch.isEmpty())
                 return Response.json(200, error(JsonNull.INSTANCE, INVALID_REQUEST, "a batch must not be empty"));
+            if (batch.size() > MAX_BATCH_MESSAGES)
+                return Response.json(200, error(JsonNull.INSTANCE, INVALID_REQUEST,
+                                "a batch must not exceed " + MAX_BATCH_MESSAGES + " messages"));
 
             var replies = new JsonArray();
             for (JsonElement element : batch)
@@ -109,6 +136,96 @@ public final class McpEndpoint
 
         var reply = handleMessage(router, message, request);
         return reply == null ? accepted() : Response.json(200, reply);
+    }
+
+    /**
+     * The whole body as one JSON value, strict: no trailing content, no repeated
+     * key. Gson's reader would keep the last duplicate silently, and the Gson in
+     * the target platform cannot be told otherwise, so the structure is walked
+     * here. Number literals are handed to Gson so their text survives - an id is
+     * echoed back exactly as the client sent it.
+     */
+    /**
+     * What a malformed body announces. Gson appends its own advice to a syntax
+     * error - a hint to switch the reader to lenient parsing, plus a documentation
+     * link - and that advice is a suggestion to accept the broken message, which is
+     * exactly the wrong thing to tell a caller. Only where the reader stopped is
+     * reported; a fault this reader raised itself is passed through as written.
+     */
+    private static String describeParseFailure(Exception e)
+    {
+        var message = e.getMessage();
+        if (message == null)
+            return "request body is not valid JSON"; //$NON-NLS-1$
+        var position = message.indexOf(" at line "); //$NON-NLS-1$
+        if (position < 0)
+            return "request body is not valid JSON: " + message; //$NON-NLS-1$
+
+        // Gson puts its advice on a second line after the position, so the position
+        // is kept and everything from the line break on is dropped
+        var end = message.indexOf('\n', position);
+        var where = message.substring(position + 1, end < 0 ? message.length() : end);
+        return "request body is not valid JSON, " + where; //$NON-NLS-1$
+    }
+
+    private static JsonElement readMessage(JsonReader reader) throws IOException
+    {
+        var value = readValue(reader);
+
+        if (reader.peek() != JsonToken.END_DOCUMENT)
+            throw new JsonSyntaxException("unexpected content after the JSON message"); //$NON-NLS-1$
+
+        return value;
+    }
+
+    private static JsonElement readValue(JsonReader reader) throws IOException
+    {
+        var token = reader.peek();
+
+        return switch (token)
+        {
+            case BEGIN_OBJECT -> readObject(reader);
+            case BEGIN_ARRAY -> readArray(reader);
+            case STRING -> new JsonPrimitive(reader.nextString()); //$NON-NLS-1$
+            case NUMBER -> JsonParser.parseString(reader.nextString()); //$NON-NLS-1$
+            case BOOLEAN -> new JsonPrimitive(reader.nextBoolean()); //$NON-NLS-1$
+            case NULL ->
+            {
+                reader.nextNull();
+                yield JsonNull.INSTANCE;
+            }
+            default -> throw new JsonSyntaxException("unexpected token " + token); //$NON-NLS-1$
+        };
+    }
+
+    private static JsonElement readObject(JsonReader reader) throws IOException
+    {
+        var object = new JsonObject();
+        var seen = new HashSet<String>();
+
+        reader.beginObject();
+        while (reader.peek() != JsonToken.END_OBJECT)
+        {
+            var name = reader.nextName();
+            if (!seen.add(name))
+                throw new JsonSyntaxException("duplicate key \"" + name + "\""); //$NON-NLS-1$ //$NON-NLS-2$
+            object.add(name, readValue(reader));
+        }
+        reader.endObject();
+
+        return object;
+    }
+
+    private static JsonElement readArray(JsonReader reader) throws IOException
+    {
+        var array = new JsonArray();
+
+        reader.beginArray();
+        while (reader.peek() != JsonToken.END_ARRAY)
+            array.add(readValue(reader));
+        reader.endArray();
+
+        return array;
     }
 
     /**
@@ -129,9 +246,17 @@ public final class McpEndpoint
             return error(JsonNull.INSTANCE, INVALID_REQUEST, "a JSON-RPC message must be an object");
 
         var message = element.getAsJsonObject();
+        var isRequest = message.has("method");
 
-        if (message.has("result") || message.has("error"))
+        // A message carrying result or error is the client's own reply, which
+        // answers nothing. But a message carrying method as well is not a reply:
+        // it is a call that was built wrongly, and 202 would tell a client that
+        // waits for an answer that all was well.
+        if (!isRequest && (message.has("result") || message.has("error")))
             return null;
+        if (message.has("result") || message.has("error"))
+            return error(JsonNull.INSTANCE, INVALID_REQUEST,
+                            "a JSON-RPC request carries \"params\", not \"result\" or \"error\"");
 
         var id = message.has("id") ? message.get("id") : null;
         var declared = message.get("method");
@@ -147,6 +272,13 @@ public final class McpEndpoint
         // a notification: a call without an id, which gets no response
         if (id == null)
             return null;
+
+        // null is the id of an answer to an unrecognized request, never the id of
+        // a request; a client that sends "id": null gets an error, not a reply
+        // that cannot be correlated with anything
+        if (id.isJsonNull())
+            return error(JsonNull.INSTANCE, INVALID_REQUEST,
+                            "\"id\" must be a string or a number; a notification omits it");
 
         var params = message.has("params") && message.get("params").isJsonObject()
                         ? message.getAsJsonObject("params")
@@ -239,6 +371,10 @@ public final class McpEndpoint
         if (!missing.isEmpty())
             return toolError(explainMissing(router, tool, missing) + hint("missing-argument", false));
 
+        var misshapen = rejectMisshapenArguments(tool, arguments);
+        if (misshapen != null)
+            return toolError(misshapen + hint("misshapen-argument", false));
+
         try
         {
             var response = McpDispatch.call(router, tool, arguments);
@@ -309,6 +445,176 @@ public final class McpEndpoint
         return missing;
     }
 
+    /**
+     * Whether an argument has a shape the route can use. Dispatch turns an
+     * argument into a path segment, a comma-joined query value or a body field,
+     * so a number where a segment is expected or an object where a query value is
+     * expected would be answered with data for a question nobody asked. The tool
+     * declares these types in its schema, which is what a model is told to
+     * produce; checking them is cheaper than trusting that it did.
+     * <p/>
+     * Body fields are not checked beyond their own type: the handler validates
+     * each patch field against the model and names the field it rejected.
+     */
+    private static String rejectMisshapenArguments(McpTool tool, JsonObject arguments)
+    {
+        var properties = tool.inputSchema().getAsJsonObject("properties"); //$NON-NLS-1$
+        if (properties == null)
+            return null;
+
+        var problems = new ArrayList<String>();
+        for (var entry : arguments.entrySet())
+        {
+            var schema = properties.get(entry.getKey());
+            if (schema == null || !schema.isJsonObject())
+                continue;
+
+            var problem = describeMisshapenValue(tool, entry.getKey(), schema.getAsJsonObject(), entry.getValue());
+            if (problem != null)
+                problems.add("- " + problem); //$NON-NLS-1$
+        }
+
+        if (problems.isEmpty())
+            return null;
+
+        return "Some arguments are not of the shape `" + tool.name() + "` declares:\n" //$NON-NLS-1$
+                        + String.join("\n", problems); //$NON-NLS-1$
+    }
+
+    private static String describeMisshapenValue(McpTool tool, String argument, JsonObject schema, JsonElement value)
+    {
+        var declared = schema.get("type"); //$NON-NLS-1$
+        if (declared != null && !matchesType(value, declared))
+            return "`" + argument + "` must be " + typesOf(declared) + ", not " + shapeOf(value); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+        var enumeration = schema.get("enum"); //$NON-NLS-1$
+        if (enumeration != null && enumeration.isJsonArray() && !holds(enumeration.getAsJsonArray(), value))
+            return "`" + argument + "` must be one of " + namesOf(enumeration.getAsJsonArray()); //$NON-NLS-1$ //$NON-NLS-2$
+
+        var minLength = schema.get("minLength"); //$NON-NLS-1$
+        if (minLength != null && value.isJsonPrimitive() && value.getAsJsonPrimitive().isString()
+                        && value.getAsString().length() < minLength.getAsInt())
+            return "`" + argument + "` must not be empty"; //$NON-NLS-1$
+
+        var items = schema.get("items"); //$NON-NLS-1$
+        if (items != null && items.isJsonObject() && value.isJsonArray())
+        {
+            var itemSchema = items.getAsJsonObject();
+            var declaredItems = itemSchema.get("type"); //$NON-NLS-1$
+            var permitted = itemSchema.get("enum"); //$NON-NLS-1$
+
+            for (JsonElement element : value.getAsJsonArray())
+            {
+                if (declaredItems != null && !matchesType(element, declaredItems))
+                    return "`" + argument + "` must hold " + typesOf(declaredItems) + ", not " + shapeOf(element); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+                if (permitted != null && permitted.isJsonArray() && !holds(permitted.getAsJsonArray(), element))
+                    return "`" + argument + "` must hold one of " + namesOf(permitted.getAsJsonArray()); //$NON-NLS-1$ //$NON-NLS-2$
+            }
+        }
+
+        var minItems = schema.get("minItems"); //$NON-NLS-1$
+        if (minItems != null && value.isJsonArray() && value.getAsJsonArray().size() < minItems.getAsInt())
+            return "`" + argument + "` must hold at least " + minItems.getAsInt() //$NON-NLS-1$
+                    + " value" + (minItems.getAsInt() == 1 ? "" : "s") + "; an empty list names nothing"; //$NON-NLS-1$ //$NON-NLS-2$
+
+        var binding = tool.binding(argument);
+        if (binding != null && binding.where() == McpTool.Where.PATH)
+        {
+            var text = value.isJsonPrimitive() ? value.getAsString() : value.toString();
+            if (text.isBlank())
+                return "`" + argument + "` must name something; a blank value resolves no path"; //$NON-NLS-1$
+
+            // A uuid is substituted into a path, and a path whose segment is a
+            // reserved literal belongs to another endpoint: "attribute-types"
+            // would answer with attribute types instead of one instrument.
+            if ("uuid".equals(binding.wire()) && !UUID_PATTERN.matcher(text).matches()) //$NON-NLS-1$
+                return "`" + argument + "` must be an entity uuid as pp_list_instruments reports it, not `" //$NON-NLS-1$ //$NON-NLS-2$
+                        + text + "`"; //$NON-NLS-1$
+        }
+
+        return null;
+    }
+
+    private static boolean matchesType(JsonElement value, JsonElement declared)
+    {
+        if (declared.isJsonArray())
+        {
+            for (JsonElement type : declared.getAsJsonArray())
+            {
+                if (matchesType(value, type))
+                    return true;
+            }
+            return false;
+        }
+
+        return matchesSingleType(value, declared.getAsString());
+    }
+
+    private static boolean matchesSingleType(JsonElement value, String type)
+    {
+        return switch (type)
+        {
+            case "string" -> value.isJsonPrimitive() && value.getAsJsonPrimitive().isString(); //$NON-NLS-1$
+            case "number", "integer" -> value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber(); //$NON-NLS-1$ //$NON-NLS-2$
+            case "boolean" -> value.isJsonPrimitive() && value.getAsJsonPrimitive().isBoolean(); //$NON-NLS-1$
+            case "array" -> value.isJsonArray(); //$NON-NLS-1$
+            case "object" -> value.isJsonObject(); //$NON-NLS-1$
+            case "null" -> value.isJsonNull(); //$NON-NLS-1$
+            default -> true;
+        };
+    }
+
+    private static String typesOf(JsonElement declared)
+    {
+        if (!declared.isJsonArray())
+            return "`" + declared.getAsString() + "`"; //$NON-NLS-1$ //$NON-NLS-2$
+
+        var names = new ArrayList<String>();
+        for (JsonElement type : declared.getAsJsonArray())
+            names.add("`" + type.getAsString() + "`"); //$NON-NLS-1$ //$NON-NLS-2$
+
+        return String.join(" or ", names); //$NON-NLS-1$
+    }
+
+    private static String shapeOf(JsonElement value)
+    {
+        if (value.isJsonNull())
+            return "null"; //$NON-NLS-1$
+        if (value.isJsonArray())
+            return "an array"; //$NON-NLS-1$
+        if (value.isJsonObject())
+            return "an object"; //$NON-NLS-1$
+        if (value.getAsJsonPrimitive().isBoolean())
+            return "a boolean"; //$NON-NLS-1$
+        if (value.getAsJsonPrimitive().isNumber())
+            return "a number"; //$NON-NLS-1$
+
+        return "the string `" + value.getAsString() + "`"; //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    private static boolean holds(JsonArray permitted, JsonElement value)
+    {
+        if (!value.isJsonPrimitive())
+            return false;
+
+        for (JsonElement candidate : permitted)
+        {
+            if (candidate.equals(value))
+                return true;
+        }
+        return false;
+    }
+
+    private static String namesOf(JsonArray permitted)
+    {
+        var names = new ArrayList<String>();
+        for (JsonElement element : permitted)
+            names.add("`" + element.getAsString() + "`"); //$NON-NLS-1$ //$NON-NLS-2$
+
+        return String.join(", ", names); //$NON-NLS-1$
+    }
+
     /** a missing {@code file} hands the files back inline, so the model recovers in this same call */
     private static String explainMissing(Router router, McpTool tool, List<String> missing)
     {
@@ -357,13 +663,14 @@ public final class McpEndpoint
 
     /**
      * Fits a response to the cap, in order of preference: it fits; it can be
-     * asked for less, and what was dropped is named; or it is truncated with a
-     * marker. Never silently - an unmarked truncation is the one outcome that
-     * produces a confident wrong answer.
+     * asked for less, and what was dropped is named; or the payload is cut and
+     * the guidance that says so is kept. Never silently - an unmarked truncation
+     * is the one outcome that produces a confident wrong answer, and a truncation
+     * that also dropped the notes is barely better.
      */
     private static String fit(Router router, McpTool tool, JsonObject arguments, JsonElement payload, int maxChars)
     {
-        var rendered = McpEnvelope.render(tool, payload, List.of());
+        var rendered = McpEnvelope.render(tool, arguments, payload, List.of());
         if (rendered.length() <= maxChars)
             return rendered;
 
@@ -377,12 +684,14 @@ public final class McpEndpoint
                 plan.get().keep().forEach(metrics::add);
                 narrowed.add("metrics", metrics);
 
-                var smaller = McpEnvelope.render(tool, payloadOf(McpDispatch.call(router, tool, narrowed)),
-                                plan.get().dropped());
+                var smallerPayload = payloadOf(McpDispatch.call(router, tool, narrowed));
+                var smaller = McpEnvelope.render(tool, narrowed, smallerPayload, plan.get().dropped());
                 if (smaller.length() <= maxChars)
                     return smaller;
+
                 // the dropped groups are not advice any more: they are already gone
-                return capWithAdvice(smaller, McpEnvelope.oversizeAdvice(tool, plan.get().dropped()), maxChars);
+                return McpEnvelope.render(tool, narrowed, smallerPayload, plan.get().dropped(),
+                                McpEnvelope.oversizeAdvice(tool, plan.get().dropped()), maxChars);
             }
             catch (Exception e)
             {
@@ -393,18 +702,7 @@ public final class McpEndpoint
             }
         }
 
-        return capWithAdvice(rendered, McpEnvelope.oversizeAdvice(tool), maxChars);
-    }
-
-    /**
-     * Truncates a body and appends the advice that tells the model what to ask
-     * for instead. The advice is cut from the budget first: appended to a capped
-     * body it would land past the limit, and the one part of a truncated answer
-     * that must survive is the part saying how to get the rest.
-     */
-    private static String capWithAdvice(String body, String advice, int maxChars)
-    {
-        return McpEnvelope.cap(body, maxChars - advice.length() - 2) + "\n\n" + advice; //$NON-NLS-1$
+        return McpEnvelope.render(tool, arguments, payload, List.of(), McpEnvelope.oversizeAdvice(tool), maxChars);
     }
 
     /** a 204 carries nothing to render; {@code pp_delete_instrument} is the one */

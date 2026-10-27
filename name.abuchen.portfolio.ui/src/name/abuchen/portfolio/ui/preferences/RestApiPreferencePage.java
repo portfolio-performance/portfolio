@@ -230,12 +230,24 @@ public class RestApiPreferencePage extends PreferencePage
                         : Messages.PrefRestApiLabelUnidentifiedClient;
 
         var label = new Label(container, SWT.WRAP);
-        label.setText(MessageFormat.format(
-                        rejection.tokenPresented() ? Messages.PrefMsgRestApiRejectedInvalidToken
-                                        : Messages.PrefMsgRestApiRejectedNoToken,
-                        format(rejection.when()), client));
+        label.setText(MessageFormat.format(messageFor(rejection), format(rejection.when()), client));
         label.setForeground(Colors.theme().warningForeground());
         GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(label);
+    }
+
+    /**
+     * Which of the three refusals this was. A header in the wrong shape reads as
+     * "no token offered" otherwise, and that is a misdiagnosis the user cannot
+     * act on: nothing is missing, only the scheme is spelled wrong.
+     */
+    private static String messageFor(RejectedConnections.Rejection rejection)
+    {
+        if (rejection.tokenPresented())
+            return Messages.PrefMsgRestApiRejectedInvalidToken;
+
+        return rejection.reason() == RejectedConnections.Reason.NO_BEARER_SCHEME
+                        ? Messages.PrefMsgRestApiRejectedNoBearerScheme
+                        : Messages.PrefMsgRestApiRejectedNoToken;
     }
 
     private int currentPort()

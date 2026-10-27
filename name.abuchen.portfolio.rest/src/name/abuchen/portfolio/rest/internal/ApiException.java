@@ -122,6 +122,19 @@ public class ApiException extends RuntimeException
                         List.of(), Map.of("Retry-After", "5")); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
+    /**
+     * The UI thread did not answer within the deadline. Refused rather than
+     * waited: a request parked on a busy UI thread (an import wizard, a price
+     * update, a long repaint) would otherwise hold a worker indefinitely, and the
+     * whole API would look dead while only the UI is busy.
+     */
+    public static ApiException uiBusy(long timeoutMillis)
+    {
+        return new ApiException(503, "ui-busy", "Application busy, retry later", //$NON-NLS-1$ //$NON-NLS-2$
+                        "The application did not answer within " + timeoutMillis + " ms", //$NON-NLS-1$ //$NON-NLS-2$
+                        List.of(), Map.of("Retry-After", "5")); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
     public int getStatus()
     {
         return status;

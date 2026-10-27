@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.Matchers.not;
 
 import java.util.List;
@@ -108,17 +109,38 @@ public class McpEnvelopeTest
         assertThat(rendered.indexOf("Converted at 1:1"), is(greaterThan(rendered.indexOf("Partial result"))));
     }
 
+    /** a patch that named a field is an edit the user has to save or discard */
     @Test
-    public void testAWriteAlwaysSaysItIsNotSavedToDisk()
+    public void testAWriteThatNamedAFieldSaysItIsNotSavedToDisk()
     {
-        assertThat(render(UPDATE, "{\"uuid\":\"x\"}"), containsString("not saved to disk"));
+        assertThat(renderWith(UPDATE, "{\"uuid\":\"0a9af43d-f91a-408d-b432-a119446bce43\",\"note\":\"x\"}", //$NON-NLS-1$
+                        "{\"uuid\":\"x\"}"), containsString("not saved to disk"));
         assertThat(render(HOLDINGS, "{\"items\":[]}"), not(containsString("not saved to disk")));
+    }
+
+    /** an empty merge patch changes nothing and marks nothing dirty, so saying it did is a lie */
+    @Test
+    public void testAnEmptyPatchDoesNotClaimAnEditHappened()
+    {
+        var rendered = renderWith(UPDATE, "{}", "{\"uuid\":\"x\"}"); //$NON-NLS-1$ //$NON-NLS-2$
+
+        assertThat(rendered, containsString("Nothing changed"));
+        assertThat(rendered, containsString("not** marked dirty"));
+        assertThat(rendered, not(containsString("not saved to disk")));
+    }
+
+    /** a delete is not a patch: it always changed something */
+    @Test
+    public void testADeleteStillSaysItIsNotSavedToDisk()
+    {
+        assertThat(renderWith(McpTools.byName("pp_delete_instrument").orElseThrow(), "{}", "{}"), //$NON-NLS-1$ //$NON-NLS-2$
+                        containsString("not saved to disk"));
     }
 
     @Test
     public void testANoContentResponseSaysSoRatherThanPrintingNull()
     {
-        var rendered = McpEnvelope.render(UPDATE, JsonNull.INSTANCE, List.of());
+        var rendered = McpEnvelope.render(UPDATE, new JsonObject(), JsonNull.INSTANCE, List.of()); //$NON-NLS-1$
 
         assertThat(rendered, containsString("returned nothing to show"));
         assertThat(rendered, not(containsString("null")));
@@ -152,6 +174,24 @@ public class McpEnvelopeTest
         assertThat(McpEnvelope.planNarrowing(PERFORMANCE, arguments).isPresent(), is(false));
     }
 
+    /** one group sent as a single value is still a choice the caller made */
+    @Test
+    public void testASingleMetricsValueIsStillAChosenSelection()
+    {
+        var arguments = JsonParser.parseString("{\"metrics\":\"risk\"}").getAsJsonObject();
+
+        assertThat(McpEnvelope.planNarrowing(PERFORMANCE, arguments).isPresent(), is(false));
+    }
+
+    /** an empty selection names nothing, so narrowing is still the way out */
+    @Test
+    public void testAnEmptyMetricsSelectionLeavesNarrowingOnTheTable()
+    {
+        var arguments = JsonParser.parseString("{\"metrics\":[]}").getAsJsonObject();
+
+        assertThat(McpEnvelope.planNarrowing(PERFORMANCE, arguments).isPresent(), is(true));
+    }
+
     @Test
     public void testAToolWithoutMetricsCannotBeNarrowed()
     {
@@ -161,11 +201,20 @@ public class McpEnvelopeTest
     @Test
     public void testWhatWasDroppedIsNamedAsMissingRatherThanZero()
     {
-        var rendered = McpEnvelope.render(PERFORMANCE, JsonParser.parseString("{\"items\":[]}"), List.of("risk"));
+        var rendered = McpEnvelope.render(PERFORMANCE, new JsonObject(), //$NON-NLS-1$
+                        JsonParser.parseString("{\"items\":[]}"), List.of("risk"));
 
         assertThat(rendered, containsString("Narrowed to fit"));
-        assertThat(rendered, containsString("were not zero"));
+        assertThat(rendered, containsString("absent, so they are not necessarily zero"));
         assertThat(rendered, containsString("risk"));
+    }
+
+    /** an annualized rate is a fraction too; reading it as a percentage is off by 100 */
+    @Test
+    public void testAnAnnualizedRateIsTreatedAsAFraction()
+    {
+        assertThat(render(PERFORMANCE, "{\"timeWeighted\":{\"ttwrorAnnualized\":0.0723}}"),
+                        containsString("fractions, not percentages"));
     }
 
     // ── the cap ─────────────────────────────────────────────────────────────
@@ -175,9 +224,86 @@ public class McpEnvelopeTest
     {
         var capped = McpEnvelope.cap("x".repeat(5000), 400);
 
-        assertThat(capped.length(), is(400));
+        assertThat(capped.length(), is(lessThanOrEqualTo(400)));
         assertThat(capped, containsString("TRUNCATED"));
-        assertThat(capped, containsString("must not be summarised as if it were the whole portfolio"));
+        // no whole item fit, so the fragment says so rather than looking valid
+        assertThat(capped, containsString("not parseable JSON"));
+    }
+
+    /** the cut lands after a whole item and closes what was open, so what survives still parses */
+    @Test
+    public void testTruncationEndsAtTheLastCompleteItem()
+    {
+        var items = new StringBuilder();
+        for (int ii = 0; ii < 40; ii++)
+        {
+            if (ii > 0)
+                items.append(",");
+            items.append("{\"name\":\"item ").append(ii).append("\"}");
+        }
+        var payload = "{\"items\":[" + items + "]}";
+
+        var capped = McpEnvelope.cap(payload, 500);
+        var kept = capped.substring(0, capped.indexOf("\n\n[TRUNCATED"));
+
+        assertThat(capped.length(), is(lessThanOrEqualTo(500)));
+        assertThat(capped, containsString("last complete item"));
+        assertThat(JsonParser.parseString(kept).isJsonObject(), is(true));
+        assertThat(JsonParser.parseString(kept).getAsJsonObject().getAsJsonArray("items").size(), is(lessThan(40)));
+    }
+
+    /** a cut that splits a surrogate pair would emit a character no one can read */
+    @Test
+    public void testTruncationNeverSplitsASurrogatePair()
+    {
+        var payload = "x".repeat(107) + "\uD83D\uDE00" + "y".repeat(300);
+        var capped = McpEnvelope.cap(payload, 400);
+
+        assertThat(capped.length(), is(lessThanOrEqualTo(400)));
+
+        for (var ii = 0; ii < capped.length(); ii++)
+        {
+            if (Character.isHighSurrogate(capped.charAt(ii)))
+                assertThat("lone high surrogate at " + ii, Character.isLowSurrogate(capped.charAt(ii + 1)), is(true));
+        }
+    }
+
+    /**
+     * The guidance is reserved from the budget before the payload is cut. Losing
+     * it is the failure mode a truncation must not have: the notes are what tell
+     * a model that the figures are fractions and that cash counts as a holding.
+     */
+    @Test
+    public void testTruncationKeepsTheNotesAndTheAdvice()
+    {
+        var items = new StringBuilder();
+        for (int ii = 0; ii < 200; ii++)
+        {
+            if (ii > 0)
+                items.append(",");
+            items.append("{\"name\":\"item ").append(ii).append("\",\"weight\":0.005}");
+        }
+
+        var rendered = McpEnvelope.render(PERFORMANCE, new JsonObject(), //$NON-NLS-1$
+                        JsonParser.parseString("{\"items\":[" + items + "]}"), List.of("risk"),
+                        "Ask a narrower question.", 600);
+
+        assertThat(rendered.length(), is(lessThanOrEqualTo(600)));
+        assertThat(rendered, containsString("fractions, not percentages"));
+        assertThat(rendered, containsString("not necessarily zero"));
+        assertThat(rendered, containsString("Ask a narrower question."));
+        assertThat(rendered, containsString("TRUNCATED"));
+    }
+
+    /** when even the marker would not fit, the guidance still says nothing fit */
+    @Test
+    public void testACapTooSmallForThePayloadStillSaysSo()
+    {
+        var rendered = McpEnvelope.render(PERFORMANCE, new JsonObject(), //$NON-NLS-1$
+                        JsonParser.parseString("{\"items\":[]}"), List.of(), "Ask a narrower question.", 20);
+
+        assertThat(rendered, containsString("Not even one figure fit"));
+        assertThat(rendered, containsString("Ask a narrower question."));
     }
 
     @Test
@@ -194,7 +320,7 @@ public class McpEnvelopeTest
         assertThat(McpEnvelope.oversizeAdvice(INSTRUMENTS), containsString("pp_get_instrument"));
         // the two performance reports, which the metrics narrowing does not reach
         assertThat(McpEnvelope.oversizeAdvice(PERFORMANCE), containsString("pp_get_instrument_performance"));
-        assertThat(McpEnvelope.oversizeAdvice(PERFORMANCE), containsString("timeWeighted"));
+        assertThat(McpEnvelope.oversizeAdvice(PERFORMANCE), containsString("number of instruments"));
         assertThat(McpEnvelope.oversizeAdvice(McpTools.byName("pp_get_overall_performance").orElseThrow()),
                         containsString("cannot be narrowed further"));
         // a tool with nothing specific to say still gets the honest default
@@ -217,8 +343,8 @@ public class McpEnvelopeTest
         assertThat(after, containsString("shorten the interval"));
         assertThat(after, containsString("pp_get_instrument_performance"));
 
-        // without a narrowing the groups are still there, so dropping them is the advice
-        assertThat(McpEnvelope.oversizeAdvice(PERFORMANCE), containsString("ask again without them"));
+        // without a narrowing there is nothing already dropped to name
+        assertThat(McpEnvelope.oversizeAdvice(PERFORMANCE), not(containsString("already re-requested")));
     }
 
     /**
@@ -250,6 +376,12 @@ public class McpEnvelopeTest
 
     private static String render(McpTool tool, String payload)
     {
-        return McpEnvelope.render(tool, JsonParser.parseString(payload), List.of());
+        return renderWith(tool, "{}", payload);
+    }
+
+    private static String renderWith(McpTool tool, String arguments, String payload)
+    {
+        return McpEnvelope.render(tool, JsonParser.parseString(arguments).getAsJsonObject(), //$NON-NLS-1$
+                        JsonParser.parseString(payload), List.of());
     }
 }

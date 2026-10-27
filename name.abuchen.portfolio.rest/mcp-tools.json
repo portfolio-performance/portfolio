@@ -109,7 +109,7 @@
       "operationId": "patchInstrument",
       "method": "PATCH",
       "pathTemplate": "/v1/files/{file}/instruments/{uuid}",
-      "description": "Change an instrument's master data or its custom attributes. This is a merge, not a replacement: only the arguments you pass are touched, and passing null clears a field rather than setting it blank. Nothing else about an instrument is writable here — prices, transactions, quote feeds, events and taxonomies are read-only, and there is no way to create an instrument.\n\nCustom attributes are addressed by the opaque attribute `id` from pp_list_instrument_attribute_types, never by the display name, and each value has to match the type declared there. Mind the two numeric types: a `percent` value is a fraction, so 0.7% is `0.007`, while a `number` value is unscaled, so an attribute the application reads as a percentage takes `5` to mean 5%.\n\nWhile the user has a dialog open in the application, or is part-way through editing a cell, writes are refused until they finish. That is normal and temporary, not a request that went wrong.",
+      "description": "Change an instrument's master data or its custom attributes. This is a merge, not a replacement: only the arguments you pass are touched, and passing null clears a field rather than setting it blank. Nothing else about an instrument is writable here — prices, transactions, quote feeds, events and taxonomies are read-only, and there is no way to create an instrument. A patch that names no field this API can write changes nothing: the response is the instrument as it already stands, and the file is not marked dirty.\n\nCustom attributes are addressed by the opaque attribute `id` from pp_list_instrument_attribute_types, never by the display name, and each value has to match the type declared there. Mind the two numeric types: a `percent` value is a fraction, so 0.7% is `0.007`, while a `number` value is unscaled, so an attribute the application reads as a percentage takes `5` to mean 5%.\n\nWhile the user has a dialog open in the application, or is part-way through editing a cell, writes are refused until they finish. That is normal and temporary, not a request that went wrong.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -131,7 +131,7 @@
               "string",
               "null"
             ],
-            "description": "A new trading currency as an ISO 4217 code, or null to remove it and mark the instrument a currency-less series such as an index. Any currency change, clearing included, is refused once the instrument has transactions — the same rule the application applies. Clearing is also refused on an exchange rate."
+            "description": "A new trading currency as an ISO 4217 code, or null to remove it and mark the instrument a currency-less series such as an index. Any currency change, clearing included, is refused once the instrument has transactions — the same rule the application applies. It is likewise refused on an instrument that carries an exchange rate, whose rate series depends on the two currencies."
           },
           "isin": {
             "type": [
@@ -490,7 +490,7 @@
           },
           "reportingCurrency": {
             "type": "string",
-            "description": "Express every amount in this ISO 4217 currency. Defaults to the file's own base currency. A pair the file has no exchange rate series for converts at 1:1 in silence, so an amount that looks untranslated means a missing rate series rather than a bad request."
+            "description": "Express every amount in this ISO 4217 currency. Defaults to the file's own base currency. A currency pair the file has no exchange rate series for converts at 1:1, and the response names every such pair in `fxWarnings`; an amount that arrived unchanged and is not named there needed no conversion rather than being refused. Ratios are computed in this currency as well, so a return can differ from what the file's own currency reports - the interval's exchange-rate movements are attributed differently, and the performance shows that part as `currencyGains`, which is zero when the reporting currency is the base currency."
           }
         },
         "required": [
@@ -547,7 +547,7 @@
           },
           "reportingCurrency": {
             "type": "string",
-            "description": "Express every amount in this ISO 4217 currency. Defaults to the file's own base currency. A pair the file has no exchange rate series for converts at 1:1 in silence, so an amount that looks untranslated means a missing rate series rather than a bad request."
+            "description": "Express every amount in this ISO 4217 currency. Defaults to the file's own base currency. A currency pair the file has no exchange rate series for converts at 1:1, and the response names every such pair in `fxWarnings`; an amount that arrived unchanged and is not named there needed no conversion rather than being refused. Ratios are computed in this currency as well, so a return can differ from what the file's own currency reports - the interval's exchange-rate movements are attributed differently, and the performance shows that part as `currencyGains`, which is zero when the reporting currency is the base currency."
           },
           "costMethod": {
             "type": "string",
@@ -556,7 +556,7 @@
               "moving-average"
             ],
             "default": "fifo",
-            "description": "`fifo` (the default) or `moving-average`. It moves the cost basis that gains are measured against, and with it the split between realized and unrealized gain; it does not touch `irr`, which reads the cash flows directly, nor any time-weighted return. Under `moving-average`, a figure with no moving-average counterpart comes back `null` rather than being recomputed some other way."
+            "description": "`fifo` (the default) or `moving-average`. It moves the cost basis that gains are measured against, and with it the split between realized and unrealized gain; it does not touch `irr`, which reads the cash flows directly, nor any time-weighted return. On a matched trade, a figure with no moving-average counterpart comes back `null` rather than being recomputed some other way."
           }
         },
         "required": [
@@ -624,7 +624,7 @@
           },
           "reportingCurrency": {
             "type": "string",
-            "description": "Express every amount in this ISO 4217 currency. Defaults to the file's own base currency. A pair the file has no exchange rate series for converts at 1:1 in silence, so an amount that looks untranslated means a missing rate series rather than a bad request."
+            "description": "Express every amount in this ISO 4217 currency. Defaults to the file's own base currency. A currency pair the file has no exchange rate series for converts at 1:1, and the response names every such pair in `fxWarnings`; an amount that arrived unchanged and is not named there needed no conversion rather than being refused. Ratios are computed in this currency as well, so a return can differ from what the file's own currency reports - the interval's exchange-rate movements are attributed differently, and the performance shows that part as `currencyGains`, which is zero when the reporting currency is the base currency."
           },
           "costMethod": {
             "type": "string",
@@ -633,7 +633,7 @@
               "moving-average"
             ],
             "default": "fifo",
-            "description": "`fifo` (the default) or `moving-average`. It moves the cost basis that gains are measured against, and with it the split between realized and unrealized gain; it does not touch `irr`, which reads the cash flows directly, nor any time-weighted return. Under `moving-average`, a figure with no moving-average counterpart comes back `null` rather than being recomputed some other way."
+            "description": "`fifo` (the default) or `moving-average`. It moves the cost basis that gains are measured against, and with it the split between realized and unrealized gain; it does not touch `irr`, which reads the cash flows directly, nor any time-weighted return. On a matched trade, a figure with no moving-average counterpart comes back `null` rather than being recomputed some other way."
           },
           "taxesAndFees": {
             "type": "string",
@@ -646,6 +646,7 @@
           },
           "metrics": {
             "type": "array",
+            "minItems": 1,
             "items": {
               "type": "string",
               "enum": [
@@ -658,7 +659,7 @@
                 "risk"
               ]
             },
-            "description": "Which groups of figures to include. Defaults to all seven; an unselected group is simply absent, and a selected one means exactly what it means when all are asked for.\n\n- `valuation` — shares held, opening and closing value, the period's cost basis\n- `gains` — realized and unrealized capital gains, each with the part caused by exchange rates\n- `income` — dividends received, how many, and the date of the most recent\n- `expenses` — the fees and taxes charged, as positive amounts\n- `moneyWeighted` — the internal rate of return\n- `timeWeighted` — the true time-weighted return, plain and annualized\n- `risk` — volatility, semi-volatility, deepest drawdown, longest drawdown in days\n\n`timeWeighted` and `risk` each need a day-by-day valuation of every instrument, which is what makes a request expensive; the two share that work, so both together cost no more than either alone. The other five are cheap. Narrow this when a response is too large to return whole, and widen it when a figure you need is missing."
+            "description": "Which groups of figures to include. Defaults to all seven; an unselected group is simply absent, and a selected one means exactly what it means when all are asked for. An empty list names no group and is refused.\n\n- `valuation` — shares held, opening and closing value, the period's cost basis\n- `gains` — realized and unrealized capital gains, each with the part caused by exchange rates\n- `income` — dividends received, how many, and the date of the most recent\n- `expenses` — the fees and taxes charged, as positive amounts\n- `moneyWeighted` — the annualized internal rate of return\n- `timeWeighted` — the true time-weighted return, plain and annualized\n- `risk` — volatility, semi-volatility, deepest drawdown, longest drawdown in days\n\n`timeWeighted` and `risk` each need a day-by-day valuation of every instrument in the file, which is what makes this request expensive; the two share that work, so both together cost no more than either alone. The other five are cheap. Narrow this when a response is too large to return whole, and widen it when a figure you need is missing."
           }
         },
         "required": [
@@ -707,8 +708,7 @@
         {
           "arg": "metrics",
           "where": "query",
-          "wire": "metrics",
-          "explode": false
+          "wire": "metrics"
         }
       ]
     },
@@ -741,7 +741,7 @@
           },
           "reportingCurrency": {
             "type": "string",
-            "description": "Express every amount in this ISO 4217 currency. Defaults to the file's own base currency. A pair the file has no exchange rate series for converts at 1:1 in silence, so an amount that looks untranslated means a missing rate series rather than a bad request."
+            "description": "Express every amount in this ISO 4217 currency. Defaults to the file's own base currency. A currency pair the file has no exchange rate series for converts at 1:1, and the response names every such pair in `fxWarnings`; an amount that arrived unchanged and is not named there needed no conversion rather than being refused. Ratios are computed in this currency as well, so a return can differ from what the file's own currency reports - the interval's exchange-rate movements are attributed differently, and the performance shows that part as `currencyGains`, which is zero when the reporting currency is the base currency."
           },
           "costMethod": {
             "type": "string",
@@ -750,7 +750,7 @@
               "moving-average"
             ],
             "default": "fifo",
-            "description": "`fifo` (the default) or `moving-average`. It moves the cost basis that gains are measured against, and with it the split between realized and unrealized gain; it does not touch `irr`, which reads the cash flows directly, nor any time-weighted return. Under `moving-average`, a figure with no moving-average counterpart comes back `null` rather than being recomputed some other way."
+            "description": "`fifo` (the default) or `moving-average`. It moves the cost basis that gains are measured against, and with it the split between realized and unrealized gain; it does not touch `irr`, which reads the cash flows directly, nor any time-weighted return. On a matched trade, a figure with no moving-average counterpart comes back `null` rather than being recomputed some other way."
           },
           "taxesAndFees": {
             "type": "string",
@@ -763,6 +763,7 @@
           },
           "metrics": {
             "type": "array",
+            "minItems": 1,
             "items": {
               "type": "string",
               "enum": [
@@ -775,7 +776,7 @@
                 "risk"
               ]
             },
-            "description": "Which groups of figures to include. Defaults to all seven; an unselected group is simply absent, and a selected one means exactly what it means when all are asked for.\n\n- `valuation` — shares held, opening and closing value, the period's cost basis\n- `gains` — realized and unrealized capital gains, each with the part caused by exchange rates\n- `income` — dividends received, how many, and the date of the most recent\n- `expenses` — the fees and taxes charged, as positive amounts\n- `moneyWeighted` — the internal rate of return\n- `timeWeighted` — the true time-weighted return, plain and annualized\n- `risk` — volatility, semi-volatility, deepest drawdown, longest drawdown in days\n\n`timeWeighted` and `risk` each need a day-by-day valuation of every instrument, which is what makes a request expensive; the two share that work, so both together cost no more than either alone. The other five are cheap. Narrow this when a response is too large to return whole, and widen it when a figure you need is missing."
+            "description": "Which groups of figures to include. Defaults to all seven; an unselected group is simply absent, and a selected one means exactly what it means when all are asked for. An empty list names no group and is refused.\n\n- `valuation` — shares held, opening and closing value, the period's cost basis\n- `gains` — realized and unrealized capital gains, each with the part caused by exchange rates\n- `income` — dividends received, how many, and the date of the most recent\n- `expenses` — the fees and taxes charged, as positive amounts\n- `moneyWeighted` — the annualized internal rate of return\n- `timeWeighted` — the true time-weighted return, plain and annualized\n- `risk` — volatility, semi-volatility, deepest drawdown, longest drawdown in days\n\n`timeWeighted` and `risk` each rest on a day-by-day valuation, computed here for this instrument alone; the two share that work, so both together cost no more than either alone. The other five are cheap. One instrument is rarely too large to return whole, so ask for what you need rather than trimming."
           }
         },
         "required": [
@@ -830,8 +831,7 @@
         {
           "arg": "metrics",
           "where": "query",
-          "wire": "metrics",
-          "explode": false
+          "wire": "metrics"
         }
       ]
     },
@@ -840,7 +840,7 @@
       "operationId": "listTrades",
       "method": "GET",
       "pathTemplate": "/v1/files/{file}/trades",
-      "description": "Matched purchases and sales across the whole file, each with its profit and loss, its holding period and its return. Buys are paired against the sells that closed them, so this answers \"how did that position actually do\" — unlike pp_list_holdings, which values what is held now, and pp_list_instrument_performance, which measures a fixed interval.\n\nA trade has no id. It is recomputed on every call, it cannot be created or edited through this connector, and changing `grouping` or touching the transactions underneath re-cuts it into different trades entirely. Identify one by the filter that produced it; to change one, the user changes its transactions in the application.\n\nCheck `direction` before doing arithmetic. On a long trade the profit is exit less entry; on a short one it runs the other way, and since share counts are never negative there is nothing in the figures to tell you which.",
+      "description": "Matched purchases and sales across the whole file, each with its profit and loss, its holding period and its return. Buys are paired against the sells that closed them, so this answers \"how did that position actually do\" — unlike pp_list_holdings, which values what is held now, and pp_list_instrument_performance, which measures a fixed interval.\n\nA trade has no id. It is recomputed on every call, it cannot be created or edited through this connector, and changing `grouping` or touching the transactions underneath re-cuts it into different trades entirely. Identify one by the filter that produced it; to change one, the user changes its transactions in the application.\n\nCheck `direction` before doing arithmetic. On a long trade the profit is exit less entry; on a short one it runs the other way, and since share counts are never negative there is nothing in the figures to tell you which.\n\nThe two rates are not the same kind of number: `return` is the gain over the holding period, while `irr` is compounded to a year — a trade held for a single day can show an enormous `irr`, which is the annualization, not a mistake.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -850,6 +850,7 @@
           },
           "status": {
             "type": "array",
+            "minItems": 1,
             "default": [
               "open",
               "closed"
@@ -861,7 +862,7 @@
                 "closed"
               ]
             },
-            "description": "`open`, `closed`, or both — the default. A closed trade has been sold out and its result is realized; an open one is still held, so its exit side is a valuation at today's price and the same trade reports different numbers on different days."
+            "description": "`open`, `closed`, or both — the default. A closed trade has been sold out and its result is realized; an open one is still held, so its exit side is a valuation at today's price and the same trade reports different numbers on different days. An empty list names no status and is refused."
           },
           "grouping": {
             "type": "string",
@@ -879,7 +880,7 @@
               "moving-average"
             ],
             "default": "fifo",
-            "description": "`fifo` (the default) or `moving-average`. It moves the cost basis that gains are measured against, and with it the split between realized and unrealized gain; it does not touch `irr`, which reads the cash flows directly, nor any time-weighted return. Under `moving-average`, a figure with no moving-average counterpart comes back `null` rather than being recomputed some other way."
+            "description": "`fifo` (the default) or `moving-average`. It moves the cost basis that gains are measured against, and with it the split between realized and unrealized gain; it does not touch `irr`, which reads the cash flows directly, nor any time-weighted return. On a matched trade, a figure with no moving-average counterpart comes back `null` rather than being recomputed some other way."
           },
           "taxesAndFees": {
             "type": "string",
@@ -892,7 +893,7 @@
           },
           "reportingCurrency": {
             "type": "string",
-            "description": "Express every amount in this ISO 4217 currency. Defaults to the file's own base currency. A pair the file has no exchange rate series for converts at 1:1 in silence, so an amount that looks untranslated means a missing rate series rather than a bad request."
+            "description": "Express every amount in this ISO 4217 currency. Defaults to the file's own base currency. A currency pair the file has no exchange rate series for converts at 1:1, and the response names every such pair in `fxWarnings`; an amount that arrived unchanged and is not named there needed no conversion rather than being refused. Ratios are computed in this currency as well, so a return can differ from what the file's own currency reports - the interval's exchange-rate movements are attributed differently, and the performance shows that part as `currencyGains`, which is zero when the reporting currency is the base currency."
           }
         },
         "required": [
@@ -915,8 +916,7 @@
         {
           "arg": "status",
           "where": "query",
-          "wire": "status",
-          "explode": false
+          "wire": "status"
         },
         {
           "arg": "grouping",
@@ -945,7 +945,7 @@
       "operationId": "listInstrumentTrades",
       "method": "GET",
       "pathTemplate": "/v1/files/{file}/instruments/{uuid}/trades",
-      "description": "The matched purchases and sales of a single instrument, computed and filtered exactly as pp_list_trades is but scoped to one `uuid`. Use it when the question is about one position rather than the whole file, and to keep a large file's trades down to an answerable size.\n\nAn instrument that has simply never been traded answers with an empty list rather than an error. As in the file-wide tool, a trade has no id and is recomputed on every call — identify one by the filter that produced it — and `direction` still decides which way the subtraction runs.",
+      "description": "The matched purchases and sales of a single instrument, computed and filtered exactly as pp_list_trades is but scoped to one `uuid`. Use it when the question is about one position rather than the whole file, and to keep a large file's trades down to an answerable size.\n\nAn instrument that has simply never been traded answers with an empty list rather than an error. As in the file-wide tool, a trade has no id and is recomputed on every call — identify one by the filter that produced it — and `direction` still decides which way the subtraction runs. `return` is the gain over the holding period; `irr` is compounded to a year, so a trade held for a day can show an enormous `irr`, which is the annualization rather than a mistake.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -959,6 +959,7 @@
           },
           "status": {
             "type": "array",
+            "minItems": 1,
             "default": [
               "open",
               "closed"
@@ -970,7 +971,7 @@
                 "closed"
               ]
             },
-            "description": "`open`, `closed`, or both — the default. A closed trade has been sold out and its result is realized; an open one is still held, so its exit side is a valuation at today's price and the same trade reports different numbers on different days."
+            "description": "`open`, `closed`, or both — the default. A closed trade has been sold out and its result is realized; an open one is still held, so its exit side is a valuation at today's price and the same trade reports different numbers on different days. An empty list names no status and is refused."
           },
           "grouping": {
             "type": "string",
@@ -988,7 +989,7 @@
               "moving-average"
             ],
             "default": "fifo",
-            "description": "`fifo` (the default) or `moving-average`. It moves the cost basis that gains are measured against, and with it the split between realized and unrealized gain; it does not touch `irr`, which reads the cash flows directly, nor any time-weighted return. Under `moving-average`, a figure with no moving-average counterpart comes back `null` rather than being recomputed some other way."
+            "description": "`fifo` (the default) or `moving-average`. It moves the cost basis that gains are measured against, and with it the split between realized and unrealized gain; it does not touch `irr`, which reads the cash flows directly, nor any time-weighted return. On a matched trade, a figure with no moving-average counterpart comes back `null` rather than being recomputed some other way."
           },
           "taxesAndFees": {
             "type": "string",
@@ -1001,7 +1002,7 @@
           },
           "reportingCurrency": {
             "type": "string",
-            "description": "Express every amount in this ISO 4217 currency. Defaults to the file's own base currency. A pair the file has no exchange rate series for converts at 1:1 in silence, so an amount that looks untranslated means a missing rate series rather than a bad request."
+            "description": "Express every amount in this ISO 4217 currency. Defaults to the file's own base currency. A currency pair the file has no exchange rate series for converts at 1:1, and the response names every such pair in `fxWarnings`; an amount that arrived unchanged and is not named there needed no conversion rather than being refused. Ratios are computed in this currency as well, so a return can differ from what the file's own currency reports - the interval's exchange-rate movements are attributed differently, and the performance shows that part as `currencyGains`, which is zero when the reporting currency is the base currency."
           }
         },
         "required": [
@@ -1030,8 +1031,7 @@
         {
           "arg": "status",
           "where": "query",
-          "wire": "status",
-          "explode": false
+          "wire": "status"
         },
         {
           "arg": "grouping",

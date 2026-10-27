@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.rest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
@@ -130,6 +131,43 @@ public class PairingServiceTest
         assertThat(service.create("Claude Code"), is(notNullValue()));
     }
 
+    /**
+     * The token is minted when it is delivered, not when the user approves. A
+     * request the client never polls must not leave a client in the store whose
+     * token nobody holds - it would be a grant that cannot be revoked by anyone.
+     */
+    @Test
+    public void testAnApprovedRequestThatIsNeverPolledCreatesNoClient()
+    {
+        var id = service.create("Claude Code");
+        host.lastAccessRequest().allowAlways();
+
+        advanceSeconds(PairingService.OUTCOME_TTL.toSeconds() + 1);
+
+        assertStatusIs(id, 404);
+        assertThat(store.listClients(), is(List.of()));
+    }
+
+    /** outcomes nobody polled are dropped, so a long-running server does not accumulate them */
+    @Test
+    public void testPairingsNobodyPollsDoNotAccumulate()
+    {
+        for (int ii = 0; ii < 120; ii++)
+        {
+            service.create("Client " + ii);
+            host.lastAccessRequest().allowAlways();
+            advanceSeconds(PairingService.OUTCOME_TTL.toSeconds() + 1);
+            assertThat(store.listClients(), is(List.of()));
+        }
+
+        var id = service.create("Last");
+        host.lastAccessRequest().allowAlways();
+
+        assertThat(service.poll(id).token(), is(notNullValue()));
+        assertThat(store.listClients(), hasSize(1));
+    }
+
+    /** a decision that arrives after the request is gone grants nothing, and says so */
     @Test
     public void testDecisionAfterExpiryIsIgnored()
     {

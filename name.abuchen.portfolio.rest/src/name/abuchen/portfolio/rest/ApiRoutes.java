@@ -1,6 +1,12 @@
 package name.abuchen.portfolio.rest;
 
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.BiFunction;
 
 import com.google.gson.JsonObject;
@@ -163,7 +169,50 @@ public final class ApiRoutes
      */
     private static Router.Handler onUiThread(HostApplication host, Router.Handler handler)
     {
-        return request -> host.syncExec(() -> handler.handle(request));
+        return request -> syncExecBounded(host, () -> handler.handle(request));
+    }
+
+    /**
+     * How long a request may wait for the UI thread. While the UI is busy - an
+     * import wizard, a price update, a long repaint - an unbounded {@code
+     * syncExec} parks the worker indefinitely and the API looks dead; a refused
+     * 503 with a Retry-After is the honest answer, and cheap for the client.
+     */
+    private static final long UI_DEADLINE_MILLIS = 10_000;
+
+    /** only used to bound the wait for the UI thread; scheduling a task costs nothing */
+    private static final ExecutorService UI_WAIT = Executors.newSingleThreadExecutor(runnable -> {
+        var thread = new Thread(runnable, "Portfolio Performance REST API UI wait"); //$NON-NLS-1$
+        thread.setDaemon(true);
+        return thread;
+    });
+
+    /**
+     * {@link HostApplication#syncExec} with a deadline. A timed-out call is
+     * refused with 503 rather than left waiting. Not interrupted: a callable
+     * already running on the UI thread finishes rather than being cut off in the
+     * middle of a model change, so a timed-out write may still land.
+     */
+    private static <T> T syncExecBounded(HostApplication host, Callable<T> callable) throws Exception
+    {
+        var future = UI_WAIT.submit(() -> host.syncExec(callable));
+
+        try
+        {
+            return future.get(UI_DEADLINE_MILLIS, TimeUnit.MILLISECONDS);
+        }
+        catch (TimeoutException e)
+        {
+            future.cancel(false);
+            throw ApiException.uiBusy(UI_DEADLINE_MILLIS);
+        }
+        catch (ExecutionException e)
+        {
+            var cause = e.getCause();
+            if (cause instanceof Exception exception)
+                throw exception;
+            throw e;
+        }
     }
 
     private static Router.Handler read(FileResolver resolver, HostApplication host,
@@ -192,7 +241,7 @@ public final class ApiRoutes
                     BiFunction<CalcContext, Request, Response> body)
     {
         return request -> {
-            var context = host.syncExec(() -> {
+            var context = syncExecBounded(host, () -> {
                 var file = resolver.resolve(request.pathParam("file")).file(); //$NON-NLS-1$
                 return new CalcContext(file.getClient(), file.getExchangeRateProviderFactory());
             });

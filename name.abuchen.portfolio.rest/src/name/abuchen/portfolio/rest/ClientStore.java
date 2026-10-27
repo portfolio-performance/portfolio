@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.rest;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -93,6 +92,14 @@ public class ClientStore
      */
     private final List<JsonObject> restricted = new ArrayList<>();
 
+    /**
+     * The file's content when this version cannot read it at all: not valid JSON,
+     * or a shape it does not recognise. Kept verbatim so that a later save does
+     * not write over it - an unreadable file is not an empty one, and the next
+     * save would discard clients the user still has.
+     */
+    private String unreadable;
+
     public ClientStore(Path directory)
     {
         this(directory, Instant::now);
@@ -128,8 +135,12 @@ public class ClientStore
         var token = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
 
         entries.add(new Entry(UUID.randomUUID().toString(), hash(token), name, clock.get(), null, session));
-        if (!session)
-            save();
+        // persisted before the token is handed out: it exists exactly once, and a
+        // caller that got it must not be told it will outlive the restart when the
+        // file was not written
+        if (!session && !save())
+            PortfolioLog.warning("Client \"" + name + "\" was added but not persisted; its token dies with " //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    + "this application run");
         return token;
     }
 
@@ -208,28 +219,44 @@ public class ClientStore
         if (!Files.exists(file))
             return;
 
-        JsonElement root;
+        String raw;
         try
         {
-            root = JsonParser.parseString(Files.readString(file, StandardCharsets.UTF_8));
+            raw = Files.readString(file, StandardCharsets.UTF_8);
         }
         catch (IOException e)
         {
-            throw new UncheckedIOException(e);
-        }
-        catch (JsonSyntaxException e)
-        {
-            // not valid JSON at all: log and start empty rather than leaving the
-            // API dead, but do not swallow it silently
+            // Cannot read it at all - which is not the same as it being empty.
+            // Nothing here may overwrite what we could not see.
             PortfolioLog.error(e);
+            unreadable = "";
             return;
         }
 
-        if (!root.isJsonObject())
+        JsonElement root;
+        try
+        {
+            root = JsonParser.parseString(raw);
+        }
+        catch (JsonSyntaxException e)
+        {
+            // not valid JSON at all: log, start empty, and keep the content so
+            // that a save does not write over something the user still needs
+            PortfolioLog.error(e);
+            unreadable = raw;
             return;
-        var clients = root.getAsJsonObject().get("clients"); //$NON-NLS-1$
+        }
+
+        var clients = root.isJsonObject() ? root.getAsJsonObject().get("clients") : null; //$NON-NLS-1$
         if (clients == null || !clients.isJsonArray())
+        {
+            // a file this version does not recognise: not an empty one. Reading
+            // it as empty and then saving would destroy tokens we never saw.
+            PortfolioLog.warning("The API client file is not a client list this version understands; its content " //$NON-NLS-1$
+                    + "is kept and will not be overwritten");
+            unreadable = raw;
             return;
+        }
 
         // parse each entry defensively: a single malformed entry is skipped, not
         // fatal, so one bad record cannot revoke every other client
@@ -288,8 +315,23 @@ public class ClientStore
         }
     }
 
-    private void save()
+    /**
+     * Writes the persistent clients. Returns whether the file was written.
+     * <p/>
+     * A failure is logged and not thrown: {@link #authenticate} runs on an HTTP
+     * worker after the token has already been accepted, and an unwritable file
+     * must not turn a working request into a 500. Content this version could not
+     * read is never written over.
+     */
+    private boolean save()
     {
+        if (unreadable != null)
+        {
+            PortfolioLog.warning("Not writing " + FILE_NAME + ": its content is not a client list this version " //$NON-NLS-1$ //$NON-NLS-2$
+                    + "understands, so saving would discard what is in it");
+            return false;
+        }
+
         var clients = new JsonArray();
         for (var entry : entries)
         {
@@ -313,10 +355,12 @@ public class ClientStore
             Files.createDirectories(file.getParent());
             Files.writeString(file, root.toString(), StandardCharsets.UTF_8);
             restrictToOwner();
+            return true;
         }
         catch (IOException e)
         {
-            throw new UncheckedIOException(e);
+            PortfolioLog.error(e);
+            return false;
         }
     }
 

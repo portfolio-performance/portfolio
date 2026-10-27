@@ -20,14 +20,31 @@ import java.util.Optional;
  */
 public final class RejectedConnections
 {
+    /** why the caller was refused, which the preference page words differently */
+    public enum Reason
+    {
+        /** no {@code Authorization} header at all */
+        NO_HEADER,
+        /** a header was sent but did not carry the bearer scheme - usually a lowercase {@code bearer} */
+        NO_BEARER_SCHEME,
+        /** a bearer token was offered and it was not one of the accepted ones */
+        INVALID_TOKEN
+    }
+
+    /** how much of a caller-supplied string is kept for display */
+    private static final int MAX_DISPLAY_CHARS = 200;
+
     /**
      * @param userAgent
      *            what the caller called itself, or null - the one field that
      *            says which connector this was
      * @param tokenPresented
      *            false when no bearer token was offered at all
+     * @param reason
+     *            which of the three refusals this was; {@link #NO_HEADER} is what
+     *            a caller with a header in the wrong shape looks like from here
      */
-    public record Rejection(Instant when, String path, String userAgent, boolean tokenPresented)
+    public record Rejection(Instant when, String path, String userAgent, boolean tokenPresented, Reason reason)
     {
     }
 
@@ -39,7 +56,12 @@ public final class RejectedConnections
 
     public static void record(String path, String userAgent, boolean tokenPresented)
     {
-        last = new Rejection(Instant.now(), path, userAgent, tokenPresented);
+        record(path, userAgent, tokenPresented, tokenPresented ? Reason.INVALID_TOKEN : Reason.NO_HEADER);
+    }
+
+    public static void record(String path, String userAgent, boolean tokenPresented, Reason reason)
+    {
+        last = new Rejection(Instant.now(), display(path), display(userAgent), tokenPresented, reason);
     }
 
     public static Optional<Rejection> last()
@@ -51,5 +73,19 @@ public final class RejectedConnections
     public static void clear()
     {
         last = null;
+    }
+
+    /**
+     * The path and the {@code User-Agent} are attacker-controlled text shown on
+     * the preference page: bounded in length and stripped of control characters,
+     * so a request cannot put a line break into a label.
+     */
+    private static String display(String value)
+    {
+        if (value == null)
+            return null;
+
+        var cleaned = value.replace('\r', ' ').replace('\n', ' ').replace('\t', ' ');
+        return cleaned.length() <= MAX_DISPLAY_CHARS ? cleaned : cleaned.substring(0, MAX_DISPLAY_CHARS) + "\u2026"; //$NON-NLS-1$
     }
 }

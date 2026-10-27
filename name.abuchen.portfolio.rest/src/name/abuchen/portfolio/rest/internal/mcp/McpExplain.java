@@ -49,7 +49,14 @@ public final class McpExplain
      */
     public static String describeFiles(List<FileSummary> files)
     {
-        if (files == null || files.isEmpty())
+        if (files == null)
+        {
+            // Nothing was looked up. Saying "no files are shared" here would be
+            // a claim about the user's application that this call never checked.
+            return "Which files are shared was not looked up for this call; pp_list_files answers it.";
+        }
+
+        if (files.isEmpty())
         {
             // Authorised, but nothing shared. Not an error, and not something
             // the model can fix by trying again with different arguments.
@@ -138,6 +145,15 @@ public final class McpExplain
                                 + retryAfter(problem) + ". Ask the user to finish what they are doing in the "
                                 + "application, then try again.";
 
+            case "ui-busy":
+                // The application did not answer on its UI thread within the
+                // bounded wait. Same shape as a dialog refusal, but nobody can
+                // be asked to close anything: whatever is slow has to finish.
+                return "Portfolio Performance did not answer on its UI thread within the bounded wait"
+                                + retryAfter(problem) + ". Something else is holding that thread — a long-running job, "
+                                + "a dialog, or a large file. Try again after a moment; if it keeps failing, say so "
+                                + "rather than retrying in a loop.";
+
             case "request-too-large":
                 return ("That edit was too large for Portfolio Performance to accept. "
                                 + (problem.getDetail() != null ? problem.getDetail() : "")).trim();
@@ -191,8 +207,9 @@ public final class McpExplain
      */
     private static String hints(ApiException problem)
     {
-        var retryable = problem.getStatus() == 423 || problem.getStatus() == 429
-                        || "file-not-open".equals(problem.getType()); //$NON-NLS-1$
+        var retryable = problem.getStatus() == 423 || problem.getStatus() == 429 || problem.getStatus() == 503
+                        || "file-not-open".equals(problem.getType()) //$NON-NLS-1$
+                        || "ui-busy".equals(problem.getType()); //$NON-NLS-1$
 
         var trailer = "\n\nretryable: " + (retryable ? "yes" : "no") + " · reasonCode: " + problem.getType(); //$NON-NLS-1$
         var header = problem.getHeaders().get("Retry-After"); //$NON-NLS-1$

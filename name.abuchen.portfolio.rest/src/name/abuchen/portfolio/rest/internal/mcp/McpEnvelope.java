@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.rest.internal.mcp;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -25,9 +26,12 @@ public final class McpEnvelope
     /**
      * Keys whose values are fractions, not percentages. Taken from the fields
      * the specification documents as such: a {@code ttwror} of 0.0723 is 7.23%.
+     * {@code ttwrorAnnualized} belongs here too - it is the same kind of figure
+     * with a different denominator, and leaving it out is how a model reads an
+     * annualized 0.0723 as 0.0723 percent.
      */
-    private static final Set<String> FRACTION_KEYS = Set.of("ttwror", "irr", "return", "weight", "maxDrawdown",
-                    "volatility", "semiVolatility");
+    private static final Set<String> FRACTION_KEYS = Set.of("ttwror", "ttwrorAnnualized", "irr", "return", "weight",
+                    "maxDrawdown", "volatility", "semiVolatility");
 
     /** offset-less local date-times, which must not be read as UTC */
     private static final Set<String> LOCAL_DATETIME_KEYS = Set.of("start", "end");
@@ -64,13 +68,64 @@ public final class McpEnvelope
     /**
      * Renders a successful payload as the text a model reads.
      *
+     * @param arguments
+     *            the arguments of the call, needed to tell a patch that changed
+     *            something from one that named nothing writable
      * @param droppedMetrics
      *            the metric groups this response is missing because it had to
      *            be narrowed to fit, or empty
      */
-    public static String render(McpTool tool, JsonElement payload, List<String> droppedMetrics)
+    public static String render(McpTool tool, JsonObject arguments, JsonElement payload, List<String> droppedMetrics)
+    {
+        return render(tool, arguments, payload, droppedMetrics, null, Integer.MAX_VALUE);
+    }
+
+    /**
+     * Renders a result that has to fit, cutting the payload and keeping the
+     * guidance that says the cut happened.
+     * <p/>
+     * The budget is reserved for the guidance first. Truncating the rendered body
+     * whole is how a large response loses exactly the lines telling a model that
+     * the figures are fractions, that cash counts as a holding and that an edit
+     * is unsaved - an unmarked truncation is a confident wrong answer, and one
+     * that also lost its notes is worse.
+     *
+     * @param advice
+     *            what to ask for instead, or null; like the notes, it is cut from
+     *            the budget rather than appended past it
+     */
+    public static String render(McpTool tool, JsonObject arguments, JsonElement payload, List<String> droppedMetrics,
+                    String advice, int maxChars)
     {
         var found = scan(payload);
+        var guidance = guidanceBefore(found, droppedMetrics);
+        var notes = notesFor(tool, arguments, found);
+        if (!notes.isEmpty())
+            guidance.add(notes.stream().map(note -> "- " + note).reduce((a, b) -> a + "\n" + b).orElseThrow());
+        if (advice != null && !advice.isEmpty())
+            guidance.add(advice);
+
+        // unrounded: the same portfolio must not read differently through curl
+        var body = payload.isJsonNull()
+                        ? "Portfolio Performance accepted the call and returned nothing to show for it."
+                        : payload.toString();
+
+        var rendered = String.join("\n\n", guidance) + "\n\n" + body;
+        if (rendered.length() <= maxChars)
+            return rendered;
+
+        // The payload is the only part that can be cut. Everything else in this
+        // result is what the cut means.
+        var budget = maxChars - String.join("\n\n", guidance).length() - 2;
+        if (budget < ITEM_CUT_MARKER.length())
+            return String.join("\n\n", guidance) + "\n\n" + NOTHING_FITS;
+
+        return String.join("\n\n", guidance) + "\n\n" + cap(body, budget);
+    }
+
+    /** what changes what the payload means: warnings, unconverted money, what was dropped */
+    private static List<String> guidanceBefore(Scan found, List<String> droppedMetrics)
+    {
         var sections = new ArrayList<String>();
 
         // warnings first: they change what everything below means
@@ -96,26 +151,19 @@ public final class McpEnvelope
 
         if (!droppedMetrics.isEmpty())
         {
+            // "missing" alone reads as zero. These groups were never asked for in
+            // this response, so their figures are unknown, not zero.
             sections.add("**Narrowed to fit.** The full response was too large to return, so it was re-requested with "
-                            + "only `" + String.join(",", NARROWED_METRICS) + "`. These groups are **missing and were "
-                            + "not zero**: `" + String.join(", ", droppedMetrics) + "`. Ask again with an explicit "
-                            + "`metrics` selection if you need one of them.");
+                            + "only `" + String.join(",", NARROWED_METRICS) + "`. These groups are **absent, so they "
+                            + "are not necessarily zero**: `" + String.join(", ", droppedMetrics) + "`. Ask again with "
+                            + "an explicit `metrics` selection if you need one of them.");
         }
 
-        // unrounded: the same portfolio must not read differently through curl
-        sections.add(payload.isJsonNull()
-                        ? "Portfolio Performance accepted the call and returned nothing to show for it."
-                        : payload.toString());
-
-        var notes = notesFor(tool, found);
-        if (!notes.isEmpty())
-            sections.add(notes.stream().map(note -> "- " + note).reduce((a, b) -> a + "\n" + b).orElseThrow());
-
-        return String.join("\n\n", sections);
+        return sections;
     }
 
     /** guidance that applies to this payload, in the order it should be read */
-    private static List<String> notesFor(McpTool tool, Scan found)
+    private static List<String> notesFor(McpTool tool, JsonObject arguments, Scan found)
     {
         var notes = new ArrayList<String>();
 
@@ -154,14 +202,33 @@ public final class McpEnvelope
 
         if (!tool.isReadOnly())
         {
-            // every time: a lost edit is the worst outcome available here
-            notes.add("**This change is not saved to disk.** It has changed the file open in Portfolio Performance and "
-                            + "marked it dirty, exactly as if the user had typed it. There is no save operation "
-                            + "available here — tell the user to save in the application, or to close without saving "
-                            + "to discard it.");
+            if ("PATCH".equals(tool.method()) && !namedWritableField(tool, arguments))
+            {
+                // an empty merge patch changes nothing and marks nothing dirty, so
+                // claiming an edit that never happened is its own kind of lie
+                notes.add("Nothing changed: this patch named no field the API can write, so the file was **not** "
+                        + "marked dirty and there is nothing for the user to save.");
+            }
+            else
+            {
+                // every time: a lost edit is the worst outcome available here
+                notes.add("**This change is not saved to disk.** It has changed the file open in Portfolio "
+                        + "Performance and marked it dirty, exactly as if the user had typed it. There is no save "
+                        + "operation available here — tell the user to save in the application, or to close without "
+                        + "saving to discard it.");
+            }
         }
 
         return notes;
+    }
+
+    /** whether a patch named at least one field of the body, which is what marks the file dirty */
+    private static boolean namedWritableField(McpTool tool, JsonObject arguments)
+    {
+        return arguments.entrySet().stream().anyMatch(entry -> {
+            var binding = tool.binding(entry.getKey());
+            return binding != null && binding.where() == McpTool.Where.BODY;
+        });
     }
 
     private static Scan scan(JsonElement payload)
@@ -227,6 +294,11 @@ public final class McpEnvelope
      * Whether this tool can be asked for less, and what would be dropped.
      * Empty when the caller already chose a selection: narrowing further would
      * answer a different question than the one asked.
+     * <p/>
+     * A selection counts whether it arrived as a list or as a single value - a
+     * client that sent one group some other way still asked for that group, and
+     * overwriting it would answer something else. An empty selection names
+     * nothing, so narrowing is still on the table.
      */
     public static Optional<Narrowing> planNarrowing(McpTool tool, JsonObject arguments)
     {
@@ -234,12 +306,21 @@ public final class McpEnvelope
             return Optional.empty();
 
         var chosen = arguments.get("metrics");
-        if (chosen != null && chosen.isJsonArray() && !chosen.getAsJsonArray().isEmpty())
+        if (chosen != null && !chosen.isJsonNull() && namesSomething(chosen))
             return Optional.empty();
 
         var dropped = new LinkedHashSet<>(METRIC_GROUPS);
         dropped.removeAll(NARROWED_METRICS);
         return Optional.of(new Narrowing(NARROWED_METRICS, List.copyOf(dropped)));
+    }
+
+    /** whether a metrics argument names at least one group */
+    private static boolean namesSomething(JsonElement value)
+    {
+        if (value.isJsonArray())
+            return !value.getAsJsonArray().isEmpty();
+
+        return value.isJsonPrimitive() && !value.getAsString().isBlank();
     }
 
     /**
@@ -272,17 +353,18 @@ public final class McpEnvelope
         return switch (tool.name())
         {
             case "pp_list_trades" -> "This portfolio has more trades than fit in one answer. Ask for "
-                            + "`status: [\"closed\"]` or `[\"open\"]` alone, or use pp_list_instrument_trades for one "
-                            + "instrument at a time.";
+                            + "`status: [\"closed\"]` or `[\"open\"]` alone if you did not already, and use "
+                            + "pp_list_instrument_trades for one instrument at a time - a whole file of matched trades "
+                            + "is never going to fit in one answer.";
             case "pp_list_instruments" -> "This file has more instruments than fit in one answer. Ask about specific "
                             + "instruments with pp_get_instrument, or ask the user which part of the portfolio they "
                             + "mean.";
             case "pp_list_holdings" -> "This portfolio has more positions than fit in one answer. Ask the user which "
                             + "part of it they mean, and use pp_get_instrument for individual positions.";
-            case "pp_list_instrument_performance" -> "This report has more instruments than fit in one answer. The "
-                            + "`timeWeighted` and `risk` groups carry a daily series per instrument and dominate the "
-                            + "size: ask again without them, or use pp_get_instrument_performance for single "
-                            + "instruments. A shorter interval helps too.";
+            case "pp_list_instrument_performance" -> "This report has more instruments than fit in one answer. What "
+                            + "dominates the size is the number of instruments, not the metric groups - each instrument "
+                            + "carries a handful of figures whatever is asked for: shorten the interval, or use "
+                            + "pp_get_instrument_performance for one instrument at a time.";
             case "pp_get_overall_performance" -> "This response is larger than one answer can carry, and it cannot be "
                             + "narrowed further. Read the `breakdown` figures you need from what is above, say the "
                             + "rest was cut, and use pp_list_instrument_performance for a per-instrument view.";
@@ -302,18 +384,123 @@ public final class McpEnvelope
     }
 
     /**
-     * Truncates an oversized result and says so - an unmarked truncation would
-     * be read as complete. A cap smaller than the marker yields the marker
-     * alone, rather than a payload with nothing to say it is partial.
+     * Truncates an oversized payload and says so - an unmarked truncation would
+     * be read as complete.
+     * <p/>
+     * The cut lands after the last complete item that fits, where one does, so
+     * what survives is still parseable JSON rather than a fragment that ends
+     * mid-value. Where no whole item fits, the marker says plainly that the
+     * fragment is not parseable, which is the one claim a model cannot recover
+     * from on its own. Never larger than {@code maxChars}.
      */
     public static String cap(String payload, int maxChars)
     {
         if (payload.length() <= maxChars)
             return payload;
 
-        var marker = "\n\n[TRUNCATED. The full answer did not fit in one tool result. What is above is incomplete and "
-                        + "must not be summarised as if it were the whole portfolio — say so, and ask for a narrower "
-                        + "question.]";
-        return payload.substring(0, Math.max(0, maxChars - marker.length())) + marker;
+        var budget = Math.max(0, maxChars - ITEM_CUT_MARKER.length());
+        var cut = lastCompleteItem(payload, budget);
+
+        if (cut.index() <= 0)
+            return cutAtCharacterBoundary(payload, budget) + PARTIAL_CUT_MARKER;
+
+        return payload.substring(0, cut.index()) + cut.closings() + ITEM_CUT_MARKER;
     }
+
+    /** where a truncated payload ends: an index, plus the brackets closing what is still open */
+    private record Cut(int index, String closings)
+    {
+    }
+
+    /**
+     * The end of the last complete item at or before {@code budget}, with the
+     * brackets that close the containers still open there. Scans the compact JSON
+     * as text: a comma ends an item, a closing bracket ends a container, and
+     * neither counts inside a string.
+     */
+    private static Cut lastCompleteItem(String json, int budget)
+    {
+        var open = new ArrayDeque<Character>();
+        var cut = new Cut(-1, "");
+        var inString = false;
+        var escaped = false;
+
+        for (var ii = 0; ii < json.length(); ii++)
+        {
+            var character = json.charAt(ii);
+
+            if (inString)
+            {
+                if (escaped)
+                    escaped = false;
+                else if (character == '\\')
+                    escaped = true;
+                else if (character == '"')
+                    inString = false;
+                continue;
+            }
+
+            if (character == '"')
+            {
+                inString = true;
+            }
+            else if (character == '{' || character == '[')
+            {
+                open.push(character);
+            }
+            else if (character == '}' || character == ']')
+            {
+                open.pop();
+                var candidate = new Cut(ii + 1, closingsOf(open));
+                if (candidate.index() + candidate.closings().length() <= budget)
+                    cut = candidate;
+            }
+            else if (character == ',')
+            {
+                var candidate = new Cut(ii, closingsOf(open));
+                if (candidate.index() + candidate.closings().length() <= budget)
+                    cut = candidate;
+            }
+
+            if (ii >= budget)
+                break;
+        }
+
+        return cut;
+    }
+
+    /** the brackets that close the containers still open, innermost first */
+    private static String closingsOf(ArrayDeque<Character> open)
+    {
+        var closing = new StringBuilder();
+        for (var character : open)
+            closing.append(character == '{' ? '}' : ']');
+        return closing.toString();
+    }
+
+    /** a cut that splits a surrogate pair would emit a character no one can read */
+    private static String cutAtCharacterBoundary(String json, int budget)
+    {
+        var index = Math.min(budget, json.length());
+        if (index > 0 && index < json.length() && Character.isHighSurrogate(json.charAt(index - 1))
+                        && Character.isLowSurrogate(json.charAt(index)))
+            index--;
+
+        return json.substring(0, index);
+    }
+
+    /** the marker for a cut that landed after a whole item - the longer of the two */
+    private static final String ITEM_CUT_MARKER = "\n\n[TRUNCATED. The full answer did not fit in one tool result. "
+                    + "This is cut after the last complete item that fit; every item after it is absent. Do not "
+                    + "summarise what is above as if it were the whole portfolio — say what was cut, and ask a "
+                    + "narrower question.]";
+
+    /** the marker for a payload too large for even one item to fit */
+    private static final String PARTIAL_CUT_MARKER = "\n\n[TRUNCATED. The full answer did not fit in one tool result, "
+                    + "and not even one item fit: this ends partway through a value, so it is not parseable JSON. "
+                    + "Nothing above is complete — say so, and ask a narrower question.]";
+
+    /** what the guidance says when the budget left after it is smaller than a marker */
+    private static final String NOTHING_FITS = "[TRUNCATED. Not even one figure fit in one tool result — ask a "
+                    + "narrower question.]";
 }

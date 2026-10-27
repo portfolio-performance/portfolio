@@ -2,8 +2,8 @@ package name.abuchen.portfolio.rest.internal.mcp;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.Matchers.not;
 
 import java.nio.charset.StandardCharsets;
@@ -121,7 +121,7 @@ public class McpToolCallTest
         assertThat(unknownFile, containsString("not sharing a file called `nope`"));
         assertThat(unknownFile, containsString("These files are available"));
 
-        var unknownEntity = text(call("pp_get_instrument", "{\"file\":\"sample\",\"uuid\":\"no-such-uuid\"}"));
+        var unknownEntity = text(call("pp_get_instrument", "{\"file\":\"sample\",\"uuid\":\"00000000-0000-0000-0000-000000000000\"}"));
         assertThat(unknownEntity, containsString("The file is shared"));
         assertThat(unknownEntity, containsString("will not start working"));
     }
@@ -134,7 +134,7 @@ public class McpToolCallTest
     @Test
     public void testARefusalSaysWhetherTryingAgainCanHelp()
     {
-        var notFound = text(call("pp_get_instrument", "{\"file\":\"sample\",\"uuid\":\"no-such-uuid\"}"));
+        var notFound = text(call("pp_get_instrument", "{\"file\":\"sample\",\"uuid\":\"00000000-0000-0000-0000-000000000000\"}"));
         assertThat(notFound, containsString("retryable: no"));
         assertThat(notFound, containsString("reasonCode: not-found"));
         assertThat(notFound, not(containsString("retryAfterSeconds")));
@@ -222,9 +222,11 @@ public class McpToolCallTest
 
         var result = call("pp_list_instruments", "{\"file\":\"sample\"}");
 
-        assertThat(text(result).length(), is(McpEndpoint.MAX_RESULT_CHARS));
+        // the guidance is reserved before the payload is cut, so the result uses
+        // at most the allowance rather than filling it exactly
+        assertThat(text(result).length(), is(lessThanOrEqualTo(McpEndpoint.MAX_RESULT_CHARS)));
         assertThat(text(result), containsString("TRUNCATED"));
-        assertThat(text(result), containsString("ask for a narrower question"));
+        assertThat(text(result), containsString("ask a narrower question"));
     }
 
     /**
@@ -240,9 +242,10 @@ public class McpToolCallTest
 
         var instruments = text(call("pp_list_instruments", "{\"file\":\"sample\"}"));
 
-        assertThat(instruments.length(), is(McpEndpoint.MAX_RESULT_CHARS));
+        assertThat(instruments.length(), is(lessThanOrEqualTo(McpEndpoint.MAX_RESULT_CHARS)));
         assertThat(instruments, containsString("pp_get_instrument"));
         assertThat(instruments, containsString("ask the user which part of the portfolio they mean"));
+        assertThat(instruments, containsString("TRUNCATED"));
     }
 
     /**
@@ -271,13 +274,13 @@ public class McpToolCallTest
         var result = text(call("pp_list_instrument_performance",
                         "{\"file\":\"sample\",\"openingDate\":\"2024-01-01\",\"closingDate\":\"2024-12-31\"}"));
 
-        assertThat(result.length(), is(McpEndpoint.MAX_RESULT_CHARS));
+        assertThat(result.length(), is(lessThanOrEqualTo(McpEndpoint.MAX_RESULT_CHARS)));
         assertThat(result, containsString("TRUNCATED"));
         assertThat(result, containsString("already re-requested without"));
         assertThat(result, containsString("`timeWeighted`"));
         assertThat(result, not(containsString("ask again without them")));
         assertThat(result, containsString("pp_get_instrument_performance"));
-        assertThat(result, endsWith("one instrument at a time."));
+        assertThat(result, containsString("pp_get_instrument_performance for one instrument at a time."));
     }
 
     /** and an ordinary portfolio stays well below the cap */
@@ -285,6 +288,65 @@ public class McpToolCallTest
     public void testAnOrdinaryResultIsNotTruncated()
     {
         assertThat(text(call("pp_list_instruments", "{\"file\":\"sample\"}")), not(containsString("TRUNCATED")));
+    }
+
+    /**
+     * A merge patch that names no writable field is a no-op the API accepts, not
+     * a 400 about the body: the tool's arguments live in the path, so the body it
+     * sends is empty, and an empty patch changes nothing rather than failing.
+     */
+    @Test
+    public void testAnEmptyPatchReturnsTheInstrumentAndSaysNothingChanged()
+    {
+        var result = call("pp_update_instrument", "{\"file\":\"sample\",\"uuid\":\"" + security.getUUID() + "\"}");
+
+        assertThat(isError(result), is(false));
+        assertThat(text(result), containsString("Nothing changed"));
+        assertThat(text(result), not(containsString("not saved to disk")));
+        assertThat(security.getNote(), is((String) null));
+    }
+
+    /** a value that cannot be an id must not reach a route that answers 404 - or worse */
+    @Test
+    public void testAUuidThatIsNotAnIdIsRefusedBeforeTheRoute()
+    {
+        var result = call("pp_get_instrument", "{\"file\":\"sample\",\"uuid\":\"attribute-types\"}");
+
+        assertThat(isError(result), is(true));
+        assertThat(text(result), containsString("`uuid` must be an entity uuid"));
+        assertThat(text(result), containsString("reasonCode: misshapen-argument"));
+        assertThat(text(result), containsString("retryable: no"));
+    }
+
+    /** a wrong type is refused here rather than surfacing as an endpoint validation error */
+    @Test
+    public void testAnArgumentOfTheWrongShapeIsRefusedWithTheDeclaredShape()
+    {
+        var result = call("pp_list_holdings", "{\"file\":\"sample\",\"date\":20260101}");
+
+        assertThat(isError(result), is(true));
+        assertThat(text(result), containsString("`date` must be `string`, not a number"));
+    }
+
+    /** an empty selection is a mistake; silently defaulting would answer another question */
+    @Test
+    public void testAnEmptySelectionIsRefusedRatherThanDefaulted()
+    {
+        var result = call("pp_list_trades", "{\"file\":\"sample\",\"status\":[]}");
+
+        assertThat(isError(result), is(true));
+        assertThat(text(result), containsString("`status` must hold at least 1 value"));
+        assertThat(text(result), containsString("an empty list names nothing"));
+    }
+
+    /** a metric group sent as a bare string is the same mistake as an unknown value */
+    @Test
+    public void testAMetricsSentAsASingleValueIsRefusedRatherThanAccepted()
+    {
+        var result = call("pp_list_instrument_performance", "{\"file\":\"sample\",\"openingDate\":\"2024-01-01\",\"metrics\":\"risk\"}");
+
+        assertThat(isError(result), is(true));
+        assertThat(text(result), containsString("`metrics` must be `array`, not the string `risk`"));
     }
 
     // ── helpers ─────────────────────────────────────────────────────────────

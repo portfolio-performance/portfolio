@@ -35,7 +35,12 @@ public final class McpDispatch
         var path = tool.pathTemplate();
         var query = new LinkedHashMap<String, String>();
         var body = new JsonObject();
-        var hasBody = false;
+
+        // A tool whose route takes a body always sends one, even when the caller
+        // named none of its fields: an empty merge patch is a documented no-op,
+        // whereas an empty request body is refused with "request body must be a
+        // JSON object" - a refusal to answer a call that asked for nothing.
+        var takesBody = tool.bindings().stream().anyMatch(binding -> binding.where() == McpTool.Where.BODY);
 
         for (McpTool.Binding binding : tool.bindings())
         {
@@ -50,16 +55,20 @@ public final class McpDispatch
             switch (binding.where())
             {
                 case PATH:
+                    // Every path argument is required, so McpEndpoint has already
+                    // refused a null or a blank one. Substituting null would put
+                    // the literal placeholder back into the template, which is a
+                    // path another route owns.
                     if (!value.isJsonNull())
                         path = path.replace("{" + binding.wire() + "}", asText(value)); //$NON-NLS-1$ //$NON-NLS-2$
                     break;
                 case QUERY:
-                    if (!value.isJsonNull())
-                        query.put(binding.wire(), asQueryValue(value));
+                    var wireValue = asQueryValue(value);
+                    if (wireValue != null)
+                        query.put(binding.wire(), wireValue);
                     break;
                 case BODY:
                     body.add(binding.wire(), value);
-                    hasBody = true;
                     break;
                 default:
                     break;
@@ -67,7 +76,7 @@ public final class McpDispatch
         }
 
         return route(router, tool.method(), path, query,
-                        hasBody ? body.toString().getBytes(StandardCharsets.UTF_8) : new byte[0]);
+                        takesBody ? body.toString().getBytes(StandardCharsets.UTF_8) : new byte[0]);
     }
 
     /** the shared files, for disambiguating a 404: a call in this process, not an HTTP round trip */
@@ -109,15 +118,24 @@ public final class McpDispatch
      * Comma-joined, which is how this API spells a multi-valued parameter
      * throughout. Repetition has no representation in a {@code Map<String,
      * String>} and none is declared; McpToolsDriftTest holds that true.
+     * <p/>
+     * An empty array is {@code null}, i.e. the parameter is not sent at all: an
+     * empty list has no meaning for {@code metrics} or {@code status}, and
+     * sending {@code metrics=} would be refused as a malformed value rather than
+     * answered with the endpoint's own default.
      */
     private static String asQueryValue(JsonElement value)
     {
+        if (value.isJsonNull())
+            return null;
+
         if (!value.isJsonArray())
             return asText(value);
 
         var parts = new ArrayList<String>();
         for (JsonElement element : (JsonArray) value)
             parts.add(asText(element));
-        return String.join(",", parts); //$NON-NLS-1$
+
+        return parts.isEmpty() ? null : String.join(",", parts); //$NON-NLS-1$
     }
 }

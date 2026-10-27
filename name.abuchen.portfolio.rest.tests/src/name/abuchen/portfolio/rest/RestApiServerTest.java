@@ -3,6 +3,7 @@ package name.abuchen.portfolio.rest;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -44,6 +45,7 @@ public class RestApiServerTest
                         request -> Response.json(201, JsonParser.parseString("{\"status\":\"pending\"}")));
         router.add("GET", "/v1/auth/requests/{id}",
                         request -> Response.json(200, JsonParser.parseString("{\"status\":\"pending\"}")));
+        router.add("DELETE", "/v1/nocontent", request -> Response.noContent());
 
         server = new RestApiServer(0, TOKEN::equals, router);
         server.start();
@@ -291,5 +293,91 @@ public class RestApiServerTest
                         HttpResponse.BodyHandlers.ofString());
         assertThat(response.statusCode(), is(404));
         assertThat(response.body(), containsString("problems/not-found"));
+    }
+
+    /**
+     * A trailing slash is the same path, not a second one: routing and the
+     * token-free exemption are both decided on the normalized path, so a client
+     * that writes `/v1/auth/requests/` is not told it needs a token.
+     */
+    @Test
+    public void testATrailingSlashIsTheSameRoute() throws Exception
+    {
+        assertThat(http.send(request("/v1/ping/").header("Authorization", "Bearer " + TOKEN).GET().build(),
+                        HttpResponse.BodyHandlers.ofString()).statusCode(), is(200));
+
+        var pairing = http.send(request("/v1/auth/requests/")
+                        .POST(HttpRequest.BodyPublishers.ofString("{\"clientName\":\"x\"}")).build(),
+                        HttpResponse.BodyHandlers.ofString());
+        assertThat(pairing.statusCode(), is(201));
+
+        assertThat(http.send(request("/v1/ping///").GET().build(), HttpResponse.BodyHandlers.ofString()).statusCode(),
+                        is(401));
+        assertThat(http.send(request("/v1//ping").header("Authorization", "Bearer " + TOKEN).GET().build(),
+                        HttpResponse.BodyHandlers.ofString()).statusCode(), is(404));
+    }
+
+    /** the scheme name is case-insensitive; the token itself is not */
+    @Test
+    public void testTheBearerSchemeIsReadCaseInsensitively() throws Exception
+    {
+        assertThat(http.send(request("/v1/ping").header("Authorization", "bearer " + TOKEN).GET().build(),
+                        HttpResponse.BodyHandlers.ofString()).statusCode(), is(200));
+        assertThat(http.send(request("/v1/ping").header("Authorization", "Bearer " + TOKEN.toUpperCase()).GET().build(),
+                        HttpResponse.BodyHandlers.ofString()).statusCode(), is(401));
+    }
+
+    /** a token under another scheme is a wrong scheme, not an absent token */
+    @Test
+    public void testAHeaderThatIsNotBearerIsRecordedAsAWrongScheme() throws Exception
+    {
+        RejectedConnections.clear();
+
+        var response = http.send(request("/v1/ping").header("Authorization", "Token " + TOKEN).GET().build(),
+                        HttpResponse.BodyHandlers.ofString());
+
+        assertThat(response.statusCode(), is(401));
+        var rejection = RejectedConnections.last().orElseThrow();
+        assertThat(rejection.reason(), is(RejectedConnections.Reason.NO_BEARER_SCHEME));
+        assertThat(rejection.tokenPresented(), is(false));
+    }
+
+    /**
+     * A 204 announced as chunked is a response a plain client waits on: the JDK
+     * turns a length of -1 into `Transfer-Encoding: chunked`, and the body that is
+     * supposed to be empty never ends. A 204 carries no body, and must say so.
+     */
+    @Test
+    public void testANoContentResponseAnnouncesNoBody() throws Exception
+    {
+        var head = rawHead("DELETE", "/v1/nocontent", "Bearer " + TOKEN).toLowerCase();
+
+        assertThat(head, containsString(" 204 "));
+        assertThat(head, not(containsString("transfer-encoding")));
+        assertThat(head, not(containsString("content-length")));
+    }
+
+    /** the raw response head, exactly as the wire sent it */
+    private String rawHead(String method, String path, String authorization) throws Exception
+    {
+        try (var socket = new Socket(InetAddress.getLoopbackAddress(), server.getPort()))
+        {
+            var request = method + " " + path + " HTTP/1.1\r\n" //
+                            + "Host: 127.0.0.1:" + server.getPort() + "\r\n" //
+                            + "Authorization: " + authorization + "\r\n" //
+                            + "Content-Length: 0\r\n" //
+                            + "Connection: close\r\n\r\n";
+            socket.getOutputStream().write(request.getBytes(StandardCharsets.US_ASCII));
+            socket.getOutputStream().flush();
+
+            var reader = new BufferedReader(
+                            new InputStreamReader(socket.getInputStream(), StandardCharsets.US_ASCII));
+            var head = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null && !line.isEmpty())
+                head.append(line).append('\n');
+
+            return head.toString();
+        }
     }
 }

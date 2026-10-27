@@ -243,6 +243,53 @@ public class ClientStoreTest
         assertThat(clients.get(0).name(), is("Good"));
     }
 
+    /**
+     * A file whose shape this version does not recognise is not an empty file.
+     * Reading it as one, and then saving what this version holds, would delete
+     * tokens that still exist - so the content stays exactly as it is.
+     */
+    @Test
+    public void testUnrecognisedContentIsNeverOverwritten() throws Exception
+    {
+        var foreign = "{\"tokens\":[{\"value\":\"a-token-a-later-version-understands\"}]}";
+        writeStore(foreign);
+
+        var store = newStore();
+        store.addPersistentClient("Claude Code");
+
+        assertThat(Files.readString(dir().resolve("api-clients.json")), is(foreign));
+        assertThat(store.listClients(), hasSize(1)); // usable in this run
+        assertThat(newStore().listClients(), hasSize(0)); // nothing was written over the old content
+    }
+
+    /** the same holds for content that is not parseable at all */
+    @Test
+    public void testUnparseableContentIsNeverOverwritten() throws Exception
+    {
+        writeStore("{ clients: [");
+
+        newStore().addPersistentClient("Claude Code");
+
+        assertThat(Files.readString(dir().resolve("api-clients.json")), is("{ clients: ["));
+    }
+
+    /**
+     * A client file this version cannot read or write must not turn a token that
+     * works into a failed request: authentication runs on an HTTP worker, after
+     * the token has already been accepted.
+     */
+    @Test
+    public void testAnUnwritableClientFileDoesNotBreakAuthentication() throws Exception
+    {
+        Files.createDirectories(dir().resolve("api-clients.json")); // a directory where a file belongs
+
+        var store = newStore();
+        var token = store.addPersistentClient("Claude Code");
+
+        assertThat(store.authenticate(token).isPresent(), is(true));
+        assertThat(store.authenticate(token).get().name(), is("Claude Code"));
+    }
+
     @Test
     public void testLastUsedIsTrackedButFileWritesAreThrottled()
     {
