@@ -135,6 +135,19 @@ public class ApiException extends RuntimeException
                         List.of(), Map.of("Retry-After", "5")); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
+    /**
+     * The deadline passed while the request was already handed to the UI thread.
+     * Not {@link #uiBusy}: that one refused, this one may still run, so it carries
+     * no Retry-After and must not be presented as something the caller can safely
+     * send again - a second PATCH would apply the same change twice.
+     */
+    public static ApiException uiRequestUnderway(long timeoutMillis)
+    {
+        return new ApiException(503, "ui-request-underway", "Application busy; the request may still be executed", //$NON-NLS-1$ //$NON-NLS-2$
+                        "The request had already been handed to the UI thread when the wait for it expired after " //$NON-NLS-1$
+                                + timeoutMillis + " ms", List.of(), Map.of()); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
     public int getStatus()
     {
         return status;

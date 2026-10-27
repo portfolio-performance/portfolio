@@ -269,7 +269,8 @@ public class RestApiServer
         if (token != null && tokenValidator.test(token))
             return Request.Authorization.VALID;
 
-        var authorization = token != null ? Request.Authorization.INVALID : Request.Authorization.MISSING;
+        var authorization = token != null ? Request.Authorization.INVALID
+                        : header != null ? Request.Authorization.WRONG_SCHEME : Request.Authorization.MISSING;
 
         if (isAuthExempt(path) || RestApiConstants.MCP_ENDPOINT.equals(path))
             return authorization;
@@ -277,11 +278,20 @@ public class RestApiServer
         // a wrong token never becomes an entry in the client list, so this
         // record is the only trace the user will have of it
         RejectedConnections.record(path, exchange.getRequestHeaders().getFirst("User-Agent"), //$NON-NLS-1$
-                token != null, token != null ? RejectedConnections.Reason.INVALID_TOKEN
-                        : header != null ? RejectedConnections.Reason.NO_BEARER_SCHEME
-                                : RejectedConnections.Reason.NO_HEADER);
+                token != null, reasonOf(authorization));
 
         throw ApiException.unauthorized();
+    }
+
+    /** the same three faults, spelled for the preference page */
+    private static RejectedConnections.Reason reasonOf(Request.Authorization authorization)
+    {
+        return switch (authorization)
+        {
+            case INVALID -> RejectedConnections.Reason.INVALID_TOKEN;
+            case WRONG_SCHEME -> RejectedConnections.Reason.NO_BEARER_SCHEME;
+            default -> RejectedConnections.Reason.NO_HEADER;
+        };
     }
 
     /**

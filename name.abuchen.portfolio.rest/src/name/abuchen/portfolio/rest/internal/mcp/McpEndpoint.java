@@ -246,40 +246,44 @@ public final class McpEndpoint
             return error(JsonNull.INSTANCE, INVALID_REQUEST, "a JSON-RPC message must be an object");
 
         var message = element.getAsJsonObject();
-        var isRequest = message.has("method");
-
-        // A message carrying result or error is the client's own reply, which
-        // answers nothing. But a message carrying method as well is not a reply:
-        // it is a call that was built wrongly, and 202 would tell a client that
-        // waits for an answer that all was well.
-        if (!isRequest && (message.has("result") || message.has("error")))
-            return null;
-        if (message.has("result") || message.has("error"))
-            return error(JsonNull.INSTANCE, INVALID_REQUEST,
-                            "a JSON-RPC request carries \"params\", not \"result\" or \"error\"");
-
-        var id = message.has("id") ? message.get("id") : null;
         var declared = message.get("method");
+        var methodIsString = declared != null && declared.isJsonPrimitive()
+                        && declared.getAsJsonPrimitive().isString();
+        var id = message.has("id") ? message.get("id") : null;
 
-        if (declared == null || !declared.isJsonPrimitive() || !declared.getAsJsonPrimitive().isString())
-        {
-            return error(id != null ? id : JsonNull.INSTANCE, INVALID_REQUEST,
-                            "a JSON-RPC request needs a string \"method\"");
-        }
+        // A message carrying result or error and no method is the client's own
+        // reply, which answers nothing.
+        if (declared == null && (message.has("result") || message.has("error")))
+            return null;
+
+        // A notification is a well-formed call without an id, and gets no
+        // response. A message that merely looks like one - no method, or a method
+        // that is not a string - is malformed, and 202 would tell a client that
+        // waits for an answer that all was well.
+        if (id == null && methodIsString)
+            return null;
+
+        // An id is a string or a number, never null, an object, an array or a
+        // boolean. JSON-RPC 2.0 says so; an id that is not a scalar cannot be
+        // echoed as one, so a client sending it gets an error it can act on
+        // rather than a reply it cannot correlate.
+        if (id != null && (!id.isJsonPrimitive() || id.getAsJsonPrimitive().isBoolean()))
+            return error(JsonNull.INSTANCE, INVALID_REQUEST,
+                    "\"id\" must be a string or a number; a notification omits it");
+
+        // A message carrying method as well as result or error is not a reply: it
+        // is a call that was built wrongly, and 202 would tell a client that waits
+        // for an answer that all was well. Its id is echoed because a batch is only
+        // readable if every refusal names the message it belongs to.
+        if (message.has("result") || message.has("error"))
+            return error(id, INVALID_REQUEST,
+                    "a JSON-RPC request carries \"params\", not \"result\" or \"error\"");
+
+        if (!methodIsString)
+            return error(id == null ? JsonNull.INSTANCE : id, INVALID_REQUEST,
+                    "a JSON-RPC request needs a string \"method\"");
 
         var method = declared.getAsString();
-
-        // a notification: a call without an id, which gets no response
-        if (id == null)
-            return null;
-
-        // null is the id of an answer to an unrecognized request, never the id of
-        // a request; a client that sends "id": null gets an error, not a reply
-        // that cannot be correlated with anything
-        if (id.isJsonNull())
-            return error(JsonNull.INSTANCE, INVALID_REQUEST,
-                            "\"id\" must be a string or a number; a notification omits it");
-
         var params = message.has("params") && message.get("params").isJsonObject()
                         ? message.getAsJsonObject("params")
                         : new JsonObject();
@@ -337,14 +341,20 @@ public final class McpEndpoint
         if (!request.authenticated())
         {
             // the one place a missing token is a refusal rather than a design,
-            // so the only place that files one
+            // so the only place that files one. A header in the wrong shape is a
+            // different fault from no header at all, and the preference page has
+            // to be able to tell them apart.
             RejectedConnections.record(request.path(), request.userAgent(),
-                            request.authorization() == Request.Authorization.INVALID);
+                            request.authorization() == Request.Authorization.INVALID,
+                            reasonOf(request.authorization()));
+
+            var fault = request.authorization() == Request.Authorization.WRONG_SCHEME
+                    ? "The `Authorization` header this connector sent does not carry a bearer token."
+                    : "Portfolio Performance will not answer this connector until it presents an access token.";
 
             // ADR 0005: a 401 reaches nobody. The chat does.
-            return toolError("Portfolio Performance will not answer this connector until it presents an access token."
-                            + "\n\nAsk the user to open Preferences → MCP Server & REST API in Portfolio Performance, "
-                            + "add a client there, and copy the token it shows once into this connector's "
+            return toolError(fault + "\n\nAsk the user to open Preferences → MCP Server & REST API in Portfolio "
+                            + "Performance, add a client there, and copy the token it shows once into this connector's "
                             + "`Authorization` header as `Bearer <token>`. Nothing can be read or changed until they "
                             + "have." + hint("no-token", true));
         }
@@ -403,6 +413,17 @@ public final class McpEndpoint
     private static String hint(String reasonCode, boolean retryable)
     {
         return "\n\nretryable: " + (retryable ? "yes" : "no") + " · reasonCode: " + reasonCode; //$NON-NLS-1$
+    }
+
+    /** the fault behind an unauthenticated call, spelled for the preference page */
+    private static RejectedConnections.Reason reasonOf(Request.Authorization authorization)
+    {
+        return switch (authorization)
+        {
+            case INVALID -> RejectedConnections.Reason.INVALID_TOKEN;
+            case WRONG_SCHEME -> RejectedConnections.Reason.NO_BEARER_SCHEME;
+            default -> RejectedConnections.Reason.NO_HEADER;
+        };
     }
 
     /**
@@ -483,6 +504,15 @@ public final class McpEndpoint
 
     private static String describeMisshapenValue(McpTool tool, String argument, JsonObject schema, JsonElement value)
     {
+        // An explicit null on an optional query argument is what not sending it
+        // means: the handler applies the endpoint's default (today, the base
+        // currency, the latest quote). A body field of null means something else
+        // - clearing that field - so it stays checked. A required argument that
+        // arrives as null was already refused as missing.
+        var binding = tool.binding(argument);
+        if (value.isJsonNull() && binding != null && binding.where() == McpTool.Where.QUERY)
+            return null;
+
         var declared = schema.get("type"); //$NON-NLS-1$
         if (declared != null && !matchesType(value, declared))
             return "`" + argument + "` must be " + typesOf(declared) + ", not " + shapeOf(value); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -518,7 +548,6 @@ public final class McpEndpoint
             return "`" + argument + "` must hold at least " + minItems.getAsInt() //$NON-NLS-1$
                     + " value" + (minItems.getAsInt() == 1 ? "" : "s") + "; an empty list names nothing"; //$NON-NLS-1$ //$NON-NLS-2$
 
-        var binding = tool.binding(argument);
         if (binding != null && binding.where() == McpTool.Where.PATH)
         {
             var text = value.isJsonPrimitive() ? value.getAsString() : value.toString();
@@ -667,8 +696,12 @@ public final class McpEndpoint
      * the guidance that says so is kept. Never silently - an unmarked truncation
      * is the one outcome that produces a confident wrong answer, and a truncation
      * that also dropped the notes is barely better.
+     * <p/>
+     * Not private: a test in this package drives it with a payload no fixture
+     * would ever produce, which is how the cap is checked at its real limit.
      */
-    private static String fit(Router router, McpTool tool, JsonObject arguments, JsonElement payload, int maxChars)
+    /* package */ static String fit(Router router, McpTool tool, JsonObject arguments, JsonElement payload,
+                    int maxChars)
     {
         var rendered = McpEnvelope.render(tool, arguments, payload, List.of());
         if (rendered.length() <= maxChars)

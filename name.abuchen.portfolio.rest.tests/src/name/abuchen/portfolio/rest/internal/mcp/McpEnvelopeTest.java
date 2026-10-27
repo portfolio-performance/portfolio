@@ -269,6 +269,89 @@ public class McpEnvelopeTest
     }
 
     /**
+     * A cut lands between items, never between the fields of one item. A JSON
+     * object closed early is still parseable, so a cut that ends mid-item produces
+     * figures missing a field while the marker claims every item above is complete.
+     */
+    @Test
+    public void testACutNeverEndsMidItem()
+    {
+        var items = new StringBuilder();
+        for (int ii = 0; ii < 60; ii++)
+        {
+            if (ii > 0)
+                items.append(",");
+            items.append("{\"uuid\":\"00000000-0000-0000-0000-000000000000\",\"name\":\"instrument ").append(ii)
+                    .append("\",\"ttwror\":0.1177,\"currencyGains\":0,\"shares\":12.5}");
+        }
+
+        var capped = McpEnvelope.cap("[" + items + "]", 900);
+
+        assertThat(capped.length(), is(lessThanOrEqualTo(900)));
+        assertThat(capped, containsString("cut after the last complete item"));
+
+        var kept = capped.substring(0, capped.indexOf("\n\n[TRUNCATED"));
+        var parsed = JsonParser.parseString(kept).getAsJsonArray();
+        assertThat(parsed.size(), is(greaterThan(0)));
+
+        for (var item : parsed)
+            assertThat("item cut mid-field", item.getAsJsonObject().size(), is(5));
+    }
+
+    /**
+     * A report that opens with an array and continues with fields: a cut may end
+     * after a whole item of the array, which closes the array and the object above
+     * it, but it must never end between two fields of one object - there the
+     * fragment would parse while sitting half-written.
+     */
+    @Test
+    public void testACutNeverEndsBetweenTheFieldsOfAnObject()
+    {
+        var payload = "{\"items\":[{\"uuid\":\"00000000-0000-0000-0000-000000000000\",\"name\":\"ACME\"}],"
+                        + "\"totals\":{\"openingValue\":394352.02,\"unrealizedGains\":40130.96,"
+                        + "\"realizedGains\":6006.82,\"income\":2324.95,\"fees\":151.53,\"taxes\":731.94,"
+                        + "\"currencyGains\":120.10,\"netDeposits\":25000.00,\"dividends\":1990.00,"
+                        + "\"interest\":334.95,\"transferCreditor\":1200.00,\"transferDebtor\":800.00,"
+                        + "\"rewards\":45.00,\"closingValue\":426864.67}}";
+
+        assertThat(payload.length(), is(greaterThan(340)));
+
+        var capped = McpEnvelope.cap(payload, 340);
+        assertThat(capped.length(), is(lessThanOrEqualTo(340)));
+        assertThat(capped, containsString("TRUNCATED"));
+
+        if (capped.contains("not parseable JSON"))
+            return; // a fragment that says it is broken is honest about being broken
+
+        var kept = capped.substring(0, capped.indexOf("\n\n[TRUNCATED"));
+        var parsed = JsonParser.parseString(kept).getAsJsonObject();
+
+        assertThat(parsed.getAsJsonArray("items").size(), is(greaterThan(0)));
+        assertThat("totals cut mid-fields", parsed.has("totals"), is(false));
+    }
+
+    /**
+     * A report that is one object has no item boundary to cut at. It gets the
+     * marker that says the fragment is not parseable, rather than one that claims
+     * whole items - the claim is the thing a model cannot recover from.
+     */
+    @Test
+    public void testAnObjectPayloadIsMarkedUnparseable()
+    {
+        var payload = "{\"breakdown\":{\"openingValue\":394352.02,\"unrealizedGains\":40130.96,"
+                        + "\"realizedGains\":6006.82,\"income\":2324.95,\"fees\":151.53,\"taxes\":731.94,"
+                        + "\"currencyGains\":120.10,\"netDeposits\":25000.00,\"dividends\":1990.00,"
+                        + "\"interest\":334.95,\"closingValue\":426864.67}}";
+
+        assertThat(payload.length(), is(greaterThan(230)));
+
+        var capped = McpEnvelope.cap(payload, 230);
+
+        assertThat(capped.length(), is(lessThanOrEqualTo(230)));
+        assertThat(capped, containsString("not parseable JSON"));
+    }
+
+    /**
      * The guidance is reserved from the budget before the payload is cut. Losing
      * it is the failure mode a truncation must not have: the notes are what tell
      * a model that the figures are fractions and that cash counts as a holding.

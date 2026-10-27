@@ -7,6 +7,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiFunction;
 
 import com.google.gson.JsonObject;
@@ -177,8 +178,11 @@ public final class ApiRoutes
      * import wizard, a price update, a long repaint - an unbounded {@code
      * syncExec} parks the worker indefinitely and the API looks dead; a refused
      * 503 with a Retry-After is the honest answer, and cheap for the client.
+     * <p/>
+     * Not final: a test in this package shortens it to watch both timeout paths
+     * without waiting ten seconds, and restores it afterwards.
      */
-    private static final long UI_DEADLINE_MILLIS = 10_000;
+    /* package */ static long uiDeadlineMillis = 10_000;
 
     /** only used to bound the wait for the UI thread; scheduling a task costs nothing */
     private static final ExecutorService UI_WAIT = Executors.newSingleThreadExecutor(runnable -> {
@@ -188,23 +192,43 @@ public final class ApiRoutes
     });
 
     /**
-     * {@link HostApplication#syncExec} with a deadline. A timed-out call is
-     * refused with 503 rather than left waiting. Not interrupted: a callable
-     * already running on the UI thread finishes rather than being cut off in the
-     * middle of a model change, so a timed-out write may still land.
+     * {@link HostApplication#syncExec} with a deadline. Two outcomes have to be
+     * told apart, and only one of them may be called a refusal: a request the UI
+     * thread was never given is refused and can be sent again, while a request
+     * already handed over is still running - cancelling it does not stop a
+     * callable that has begun, so saying "refused" there would invite the client
+     * to apply the same write a second time.
      */
     private static <T> T syncExecBounded(HostApplication host, Callable<T> callable) throws Exception
     {
-        var future = UI_WAIT.submit(() -> host.syncExec(callable));
+        var abandoned = new AtomicBoolean(false);
+        var handedOver = new AtomicBoolean(false);
+
+        var future = UI_WAIT.submit(() -> {
+            if (abandoned.get())
+                // the caller gave up before this began; the model is not touched
+                return null;
+
+            handedOver.set(true);
+            return host.syncExec(callable);
+        });
 
         try
         {
-            return future.get(UI_DEADLINE_MILLIS, TimeUnit.MILLISECONDS);
+            return future.get(uiDeadlineMillis, TimeUnit.MILLISECONDS);
         }
         catch (TimeoutException e)
         {
-            future.cancel(false);
-            throw ApiException.uiBusy(UI_DEADLINE_MILLIS);
+            abandoned.set(true);
+
+            // Whether the request reached the UI thread is knowable from two
+            // facts: the flag the worker sets on its way in, and whether the
+            // cancel still succeeded (a task that began cannot be cancelled).
+            // Either says the callable may run, so it must not be called a refusal.
+            if (handedOver.get() || !future.cancel(false))
+                throw ApiException.uiRequestUnderway(uiDeadlineMillis);
+
+            throw ApiException.uiBusy(uiDeadlineMillis);
         }
         catch (ExecutionException e)
         {

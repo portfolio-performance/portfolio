@@ -117,7 +117,14 @@ public final class TradesHandler
                     if (params.status().contains(TradeStatus.of(trade)))
                     {
                         trades.add(trade);
+                        // the exit side is valued at the market price, which is in
+                        // the security's own currency
                         currencies.add(trade.getSecurity().getCurrencyCode());
+                        // and the entry side is money the converter had to look a
+                        // rate up for: a transaction can be recorded in a currency
+                        // other than the security's, a fee or tax in a third
+                        for (var pair : trade.getTransactions())
+                            ConvertedCurrencies.addFrom(pair.getTransaction(), params.currency(), currencies);
                     }
                 }
             }

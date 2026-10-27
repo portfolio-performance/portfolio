@@ -18,6 +18,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -246,6 +247,65 @@ public class McpToolCallTest
         assertThat(instruments, containsString("pp_get_instrument"));
         assertThat(instruments, containsString("ask the user which part of the portfolio they mean"));
         assertThat(instruments, containsString("TRUNCATED"));
+    }
+
+    /**
+     * The cap applied by the endpoint itself, on the one report that cannot be
+     * narrowed: `pp_get_overall_performance` has no metric groups to drop, so the
+     * advice is the only thing left worth keeping, and it is what tells a model to
+     * answer from the fragment rather than guess the rest of the reconciliation.
+     */
+    @Test
+    public void testTheAdviceForARouteThatCannotBeNarrowedSurvivesTheCap()
+    {
+        var tool = McpTools.byName("pp_get_overall_performance").orElseThrow();
+
+        // a payload no fixture produces on its own: an oversized report is what
+        // this path exists for, and only a synthetic one reaches the real limit
+        var payload = new JsonObject();
+        payload.addProperty("openingDate", "2024-01-01");
+        payload.addProperty("closingDate", "2024-12-31");
+        payload.addProperty("reportingCurrency", "EUR");
+
+        var warnings = new JsonArray();
+        for (int ii = 0; ii < 600; ii++)
+        {
+            var warning = new JsonObject();
+            warning.addProperty("currency", "X" + ii);
+            warning.addProperty("reportingCurrency", "EUR");
+            warning.addProperty("reason", "no exchange rate series for this pair, converted at 1:1 " + ii);
+            warnings.add(warning);
+        }
+        payload.add("fxWarnings", warnings);
+
+        var arguments = JsonParser.parseString("{\"file\":\"sample\",\"openingDate\":\"2024-01-01\"}")
+                        .getAsJsonObject();
+
+        var fitted = McpEndpoint.fit(router, tool, arguments, payload, McpEndpoint.MAX_RESULT_CHARS);
+
+        assertThat(fitted.length(), is(lessThanOrEqualTo(McpEndpoint.MAX_RESULT_CHARS)));
+        assertThat(fitted, containsString("TRUNCATED"));
+        assertThat(fitted, containsString("cannot be narrowed further"));
+    }
+
+    /**
+     * An optional argument that is explicitly null says "no preference", which is
+     * what omitting it says. Rejecting it would refuse questions the API can
+     * answer, and a model writes null for that often enough to matter.
+     */
+    @Test
+    public void testAnOptionalArgumentExplicitlyNullIsAccepted()
+    {
+        var holdings = call("pp_list_holdings",
+                        "{\"file\":\"sample\",\"date\":null,\"reportingCurrency\":null}");
+        assertThat(isError(holdings), is(false));
+
+        var trades = call("pp_list_trades", "{\"file\":\"sample\",\"status\":null,\"grouping\":null}");
+        assertThat(isError(trades), is(false));
+
+        var performance = call("pp_get_overall_performance",
+                        "{\"file\":\"sample\",\"openingDate\":\"2024-01-01\",\"closingDate\":null,\"costMethod\":null}");
+        assertThat(isError(performance), is(false));
     }
 
     /**

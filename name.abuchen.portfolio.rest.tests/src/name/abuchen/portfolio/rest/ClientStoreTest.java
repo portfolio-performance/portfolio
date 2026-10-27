@@ -111,7 +111,8 @@ public class ClientStoreTest
         var store = newStore();
         var token = store.addSessionClient("Claude Code");
 
-        store.revoke(store.listClients().get(0).id());
+        // nothing persistent to remove, so this is a complete revocation
+        assertThat(store.revoke(store.listClients().get(0).id()), is(true));
 
         assertThat(store.authenticate(token).isPresent(), is(false));
     }
@@ -181,6 +182,49 @@ public class ClientStoreTest
         {
             // expected: nothing left after sanitization
         }
+        assertThat(store.listClients(), hasSize(0));
+    }
+
+    /**
+     * A client file that cannot be written makes this token one that outlives
+     * nothing: it works now and disappears at the next restart, exactly like a
+     * session client. Saying so is what lets the UI call it session-only instead
+     * of presenting it as a permanent client that is silently not on disk.
+     */
+    @Test
+    public void testUnwritableClientFileMarksTheTokenAsSessionOnly() throws Exception
+    {
+        Files.createDirectories(dir().resolve("api-clients.json")); // a directory where a file belongs
+
+        var store = newStore();
+        var token = store.addPersistentClient("Claude Code");
+
+        assertThat(store.authenticate(token).isPresent(), is(true));
+        assertThat(store.listClients().get(0).session(), is(true));
+
+        // revoking it is complete, because nothing was ever written
+        assertThat(store.revoke(store.listClients().get(0).id()), is(true));
+        assertThat(store.authenticate(token).isPresent(), is(false));
+    }
+
+    /**
+     * A revocation whose write failed is not a completed one. The client is gone
+     * for this session, but the file still holds the token, so it authenticates
+     * again after a restart - and the UI has to be able to tell the user that.
+     */
+    @Test
+    public void testRevokeThatCouldNotBeWrittenReportsTheFailure() throws Exception
+    {
+        var store = newStore();
+        var token = store.addPersistentClient("Claude Code");
+        var id = store.listClients().get(0).id();
+        assertThat(store.listClients().get(0).session(), is(false));
+
+        Files.delete(dir().resolve("api-clients.json"));
+        Files.createDirectories(dir().resolve("api-clients.json"));
+
+        assertThat(store.revoke(id), is(false));
+        assertThat(store.authenticate(token).isPresent(), is(false));
         assertThat(store.listClients(), hasSize(0));
     }
 

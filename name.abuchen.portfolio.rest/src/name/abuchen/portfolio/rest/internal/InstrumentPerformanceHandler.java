@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -63,7 +64,8 @@ public final class InstrumentPerformanceHandler
     }
 
     /**
-     * The currencies this report converted: the instruments it is about. The
+     * The currencies this report converted: the instruments it is about, plus the
+     * currencies their transactions and fees were actually converted from. The
      * collection covers every instrument the interval touched and the item route
      * exactly one, so neither names a currency whose amounts never reached the
      * response - which the file's currency list would, since it includes cash
@@ -71,29 +73,77 @@ public final class InstrumentPerformanceHandler
      */
     private static List<String> currenciesOf(JsonObject report, Client client)
     {
-        var currencyByUuid = new HashMap<String, String>();
+        var termCurrency = report.get("reportingCurrency") != null //$NON-NLS-1$
+                        ? report.get("reportingCurrency").getAsString()
+                        : null;
+        var opening = report.get("openingDate") != null ? LocalDate.parse(report.get("openingDate").getAsString()) : null; //$NON-NLS-1$
+        var closing = report.get("closingDate") != null ? LocalDate.parse(report.get("closingDate").getAsString()) : null; //$NON-NLS-1$
+
+        var securityByUuid = new HashMap<String, Security>();
         for (var security : client.getSecurities())
-            currencyByUuid.put(security.getUUID(), security.getCurrencyCode());
+            securityByUuid.put(security.getUUID(), security);
 
         var currencies = new ArrayList<String>();
+        var uuids = new HashSet<String>();
 
         if (report.has("items") && report.get("items").isJsonArray()) //$NON-NLS-1$
         {
             for (JsonElement item : report.get("items").getAsJsonArray()) //$NON-NLS-1$
-                currencies.add(currencyOf(item, currencyByUuid));
+            {
+                var currency = currencyOf(item, securityByUuid);
+                currencies.add(currency);
+
+                if (currency != null)
+                    uuids.add(securityUuidOf(item, securityByUuid));
+            }
         }
         else if (report.has("uuid")) //$NON-NLS-1$
-            currencies.add(currencyByUuid.get(report.get("uuid").getAsString())); //$NON-NLS-1$
+        {
+            var uuid = report.get("uuid").getAsString(); //$NON-NLS-1$
+            var security = securityByUuid.get(uuid);
+            currencies.add(security != null ? security.getCurrencyCode() : null);
+            if (security != null)
+                uuids.add(uuid);
+        }
+
+        // a transaction may be recorded in a currency other than the security's,
+        // and a fee or a tax in a third; the snapshot converted those amounts
+        // inside the interval, so only transactions of that interval are counted
+        for (var portfolio : client.getPortfolios())
+        {
+            for (var transaction : portfolio.getTransactions())
+            {
+                if (!uuids.contains(transaction.getSecurity().getUUID())
+                        || !withinInterval(transaction.getDateTime().toLocalDate(), opening, closing))
+                    continue;
+
+                ConvertedCurrencies.addFrom(transaction, termCurrency, currencies);
+            }
+        }
 
         return currencies;
     }
 
-    private static String currencyOf(JsonElement item, Map<String, String> currencyByUuid)
+    /** whether a transaction belongs to the interval the report was computed over */
+    private static boolean withinInterval(LocalDate date, LocalDate opening, LocalDate closing)
+    {
+        return opening == null || closing == null || (!date.isBefore(opening) && !date.isAfter(closing));
+    }
+
+    private static String securityUuidOf(JsonElement item, Map<String, Security> securityByUuid)
+    {
+        var uuid = item.getAsJsonObject().get("uuid").getAsString(); //$NON-NLS-1$
+        var security = securityByUuid.get(uuid);
+        return security != null ? security.getUUID() : null;
+    }
+
+    private static String currencyOf(JsonElement item, Map<String, Security> securityByUuid)
     {
         if (!item.isJsonObject() || !item.getAsJsonObject().has("uuid")) //$NON-NLS-1$
             return null;
 
-        return currencyByUuid.get(item.getAsJsonObject().get("uuid").getAsString()); //$NON-NLS-1$
+        var security = securityByUuid.get(item.getAsJsonObject().get("uuid").getAsString()); //$NON-NLS-1$
+        return security != null ? security.getCurrencyCode() : null;
     }
 
     /* package */ static JsonElement list(Client client, Function<String, CurrencyConverter> converters,

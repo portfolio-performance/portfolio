@@ -154,6 +154,16 @@ public final class McpExplain
                                 + "a dialog, or a large file. Try again after a moment; if it keeps failing, say so "
                                 + "rather than retrying in a loop.";
 
+            case "ui-request-underway":
+                // The request was already handed to the UI thread when the wait
+                // expired. Whether it ran is not knowable from here, and sending a
+                // write again would apply it twice, so this must not read as a
+                // refusal that was cleanly rolled back.
+                return "Portfolio Performance had already taken this request onto its UI thread when the bounded "
+                                + "wait expired. It may have been executed anyway - do not send the same call again. "
+                                + "Read the file back with the tool that lists or describes what this call would have "
+                                + "changed, and tell the user which state it is in.";
+
             case "request-too-large":
                 return ("That edit was too large for Portfolio Performance to accept. "
                                 + (problem.getDetail() != null ? problem.getDetail() : "")).trim();
@@ -207,9 +217,10 @@ public final class McpExplain
      */
     private static String hints(ApiException problem)
     {
-        var retryable = problem.getStatus() == 423 || problem.getStatus() == 429 || problem.getStatus() == 503
-                        || "file-not-open".equals(problem.getType()) //$NON-NLS-1$
-                        || "ui-busy".equals(problem.getType()); //$NON-NLS-1$
+        var retryable = !"ui-request-underway".equals(problem.getType()) //$NON-NLS-1$
+                        && (problem.getStatus() == 423 || problem.getStatus() == 429 || problem.getStatus() == 503
+                                || "file-not-open".equals(problem.getType()) //$NON-NLS-1$
+                                || "ui-busy".equals(problem.getType())); //$NON-NLS-1$
 
         var trailer = "\n\nretryable: " + (retryable ? "yes" : "no") + " · reasonCode: " + problem.getType(); //$NON-NLS-1$
         var header = problem.getHeaders().get("Retry-After"); //$NON-NLS-1$

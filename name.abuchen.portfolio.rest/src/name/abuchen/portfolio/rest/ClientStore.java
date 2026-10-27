@@ -49,7 +49,8 @@ public class ClientStore
         private final String tokenHash;
         private final String name;
         private final Instant created;
-        private final boolean session;
+        /** mutable: an entry that could not be written is a session client after all */
+        private boolean session;
         private Instant lastUsed;
         private Instant lastUsedPersisted;
 
@@ -134,13 +135,19 @@ public class ClientStore
         random.nextBytes(bytes);
         var token = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
 
-        entries.add(new Entry(UUID.randomUUID().toString(), hash(token), name, clock.get(), null, session));
-        // persisted before the token is handed out: it exists exactly once, and a
-        // caller that got it must not be told it will outlive the restart when the
-        // file was not written
+        var entry = new Entry(UUID.randomUUID().toString(), hash(token), name, clock.get(), null, session);
+        entries.add(entry);
+
+        // persisted before the token is handed out: it exists exactly once. A write
+        // that failed cannot outlive this run, so the entry is recorded as a session
+        // client - the UI says session-only rather than implying a token that
+        // survives a restart, which is the one claim it cannot make here.
         if (!session && !save())
+        {
+            entry.session = true;
             PortfolioLog.warning("Client \"" + name + "\" was added but not persisted; its token dies with " //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                     + "this application run");
+        }
         return token;
     }
 
@@ -173,7 +180,13 @@ public class ClientStore
         return entries.stream().map(Entry::toApiClient).toList();
     }
 
-    public synchronized void revoke(String id)
+    /**
+     * Removes a client, answering whether the removal reached the file. False
+     * means the entry is gone from memory while the file still holds its token
+     * hash, so the token authenticates again after a restart - the caller has to
+     * say that rather than presenting the client as revoked.
+     */
+    public synchronized boolean revoke(String id)
     {
         var removedPersistent = false;
         for (var iterator = entries.iterator(); iterator.hasNext();)
@@ -185,8 +198,17 @@ public class ClientStore
                 iterator.remove();
             }
         }
-        if (removedPersistent)
-            save();
+
+        if (!removedPersistent)
+            return true;
+
+        if (!save())
+        {
+            PortfolioLog.warning("A revoked client is gone for this run only; its token still authenticates after a " //$NON-NLS-1$ //$NON-NLS-2$
+                    + "restart because the client file could not be written");
+            return false;
+        }
+        return true;
     }
 
     /** strips control characters and surrounding whitespace; null becomes empty */

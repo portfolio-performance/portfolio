@@ -2,7 +2,9 @@ package name.abuchen.portfolio.rest.testsupport;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
@@ -52,10 +54,36 @@ public class FakeHost implements HostApplication
     private int syncExecDepth = 0;
     private boolean accessedOutsideUIThread = false;
     private final List<Object> syncExecResults = new ArrayList<>();
+    private CountDownLatch syncExecGate;
+    private int callablesRun;
+    private Throwable callableFailure;
 
     public FakeHost(List<OpenFile> openFiles)
     {
         this.openFiles = openFiles;
+    }
+
+    /**
+     * Makes {@link #syncExec} wait on a latch before running anything, which is
+     * how a test shows a UI thread busy with something else. Releasing the latch
+     * stands for the UI thread getting round to the queued callable after the
+     * client already gave up.
+     */
+    public void blockSyncExecUntil(CountDownLatch gate)
+    {
+        this.syncExecGate = gate;
+    }
+
+    /** how many callables actually ran on the UI thread */
+    public int callablesRun()
+    {
+        return callablesRun;
+    }
+
+    /** the first exception a syncExec callable raised, if any */
+    public Optional<Throwable> callableFailure()
+    {
+        return Optional.ofNullable(callableFailure);
     }
 
     public void setUserEditing(boolean userEditing)
@@ -98,9 +126,24 @@ public class FakeHost implements HostApplication
 
         try
         {
-            T result = callable.call();
-            syncExecResults.add(result);
-            return result;
+            var gate = syncExecGate;
+            if (gate != null)
+                gate.await();
+
+            callablesRun++;
+
+            try
+            {
+                T result = callable.call();
+                syncExecResults.add(result);
+                return result;
+            }
+            catch (Throwable t)
+            {
+                if (callableFailure == null)
+                    callableFailure = t;
+                throw t;
+            }
         }
         finally
         {

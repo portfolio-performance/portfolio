@@ -205,8 +205,10 @@ save.
 | 423 | `user-interaction` | a dialog is open in the app — **retry**, see `Retry-After` |
 | 429 | `pairing-pending` | another pairing request awaits the user — retry after `Retry-After` |
 | 429 | `pairing-cooldown` | a pairing request was declined — retry after `Retry-After` |
+| 503 | `ui-busy` | the app's UI thread was never given the request — **retry**, see `Retry-After` |
+| 503 | `ui-request-underway` | the request was already handed to the UI thread — **do not retry**, read the state back |
 
-Two of these regularly surprise clients:
+Three of these regularly surprise clients:
 
 **404 does not mean "does not exist."** A file that exists but is not enabled answers exactly like a
 file that does not exist. That is deliberate: the token must not let a client enumerate files the
@@ -215,6 +217,14 @@ user did not share.
 **423 is normal and temporary.** While the user has a modal dialog open, writes are rejected rather
 than silently clobbered by whatever the dialog writes back on OK. Reads still work. Respect
 `Retry-After` and try again.
+
+**503 says two different things.** The API hands every request that touches the model to the UI
+thread and waits for it with a deadline. `ui-busy` means the UI thread never got the request: it is
+refused, nothing changed, and `Retry-After` is safe to honour. `ui-request-underway` means the
+request had already been handed over when the wait expired — it may still be executed, so there is
+no `Retry-After` and sending it again would apply the same change twice. Read the state back with
+the tool that lists or describes what the call would have changed, and report what is actually
+there.
 
 ## Computed collections
 

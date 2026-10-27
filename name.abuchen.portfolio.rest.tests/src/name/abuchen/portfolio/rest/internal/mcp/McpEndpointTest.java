@@ -322,6 +322,28 @@ public class McpEndpointTest
         var reply = body(response).getAsJsonObject();
         assertThat(reply.getAsJsonObject("error").get("code").getAsInt(), is(-32600));
         assertThat(reply.getAsJsonObject("error").get("message").getAsString(), containsString("not \"result\""));
+        // a batch is only readable if every refusal names the message it belongs to
+        assertThat(reply.get("id").getAsInt(), is(7));
+    }
+
+    /**
+     * JSON-RPC ids are strings or numbers. An object, an array or a boolean cannot
+     * be echoed as one, and a reply that carries it back is a reply no client can
+     * match to its request.
+     */
+    @Test
+    public void testAnIdThatIsNotAStringOrNumberIsInvalid() throws Exception
+    {
+        for (var id : List.of("{}", "[]", "true", "[1,2]", "{\"a\":1}"))
+        {
+            var response = rpc(null, "{\"jsonrpc\":\"2.0\",\"id\":" + id + ",\"method\":\"ping\"}");
+
+            var reply = body(response).getAsJsonObject();
+            assertThat(reply.getAsJsonObject("error").get("code").getAsInt(), is(-32600));
+            assertThat(reply.getAsJsonObject("error").get("message").getAsString(),
+                            containsString("\"id\" must be a string or a number"));
+            assertThat(reply.get("id").isJsonNull(), is(true));
+        }
     }
 
     /** a notification omits `id`; sending `null` is neither, and answering it would echo nothing */
@@ -406,6 +428,27 @@ public class McpEndpointTest
 
         var rejection = RejectedConnections.last().orElseThrow();
         assertThat(rejection.tokenPresented(), is(false));
+        assertThat(rejection.reason(), is(RejectedConnections.Reason.NO_HEADER));
+    }
+
+    /**
+     * A header that carries some other scheme is a different fault from no header,
+     * and the preference page has to say which - "you forgot the header" is a
+     * misdiagnosis of a connector that sent one.
+     */
+    @Test
+    public void testAToolCallWithTheWrongSchemeIsRecordedAsSuch() throws Exception
+    {
+        var response = send(HttpRequest.newBuilder(uri()).header("Authorization", "Token abc")
+                        .POST(HttpRequest.BodyPublishers.ofString(call("pp_list_files", "{}"))));
+
+        var rejection = RejectedConnections.last().orElseThrow();
+        assertThat(rejection.path(), is("/mcp"));
+        assertThat(rejection.tokenPresented(), is(false));
+        assertThat(rejection.reason(), is(RejectedConnections.Reason.NO_BEARER_SCHEME));
+
+        assertThat(text(body(response).getAsJsonObject().getAsJsonObject("result")),
+                        containsString("does not carry a bearer token"));
     }
 
     /**

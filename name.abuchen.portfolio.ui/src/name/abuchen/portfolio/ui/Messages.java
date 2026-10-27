@@ -1321,6 +1321,7 @@ public class Messages extends NLS
     public static String PrefMsgRestApiRejectedInvalidToken;
     public static String PrefMsgRestApiRejectedNoBearerScheme;
     public static String PrefMsgRestApiRejectedNoToken;
+    public static String PrefMsgRestApiRevokeNotPersisted;
     public static String PrefMsgRestApiTokenShownOnce;
     public static String PrefMsgRestApiUnsavedFiles;
     public static String PrefMyDividends24APIKey;

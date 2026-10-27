@@ -391,7 +391,8 @@ public final class McpEnvelope
      * what survives is still parseable JSON rather than a fragment that ends
      * mid-value. Where no whole item fits, the marker says plainly that the
      * fragment is not parseable, which is the one claim a model cannot recover
-     * from on its own. Never larger than {@code maxChars}.
+     * from on its own. Never larger than {@code maxChars} once a marker fits;
+     * below that, the marker alone is what comes back.
      */
     public static String cap(String payload, int maxChars)
     {
@@ -402,7 +403,14 @@ public final class McpEnvelope
         var cut = lastCompleteItem(payload, budget);
 
         if (cut.index() <= 0)
+        {
+            if (maxChars < PARTIAL_CUT_MARKER.length())
+                // too small to say why the fragment is broken; the shortest marker
+                // is the only thing that can still be read as a truncation
+                return NOTHING_FITS;
+
             return cutAtCharacterBoundary(payload, budget) + PARTIAL_CUT_MARKER;
+        }
 
         return payload.substring(0, cut.index()) + cut.closings() + ITEM_CUT_MARKER;
     }
@@ -417,6 +425,12 @@ public final class McpEnvelope
      * brackets that close the containers still open there. Scans the compact JSON
      * as text: a comma ends an item, a closing bracket ends a container, and
      * neither counts inside a string.
+     * <p/>
+     * A boundary counts only where the innermost open container is an array. A
+     * comma between two fields of one object, or the closing brace of an object
+     * nested inside an item, would produce parseable JSON that ends mid-item - and
+     * a marker claiming "after the last complete item" on a half-written item is
+     * the one thing this function must not say.
      */
     private static Cut lastCompleteItem(String json, int budget)
     {
@@ -451,11 +465,14 @@ public final class McpEnvelope
             else if (character == '}' || character == ']')
             {
                 open.pop();
-                var candidate = new Cut(ii + 1, closingsOf(open));
-                if (candidate.index() + candidate.closings().length() <= budget)
-                    cut = candidate;
+                if (endsArrayElement(open))
+                {
+                    var candidate = new Cut(ii + 1, closingsOf(open));
+                    if (candidate.index() + candidate.closings().length() <= budget)
+                        cut = candidate;
+                }
             }
-            else if (character == ',')
+            else if (character == ',' && endsArrayElement(open))
             {
                 var candidate = new Cut(ii, closingsOf(open));
                 if (candidate.index() + candidate.closings().length() <= budget)
@@ -467,6 +484,12 @@ public final class McpEnvelope
         }
 
         return cut;
+    }
+
+    /** whether the containers still open end in an array, which is where an item boundary is */
+    private static boolean endsArrayElement(ArrayDeque<Character> open)
+    {
+        return !open.isEmpty() && open.peek() == '[';
     }
 
     /** the brackets that close the containers still open, innermost first */
