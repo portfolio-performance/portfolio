@@ -154,6 +154,9 @@ events — is read-only in v1.
 Any field that is unknown or not writable is a **422, never a silent no-op**: a typo must not look
 like success. All violations come back at once so you can fix them in one round-trip.
 
+A patch that only restates values the instrument already has changes nothing and does not mark the
+file dirty. The response header `X-Portfolio-Changed: true|false` says which of the two happened.
+
 ### `DELETE /v1/files/{file}/instruments/{uuid}`
 
 `204 No Content` on success. **409** if transactions or investment plans reference the instrument —

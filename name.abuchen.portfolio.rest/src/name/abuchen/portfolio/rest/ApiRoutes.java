@@ -98,6 +98,13 @@ public final class ApiRoutes
      */
     /* package */ static final int CALCULATION_SLOTS = 2;
 
+    /**
+     * On a PATCH: {@code true} when a stored value changed and the file now has
+     * unsaved changes, {@code false} when the patch only restated what was
+     * already there.
+     */
+    public static final String CHANGED_HEADER = "X-Portfolio-Changed"; //$NON-NLS-1$
+
     private ApiRoutes()
     {
     }
@@ -149,7 +156,10 @@ public final class ApiRoutes
                             var result = SecuritiesHandler.patch(file.getClient(), req.pathParam("uuid"), //$NON-NLS-1$
                                             parseObject(req));
                             InstrumentChangeLog.record(file.getLabel(), result.instrumentName(), result.changes());
-                            return Response.json(200, result.entity());
+                            // whether a stored value changed - and with it whether the
+                            // file now has unsaved changes - which the body cannot say
+                            return Response.json(200, result.entity()).withHeader(CHANGED_HEADER,
+                                            String.valueOf(!result.changes().isEmpty()));
                         }));
         router.add("DELETE", "/v1/files/{file}/instruments/{uuid}", write(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$
                         (file, req) -> {

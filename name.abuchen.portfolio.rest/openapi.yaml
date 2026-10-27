@@ -518,6 +518,10 @@ paths:
         Any field that is unknown or not writable is rejected `422`, never a silent
         no-op — a typo must not look like success. All violations are reported at
         once so they can be fixed in one round-trip.
+
+        A patch that only restates values the instrument already has changes
+        nothing and does not mark the file dirty; the `X-Portfolio-Changed`
+        response header says which of the two happened.
       requestBody:
         required: true
         content:
@@ -533,6 +537,15 @@ paths:
       responses:
         "200":
           description: The updated instrument
+          headers:
+            X-Portfolio-Changed:
+              description: |
+                `true` when a stored value changed and the file now has unsaved
+                changes; `false` when the patch named only values the instrument
+                already had, so nothing changed and nothing needs saving.
+              schema:
+                type: string
+                enum: ["true", "false"]
           content:
             application/json:
               schema:
@@ -866,7 +879,17 @@ paths:
         closing value:
         `openingValue + unrealizedCapitalGains + realizedCapitalGains + income +
         fees + taxes + currencyGains + netDeposits = closingValue`. `fees` and
-        `taxes` are therefore negative. `netDeposits` is the external capital
+        `taxes` are therefore negative. The identity holds to the cent when no
+        currency conversion is involved; with foreign currencies the terms are
+        converted at the dates they happened and the opening and closing values
+        at the interval's ends, which can leave a small residual — the
+        application's own calculation shows the same figures.
+
+        Capital gains are stated before fees and taxes, which stand as terms of
+        their own — the same as the per-instrument report with
+        `taxesAndFees=excluded`, and the only way the sum can add up. `taxes` is
+        what was booked in the period (withholding, advance lump sums, taxes on
+        sales), not a tax computed from the period's gains, so it can exceed them. `netDeposits` is the external capital
         flow (deposits less removals) over the period; it is *not* part of the
         performance-driven change, but is required for the value reconciliation.
 
@@ -983,6 +1006,11 @@ paths:
         `risk` together costs no more than asking for either, as they share one
         series. A request for all groups over every instrument of a large file
         with a long interval is slow; there is no pagination.
+
+        **Matching the aggregate report.** Capital gains match the aggregate
+        endpoint with `taxesAndFees=excluded`, its fees and taxes being separate
+        terms there. The rows still do not add up to it: cash accounts, account
+        fees and fees on transfers belong to no instrument.
 
         **Signs.** Every money field here is a magnitude: `fees` is the sum of
         the fees charged and is positive. Only fields that are terms of a
@@ -2162,7 +2190,11 @@ components:
           description: The holding's value in the reporting currency.
         weight:
           type: number
-          description: The holding's fraction (0–1) of total assets — not a percentage.
+          description: |
+            The holding's fraction of total assets — not a percentage. A cash
+            account can hold a negative balance (a loan, a credit card); its
+            weight is then negative and the others are divided by the smaller
+            net total, so a weight can exceed 1. The weights always add up to 1.
         localValuation:
           allOf:
             - $ref: "#/components/schemas/MonetaryValue"
@@ -2333,7 +2365,8 @@ components:
             known prices. When the two dates differ the report mixes two
             periods, and neither return is a forecast. When `openingDate` is
             today or later nothing could be measured: every return and every
-            risk figure is `null`, `longestDrawdownDays` included.
+            risk ratio is `null`; `longestDrawdownDays`, which the 1.0 contract
+            keeps non-null, is `0`.
         reportingCurrency:
           type: string
           description: |
@@ -2560,7 +2593,7 @@ components:
             (0.231 is a 23.1 % drawdown), matching the application's own sign
             convention rather than the negative one charts often use.
         longestDrawdownDays:
-          type: [integer, "null"]
+          type: integer
           description: |
             The length in days of the longest stretch without a new high: from
             a peak to the next strictly higher value, or to the end of the
@@ -2568,8 +2601,9 @@ components:
             between data points, it is never shorter than the sampling interval
             — a period with no drawdown at all still reports 1. This is **not**
             the duration of the deepest drawdown, which is a different and
-            shorter interval — hence the name. `null` when `openingDate` is
-            today or later: nothing could be measured.
+            shorter interval — hence the name. `0` when `openingDate` is today
+            or later: nothing could be measured, and the 1.0 contract keeps this
+            field non-null — the `null` ratios next to it say so.
 
     FieldError:
       type: object

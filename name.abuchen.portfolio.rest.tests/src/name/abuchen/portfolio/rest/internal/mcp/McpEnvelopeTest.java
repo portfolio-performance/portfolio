@@ -29,6 +29,7 @@ public class McpEnvelopeTest
     private static final McpTool INSTRUMENTS = McpTools.byName("pp_list_instruments").orElseThrow();
     private static final McpTool UPDATE = McpTools.byName("pp_update_instrument").orElseThrow();
     private static final McpTool PERFORMANCE = McpTools.byName("pp_list_instrument_performance").orElseThrow();
+    private static final McpTool OVERALL = McpTools.byName("pp_get_overall_performance").orElseThrow();
 
     /** the single most consequential misreading available */
     @Test
@@ -450,6 +451,69 @@ public class McpEnvelopeTest
 
         // without a narrowing there is nothing already dropped to name
         assertThat(McpEnvelope.oversizeAdvice(PERFORMANCE), not(containsString("already re-requested")));
+    }
+
+    /**
+     * Reported from a live test: a loan held as a cash account made a security
+     * weigh 97 times the file and a time-weighted return fall below -100%, and
+     * nothing said why. Small negative balances that distort nothing stay quiet.
+     */
+    @Test
+    public void testANegativeBaseIsNamedBeforeTheFigures()
+    {
+        var holdings = JsonParser.parseString("{\"totalAssets\": {\"value\": 1608.4, \"currency\": \"EUR\"}, "
+                        + "\"items\": [{\"type\": \"instrument\", "
+                        + "\"valuation\": {\"value\": 156000, \"currency\": \"EUR\"}, "
+                        + "\"weight\": 96.99}, {\"type\": \"cash-account\", \"valuation\": {\"value\": -154391.6, "
+                        + "\"currency\": \"EUR\"}, \"weight\": -95.99}]}");
+        var rendered = McpEnvelope.render(HOLDINGS, new JsonObject(), holdings, List.of());
+        assertThat(rendered, containsString("**Negative holdings distort the weights.**"));
+        assertThat(rendered.indexOf("distort the weights"), lessThan(rendered.indexOf("\"totalAssets\"")));
+
+        var harmless = JsonParser.parseString("{\"totalAssets\": {\"value\": 1000, \"currency\": \"EUR\"}, "
+                        + "\"items\": [{\"type\": \"instrument\", "
+                        + "\"valuation\": {\"value\": 1001.73, \"currency\": \"EUR\"}, "
+                        + "\"weight\": 0.99}, {\"type\": \"cash-account\", \"valuation\": {\"value\": -1.73, "
+                        + "\"currency\": \"EUR\"}, \"weight\": -0.0017}]}");
+        assertThat(McpEnvelope.render(HOLDINGS, new JsonObject(), harmless, List.of()),
+                        not(containsString("distort the weights")));
+
+        var performance = JsonParser.parseString("{\"ttwror\": -1.196, \"breakdown\": {"
+                        + money("openingValue", "-40027.03") + "," + money("unrealizedCapitalGains", "24678.73") + ","
+                        + money("realizedCapitalGains", "-3064.5") + "," + money("income", "-8330.14") + ","
+                        + money("fees", "-294.26") + "," + money("taxes", "-512.17") + "," + money("currencyGains", "0")
+                        + "," + money("netDeposits", "29337.93") + "," + money("closingValue", "1788.56") + "}}");
+        assertThat(McpEnvelope.render(OVERALL, new JsonObject(), performance, List.of()),
+                        containsString("value is negative at the start or the end of this period"));
+    }
+
+    /**
+     * Reported from a live test: with foreign currencies the breakdown missed
+     * the closing value by 9.66 EUR, which the application shows the same way.
+     * The gap is named; a reconciliation to the cent says nothing.
+     */
+    @Test
+    public void testABreakdownResidualIsNamed()
+    {
+        var off = JsonParser.parseString("{\"breakdown\": {" + money("openingValue", "172656.77") + ","
+                        + money("unrealizedCapitalGains", "14118.16") + "," + money("realizedCapitalGains", "11076.99")
+                        + "," + money("income", "1142.83") + "," + money("fees", "-934.6") + ","
+                        + money("taxes", "-187.35") + "," + money("currencyGains", "29.93") + ","
+                        + money("netDeposits", "24231.3") + "," + money("closingValue", "222143.69") + "}}");
+        assertThat(McpEnvelope.render(OVERALL, new JsonObject(), off, List.of()),
+                        containsString("**The breakdown misses `closingValue` by 9.66 EUR.**"));
+
+        var exact = JsonParser.parseString("{\"breakdown\": {" + money("openingValue", "100") + ","
+                        + money("unrealizedCapitalGains", "10") + "," + money("realizedCapitalGains", "0") + ","
+                        + money("income", "0") + "," + money("fees", "-1") + "," + money("taxes", "0") + ","
+                        + money("currencyGains", "0") + "," + money("netDeposits", "0") + ","
+                        + money("closingValue", "109") + "}}");
+        assertThat(McpEnvelope.render(OVERALL, new JsonObject(), exact, List.of()), not(containsString("misses")));
+    }
+
+    private static String money(String field, String value)
+    {
+        return "\"" + field + "\": {\"value\": " + value + ", \"currency\": \"EUR\"}";
     }
 
     /**

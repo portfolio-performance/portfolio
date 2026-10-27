@@ -414,7 +414,9 @@ public final class EntityJson
             risk.add("volatility", JsonNull.INSTANCE); //$NON-NLS-1$
             risk.add("semiVolatility", JsonNull.INSTANCE); //$NON-NLS-1$
             risk.add("maxDrawdown", JsonNull.INSTANCE); //$NON-NLS-1$
-            risk.add("longestDrawdownDays", JsonNull.INSTANCE); //$NON-NLS-1$
+            // an integer the 1.0 contract declares non-null - nullable would break
+            // it - so the length of a stretch that was never measured is 0
+            risk.addProperty("longestDrawdownDays", 0); //$NON-NLS-1$
             json.add("risk", risk); //$NON-NLS-1$
         }
         else if (metrics.contains(MetricGroup.RISK))

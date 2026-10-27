@@ -169,6 +169,58 @@ public class PatchSecurityTest
         }
     }
 
+    /**
+     * Reported from a live test: setting a value to what it already was marked
+     * the file dirty, and the user was asked to save a file nothing had changed.
+     */
+    @Test
+    public void testAPatchThatRestatesValuesDoesNotMarkFileDirty()
+    {
+        var client = new Client();
+        var security = new SecurityBuilder().addTo(client);
+        security.setName("Same");
+
+        var dirty = new AtomicBoolean();
+        client.addPropertyChangeListener("dirty", event -> dirty.set(true));
+
+        var result = SecuritiesHandler.patch(client, security.getUUID(), json("{\"name\":\"Same\"}"));
+        assertThat(result.changes().isEmpty(), is(true));
+        assertThat(dirty.get(), is(false));
+    }
+
+    /** the response says whether anything changed, which its body cannot */
+    @Test
+    public void testThePatchResponseSaysWhetherAValueChanged() throws Exception
+    {
+        var client = new Client();
+        var security = new SecurityBuilder().addTo(client);
+        security.setName("Same");
+
+        var node = InstanceScope.INSTANCE.getNode("rest-test-" + UUID.randomUUID());
+        try
+        {
+            var registry = new FileAccessRegistry(node);
+            registry.setEnabled("/tmp/x.portfolio", true);
+            var host = new FakeHost(List.of(new FakeHost.FakeOpenFile("/tmp/x.portfolio", "x", client)));
+            var router = ApiRoutes.create(registry, host,
+                            new PairingService(new ClientStore(Path.of("target", "unused-client-store")), host));
+            var uuid = registry.byPath("/tmp/x.portfolio").orElseThrow().uuid();
+            var match = router.match("PATCH", "/v1/files/" + uuid + "/instruments/" + security.getUUID());
+
+            var restated = match.handler().handle(new Request("PATCH", "irrelevant", match.pathParams(),
+                            "{\"name\":\"Same\"}".getBytes(StandardCharsets.UTF_8)));
+            assertThat(restated.headers().get(ApiRoutes.CHANGED_HEADER), is("false"));
+
+            var changed = match.handler().handle(new Request("PATCH", "irrelevant", match.pathParams(),
+                            "{\"name\":\"Other\"}".getBytes(StandardCharsets.UTF_8)));
+            assertThat(changed.headers().get(ApiRoutes.CHANGED_HEADER), is("true"));
+        }
+        finally
+        {
+            node.removeNode();
+        }
+    }
+
     @Test
     public void testWriteGateReturns423WhileUserEditing() throws Exception
     {

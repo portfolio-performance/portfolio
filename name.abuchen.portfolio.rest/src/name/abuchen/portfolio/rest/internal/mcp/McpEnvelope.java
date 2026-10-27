@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.rest.internal.mcp;
 
+import java.math.BigDecimal;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -100,9 +101,20 @@ public final class McpEnvelope
     public static String render(McpTool tool, JsonObject arguments, JsonElement payload, List<String> droppedMetrics,
                     String advice, int maxChars)
     {
+        return render(tool, arguments, payload, droppedMetrics, advice, maxChars, null);
+    }
+
+    /**
+     * @param changed
+     *            for a write, whether a stored value changed, as the response
+     *            says; null when it does not say
+     */
+    public static String render(McpTool tool, JsonObject arguments, JsonElement payload, List<String> droppedMetrics,
+                    String advice, int maxChars, Boolean changed)
+    {
         var found = scan(payload);
         var guidance = guidanceBefore(found, payload, droppedMetrics);
-        var notes = notesFor(tool, arguments, found);
+        var notes = notesFor(tool, arguments, found, changed);
         if (!notes.isEmpty())
             guidance.add(notes.stream().map(note -> "- " + note).reduce((a, b) -> a + "\n" + b).orElseThrow());
         if (advice != null && !advice.isEmpty())
@@ -175,6 +187,13 @@ public final class McpEnvelope
                             + "anything.");
         }
 
+        // a negative base turns every ratio measured against it upside down
+        negativeBase(payload).ifPresent(sections::add);
+
+        // the breakdown promises a reconciliation; where currency conversion
+        // leaves a gap, the gap is named instead of being left for the sum to hide
+        breakdownResidual(payload).ifPresent(sections::add);
+
         if (!droppedMetrics.isEmpty())
         {
             // "missing" alone reads as zero. These groups were never asked for in
@@ -207,7 +226,7 @@ public final class McpEnvelope
     }
 
     /** guidance that applies to this payload, in the order it should be read */
-    private static List<String> notesFor(McpTool tool, JsonObject arguments, Scan found)
+    private static List<String> notesFor(McpTool tool, JsonObject arguments, Scan found, Boolean changed)
     {
         var notes = new ArrayList<String>();
 
@@ -253,6 +272,12 @@ public final class McpEnvelope
                 notes.add("Nothing changed: this patch named no field the API can write, so the file was **not** "
                         + "marked dirty and there is nothing for the user to save.");
             }
+            else if ("PATCH".equals(tool.method()) && Boolean.FALSE.equals(changed))
+            {
+                // the same for a patch that only restated stored values
+                notes.add("Nothing changed: every value this patch named already had that value, so the file was "
+                        + "**not** marked dirty and there is nothing for the user to save.");
+            }
             else
             {
                 // every time: a lost edit is the worst outcome available here
@@ -286,6 +311,141 @@ public final class McpEnvelope
     }
 
     /** an always-present collection field of a report, empty when it is absent */
+    /**
+     * The section for a holdings statement or a performance report whose base
+     * is not positive - typically a loan held as a cash account. Weights are
+     * divided by total assets and returns are measured against the value, so
+     * neither can be read as usual.
+     */
+    private static Optional<String> negativeBase(JsonElement payload)
+    {
+        if (payload == null || !payload.isJsonObject())
+            return Optional.empty();
+        var report = payload.getAsJsonObject();
+
+        var total = amountOf(report.get("totalAssets"));
+        if (total != null && (total.signum() <= 0 && hasNegativeHolding(report.get("items"))
+                        || hasWeightAboveOne(report.get("items"))))
+        {
+            return Optional.of("**Negative holdings distort the weights.** A loan or a credit card held as a cash "
+                            + "account has a negative value, and every `weight` is divided by the net total of "
+                            + total.toPlainString() + " " + currencyOf(report.get("totalAssets")) + ", so weights can "
+                            + "be negative or larger than 1 and are not shares of the portfolio - they still add up "
+                            + "to 1. Rank and report by value; give a weight only together with this caveat.");
+        }
+
+        var breakdown = report.get("breakdown");
+        if (breakdown == null || !breakdown.isJsonObject())
+            return Optional.empty();
+        var opening = amountOf(breakdown.getAsJsonObject().get("openingValue"));
+        var closing = amountOf(breakdown.getAsJsonObject().get("closingValue"));
+        if ((opening != null && opening.signum() < 0) || (closing != null && closing.signum() < 0))
+        {
+            return Optional.of("**The file's value is negative at the start or the end of this period** (opening "
+                            + plain(opening) + ", closing " + plain(closing) + "), usually because "
+                            + "a loan is held as a cash account. `ttwror` and `irr` are measured against that value, "
+                            + "so they are not meaningful: a time-weighted return below -100% comes from the negative "
+                            + "base, not from losing more than everything. Report the money figures instead.");
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * The section for a performance breakdown whose terms miss the closing
+     * value. Without currency conversion they add up to the cent; with it, the
+     * terms are converted at the dates they happened while the opening and
+     * closing values are converted at the ends of the interval, and the
+     * application's own calculation leaves the same gap.
+     */
+    private static Optional<String> breakdownResidual(JsonElement payload)
+    {
+        if (payload == null || !payload.isJsonObject())
+            return Optional.empty();
+        var breakdown = payload.getAsJsonObject().get("breakdown");
+        if (breakdown == null || !breakdown.isJsonObject())
+            return Optional.empty();
+
+        var terms = breakdown.getAsJsonObject();
+        var closing = amountOf(terms.get("closingValue"));
+        if (closing == null)
+            return Optional.empty();
+
+        var sum = BigDecimal.ZERO;
+        for (var term : List.of("openingValue", "unrealizedCapitalGains", "realizedCapitalGains", "income", "fees",
+                        "taxes", "currencyGains", "netDeposits"))
+        {
+            var amount = amountOf(terms.get(term));
+            if (amount == null)
+                return Optional.empty();
+            sum = sum.add(amount);
+        }
+
+        var residual = closing.subtract(sum);
+        if (residual.abs().compareTo(new BigDecimal("0.01")) <= 0)
+            return Optional.empty();
+
+        return Optional.of("**The breakdown misses `closingValue` by " + residual.toPlainString() + " "
+                        + currencyOf(terms.get("closingValue")) + ".** The terms are converted at the dates they "
+                        + "happened, the opening and closing values at the ends of the interval, and Portfolio "
+                        + "Performance's own calculation shows the same gap. Name it as a currency-conversion residual "
+                        + "rather than presenting the terms as an exact reconciliation.");
+    }
+
+    /** whether a holdings list has a line valued below zero */
+    private static boolean hasNegativeHolding(JsonElement items)
+    {
+        if (items == null || !items.isJsonArray())
+            return false;
+        for (var item : items.getAsJsonArray())
+        {
+            if (!item.isJsonObject())
+                continue;
+            var value = amountOf(item.getAsJsonObject().get("valuation"));
+            if (value != null && value.signum() < 0)
+                return true;
+        }
+        return false;
+    }
+
+    /** whether a line outweighs the whole file, which only a negative line elsewhere allows */
+    private static boolean hasWeightAboveOne(JsonElement items)
+    {
+        if (items == null || !items.isJsonArray())
+            return false;
+        for (var item : items.getAsJsonArray())
+        {
+            if (!item.isJsonObject())
+                continue;
+            var weight = item.getAsJsonObject().get("weight");
+            if (weight != null && weight.isJsonPrimitive() && weight.getAsJsonPrimitive().isNumber()
+                            && weight.getAsDouble() > 1)
+                return true;
+        }
+        return false;
+    }
+
+    /** the value of a monetary object, or null when it is not one */
+    private static BigDecimal amountOf(JsonElement money)
+    {
+        if (money == null || !money.isJsonObject())
+            return null;
+        var value = money.getAsJsonObject().get("value");
+        return value != null && value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber()
+                        ? value.getAsBigDecimal()
+                        : null;
+    }
+
+    private static String plain(BigDecimal amount)
+    {
+        return amount == null ? "unknown" : amount.toPlainString();
+    }
+
+    private static String currencyOf(JsonElement money)
+    {
+        var currency = money.getAsJsonObject().get("currency");
+        return currency != null && currency.isJsonPrimitive() ? currency.getAsString() : "";
+    }
+
     /** a report period that runs past today, the last day its time-weighted figures reach */
     private record FutureEnd(String openingDate, String closingDate, String today)
     {

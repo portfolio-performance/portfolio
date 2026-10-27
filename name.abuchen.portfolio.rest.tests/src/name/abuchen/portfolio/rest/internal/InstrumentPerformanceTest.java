@@ -267,7 +267,8 @@ public class InstrumentPerformanceTest
         assertThat(row.getAsJsonObject("risk").get("volatility").isJsonNull(), is(true));
         assertThat(row.getAsJsonObject("risk").get("semiVolatility").isJsonNull(), is(true));
         assertThat(row.getAsJsonObject("risk").get("maxDrawdown").isJsonNull(), is(true));
-        assertThat(row.getAsJsonObject("risk").get("longestDrawdownDays").isJsonNull(), is(true));
+        // non-null in the 1.0 contract, so 0 rather than null
+        assertThat(row.getAsJsonObject("risk").get("longestDrawdownDays").getAsInt(), is(0));
         assertThat(row.getAsJsonObject("valuation").get("closingValue").isJsonNull(), is(false));
     }
 

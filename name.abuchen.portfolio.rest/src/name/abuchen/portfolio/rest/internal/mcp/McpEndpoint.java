@@ -21,6 +21,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 
 import name.abuchen.portfolio.PortfolioLog;
+import name.abuchen.portfolio.rest.ApiRoutes;
 import name.abuchen.portfolio.rest.RejectedConnections;
 import name.abuchen.portfolio.rest.RestApiConstants;
 import name.abuchen.portfolio.rest.internal.ApiException;
@@ -388,7 +389,11 @@ public final class McpEndpoint
         try
         {
             var response = McpDispatch.call(router, tool, arguments);
-            return toolResult(fit(router, tool, arguments, payloadOf(response), MAX_RESULT_CHARS));
+            // a PATCH says whether a stored value changed, which decides whether
+            // the user has anything to save
+            var changed = response.headers().get(ApiRoutes.CHANGED_HEADER);
+            return toolResult(fit(router, tool, arguments, payloadOf(response), MAX_RESULT_CHARS,
+                            changed == null ? null : Boolean.valueOf(changed)));
         }
         catch (ApiException e)
         {
@@ -713,7 +718,18 @@ public final class McpEndpoint
     /* package */ static String fit(Router router, McpTool tool, JsonObject arguments, JsonElement payload,
                     int maxChars)
     {
-        var rendered = McpEnvelope.render(tool, arguments, payload, List.of());
+        return fit(router, tool, arguments, payload, maxChars, null);
+    }
+
+    /**
+     * @param changed
+     *            for a write, whether a stored value changed; null when the
+     *            response does not say
+     */
+    /* package */ static String fit(Router router, McpTool tool, JsonObject arguments, JsonElement payload,
+                    int maxChars, Boolean changed)
+    {
+        var rendered = McpEnvelope.render(tool, arguments, payload, List.of(), null, Integer.MAX_VALUE, changed);
         if (rendered.length() <= maxChars)
             return rendered;
 
@@ -750,7 +766,7 @@ public final class McpEndpoint
         }
 
         var advice = McpEnvelope.oversizeAdvice(tool, arguments, payload);
-        return McpEnvelope.render(tool, arguments, payload, List.of(), advice, maxChars);
+        return McpEnvelope.render(tool, arguments, payload, List.of(), advice, maxChars, changed);
     }
 
     /** a 204 carries nothing to render; {@code pp_delete_instrument} is the one */

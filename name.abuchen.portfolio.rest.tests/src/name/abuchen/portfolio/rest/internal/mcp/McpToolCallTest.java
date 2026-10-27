@@ -175,6 +175,19 @@ public class McpToolCallTest
         assertThat(text(result), containsString("not saved to disk"));
     }
 
+    /** a patch that restates the stored value changed nothing, and says so */
+    @Test
+    public void testAPatchThatRestatesAValueSaysNothingChanged()
+    {
+        security.setNote("seen");
+        var result = call("pp_update_instrument",
+                        "{\"file\":\"sample\",\"uuid\":\"" + security.getUUID() + "\",\"note\":\"seen\"}");
+
+        assertThat(isError(result), is(false));
+        assertThat(text(result), containsString("already had that value"));
+        assertThat(text(result), not(containsString("not saved to disk")));
+    }
+
     /** a merge patch clears a field when given null, which absent must not do */
     @Test
     public void testAnExplicitNullClearsAndAnAbsentArgumentDoesNot()
