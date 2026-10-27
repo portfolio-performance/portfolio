@@ -469,6 +469,15 @@ public class McpEnvelopeTest
         assertThat(rendered, containsString("None of them is a forecast"));
         assertThat(rendered.indexOf("ends in the future"), lessThan(rendered.indexOf("\"ttwror\"")));
 
+        // nothing before today in it: said as such, and why the returns are null
+        var ahead = JsonParser.parseString("{\"openingDate\": \"2026-12-01\", \"closingDate\": \"2027-03-01\", "
+                        + "\"timeWeightedUntil\": \"2026-10-27\", \"ttwror\": null}");
+        var aheadRendered = McpEnvelope.render(PERFORMANCE, new JsonObject(), ahead, List.of());
+        assertThat(aheadRendered, containsString("**This period lies entirely after today.** It runs from 2026-12-01 "
+                        + "to 2027-03-01"));
+        assertThat(aheadRendered, containsString("the returns are `null`"));
+        assertThat(aheadRendered, not(containsString("ends in the future")));
+
         var past = JsonParser.parseString(
                         "{\"closingDate\": \"2025-12-31\", \"timeWeightedUntil\": \"2025-12-31\", \"ttwror\": 0.12}");
         assertThat(McpEnvelope.render(PERFORMANCE, new JsonObject(), past, List.of()),

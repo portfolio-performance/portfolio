@@ -209,7 +209,8 @@ public final class EntityJson
             var priceDate = securityPrice.getDate();
             if (priceDate != null)
             {
-                var age = QuoteAge.of(priceDate, valuationDate, TradeCalendarManager.getInstance(security));
+                var age = QuoteAge.asOf(priceDate, valuationDate, LocalDate.now(),
+                                TradeCalendarManager.getInstance(security));
                 json.addProperty("priceStale", age.isStale()); //$NON-NLS-1$
                 json.addProperty("priceAgeDays", age.calendarDays()); //$NON-NLS-1$
                 json.addProperty("priceMissedTradingDays", age.missedTradingDays()); //$NON-NLS-1$
@@ -376,10 +377,14 @@ public final class EntityJson
             json.add("expenses", expenses); //$NON-NLS-1$
         }
 
+        // a period entirely after today has no price movement to measure: the
+        // engines would answer 0, which reads as a measured flat return
+        var measurable = CalcParams.hasAPast(params.openingDate());
+
         if (metrics.contains(MetricGroup.MONEY_WEIGHTED))
         {
             var moneyWeighted = new JsonObject();
-            moneyWeighted.add("irr", ratio(record.getIrr())); //$NON-NLS-1$
+            moneyWeighted.add("irr", ratio(measurable ? record.getIrr() : Double.NaN)); //$NON-NLS-1$
             json.add("moneyWeighted", moneyWeighted); //$NON-NLS-1$
         }
 
@@ -389,12 +394,23 @@ public final class EntityJson
         if (metrics.contains(MetricGroup.TIME_WEIGHTED))
         {
             var timeWeighted = new JsonObject();
-            timeWeighted.add("ttwror", ratio(record.getTrueTimeWeightedRateOfReturn())); //$NON-NLS-1$
-            timeWeighted.add("ttwrorAnnualized", ratio(record.getTrueTimeWeightedRateOfReturnAnnualized())); //$NON-NLS-1$
+            timeWeighted.add("ttwror", //$NON-NLS-1$
+                            ratio(measurable ? record.getTrueTimeWeightedRateOfReturn() : Double.NaN));
+            timeWeighted.add("ttwrorAnnualized", //$NON-NLS-1$
+                            ratio(measurable ? record.getTrueTimeWeightedRateOfReturnAnnualized() : Double.NaN));
             json.add("timeWeighted", timeWeighted); //$NON-NLS-1$
         }
 
-        if (metrics.contains(MetricGroup.RISK))
+        if (metrics.contains(MetricGroup.RISK) && !measurable)
+        {
+            var risk = new JsonObject();
+            risk.add("volatility", JsonNull.INSTANCE); //$NON-NLS-1$
+            risk.add("semiVolatility", JsonNull.INSTANCE); //$NON-NLS-1$
+            risk.add("maxDrawdown", JsonNull.INSTANCE); //$NON-NLS-1$
+            risk.addProperty("longestDrawdownDays", 0); //$NON-NLS-1$
+            json.add("risk", risk); //$NON-NLS-1$
+        }
+        else if (metrics.contains(MetricGroup.RISK))
         {
             var drawdown = record.getDrawdown();
             var volatility = record.getVolatility();

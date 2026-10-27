@@ -75,6 +75,30 @@ public class QuoteAgeTest
         assertThat(age(FRIDAY, FRIDAY.plusDays(3), EVERY_DAY).isStale(), is(true));
     }
 
+    /**
+     * Reported from a live test: valued at a future date, today's quote read as
+     * 66 days old and stale. No quote can be younger than today's, so the age
+     * is measured to today when the valuation date lies after it.
+     */
+    @Test
+    public void testAFutureValuationDateMeasuresToToday()
+    {
+        var today = FRIDAY;
+        var age = QuoteAge.asOf(today, today.plusDays(66), today, GERMANY);
+        assertThat(age.calendarDays(), is(0L));
+        assertThat(age.missedTradingDays(), is(0L));
+        assertThat(age.isStale(), is(false));
+
+        // a quote that is stale today stays stale at a future date - by today's measure
+        var stale = QuoteAge.asOf(FRIDAY.minusDays(14), FRIDAY.plusDays(66), today, GERMANY);
+        assertThat(stale.calendarDays(), is(14L));
+        assertThat(stale.isStale(), is(true));
+
+        // a past valuation date is unaffected
+        assertThat(QuoteAge.asOf(FRIDAY, FRIDAY.plusDays(5), FRIDAY.plusDays(30), GERMANY).missedTradingDays(),
+                        is(2L));
+    }
+
     /** a quote on or after the valuation date is as young as it gets */
     @Test
     public void testAQuoteOnOrAfterTheValuationDateIsFresh()

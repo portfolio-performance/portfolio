@@ -73,6 +73,16 @@ public final class CalcParams
     }
 
     /**
+     * Whether an interval opening on this date has any past to measure. The
+     * time-weighted engine stops at today, and an interval that opens today or
+     * later has no price movement in it: its returns are undefined, not zero.
+     */
+    public static boolean hasAPast(LocalDate openingDate)
+    {
+        return openingDate.isBefore(LocalDate.now());
+    }
+
+    /**
      * The range constraint depends on the two dates having parsed and on nothing
      * else, so it accumulates with the other violations instead of hiding behind
      * them. Skipped when either date is absent or unparseable - the constraint

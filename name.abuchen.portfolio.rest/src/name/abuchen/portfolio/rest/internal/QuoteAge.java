@@ -46,6 +46,18 @@ import name.abuchen.portfolio.util.TradeCalendar;
     {
     }
 
+    /**
+     * The age as of the valuation date, but never later than today. No quote can
+     * be younger than today's, so valued at a future date, today's quote is as
+     * fresh as a quote can be - measured against the future date it would miss
+     * every trading day up to it.
+     */
+    /* package */ static Age asOf(LocalDate quoteDate, LocalDate valuationDate, LocalDate today,
+                    TradeCalendar calendar)
+    {
+        return of(quoteDate, valuationDate.isAfter(today) ? today : valuationDate, calendar);
+    }
+
     /* package */ static Age of(LocalDate quoteDate, LocalDate valuationDate, TradeCalendar calendar)
     {
         var calendarDays = Math.max(0L, ChronoUnit.DAYS.between(quoteDate, valuationDate));

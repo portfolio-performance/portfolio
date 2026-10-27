@@ -2132,17 +2132,20 @@ components:
           type: integer
           description: |
             Instruments only, when `price.date` is known. Calendar days between
-            `price.date` and the response's `date`; never negative, so a quote
-            dated after `date` reads 0 rather than implying the valuation happened
-            before it.
+            `price.date` and the response's `date` — or today, when `date` lies
+            in the future, since no quote can be younger than today's. Never
+            negative, so a quote dated after `date` reads 0 rather than implying
+            the valuation happened before it.
         priceMissedTradingDays:
           type: integer
           description: |
             Instruments only, when `price.date` is known. The trading days strictly
-            between `price.date` and the response's `date`, counted in the
-            instrument's own trade calendar. `date` itself does not count: its
-            close cannot be known before the day is over. On a Sunday, Friday's
-            quote has missed none.
+            between `price.date` and the response's `date` — or today, when
+            `date` lies in the future — counted in the instrument's own trade
+            calendar. That end day itself does not count: its close cannot be
+            known before the day is over. On a Sunday, Friday's quote has missed
+            none, and valued at a future date today's quote has missed none
+            either.
         valuation:
           allOf:
             - $ref: "#/components/schemas/MonetaryValue"
@@ -2190,7 +2193,8 @@ components:
             and include the transactions dated after today, valued at the
             latest known prices — a planned transaction shows its effect there.
             When the two dates differ the report mixes two periods, and neither
-            return is a forecast.
+            return is a forecast. When `openingDate` is today or later nothing
+            could be measured, and `ttwror` and `irr` are `null`.
         reportingCurrency:
           type: string
           description: |
@@ -2210,12 +2214,14 @@ components:
           description: |
             The true time-weighted rate of return over the interval, as a
             fraction (0.0723 is 7.23 %) — not a percentage. `null` when the
-            model cannot define it for the interval.
+            model cannot define it for the interval, and when `openingDate` is
+            today or later: such a period has no price movement to measure.
         irr:
           type: [number, "null"]
           description: |
             The internal (money-weighted) rate of return over the interval, as a
-            fraction — not a percentage. `null` when the model cannot define it
+            fraction — not a percentage. `null` when `openingDate` is today or
+            later, and when the model cannot define it
             for the interval.
         breakdown:
           $ref: "#/components/schemas/PerformanceBreakdown"
@@ -2315,7 +2321,9 @@ components:
             gains, income, expenses and `moneyWeighted` run to `closingDate`
             and include the transactions dated after today, valued at the latest
             known prices. When the two dates differ the report mixes two
-            periods, and neither return is a forecast.
+            periods, and neither return is a forecast. When `openingDate` is
+            today or later nothing could be measured: every return and every
+            risk ratio is `null`, and `longestDrawdownDays` is 0.
         reportingCurrency:
           type: string
           description: |

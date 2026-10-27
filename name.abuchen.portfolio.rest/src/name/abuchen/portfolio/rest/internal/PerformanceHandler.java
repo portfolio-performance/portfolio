@@ -51,9 +51,12 @@ public final class PerformanceHandler
 
         // TTWROR comes from a second engine; IRR is money-weighted, both are
         // independent of the cost method
-        var ttwror = PerformanceIndex.forClient(client, converter, interval, new ArrayList<>())
-                        .getFinalAccumulatedPercentage();
-        var irr = performance.getPerformanceIRR();
+        // a period entirely after today has no price movement to measure: the
+        // engines would answer 0, which reads as a measured flat return
+        var measurable = CalcParams.hasAPast(openingDate);
+        var ttwror = measurable ? PerformanceIndex.forClient(client, converter, interval, new ArrayList<>())
+                        .getFinalAccumulatedPercentage() : Double.NaN;
+        var irr = measurable ? performance.getPerformanceIRR() : Double.NaN;
 
         var report = EntityJson.performance(openingDate, closingDate, currency, costMethod, ttwror, irr, performance);
         FxWarnings.attach(report, conversions);

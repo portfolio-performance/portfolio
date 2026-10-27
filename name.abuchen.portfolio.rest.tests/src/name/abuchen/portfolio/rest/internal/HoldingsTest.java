@@ -154,6 +154,33 @@ public class HoldingsTest
     }
 
     /**
+     * Valued at a future date, today's quote is as fresh as a quote can be -
+     * the age is measured to today, not to the future date.
+     */
+    @Test
+    public void testTodaysQuoteIsNotStaleAtAFutureDate()
+    {
+        var client = new Client();
+        var today = LocalDate.now();
+
+        var security = new SecurityBuilder() //
+                        .addPrice(today.toString(), Values.Quote.factorize(110)) //
+                        .addTo(client);
+
+        new PortfolioBuilder() //
+                        .inbound_delivery(security, "2026-01-15", Values.Share.factorize(10),
+                                        Values.Amount.factorize(1000)) //
+                        .addTo(client);
+
+        var holdings = list(client, today.plusDays(66).toString(), null).getAsJsonObject();
+        var instrument = holdings.get("items").getAsJsonArray().get(0).getAsJsonObject();
+
+        assertThat(instrument.get("priceStale").getAsBoolean(), is(false));
+        assertThat(instrument.get("priceAgeDays").getAsLong(), is(0L));
+        assertThat(instrument.get("priceMissedTradingDays").getAsLong(), is(0L));
+    }
+
+    /**
      * Decimal values must be written as plain decimal literals - a BigDecimal
      * like 1.1E+3 would be valid JSON but hostile to every consumer.
      */

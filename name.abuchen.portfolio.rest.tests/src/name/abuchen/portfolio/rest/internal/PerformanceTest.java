@@ -250,6 +250,36 @@ public class PerformanceTest
         assertThat(result.get("ttwror").getAsDouble(), closeTo(untilToday.get("ttwror").getAsDouble(), 1e-12));
     }
 
+    /**
+     * A period that opens today or later has no price movement in it. The
+     * engines would report 0 - a measured flat return - so both returns are
+     * null, while the money figures still show the planned transactions.
+     */
+    @Test
+    public void testAPeriodEntirelyAfterTodayHasNoReturns()
+    {
+        var today = LocalDate.now();
+        var client = heldPosition(account -> account.deposit_(today.plusDays(40).toString(),
+                        Values.Amount.factorize(500)));
+
+        for (var opening : List.of(today, today.plusDays(30)))
+        {
+            var result = perf(client, opening.toString(), today.plusDays(90).toString(), null, null);
+
+            assertThat(result.get("timeWeightedUntil").getAsString(), is(today.toString()));
+            assertThat(result.get("ttwror").isJsonNull(), is(true));
+            assertThat(result.get("irr").isJsonNull(), is(true));
+
+            var breakdown = result.get("breakdown").getAsJsonObject();
+            assertThat(value(breakdown, "netDeposits"), is(500.0));
+            assertReconciles(breakdown);
+        }
+
+        // a period that opened yesterday has a past, and its returns are measured
+        var yesterday = perf(client, today.minusDays(1).toString(), today.plusDays(90).toString(), null, null);
+        assertThat(yesterday.get("ttwror").isJsonNull(), is(false));
+    }
+
     /** a closing date up to today is where the time-weighted figure stops, too */
     @Test
     public void testTimeWeightedUntilIsTheClosingDateWhenItIsNotInTheFuture()

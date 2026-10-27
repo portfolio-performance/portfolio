@@ -248,6 +248,29 @@ public class InstrumentPerformanceTest
         assertThat(item.get("timeWeightedUntil").getAsString(), is(today));
     }
 
+    /**
+     * A period that opens today or later has no price movement to measure:
+     * every return and risk ratio is null rather than a measured zero, and the
+     * money figures are still there.
+     */
+    @Test
+    public void testAPeriodEntirelyAfterTodayHasNoReturnsOrRiskRatios()
+    {
+        var opening = LocalDate.now().plusDays(1).toString();
+        var closing = LocalDate.now().plusDays(60).toString();
+
+        var row = onlyItem(list(heldPosition(), opening, closing, null, null, null, null));
+
+        assertThat(row.getAsJsonObject("moneyWeighted").get("irr").isJsonNull(), is(true));
+        assertThat(row.getAsJsonObject("timeWeighted").get("ttwror").isJsonNull(), is(true));
+        assertThat(row.getAsJsonObject("timeWeighted").get("ttwrorAnnualized").isJsonNull(), is(true));
+        assertThat(row.getAsJsonObject("risk").get("volatility").isJsonNull(), is(true));
+        assertThat(row.getAsJsonObject("risk").get("semiVolatility").isJsonNull(), is(true));
+        assertThat(row.getAsJsonObject("risk").get("maxDrawdown").isJsonNull(), is(true));
+        assertThat(row.getAsJsonObject("risk").get("longestDrawdownDays").getAsInt(), is(0));
+        assertThat(row.getAsJsonObject("valuation").get("closingValue").isJsonNull(), is(false));
+    }
+
     /** the echo states the value that was applied, not an omitted property */
     @Test
     public void testDefaultsAreEchoedAsAppliedValues()

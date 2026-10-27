@@ -486,7 +486,7 @@
           "date": {
             "type": "string",
             "format": "date",
-            "description": "Value the file as of this day, as YYYY-MM-DD. Defaults to today. A past date gives the statement of assets as it stood then; a future date is accepted and simply uses the latest known prices."
+            "description": "Value the file as of this day, as YYYY-MM-DD. Defaults to today. A past date gives the statement of assets as it stood then; a future date is accepted and simply uses the latest known prices, which then count as fresh."
           },
           "reportingCurrency": {
             "type": "string",
@@ -543,7 +543,7 @@
           "closingDate": {
             "type": "string",
             "format": "date",
-            "description": "End of the period, as YYYY-MM-DD. Defaults to today, and must be strictly after the opening date. A future date is accepted and values at the latest known prices — it does not forecast: the money figures then include transactions dated after today, while the time-weighted figures stop at today, which the response states as `timeWeightedUntil`."
+            "description": "End of the period, as YYYY-MM-DD. Defaults to today, and must be strictly after the opening date. A future date is accepted and values at the latest known prices — it does not forecast: the money figures then include transactions dated after today, while the time-weighted figures stop at today, which the response states as `timeWeightedUntil`. A period that opens today or later has nothing to measure, so its returns are null."
           },
           "reportingCurrency": {
             "type": "string",
@@ -620,7 +620,7 @@
           "closingDate": {
             "type": "string",
             "format": "date",
-            "description": "End of the period, as YYYY-MM-DD. Defaults to today, and must be strictly after the opening date. A future date is accepted and values at the latest known prices — it does not forecast: the money figures then include transactions dated after today, while the time-weighted figures stop at today, which the response states as `timeWeightedUntil`."
+            "description": "End of the period, as YYYY-MM-DD. Defaults to today, and must be strictly after the opening date. A future date is accepted and values at the latest known prices — it does not forecast: the money figures then include transactions dated after today, while the time-weighted figures stop at today, which the response states as `timeWeightedUntil`. A period that opens today or later has nothing to measure, so its returns are null."
           },
           "reportingCurrency": {
             "type": "string",
@@ -737,7 +737,7 @@
           "closingDate": {
             "type": "string",
             "format": "date",
-            "description": "End of the period, as YYYY-MM-DD. Defaults to today, and must be strictly after the opening date. A future date is accepted and values at the latest known prices — it does not forecast: the money figures then include transactions dated after today, while the time-weighted figures stop at today, which the response states as `timeWeightedUntil`."
+            "description": "End of the period, as YYYY-MM-DD. Defaults to today, and must be strictly after the opening date. A future date is accepted and values at the latest known prices — it does not forecast: the money figures then include transactions dated after today, while the time-weighted figures stop at today, which the response states as `timeWeightedUntil`. A period that opens today or later has nothing to measure, so its returns are null."
           },
           "reportingCurrency": {
             "type": "string",

@@ -156,15 +156,23 @@ public final class McpEnvelope
         // of its returns is a forecast - said before the figures, like the
         // other two outcomes that change what they mean
         var future = endsInTheFuture(payload);
-        if (future.isPresent())
+        if (future.isPresent() && future.get().entirelyAfterToday())
+        {
+            sections.add("**This period lies entirely after today.** It runs from " + future.get().openingDate()
+                            + " to " + future.get().closingDate() + ", but prices are known only up to today ("
+                            + future.get().today() + "), so no return can be measured and the returns are `null`. "
+                            + "The money figures include the transactions dated up to `closingDate`, valued at the "
+                            + "latest known prices: they show what planned transactions would do, not a forecast.");
+        }
+        else if (future.isPresent())
         {
             sections.add("**This period ends in the future.** `closingDate` is " + future.get().closingDate()
-                            + ", after today (" + future.get().today() + "). The closing value, `netDeposits` and the "
-                            + "other money figures include the transactions dated up to `closingDate`, valued at the "
-                            + "latest known prices; the time-weighted figures and the risk measures stop at "
-                            + "`timeWeightedUntil`; `irr` spreads the result over days without any price movement. "
-                            + "None of them is a forecast. Use the money figures to show what planned transactions "
-                            + "would do, and say that the returns do not project anything.");
+                            + ", after today (" + future.get().today() + "). The money figures include the "
+                            + "transactions dated up to `closingDate`, valued at the latest known prices; the "
+                            + "time-weighted figures stop at `timeWeightedUntil`, and `irr` spreads the result over "
+                            + "days without any price movement. None of them is a forecast. Use the money figures to "
+                            + "show what planned transactions would do, and say that the returns do not project "
+                            + "anything.");
         }
 
         if (!droppedMetrics.isEmpty())
@@ -279,8 +287,13 @@ public final class McpEnvelope
 
     /** an always-present collection field of a report, empty when it is absent */
     /** a report period that runs past today, the last day its time-weighted figures reach */
-    private record FutureEnd(String closingDate, String today)
+    private record FutureEnd(String openingDate, String closingDate, String today)
     {
+        /** nothing before today in it: the time-weighted engine measured nothing */
+        boolean entirelyAfterToday()
+        {
+            return openingDate != null && openingDate.compareTo(today) >= 0;
+        }
     }
 
     /**
@@ -292,14 +305,17 @@ public final class McpEnvelope
         if (payload == null || !payload.isJsonObject())
             return Optional.empty();
 
+        var opening = payload.getAsJsonObject().get("openingDate");
         var closing = payload.getAsJsonObject().get("closingDate");
         var until = payload.getAsJsonObject().get("timeWeightedUntil");
         if (closing == null || until == null || !closing.isJsonPrimitive() || !until.isJsonPrimitive())
             return Optional.empty();
 
-        return closing.getAsString().compareTo(until.getAsString()) > 0
-                        ? Optional.of(new FutureEnd(closing.getAsString(), until.getAsString()))
-                        : Optional.empty();
+        if (closing.getAsString().compareTo(until.getAsString()) <= 0)
+            return Optional.empty();
+
+        var openingDate = opening != null && opening.isJsonPrimitive() ? opening.getAsString() : null;
+        return Optional.of(new FutureEnd(openingDate, closing.getAsString(), until.getAsString()));
     }
 
     private static JsonArray topLevelArray(JsonElement payload, String key)
