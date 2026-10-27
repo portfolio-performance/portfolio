@@ -1,0 +1,293 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.2
+System: macosx | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Investment Account Statement
+Account Number: 328-35768-24
+KCECE - 84306
+Account Type: Registered Retirement Savings Plan
+For the Period: March 1 to 29, 2019
+Last Statement: February 28, 2019
+jKzajF h UjlsOL 42\* Address Information
+382 sXtLgH AG 45 jfbZ sKpRgP tqBh
+ZbCAaVy aT U4Q 2I2
+CiYPQyxHR XDZOW
+RgZyKoY, ZckbCGV
+F0q 5S6
+UpFfI: (848) 825-7808
+Website: www.scotiaitrade.com
+Email: service@scotiaitrade.com
+Order-Execution Only Account
+The Bank of Nova Scotia Trust Company acting as Trustee
+We’ve lowered our standard pricing
+Get $9.99 standard commission pricing per trade for equities and options. See scotiaitrade.com/pricing for full details.
+Account Summary
+FX Rate
+Investments by Currency Market Value (As of March 29, 2019) Total Canadian Equivalent
+Canadian Dollar 61,725 61,725
+U.S. Dollar 43,207 1 USD = 1.3360 CAD 57,725
+Total Value of Account $119,450
+Total Value on Last Statement $115,460
+Scotia iTRADE, Scotia, and the Scotia iTRADE logo are trademarks of The Bank of Nova Scotia, used under license. Page 1 of 8
+Scotia iTRADE (Order-Execution Only Account) is a division of Scotia Capital Inc. (SCI). SCI is a member of the Canadian Investor Protection Fund and the
+Investment Industry Regulatory Organization of Canada. Scotia iTRADE does not provide investment advice or recommendations and investors are
+responsible for their own investment decisions. All dispositions of securities in non-trust accounts shown on monthly statements are reported to the Canada
+Revenue Agency and, for Quebec residents, the ministère du Revenue du Québec. You are reminded to report income or capital gains from these
+transactions on your annual income tax return and to keep this statement for income tax purposes.
+SWSTM16000_1971337_067 - 0084306 HRI- -0016-0009-19- - 002324
+Account Number: 679-45847-17
+Statement for March 1 to 29, 2019
+Portfolio Overview Account Currency: CAD
+..Test
+Account Summary
+75,000
+Date Net Asset Value
+56,250
+Feb. 28, 2019 $73,312
+37,500
+Mar. 29, 2019 $61,725
+18,750
+Change in the value of your account $-11,587
+0
+xxxx Feb. 28 Mar. 29
+Mar. 29, 2019 % of
+Asset Class Summary
+Market Value Total Assets
+Cash 14,463 23.43
+23.43%
+Equity 47,262 76.57
+Total Value of Portfolio $61,725 100.00
+76.57%
+Details of Your Account Holdings
+
+## Average Adjusted Market
+Security Description Quantity Market Value
+Cost Book Value Price
+Cash $14,463
+
+## Equity
+
+## BROOKFIELD INFRASTRUCTURE 89 45.245 4,026 55.810 4,967
+PARTNERS L P UNITS
+(88 SEG)
+
+## CHORUS AVIATION INC 382 8.045 3,073 7.180 2,743
+VTG & VARIABLE VTG SHS
+(381 SEG)
+
+## ISHARES NASDAQ 100 INDEX 118 38.627 4,558 59.370 7,006
+ETF CAD HEDGED
+(117 SEG)
+
+## NATIONAL BANK OF CANADA 152 62.212 9,456 60.310 9,167
+(151 SEG)
+Page 2 of 8
+SWSTM16000_1971337_067 - 0084306 HRI- -0016-0010-20- - 002325
+Account Number: 789-48170-54
+Statement for March 1 to 29, 2019
+Details of Your Account Holdings - continued
+
+## Average Adjusted Market
+Security Description Quantity Market Value
+Cost Book Value Price
+
+* 
+
+## PREMIUM BRANDS HOLDINGS 58 66.722 3,869 77.000 4,466
+CORPORATION
+(57 SEG)
+
+## RICHARDS PACKAGING INCOME 150 29.179 4,376 37.810 5,672
+FUND TRUST UTS
+(149 SEG)
+
+## SHOPIFY INC 48 135.971 6,526 275.860 13,241
+CL A
+Total Equity $35,884 $47,262
+
+## Total Account Holdings $50,347 $61,725
+Top Space
+The adjusted cost displayed on this statement incorporates the original cost of your investments as well as any reinvested dividends and/or
+mutual fund distributions. Please note that where you have purchased securities through a PAC plan the cost displayed does not necessarily
+reflect your original purchase price.
+Bottom Space
+Monthly Activity
+
+## Date Activity Description Quantity Price Credit/Debit(-)
+xxxx
+Opening Cash Balance $27,947.59
+xxx
+Mar. 14 RICHARDS PACKAGING INCOME 0.1100 16.50
+FUND TRUST UTS
+DIST ON 150 SHS
+REC 02/28/19 PAY 03/14/19
+Mar. 15 CONVERT conf#34Q7K Scotia Online -13,505.00
+BROKERAGE C$ - U$ @ 1.3505
+59053803
+Mar. 18 REINVEST CHORUS AVIATION INC -15.20
+VTG & VARIABLE VTG SHS
+FUNDS HELD FOR REINVESTMENT
+Mar. 18 DIVIDEND CHORUS AVIATION INC 0.0400 15.20
+VTG & VARIABLE VTG SHS
+CASH DIV ON 380 SHS
+REC 02/28/19 PAY 03/18/19
+Mar. 20 PURCHASE CHORUS AVIATION INC 2 -13.90
+VTG & VARIABLE VTG SHS
+REINVEST @6.9549 03/18/19
+4% DISCOUNT
+Page 3 of 8
+SWSTM16000_1971337_067 - 0084306 HRI- -0016-0011-21- - 002326
+Account Number: 464-99861-81
+Statement for March 1 to 29, 2019
+Monthly Activity - continued
+
+## Date Activity Description Quantity Price Credit/Debit(-)
+
+## Mar. 20 REINVEST CHORUS AVIATION INC 15.20
+VTG & VARIABLE VTG SHS
+DIVIDEND REINVESTMENT
+Mar. 29 PURCHASE BROOKFIELD INFRASTRUCTURE 1 -55.29
+PARTNERS L P UNITS
+REINV @ 55.2942 C$ 03/29/19
+DIVIDEND - DPP PURCHASE PLAN
+Mar. 29 BROOKFIELD INFRASTRUCTURE 0.6617 58.23
+PARTNERS L P UNITS
+DIST ON 88 SHS
+REC 02/28/19 PAY 03/29/19
+f kjfkufkufkgfhgf
+Closing Cash Balance $14,463.33
+Summary
+
+## Contribution Summary
+Personal Total
+First 60 Days 16,000 16,000
+Remainder of Year 0 0
+Year-to-Date $16,000 $16,000
+Page 4 of 8
+SWSTM16000_1971337_067 - 0084306 HRI- -0016-0012-22- - 002327
+Account Number: 847-15797-22
+Statement for March 1 to 29, 2019
+Portfolio Overview Account Currency: USD
+Test
+Account Summary
+45,000
+Date Net Asset Value
+33,750
+Feb. 28, 2019 $32,003
+22,500
+Mar. 29, 2019 $43,207
+11,250
+Change in the value of your account $11,204
+0
+xxxx Feb. 28 Mar. 29
+Mar. 29, 2019 % of
+Asset Class Summary Market Value Total Assets
+Cash 1,503 3.47 3.47%
+Equity 41,704 96.53
+Total Value of Portfolio $43,207 100.00
+96.53%
+Details of Your Account Holdings
+
+## Average Adjusted Market
+Security Description Quantity Market Value
+Cost Book Value Price
+Cash $1,503
+
+## Equity
+
+## AMAZON.COM INC 4 1,768.497 7,073 1,780.750 7,123
+
+## AMERICAN TOWER CORPORATION 22 132.598 2,917 197.060 4,335
+REIT
+
+## MARKEL CORP HOLDING CO 4 1,021.547 4,086 996.240 3,985
+
+## MASTERCARD INCORPORATED 38 218.322 8,296 235.450 8,947
+(37 SEG)
+
+## TRADE DESK INC (THE) 25 210.639 5,265 197.950 4,949
+CLASS A COMMON STOCK
+
+## TWILIO INC 31 123.622 3,832 129.180 4,005
+Page 5 of 8
+SWSTM16000_1971337_067 - 0084306 HRI- -0016-0013-23- - 002328
+Account Number: 840-28576-08
+Statement for March 1 to 29, 2019
+Details of Your Account Holdings - continued
+
+## Average Adjusted Market
+Security Description Quantity Market Value
+Cost Book Value Price
+
+## CL A
+
+## UNION PACIFIC CORP 50 146.669 7,333 167.200 8,360
+(49 SEG)
+Total Equity $38,802 $41,704
+
+## Total Account Holdings $40,305 $43,207
+TopSpace
+The adjusted cost displayed on this statement incorporates the original cost of your investments as well as any reinvested dividends and/or
+mutual fund distributions. Please note that where you have purchased securities through a PAC plan the cost displayed does not necessarily
+reflect your original purchase price.
+Bottom Space
+Monthly Activity
+
+Date Activity Description Quantity Price Credit/Debit(-)
+xxxx
+Opening Cash Balance $4,643.74
+xxx
+Mar. 14 BUY TWILIO INC 31 123.2999 -3,832.29
+CL A
+STP PET
+UNSOLICITED VIA INTERNET
+Mar. 15 CONVERT conf#34Q7K Scotia Online 10,000.00
+BROKERAGE C$ - U$ @ 1.3505
+59053803
+Mar. 19 BUY MARKEL CORP HOLDING CO 4 1019.0500 -4,086.19
+STP PET
+UNSOLICITED VIA INTERNET
+Mar. 19 BUY TRADE DESK INC (THE) 25 210.2400 -5,265.99
+CLASS A COMMON STOCK
+STP PET
+UNSOLICITED VIA INTERNET
+Mar. 29 DIVIDEND UNION PACIFIC CORP 0.8800 44.00
+CASH DIV ON 50 SHS
+REC 02/28/19 PAY 03/29/19
+f kjfkufkufkgfhgf
+Closing Cash Balance $1,503.27
+Page 6 of 8
+SWSTM16000_1971337_067 - 0084306 HRI- -0016-0014-24- - 002329
+Account Number: 430-50358-02
+Statement for March 1 to 29, 2019
+A Note From Scotia iTRADE
+How to… Make it Happen
+Gain investing confidence and make the most of the tools and resources available from Scotia iTRADE®. Visit:
+scotiaitrade.com > About > How-To Resources.
+Disclosures on Trade Confirmations and Account Statements
+Please be advised that due to a technical error, trade confirmations and account statements sent to clients prior to October
+2018 may not have reflected the Bank of Nova Scotia’s status as a related or connected issuer for certain Bank of Nova Scotia
+securities purchased by clients. The technical error has since been corrected.
+Please note that a list of related or connected issuers is available via our Statement of Policies, which is posted on our website
+at: www.scotiaitrade.com/content/dam/itrade/documents/stmtpolicy.pdf and available upon request.
+Should you have any questions about this matter, please contact service@scotiaitrade.com.
+Tax Slips
+To help you prepare to file your tax return, visit our new tax website at www.scotiawealthmanagement.com/tax , to find a
+schedule of dates when your tax slips will be made available. To retrieve your electronic slips in Scotia OnLine, select
+“Brokerage Tax Documents” under “Communication Centre”.
+Note: We suggest that prior to filing your tax return you have all of your tax slips, which will be made available shortly after
+receiving tax information from the issuer(s) and will be in accordance with Canada Revenue Agency (CRA) and Internal
+Revenue Service (IRS) regulations.
+For questions, please contact service@scotiaitrade.com or call Toll-Free (Canada/USA) 1-888-TRADE88 (1-888-872-3388) or
+(416) 214-6457 if outside of Canada and USA.
+Education Resources
+There’s a trader in all of us. Scotia iTRADE® U can help you find yours.
+Learn more by visiting scotiaitrade.com > Education.
+…
+Page 7 of 8
+SWSTM16000_1971337_067 - 0084306 HRI- -0016-0015-25- - 002330
+Account Number: 224-41231-06
+Statement for sbWsj 1 to 29, 2019
+Terms and Conditions unable to obtain valuations. A current market quotation can be made available
+Terms and Conditions are applicable to your account(s). For further details of upon request.
+these terms and conditions go to http://www.scotiaitrade.com/. Segregated Quantity Order-Execution Only Account Securities regulations stipulate that all fully paid and excess margin securities Only Account means that Scotia iTRADE does not provide recommendations or must be promptly segregated and are not available for use in the general accept any responsibility to advise clients on the suitability of investment conduct of our business. All security positions displayed under the account decisions or transactions. holdings section are segregated unless otherwise indicated under the security description column. Securities registered in your name are also indicated under Statement Frequency the security description column. Statements are issued whenever there has been activity in the account during the past month; otherwise statements are issued on a quarterly basis. Third Market Dealers In connection with certain trades in securities of U.S. issuers, Scotia Capital Inc. Leverage / Margin Risk Disclosure Statement will receive remuneration for directing orders to a particular broker-dealer or The use of leverage may not be suitable for all investors. Using borrowed market centre for execution. The source and amount of any such remuneration money (whether through a margin account or any other method of borrowing) received by Scotia iTRADE in connection with any transaction executed on your to finance the purchase of securities involves greater risk than using cash behalf will be disclosed to you upon request. resources only. If you borrow money to purchase securities, your responsibility to repay the loan and pay interest as required by its terms remains the same Member-Canadian Investor Protection Fund even if the value of the securities purchased declines. Customers’ accounts are protected by the Canadian Investor Protection Fund within specified limits. A brochure describing the nature and limits of coverage Account Summary is available upon request. The term ‘Net Asset Value’ refers to the total market value of priced securities within your account, by currency, including cash balances as at the close of business on the date indicated. Endnotes 1. There has been an adjustment made to this book value during the statement Adjusted Average Cost and Adjusted Book Value period. Adjusted average cost represents the average cost of acquiring one share/unit 2. There is no active market for this investment, and therefore the market value of a security including commissions, fees, reinvested dividends and/or mutual has been estimated. fund distributions. This has been calculated to the best of our ability. Adjusted 3. There is no active market for this investment, and the market value cannot book value is the total cost of acquiring a security - the total of your adjusted be determined. average cost times the number of shares/units you hold of a security. 4. If this position is sold, a sales charge may be applied to the proceeds. 5. Some or all of the book value of this position has been determined using a Cash Balances market value calculation. This section shows the balance in your account, including all transactions that 6. The book value of this position cannot be determined. have settled. A debit balance is indicated by ‘-’ and represents an amount owed to Scotia iTRADE. A credit balance in a Regular account represents an amount owed to you, whereas a credit balance in a Registered account indicates the Other Information: cash portion of your assets. Employees of The Bank of Nova Scotia (‘Scotia Capital’) and/or Scotia iTRADE are not authorized to provide tax or legal advice. Please consult your accountant Free credit balances in Regular accounts represent funds payable on demand or lawyer on such matters. which, although properly recorded in our books, are not segregated and may be used in the conduct of our business. Cash balances in Registered accounts The financial statement of Scotia Capital and Scotia Capital Inc. as at the close are held in trust by the trustee. of the last financial year and a current list of directors and officers will be furnished upon request. Clients in British Columbia are entitled to certain Asset Class Summary additional information about Scotia iTRADE, including information about Asset classes you hold will be displayed under the Asset Class Summary section commissions and fees that we charge, and about any administrative in the statement. Please note that only the asset classes of securities you proceedings that may relate to the firm or our staff. currently hold in your account will be displayed on your statement. This statement constitutes a complete record of your transactions. Please examine this statement of account promptly. If you do not agree with the Payment Information (RRIF and LIF Accounts Only) information hereon, please advise us in writing within thirty days at: Scotia The information displayed reflects our records as of the statement date. The iTRADE, Compliance Department, 40 King Street West, 5th Floor, Toronto, Selected Payment Frequency indicates the payment frequency as of the Ontario, M5H 1H1 or you will be precluded from asserting that errors or statement date. Minimum Annual Payment refers to the minimum annual omissions have occurred. amount required by Canada Revenue Agency from your RRIF account. If, according to our records, you have elected to receive an annual amount greater than the minimum payment, then this amount will be displayed as the Elected Payment Amount. Withholding tax will be applied to amounts withdrawn in excess of the Minimum Annual Payment. The Year to Date Payment amount displayed is the total amount of the payments paid to you, after withholding tax has been deducted, if applicable. New Activity in Your Account This section shows all the activity in your account during the month. The Date column refers to the settlement date in the case of executed trades, or processing date in the case of other entries. Transfers of funds made to your account on the last business day of the month may not appear on your month end statement until the following month. Short Account Proceeds from declared short sales have been segregated into a SHORT account and market increases and/or decreases from the original sale price are marked to the market. Such increases and or decreases are transferred to your margin account weekly. Transfers are reflected with the description ‘Mark to Market.’ Your Account Holdings The market valuation information has been obtained from sources believed to be reliable; however, we cannot guarantee their accuracy. Our best efforts have been made to price all securities; however, in some circumstances, we may be Code Information Page 8 of 8 Code: Nonvot Resvot Subvot Definition: Non-voting Restricted Voting Subordinate voting SWSTM16000_1971337_067 - 0084306 HRI- -0016-0016-26- - 002331
