@@ -52,10 +52,10 @@ public final class InstrumentPerformanceHandler
                     String closingDateParam, String currencyParam, String costMethodParam, String taxesAndFeesParam,
                     String metricsParam)
     {
-        var conversions = new ConversionRecorder();
+        var conversions = new ConversionRecorder(factory);
         var report = list(client, converters(factory, conversions), openingDateParam, closingDateParam,
                         currencyParam, costMethodParam, taxesAndFeesParam, metricsParam).getAsJsonObject();
-        FxWarnings.attach(report, conversions, factory);
+        FxWarnings.attach(report, conversions);
         return report;
     }
 
@@ -86,10 +86,10 @@ public final class InstrumentPerformanceHandler
                     String openingDateParam, String closingDateParam, String currencyParam, String costMethodParam,
                     String taxesAndFeesParam, String metricsParam)
     {
-        var conversions = new ConversionRecorder();
+        var conversions = new ConversionRecorder(factory);
         var report = get(client, converters(factory, conversions), uuid, openingDateParam, closingDateParam,
                         currencyParam, costMethodParam, taxesAndFeesParam, metricsParam).getAsJsonObject();
-        FxWarnings.attach(report, conversions, factory);
+        FxWarnings.attach(report, conversions);
         return report;
     }
 

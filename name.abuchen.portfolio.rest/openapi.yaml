@@ -2061,10 +2061,12 @@ components:
             **Open set:** further reasons may be added within v1; treat an unknown
             one as "this pair was converted at 1:1, for a reason not described
             here". `no-series` — no exchange rate series exists for the pair at
-            all. `no-rate` — a series exists but holds no rates, so it answers no
-            date. Both are independent of the date; neither is the case where a
-            series holds rates and answers a date before its first quote with that
-            first quote, which is a different inaccuracy and not reported here.
+            all. `no-rate` — a series exists but answered no rate for at least one
+            date the report converted at (it holds no rates, or — for a series
+            built from an exchange-rate instrument — its quote for that day is
+            zero). Neither is the case where a series holds rates and answers a
+            date before its first quote with that first quote, which is a
+            different inaccuracy and not reported here.
           x-extensible-enum: [no-series, no-rate]
 
     FxWarnings:

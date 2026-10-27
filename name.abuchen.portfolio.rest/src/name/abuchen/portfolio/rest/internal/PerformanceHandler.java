@@ -43,7 +43,7 @@ public final class PerformanceHandler
         if (!errors.isEmpty())
             throw ApiException.badRequest(errors);
 
-        var conversions = new ConversionRecorder();
+        var conversions = new ConversionRecorder(factory);
         var converter = conversions.wrap(new CurrencyConverterImpl(factory, currency));
         var interval = Interval.of(openingDate, closingDate);
 
@@ -56,7 +56,7 @@ public final class PerformanceHandler
         var irr = performance.getPerformanceIRR();
 
         var report = EntityJson.performance(openingDate, closingDate, currency, costMethod, ttwror, irr, performance);
-        FxWarnings.attach(report, conversions, factory);
+        FxWarnings.attach(report, conversions);
         return report;
     }
 }

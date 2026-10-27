@@ -37,10 +37,10 @@ public final class HoldingsHandler
         if (!errors.isEmpty())
             throw ApiException.badRequest(errors);
 
-        var conversions = new ConversionRecorder();
+        var conversions = new ConversionRecorder(factory);
         var converter = conversions.wrap(new CurrencyConverterImpl(factory, currency));
         var report = EntityJson.toJson(ClientSnapshot.create(client, converter, date), currency);
-        FxWarnings.attach(report, conversions, factory);
+        FxWarnings.attach(report, conversions);
         return report;
     }
 }

@@ -425,6 +425,33 @@ public class HoldingsTest
     }
 
     /**
+     * The valuation date decides, not today: an exchange-rate security whose
+     * quote on the valuation date is zero has no rate for that day, so the
+     * statement converts at 1:1 and has to say so - even though the series holds
+     * a valid rate today. On a day with a valid quote the same pair is silent.
+     */
+    @Test
+    public void testFxWarningsFollowTheValuationDateNotToday()
+    {
+        var client = new Client();
+        new AccountBuilder("ARS").deposit_("2026-01-01", Values.Amount.factorize(100)).addTo(client);
+
+        var rates = new Security("ARS/EUR", "ARS");
+        rates.setTargetCurrencyCode(CurrencyUnit.EUR);
+        rates.addPrice(new SecurityPrice(LocalDate.of(2026, 1, 2), Values.Quote.factorize(965)));
+        rates.addPrice(new SecurityPrice(LocalDate.of(2026, 7, 15), 0));
+        rates.addPrice(new SecurityPrice(LocalDate.of(2026, 7, 25), Values.Quote.factorize(970)));
+        client.addSecurity(rates);
+
+        var onAZeroQuote = list(client, "2026-07-20", null).getAsJsonObject().get("fxWarnings").getAsJsonArray();
+        assertThat(onAZeroQuote.size(), is(1));
+        assertThat(onAZeroQuote.get(0).getAsJsonObject().get("reason").getAsString(), is("no-rate"));
+
+        var onAValidQuote = list(client, "2026-07-30", null).getAsJsonObject().get("fxWarnings").getAsJsonArray();
+        assertThat(onAValidQuote.size(), is(0));
+    }
+
+    /**
      * Only money the statement of assets converted is named. An empty account and
      * a security that is no longer held contribute nothing to it, whatever their
      * currency, so a warning about them would send the reader looking for

@@ -53,7 +53,7 @@ public final class TradesHandler
                     String groupingParam, String costMethodParam, String taxesAndFeesParam, String currencyParam)
     {
         var params = parse(client, statusParam, groupingParam, costMethodParam, taxesAndFeesParam, currencyParam);
-        return respond(collect(client, factory, client.getSecurities(), params), params, factory);
+        return respond(collect(client, factory, client.getSecurities(), params), params);
     }
 
     public static JsonElement forInstrument(Client client, ExchangeRateProviderFactory factory, String uuid,
@@ -66,7 +66,7 @@ public final class TradesHandler
         var params = parse(client, statusParam, groupingParam, costMethodParam, taxesAndFeesParam, currencyParam);
 
         // sub-collection: an untraded instrument has an empty list, not a 404
-        return respond(collect(client, factory, List.of(security), params), params, factory);
+        return respond(collect(client, factory, List.of(security), params), params);
     }
 
     private static Params parse(Client client, String statusParam, String groupingParam, String costMethodParam,
@@ -94,10 +94,10 @@ public final class TradesHandler
     private static Collected collect(Client client, ExchangeRateProviderFactory factory, List<Security> securities,
                     Params params)
     {
-        // records what computing the trades converted - of every trade of these
+        // records what computing the trades converted at 1:1 - for every trade of these
         // instruments, including those a status filter leaves out of the answer,
         // because the collector has to match all of them
-        var conversions = new ConversionRecorder();
+        var conversions = new ConversionRecorder(factory);
         var converter = conversions.wrap(new CurrencyConverterImpl(factory, params.currency()));
 
         // moving-average costs share one snapshot cache per request
@@ -146,7 +146,7 @@ public final class TradesHandler
         };
     }
 
-    private static JsonElement respond(Collected collected, Params params, ExchangeRateProviderFactory factory)
+    private static JsonElement respond(Collected collected, Params params)
     {
         var items = new JsonArray();
         for (var trade : collected.trades())
@@ -158,8 +158,8 @@ public final class TradesHandler
 
         var json = EntityJson.tradesContext(params);
         // after the items: a trade's figures may be computed as it is rendered,
-        // and every pair that was converted on the way has to be seen first
-        FxWarnings.attach(json, collected.conversions(), factory);
+        // and every fallback on the way has to be seen first
+        FxWarnings.attach(json, collected.conversions());
         // always present so clients can detect partial success
         json.add("warnings", warnings); //$NON-NLS-1$
         json.add("items", items); //$NON-NLS-1$
