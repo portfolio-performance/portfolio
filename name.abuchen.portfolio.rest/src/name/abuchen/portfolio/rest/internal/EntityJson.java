@@ -21,6 +21,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.rest.FileAccessRegistry.FileAccess;
 import name.abuchen.portfolio.rest.spi.OpenFile;
 import name.abuchen.portfolio.snapshot.AssetPosition;
@@ -146,10 +147,11 @@ public final class EntityJson
         json.addProperty("id", access.uuid()); //$NON-NLS-1$
         if (access.alias() != null)
             json.addProperty("alias", access.alias()); //$NON-NLS-1$
-        // the one value a caller must send as {file}: an alias exists only when the
-        // user assigned one, and the label is never an address - naming the value
-        // is what stops a client guessing between the two
-        json.addProperty("use", access.alias() != null ? access.alias() : access.uuid()); //$NON-NLS-1$
+        // the one value a caller must send as {file}: always the uuid. An alias is
+        // accepted as an address, but the user can rename it between listing and
+        // the next call, and a stable address is worth more than a readable one -
+        // the label and the alias are there for display
+        json.addProperty("use", access.uuid()); //$NON-NLS-1$
         json.addProperty("label", file.getLabel()); //$NON-NLS-1$
         json.addProperty("path", file.getPath()); //$NON-NLS-1$
         return json;
@@ -211,7 +213,12 @@ public final class EntityJson
             {
                 var age = QuoteAge.asOf(priceDate, valuationDate, LocalDate.now(),
                                 TradeCalendarManager.getInstance(security));
-                json.addProperty("priceStale", age.isStale()); //$NON-NLS-1$
+                // a manual price is updated when the user decides to, not every
+                // trading day - the data quality view ends a manual instrument's
+                // interval at its last quote - so it is never flagged; its age
+                // is still reported
+                var manual = QuoteFeed.MANUAL.equals(security.getFeed());
+                json.addProperty("priceStale", !manual && age.isStale()); //$NON-NLS-1$
                 json.addProperty("priceAgeDays", age.calendarDays()); //$NON-NLS-1$
                 json.addProperty("priceMissedTradingDays", age.missedTradingDays()); //$NON-NLS-1$
             }
@@ -407,7 +414,7 @@ public final class EntityJson
             risk.add("volatility", JsonNull.INSTANCE); //$NON-NLS-1$
             risk.add("semiVolatility", JsonNull.INSTANCE); //$NON-NLS-1$
             risk.add("maxDrawdown", JsonNull.INSTANCE); //$NON-NLS-1$
-            risk.addProperty("longestDrawdownDays", 0); //$NON-NLS-1$
+            risk.add("longestDrawdownDays", JsonNull.INSTANCE); //$NON-NLS-1$
             json.add("risk", risk); //$NON-NLS-1$
         }
         else if (metrics.contains(MetricGroup.RISK))

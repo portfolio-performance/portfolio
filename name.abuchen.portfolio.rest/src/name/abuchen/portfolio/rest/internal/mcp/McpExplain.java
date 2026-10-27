@@ -155,10 +155,11 @@ public final class McpExplain
 
             case "ui-busy":
                 // The UI thread did not take the request on within the bounded
-                // wait, and the request will never run. Nobody can be asked to
-                // close anything: whatever is slow has to finish.
-                return "Portfolio Performance did not get to this request on its UI thread within the bounded wait"
-                                + retryAfter(problem) + ", so nothing was read or changed. Something else is holding "
+                // wait, and the request will never run - or it was a read, which
+                // changes nothing. Nobody can be asked to close anything:
+                // whatever is slow has to finish.
+                return "Portfolio Performance did not answer this request on its UI thread within the bounded wait"
+                                + retryAfter(problem) + ", so nothing was changed. Something else is holding "
                                 + "that thread - a long-running job or a large file. Try again after a moment; if it "
                                 + "keeps failing, say so rather than retrying in a loop.";
 
@@ -180,7 +181,8 @@ public final class McpExplain
                                 + "trades.";
 
             case "server-busy":
-                return "Portfolio Performance is answering too many requests at once" + retryAfter(problem)
+                return "Portfolio Performance is answering too many requests at once, or calculations that ran out of "
+                                + "time are still finishing" + retryAfter(problem)
                                 + ". Send fewer calls in parallel and try again.";
 
             case "request-too-large":

@@ -6,6 +6,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -87,6 +89,15 @@ public final class ApiRoutes
     private static final ExecutorService CALCULATIONS = Executors.newThreadPerTaskExecutor(
                     Thread.ofVirtual().name("Portfolio Performance REST API calculation").factory()); //$NON-NLS-1$
 
+    /**
+     * How many calculations may run at once. A calculation that outlasts its
+     * deadline is not stopped by the interrupt - the engines never check for
+     * one - so it holds its slot until it really ends, not until the client
+     * stops waiting. Without that, every retry after a timeout would start
+     * another calculation next to the ones still running.
+     */
+    /* package */ static final int CALCULATION_SLOTS = 2;
+
     private ApiRoutes()
     {
     }
@@ -100,7 +111,7 @@ public final class ApiRoutes
                     Deadlines deadlines)
     {
         var ui = new UiThread(host, deadlines.uiThread());
-        var calculation = deadlines.calculation();
+        var calculation = new Calculation(deadlines.calculation(), new Semaphore(CALCULATION_SLOTS));
         var router = new Router();
         var resolver = new FileResolver(registry, host);
         var files = new FilesHandler(registry, host);
@@ -123,7 +134,7 @@ public final class ApiRoutes
         router.add("GET", "/v1/auth/requests/{id}", //$NON-NLS-1$ //$NON-NLS-2$
                         request -> PairingHandler.poll(pairing, request.pathParam("id"))); //$NON-NLS-1$
 
-        router.add("GET", "/v1/files", onUiThread(ui, files::list)); //$NON-NLS-1$ //$NON-NLS-2$
+        router.add("GET", "/v1/files", onUiThread(ui, true, files::list)); //$NON-NLS-1$ //$NON-NLS-2$
 
         router.add("GET", "/v1/files/{file}/instruments", read(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$
                         (client, req) -> Response.json(200, SecuritiesHandler.list(client))));
@@ -210,9 +221,14 @@ public final class ApiRoutes
      * or the model must go through here - including resolving the {file}
      * segment, which reads the list of open files.
      */
-    private static Router.Handler onUiThread(UiThread ui, Router.Handler handler)
+    private static Router.Handler onUiThread(UiThread ui, boolean idempotent, Router.Handler handler)
     {
-        return request -> syncExecBounded(ui.host(), () -> handler.handle(request), ui.deadline());
+        return request -> syncExecBounded(ui.host(), () -> handler.handle(request), ui.deadline(), idempotent);
+    }
+
+    /** the deadline of a calculation and the slots that bound how many run at once */
+    private record Calculation(Duration deadline, Semaphore slots)
+    {
     }
 
     private static final int NOT_STARTED = 0;
@@ -230,13 +246,22 @@ public final class ApiRoutes
      * {@code ui-busy} and is guaranteed never to run - the client may send it
      * again - while one that had started is reported as
      * {@code ui-request-underway}, because it will finish and a second write
-     * would apply the same change twice. A read that the UI thread had not
-     * started is therefore always safe to retry.
+     * would apply the same change twice.
      * <p/>
-     * Not private: a test in this package drives both outcomes directly.
+     * A read changes nothing, so sending it again is safe even when it had
+     * started - and it is the only way to get the answer that was thrown away.
+     * An {@code idempotent} request is therefore always refused as retryable.
+     * <p/>
+     * Not private: a test in this package drives all outcomes directly.
      */
     /* package */ static <T> T syncExecBounded(HostApplication host, Callable<T> callable, Duration deadline)
                     throws Exception
+    {
+        return syncExecBounded(host, callable, deadline, false);
+    }
+
+    /* package */ static <T> T syncExecBounded(HostApplication host, Callable<T> callable, Duration deadline,
+                    boolean idempotent) throws Exception
     {
         var state = new AtomicInteger(NOT_STARTED);
 
@@ -260,6 +285,9 @@ public final class ApiRoutes
                 throw ApiException.uiBusy(deadline.toMillis());
             }
 
+            if (idempotent)
+                throw ApiException.uiReadTimedOut(deadline.toMillis());
+
             throw ApiException.uiRequestUnderway(deadline.toMillis());
         }
         catch (ExecutionException e)
@@ -275,12 +303,40 @@ public final class ApiRoutes
      * computation may not notice and finish on its own, but its result is
      * discarded.
      * <p/>
+     * The slot is taken before the work starts and given back when the work
+     * ends - not when the client stops waiting - so a calculation still running
+     * after its deadline keeps counting. With every slot taken, the request is
+     * refused at once as {@code server-busy}.
+     * <p/>
      * Not private: a test in this package drives it with a calculation that
      * outlasts its deadline.
      */
-    /* package */ static Response computeBounded(Callable<Response> calculation, Duration deadline) throws Exception
+    /* package */ static Response computeBounded(Callable<Response> calculation, Duration deadline,
+                    Semaphore slots) throws Exception
     {
-        var future = CALCULATIONS.submit(calculation);
+        if (!slots.tryAcquire())
+            throw ApiException.serverBusy();
+
+        Future<Response> future;
+        try
+        {
+            future = CALCULATIONS.submit(() -> {
+                try
+                {
+                    return calculation.call();
+                }
+                finally
+                {
+                    slots.release();
+                }
+            });
+        }
+        catch (RuntimeException e)
+        {
+            // never submitted, so the finally above never runs
+            slots.release();
+            throw e;
+        }
 
         try
         {
@@ -309,7 +365,7 @@ public final class ApiRoutes
 
     private static Router.Handler read(FileResolver resolver, UiThread ui, BiFunction<Client, Request, Response> body)
     {
-        return onUiThread(ui, request -> {
+        return onUiThread(ui, true, request -> {
             var resolved = resolver.resolve(request.pathParam("file")); //$NON-NLS-1$
             return body.apply(resolved.file().getClient(), request);
         });
@@ -329,22 +385,22 @@ public final class ApiRoutes
      * response or an internal error; retrying is cheap for the client, blocking
      * the UI is not.
      */
-    private static Router.Handler calc(FileResolver resolver, UiThread ui, Duration deadline,
+    private static Router.Handler calc(FileResolver resolver, UiThread ui, Calculation calculation,
                     BiFunction<CalcContext, Request, Response> body)
     {
         return request -> {
             var context = syncExecBounded(ui.host(), () -> {
                 var file = resolver.resolve(request.pathParam("file")).file(); //$NON-NLS-1$
                 return new CalcContext(file.getClient(), file.getExchangeRateProviderFactory());
-            }, ui.deadline());
-            return computeBounded(() -> body.apply(context, request), deadline);
+            }, ui.deadline(), true);
+            return computeBounded(() -> body.apply(context, request), calculation.deadline(), calculation.slots());
         };
     }
 
     private static Router.Handler write(FileResolver resolver, UiThread ui,
                     BiFunction<OpenFile, Request, Response> body)
     {
-        return onUiThread(ui, request -> {
+        return onUiThread(ui, false, request -> {
             // resolve first: an unknown file is a 404 even while the user edits
             var resolved = resolver.resolve(request.pathParam("file")); //$NON-NLS-1$
 

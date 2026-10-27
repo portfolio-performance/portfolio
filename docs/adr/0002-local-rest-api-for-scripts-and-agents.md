@@ -19,6 +19,9 @@ becomes a later thin adapter over the same service layer. The individual decisio
   portfolio file. Move or rename ⇒ identity lost ⇒ fails closed. Files may additionally carry a
   user-assigned alias (`[a-z0-9-]{1,32}`, may not parse as a UUID, unique case-insensitively across
   all records) so an alias can never shadow a file UUID in the shared `/files/{id}` segment.
+  The file listing names the address to send as `use`, and that is always the UUID: an alias can be
+  renamed between listing the files and the next call, and a stable address is worth more than a
+  readable one. Aliases stay accepted for hand-written scripts.
 - **Explicit targeting only.** Every data route is scoped `/v1/files/{id}/…`. There is no "active
   file": the user switching tabs must never retarget a running script.
 - **Per-file opt-in is the authorization grant.** Server off by default; a global preference enables
@@ -63,14 +66,17 @@ becomes a later thin adapter over the same service layer. The individual decisio
   compare-and-set against the waiting caller: a request the UI thread had *not started* when the
   deadline passed is refused, will never run, and is safe to retry (`Retry-After`); a request that
   was *already running* will complete, so that one carries no `Retry-After` and must not be resent,
-  because a second write would apply the same change twice.
+  because a second write would apply the same change twice. A read is the exception: it changes
+  nothing, so even one that had started is refused as retryable.
 - **Calculations and the connection have deadlines of their own.** A calculation that does not
   finish within 120 s is answered with 503 `calculation-timeout` instead of a dropped connection; a
   progress signal was considered and rejected, because it needs a streamed response (SSE), which this
   ADR refuses. Receiving a request and sending its response are each bounded by a 30 s watchdog
   against clients that stall. At most 8 requests are served at once, and one over the bound is
   refused (503 `server-busy`) before its body is read, so no local process can make the application
-  buffer an arbitrary number of request bodies.
+  buffer an arbitrary number of request bodies. The engines never check for an interrupt, so a
+  calculation past its deadline runs on; it keeps one of two calculation slots until it really ends,
+  and a calculation that finds both taken is refused (503 `server-busy`) instead of piling up.
 - **The API vocabulary is deliberately more general than the model** (`Security` → *instrument*,
   `Portfolio` → *investment account*), because the contract cannot be renamed once clients exist.
   Java class names keep the model's vocabulary; the mapping and its rationale are in the README.

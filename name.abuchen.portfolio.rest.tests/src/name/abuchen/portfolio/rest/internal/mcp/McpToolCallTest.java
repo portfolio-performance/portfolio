@@ -91,7 +91,8 @@ public class McpToolCallTest
 
         assertThat(isError(result), is(true));
         assertThat(text(result), containsString("no default file"));
-        assertThat(text(result), containsString("sample"));
+        // the address to send, which is the id - the alias is for display
+        assertThat(text(result), containsString("use `" + fileId + "`"));
     }
 
     @Test
@@ -153,11 +154,14 @@ public class McpToolCallTest
     @Test
     public void testTheFileListingNamesTheAddressToSend()
     {
+        // always the id, even with an alias set: an alias can be renamed between
+        // the listing and the next call
         var files = text(call("pp_list_files", "{}"));
-        assertThat(files, containsString("\"use\":\"sample\""));
+        assertThat(files, containsString("\"use\":\"" + fileId + "\""));
+        assertThat(files, containsString("\"alias\":\"sample\""));
 
         // and that value is what a tool accepts
-        assertThat(isError(call("pp_list_instruments", "{\"file\":\"sample\"}")), is(false));
+        assertThat(isError(call("pp_list_instruments", "{\"file\":\"" + fileId + "\"}")), is(false));
     }
 
     @Test
@@ -373,9 +377,15 @@ public class McpToolCallTest
         var result = call("pp_get_instrument", "{\"file\":\"sample\",\"uuid\":\"attribute-types\"}");
 
         assertThat(isError(result), is(true));
-        assertThat(text(result), containsString("`uuid` must be an entity uuid"));
+        assertThat(text(result), containsString("`uuid` must be an entity uuid as pp_list_instruments reports it"));
         assertThat(text(result), containsString("reasonCode: misshapen-argument"));
         assertThat(text(result), containsString("retryable: no"));
+
+        // an account tool names the list its uuids come from, not the instruments
+        var cash = call("pp_get_cash_account", "{\"file\":\"sample\",\"uuid\":\"cash\"}");
+        assertThat(text(cash), containsString("as pp_list_cash_accounts reports it"));
+        var investment = call("pp_get_investment_account", "{\"file\":\"sample\",\"uuid\":\"depot\"}");
+        assertThat(text(investment), containsString("as pp_list_investment_accounts reports it"));
     }
 
     /** a wrong type is refused here rather than surfacing as an endpoint validation error */

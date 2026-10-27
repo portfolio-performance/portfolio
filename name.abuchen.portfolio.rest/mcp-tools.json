@@ -14,7 +14,7 @@
       "operationId": "listFiles",
       "method": "GET",
       "pathTemplate": "/v1/files",
-      "description": "List the portfolio files this connector may address. Every other tool needs one of them as its `file`: send each file's `use` value exactly — an `alias` when the user has named the file, otherwise its `id`. A `label` is a display name and never an address, so never pass one. Start here — there is no default file and no active file. Only files the user has open in Portfolio Performance *and* has individually enabled appear.",
+      "description": "List the portfolio files this connector may address. Every other tool needs one of them as its `file`: send each file's `use` value exactly. It is always the file's stable `id`; an `alias` or a `label` is for display, so never pass one. Start here — there is no default file and no active file. Only files the user has open in Portfolio Performance *and* has individually enabled appear.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -39,7 +39,7 @@
         "properties": {
           "file": {
             "type": "string",
-            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. A `label` is a display name and never an address; do not guess between an `id` and an `alias`. Required; there is no default file."
+            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. It is the file's stable `id`; a `label` or an `alias` is for display, never an address. Required; there is no default file."
           }
         },
         "required": [
@@ -72,7 +72,7 @@
         "properties": {
           "file": {
             "type": "string",
-            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. A `label` is a display name and never an address; do not guess between an `id` and an `alias`. Required; there is no default file."
+            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. It is the file's stable `id`; a `label` or an `alias` is for display, never an address. Required; there is no default file."
           },
           "uuid": {
             "type": "string",
@@ -115,7 +115,7 @@
         "properties": {
           "file": {
             "type": "string",
-            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. A `label` is a display name and never an address; do not guess between an `id` and an `alias`. Required; there is no default file."
+            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. It is the file's stable `id`; a `label` or an `alias` is for display, never an address. Required; there is no default file."
           },
           "uuid": {
             "type": "string",
@@ -253,7 +253,7 @@
         "properties": {
           "file": {
             "type": "string",
-            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. A `label` is a display name and never an address; do not guess between an `id` and an `alias`. Required; there is no default file."
+            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. It is the file's stable `id`; a `label` or an `alias` is for display, never an address. Required; there is no default file."
           },
           "uuid": {
             "type": "string",
@@ -296,7 +296,7 @@
         "properties": {
           "file": {
             "type": "string",
-            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. A `label` is a display name and never an address; do not guess between an `id` and an `alias`. Required; there is no default file."
+            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. It is the file's stable `id`; a `label` or an `alias` is for display, never an address. Required; there is no default file."
           }
         },
         "required": [
@@ -329,7 +329,7 @@
         "properties": {
           "file": {
             "type": "string",
-            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. A `label` is a display name and never an address; do not guess between an `id` and an `alias`. Required; there is no default file."
+            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. It is the file's stable `id`; a `label` or an `alias` is for display, never an address. Required; there is no default file."
           }
         },
         "required": [
@@ -362,7 +362,7 @@
         "properties": {
           "file": {
             "type": "string",
-            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. A `label` is a display name and never an address; do not guess between an `id` and an `alias`. Required; there is no default file."
+            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. It is the file's stable `id`; a `label` or an `alias` is for display, never an address. Required; there is no default file."
           },
           "uuid": {
             "type": "string",
@@ -405,7 +405,7 @@
         "properties": {
           "file": {
             "type": "string",
-            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. A `label` is a display name and never an address; do not guess between an `id` and an `alias`. Required; there is no default file."
+            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. It is the file's stable `id`; a `label` or an `alias` is for display, never an address. Required; there is no default file."
           }
         },
         "required": [
@@ -438,7 +438,7 @@
         "properties": {
           "file": {
             "type": "string",
-            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. A `label` is a display name and never an address; do not guess between an `id` and an `alias`. Required; there is no default file."
+            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. It is the file's stable `id`; a `label` or an `alias` is for display, never an address. Required; there is no default file."
           },
           "uuid": {
             "type": "string",
@@ -475,13 +475,13 @@
       "operationId": "listHoldings",
       "method": "GET",
       "pathTemplate": "/v1/files/{file}/holdings",
-      "description": "The statement of assets: everything the file holds on one date and what it is worth, instrument positions and cash account balances in a single list, each with its share of total assets. This is the only place a cash balance can be read and the only place a position's value can be, because the account tools carry neither.\n\nEach position is valued at the most recent price on or before the date, and that price's own date travels with it, so a quote that has gone stale is visible rather than hidden. `priceStale` says whether it has: true only when more than one trading day of the instrument's own calendar passed without a quote (`priceMissedTradingDays`), so a weekend or a holiday never makes a price stale. Name a stale price when you report a value built on it. Positions already closed by the date drop out; cash accounts stay in even at zero.",
+      "description": "The statement of assets: everything the file holds on one date and what it is worth, instrument positions and cash account balances in a single list, each with its share of total assets. This is the only place a cash balance can be read and the only place a position's value can be, because the account tools carry neither.\n\nEach position is valued at the most recent price on or before the date, and that price's own date travels with it, so a quote that has gone stale is visible rather than hidden. `priceStale` says whether it has: true only when more than one trading day of the instrument's own calendar passed without a quote (`priceMissedTradingDays`), so a weekend or a holiday never makes a price stale, and a price the user maintains by hand (quote feed `MANUAL`) is never flagged. Name a stale price when you report a value built on it. Positions already closed by the date drop out; cash accounts stay in even at zero.",
       "inputSchema": {
         "type": "object",
         "properties": {
           "file": {
             "type": "string",
-            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. A `label` is a display name and never an address; do not guess between an `id` and an `alias`. Required; there is no default file."
+            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. It is the file's stable `id`; a `label` or an `alias` is for display, never an address. Required; there is no default file."
           },
           "date": {
             "type": "string",
@@ -533,7 +533,7 @@
         "properties": {
           "file": {
             "type": "string",
-            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. A `label` is a display name and never an address; do not guess between an `id` and an `alias`. Required; there is no default file."
+            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. It is the file's stable `id`; a `label` or an `alias` is for display, never an address. Required; there is no default file."
           },
           "openingDate": {
             "type": "string",
@@ -610,7 +610,7 @@
         "properties": {
           "file": {
             "type": "string",
-            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. A `label` is a display name and never an address; do not guess between an `id` and an `alias`. Required; there is no default file."
+            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. It is the file's stable `id`; a `label` or an `alias` is for display, never an address. Required; there is no default file."
           },
           "openingDate": {
             "type": "string",
@@ -723,7 +723,7 @@
         "properties": {
           "file": {
             "type": "string",
-            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. A `label` is a display name and never an address; do not guess between an `id` and an `alias`. Required; there is no default file."
+            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. It is the file's stable `id`; a `label` or an `alias` is for display, never an address. Required; there is no default file."
           },
           "uuid": {
             "type": "string",
@@ -846,7 +846,7 @@
         "properties": {
           "file": {
             "type": "string",
-            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. A `label` is a display name and never an address; do not guess between an `id` and an `alias`. Required; there is no default file."
+            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. It is the file's stable `id`; a `label` or an `alias` is for display, never an address. Required; there is no default file."
           },
           "status": {
             "type": "array",
@@ -951,7 +951,7 @@
         "properties": {
           "file": {
             "type": "string",
-            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. A `label` is a display name and never an address; do not guess between an `id` and an `alias`. Required; there is no default file."
+            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. It is the file's stable `id`; a `label` or an `alias` is for display, never an address. Required; there is no default file."
           },
           "uuid": {
             "type": "string",

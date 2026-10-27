@@ -12,7 +12,9 @@ import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
@@ -164,6 +166,37 @@ public class UiDeadlineHonestyTest
         waitUntil(() -> host.syncExecResults().contains("done"));
     }
 
+    /**
+     * A read changes nothing. Even when it had started, the answer was thrown
+     * away and sending the read again is safe - so it is the retryable refusal,
+     * not "do not resend".
+     */
+    @Test
+    public void testAReadAlreadyRunningIsRetryable() throws Exception
+    {
+        var started = new CountDownLatch(1);
+        var release = new CountDownLatch(1);
+
+        try
+        {
+            ApiRoutes.syncExecBounded(host, () -> {
+                started.countDown();
+                release.await(10, TimeUnit.SECONDS);
+                return "read";
+            }, Duration.ofMillis(300), true);
+            fail("expected the bounded wait on the UI thread to expire");
+        }
+        catch (ApiException e)
+        {
+            assertThat(e.getType(), is("ui-busy"));
+            assertThat(e.getHeaders().get("Retry-After"), is("5"));
+        }
+
+        assertThat(started.getCount(), is(0L));
+        release.countDown();
+        waitUntil(() -> host.syncExecResults().contains("read"));
+    }
+
     /** an answer within the deadline is simply the answer */
     @Test
     public void testAnAnswerWithinTheDeadlineIsReturned() throws Exception
@@ -185,7 +218,7 @@ public class UiDeadlineHonestyTest
             ApiRoutes.computeBounded(() -> {
                 release.await(10, TimeUnit.SECONDS);
                 return null;
-            }, Duration.ofMillis(200));
+            }, Duration.ofMillis(200), new Semaphore(1));
             fail("expected the calculation deadline to expire");
         }
         catch (ApiException e)
@@ -201,6 +234,51 @@ public class UiDeadlineHonestyTest
         }
     }
 
+    /**
+     * Reported in review: the engines never check for an interrupt, so a
+     * calculation past its deadline keeps running. It keeps its slot until it
+     * really ends, and while every slot is taken a new calculation is refused
+     * at once instead of starting next to it.
+     */
+    @Test
+    public void testACalculationPastItsDeadlineKeepsItsSlot() throws Exception
+    {
+        var slots = new Semaphore(1);
+        var finish = new AtomicBoolean(false);
+
+        try
+        {
+            ApiRoutes.computeBounded(() -> {
+                // ignores the interrupt, as the engines do
+                while (!finish.get())
+                    Thread.onSpinWait();
+                return null;
+            }, Duration.ofMillis(200), slots);
+            fail("expected the calculation deadline to expire");
+        }
+        catch (ApiException e)
+        {
+            assertThat(e.getType(), is("calculation-timeout"));
+        }
+
+        // still running, still counted
+        assertThat(slots.availablePermits(), is(0));
+        try
+        {
+            ApiRoutes.computeBounded(() -> null, Duration.ofSeconds(5), slots);
+            fail("expected the second calculation to be refused while the first still runs");
+        }
+        catch (ApiException e)
+        {
+            assertThat(e.getType(), is("server-busy"));
+            assertThat(e.getHeaders().get("Retry-After"), is("1"));
+        }
+
+        finish.set(true);
+        waitUntil(() -> slots.availablePermits() == 1);
+        assertThat(ApiRoutes.computeBounded(() -> null, Duration.ofSeconds(5), slots), is(nullValue()));
+    }
+
     /** a failure inside the calculation is that failure, not a timeout */
     @Test
     public void testACalculationFailureIsPassedThrough() throws Exception
@@ -209,7 +287,7 @@ public class UiDeadlineHonestyTest
         {
             ApiRoutes.computeBounded(() -> {
                 throw ApiException.notFound();
-            }, Duration.ofSeconds(5));
+            }, Duration.ofSeconds(5), new Semaphore(1));
             fail("expected the calculation's own exception");
         }
         catch (ApiException e)

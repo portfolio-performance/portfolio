@@ -558,11 +558,21 @@ public final class McpEndpoint
             // reserved literal belongs to another endpoint: "attribute-types"
             // would answer with attribute types instead of one instrument.
             if ("uuid".equals(binding.wire()) && !UUID_PATTERN.matcher(text).matches())
-                return "`" + argument + "` must be an entity uuid as pp_list_instruments reports it, not `"
+                return "`" + argument + "` must be an entity uuid as " + listingOf(tool) + " reports it, not `"
                         + text + "`";
         }
 
         return null;
+    }
+
+    /** the tool that lists the entities a uuid-taking tool addresses */
+    private static String listingOf(McpTool tool)
+    {
+        if (tool.name().contains("cash_account"))
+            return "pp_list_cash_accounts";
+        if (tool.name().contains("investment_account"))
+            return "pp_list_investment_accounts";
+        return "pp_list_instruments";
     }
 
     private static boolean matchesType(JsonElement value, JsonElement declared)

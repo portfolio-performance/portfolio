@@ -22,8 +22,8 @@ public final class McpInstructions
                     — a live app on this machine, not a database. If it is closed or its REST API is off, nothing is reachable.
 
                     Start with pp_list_files. Every other tool needs a `file`: the `use` value from that list, sent \
-                    exactly as it was given. An `id` and an `alias` both appear there, but only `use` is an address — \
-                    a `label` is a display name. There is no default file. An empty list is not an error: only the \
+                    exactly as it was given. It is the file's stable `id`; an `alias` or a `label` is for display only. \
+                    There is no default file. An empty list is not an error: only the \
                     user can share a file, under Preferences → MCP Server & REST API.
 
                     **Writes are not saved to disk.** pp_update_instrument and pp_delete_instrument change the open file \

@@ -24,6 +24,7 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.online.QuoteFeed;
 
 @SuppressWarnings("nls")
 public class HoldingsTest
@@ -151,6 +152,35 @@ public class HoldingsTest
         assertThat(instrument.get("priceStale").getAsBoolean(), is(false));
         assertThat(instrument.get("priceAgeDays").getAsLong(), is(2L));
         assertThat(instrument.get("priceMissedTradingDays").getAsLong(), is(0L));
+    }
+
+    /**
+     * Reported in review: a price kept by hand changes when the user decides,
+     * not every trading day, and the data quality view ends a manual
+     * instrument's interval at its last quote. It is never flagged; its age is
+     * still reported.
+     */
+    @Test
+    public void testAManualPriceIsNeverStale()
+    {
+        var client = new Client();
+
+        var security = new SecurityBuilder() //
+                        .addPrice("2026-07-01", Values.Quote.factorize(110)) //
+                        .addTo(client);
+        security.setFeed(QuoteFeed.MANUAL);
+
+        new PortfolioBuilder() //
+                        .inbound_delivery(security, "2026-01-15", Values.Share.factorize(10),
+                                        Values.Amount.factorize(1000)) //
+                        .addTo(client);
+
+        var holdings = list(client, "2026-07-20", null).getAsJsonObject();
+        var instrument = holdings.get("items").getAsJsonArray().get(0).getAsJsonObject();
+
+        assertThat(instrument.get("priceStale").getAsBoolean(), is(false));
+        assertThat(instrument.get("priceAgeDays").getAsLong(), is(19L));
+        assertThat(instrument.get("priceMissedTradingDays").getAsLong(), is(12L));
     }
 
     /**

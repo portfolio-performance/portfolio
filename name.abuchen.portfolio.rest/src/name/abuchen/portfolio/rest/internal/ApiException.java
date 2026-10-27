@@ -137,6 +137,20 @@ public class ApiException extends RuntimeException
     }
 
     /**
+     * The deadline passed while a read was already running on the UI thread. A
+     * read changes nothing, so - unlike {@link #uiRequestUnderway} - it is the
+     * same retryable refusal as {@link #uiBusy}: the answer was thrown away, and
+     * sending the read again is the only way to get it.
+     */
+    public static ApiException uiReadTimedOut(long timeoutMillis)
+    {
+        return new ApiException(503, "ui-busy", "Application busy, retry later", //$NON-NLS-1$ //$NON-NLS-2$
+                        "The read was still running on the UI thread when the wait for it expired after " //$NON-NLS-1$
+                                        + timeoutMillis + " ms; it changes nothing, so it is safe to send again", //$NON-NLS-1$
+                        List.of(), Map.of("Retry-After", "5")); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    /**
      * The deadline passed while the request was already running on the UI
      * thread. Not {@link #uiBusy}: that one was not executed, this one will
      * finish, so it carries no Retry-After and must not be presented as

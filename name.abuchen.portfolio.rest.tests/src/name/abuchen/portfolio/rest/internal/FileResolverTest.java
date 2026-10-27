@@ -79,10 +79,11 @@ public class FileResolverTest
     }
 
     /**
-     * `use` names the value a caller must send as the {file} segment: the alias
-     * when the user assigned one, otherwise the uuid. A label is a display name
-     * and never an address, so the payload states which value to send instead of
-     * leaving a client to guess between the two.
+     * `use` names the value a caller must send as the {file} segment: always the
+     * uuid, even when the user assigned an alias - an alias can be renamed between
+     * listing and the next call. A label is a display name and never an address,
+     * so the payload states which value to send instead of leaving a client to
+     * guess.
      */
     @Test
     public void testFilePayloadNamesTheAddressToSend()
@@ -93,7 +94,7 @@ public class FileResolverTest
 
         var withAlias = EntityJson.toJson(registry.byPath("/tmp/a.portfolio").orElseThrow(), file);
         assertThat(withAlias.get("alias").getAsString(), is("main"));
-        assertThat(withAlias.get("use").getAsString(), is("main"));
+        assertThat(withAlias.get("use").getAsString(), is(withAlias.get("id").getAsString()));
         assertThat(withAlias.get("label").getAsString(), is("a display label"));
 
         registry.setAlias("/tmp/a.portfolio", null);

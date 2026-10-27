@@ -115,12 +115,13 @@ pagination and will not start truncating results. Any later paging must be opt-i
 
 ```json
 {"items": [
-  {"id": "5f3c…", "alias": "main", "label": "portfolio.xml", "path": "/Users/me/portfolio.xml"}
+  {"id": "5f3c…", "use": "5f3c…", "alias": "main", "label": "portfolio.xml", "path": "/Users/me/portfolio.xml"}
 ]}
 ```
 
-Lists only files that are open *and* enabled. Address a file by its `id` or its `alias` in the
-`{file}` segment below. Check `path` if it matters to your script which file it is writing to: the
+Lists only files that are open *and* enabled. `use` is the value to send in the `{file}` segment
+below; it is always the `id`, because the user can rename an alias at any time. An `alias` is
+accepted as well, which is handy in a hand-written script. Check `path` if it matters to your script which file it is writing to: the
 identity is keyed by path, so a *different* file copied over an enabled path inherits that path's
 identity and enablement.
 
@@ -211,10 +212,10 @@ save.
 | 423 | `user-interaction` | a dialog is open in the app — **retry**, see `Retry-After` |
 | 429 | `pairing-pending` | another pairing request awaits the user — retry after `Retry-After` |
 | 429 | `pairing-cooldown` | a pairing request was declined — retry after `Retry-After` |
-| 503 | `ui-busy` | the app's UI thread did not take the request on in time; it was not executed — **retry**, see `Retry-After` |
-| 503 | `ui-request-underway` | the request was already running on the UI thread and will finish — **do not retry**, read the state back |
+| 503 | `ui-busy` | the app's UI thread did not take the request on in time; it was not executed (or it was a read) — **retry**, see `Retry-After` |
+| 503 | `ui-request-underway` | a write was already running on the UI thread and will finish — **do not retry**, read the state back |
 | 503 | `calculation-timeout` | a calculation did not finish in time — ask a smaller question (shorter interval, one instrument) |
-| 503 | `server-busy` | more requests in flight than the server serves at once — retry after `Retry-After` |
+| 503 | `server-busy` | more requests in flight than the server serves at once, or every calculation slot taken — retry after `Retry-After` |
 
 Three of these regularly surprise clients:
 
@@ -230,15 +231,19 @@ than silently clobbered by whatever the dialog writes back on OK. Reads still wo
 thread and waits for it with a deadline (10 seconds). Whether the request ran is decided on the UI
 thread itself, so the answer is exact: `ui-busy` means the UI thread had not started the request
 when the wait expired — it is refused, will never run, nothing changed, and `Retry-After` is safe to
-honour. `ui-request-underway` means the request was already running — it will complete, so there is
-no `Retry-After` and sending a write again would apply the same change twice. Read the state back
+honour. `ui-request-underway` means a write was already running — it will complete, so there is
+no `Retry-After` and sending it again would apply the same change twice. Read the state back
 with the tool that lists or describes what the call changes, and report what is actually there.
+A read that was already running is answered `ui-busy` as well: it changes nothing, and sending it
+again is the only way to get the answer that was thrown away.
 
 Calculations (holdings, performance, trades) run off the UI thread with their own deadline (120
 seconds). `calculation-timeout` means the answer did not come in time; the same question would take
-just as long again, so narrow it. `server-busy` means more requests are in flight than the server
-serves at once (8); it is refused before the body is read, so retrying after `Retry-After` is
-cheap.
+just as long again, so narrow it. The engines cannot be interrupted, so a calculation past its
+deadline still runs to its end — and keeps one of the two calculation slots until it does.
+`server-busy` means more requests are in flight than the server serves at once (8), or both
+calculation slots are taken; it is refused before any work starts, so retrying after `Retry-After`
+is cheap.
 
 ## Computed collections
 

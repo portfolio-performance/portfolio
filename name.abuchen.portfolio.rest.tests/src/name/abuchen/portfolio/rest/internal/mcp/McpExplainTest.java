@@ -28,7 +28,7 @@ public class McpExplainTest
     {
         var text = explain(ApiException.uiBusy(10_000));
 
-        assertThat(text, containsString("nothing was read or changed"));
+        assertThat(text, containsString("nothing was changed"));
         assertThat(text, containsString("retryable: yes · reasonCode: ui-busy · retryAfterSeconds: 5"));
     }
 
