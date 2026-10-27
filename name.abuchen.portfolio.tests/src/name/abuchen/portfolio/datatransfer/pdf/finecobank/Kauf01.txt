@@ -1,0 +1,33 @@
+PDFBox Version: 3.0.8
+Portfolio Performance Version: 0.89.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Gentile
+Muster Max
+Milano, 22/05/2026
+In riferimento alle sue istruzioni, le comunichiamo l’esecuzione per suo conto dell’operazione sotto indicata sul Dossier n. 6543210
+intestato a:  Muster Max
+› aDati Ordine
+Descrizione titolo: ISHS CR STX EUR-AC
+Simbolo: CSSX5E
+Isin: IE00B53L3W79
+Operazione  ACQUISTO TITOLI Cambio applicato: 1,00000
+Riferimento ordine: 20260000000381976201 Cambio senza spread: 1,00000
+Trans ID: 61411053584056 Rateo lordo: 0,00 EUR 
+Data/ora ricevimento dell’ordine: 22/05/2026 10:53:58 Ritenuta rateo: 0,00 EUR 
+Data/ora esecuzione: 22/05/2026 10:53:59 Disaggio di emissione: 0,00000 EUR 
+Valuta regolamento: 26/05/2026 Ritenuta disaggio: 0,00 EUR 
+Tipo di ordine: Limitato Coefficiente di indicizzazione: 1,00000
+Mercato: EURONEXT MILAN Bolli: 0,00 EUR 
+Quantità: 4,000 Commissioni: 0,00 EUR 
+Prezzo eseguito: 233,15000 Spese: 0,00 EUR 
+Divisa: EUR Totale Commissioni e Spese: 0,00 EUR 
+Totale: 932,60 EUR 
+  FinecoBank S.p.A.
+L’Amministratore Delegato
+e Direttore Generale
+Rilasciata per gli usi consentiti dalla legge. Alessandro Foti
+FinecoBank S.p.A. - Sede legale 20131 Milano - P.zza Durante, 11 - Direzione Generale 42123 Reggio Emilia Via Rivoluzione d’Ottobre, 16 - Capitale Sociale € 201.629.810,91 interamente sottoscritto e versa-
+to - Banca iscritta all’Albo delle Banche e Capogruppo del Gruppo Bancario FinecoBank – Albo dei Gruppi Bancari cod. 3015 - P.Iva 12962340159 - Codice Fiscale e n. iscr. R.I. Milano-Monza-Brianza-Lodi 
+01392970404 - R.E.A. n. 1598155 - Aderente al Fondo Nazionale di Garanzia e al Fondo Interbancario di Tutela dei depositi. PEC: finecobankspa.pec@pec.finecobank.com
+AMM021 - vers. 1/2024 - Novembre 2024
