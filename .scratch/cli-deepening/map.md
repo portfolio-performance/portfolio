@@ -24,12 +24,12 @@ A hand-off-ready refactoring spec for `name.abuchen.portfolio.cli` and its tests
 
 - Fixed before charting (commit c84342165, "Stop a transaction update whose type or kind change is refused"): `transaction.update` now stops when the overlay refuses a type or kind change; previously the replacing context built the replacement anyway.
 - [What is the interface of a deepened Transaction record module?](issues/01-transaction-record-module.md): one `cli.transaction` module, `TransactionRecords.open(client, existedBeforeBatch)` with `all/find/render` and `add/update/delete` returning `Applied | Unchanged | Refused(FieldFailure…)`. Internal per-type rule table, a direct typed-Draft update path, OversellGuard inside, one join per call. Help stays hand-written with a drift test. `OperationInput` and `EntityKind` move to `cli.command` behind a failure sink.
+- [What is the facet interface that a command is composed of?](issues/02-command-facets.md): `Facet<T>` (Declaration + resolve + report) composed by `CommandSpec.of(..., facets…)`; handlers return data via `run.get(facet)`. `ClientFile.READ`/`write(...)` are facets (no write kind), cross-option rules stay in their owning facet, `ErrorSpec` → `ErrorCode` enum with scope derived from facets, immutable `Response`, multi-choice `OptionSpec`. Regex scan → CliRun code-in-scope check; `FacetHarness` tests; derived samples; golden `--help` test first. Transaction `OperationSpec`s move to `cli.transaction`; `TableColumn` stays per command.
 
 ## Not yet specified
 
 - **How the apply framework slims afterwards.** Ticket 01 settled that `OperationInput` and `EntityKind` move to `cli.command` behind a `FieldFailure` sink, and that `OperationContext` loses `replacing`. Still open: whether `OperationContext` gains a `claimExisting(kind)` helper, and whether the UUID-member parsing repeated in EntityOperations collapses. Hangs on ticket 03.
-- **Table output under facets.** Whether `TableColumn` declarations join the facet interface or stay per command. Hangs on ticket 02.
-- **Contract-change ripple.** Help text, skill (`SKILL.md`) and SkillDriftTest updates for the `Change.entity` enum and the declared failure codes. Hangs on tickets 03 and 06.
+- **Contract-change ripple.** Help text, skill (`SKILL.md`) and SkillDriftTest updates for the `Change.entity` enum, the declared failure codes, the multi-choice `--type` help line, and any `Response meta:` line the golden help test shows changed (ticket 02). Hangs on tickets 03 and 06.
 - **Migration order.** How to stage the refactors so the suite stays green and each step is one agent session; which end-to-end tests go when. Settled inside ticket 07 once the interfaces are known.
 
 ## Out of scope
