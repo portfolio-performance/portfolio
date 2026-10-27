@@ -221,6 +221,47 @@ public class PerformanceTest
     }
 
     /**
+     * Reported from a test run: with a closing date in the future, the closing
+     * value and the deposits grew with planned transactions while `ttwror` stood
+     * still - the time-weighted engine stops at today. The future date stays
+     * allowed, because a planned transaction is how a user simulates, and
+     * `timeWeightedUntil` says where the time-weighted figure stopped.
+     */
+    @Test
+    public void testAFutureClosingDateKeepsPlannedTransactionsAndSaysWhereTtwrorStopped()
+    {
+        var today = LocalDate.now();
+        var future = today.plusDays(30);
+        var client = heldPosition(account -> account.deposit_(today.plusDays(10).toString(),
+                        Values.Amount.factorize(500)));
+
+        var result = perf(client, "2024-01-01", future.toString(), null, null);
+
+        assertThat(result.get("closingDate").getAsString(), is(future.toString()));
+        assertThat(result.get("timeWeightedUntil").getAsString(), is(today.toString()));
+
+        // the planned deposit is in the money figures, and they still reconcile
+        var breakdown = result.get("breakdown").getAsJsonObject();
+        assertThat(value(breakdown, "netDeposits"), is(500.0));
+        assertReconciles(breakdown);
+
+        // ... and the time-weighted figure ignores it, as the engine always did
+        var untilToday = perf(client, "2024-01-01", today.toString(), null, null);
+        assertThat(result.get("ttwror").getAsDouble(), closeTo(untilToday.get("ttwror").getAsDouble(), 1e-12));
+    }
+
+    /** a closing date up to today is where the time-weighted figure stops, too */
+    @Test
+    public void testTimeWeightedUntilIsTheClosingDateWhenItIsNotInTheFuture()
+    {
+        var result = perf(heldPosition(), "2024-01-01", "2024-12-31", null, null);
+        assertThat(result.get("timeWeightedUntil").getAsString(), is("2024-12-31"));
+
+        var today = perf(heldPosition(), "2024-01-01", null, null, null);
+        assertThat(today.get("timeWeightedUntil").getAsString(), is(LocalDate.now().toString()));
+    }
+
+    /**
      * The reporting currency is echoed on the envelope - a stored response must
      * not force the reader to infer it from an arbitrary nested money object.
      */

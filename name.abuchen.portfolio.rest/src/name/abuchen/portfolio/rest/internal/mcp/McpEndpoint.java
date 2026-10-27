@@ -739,7 +739,8 @@ public final class McpEndpoint
             }
         }
 
-        return McpEnvelope.render(tool, arguments, payload, List.of(), McpEnvelope.oversizeAdvice(tool), maxChars);
+        var advice = McpEnvelope.oversizeAdvice(tool, arguments, payload);
+        return McpEnvelope.render(tool, arguments, payload, List.of(), advice, maxChars);
     }
 
     /** a 204 carries nothing to render; {@code pp_delete_instrument} is the one */

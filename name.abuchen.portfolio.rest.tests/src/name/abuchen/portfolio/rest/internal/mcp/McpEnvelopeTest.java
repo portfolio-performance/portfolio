@@ -453,6 +453,66 @@ public class McpEnvelopeTest
     }
 
     /**
+     * A period ending in the future mixes money figures that include planned
+     * transactions with time-weighted figures that stop at today. The reader is
+     * told before the figures, and told that neither return is a forecast.
+     */
+    @Test
+    public void testAPeriodEndingInTheFutureIsSaidToMixTwoPeriods()
+    {
+        var future = JsonParser.parseString(
+                        "{\"closingDate\": \"2031-01-01\", \"timeWeightedUntil\": \"2026-10-27\", \"ttwror\": 0.12}");
+        var rendered = McpEnvelope.render(PERFORMANCE, new JsonObject(), future, List.of());
+
+        assertThat(rendered, containsString("**This period ends in the future.** `closingDate` is 2031-01-01, after "
+                        + "today (2026-10-27)"));
+        assertThat(rendered, containsString("None of them is a forecast"));
+        assertThat(rendered.indexOf("ends in the future"), lessThan(rendered.indexOf("\"ttwror\"")));
+
+        var past = JsonParser.parseString(
+                        "{\"closingDate\": \"2025-12-31\", \"timeWeightedUntil\": \"2025-12-31\", \"ttwror\": 0.12}");
+        assertThat(McpEnvelope.render(PERFORMANCE, new JsonObject(), past, List.of()),
+                        not(containsString("ends in the future")));
+    }
+
+    /**
+     * Reported from a test run: a call already filtered to closed trades was
+     * told to filter by status, which sends the same oversized request again.
+     * The advice follows the call as it was made, and says how many trades the
+     * request held.
+     */
+    @Test
+    public void testTradesAdviceFollowsTheCall()
+    {
+        var payload = JsonParser.parseString("{\"items\": [{}, {}, {}]}");
+
+        var unfiltered = McpEnvelope.oversizeAdvice(TRADES, new JsonObject(), payload);
+        assertThat(unfiltered, containsString("`status: [\"closed\"]`"));
+        assertThat(unfiltered, containsString("3 in this request"));
+        assertThat(unfiltered, containsString("pp_list_instrument_trades"));
+
+        var closed = JsonParser.parseString("{\"status\": [\"closed\"]}").getAsJsonObject();
+        var filtered = McpEnvelope.oversizeAdvice(TRADES, closed, payload);
+        assertThat(filtered, not(containsString("`status: [\"closed\"]`")));
+        assertThat(filtered, containsString("status filter is already applied"));
+        assertThat(filtered, containsString("pp_list_instrument_trades"));
+        assertThat(filtered, not(containsString("grouping")));
+
+        // both statuses are no filter at all
+        var both = JsonParser.parseString("{\"status\": [\"open\", \"closed\"]}").getAsJsonObject();
+        assertThat(McpEnvelope.oversizeAdvice(TRADES, both, payload), containsString("`status: [\"closed\"]`"));
+
+        var perLot = JsonParser.parseString("{\"status\": [\"closed\"], \"grouping\": \"per-lot\"}")
+                        .getAsJsonObject();
+        assertThat(McpEnvelope.oversizeAdvice(TRADES, perLot, payload),
+                        containsString("leave `grouping` at `combined`"));
+
+        // every other tool keeps its own advice whatever the arguments
+        assertThat(McpEnvelope.oversizeAdvice(INSTRUMENTS, closed, payload),
+                        is(McpEnvelope.oversizeAdvice(INSTRUMENTS)));
+    }
+
+    /**
      * Measured: without this the cash accounts are dropped from a ranking, and
      * in a real file they can be the largest positions in it.
      */

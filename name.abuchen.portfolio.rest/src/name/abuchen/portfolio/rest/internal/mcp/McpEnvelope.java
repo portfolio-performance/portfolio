@@ -101,7 +101,7 @@ public final class McpEnvelope
                     String advice, int maxChars)
     {
         var found = scan(payload);
-        var guidance = guidanceBefore(found, droppedMetrics);
+        var guidance = guidanceBefore(found, payload, droppedMetrics);
         var notes = notesFor(tool, arguments, found);
         if (!notes.isEmpty())
             guidance.add(notes.stream().map(note -> "- " + note).reduce((a, b) -> a + "\n" + b).orElseThrow());
@@ -127,7 +127,7 @@ public final class McpEnvelope
     }
 
     /** what changes what the payload means: warnings, unconverted money, what was dropped */
-    private static List<String> guidanceBefore(Scan found, List<String> droppedMetrics)
+    private static List<String> guidanceBefore(Scan found, JsonElement payload, List<String> droppedMetrics)
     {
         var sections = new ArrayList<String>();
 
@@ -150,6 +150,21 @@ public final class McpEnvelope
                     + " in this report have nothing to convert with, so amounts in those currencies were multiplied by "
                     + "1 and are shown at face value. Say that they are unconverted; do not present them as if the "
                     + "exchange rate had been applied. The pairs:\n" + preview(found.fxWarnings(), "fxWarnings"));
+        }
+
+        // a period ending in the future mixes two kinds of figure, and neither
+        // of its returns is a forecast - said before the figures, like the
+        // other two outcomes that change what they mean
+        var future = endsInTheFuture(payload);
+        if (future.isPresent())
+        {
+            sections.add("**This period ends in the future.** `closingDate` is " + future.get().closingDate()
+                            + ", after today (" + future.get().today() + "). The closing value, `netDeposits` and the "
+                            + "other money figures include the transactions dated up to `closingDate`, valued at the "
+                            + "latest known prices; the time-weighted figures and the risk measures stop at "
+                            + "`timeWeightedUntil`; `irr` spreads the result over days without any price movement. "
+                            + "None of them is a forecast. Use the money figures to show what planned transactions "
+                            + "would do, and say that the returns do not project anything.");
         }
 
         if (!droppedMetrics.isEmpty())
@@ -263,6 +278,30 @@ public final class McpEnvelope
     }
 
     /** an always-present collection field of a report, empty when it is absent */
+    /** a report period that runs past today, the last day its time-weighted figures reach */
+    private record FutureEnd(String closingDate, String today)
+    {
+    }
+
+    /**
+     * The closing date and the last time-weighted day of a report whose period
+     * runs past today, or empty. ISO dates compare correctly as strings.
+     */
+    private static Optional<FutureEnd> endsInTheFuture(JsonElement payload)
+    {
+        if (payload == null || !payload.isJsonObject())
+            return Optional.empty();
+
+        var closing = payload.getAsJsonObject().get("closingDate");
+        var until = payload.getAsJsonObject().get("timeWeightedUntil");
+        if (closing == null || until == null || !closing.isJsonPrimitive() || !until.isJsonPrimitive())
+            return Optional.empty();
+
+        return closing.getAsString().compareTo(until.getAsString()) > 0
+                        ? Optional.of(new FutureEnd(closing.getAsString(), until.getAsString()))
+                        : Optional.empty();
+    }
+
     private static JsonArray topLevelArray(JsonElement payload, String key)
     {
         if (!payload.isJsonObject())
@@ -354,6 +393,58 @@ public final class McpEnvelope
     }
 
     /**
+     * The advice for the call as it was made. Only the trades list depends on
+     * the arguments: advice to filter by status that the call already followed
+     * would send the same oversized request again, and the number of trades
+     * tells the reader how far one answer is from holding them all.
+     */
+    public static String oversizeAdvice(McpTool tool, JsonObject arguments, JsonElement payload)
+    {
+        return "pp_list_trades".equals(tool.name()) ? tradesAdvice(arguments, payload) : oversizeAdvice(tool);
+    }
+
+    private static String tradesAdvice(JsonObject arguments, JsonElement payload)
+    {
+        var advice = new StringBuilder("This portfolio has more trades than fit in one answer");
+        var count = itemCount(payload);
+        if (count >= 0)
+            advice.append(" - ").append(count).append(" in this request");
+        advice.append(". ");
+
+        if (isSingleStatus(arguments == null ? null : arguments.get("status")))
+            advice.append("The status filter is already applied and is not enough: use ");
+        else
+            advice.append("Ask for `status: [\"closed\"]` or `[\"open\"]` alone, or use ");
+
+        advice.append("pp_list_instrument_trades for one instrument at a time");
+
+        var grouping = arguments == null ? null : arguments.get("grouping");
+        if (grouping != null && grouping.isJsonPrimitive() && "per-lot".equals(grouping.getAsString()))
+            advice.append(", and leave `grouping` at `combined` - `per-lot` makes every purchase a row of its own");
+
+        return advice.append(". A whole file of matched trades is never going to fit in one answer.").toString();
+    }
+
+    /** whether a status argument names exactly one status */
+    private static boolean isSingleStatus(JsonElement status)
+    {
+        if (status == null || status.isJsonNull())
+            return false;
+        if (status.isJsonArray())
+            return status.getAsJsonArray().size() == 1;
+        return status.isJsonPrimitive();
+    }
+
+    /** the number of items in a list payload, or -1 when it has none */
+    private static int itemCount(JsonElement payload)
+    {
+        if (payload == null || !payload.isJsonObject())
+            return -1;
+        var items = payload.getAsJsonObject().get("items");
+        return items != null && items.isJsonArray() ? items.getAsJsonArray().size() : -1;
+    }
+
+    /**
      * The same advice for a report that was already narrowed, naming the groups
      * that were dropped on the way.
      * <p/>
@@ -373,10 +464,7 @@ public final class McpEnvelope
 
         return switch (tool.name())
         {
-            case "pp_list_trades" -> "This portfolio has more trades than fit in one answer. Ask for "
-                            + "`status: [\"closed\"]` or `[\"open\"]` alone if you did not already, and use "
-                            + "pp_list_instrument_trades for one instrument at a time - a whole file of matched trades "
-                            + "is never going to fit in one answer.";
+            case "pp_list_trades" -> tradesAdvice(null, null);
             case "pp_list_instruments" -> "This file has more instruments than fit in one answer. Ask about specific "
                             + "instruments with pp_get_instrument, or ask the user which part of the portfolio they "
                             + "mean.";

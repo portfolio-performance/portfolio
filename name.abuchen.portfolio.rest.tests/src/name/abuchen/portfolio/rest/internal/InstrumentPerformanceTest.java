@@ -115,6 +115,7 @@ public class InstrumentPerformanceTest
 
         assertThat(result.get("openingDate").getAsString(), is(OPENING));
         assertThat(result.get("closingDate").getAsString(), is(CLOSING));
+        assertThat(result.get("timeWeightedUntil").getAsString(), is(CLOSING));
         assertThat(result.get("reportingCurrency").getAsString(), is("USD"));
         assertThat(result.get("costMethod").getAsString(), is("moving-average"));
         assertThat(result.get("taxesAndFees").getAsString(), is("excluded"));
@@ -223,6 +224,28 @@ public class InstrumentPerformanceTest
         for (var warning : report.get("fxWarnings").getAsJsonArray())
             currencies.add(warning.getAsJsonObject().get("currency").getAsString());
         return currencies;
+    }
+
+    /**
+     * A closing date in the future stays allowed - a planned transaction is how
+     * a user simulates - but the time-weighted and risk figures stop at today,
+     * and the context says so on the collection and on the item route alike.
+     */
+    @Test
+    public void testAFutureClosingDateSaysWhereTheTimeWeightedFiguresStopped()
+    {
+        var today = LocalDate.now().toString();
+        var future = LocalDate.now().plusDays(30).toString();
+        var client = heldPosition();
+
+        var result = list(client, OPENING, future, null, null, null, null);
+        assertThat(result.get("closingDate").getAsString(), is(future));
+        assertThat(result.get("timeWeightedUntil").getAsString(), is(today));
+
+        var uuid = client.getSecurities().get(0).getUUID();
+        var item = InstrumentPerformanceHandler.get(client, new ExchangeRateProviderFactory(client), uuid, OPENING,
+                        future, null, null, null, null).getAsJsonObject();
+        assertThat(item.get("timeWeightedUntil").getAsString(), is(today));
     }
 
     /** the echo states the value that was applied, not an omitted property */

@@ -36,11 +36,13 @@ curl -s -X POST -d '{"clientName": "My Script"}' http://127.0.0.1:5712/v1/auth/r
 
 # 2. the user approves or declines inside Portfolio Performance; poll every 1–2s
 curl -s http://127.0.0.1:5712/v1/auth/requests/<id>
-# → {"status": "pending"} … then {"status": "approved", "token": "…"}
+# → {"status": "pending"} … then {"status": "approved", "token": "…", "persistent": true}
 ```
 
 The approval prompt offers **Allow for this session** (the token dies when the application quits),
 **Always allow** (persistent), and **Decline**. The token is delivered **exactly once** — store it.
+`persistent` says whether it survives a restart: `false` for a session grant, and also for an
+always-allow grant the application could not record — pair again after the next start.
 A request expires after 2 minutes; only one may be pending at a time, and a decline imposes a
 cool-down (both reported `429` with `Retry-After`). Every `401` names the pairing endpoint in its
 `pairingEndpoint` field, so the flow is discoverable at runtime.
@@ -80,6 +82,10 @@ exists. Same switch, same port, same tokens; there is nothing extra to install.
   additive-only promise.
 - **The last refused connection is shown on the preference page.** A client with a wrong token never
   becomes an entry in the client list and reports nothing itself.
+- **Keep the connector name short — 27 characters at most.** Some clients, Claude among them, cap a
+  tool's full name at 64 characters, counting a prefix made from the name you give the connector:
+  `mcp__<name>__pp_list_instrument_performance`, whose tool part is the longest at 30 characters.
+  `portfolio-performance` fits; a longer name gets tool names truncated and suffixed with a hash.
 
 The tools themselves — names, descriptions, `inputSchema`, annotations — are `mcp-tools.json` in
 this bundle. See [For contributors](#for-contributors) before editing a word of it.

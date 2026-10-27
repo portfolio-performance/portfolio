@@ -260,6 +260,7 @@ public final class EntityJson
         var json = new JsonObject();
         json.addProperty("openingDate", openingDate.toString()); //$NON-NLS-1$
         json.addProperty("closingDate", closingDate.toString()); //$NON-NLS-1$
+        json.addProperty("timeWeightedUntil", CalcParams.timeWeightedUntil(closingDate).toString()); //$NON-NLS-1$
         json.addProperty("reportingCurrency", reportingCurrency); //$NON-NLS-1$
         json.addProperty("costMethod", CalcParams.wireName(costMethod)); //$NON-NLS-1$
         json.add("ttwror", ratio(ttwror)); //$NON-NLS-1$
@@ -290,6 +291,8 @@ public final class EntityJson
         var json = new JsonObject();
         json.addProperty("openingDate", params.openingDate().toString()); //$NON-NLS-1$
         json.addProperty("closingDate", params.closingDate().toString()); //$NON-NLS-1$
+        json.addProperty("timeWeightedUntil", //$NON-NLS-1$
+                        CalcParams.timeWeightedUntil(params.closingDate()).toString());
         json.addProperty("reportingCurrency", params.currency()); //$NON-NLS-1$
         json.addProperty("costMethod", CalcParams.wireName(params.costMethod())); //$NON-NLS-1$
         json.addProperty("taxesAndFees", CalcParams.wireName(params.taxesAndFees())); //$NON-NLS-1$

@@ -897,7 +897,9 @@ paths:
             The closing valuation date (default: today). `closingValue` equals
             `GET .../holdings?date={closingDate}`'s `totalAssets`. Must be
             strictly after `openingDate`; an empty or inverted range is rejected
-            `400 invalid-range`.
+            `400 invalid-range`. Future dates are accepted and value at the last
+            known prices; `ttwror` stops at today, which the response states as
+            `timeWeightedUntil`.
           schema:
             type: string
             format: date
@@ -924,6 +926,7 @@ paths:
                   value:
                     openingDate: "2024-01-01"
                     closingDate: "2024-12-31"
+                    timeWeightedUntil: "2024-12-31"
                     reportingCurrency: EUR
                     costMethod: fifo
                     ttwror: 0.0723
@@ -1013,6 +1016,7 @@ paths:
                   value:
                     openingDate: "2025-01-01"
                     closingDate: "2025-12-31"
+                    timeWeightedUntil: "2025-12-31"
                     reportingCurrency: EUR
                     costMethod: fifo
                     taxesAndFees: included
@@ -1103,6 +1107,7 @@ paths:
                   value:
                     openingDate: "2025-01-01"
                     closingDate: "2025-12-31"
+                    timeWeightedUntil: "2025-12-31"
                     reportingCurrency: EUR
                     costMethod: fifo
                     taxesAndFees: included
@@ -1389,7 +1394,8 @@ components:
         The closing valuation date (default: today). Must be strictly after
         `openingDate`; an empty or inverted range is rejected `400
         invalid-range`. Future dates are accepted and value at the last known
-        prices.
+        prices; the time-weighted figures stop at today, which the response
+        states as `timeWeightedUntil`.
       schema:
         type: string
         format: date
@@ -1502,8 +1508,11 @@ components:
         average cost of the shares rather than the matched lots.
 
         It does **not** change `irr`, which is derived from the actual cash
-        flows and has no moving-average counterpart — so a request with
-        `moving-average` returns a deliberately mixed-basis item. Nor does it
+        flows of the lots matched first in, first out — as in the
+        application's trades view — and has no moving-average counterpart. A
+        request with `moving-average` therefore returns a deliberately
+        mixed-basis item, whose `irr` can even differ in sign from its
+        `profitLoss`. Nor does it
         change `exitValue`, which is what the shares realized or are worth.
 
         `entryValue`, `profitLoss` and `return` are `null` — always all three
@@ -1757,9 +1766,11 @@ components:
           type: [number, "null"]
           description: |
             The internal rate of return as a fraction (0.0523 is 5.23 %),
-            annualized, from the trade's actual cash flows. Does **not** follow
-            `costMethod` or `taxesAndFees` — there is no variant of it. `null`
-            when the model cannot define it.
+            annualized, from the actual cash flows of the lots matched first
+            in, first out. Does **not** follow `costMethod` or `taxesAndFees` —
+            there is no variant of it — so under `moving-average` it can differ
+            in sign from `profitLoss`. Annualizing makes it extreme for a short
+            holding period. `null` when the model cannot define it.
         return:
           type: [number, "null"]
           description: |
@@ -2153,6 +2164,7 @@ components:
       required:
         - openingDate
         - closingDate
+        - timeWeightedUntil
         - reportingCurrency
         - costMethod
         - ttwror
@@ -2168,6 +2180,17 @@ components:
           type: string
           format: date
           description: The effective closing valuation date.
+        timeWeightedUntil:
+          type: string
+          format: date
+          description: |
+            The last day `ttwror` is measured to: `closingDate`, or today when
+            `closingDate` lies in the future, because the time-weighted engine
+            never runs past today. The breakdown and `irr` run to `closingDate`
+            and include the transactions dated after today, valued at the
+            latest known prices — a planned transaction shows its effect there.
+            When the two dates differ the report mixes two periods, and neither
+            return is a forecast.
         reportingCurrency:
           type: string
           description: |
@@ -2267,6 +2290,7 @@ components:
       required:
         - openingDate
         - closingDate
+        - timeWeightedUntil
         - reportingCurrency
         - costMethod
         - taxesAndFees
@@ -2281,6 +2305,17 @@ components:
           type: string
           format: date
           description: The effective closing valuation date.
+        timeWeightedUntil:
+          type: string
+          format: date
+          description: |
+            The last day the `timeWeighted` and `risk` figures are measured to:
+            `closingDate`, or today when `closingDate` lies in the future,
+            because the time-weighted engine never runs past today. Valuation,
+            gains, income, expenses and `moneyWeighted` run to `closingDate`
+            and include the transactions dated after today, valued at the latest
+            known prices. When the two dates differ the report mixes two
+            periods, and neither return is a forecast.
         reportingCurrency:
           type: string
           description: |
@@ -2467,20 +2502,25 @@ components:
       description: |
         What the instrument cost during the interval: the charges embedded in
         its trades and dividends, plus the standalone fee and tax bookings
-        attributed to it, net of refunds.
+        attributed to it, net of refunds. Both are positive magnitudes as a
+        rule, but negative when refunds outweigh the charges in the interval —
+        a tax refund booked against the instrument, for example.
       required: [fees, taxes]
       properties:
         fees:
           allOf:
             - $ref: "#/components/schemas/MonetaryValue"
           description: |
-            The fees charged, as a positive magnitude — unlike the aggregate
-            endpoint's `breakdown.fees`, which is negated so that its
-            decomposition adds up.
+            The fees charged net of fee refunds, as a positive magnitude unless
+            refunds outweigh them — unlike the aggregate endpoint's
+            `breakdown.fees`, which is negated so that its decomposition adds
+            up.
         taxes:
           allOf:
             - $ref: "#/components/schemas/MonetaryValue"
-          description: The taxes charged, as a positive magnitude.
+          description: |
+            The taxes charged net of tax refunds, as a positive magnitude
+            unless refunds outweigh them.
 
     InstrumentRisk:
       type: object
