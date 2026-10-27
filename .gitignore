@@ -1,4 +1,6 @@
 target
+# written into each module directory by tycho-packaging:update-consumer-pom, removed again at build end
+.tycho-consumer-pom.xml
 workspace
 .metadata/*
 .recommenders/*
