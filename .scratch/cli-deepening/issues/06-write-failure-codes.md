@@ -6,6 +6,8 @@ Blocked by: 01, 02
 
 Map: [map.md](../map.md). Review card 5, "Declared failure codes for write operations", in [architecture-review.html](../architecture-review.html#c5). Contract change allowed (map Notes): the codes become listed in `apply --help <op>`.
 
+Note from [ticket 01](01-transaction-record-module.md): the transaction refusal codes (`*-not-allowed`) now sit on the members of the Transaction record module's internal rule table, and all of its failures come back as `FieldFailure` values in `Outcome.Refused`. Declaring them per operation can read from there.
+
 ## Question
 
 Where are the field-level failure codes of `apply` operations declared, so that `apply --help <op>` lists them, `context.fail` can only raise a declared code, and SkillDriftTest knows them? Is it per OperationSpec, one shared catalog, or the deepened modules from tickets 01 and 03, following ticket 02's "declared by whatever raises it" rule?
