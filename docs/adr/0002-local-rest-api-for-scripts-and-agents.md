@@ -57,6 +57,12 @@ becomes a later thin adapter over the same service layer. The individual decisio
   dialogs such as `EditSecurityDialog` hold a stale copy of the entity that is written back wholesale
   on OK, and `syncExec` runnables *do* execute during a modal event loop — so an API write landing
   mid-dialog would be silently clobbered. Reads stay allowed.
+- **The wait for the UI thread is bounded, and the two outcomes are told apart** (503 `ui-busy` vs.
+  503 `ui-request-underway`). Parking the worker on a busy UI thread makes the API look dead, so the
+  wait has a deadline. A request the UI thread was *never given* is a refusal and safe to retry
+  (`Retry-After`); a request that was *already handed over* when the deadline passed may still be
+  executed — cancelling does not stop a runnable that has begun — so that one carries no
+  `Retry-After` and must not be resent, because a second write would apply the same change twice.
 - **The API vocabulary is deliberately more general than the model** (`Security` → *instrument*,
   `Portfolio` → *investment account*), because the contract cannot be renamed once clients exist.
   Java class names keep the model's vocabulary; the mapping and its rationale are in the README.
