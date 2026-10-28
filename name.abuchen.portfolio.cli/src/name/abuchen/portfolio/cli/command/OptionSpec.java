@@ -22,16 +22,54 @@ public record OptionSpec(String name, String valueName, String description, Type
     /** How the value of an option is read. */
     sealed interface Type permits Text, IsoDate, IntegerDomain, Flag, Choice, Choices, Currency, Reference
     {
+        /**
+         * Checks a value of the option as the command line is parsed; a type
+         * whose values can't be wrong yet accepts it.
+         */
+        default void check(OptionSpec option, Optional<String> raw) throws CliException
+        {
+        }
+
+        /** The value of a lone option, see {@link Facet#option(OptionSpec)}. */
+        Object value(CommandContext run, OptionSpec option) throws CliException;
+
+        /** What the type adds to the option's help line. */
+        default List<String> helpFacts()
+        {
+            return List.of();
+        }
     }
 
     /** A reference to one entity of a kind; declared through {@link ReferenceOption}. */
     public record Reference(String label) implements Type
     {
+        @Override
+        public Object value(CommandContext run, OptionSpec option)
+        {
+            throw new IllegalStateException("Option '--" + option.name() + "' is a reference: use ReferenceOption");
+        }
     }
 
     /** One of a fixed set of values; <code>--help</code> publishes them. */
     public record Choice(List<String> values, String defaultValue) implements Type
     {
+        @Override
+        public void check(OptionSpec option, Optional<String> raw) throws CliException
+        {
+            option.parseChoice(raw);
+        }
+
+        @Override
+        public Object value(CommandContext run, OptionSpec option) throws CliException
+        {
+            return run.choice(option);
+        }
+
+        @Override
+        public List<String> helpFacts()
+        {
+            return List.of("one of " + String.join(", ", values), "default " + defaultValue);
+        }
     }
 
     /**
@@ -40,31 +78,105 @@ public record OptionSpec(String name, String valueName, String description, Type
      */
     public record Choices(List<String> values) implements Type
     {
+        @Override
+        public void check(OptionSpec option, Optional<String> raw) throws CliException
+        {
+            option.parseChoices(raw);
+        }
+
+        @Override
+        public Object value(CommandContext run, OptionSpec option) throws CliException
+        {
+            return run.choices(option);
+        }
+
+        @Override
+        public List<String> helpFacts()
+        {
+            return List.of("one or more of " + String.join(", ", values));
+        }
     }
 
     /** The ISO code of a currency known to core. */
     public record Currency() implements Type
     {
+        @Override
+        public void check(OptionSpec option, Optional<String> raw) throws CliException
+        {
+            option.parseCurrency(raw);
+        }
+
+        @Override
+        public Object value(CommandContext run, OptionSpec option) throws CliException
+        {
+            return run.currency(option);
+        }
     }
 
     /** A switch that takes no value: present or absent. */
     public record Flag() implements Type
     {
+        @Override
+        public Object value(CommandContext run, OptionSpec option)
+        {
+            return run.flag(option);
+        }
+
+        @Override
+        public List<String> helpFacts()
+        {
+            return List.of("switch, default off");
+        }
     }
 
     /** A free-form value. */
     public record Text() implements Type
     {
+        @Override
+        public Object value(CommandContext run, OptionSpec option)
+        {
+            return run.text(option);
+        }
     }
 
-    /** An ISO <code>yyyy-MM-dd</code> date. */
+    /** An ISO <code>yyyy-MM-dd</code> date; the value placeholder already reads so in help. */
     public record IsoDate() implements Type
     {
+        @Override
+        public void check(OptionSpec option, Optional<String> raw) throws CliException
+        {
+            option.parseDate(raw);
+        }
+
+        @Override
+        public Object value(CommandContext run, OptionSpec option) throws CliException
+        {
+            return run.date(option);
+        }
     }
 
     /** The default and inclusive range of an integer option. The maximum may be null (unbounded). */
     public record IntegerDomain(long defaultValue, long minimum, Long maximum) implements Type
     {
+        @Override
+        public void check(OptionSpec option, Optional<String> raw) throws CliException
+        {
+            option.parseInteger(raw);
+        }
+
+        @Override
+        public Object value(CommandContext run, OptionSpec option) throws CliException
+        {
+            return run.integer(option);
+        }
+
+        @Override
+        public List<String> helpFacts()
+        {
+            return List.of("integer " + (maximum == null ? "at least " + minimum : minimum + " to " + maximum),
+                            "default " + defaultValue);
+        }
+
         boolean contains(long value)
         {
             return value >= minimum && (maximum == null || value <= maximum);
@@ -242,23 +354,13 @@ public record OptionSpec(String name, String valueName, String description, Type
      */
     void check(Optional<String> raw) throws CliException
     {
-        switch (type)
-        {
-            case IsoDate date -> parseDate(raw);
-            case IntegerDomain domain -> parseInteger(raw);
-            case Choice choice -> parseChoice(raw);
-            case Choices choices -> parseChoices(raw);
-            case Currency currency -> parseCurrency(raw);
-            case Flag flag ->
-            {
-            }
-            case Text text ->
-            {
-            }
-            case Reference reference ->
-            {
-            }
-        }
+        type.check(this, raw);
+    }
+
+    /** What the option's type adds to its help line, such as its range and default. */
+    public List<String> typeFacts()
+    {
+        return type.helpFacts();
     }
 
     /**

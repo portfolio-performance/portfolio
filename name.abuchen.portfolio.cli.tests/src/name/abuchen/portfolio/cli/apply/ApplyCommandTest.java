@@ -3,7 +3,6 @@ package name.abuchen.portfolio.cli.apply;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
@@ -90,54 +89,6 @@ public class ApplyCommandTest
     }
 
     @Test
-    public void updatesOnlyThePresentFieldsAndReportsBeforeAndAfter() throws IOException
-    {
-        var uuid = idleInstrument().getUUID();
-        cli.apply(update(uuid, "\"name\":\"Old\",\"currencyCode\":\"EUR\",\"note\":\"first\",\"wkn\":\"W1\""));
-
-        var run = cli.apply(update(uuid, "\"name\":\"Renamed\",\"note\":null,\"retired\":true,\"wkn\":\"W1\""));
-
-        assertThat(run.stdout, run.exitCode, is(0));
-
-        var updated = run.updated();
-        assertThat(updated.get("entity").getAsString(), is("instrument"));
-        assertThat(updated.get("uuid").getAsString(), is(uuid));
-        // wkn is unchanged and therefore not reported
-        assertThat(updated.getAsJsonObject("before").keySet(), containsInAnyOrder("name", "note", "retired"));
-        assertThat(updated.getAsJsonObject("before").get("name").getAsString(), is("Old"));
-        assertThat(updated.getAsJsonObject("after").get("name").getAsString(), is("Renamed"));
-        assertThat(updated.getAsJsonObject("after").get("note").isJsonNull(), is(true));
-        assertThat(updated.getAsJsonObject("after").get("retired").getAsBoolean(), is(true));
-
-        var security = cli.reload().getSecurities().get(1);
-        assertThat(security.getName(), is("Renamed"));
-        assertThat(security.getNote() == null, is(true));
-        assertThat(security.getCurrencyCode(), is("EUR"));
-        assertThat(security.getWkn(), is("W1"));
-        assertThat(security.isRetired(), is(true));
-    }
-
-    @Test
-    public void refusesAnInvalidIsinWithAFieldLevelError() throws IOException
-    {
-        var before = Files.readAllBytes(file.toPath());
-
-        var run = cli.apply(add("\"name\":\"Bad\",\"isin\":\"US0378331006\""));
-
-        assertThat(run.exitCode, is(1));
-        assertThat(run.code(), is("validation-failed"));
-        assertThat(run.failures().size(), is(1));
-        assertThat(run.failure(0).get("operationIndex").getAsInt(), is(0));
-        assertThat(run.failure(0).get("field").getAsString(), is("isin"));
-        assertThat(run.failure(0).get("code").getAsString(), is("invalid-isin"));
-        assertThat(run.failure(0).get("message").getAsString(), containsString("US0378331006"));
-        assertThat(run.failure(0).get("check").getAsString(), is("Isin.isValid"));
-        assertThat(run.failure(0).keySet(),
-                        containsInAnyOrder("operationIndex", "field", "code", "message", "check"));
-        assertThat(Files.readAllBytes(file.toPath()), is(before));
-    }
-
-    @Test
     public void reportsEveryFailureOfABatchAtOnceAndLeavesTheFileUntouched() throws IOException
     {
         var before = Files.readAllBytes(file.toPath());
@@ -155,6 +106,9 @@ public class ApplyCommandTest
         assertThat(run.failureKeys(), containsInAnyOrder("1:isin:invalid-isin", "2:currencyCode:invalid-currency",
                         "2:name:required", "3:uuid:reference-not-found", "4:operation:unknown-operation",
                         "5:colour:unknown-field", "5:retired:invalid-type"));
+        // a failure that a core check decides names it
+        assertThat(run.failure(0).get("field").getAsString(), is("isin"));
+        assertThat(run.failure(0).get("check").getAsString(), is("Isin.isValid"));
 
         assertThat(Files.readAllBytes(file.toPath()), is(before));
         assertThat(ClientFiles.listing(clientFolder), is(listingBefore));

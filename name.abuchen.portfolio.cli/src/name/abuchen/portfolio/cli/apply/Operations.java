@@ -9,29 +9,24 @@ import name.abuchen.portfolio.cli.masterdata.Instruments;
 import name.abuchen.portfolio.cli.masterdata.InvestmentAccounts;
 import name.abuchen.portfolio.cli.transaction.TransactionRecords;
 
-/** The single list of write operations, applied by the <code>apply</code> command. */
+/**
+ * The single list of write operations, applied by the <code>apply</code>
+ * command. An operation declared outside <code>apply</code> handles an
+ * {@link OperationSpec.Context}, which the batch's {@link OperationContext}
+ * is.
+ */
 public final class Operations
 {
-    public static final List<OperationSpec<OperationContext>> ALL = Stream
-                    .of(adapt(Instruments.INSTRUMENTS.operations()), adapt(CashAccounts.CASH_ACCOUNTS.operations()),
-                                    adapt(InvestmentAccounts.INVESTMENT_ACCOUNTS.operations()),
-                                    adapt(List.of(TransactionRecords.ADD, TransactionRecords.UPDATE,
-                                                    TransactionRecords.DELETE)),
+    public static final List<OperationSpec<? super OperationContext>> ALL = Stream
+                    .<List<? extends OperationSpec<? super OperationContext>>> of(Instruments.INSTRUMENTS.operations(),
+                                    CashAccounts.CASH_ACCOUNTS.operations(),
+                                    InvestmentAccounts.INVESTMENT_ACCOUNTS.operations(),
+                                    List.of(TransactionRecords.ADD, TransactionRecords.UPDATE,
+                                                    TransactionRecords.DELETE),
                                     TaxonomyOperations.ALL)
-                    .flatMap(List::stream).toList();
+                    .<OperationSpec<? super OperationContext>> flatMap(List::stream).toList();
 
     private Operations()
     {
-    }
-
-    /** Operations declared outside <code>apply</code>, run with the batch's context. */
-    static List<OperationSpec<OperationContext>> adapt(List<OperationSpec<OperationSpec.Context>> operations)
-    {
-        return operations.stream().map(Operations::adapt).toList();
-    }
-
-    static OperationSpec<OperationContext> adapt(OperationSpec<OperationSpec.Context> operation)
-    {
-        return operation.handledBy(operation.handler()::apply);
     }
 }

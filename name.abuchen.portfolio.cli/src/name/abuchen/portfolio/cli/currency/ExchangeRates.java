@@ -96,6 +96,7 @@ final class ExchangeRates
         /** The amount in minor units in the term currency, rounded like core's currency converter. */
         long convert(long amount)
         {
+            // mirrors core's CurrencyConverter.convert(LocalDate, Money); ADR 0007-cli-arithmetic-mirrors-core-rounding-per-site.md
             return BigDecimal.valueOf(amount).multiply(value).setScale(0, RoundingMode.HALF_DOWN).longValue();
         }
     }

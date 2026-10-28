@@ -264,35 +264,7 @@ final class HelpText
         if (option.required())
             facts.add("required");
 
-        switch (option.type())
-        {
-            case OptionSpec.IntegerDomain domain ->
-            {
-                facts.add("integer " + (domain.maximum() == null ? "at least " + domain.minimum()
-                                : domain.minimum() + " to " + domain.maximum()));
-                facts.add("default " + domain.defaultValue());
-            }
-            case OptionSpec.IsoDate date ->
-            {
-                // the value placeholder already reads yyyy-MM-dd
-            }
-            case OptionSpec.Flag flag -> facts.add("switch, default off");
-            case OptionSpec.Choice choice ->
-            {
-                facts.add("one of " + String.join(", ", choice.values()));
-                facts.add("default " + choice.defaultValue());
-            }
-            case OptionSpec.Choices choices -> facts.add("one or more of " + String.join(", ", choices.values()));
-            case OptionSpec.Currency currency ->
-            {
-            }
-            case OptionSpec.Text text ->
-            {
-            }
-            case OptionSpec.Reference reference ->
-            {
-            }
-        }
+        facts.addAll(option.typeFacts());
         return facts.isEmpty() ? "" : " (" + String.join(", ", facts) + ")";
     }
 

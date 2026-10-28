@@ -62,12 +62,6 @@ public record OperationSpec<C>(String name, String summary, Schema input, Set<Er
         return new OperationSpec<>(name, summary, input, declaredCodes, true, handler);
     }
 
-    /** The same declaration, run by another handler; for the batch that adapts a module's operation. */
-    public <D> OperationSpec<D> handledBy(Handler<D> other)
-    {
-        return new OperationSpec<>(name, summary, input, declaredCodes, claims, other);
-    }
-
     /**
      * Every code a <code>failures</code> entry of this operation can carry,
      * in declaration order: <code>unknown-field</code>, which every operation

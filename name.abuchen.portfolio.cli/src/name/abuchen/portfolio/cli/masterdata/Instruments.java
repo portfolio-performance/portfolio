@@ -41,15 +41,15 @@ public final class Instruments
                                                     + MinorUnits.CONVERTED_BY_HOLDINGS),
                                     Security::getCurrencyCode)
                     .write(Writer.optional("ISO currency code; omit for an index.", Security::setCurrencyCode)
-                                    .check(Checks::isCurrency, ErrorCode.INVALID_CURRENCY, Checks::notACurrency, null))
+                                    .check(Checks::isCurrency, ErrorCode.INVALID_CURRENCY, Checks::notACurrency))
                     .ifSet(ISIN, Schema.string("ISIN, if set."), Security::getIsin)
                     .write(Writer.optional("ISIN: valid and not used by another instrument.", Security::setIsin)
                                     .check(isin -> Isin.isValid(isin) && isin.matches(Isin.PATTERN), ErrorCode.INVALID_ISIN,
                                                     isin -> "'" + isin + "' is not a valid ISIN.", "Isin.isValid"))
-                    .ifSet("tickerSymbol", Schema.string("Ticker symbol, if set."), Security::getTickerSymbol)
-                    .write(Writer.optional("Ticker symbol.", Security::setTickerSymbol))
                     .ifSet("wkn", Schema.string("WKN, if set."), Security::getWkn)
                     .write(Writer.optional("WKN.", Security::setWkn))
+                    .ifSet("tickerSymbol", Schema.string("Ticker symbol, if set."), Security::getTickerSymbol)
+                    .write(Writer.optional("Ticker symbol.", Security::setTickerSymbol))
                     .ifSet("note", Schema.string("Note, if set."), Security::getNote)
                     .write(Writer.optional("Note.", Security::setNote))
                     .retired("Whether the instrument is retired.", Security::isRetired)
@@ -57,7 +57,9 @@ public final class Instruments
                     .alwaysPrepared("attributes", Schema.array("User-defined attributes that have a value.", ATTRIBUTE),
                                     Instruments::attributes)
                     .updatedAt(Security::getUpdatedAt)
-                    .lookupKeys(ISIN, "tickerSymbol", "name")
+                    // the published contracts: the item lists wkn first, the add and update tickerSymbol first
+                    .writeOrder("name", CURRENCY, ISIN, "tickerSymbol", "wkn", "note", "retired")
+                    .referenceFields(ISIN, "tickerSymbol", "name")
                     .candidateDetails(ISIN, "tickerSymbol", CURRENCY)
                     // setName leaves it unset, and the binary format cannot store an instrument without it
                     .creates(Security::new, Client::addSecurity, security -> security.setUpdatedAt(Instant.now()))

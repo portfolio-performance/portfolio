@@ -30,8 +30,8 @@ public final class InvestmentAccounts
                     .retired("Whether the account is retired.", Portfolio::isRetired)
                     .write(Writer.flag("Whether the investment account is retired", Portfolio::setRetired))
                     .updatedAt(Portfolio::getUpdatedAt)
-                    .lookupKeys("name")
-                    .creates(Portfolio::new, Client::addPortfolio, null)
+                    .referenceFields("name")
+                    .creates(Portfolio::new, Client::addPortfolio)
                     .validator(InvestmentAccounts::validate, ErrorCode.REFERENCE_NOT_FOUND)
                     .operations("Adds an investment account. The name and a reference cash account that is already in the file are required.",
                                     "Updates an investment account by UUID. Only the fields present change; null or an empty string clears the note. A new reference cash account must already be in the file.")

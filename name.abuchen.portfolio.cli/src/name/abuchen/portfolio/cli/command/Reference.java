@@ -13,7 +13,8 @@ import name.abuchen.portfolio.model.Client;
 /**
  * What identifies one kind of entity that an agent can name on a read, and
  * how an ambiguity lists it. A UUID is canonical and wins immediately.
- * Otherwise every lookup key is matched, pooled with no precedence among them.
+ * Otherwise every reference field is matched, pooled with no precedence among
+ * them.
  * The lookup never guesses: one entity resolves, none is not found and several
  * are ambiguous. Every comparison is case-insensitive and ordinal, like the
  * list ordering, and retired entities take part. Each kind searches only its
@@ -38,7 +39,7 @@ public interface Reference<T>
     String name(T entity);
 
     /** The fields matched after the UUID. */
-    List<Key<T>> lookupKeys();
+    List<Key<T>> referenceFields();
 
     /** Whether an entity is retired; empty if the kind is never retired, and its candidates carry no flag. */
     Optional<Predicate<T>> retired();
@@ -47,11 +48,11 @@ public interface Reference<T>
     List<Key<T>> candidateDetails();
 
     static <T> Reference<T> of(String noun, Function<Client, List<T>> entities, Function<T, String> uuid,
-                    Function<T, String> name, List<Key<T>> lookupKeys, Optional<Predicate<T>> retired,
+                    Function<T, String> name, List<Key<T>> referenceFields, Optional<Predicate<T>> retired,
                     List<Key<T>> candidateDetails)
     {
         record Declared<T>(String noun, Function<Client, List<T>> all, Function<T, String> uuidOf,
-                        Function<T, String> nameOf, List<Key<T>> lookupKeys, Optional<Predicate<T>> retired,
+                        Function<T, String> nameOf, List<Key<T>> referenceFields, Optional<Predicate<T>> retired,
                         List<Key<T>> candidateDetails) implements Reference<T>
         {
             @Override
@@ -73,7 +74,7 @@ public interface Reference<T>
             }
         }
 
-        return new Declared<>(noun, entities, uuid, name, List.copyOf(lookupKeys), retired,
+        return new Declared<>(noun, entities, uuid, name, List.copyOf(referenceFields), retired,
                         List.copyOf(candidateDetails));
     }
 
@@ -124,7 +125,7 @@ public interface Reference<T>
 
     private List<String> matchedBy(T entity, String value)
     {
-        return lookupKeys().stream().filter(key -> value.equalsIgnoreCase(key.value().apply(entity)))
+        return referenceFields().stream().filter(key -> value.equalsIgnoreCase(key.value().apply(entity)))
                         .map(Key::name).toList();
     }
 

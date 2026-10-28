@@ -15,8 +15,8 @@ Response data: A page of the list.
     name (string) Instrument name; empty if the file has none.
     currencyCode (string, optional) ISO currency code; absent for indices. The currency may be a minor currency unit, such as ILA (1/100 ILS) or GBX (1/100 GBP); the figure is then in that unit. This command does not convert: holdings has the market value in the reporting currency in converted.
     isin (string, optional) ISIN, if set.
-    tickerSymbol (string, optional) Ticker symbol, if set.
     wkn (string, optional) WKN, if set.
+    tickerSymbol (string, optional) Ticker symbol, if set.
     note (string, optional) Note, if set.
     retired (boolean) Whether the instrument is retired.
     attributes (array of object) User-defined attributes that have a value.

@@ -101,17 +101,7 @@ public interface Facet<T>
         if (spec.type() instanceof OptionSpec.Reference)
             throw new IllegalArgumentException("Option '--" + spec.name() + "' is a reference: use ReferenceOption");
 
-        return of(Declaration.empty().options(spec), run -> (V) switch (spec.type())
-        {
-            case OptionSpec.Flag flag -> run.flag(spec);
-            case OptionSpec.IsoDate date -> run.date(spec);
-            case OptionSpec.IntegerDomain domain -> run.integer(spec);
-            case OptionSpec.Choice choice -> run.choice(spec);
-            case OptionSpec.Choices choices -> run.choices(spec);
-            case OptionSpec.Currency currency -> run.currency(spec);
-            case OptionSpec.Text text -> run.text(spec);
-            case OptionSpec.Reference reference -> throw new IllegalStateException();
-        });
+        return of(Declaration.empty().options(spec), run -> (V) spec.type().value(run, spec));
     }
 
     /** A lone reference option; its value is the entity it names, or empty if it is absent. */

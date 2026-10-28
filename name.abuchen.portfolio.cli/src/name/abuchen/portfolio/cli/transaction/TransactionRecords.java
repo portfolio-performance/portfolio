@@ -141,7 +141,7 @@ public final class TransactionRecords
      */
     Outcome add(JsonObject input, boolean reportUnknown)
     {
-        var result = TransactionAdd.build(client, existedBeforeBatch, input, List.of(), reportUnknown);
+        var result = TransactionAdd.add(client, existedBeforeBatch, input, reportUnknown);
         if (result.built() == null)
             return new Outcome.Refused(result.failures());
 

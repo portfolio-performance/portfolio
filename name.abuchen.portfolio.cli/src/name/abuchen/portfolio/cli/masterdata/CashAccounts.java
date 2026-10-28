@@ -19,15 +19,15 @@ public final class CashAccounts
                                     Account::getCurrencyCode)
                     .write(Writer.required("ISO currency code of the account.", "a currency",
                                     Account::setCurrencyCode).check(Checks::isCurrency, ErrorCode.INVALID_CURRENCY,
-                                                    Checks::notACurrency, null))
+                                                    Checks::notACurrency))
                     .ifSet("note", Schema.string("Note, if set."), Account::getNote)
                     .write(Writer.optional("Note.", Account::setNote))
                     .retired("Whether the account is retired.", Account::isRetired)
                     .write(Writer.flag("Whether the cash account is retired", Account::setRetired))
                     .updatedAt(Account::getUpdatedAt)
-                    .lookupKeys("name")
+                    .referenceFields("name")
                     .candidateDetails("currencyCode")
-                    .creates(Account::new, Client::addAccount, null)
+                    .creates(Account::new, Client::addAccount)
                     .validator(CashAccounts::validate, ErrorCode.CURRENCY_IMMUTABLE)
                     .operations("Adds a cash account. The name and the currency are required.",
                                     "Updates a cash account by UUID. Only the fields present change; null or an empty string clears the note. The currency can't change once the account has transactions.")

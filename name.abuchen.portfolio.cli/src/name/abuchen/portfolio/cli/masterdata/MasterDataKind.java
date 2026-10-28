@@ -70,7 +70,7 @@ public final class MasterDataKind<T>
      *            prepares, per client, how the member reads an entity
      * @param perClient
      *            whether the getter needs the client; such a member can't be a
-     *            lookup key or candidate detail
+     *            reference field or candidate detail
      * @param writer
      *            how a write sets the member, or null if it is read-only
      */
@@ -107,8 +107,9 @@ public final class MasterDataKind<T>
         private Schema item;
         private Predicate<T> retired;
         private Function<T, Instant> updatedAt;
-        private List<String> lookupKeys = List.of();
+        private List<String> referenceFields = List.of();
         private List<String> candidateDetails = List.of();
+        private List<String> writeOrder = List.of();
         private Supplier<T> create;
         private BiConsumer<Client, T> add;
         private Consumer<T> initialize;
@@ -170,8 +171,16 @@ public final class MasterDataKind<T>
             return this;
         }
 
+        /** How an add creates an entity and puts it into the client. */
+        public Builder<T> creates(Supplier<T> create, BiConsumer<Client, T> add)
+        {
+            return creates(create, add, created -> {
+            });
+        }
+
         /**
-         * How an add creates an entity and puts it into the client.
+         * How an add creates an entity, gives it what it needs beyond its
+         * members and puts it into the client.
          *
          * @param initialize
          *            what a new entity needs beyond its members
@@ -222,9 +231,9 @@ public final class MasterDataKind<T>
         }
 
         /** Members matched by a reference after the UUID. */
-        public Builder<T> lookupKeys(String... members)
+        public Builder<T> referenceFields(String... members)
         {
-            lookupKeys = List.of(members);
+            referenceFields = List.of(members);
             return this;
         }
 
@@ -232,6 +241,17 @@ public final class MasterDataKind<T>
         public Builder<T> candidateDetails(String... members)
         {
             candidateDetails = List.of(members);
+            return this;
+        }
+
+        /**
+         * The order of the writable members in the input of the add and
+         * update, if it is not the member order; it names every writable
+         * member once.
+         */
+        public Builder<T> writeOrder(String... members)
+        {
+            writeOrder = List.of(members);
             return this;
         }
 
@@ -267,6 +287,7 @@ public final class MasterDataKind<T>
     private final String noun;
     private final Outcome.Entity entity;
     private final List<Member<T>> members;
+    private final List<Member<T>> writable;
     private final Supplier<T> create;
     private final BiConsumer<Client, T> add;
     private final Consumer<T> initialize;
@@ -285,13 +306,14 @@ public final class MasterDataKind<T>
         this.entity = Arrays.stream(Outcome.Entity.values()).filter(e -> e.id().equals(builder.id)).findFirst()
                         .orElseThrow(() -> new IllegalStateException("No change entity '" + builder.id + "'"));
         this.members = List.copyOf(builder.members);
+        this.writable = writable(builder.writeOrder);
         this.create = builder.create;
         this.add = builder.add;
         this.initialize = builder.initialize;
         this.validator = builder.validator;
         this.item = builder.item;
         this.reference = Reference.of(builder.noun, builder.entities, builder.uuid, builder.name,
-                        keys(builder.lookupKeys), Optional.of(builder.retired), keys(builder.candidateDetails));
+                        keys(builder.referenceFields), Optional.of(builder.retired), keys(builder.candidateDetails));
         this.entityKind = EntityKind.of(reference);
 
         var sort = Sorting.Spec.of(builder.uuid, "name",
@@ -438,8 +460,7 @@ public final class MasterDataKind<T>
 
     void initialize(T created)
     {
-        if (initialize != null)
-            initialize.accept(created);
+        initialize.accept(created);
     }
 
     void addTo(Client client, T created)
@@ -447,10 +468,22 @@ public final class MasterDataKind<T>
         add.accept(client, created);
     }
 
-    /** The writable members, in member order. */
+    /** The writable members, in write order. */
     List<Member<T>> writable()
     {
-        return members.stream().filter(m -> m.writer() != null).toList();
+        return writable;
+    }
+
+    private List<Member<T>> writable(List<String> writeOrder)
+    {
+        var inMemberOrder = members.stream().filter(m -> m.writer() != null).toList();
+        if (writeOrder.isEmpty())
+            return inMemberOrder;
+
+        var ordered = writeOrder.stream().map(this::member).toList();
+        if (ordered.size() != inMemberOrder.size() || !ordered.containsAll(inMemberOrder))
+            throw new IllegalStateException("The write order of " + id + " must name every writable member once");
+        return ordered;
     }
 
     Member<T> member(String name)
@@ -491,7 +524,7 @@ public final class MasterDataKind<T>
                         .orElseThrow(() -> new IllegalStateException(
                                         "'" + name + "' is not a member of " + id));
         if (member.perClient())
-            throw new IllegalStateException("'" + name + "' needs the client and can't be a lookup key or detail");
+            throw new IllegalStateException("'" + name + "' needs the client and can't be a reference field or detail");
         return new Reference.Key<>(name, member::text);
     }
 

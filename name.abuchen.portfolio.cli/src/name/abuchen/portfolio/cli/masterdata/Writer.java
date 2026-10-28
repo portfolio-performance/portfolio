@@ -102,12 +102,23 @@ public final class Writer<T>
     }
 
     /**
-     * Adds a check of the value alone.
+     * Adds a check of the value alone that no core check decides.
+     *
+     * @param message
+     *            the failure message for the refused value
+     */
+    public Writer<T> check(Predicate<String> valid, ErrorCode code, Function<String, String> message)
+    {
+        return check(valid, code, message, null);
+    }
+
+    /**
+     * Adds a check of the value alone that a core check decides.
      *
      * @param message
      *            the failure message for the refused value
      * @param coreCheck
-     *            the core check that decides, or null
+     *            the core check that decides
      */
     public Writer<T> check(Predicate<String> valid, ErrorCode code, Function<String, String> message, String coreCheck)
     {
