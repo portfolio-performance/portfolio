@@ -13,12 +13,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
-import name.abuchen.portfolio.cli.command.CommandContext;
 import name.abuchen.portfolio.cli.command.Warning;
 import name.abuchen.portfolio.cli.command.WarningSpec;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
+import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 import name.abuchen.portfolio.money.FixedExchangeRateTimeSeries;
@@ -138,8 +138,8 @@ final class ExchangeRates
         }
     }
 
-    private final CommandContext context;
     private final Client client;
+    private final RateCache rateCache;
     private ExchangeRateProviderFactory factory;
 
     private boolean cacheTried;
@@ -149,10 +149,10 @@ final class ExchangeRates
     private final Map<Pair, Affected> missing = new LinkedHashMap<>();
     private final Map<Pair, Affected> stale = new LinkedHashMap<>();
 
-    ExchangeRates(CommandContext context, Client client)
+    ExchangeRates(Client client, RateCache rateCache)
     {
-        this.context = context;
         this.client = client;
+        this.rateCache = rateCache;
     }
 
     /**
@@ -203,8 +203,7 @@ final class ExchangeRates
 
         try
         {
-            var path = EcbCache.locate(context::env, context.osName());
-            cache = EcbCache.read(path);
+            cache = rateCache.load();
         }
         catch (EcbCache.Unavailable e)
         {
@@ -242,7 +241,7 @@ final class ExchangeRates
             {
                 if (stepValue.signum() == 0)
                     return Optional.empty();
-                stepValue = BigDecimal.ONE.divide(stepValue, 10, RoundingMode.HALF_DOWN);
+                stepValue = ExchangeRate.inverse(stepValue);
             }
 
             value = value.multiply(stepValue);
@@ -293,7 +292,7 @@ final class ExchangeRates
     }
 
     /** Records that no rate was found for a record of the given pair. */
-    private void noteMissing(String baseCurrency, String termCurrency)
+    void noteMissing(String baseCurrency, String termCurrency)
     {
         missing.computeIfAbsent(new Pair(baseCurrency, termCurrency), p -> new Affected()).count++;
     }

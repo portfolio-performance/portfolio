@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.cli.query;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -34,6 +33,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.Values;
 
 /**
@@ -299,6 +299,6 @@ public final class TransactionsCommand
 
         // the stored rate converts into the record's currency, so the inverse converts out of it
         return forex.findFirst().or(() -> transfer).filter(stored -> stored.signum() != 0)
-                        .map(stored -> BigDecimal.ONE.divide(stored, 10, RoundingMode.HALF_DOWN));
+                        .map(stored -> ExchangeRate.inverse(stored));
     }
 }

@@ -20,7 +20,6 @@ import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.cli.command.Warning;
 import name.abuchen.portfolio.cli.command.WarningSpec;
 import name.abuchen.portfolio.cli.currency.ReportingCurrency;
-import name.abuchen.portfolio.cli.currency.StrictConverter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
@@ -34,7 +33,8 @@ import name.abuchen.portfolio.snapshot.PerformanceIndex;
  * figures are core's performance index (IRR, TTWROR) and its performance
  * snapshot (gains), converted by core's own converter over the CLI's rate
  * source; core decides which rate it uses on which day. Core's converter falls
- * back to 1.0 without a word where it finds no rate, so a {@link StrictConverter}
+ * back to 1.0 without a word where it finds no rate, so the figures are
+ * reported only through {@link ReportingCurrency.CoreFigures#trusted}, which
  * checks every rate core asks for. If one is missing, no figure is reported
  * (ADR 0005); a stale rate is used and warned about.
  */
@@ -126,7 +126,7 @@ public final class PerformanceCommand
             breakdown = Optional.of(scope.narrowed(client).orElseThrow(PerformanceByInstrument::unsupportedScope));
 
         var reporting = requested.orBase(context, client);
-        var converter = reporting.strictConverter();
+        var core = reporting.coreFigures();
 
         var data = new LinkedHashMap<String, Object>();
         data.put("currencyCode", reporting.code());
@@ -134,20 +134,18 @@ public final class PerformanceCommand
         Optional<Security> quiet = Optional.empty();
         if (breakdown.isPresent())
         {
-            data.put("items", PerformanceByInstrument.items(breakdown.get(), converter, period, costMethod));
+            data.put("items", PerformanceByInstrument.items(breakdown.get(), core, period, costMethod));
         }
         else
         {
-            quiet = scope.quietInstrument(client, reporting.coreConverter(), period.interval());
+            quiet = scope.quietInstrument(client, core.unreported(), period.interval());
             if (quiet.isEmpty())
             {
-                var index = scope.index(client, converter, period.interval());
-                var snapshot = index.getClientPerformanceSnapshot(costMethod == CostMethod.FIFO).orElseThrow();
-                var figures = figures(index, snapshot);
-
-                // core calculates lazily: only after all figures are read is every rate it needed known
-                if (converter.isComplete())
-                    data.putAll(figures);
+                core.trusted(() -> {
+                    var index = scope.index(client, core.converter(), period.interval());
+                    var snapshot = index.getClientPerformanceSnapshot(costMethod == CostMethod.FIFO).orElseThrow();
+                    return figures(index, snapshot);
+                }).ifPresent(data::putAll);
             }
         }
 

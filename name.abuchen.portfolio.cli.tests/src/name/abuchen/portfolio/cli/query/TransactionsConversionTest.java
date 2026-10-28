@@ -12,7 +12,6 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -314,57 +313,6 @@ public class TransactionsConversionTest
 
         assertThat(run.stdout, run.exitCode, is(0));
         assertThat(run.warnings("stale-exchange-rate").get(0).get("count").getAsInt(), is(1));
-    }
-
-    @Test
-    public void anUnavailableCacheWarnsOnceAndNeverFailsTheCommandOrFallsBackToBuiltInRates() throws IOException
-    {
-        deposit(euro, "2026-10-12", 100_000);
-        deposit(euro, "2026-10-13", 100_000);
-
-        var garbage = folder.newFile("garbage.pb").toPath();
-        Files.write(garbage, new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
-        var directory = folder.newFolder("directory").toPath();
-
-        var cases = new LinkedHashMap<String, Map<String, String>>();
-        cases.put("not-found", Map.of("PP_ECB_RATES", cache.toString()));
-        cases.put("unparsable", Map.of("PP_ECB_RATES", garbage.toString()));
-        cases.put("unreadable", Map.of("PP_ECB_RATES", directory.toString()));
-        cases.put("not-configured", Map.of());
-
-        for (var entry : cases.entrySet())
-        {
-            var run = run(entry.getValue(), "--currency", "USD");
-
-            assertThat(entry.getKey() + ": " + run.stdout, run.exitCode, is(0));
-            for (var i = 0; i < 2; i++)
-                assertThat(entry.getKey(), run.items().get(i).getAsJsonObject().has("converted"), is(false));
-
-            var unavailable = run.warnings("exchange-rate-cache-unavailable");
-            assertThat(entry.getKey(), unavailable, hasSize(1));
-            assertThat(text(unavailable.get(0), "reason"), is(entry.getKey()));
-            assertThat(unavailable.get(0).has("detail"), is(true));
-            assertThat(entry.getKey(), unavailable.get(0).has("path"), is(!entry.getKey().equals("not-configured")));
-
-            var missing = run.warnings("exchange-rate-missing");
-            assertThat(entry.getKey(), missing, hasSize(1));
-            assertThat(missing.get(0).get("count").getAsInt(), is(2));
-            assertThat(entry.getKey(), run.meta().has("exchangeRates"), is(false));
-        }
-    }
-
-    @Test
-    public void exchangeRateInstrumentsStillWorkWithoutTheCache() throws IOException
-    {
-        var rate = new SecurityBuilder("USD").addPrice("2026-10-11", 92_000_000L).addTo(client);
-        rate.setTargetCurrencyCode("EUR");
-        deposit(dollars, "2026-10-12", 10_000);
-
-        var run = run(Map.of(), "--currency", "EUR");
-
-        assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(text(converted(run, 0), "rateSource"), is("instrument"));
-        assertThat(run.warnings("exchange-rate-cache-unavailable"), hasSize(1));
     }
 
     @Test

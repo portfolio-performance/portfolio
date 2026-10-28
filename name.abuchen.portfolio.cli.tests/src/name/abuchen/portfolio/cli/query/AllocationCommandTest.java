@@ -366,6 +366,30 @@ public class AllocationCommandTest
     }
 
     @Test
+    public void aRateOnlyCoreMissesLeavesOutTheValuesAndIsWarnedAboutOnce() throws IOException
+    {
+        // a USD instrument without prices, bought in EUR: core values it at the purchase price, converted into
+        // USD on the day of the purchase, a rate the holdings themselves don't need
+        var delta = new SecurityBuilder("USD").addTo(client);
+        delta.setName("Delta");
+        new PortfolioBuilder(cash).buyPrice(delta, "2026-01-05", 2, 100).addTo(client);
+        assign(equity, delta);
+        EcbCacheFiles.write(cache, EcbCacheFiles.series("EUR", "USD").rate("2026-03-01", "1.1000"));
+
+        var run = run(Map.of("PP_ECB_RATES", cache.toString()), "--taxonomy", "Classes", "--date", DATE);
+        assertThat(run.stdout, run.exitCode, is(0));
+
+        assertThat(run.data().has("total"), is(false));
+        assertThat(row(run, "Europe").has("value"), is(false));
+
+        var missing = run.warnings("exchange-rate-missing");
+        assertThat(missing.size(), is(1));
+        assertThat(missing.get(0).get("baseCurrency").getAsString(), is("EUR"));
+        assertThat(missing.get(0).get("termCurrency").getAsString(), is("USD"));
+        assertThat(missing.get(0).get("count").getAsInt(), is(1));
+    }
+
+    @Test
     public void aZeroTotalLeavesOutEveryShareButKeepsTheValues() throws IOException
     {
         client = new Client();

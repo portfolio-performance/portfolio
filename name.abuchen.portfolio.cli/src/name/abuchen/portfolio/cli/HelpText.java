@@ -14,7 +14,7 @@ import name.abuchen.portfolio.cli.command.CommandSpec;
 import name.abuchen.portfolio.cli.command.MinorUnits;
 import name.abuchen.portfolio.cli.command.OptionSpec;
 import name.abuchen.portfolio.cli.command.OutputFormat;
-import name.abuchen.portfolio.cli.currency.EcbCache;
+import name.abuchen.portfolio.cli.currency.RateCache;
 
 /**
  * Plain-text help for <code>--help</code>, generated from everything declared
@@ -43,7 +43,7 @@ final class HelpText
 
     static final List<EnvironmentVariable> ENVIRONMENT = List.of(
                     new EnvironmentVariable("PP_FILE", "Client file to read, used when --file is not given."),
-                    new EnvironmentVariable(EcbCache.VARIABLE,
+                    new EnvironmentVariable(RateCache.VARIABLE,
                                     "Path of the desktop app's ECB exchange-rate cache (ecb_exchange_rates.pb), read-only,"
                                                     + " used by commands that convert currencies. If unset, the app's default workspace is"
                                                     + " searched (%LOCALAPPDATA%\\PortfolioPerformance\\workspace on Windows,"
