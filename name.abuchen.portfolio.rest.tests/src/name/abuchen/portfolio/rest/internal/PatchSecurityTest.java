@@ -77,6 +77,62 @@ public class PatchSecurityTest
         assertThat(dirty.get(), is(true));
     }
 
+    /**
+     * The application's ISIN column refuses what fails the check digit; the API
+     * used to store it anyway. The whole patch fails, as for any other field.
+     */
+    @Test
+    public void testAnInvalidIsinIsRejectedAndNothingIsApplied()
+    {
+        var client = new Client();
+        var security = new SecurityBuilder().addTo(client);
+        security.setName("Old");
+        security.setIsin("DE0005557508");
+
+        try
+        {
+            SecuritiesHandler.patch(client, security.getUUID(), json("{\"name\":\"New\",\"isin\":\"KEINE-ISIN\"}"));
+            Assert.fail("expected ApiException");
+        }
+        catch (ApiException e)
+        {
+            assertThat(e.getStatus(), is(422));
+            assertThat(e.getErrors().size(), is(1));
+            assertThat(e.getErrors().get(0).field(), is("isin"));
+            assertThat(e.getErrors().get(0).code(), is("invalid-isin"));
+            assertThat(security.getName(), is("Old"));
+            assertThat(security.getIsin(), is("DE0005557508"));
+        }
+
+        // a wrong check digit fails the same way
+        try
+        {
+            SecuritiesHandler.patch(client, security.getUUID(), json("{\"isin\":\"DE0005557509\"}"));
+            Assert.fail("expected ApiException");
+        }
+        catch (ApiException e)
+        {
+            assertThat(e.getErrors().get(0).code(), is("invalid-isin"));
+        }
+    }
+
+    /** surrounding whitespace is ignored and a blank ISIN clears it, as in the ISIN column */
+    @Test
+    public void testIsinIsTrimmedAndBlankClearsIt()
+    {
+        var client = new Client();
+        var security = new SecurityBuilder().addTo(client);
+
+        SecuritiesHandler.patch(client, security.getUUID(), json("{\"isin\":\"  IE00BK1PV551 \"}"));
+        assertThat(security.getIsin(), is("IE00BK1PV551"));
+
+        var restated = SecuritiesHandler.patch(client, security.getUUID(), json("{\"isin\":\"IE00BK1PV551 \"}"));
+        assertThat(restated.changes().isEmpty(), is(true));
+
+        SecuritiesHandler.patch(client, security.getUUID(), json("{\"isin\":\"   \"}"));
+        assertThat(security.getIsin(), nullValue());
+    }
+
     @Test
     public void testAllViolationsReportedAtOnceAndModelUnchanged()
     {
