@@ -102,12 +102,6 @@ public final class ApiRoutes
      * and on virtual threads it would compete for the same few carriers as every
      * HTTP exchange. The slots bound how many threads this pool ever holds.
      */
-    /** how many calculations run at once */
-    private static final int DEFAULT_SLOTS = 2;
-
-    /** how many calculations may wait for a turn, per slot */
-    private static final int QUEUED_PER_SLOT = 2;
-
     private static final ExecutorService CALCULATIONS = Executors.newCachedThreadPool(Thread.ofPlatform()
                     .name("Portfolio Performance REST API calculation ", 0).daemon(true).factory()); //$NON-NLS-1$
 
@@ -273,8 +267,8 @@ public final class ApiRoutes
                     Deadlines deadlines)
     {
         var ui = new UiThread(host, deadlines.uiThread());
-        var calculation = new Calculation(deadlines.calculation(), new CalculationSlots(DEFAULT_SLOTS,
-                        DEFAULT_SLOTS * QUEUED_PER_SLOT, deadlines.calculationQueue()));
+        var calculation = new Calculation(deadlines.calculation(), new CalculationSlots(
+                        RestApiLimits.calculationSlots(), RestApiLimits.calculationQueue(), deadlines.calculationQueue()));
         var router = new Router();
         var resolver = new FileResolver(registry, host);
         var files = new FilesHandler(registry, host);
