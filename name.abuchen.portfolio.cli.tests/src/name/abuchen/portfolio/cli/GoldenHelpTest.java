@@ -11,6 +11,8 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.cli.apply.Operations;
+
 /**
  * The help contract guard: every help text an agent can ask for is compared
  * byte for byte with a checked-in golden file under <code>golden/help</code>.
@@ -47,7 +49,7 @@ public class GoldenHelpTest
         texts.put("global.txt", CliRun.run("--help").stdout);
         for (var command : Commands.ALL)
             texts.put(command.name() + ".txt", CliRun.run(command.name(), "--help").stdout);
-        for (var operation : Commands.OPERATIONS)
+        for (var operation : Operations.ALL)
             texts.put("apply/" + operation.name() + ".txt",
                             CliRun.run("apply", "--help", operation.name()).stdout);
         return texts;

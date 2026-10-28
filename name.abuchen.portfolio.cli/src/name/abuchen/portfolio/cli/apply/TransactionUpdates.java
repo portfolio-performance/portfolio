@@ -9,6 +9,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import name.abuchen.portfolio.cli.command.EntityKind;
+import name.abuchen.portfolio.cli.command.OperationInput;
+import name.abuchen.portfolio.cli.command.OperationSpec;
+import name.abuchen.portfolio.cli.command.Outcome;
 import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.cli.query.BuiltRecord;
 import name.abuchen.portfolio.cli.query.TransactionRecord;
@@ -37,10 +41,15 @@ final class TransactionUpdates
 
     private static final Gson GSON = new Gson();
 
-    static final OperationSpec DELETE = new OperationSpec("transaction.delete",
+    /** A record is named by the UUID of any of its sides. */
+    private static final EntityKind<TransactionRecord> RECORD = new EntityKind<>("transaction",
+                    TransactionRecord::allOf, (record, uuid) -> record.sides().contains(uuid),
+                    TransactionRecord::primary);
+
+    static final OperationSpec<OperationContext> DELETE = new OperationSpec<>("transaction.delete",
                     "Deletes a whole transaction record, both sides, found by the UUID of either of its sides. The response is one deleted change whose uuid is the record id, with the record as it was in before. A delete that would make an investment account's holding of an instrument negative at the end of any date, by removing a buy or a delivery or transfer into it, is refused.",
                     Schema.object("The record to delete.")
-                                    .property(ApplyBatch.OPERATION_MEMBER,
+                                    .property(OperationSpec.OPERATION_MEMBER,
                                                     Schema.enumOf("Operation name.", List.of("transaction.delete")))
                                     .property(UUID_MEMBER, Schema.string("UUID of either side of the record.")),
                     TransactionUpdates::delete);
@@ -84,7 +93,8 @@ final class TransactionUpdates
 
         var before = TransactionsCommand.render(existing.record(), context.client());
         existing.sides().forEach(side -> detach(context.client(), side));
-        context.deleted(new OperationContext.Change("transaction", existing.record().id(), before, Map.of()));
+        context.deleted(new OperationContext.Change(Outcome.Entity.TRANSACTION, existing.record().id(), before,
+                        Map.of()));
     }
 
     /** The record with a side of the given UUID, claimed for this operation; null after reporting why not. */
@@ -96,13 +106,13 @@ final class TransactionUpdates
             context.fail(UUID_MEMBER, "required", "This operation needs the UUID of a side of the transaction.");
             return null;
         }
-        if (!OperationContext.isText(member))
+        if (!OperationInput.isText(member))
         {
             context.fail(UUID_MEMBER, "invalid-type", "The UUID must be a string.");
             return null;
         }
 
-        var record = context.input().find(UUID_MEMBER, member.getAsString(), EntityKind.TRANSACTION_RECORD);
+        var record = context.input().find(UUID_MEMBER, member.getAsString(), RECORD);
         if (record == null)
             return null;
 
@@ -125,7 +135,7 @@ final class TransactionUpdates
         for (var member : context.input().json().entrySet())
         {
             var name = member.getKey();
-            if (name.equals(ApplyBatch.OPERATION_MEMBER) || name.equals(UUID_MEMBER))
+            if (name.equals(OperationSpec.OPERATION_MEMBER) || name.equals(UUID_MEMBER))
                 continue;
 
             if (name.equals(TransactionShape.TYPE.name()) && differs(member.getValue(), record.type()))
@@ -143,7 +153,7 @@ final class TransactionUpdates
 
     private static boolean differs(JsonElement value, String current)
     {
-        return !(OperationContext.isText(value) && current.equals(value.getAsString()));
+        return !(OperationInput.isText(value) && current.equals(value.getAsString()));
     }
 
     /**
@@ -194,7 +204,8 @@ final class TransactionUpdates
             return;
         }
 
-        context.updated(new OperationContext.Change("transaction", id, changedBefore, changedAfter));
+        context.updated(new OperationContext.Change(Outcome.Entity.TRANSACTION, id, changedBefore,
+                        changedAfter));
     }
 
     /** Values are compared as the JSON they are rendered to, as the numbers in them don't share a type. */

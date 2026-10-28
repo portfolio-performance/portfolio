@@ -10,7 +10,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
-import name.abuchen.portfolio.cli.Commands;
 import name.abuchen.portfolio.cli.command.CliException;
 import name.abuchen.portfolio.cli.command.ClientFile;
 import name.abuchen.portfolio.cli.command.CommandContext;
@@ -19,6 +18,7 @@ import name.abuchen.portfolio.cli.command.Declaration;
 import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.Facet;
 import name.abuchen.portfolio.cli.command.OptionSpec;
+import name.abuchen.portfolio.cli.command.Outcome;
 import name.abuchen.portfolio.cli.command.Schema;
 
 /**
@@ -40,7 +40,7 @@ public final class ApplyCommand
                     "Validate the batch and report the changes and the would-be backup path without writing any file, backup or lock.");
 
     private static final Schema CHANGE = Schema.object("What an operation did to one entity.")
-                    .property("entity", Schema.string("Kind of entity: instrument, cash-account, investment-account or transaction."))
+                    .property("entity", Schema.enumOf("Kind of entity.", Outcome.Entity.ids()))
                     .property("uuid", Schema.string("UUID of the entity."))
                     .optionalProperty("before", Schema.anyObject(
                                     "The changed fields as they were, or for a deleted entity all its fields; absent for a created entity. A field that was unset is null."))
@@ -67,7 +67,7 @@ public final class ApplyCommand
     private static Object execute(CommandContext run) throws CliException
     {
         var operations = run.get(BATCH);
-        var results = run.get(WRITE).write(client -> ApplyBatch.run(client, operations, Commands.OPERATIONS));
+        var results = run.get(WRITE).write(client -> ApplyBatch.run(client, operations, Operations.ALL));
 
         var data = new LinkedHashMap<String, Object>();
         data.put("results", results);

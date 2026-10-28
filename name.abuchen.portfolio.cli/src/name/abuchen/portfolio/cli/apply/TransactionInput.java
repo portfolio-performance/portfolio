@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import name.abuchen.portfolio.cli.command.EntityKind;
+import name.abuchen.portfolio.cli.command.OperationInput;
 import name.abuchen.portfolio.cli.query.TransactionShape;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Portfolio;

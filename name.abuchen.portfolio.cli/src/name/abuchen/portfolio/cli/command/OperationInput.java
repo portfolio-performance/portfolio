@@ -1,61 +1,83 @@
-package name.abuchen.portfolio.cli.apply;
+package name.abuchen.portfolio.cli.command;
 
 import java.math.BigDecimal;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import name.abuchen.portfolio.cli.command.Decimals;
-import name.abuchen.portfolio.cli.command.Schema;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.Values;
 
 /**
  * Reads the input of one operation, or one object nested in it, and reports
- * every problem as a field-level failure of the operation. A nested reader
- * names its fields after the object, such as <code>units[0].amount</code>.
+ * every problem as a {@link FieldFailure} into its sink. A nested reader names
+ * its fields after the object, such as <code>units[0].amount</code>.
  */
-final class OperationInput
+public final class OperationInput
 {
-    private final OperationContext context;
     private final JsonObject json;
+    private final Client client;
+    private final Predicate<Object> existedBeforeBatch;
+    private final Consumer<FieldFailure> sink;
     private final String prefix;
 
-    OperationInput(OperationContext context, JsonObject json)
+    /**
+     * @param client
+     *            the evolving model, in which UUIDs are looked up
+     * @param existedBeforeBatch
+     *            whether an object of the model was in the file before the
+     *            batch started; only such an entity can be named
+     * @param sink
+     *            where the failures go
+     */
+    public OperationInput(JsonObject json, Client client, Predicate<Object> existedBeforeBatch,
+                    Consumer<FieldFailure> sink)
     {
-        this(context, json, "");
+        this(json, client, existedBeforeBatch, sink, "");
     }
 
-    private OperationInput(OperationContext context, JsonObject json, String prefix)
+    private OperationInput(JsonObject json, Client client, Predicate<Object> existedBeforeBatch,
+                    Consumer<FieldFailure> sink, String prefix)
     {
-        this.context = context;
         this.json = json;
+        this.client = client;
+        this.existedBeforeBatch = existedBeforeBatch;
+        this.sink = sink;
         this.prefix = prefix;
     }
 
-    JsonObject json()
+    /** Whether the JSON value is a string. */
+    public static boolean isText(JsonElement element)
+    {
+        return element.isJsonPrimitive() && element.getAsJsonPrimitive().isString();
+    }
+
+    public JsonObject json()
     {
         return json;
     }
 
     /** Reports every member that the schema of this object does not declare. */
-    void rejectUnknownFields(Schema schema)
+    public void rejectUnknownFields(Schema schema)
     {
         for (var member : json.keySet())
         {
             if (!schema.declares(member))
-                context.fail(field(member), "unknown-field", (prefix.isEmpty() ? "The operation" : "The object")
+                fail(member, "unknown-field", (prefix.isEmpty() ? "The operation" : "The object")
                                 + " has no field '" + member + "'.");
         }
     }
 
     /** Reports a failure of the member, or of this object itself if the member is empty. */
-    void fail(String member, String code, String message)
+    public void fail(String member, String code, String message)
     {
-        context.fail(field(member), code, message);
+        sink.accept(new FieldFailure(field(member), code, message, null));
     }
 
     /** Whether the member is present and not null. */
-    boolean has(String member)
+    public boolean has(String member)
     {
         return json.has(member) && !json.get(member).isJsonNull();
     }
@@ -64,9 +86,9 @@ final class OperationInput
      * The string value of the member, or null if it is absent, null or blank;
      * reports a member that is not a string.
      */
-    String text(String member)
+    public String text(String member)
     {
-        if (has(member) && !OperationContext.isText(json.get(member)))
+        if (has(member) && !isText(json.get(member)))
         {
             fail(member, "invalid-type", "The " + member + " must be a string.");
             return null;
@@ -75,19 +97,19 @@ final class OperationInput
     }
 
     /** Like {@link #text(String)}, and reports <code>required</code> if the member is absent, null or blank. */
-    String requiredText(String member, String requiredMessage)
+    public String requiredText(String member, String requiredMessage)
     {
         var text = text(member);
-        if (text == null && (!has(member) || OperationContext.isText(json.get(member))))
+        if (text == null && (!has(member) || isText(json.get(member))))
             fail(member, "required", requiredMessage);
         return text;
     }
 
     /** The string value of the member, or null if it is absent, null, blank or not a string; reports nothing. */
-    String rawText(String member)
+    public String rawText(String member)
     {
         var element = json.get(member);
-        if (element == null || !OperationContext.isText(element))
+        if (element == null || !isText(element))
             return null;
         var text = element.getAsString();
         return text.isBlank() ? null : text;
@@ -98,7 +120,7 @@ final class OperationInput
      * is not positive if that is asked for, or is absent and a
      * <code>requiredMessage</code> is given.
      */
-    BigDecimal number(String member, String requiredMessage, boolean positive)
+    public BigDecimal number(String member, String requiredMessage, boolean positive)
     {
         var value = rawNumber(member);
         if (value == null)
@@ -123,7 +145,7 @@ final class OperationInput
      * units of the given values, e.g. cents; more decimal places than those
      * values keep are reported.
      */
-    Long amount(String member, Values<Long> values, boolean positive, String requiredMessage)
+    public Long amount(String member, Values<Long> values, boolean positive, String requiredMessage)
     {
         var value = number(member, requiredMessage, positive);
         if (value == null)
@@ -139,7 +161,7 @@ final class OperationInput
     }
 
     /** The member as a number, or null if it is absent or not a number; reports nothing. */
-    BigDecimal rawNumber(String member)
+    public BigDecimal rawNumber(String member)
     {
         var element = json.get(member);
         return element != null && element.isJsonPrimitive() && element.getAsJsonPrimitive().isNumber()
@@ -151,16 +173,16 @@ final class OperationInput
      * The existing entity whose UUID is the member, or null after reporting
      * that the member is missing, is not a string or names no such entity.
      */
-    <T> T existing(String member, EntityKind<T> kind, String requiredMessage)
+    public <T> T existing(String member, EntityKind<T> kind, String requiredMessage)
     {
         var uuid = requiredText(member, requiredMessage);
         return uuid == null ? null : find(member, uuid, kind);
     }
 
     /** The existing entity with the UUID, which the member gave, or null after reporting that there is none. */
-    <T> T find(String member, String uuid, EntityKind<T> kind)
+    public <T> T find(String member, String uuid, EntityKind<T> kind)
     {
-        var found = kind.find(context, uuid);
+        var found = kind.find(client, existedBeforeBatch, uuid);
         if (found.isEmpty())
             fail(member, "reference-not-found", "No " + kind.noun() + " with UUID " + uuid + " in the file.");
         return found.orElse(null);
@@ -173,7 +195,7 @@ final class OperationInput
      * @return false if the member is absent or null, or, after reporting it,
      *         not an array
      */
-    boolean eachObject(String member, String notObjectMessage, Consumer<OperationInput> each)
+    public boolean eachObject(String member, String notObjectMessage, Consumer<OperationInput> each)
     {
         if (!has(member))
             return false;
@@ -188,15 +210,16 @@ final class OperationInput
         {
             var path = field(member) + "[" + index + "]";
             if (array.get(index).isJsonObject())
-                each.accept(new OperationInput(context, array.get(index).getAsJsonObject(), path));
+                each.accept(new OperationInput(array.get(index).getAsJsonObject(), client, existedBeforeBatch, sink,
+                                path));
             else
-                context.fail(path, "invalid-type", notObjectMessage);
+                sink.accept(new FieldFailure(path, "invalid-type", notObjectMessage, null));
         }
         return true;
     }
 
     /** The field path of the member, or of this object itself if the member is empty. */
-    String field(String member)
+    public String field(String member)
     {
         if (prefix.isEmpty())
             return member;

@@ -14,6 +14,7 @@ import org.junit.Test;
 
 import com.google.gson.JsonObject;
 
+import name.abuchen.portfolio.cli.apply.Operations;
 import name.abuchen.portfolio.cli.command.CommandSpec;
 import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.OptionSpec;
@@ -210,7 +211,7 @@ public class HelpTest
 
         assertThat(run.exitCode, is(0));
         assertThat(run.stdout, containsString("pp-cli apply --help <operation>"));
-        for (var operation : Commands.OPERATIONS)
+        for (var operation : Operations.ALL)
         {
             assertThat(run.stdout, containsString("  " + operation.name() + " "));
             assertThat(run.stdout, containsString(start(operation.summary())));
@@ -233,7 +234,7 @@ public class HelpTest
     @Test
     public void everyOperationHasInputHelpMentioningAllItsFields()
     {
-        for (var operation : Commands.OPERATIONS)
+        for (var operation : Operations.ALL)
         {
             var run = CliRun.run("apply", "--help", operation.name());
 
@@ -299,7 +300,7 @@ public class HelpTest
         outputs.add(CliRun.run("--help").stdout);
         for (var command : Commands.ALL)
             outputs.add(CliRun.run(command.name(), "--help").stdout);
-        for (var operation : Commands.OPERATIONS)
+        for (var operation : Operations.ALL)
             outputs.add(CliRun.run("apply", "--help", operation.name()).stdout);
 
         var tooLarge = new ArrayList<String>();

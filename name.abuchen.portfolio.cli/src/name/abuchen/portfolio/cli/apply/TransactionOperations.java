@@ -9,6 +9,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
+import name.abuchen.portfolio.cli.command.OperationInput;
+import name.abuchen.portfolio.cli.command.OperationSpec;
+import name.abuchen.portfolio.cli.command.Outcome;
 import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.cli.query.BuiltRecord;
 import name.abuchen.portfolio.cli.query.TransactionRecord;
@@ -58,15 +61,15 @@ public final class TransactionOperations
                     new CheckSecurityRelatedValuesAction(), new CheckCurrenciesAction(),
                     new CheckForexGrossValueAction(), new CheckValidTypesAction());
 
-    static final OperationSpec ADD = new OperationSpec(OP,
+    static final OperationSpec<OperationContext> ADD = new OperationSpec<>(OP,
                     "Adds a transaction in the shape the transactions output uses. Cash-account events (deposit, removal, interest, dividend, fee, tax, refund) are one-sided. BUY and SELL create an investment-account side and a cash-account side together; TRANSFER creates both sides of a cash or security transfer; DELIVERY_INBOUND and DELIVERY_OUTBOUND move shares without a cash side. The response is one created change whose uuid is the record id. A write that would make an investment account's holding of an instrument negative at the end of any date is refused.",
                     schema(false), TransactionOperations::add);
 
-    static final OperationSpec UPDATE = new OperationSpec(UPDATE_OP,
+    static final OperationSpec<OperationContext> UPDATE = new OperationSpec<>(UPDATE_OP,
                     "Changes a whole transaction record, found by the UUID of either of its sides. Only the fields present change; null clears an optional field. The patch is overlaid on the current record and then validated exactly like an add, so a partial edit can't bypass validation and nothing is recomputed: fees, taxes and forex units that no longer fit a changed amount or shares are refused with a field-level error. The type, and the kind of a transfer, can't change; delete the record and add a new one. Both sides stay in step and keep their UUIDs. The response is one updated change, with before and after for the changed fields, whose uuid is the record id. A change that would make an investment account's holding of an instrument negative at the end of any date is refused.",
                     schema(true), TransactionUpdates::update);
 
-    public static final List<OperationSpec> ALL = List.of(ADD, UPDATE, TransactionUpdates.DELETE);
+    static final List<OperationSpec<OperationContext>> ALL = List.of(ADD, UPDATE, TransactionUpdates.DELETE);
 
     private TransactionOperations()
     {
@@ -75,7 +78,7 @@ public final class TransactionOperations
     private static Schema schema(boolean update)
     {
         var schema = Schema.object(update ? UPDATE_DESCRIPTION : "A transaction, in the shape the transactions output uses.")
-                        .property(ApplyBatch.OPERATION_MEMBER,
+                        .property(OperationSpec.OPERATION_MEMBER,
                                         Schema.enumOf("Operation name.", List.of(update ? UPDATE_OP : OP)));
         if (update)
             schema.property(TransactionUpdates.UUID_MEMBER,
@@ -178,7 +181,7 @@ public final class TransactionOperations
     {
         var record = TransactionRecord.allOf(context.client()).stream().filter(r -> r.primary() == primary).findFirst()
                         .orElseThrow();
-        context.created(new OperationContext.Change("transaction", record.id(), null,
+        context.created(new OperationContext.Change(Outcome.Entity.TRANSACTION, record.id(), null,
                         TransactionsCommand.render(record, context.client())));
     }
 
@@ -190,7 +193,7 @@ public final class TransactionOperations
             context.fail("type", "required", "A transaction needs a type.");
             return null;
         }
-        if (!OperationContext.isText(member))
+        if (!OperationInput.isText(member))
         {
             context.fail("type", "invalid-type", "The type must be a string.");
             return null;
@@ -228,7 +231,7 @@ public final class TransactionOperations
             return null;
 
         var text = input.json().get("exDate");
-        if (!OperationContext.isText(text))
+        if (!OperationInput.isText(text))
         {
             context.fail("exDate", "invalid-type", "The ex-date must be a string.");
             return null;

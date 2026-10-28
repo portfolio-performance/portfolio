@@ -9,6 +9,10 @@ import java.util.Map;
 import java.util.Set;
 
 import name.abuchen.portfolio.cli.command.Decimals;
+import name.abuchen.portfolio.cli.command.EntityKind;
+import name.abuchen.portfolio.cli.command.OperationInput;
+import name.abuchen.portfolio.cli.command.OperationSpec;
+import name.abuchen.portfolio.cli.command.Outcome;
 import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.cli.query.TaxonomyTree;
 import name.abuchen.portfolio.model.Classification;
@@ -30,11 +34,11 @@ public final class TaxonomyOperations
                     .property("weight", Schema.number(
                                     "Positive fraction of one, e.g. 0.6 for 60%, with at most four decimal places."));
 
-    static final OperationSpec ASSIGN = new OperationSpec(OP,
+    static final OperationSpec<OperationContext> ASSIGN = new OperationSpec<>(OP,
                     "Replaces the complete assignment of one instrument within one existing taxonomy. The assignments list names classifications by UUID, each with a weight as a fraction of one, as in the taxonomies output; an empty list removes the instrument from the taxonomy. Weights must be positive and at most 100% in total, a classification may appear only once, and only leaf classifications, those that no other classification names as its parent, can be used. The response is one updated change, with the assignments before and after, whose uuid is the instrument.",
                     schema(), TaxonomyOperations::assign);
 
-    public static final List<OperationSpec> ALL = List.of(ASSIGN);
+    static final List<OperationSpec<OperationContext>> ALL = List.of(ASSIGN);
 
     private TaxonomyOperations()
     {
@@ -43,7 +47,7 @@ public final class TaxonomyOperations
     private static Schema schema()
     {
         return Schema.object("The complete assignment of one instrument within one taxonomy.")
-                        .property(ApplyBatch.OPERATION_MEMBER, Schema.enumOf("Operation name.", List.of(OP)))
+                        .property(OperationSpec.OPERATION_MEMBER, Schema.enumOf("Operation name.", List.of(OP)))
                         .property("taxonomy", Schema.string("UUID of the taxonomy."))
                         .property("instrument", Schema.string("UUID of the instrument."))
                         .property("assignments", Schema.array(
@@ -80,7 +84,7 @@ public final class TaxonomyOperations
 
         var after = assignmentsOf(taxonomy, instrument);
         if (!before.equals(after))
-            context.updated(new OperationContext.Change("taxonomy-assignment", instrument.getUUID(),
+            context.updated(new OperationContext.Change(Outcome.Entity.TAXONOMY_ASSIGNMENT, instrument.getUUID(),
                             Map.of("assignments", before), Map.of("assignments", after)));
     }
 
@@ -136,7 +140,7 @@ public final class TaxonomyOperations
     {
         var member = "classification";
         var element = entry.json().get(member);
-        if (entry.has(member) && !OperationContext.isText(element))
+        if (entry.has(member) && !OperationInput.isText(element))
         {
             entry.fail(member, "invalid-type", "The classification must be a string.");
             return null;

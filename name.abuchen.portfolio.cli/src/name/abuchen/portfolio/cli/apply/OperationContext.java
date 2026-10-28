@@ -6,29 +6,32 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import name.abuchen.portfolio.cli.command.Claims;
+import name.abuchen.portfolio.cli.command.FieldFailure;
+import name.abuchen.portfolio.cli.command.OperationInput;
+import name.abuchen.portfolio.cli.command.Outcome;
 import name.abuchen.portfolio.model.Client;
 
 /**
  * What one operation of a batch sees: the evolving model, its own input and
  * the places to report failures and changes.
  */
-final class OperationContext
+public final class OperationContext
 {
     /** One failed check of one operation. */
-    record Failure(int operationIndex, String field, String code, String message, String check)
+    record Failure(int operationIndex, FieldFailure failure)
     {
         Map<String, Object> toJson()
         {
             var json = new LinkedHashMap<String, Object>();
             json.put("operationIndex", operationIndex);
-            json.put("field", field);
-            json.put("code", code);
-            json.put("message", message);
-            if (check != null)
-                json.put("check", check);
+            json.put("field", failure.field());
+            json.put("code", failure.code());
+            json.put("message", failure.message());
+            if (failure.check() != null)
+                json.put("check", failure.check());
             return json;
         }
     }
@@ -38,12 +41,12 @@ final class OperationContext
      * <code>after</code>, an updated one the changed fields in both, and a
      * deleted one its whole <code>before</code> and an empty <code>after</code>.
      */
-    record Change(String entity, String uuid, Map<String, Object> before, Map<String, Object> after)
+    record Change(Outcome.Entity entity, String uuid, Map<String, Object> before, Map<String, Object> after)
     {
         Map<String, Object> toJson()
         {
             var json = new LinkedHashMap<String, Object>();
-            json.put("entity", entity);
+            json.put("entity", entity.id());
             json.put("uuid", uuid);
             if (before != null)
                 json.put("before", before);
@@ -65,7 +68,7 @@ final class OperationContext
     {
         this.batch = batch;
         this.index = index;
-        this.input = new OperationInput(this, input);
+        this.input = new OperationInput(input, batch.client(), batch::existedBeforeBatch, this::fail);
         this.created = new ArrayList<>();
         this.updated = new ArrayList<>();
         this.deleted = new ArrayList<>();
@@ -76,7 +79,7 @@ final class OperationContext
     {
         this.batch = outer.batch;
         this.index = outer.index;
-        this.input = new OperationInput(this, input);
+        this.input = new OperationInput(input, batch.client(), batch::existedBeforeBatch, this::fail);
         this.created = outer.created;
         this.updated = outer.updated;
         this.deleted = outer.deleted;
@@ -97,12 +100,6 @@ final class OperationContext
     Optional<TransactionUpdates.Existing> replacing()
     {
         return replacing;
-    }
-
-    /** Whether the JSON value is a string. */
-    static boolean isText(JsonElement element)
-    {
-        return element.isJsonPrimitive() && element.getAsJsonPrimitive().isString();
     }
 
     Client client()
@@ -126,8 +123,13 @@ final class OperationContext
      */
     void fail(String field, String code, String message, String check)
     {
+        fail(new FieldFailure(field, code, message, check));
+    }
+
+    private void fail(FieldFailure failure)
+    {
         failureCount++;
-        batch.report(new Failure(index, field, code, message, check));
+        batch.report(new Failure(index, failure));
     }
 
     boolean failed()
@@ -144,19 +146,43 @@ final class OperationContext
      */
     boolean claim(String field, String uuid)
     {
-        var earlier = batch.claim(uuid, index);
-        if (earlier == null)
+        var earlier = claims().claim(uuid);
+        if (earlier.isEmpty())
             return true;
 
-        fail(field, "duplicate-target", "Operation " + earlier + " already changes " + uuid
+        fail(field, "duplicate-target", "Operation " + earlier.getAsInt() + " already changes " + uuid
                         + "; one batch may change an entity only once.");
         return false;
+    }
+
+    /** Claims entities for this operation. */
+    Claims claims()
+    {
+        return uuid -> batch.claim(uuid, index);
     }
 
     /** Whether the entity was already in the file before the batch started. */
     boolean existedBeforeBatch(Object entity)
     {
         return batch.existedBeforeBatch(entity);
+    }
+
+    /** Reports the outcome of this operation as its change or its failures. */
+    void record(Outcome outcome)
+    {
+        switch (outcome)
+        {
+            case Outcome.Applied applied when applied.before() == null -> created(
+                            new Change(applied.kind(), applied.recordId(), null, applied.after()));
+            case Outcome.Applied applied when applied.after().isEmpty() -> deleted(
+                            new Change(applied.kind(), applied.recordId(), applied.before(), applied.after()));
+            case Outcome.Applied applied -> updated(
+                            new Change(applied.kind(), applied.recordId(), applied.before(), applied.after()));
+            case Outcome.Unchanged unchanged -> {
+                // nothing to report
+            }
+            case Outcome.Refused refused -> refused.failures().forEach(this::fail);
+        }
     }
 
     void created(Change change)
