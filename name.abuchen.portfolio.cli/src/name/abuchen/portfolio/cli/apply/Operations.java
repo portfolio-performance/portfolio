@@ -15,7 +15,8 @@ public final class Operations
     public static final List<OperationSpec<OperationContext>> ALL = Stream
                     .of(adapt(Instruments.INSTRUMENTS.operations()), adapt(CashAccounts.CASH_ACCOUNTS.operations()),
                                     adapt(InvestmentAccounts.INVESTMENT_ACCOUNTS.operations()),
-                                    List.of(adapt(TransactionRecords.ADD)), TransactionOperations.ALL,
+                                    adapt(List.of(TransactionRecords.ADD, TransactionRecords.UPDATE,
+                                                    TransactionRecords.DELETE)),
                                     TaxonomyOperations.ALL)
                     .flatMap(List::stream).toList();
 

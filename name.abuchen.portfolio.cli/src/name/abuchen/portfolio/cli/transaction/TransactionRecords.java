@@ -9,13 +9,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import com.google.gson.JsonObject;
 
+import name.abuchen.portfolio.cli.command.Claims;
 import name.abuchen.portfolio.cli.command.Decimals;
-import name.abuchen.portfolio.cli.command.FieldFailure;
 import name.abuchen.portfolio.cli.command.MasterData;
 import name.abuchen.portfolio.cli.command.OperationSpec;
 import name.abuchen.portfolio.cli.command.Outcome;
@@ -50,6 +49,20 @@ public final class TransactionRecords
                     "Adds a transaction in the shape the transactions output uses. Cash-account events (deposit, removal, interest, dividend, fee, tax, refund) are one-sided. BUY and SELL create an investment-account side and a cash-account side together; TRANSFER creates both sides of a cash or security transfer; DELIVERY_INBOUND and DELIVERY_OUTBOUND move shares without a cash side. The response is one created change whose uuid is the record id. A write that would make an investment account's holding of an instrument negative at the end of any date is refused.",
                     TransactionAdd.SCHEMA, context -> context.record(
                                     open(context.client(), context::existedBeforeBatch).add(context.json(), false)));
+
+    /** <code>transaction.update</code>: a thin adapter over {@link #update}. */
+    public static final OperationSpec<OperationSpec.Context> UPDATE = new OperationSpec<>(TransactionUpdate.UPDATE,
+                    "Changes a whole transaction record, found by the UUID of either of its sides. Only the fields present change; null clears an optional field. The patch is overlaid on the current record and then validated exactly like an add, so a partial edit can't bypass validation and nothing is recomputed: fees, taxes and forex units that no longer fit a changed amount or shares are refused with a field-level error. The type, and the kind of a transfer, can't change; delete the record and add a new one. Both sides stay in step and keep their UUIDs. The response is one updated change, with before and after for the changed fields, whose uuid is the record id. A change that would make an investment account's holding of an instrument negative at the end of any date is refused.",
+                    TransactionUpdate.PATCH_SCHEMA,
+                    context -> context.record(open(context.client(), context::existedBeforeBatch)
+                                    .update(context.json(), context.claims(), false)));
+
+    /** <code>transaction.delete</code>: a thin adapter over {@link #delete}. */
+    public static final OperationSpec<OperationSpec.Context> DELETE = new OperationSpec<>(TransactionUpdate.DELETE,
+                    "Deletes a whole transaction record, both sides, found by the UUID of either of its sides. The response is one deleted change whose uuid is the record id, with the record as it was in before. A delete that would make an investment account's holding of an instrument negative at the end of any date, by removing a buy or a delivery or transfer into it, is refused.",
+                    TransactionUpdate.DELETE_SCHEMA,
+                    context -> context.record(open(context.client(), context::existedBeforeBatch)
+                                    .delete(context.json(), context.claims(), false)));
 
     private final Client client;
     private final Predicate<Object> existedBeforeBatch;
@@ -132,42 +145,50 @@ public final class TransactionRecords
     }
 
     /**
-     * The record the input describes, checked like an add, that replaces the
-     * given sides; null after reporting the failures. Not put into the model.
-     * Transitional: <code>transaction.update</code> needs it until it takes
-     * its own path into this module.
+     * Changes the record that has a side with the <code>uuid</code> of the
+     * patch. Every side is claimed first, so a record another operation
+     * changes is refused before anything is checked. The patch is laid on the
+     * record as stored and then checked exactly like an add, against the
+     * holdings without the record's current sides; only a record that passes
+     * is copied onto the existing sides, which keep their UUIDs and move to
+     * other accounts if the patch says so.
+     *
+     * @return {@link Outcome.Applied} with the changed members before and
+     *         after, {@link Outcome.Unchanged} if the patch changes nothing,
+     *         or {@link Outcome.Refused} with every failure, the model
+     *         untouched
      */
-    public BuiltRecord replacement(JsonObject input, List<BuiltRecord.Side> replaced, Consumer<FieldFailure> failures)
+    public Outcome update(JsonObject patch, Claims claims)
     {
-        var result = TransactionAdd.build(client, existedBeforeBatch, input, replaced, false);
-        result.failures().forEach(failures);
-        return result.built();
+        return update(patch, claims, true);
     }
 
     /**
-     * The <code>negative-holding</code> failures, on the field, of removing
-     * the sides. Transitional: <code>transaction.delete</code> needs it until
-     * it moves into this module.
+     * @param reportUnknown
+     *            whether a member the update does not declare is reported; if
+     *            not, it still refuses the patch
      */
-    public List<FieldFailure> oversoldWithout(List<BuiltRecord.Side> sides, String field)
+    Outcome update(JsonObject patch, Claims claims, boolean reportUnknown)
     {
-        return OversellGuard.check(field, OversellGuard.effectsOf(sides), List.of());
+        return new TransactionUpdate(this, client, existedBeforeBatch).update(patch, claims, reportUnknown);
     }
 
     /**
-     * The sides of the record, in its order, with the account or investment
-     * account each is in. Transitional: the update and delete paths need the
-     * owners until they move into this module.
+     * Deletes the whole record, every side, that has a side with the
+     * <code>uuid</code> of the input, after claiming every side. A delete
+     * that would oversell an investment account's holding is refused.
+     *
+     * @return {@link Outcome.Applied} with the record as it was in
+     *         <code>before</code>, or {@link Outcome.Refused}
      */
-    public List<BuiltRecord.Side> sidesOf(TransactionRecord record)
+    public Outcome delete(JsonObject input, Claims claims)
     {
-        var join = new Join(client);
-        var sides = new ArrayList<BuiltRecord.Side>();
-        join.accountOwners.forEach((t, owner) -> sides.add(new BuiltRecord.Side(t, owner)));
-        join.portfolioOwners.forEach((t, owner) -> sides.add(new BuiltRecord.Side(t, owner)));
-        return record.sides().stream().map(uuid -> sides.stream()
-                        .filter(side -> uuid.equals(side.transaction().getUUID())).findFirst().orElseThrow())
-                        .toList();
+        return delete(input, claims, true);
+    }
+
+    Outcome delete(JsonObject input, Claims claims, boolean reportUnknown)
+    {
+        return new TransactionUpdate(this, client, existedBeforeBatch).delete(input, claims, reportUnknown);
     }
 
     /** The record's fields as written, without the {@code --currency} conversion; also the shape writes return. */
@@ -190,8 +211,7 @@ public final class TransactionRecords
         json.put(TransactionShape.CURRENCY_CODE.name(), currencyCode);
 
         var crossCurrency = record.crossCurrencyIncoming();
-        var transferRate = crossCurrency.flatMap(incoming -> primary.getUnit(Transaction.Unit.Type.GROSS_VALUE)
-                        .filter(unit -> unit.getForex().getCurrencyCode().equals(incoming.getCurrencyCode())));
+        var transferRate = record.transferRate();
         crossCurrency.ifPresent(incoming -> {
             json.put(TransactionShape.TARGET_AMOUNT.name(), Decimals.of(incoming.getAmount(), Values.Amount));
             json.put(TransactionShape.TARGET_CURRENCY_CODE.name(), MasterData.orEmpty(incoming.getCurrencyCode()));
@@ -264,7 +284,7 @@ public final class TransactionRecords
     }
 
     /** The sides of the client with their owners, joined into records. */
-    private static final class Join
+    static final class Join
     {
         private final IdentityHashMap<Transaction, Account> accountOwners = new IdentityHashMap<>();
         private final IdentityHashMap<Transaction, Portfolio> portfolioOwners = new IdentityHashMap<>();
@@ -286,6 +306,17 @@ public final class TransactionRecords
                 else
                     portfolioOwners.put(side.transaction(), (Portfolio) side.owner());
             }
+        }
+
+        /** The sides of the record, in its order, with the account or investment account each is in. */
+        List<BuiltRecord.Side> withOwners(TransactionRecord record)
+        {
+            var sides = new ArrayList<BuiltRecord.Side>();
+            accountOwners.forEach((t, owner) -> sides.add(new BuiltRecord.Side(t, owner)));
+            portfolioOwners.forEach((t, owner) -> sides.add(new BuiltRecord.Side(t, owner)));
+            return record.sides().stream().map(uuid -> sides.stream()
+                            .filter(side -> uuid.equals(side.transaction().getUUID())).findFirst().orElseThrow())
+                            .toList();
         }
 
         /** The record this side starts, or empty if its partner starts it. */
