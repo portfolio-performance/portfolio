@@ -7,6 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class Router
 {
@@ -41,24 +42,58 @@ public class Router
         }));
     }
 
+    /**
+     * Matches the path against the registered routes.
+     * <p/>
+     * Among the routes whose path matches, the one with the fewest placeholders
+     * wins, whatever the registration order. A literal segment is a decision
+     * about that path; a placeholder is a variable, and letting the variable win
+     * is how {@code /instruments/attribute-types} could be answered as if
+     * {@code attribute-types} were an instrument uuid. Registration order still
+     * decides between routes of equal specificity, and the OpenAPI drift test
+     * reads the table in registration order.
+     */
     public Match match(String method, String path)
     {
         var segments = split(path);
         var pathMatched = false;
+        Match mostSpecific = null;
+        int fewestPlaceholders = Integer.MAX_VALUE;
 
         for (Route route : routes)
         {
             var params = matchSegments(route.segments(), segments);
             if (params == null)
                 continue;
+
             pathMatched = true;
-            if (route.method().equals(method))
-                return new Match(route.handler(), params);
+            if (!route.method().equals(method))
+                continue;
+
+            var placeholders = countPlaceholders(route.segments());
+            if (placeholders < fewestPlaceholders)
+            {
+                fewestPlaceholders = placeholders;
+                mostSpecific = new Match(route.handler(), params);
+            }
         }
+
+        if (mostSpecific != null)
+            return mostSpecific;
 
         if (pathMatched)
             throw new ApiException(405, "method-not-allowed", "Method not allowed"); //$NON-NLS-1$ //$NON-NLS-2$
         throw ApiException.notFound();
+    }
+
+    private static int countPlaceholders(String[] segments)
+    {
+        return (int) Stream.of(segments).filter(Router::isPlaceholder).count();
+    }
+
+    private static boolean isPlaceholder(String segment)
+    {
+        return segment.startsWith("{") && segment.endsWith("}"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
@@ -128,7 +163,7 @@ public class Router
         for (int ii = 0; ii < pattern.length; ii++)
         {
             var expected = pattern[ii];
-            if (expected.startsWith("{") && expected.endsWith("}")) //$NON-NLS-1$ //$NON-NLS-2$
+            if (isPlaceholder(expected))
                 params.put(expected.substring(1, expected.length() - 1), actual[ii]);
             else if (!expected.equals(actual[ii]))
                 return null;
