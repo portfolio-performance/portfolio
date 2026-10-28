@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -69,13 +70,27 @@ public final class FacetHarness
      */
     public static <T> Result<T> run(Facet<T> facet, List<String> args, Client client)
     {
+        return run(facet, args, client, Map.of(), value -> {
+        });
+    }
+
+    /**
+     * @param env
+     *            the environment the command runs in
+     * @param handler
+     *            what the handler does with the value, before the facet reports
+     */
+    public static <T> Result<T> run(Facet<T> facet, List<String> args, Client client, Map<String, String> env,
+                    Consumer<T> handler)
+    {
         var resolved = new AtomicReference<T>();
         var probe = CommandSpec.of("probe", "A probe.", Schema.object("Data."), run -> {
             resolved.set(run.get(facet));
+            handler.accept(resolved.get());
             return Map.of();
         }, facet);
 
-        var context = new CommandContext(options(facet, args), Map.of(), new ByteArrayInputStream(new byte[0]),
+        var context = new CommandContext(options(facet, args), env, new ByteArrayInputStream(new byte[0]),
                         new PrintStream(new ByteArrayOutputStream()), CliRun.CLOCK, "Linux", null);
         if (client != null)
             context.withClient(new LoadedClient(client, FileFormat.XML));

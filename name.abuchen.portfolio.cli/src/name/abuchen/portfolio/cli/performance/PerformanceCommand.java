@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.cli.performance;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -12,6 +13,7 @@ import name.abuchen.portfolio.cli.command.CliException;
 import name.abuchen.portfolio.cli.command.CommandContext;
 import name.abuchen.portfolio.cli.command.CommandSpec;
 import name.abuchen.portfolio.cli.command.Decimals;
+import name.abuchen.portfolio.cli.command.Facet;
 import name.abuchen.portfolio.cli.command.MasterData;
 import name.abuchen.portfolio.cli.command.OptionSpec;
 import name.abuchen.portfolio.cli.command.Response;
@@ -19,6 +21,7 @@ import name.abuchen.portfolio.cli.command.ResponseMeta;
 import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.cli.command.Warning;
 import name.abuchen.portfolio.cli.command.WarningSpec;
+import name.abuchen.portfolio.cli.currency.RateCache;
 import name.abuchen.portfolio.cli.currency.ReportingCurrency;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
@@ -40,8 +43,12 @@ import name.abuchen.portfolio.snapshot.PerformanceIndex;
  */
 public final class PerformanceCommand
 {
-    private static final OptionSpec CURRENCY = ReportingCurrency.option(
-                    "ISO currency of the figures. Defaults to the base currency of the file.");
+    /** Transitional, until the command is composed of facets: only its option and warnings are used. */
+    private static final Facet<ReportingCurrency> REPORTING = ReportingCurrency.facet(
+                    "ISO currency of the figures. Defaults to the base currency of the file.",
+                    ReportingCurrency.Counting.DAYS);
+
+    private static final OptionSpec CURRENCY = REPORTING.declaration().options().get(0);
 
     /** A value or gain of the performance snapshot, as the output names it. */
     private record Figure(String key, CategoryType category, String description)
@@ -94,7 +101,7 @@ public final class PerformanceCommand
                     "The instrument of --instrument was not held at the start or end of the period and had no transaction in it, so no figure is reported. Carries the uuid and name of the instrument.");
 
     private static final List<WarningSpec> WARNINGS = Stream
-                    .concat(Stream.of(NO_ACTIVITY), ReportingCurrency.WARNINGS_COUNTING_DAYS.stream()).toList();
+                    .concat(Stream.of(NO_ACTIVITY), REPORTING.declaration().warnings().stream()).toList();
 
     public static final CommandSpec SPEC = new CommandSpec("performance",
                     "IRR, TTWROR and gains of the whole client, one investment account (optionally with its reference cash account), one cash account or one instrument over a period (--from and --to, or --period), by FIFO or moving-average cost, in the base currency or --currency; or with --by instrument, one record per instrument active in the period.",
@@ -118,14 +125,15 @@ public final class PerformanceCommand
     {
         var period = PerformancePeriod.resolve(context);
         var costMethod = CostMethod.parse(context);
-        var requested = ReportingCurrency.requested(context, CURRENCY);
+        var requested = context.currency(CURRENCY);
         var client = context.loadClient().client();
         var scope = PerformanceScope.resolve(context, client);
         Optional<Client> breakdown = Optional.empty();
         if (PerformanceByInstrument.requested(context))
             breakdown = Optional.of(scope.narrowed(client).orElseThrow(PerformanceByInstrument::unsupportedScope));
 
-        var reporting = requested.orBase(context, client);
+        var reporting = new ReportingCurrency(requested.orElse(client.getBaseCurrency()), client,
+                        RateCache.desktop(context::env, context.osName()), LocalDate.now(context.clock()));
         var core = reporting.coreFigures();
 
         var data = new LinkedHashMap<String, Object>();
