@@ -815,7 +815,7 @@ paths:
             application/json:
               schema:
                 type: object
-                required: [date, reportingCurrency, totalAssets, fxWarnings, items]
+                required: [date, reportingCurrency, totalAssets, fxWarnings, fxStaleRates, items]
                 properties:
                   date:
                     type: string
@@ -1617,6 +1617,7 @@ components:
           valuationDate,
           status,
           fxWarnings,
+          fxStaleRates,
           warnings,
           items,
         ]
@@ -2292,6 +2293,7 @@ components:
         - irr
         - breakdown
         - fxWarnings
+        - fxStaleRates
       properties:
         openingDate:
           type: string
@@ -2425,6 +2427,7 @@ components:
         - taxesAndFees
         - metrics
         - fxWarnings
+        - fxStaleRates
       properties:
         openingDate:
           type: string
