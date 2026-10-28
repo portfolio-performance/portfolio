@@ -504,15 +504,6 @@ public class HoldingsCommandTest
         assertThat(instruments, is(List.of(alpha.getUUID(), beta.getUUID(), zulu.getUUID())));
     }
 
-    @Test
-    public void anUnknownCurrencyIsAUsageError() throws IOException
-    {
-        var run = run("--currency", "XXY");
-        assertThat(run.exitCode, is(2));
-        assertThat(run.code(), is("invalid-option-value"));
-        assertThat(run.problem().get("option").getAsString(), is("currency"));
-    }
-
     private void sellBetaAndBuyGammaLater()
     {
         var gamma = new SecurityBuilder().addTo(client);

@@ -20,7 +20,7 @@ Response data: The allocation at the date.
     share (number, optional) The value as an unrounded fraction of total. Absent if an exchange rate is missing or the total is zero.
   total (number, optional) Total assets (cash and instruments) of the client in the reporting currency. Absent if an exchange rate is missing.
 
-Response meta: fileVersion, asOf, date, currency, taxonomy; optional: exchangeRates
+Response meta: fileVersion, asOf, taxonomy, date, currency; optional: exchangeRates
 
 Warnings:
   stale-price  The latest price is more than 7 days old. Not emitted for retired instruments, instruments with a manual quote feed or instruments without a price.

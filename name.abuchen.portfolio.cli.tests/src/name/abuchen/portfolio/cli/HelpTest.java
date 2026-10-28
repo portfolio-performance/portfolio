@@ -23,9 +23,10 @@ public class HelpTest
 {
     /**
      * What an agent harness shows without truncating; describe, at about 20 KB,
-     * was cut. Ticket 01 asks for about 6 KB; this is the hard guard.
+     * was cut. Ticket 01 asks for about 6 KB; this is the hard guard. It was
+     * 6.5 KB until transactions' --type listed its values (cli-deepening 13).
      */
-    private static final int SIZE_LIMIT = 6656;
+    private static final int SIZE_LIMIT = 6912;
 
     @Test
     public void globalHelpListsEveryCommandWithASummaryAndEveryErrorCode()

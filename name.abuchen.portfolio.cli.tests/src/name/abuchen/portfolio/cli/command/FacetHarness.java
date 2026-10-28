@@ -87,6 +87,15 @@ public final class FacetHarness
      */
     public static <T> Result<T> run(Facet<T> facet, List<String> args, Client client, Body<T> body)
     {
+        return run(facet, args, client, Map.of(), body);
+    }
+
+    /**
+     * Like {@link #run(Facet, List, Client, Body)}, in the given environment.
+     */
+    public static <T> Result<T> run(Facet<T> facet, List<String> args, Client client, Map<String, String> env,
+                    Body<T> body)
+    {
         var resolved = new AtomicReference<T>();
         var probe = CommandSpec.of("probe", "A probe.", Schema.object("Data."), run -> {
             resolved.set(run.get(facet));
@@ -94,7 +103,7 @@ public final class FacetHarness
             return Map.of();
         }, facet);
 
-        var context = new CommandContext(options(facet, args), Map.of(), new ByteArrayInputStream(new byte[0]),
+        var context = new CommandContext(options(facet, args), env, new ByteArrayInputStream(new byte[0]),
                         new PrintStream(new ByteArrayOutputStream()), CliRun.CLOCK, "Linux", WriteEnvironment.SYSTEM);
         if (client != null)
             context.withClient(new LoadedClient(client, FileFormat.XML));

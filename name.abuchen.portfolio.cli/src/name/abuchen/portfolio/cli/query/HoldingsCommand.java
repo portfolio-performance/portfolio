@@ -7,21 +7,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import name.abuchen.portfolio.cli.command.CliException;
+import name.abuchen.portfolio.cli.command.ClientFile;
 import name.abuchen.portfolio.cli.command.CommandContext;
 import name.abuchen.portfolio.cli.command.CommandSpec;
 import name.abuchen.portfolio.cli.command.Decimals;
+import name.abuchen.portfolio.cli.command.Facet;
+import name.abuchen.portfolio.cli.command.Filters;
 import name.abuchen.portfolio.cli.command.MasterData;
 import name.abuchen.portfolio.cli.command.MinorUnits;
 import name.abuchen.portfolio.cli.command.OptionSpec;
 import name.abuchen.portfolio.cli.command.ReferenceOption;
-import name.abuchen.portfolio.cli.command.Response;
-import name.abuchen.portfolio.cli.command.ResponseMeta;
 import name.abuchen.portfolio.cli.command.Schema;
-import name.abuchen.portfolio.cli.command.WarningSpec;
-import name.abuchen.portfolio.cli.currency.Prices;
 import name.abuchen.portfolio.cli.currency.ReportingCurrency;
 import name.abuchen.portfolio.cli.currency.StalePrices;
 import name.abuchen.portfolio.model.Portfolio;
@@ -45,21 +43,25 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
  */
 public final class HoldingsCommand
 {
-    private static final OptionSpec DATE = OptionSpec.date("date",
-                    "Day to value the holdings at. Defaults to today. Holdings use the prices on or before this day, and conversions the rates on or before it.");
+    private static final Facet<LocalDate> DATE = ValuationDay.facet(
+                    "Day to value the holdings at. Defaults to today. Holdings use the prices on or before this day, and conversions the rates on or before it.",
+                    "The day the holdings are valued at: as given, otherwise today.");
 
-    private static final ReferenceOption<Portfolio> INVESTMENT_ACCOUNT = ReferenceOption.investmentAccount(
-                    "investment-account",
-                    "Only the holdings of this investment account. The cash section is not affected.");
+    private static final Facet<Filters.Reference<Portfolio, PortfolioSnapshot>> INVESTMENT_ACCOUNT = Filters.reference(
+                    ReferenceOption.investmentAccount("investment-account",
+                                    "Only the holdings of this investment account. The cash section is not affected."),
+                    "investmentAccount", "UUID the investment-account filter resolved to.",
+                    (account, snapshot) -> snapshot.unwrapPortfolio() == account);
 
-    private static final OptionSpec BY_ACCOUNT = OptionSpec.flag("by-account",
-                    "Split the holdings into one block per investment account instead of one aggregate.");
+    private static final Facet<Boolean> BY_ACCOUNT = Facet.option(OptionSpec.flag("by-account",
+                    "Split the holdings into one block per investment account instead of one aggregate."));
 
-    private static final OptionSpec INCLUDE_ZERO = OptionSpec.flag("include-zero",
-                    "Also list instruments held before the date and fully sold by it, with zero shares. They are hidden by default.");
+    private static final Facet<Boolean> INCLUDE_ZERO = Facet.option(OptionSpec.flag("include-zero",
+                    "Also list instruments held before the date and fully sold by it, with zero shares. They are hidden by default."));
 
-    private static final OptionSpec CURRENCY = ReportingCurrency.option(
-                    "ISO currency of the totals and converted amounts. Defaults to the base currency of the file. Amounts stay in their native currency as well.");
+    private static final Facet<ReportingCurrency> CURRENCY = ReportingCurrency.facet(
+                    "ISO currency of the totals and converted amounts. Defaults to the base currency of the file. Amounts stay in their native currency as well.",
+                    ReportingCurrency.Counting.ITEMS);
 
     private static Schema total(String description)
     {
@@ -115,19 +117,10 @@ public final class HoldingsCommand
                                     .optionalProperty("total", total(
                                                     "Sum of the balances in the reporting currency. Absent if a balance has no rate.")));
 
-    private static final Schema META = ResponseMeta.fileSchema()
-                    .property("date", Schema.string("The day the holdings are valued at: as given, otherwise today."))
-                    .property("currency", Schema.string("The reporting currency of the totals: as given, otherwise the base currency."))
-                    .optionalProperty("investmentAccount", Schema.string("UUID the investment-account filter resolved to."))
-                    .optionalProperty("exchangeRates", ReportingCurrency.ratesMetaSchema());
-
-    private static final List<WarningSpec> WARNINGS = Stream
-                    .concat(Stream.of(Prices.STALE_PRICE), ReportingCurrency.WARNINGS.stream()).toList();
-
-    public static final CommandSpec SPEC = new CommandSpec("holdings",
+    public static final CommandSpec SPEC = CommandSpec.of("holdings",
                     "What is held at a date and what it is worth: holdings aggregated across investment accounts, or per account, with cash balances in a separate section, in the base currency or --currency.",
-                    true, List.of(DATE, INVESTMENT_ACCOUNT.spec(), BY_ACCOUNT, INCLUDE_ZERO, CURRENCY), DATA, META,
-                    WARNINGS, HoldingsCommand::execute);
+                    DATA, HoldingsCommand::execute, ClientFile.READ, DATE, INVESTMENT_ACCOUNT, BY_ACCOUNT, INCLUDE_ZERO,
+                    StalePrices.FACET, CURRENCY);
 
     private HoldingsCommand()
     {
@@ -153,22 +146,18 @@ public final class HoldingsCommand
         }
     }
 
-    private static Response execute(CommandContext context) throws CliException
+    private static Map<String, Object> execute(CommandContext run) throws CliException
     {
-        var date = context.date(DATE).orElse(LocalDate.now(context.clock()));
-        var requested = ReportingCurrency.requested(context, CURRENCY);
-        var client = context.loadClient().client();
-
-        var filter = context.reference(INVESTMENT_ACCOUNT, client);
-
-        var reporting = requested.orBase(context, client);
+        var date = run.get(DATE);
+        var client = run.client();
+        var filter = run.get(INVESTMENT_ACCOUNT);
+        var reporting = run.get(CURRENCY);
         var snapshot = ClientSnapshot.create(client, reporting.coreFigures().unreported(), date);
 
         var blocks = new ArrayList<Block>();
-        if (context.flag(BY_ACCOUNT) || filter.isPresent())
+        if (run.get(BY_ACCOUNT) || filter.entity().isPresent())
         {
-            var wanted = filter;
-            snapshot.getPortfolios().stream().filter(s -> wanted.isEmpty() || s.unwrapPortfolio() == wanted.get())
+            snapshot.getPortfolios().stream().filter(filter)
                             .sorted(MasterData.byNameThenUuid((PortfolioSnapshot s) -> s.unwrapPortfolio().getName(),
                                             s -> s.unwrapPortfolio().getUUID()))
                             .forEach(s -> blocks.add(new Block(Optional.of(s.unwrapPortfolio()),
@@ -179,31 +168,21 @@ public final class HoldingsCommand
             blocks.add(new Block(Optional.empty(), client.getPortfolios(), snapshot.getJointPortfolio()));
         }
 
-        var includeZero = context.flag(INCLUDE_ZERO);
-        var stalePrices = new StalePrices(date);
+        var includeZero = run.get(INCLUDE_ZERO);
+        var stalePrices = run.get(StalePrices.FACET);
 
         var holdings = new ArrayList<Map<String, Object>>();
         for (var block : blocks)
         {
             var rows = rows(block, date, includeZero);
-            rows.forEach(row -> row.price().ifPresent(price -> stalePrices.note(row.security(), price)));
+            rows.forEach(row -> row.price().ifPresent(price -> stalePrices.note(row.security(), price, date)));
             holdings.add(render(block, rows, date, reporting));
         }
 
         var data = new LinkedHashMap<String, Object>();
         data.put("holdings", holdings);
         data.put("cash", renderCash(snapshot.getAccounts(), date, reporting));
-
-        var meta = ResponseMeta.of(context, client);
-        meta.put("date", date.toString());
-        meta.put("currency", reporting.code());
-        filter.ifPresent(account -> meta.put("investmentAccount", account.getUUID()));
-        reporting.putRatesInto(meta);
-
-        var response = Response.of(data, meta);
-        stalePrices.warnings().forEach(response::warn);
-        reporting.warnings().forEach(response::warn);
-        return response;
+        return data;
     }
 
     private static List<Row> rows(Block block, LocalDate date, boolean includeZero)
