@@ -465,7 +465,10 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
 
     private void setupDirtyListener(TableViewer tableViewer)
     {
-        PropertyChangeListener listener = e -> Display.getDefault().asyncExec(() -> tableViewer.refresh(true));
+        PropertyChangeListener listener = e -> Display.getDefault().asyncExec(() -> {
+            if (!tableViewer.getTable().isDisposed())
+                tableViewer.refresh(true);
+        });
         client.addPropertyChangeListener("dirty", listener); //$NON-NLS-1$
         tableViewer.getTable().addDisposeListener(e -> client.removePropertyChangeListener("dirty", listener)); //$NON-NLS-1$
     }
