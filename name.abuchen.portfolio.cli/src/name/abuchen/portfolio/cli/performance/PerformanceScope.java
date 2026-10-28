@@ -9,11 +9,15 @@ import java.util.Optional;
 
 import name.abuchen.portfolio.cli.command.CliException;
 import name.abuchen.portfolio.cli.command.CommandContext;
+import name.abuchen.portfolio.cli.command.Declaration;
 import name.abuchen.portfolio.cli.command.ErrorCode;
+import name.abuchen.portfolio.cli.command.Facet;
 import name.abuchen.portfolio.cli.command.MasterData;
 import name.abuchen.portfolio.cli.command.OptionSpec;
 import name.abuchen.portfolio.cli.command.ReferenceOption;
 import name.abuchen.portfolio.cli.command.Schema;
+import name.abuchen.portfolio.cli.command.Warning;
+import name.abuchen.portfolio.cli.command.WarningSpec;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
@@ -26,7 +30,9 @@ import name.abuchen.portfolio.util.Interval;
 
 /**
  * What <code>performance</code> is about: the whole client, or one investment
- * account, cash account or instrument, chosen with the reference options.
+ * account, cash account or instrument, chosen with the reference options; and
+ * whether it is broken down by instrument with <code>--by</code>, which only
+ * the whole client and an investment account can be.
  */
 final class PerformanceScope
 {
@@ -42,8 +48,28 @@ final class PerformanceScope
     private static final OptionSpec WITH_REFERENCE_CASH_ACCOUNT = OptionSpec.flag("with-reference-cash-account",
                     "Report the investment account together with its reference cash account. Only with --investment-account; fails with no-reference-cash-account if the account has none.");
 
-    static final List<OptionSpec> OPTIONS = List.of(INVESTMENT_ACCOUNT.spec(), CASH_ACCOUNT.spec(),
-                    INSTRUMENT.spec(), WITH_REFERENCE_CASH_ACCOUNT);
+    private static final String BY_INSTRUMENT = "instrument";
+
+    private static final OptionSpec BY = new OptionSpec("by", "dimension",
+                    "Break the figures down: instrument is the only dimension. Returns one record per instrument active in the period, sorted by name, instead of the figures of the scope. With the whole client or an investment account.");
+
+    private static final WarningSpec NO_ACTIVITY = new WarningSpec("no-activity-in-period",
+                    "The instrument of --instrument was not held at the start or end of the period and had no transaction in it, so no figure is reported. Carries the uuid and name of the instrument.");
+
+    /**
+     * The scope as a facet: it owns the scope options, <code>--by</code>,
+     * which only some scopes can be broken down by, and the rules between
+     * them. <code>meta.scope</code> gets what it resolved to. It declares
+     * <code>no-activity-in-period</code>, which the command warns about for a
+     * quiet instrument.
+     */
+    static final Facet<PerformanceScope> FACET = Facet.of(Declaration.empty()
+                    .options(INVESTMENT_ACCOUNT.spec(), CASH_ACCOUNT.spec(), INSTRUMENT.spec(),
+                                    WITH_REFERENCE_CASH_ACCOUNT, BY)
+                    .meta("scope", schema()).warnings(NO_ACTIVITY)
+                    .codes(ErrorCode.CONFLICTING_OPTIONS, ErrorCode.OPTION_REQUIRED,
+                                    ErrorCode.NO_REFERENCE_CASH_ACCOUNT)
+                    .needingClient(), run -> resolve(run, run.client()), (scope, out) -> out.meta("scope", scope.meta()));
 
     /** The kinds of scope, as <code>meta.scope.kind</code> names them. */
     private enum Kind
@@ -195,10 +221,12 @@ final class PerformanceScope
     }
 
     private final Target target;
+    private final Optional<Client> breakdown;
 
-    private PerformanceScope(Target target)
+    private PerformanceScope(Target target, Optional<Client> breakdown)
     {
         this.target = target;
+        this.breakdown = breakdown;
     }
 
     /**
@@ -207,7 +235,17 @@ final class PerformanceScope
      *             reference does not resolve or the investment account has no
      *             reference cash account to add
      */
-    static PerformanceScope resolve(CommandContext context, Client client) throws CliException
+    private static PerformanceScope resolve(CommandContext context, Client client) throws CliException
+    {
+        var target = target(context, client);
+        if (!byInstrument(context))
+            return new PerformanceScope(target, Optional.empty());
+
+        var narrowed = target.narrowed(client).orElseThrow(PerformanceScope::unsupportedScope);
+        return new PerformanceScope(target, Optional.of(narrowed));
+    }
+
+    private static Target target(CommandContext context, Client client) throws CliException
     {
         var given = new ArrayList<String>();
         for (var option : List.of(INVESTMENT_ACCOUNT.spec(), CASH_ACCOUNT.spec(), INSTRUMENT.spec()))
@@ -239,18 +277,61 @@ final class PerformanceScope
                                 "The investment account '" + MasterData.orEmpty(account.getName())
                                                 + "' has no reference cash account.",
                                 422).with("uuid", account.getUUID());
-            return new PerformanceScope(new OneInvestmentAccount(account, withReferenceCashAccount));
+            return new OneInvestmentAccount(account, withReferenceCashAccount);
         }
 
         var cashAccount = context.reference(CASH_ACCOUNT, client);
         if (cashAccount.isPresent())
-            return new PerformanceScope(new OneCashAccount(cashAccount.get()));
+            return new OneCashAccount(cashAccount.get());
 
         var instrument = context.reference(INSTRUMENT, client);
         if (instrument.isPresent())
-            return new PerformanceScope(new OneInstrument(instrument.get()));
+            return new OneInstrument(instrument.get());
 
-        return new PerformanceScope(new WholeClient());
+        return new WholeClient();
+    }
+
+    /**
+     * @return whether the figures are to be broken down by instrument
+     * @throws CliException
+     *             <code>invalid-option-value</code> for any other dimension
+     */
+    private static boolean byInstrument(CommandContext context) throws CliException
+    {
+        var value = context.text(BY);
+        if (value.isPresent() && !BY_INSTRUMENT.equals(value.get()))
+            throw BY.invalid(value.get(), "'" + BY_INSTRUMENT + "'");
+        return value.isPresent();
+    }
+
+    /**
+     * @return a usage error: the scope cannot be broken down by instrument
+     */
+    private static CliException unsupportedScope()
+    {
+        return CliException.usage(ErrorCode.CONFLICTING_OPTIONS, "Conflicting options",
+                        "Option '--" + BY.name()
+                                        + "' works with the whole client or an investment account, not with '--cash-account' or '--instrument'.")
+                        .with("option", BY.name());
+    }
+
+    /**
+     * With <code>--by instrument</code>, the client as far as the scope covers
+     * it, on which per-instrument figures are calculated; empty without it.
+     */
+    Optional<Client> breakdown()
+    {
+        return breakdown;
+    }
+
+    /** The warning that the instrument of the scope was not active in the period. */
+    static Warning noActivity(Security security)
+    {
+        return new Warning(NO_ACTIVITY.code(),
+                        "The instrument '" + MasterData.orEmpty(security.getName())
+                                        + "' was not held at the start or end of the period and had no transaction in it.")
+                                                        .with("uuid", security.getUUID())
+                                                        .with("name", MasterData.orEmpty(security.getName()));
     }
 
     /**
@@ -263,34 +344,24 @@ final class PerformanceScope
         return target.quietInstrument(client, converter, interval);
     }
 
-    /**
-     * The client as far as the scope covers it, on which per-instrument figures
-     * are calculated; empty if the scope cannot be broken down by instrument.
-     */
-    Optional<Client> narrowed(Client client)
-    {
-        return target.narrowed(client);
-    }
-
     /** Core's performance index for the scope. */
     PerformanceIndex index(Client client, CurrencyConverter converter, Interval interval)
     {
         return target.index(client, converter, interval);
     }
 
-    /** Adds <code>scope</code>: the kind and what it resolved to. */
-    void putInto(Map<String, Object> meta)
+    /** <code>meta.scope</code>: the kind and what it resolved to. */
+    private Map<String, Object> meta()
     {
         var scope = new LinkedHashMap<String, Object>();
         scope.put("kind", target.kind().id);
         target.putInto(scope);
-        meta.put("scope", scope);
+        return scope;
     }
 
-    /** Declares the members {@link #putInto} adds. */
-    static Schema declareIn(Schema meta)
+    private static Schema schema()
     {
-        return meta.property("scope", Schema.object("What the figures are about.")
+        return Schema.object("What the figures are about.")
                         .property("kind", Schema.enumOf("The kind of scope.",
                                         Arrays.stream(Kind.values()).map(kind -> kind.id).toList()))
                         .optionalProperty("uuid", Schema.string("UUID of the account or instrument."))
@@ -298,6 +369,6 @@ final class PerformanceScope
                         .optionalProperty("referenceCashAccount", Schema.object(
                                         "The reference cash account reported together with the investment account. Present only with --with-reference-cash-account.")
                                         .property("uuid", Schema.string("Its UUID."))
-                                        .property("name", Schema.string("Its name."))));
+                                        .property("name", Schema.string("Its name.")));
     }
 }

@@ -95,6 +95,29 @@ public final class CommandContext
         return option.parseChoice(raw(option, OptionSpec.Choice.class));
     }
 
+    /**
+     * The values of a multi-choice option, without duplicates and in the
+     * published order; empty when it is absent.
+     *
+     * @throws CliException
+     *             a usage error if an item is not one of the choices
+     */
+    public List<String> choices(OptionSpec option) throws CliException
+    {
+        return option.parseChoices(raw(option, OptionSpec.Choices.class));
+    }
+
+    /**
+     * The ISO code of a currency option, or empty if it is absent.
+     *
+     * @throws CliException
+     *             a usage error if core doesn't know the currency
+     */
+    public Optional<String> currency(OptionSpec option) throws CliException
+    {
+        return option.parseCurrency(raw(option, OptionSpec.Currency.class));
+    }
+
     /** The value of a free-form option as given, or empty if it is absent. */
     public Optional<String> text(OptionSpec option)
     {
@@ -187,6 +210,17 @@ public final class CommandContext
     void bind(List<Facet<?>> commandFacets)
     {
         this.facets = commandFacets;
+    }
+
+    /**
+     * Checks every given value against its option's type, before any facet
+     * resolves: a value that doesn't fit is a usage error ahead of any file
+     * error, even for an option a facet reads only once the client is loaded.
+     */
+    void checkValues(List<OptionSpec> declared) throws CliException
+    {
+        for (var option : declared)
+            option.check(Optional.ofNullable(options.get(option.name())));
     }
 
     <T> void resolve(Facet<T> facet) throws CliException

@@ -2,9 +2,13 @@ package name.abuchen.portfolio.cli.command;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Pattern;
+
+import name.abuchen.portfolio.money.CurrencyUnit;
 
 /**
  * Declares one option that takes a value, e.g. <code>--file &lt;path&gt;</code>.
@@ -16,7 +20,7 @@ import java.util.regex.Pattern;
 public record OptionSpec(String name, String valueName, String description, Type type, boolean required)
 {
     /** How the value of an option is read. */
-    sealed interface Type permits Text, IsoDate, IntegerDomain, Flag, Choice, Reference
+    sealed interface Type permits Text, IsoDate, IntegerDomain, Flag, Choice, Choices, Currency, Reference
     {
     }
 
@@ -27,6 +31,19 @@ public record OptionSpec(String name, String valueName, String description, Type
 
     /** One of a fixed set of values; <code>--help</code> publishes them. */
     public record Choice(List<String> values, String defaultValue) implements Type
+    {
+    }
+
+    /**
+     * One or more of a fixed set of values, comma-separated and
+     * case-insensitive; <code>--help</code> publishes them.
+     */
+    public record Choices(List<String> values) implements Type
+    {
+    }
+
+    /** The ISO code of a currency known to core. */
+    public record Currency() implements Type
     {
     }
 
@@ -90,6 +107,22 @@ public record OptionSpec(String name, String valueName, String description, Type
                     String defaultValue)
     {
         return new OptionSpec(name, valueName, description, new Choice(values, defaultValue), false);
+    }
+
+    /**
+     * A multi-choice option: one or more of the values, comma-separated,
+     * matched case-insensitively. Its value is the values given, without
+     * duplicates, in the order of <code>values</code>.
+     */
+    public static OptionSpec choices(String name, String valueName, String description, List<String> values)
+    {
+        return new OptionSpec(name, valueName, description, new Choices(List.copyOf(values)), false);
+    }
+
+    /** An option that takes the ISO code of a currency known to core. */
+    public static OptionSpec currency(String name, String description)
+    {
+        return new OptionSpec(name, "code", description, new Currency(), false);
     }
 
     /** A switch such as <code>--include-zero</code>, given without a value. */
@@ -161,6 +194,71 @@ public record OptionSpec(String name, String valueName, String description, Type
             return text;
 
         throw invalid(text, "one of " + String.join(", ", choice.values()));
+    }
+
+    /**
+     * The values of this multi-choice option, without duplicates and in the
+     * published order; empty when the option is absent.
+     *
+     * @throws CliException
+     *             a usage error if an item is not one of the choices
+     */
+    List<String> parseChoices(Optional<String> raw) throws CliException
+    {
+        var choices = (Choices) type;
+        if (raw.isEmpty())
+            return List.of();
+
+        var given = new HashSet<String>();
+        for (var item : raw.get().split(",", -1))
+        {
+            var value = item.trim().toUpperCase(Locale.ROOT);
+            if (choices.values().stream().noneMatch(v -> v.toUpperCase(Locale.ROOT).equals(value)))
+                throw invalid(raw.get(), "a comma-separated list of: " + String.join(", ", choices.values()));
+            given.add(value);
+        }
+        return choices.values().stream().filter(v -> given.contains(v.toUpperCase(Locale.ROOT))).toList();
+    }
+
+    /**
+     * The value of this currency option as given, or empty if it is absent.
+     *
+     * @throws CliException
+     *             a usage error if core doesn't know the currency
+     */
+    Optional<String> parseCurrency(Optional<String> raw) throws CliException
+    {
+        if (raw.isPresent() && CurrencyUnit.getInstance(raw.get()) == null)
+            throw invalid(raw.get(), "an ISO currency code known to core");
+        return raw;
+    }
+
+    /**
+     * Checks a value against the option's type, as the command line is
+     * parsed. A reference can only be checked once the client is loaded.
+     *
+     * @throws CliException
+     *             a usage error if the value does not fit the type
+     */
+    void check(Optional<String> raw) throws CliException
+    {
+        switch (type)
+        {
+            case IsoDate date -> parseDate(raw);
+            case IntegerDomain domain -> parseInteger(raw);
+            case Choice choice -> parseChoice(raw);
+            case Choices choices -> parseChoices(raw);
+            case Currency currency -> parseCurrency(raw);
+            case Flag flag ->
+            {
+            }
+            case Text text ->
+            {
+            }
+            case Reference reference ->
+            {
+            }
+        }
     }
 
     /**

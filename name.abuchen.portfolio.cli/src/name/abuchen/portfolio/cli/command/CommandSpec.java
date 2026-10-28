@@ -162,6 +162,7 @@ public final class CommandSpec
     private Response run(CommandContext context, Handler body) throws CliException
     {
         context.bind(facets);
+        context.checkValues(declaredOptions);
 
         for (var facet : facets)
         {

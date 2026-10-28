@@ -3,27 +3,27 @@ package name.abuchen.portfolio.cli.query;
 import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import name.abuchen.portfolio.cli.command.CliException;
+import name.abuchen.portfolio.cli.command.ClientFile;
 import name.abuchen.portfolio.cli.command.CommandContext;
 import name.abuchen.portfolio.cli.command.CommandSpec;
 import name.abuchen.portfolio.cli.command.DateRange;
 import name.abuchen.portfolio.cli.command.Decimals;
-import name.abuchen.portfolio.cli.command.ErrorCode;
+import name.abuchen.portfolio.cli.command.Declaration;
+import name.abuchen.portfolio.cli.command.Facet;
+import name.abuchen.portfolio.cli.command.Filters;
 import name.abuchen.portfolio.cli.command.MasterData;
 import name.abuchen.portfolio.cli.command.OptionSpec;
 import name.abuchen.portfolio.cli.command.Paging;
 import name.abuchen.portfolio.cli.command.ReferenceOption;
-import name.abuchen.portfolio.cli.command.Response;
-import name.abuchen.portfolio.cli.command.ResponseMeta;
 import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.cli.command.Sorting;
 import name.abuchen.portfolio.cli.currency.ReportingCurrency;
@@ -46,25 +46,42 @@ public final class TransactionsCommand
 {
     private static final DateTimeFormatter TIME = DateTimeFormatter.ofPattern("HH:mm");
 
-    private static final ReferenceOption<Portfolio> INVESTMENT_ACCOUNT = ReferenceOption.investmentAccount(
-                    "investment-account", "Only records with a side in this investment account.");
+    private static final Facet<Filters.Reference<Portfolio, TransactionRecord>> INVESTMENT_ACCOUNT = Filters
+                    .reference(ReferenceOption.investmentAccount("investment-account",
+                                    "Only records with a side in this investment account."), "investmentAccount",
+                                    "UUID the investment-account filter resolved to.",
+                                    (account, record) -> record.touchesInvestmentAccount(account.getUUID()));
 
-    private static final ReferenceOption<Account> CASH_ACCOUNT = ReferenceOption.cashAccount("cash-account",
-                    "Only records with a side in this cash account.");
+    private static final Facet<Filters.Reference<Account, TransactionRecord>> CASH_ACCOUNT = Filters.reference(
+                    ReferenceOption.cashAccount("cash-account", "Only records with a side in this cash account."),
+                    "cashAccount", "UUID the cash-account filter resolved to.",
+                    (account, record) -> record.touchesCashAccount(account.getUUID()));
 
-    private static final ReferenceOption<Security> INSTRUMENT = ReferenceOption.instrument("instrument",
-                    "Only records of this instrument, including its dividends, fees and taxes.");
+    private static final Facet<Filters.Reference<Security, TransactionRecord>> INSTRUMENT = Filters.reference(
+                    ReferenceOption.instrument("instrument",
+                                    "Only records of this instrument, including its dividends, fees and taxes."),
+                    "instrument", "UUID the instrument filter resolved to.",
+                    (security, record) -> record.primary().getSecurity() == security);
 
-    private static final OptionSpec TYPE = new OptionSpec("type", "types",
-                    "Only records of these types: comma-separated, case-insensitive values of the type field.");
+    private static final OptionSpec TYPE_OPTION = OptionSpec.choices("type", "types",
+                    "Only records of these types: comma-separated, case-insensitive values of the type field.",
+                    TransactionShape.FILTERABLE_TYPES);
 
-    private static final OptionSpec FROM = OptionSpec.date("from",
-                    "First day of the range, inclusive. Without it, no lower bound.");
+    /** The types to list; empty lists every type. <code>meta</code> gets them if any are given. */
+    private static final Facet<List<String>> TYPE = Facet.of(Declaration.empty().options(TYPE_OPTION)
+                    .optionalMeta("types", Schema.array(
+                                    "The type filter: upper case, without duplicates, in the published order.",
+                                    Schema.string(null))),
+                    run -> run.choices(TYPE_OPTION), (types, out) -> {
+                        if (!types.isEmpty())
+                            out.meta("types", types);
+                    });
 
-    private static final OptionSpec TO = OptionSpec.date("to",
+    private static final Facet<DateRange> RANGE = DateRange.facet(
+                    "First day of the range, inclusive. Without it, no lower bound.",
                     "Last day of the range, inclusive. Defaults to today.");
 
-    private static final OptionSpec CURRENCY = ReportingCurrency.option(
+    private static final Facet<Optional<ReportingCurrency>> CURRENCY = ReportingCurrency.ifGiven(
                     "Adds converted to every record: its amount in this ISO currency, with rate, date and source. amount stays in the record's currency.");
 
     private static Schema recordSchema()
@@ -81,97 +98,32 @@ public final class TransactionsCommand
 
     private static final Schema DATA = Paging.pageSchema("A page of the transaction records.", recordSchema());
 
-    private static final Schema META = DateRange.declareIn(ResponseMeta.pagedSchema(SORT))
-                    .optionalProperty("currency", Schema.string("The currency asked for, as given."))
-                    .optionalProperty("investmentAccount", Schema.string("UUID the investment-account filter resolved to."))
-                    .optionalProperty("cashAccount", Schema.string("UUID the cash-account filter resolved to."))
-                    .optionalProperty("instrument", Schema.string("UUID the instrument filter resolved to."))
-                    .optionalProperty("types", Schema.array("The type filter: upper case, without duplicates, in the published order.",
-                                    Schema.string(null)))
-                    .optionalProperty("exchangeRates", ReportingCurrency.ratesMetaSchema());
-
-    public static final CommandSpec SPEC = new CommandSpec("transactions",
+    public static final CommandSpec SPEC = CommandSpec.of("transactions",
                     "Business events as transaction records, each joining the sides of a buy, sell or transfer, filtered by date range, account, instrument and type.",
-                    true,
-                    List.of(INVESTMENT_ACCOUNT.spec(), CASH_ACCOUNT.spec(), INSTRUMENT.spec(), TYPE, FROM, TO,
-                                    CURRENCY, Paging.LIMIT, Paging.OFFSET, SORT.sortOption(), Sorting.ORDER),
-                    DATA, META, ReportingCurrency.WARNINGS, TransactionsCommand::execute);
+                    DATA, TransactionsCommand::execute, ClientFile.READ, INVESTMENT_ACCOUNT, CASH_ACCOUNT, INSTRUMENT,
+                    TYPE, RANGE, CURRENCY, Paging.FACET, SORT);
 
     private TransactionsCommand()
     {
     }
 
-    /** What a record must match to be listed; absent filters match everything. */
-    private record Filter(DateRange range, Optional<Portfolio> investmentAccount, Optional<Account> cashAccount,
-                    Optional<Security> instrument, List<String> types)
+    private static Map<String, Object> execute(CommandContext run) throws CliException
     {
-        boolean test(TransactionRecord record)
-        {
-            return range.contains(record.primary().getDateTime().toLocalDate())
-                            && investmentAccount.map(account -> record.touchesInvestmentAccount(account.getUUID()))
-                                            .orElse(true)
-                            && cashAccount.map(account -> record.touchesCashAccount(account.getUUID())).orElse(true)
-                            && instrument.map(security -> record.primary().getSecurity() == security).orElse(true)
-                            && (types.isEmpty() || types.contains(record.type()));
-        }
-    }
+        var client = run.client();
+        var range = run.get(RANGE);
+        var types = run.get(TYPE);
+        Predicate<TransactionRecord> filter = record -> range.contains(record.primary().getDateTime().toLocalDate())
+                        && (types.isEmpty() || types.contains(record.type()));
+        filter = filter.and(run.get(INVESTMENT_ACCOUNT)).and(run.get(CASH_ACCOUNT)).and(run.get(INSTRUMENT));
 
-    private static Response execute(CommandContext context) throws CliException
-    {
-        var paging = Paging.parse(context);
-        var sorting = SORT.parse(context);
-        var range = DateRange.parse(context, FROM, TO);
-        var types = parseTypes(context.text(TYPE));
-        var requested = ReportingCurrency.requested(context, CURRENCY);
-
-        var client = context.loadClient().client();
-        var reporting = requested.ifGiven(context, client);
-
-        var investmentAccount = context.reference(INVESTMENT_ACCOUNT, client);
-        var cashAccount = context.reference(CASH_ACCOUNT, client);
-        var instrument = context.reference(INSTRUMENT, client);
-
-        var filter = new Filter(range, investmentAccount, cashAccount, instrument, types);
-        var records = sorting.sort(client, TransactionRecord.allOf(client).stream().filter(filter::test).toList());
-        var page = paging.of(records);
+        var records = run.get(SORT).sort(client, TransactionRecord.allOf(client).stream().filter(filter).toList());
+        var page = run.get(Paging.FACET).of(records);
 
         var names = new AccountNames(client);
+        var reporting = run.get(CURRENCY);
         var data = new LinkedHashMap<String, Object>();
         page.putInto(data, record -> render(record, names, reporting));
-
-        var meta = ResponseMeta.paged(context, client, paging, sorting);
-        range.putInto(meta);
-        reporting.ifPresent(currency -> meta.put("currency", currency.code()));
-        investmentAccount.ifPresent(account -> meta.put("investmentAccount", account.getUUID()));
-        cashAccount.ifPresent(account -> meta.put("cashAccount", account.getUUID()));
-        instrument.ifPresent(security -> meta.put("instrument", security.getUUID()));
-        if (!types.isEmpty())
-            meta.put("types", TransactionShape.FILTERABLE_TYPES.stream().filter(types::contains).toList());
-        reporting.ifPresent(currency -> currency.putRatesInto(meta));
-
-        var response = Response.of(data, meta);
-        reporting.ifPresent(currency -> currency.warnings().forEach(response::warn));
-        return response;
-    }
-
-    /** The upper-cased types of the comma-separated list; empty if the option is absent. */
-    private static List<String> parseTypes(Optional<String> raw) throws CliException
-    {
-        if (raw.isEmpty())
-            return List.of();
-
-        var types = new ArrayList<String>();
-        for (var item : raw.get().split(",", -1))
-        {
-            var type = item.trim().toUpperCase(Locale.ROOT);
-            if (!TransactionShape.FILTERABLE_TYPES.contains(type))
-                throw CliException.usage(ErrorCode.INVALID_OPTION_VALUE, "Invalid option value",
-                                "Option '--" + TYPE.name() + "' must be a comma-separated list of: "
-                                                + String.join(", ", TransactionShape.FILTERABLE_TYPES) + ".")
-                                .with("option", TYPE.name()).with("value", raw.get());
-            types.add(type);
-        }
-        return types;
+        return data;
     }
 
     private static Map<String, Object> render(TransactionRecord record, AccountNames names,

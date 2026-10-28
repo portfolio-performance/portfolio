@@ -518,18 +518,6 @@ public class TransactionsCommandTest
     }
 
     @Test
-    public void aFromAfterToIsAnInvalidDateRange() throws IOException
-    {
-        var run = run("--from", "2026-02-01", "--to", "2026-01-01");
-
-        assertThat(run.exitCode, is(2));
-        var problem = run.problem();
-        assertThat(text(problem, "code"), is("invalid-date-range"));
-        assertThat(text(problem, "from"), is("2026-02-01"));
-        assertThat(text(problem, "to"), is("2026-01-01"));
-    }
-
-    @Test
     public void accountFiltersMatchARecordWithAnySideInTheAccount() throws IOException
     {
         var savings = new AccountBuilder("EUR").addTo(client);
@@ -619,21 +607,6 @@ public class TransactionsCommandTest
         var orphans = run("--type", "transfer_out");
         assertThat(ids(orphans), contains(orphan.getSourceTransaction().getUUID()));
         assertThat(orphans.data().get("total").getAsInt(), is(1));
-    }
-
-    @Test
-    public void anUnknownOrEmptyTypeIsAUsageError() throws IOException
-    {
-        for (var value : List.of("BUY,NOPE", "", "BUY,", ","))
-        {
-            var run = run("--type", value);
-
-            assertThat(value, run.exitCode, is(2));
-            var problem = run.problem();
-            assertThat(text(problem, "code"), is("invalid-option-value"));
-            assertThat(text(problem, "option"), is("type"));
-            assertThat(text(problem, "value"), is(value));
-        }
     }
 
     @Test

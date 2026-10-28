@@ -6,7 +6,7 @@ Options:
   --investment-account <ref>  Only records with a side in this investment account.
   --cash-account <ref>  Only records with a side in this cash account.
   --instrument <ref>  Only records of this instrument, including its dividends, fees and taxes.
-  --type <types>  Only records of these types: comma-separated, case-insensitive values of the type field.
+  --type <types>  Only records of these types: comma-separated, case-insensitive values of the type field. (one or more of BUY, SELL, DEPOSIT, REMOVAL, INTEREST, INTEREST_CHARGE, DIVIDENDS, FEES, FEES_REFUND, TAXES, TAX_REFUND, DELIVERY_INBOUND, DELIVERY_OUTBOUND, TRANSFER, TRANSFER_IN, TRANSFER_OUT)
   --from <yyyy-MM-dd>  First day of the range, inclusive. Without it, no lower bound.
   --to <yyyy-MM-dd>  Last day of the range, inclusive. Defaults to today.
   --currency <code>  Adds converted to every record: its amount in this ISO currency, with rate, date and source. amount stays in the record's currency.
@@ -60,7 +60,7 @@ Response data: A page of the transaction records.
   total (integer) Number of items in the whole list.
   nextOffset (integer, optional) Offset of the next page. Absent on the last page.
 
-Response meta: fileVersion, asOf, limit, offset, sort, order, to; optional: from, currency, investmentAccount, cashAccount, instrument, types, exchangeRates
+Response meta: fileVersion, asOf, limit, offset, sort, order, to; optional: investmentAccount, cashAccount, instrument, types, from, currency, exchangeRates
 
 Warnings:
   exchange-rate-missing  No usable exchange rate for a currency pair; its figures are left out. Carries baseCurrency, termCurrency and the count of affected items.

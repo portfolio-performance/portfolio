@@ -10,17 +10,16 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import name.abuchen.portfolio.cli.command.CliException;
 import name.abuchen.portfolio.cli.command.CommandContext;
 import name.abuchen.portfolio.cli.command.Decimals;
-import name.abuchen.portfolio.cli.command.ErrorCode;
+import name.abuchen.portfolio.cli.command.Declaration;
+import name.abuchen.portfolio.cli.command.Facet;
 import name.abuchen.portfolio.cli.command.OptionSpec;
 import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.cli.command.Warning;
 import name.abuchen.portfolio.cli.command.WarningSpec;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyConverter;
-import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -34,12 +33,19 @@ import name.abuchen.portfolio.money.Values;
  */
 public final class ReportingCurrency
 {
-    /** The warnings of a command that converts. */
-    public static final List<WarningSpec> WARNINGS = List.of(ExchangeRates.MISSING, ExchangeRates.STALE,
-                    ExchangeRates.CACHE_UNAVAILABLE);
+    /** What the counts of a command's rate warnings count. */
+    public enum Counting
+    {
+        /** The figures the command converts itself: records or holdings. */
+        ITEMS,
+        /** The days core needed a rate on, for figures core calculates itself. */
+        DAYS
+    }
 
-    /** The warnings of a command whose converter core drives, which counts days rather than records. */
-    public static final List<WarningSpec> WARNINGS_COUNTING_DAYS = List.of(
+    private static final List<WarningSpec> WARNINGS_COUNTING_ITEMS = List.of(ExchangeRates.MISSING,
+                    ExchangeRates.STALE, ExchangeRates.CACHE_UNAVAILABLE);
+
+    private static final List<WarningSpec> WARNINGS_COUNTING_DAYS = List.of(
                     new WarningSpec(ExchangeRates.MISSING.code(),
                                     "No usable exchange rate was found for a currency pair on a day core needed it, so the figures are left out. Carries baseCurrency, termCurrency and the count of days without a rate."),
                     new WarningSpec(ExchangeRates.STALE.code(),
@@ -47,26 +53,68 @@ public final class ReportingCurrency
                                                     + " days before the day needed was used. Carries baseCurrency, termCurrency, the count of days and the maxAgeDays."),
                     ExchangeRates.CACHE_UNAVAILABLE);
 
-    /** The currency code of <code>--currency</code>, validated before the client is loaded. */
-    public record Requested(Optional<String> code)
+    private static final String META_CURRENCY = "currency";
+    private static final String META_RATES = "exchangeRates";
+
+    /**
+     * <code>--currency</code> with the base currency of the file as its
+     * default. <code>meta</code> gets the currency and, if the cache was read,
+     * <code>exchangeRates</code>; the rate warnings follow the handler.
+     *
+     * @param description
+     *            the option as the command uses it
+     */
+    public static Facet<ReportingCurrency> facet(String description, Counting counting)
     {
-        /** The currency given, otherwise the base currency of the client. */
-        public ReportingCurrency orBase(CommandContext context, Client client)
-        {
-            return of(code.orElse(client.getBaseCurrency()), context, client);
-        }
+        var option = OptionSpec.currency("currency", description);
+        var declaration = declaration(option, counting)
+                        .meta(META_CURRENCY, Schema.string("The reporting currency: as given, otherwise the base currency of the file."))
+                        .optionalMeta(META_RATES, ratesMetaSchema());
+        return Facet.of(declaration, run -> {
+            var client = run.client();
+            return of(run.currency(option).orElse(client.getBaseCurrency()), client, run);
+        }, (reporting, out) -> reporting.report(out));
+    }
 
-        /** The currency given, if any; for a command without a default. */
-        public Optional<ReportingCurrency> ifGiven(CommandContext context, Client client)
-        {
-            return code.map(c -> of(c, context, client));
-        }
+    /**
+     * <code>--currency</code> without a default, for a command that converts
+     * only if asked to. If it is given, <code>meta</code> and the warnings are
+     * those of {@link #facet}, counting items.
+     */
+    public static Facet<Optional<ReportingCurrency>> ifGiven(String description)
+    {
+        var option = OptionSpec.currency("currency", description);
+        var declaration = declaration(option, Counting.ITEMS)
+                        .optionalMeta(META_CURRENCY, Schema.string("The currency asked for, as given."))
+                        .optionalMeta(META_RATES, ratesMetaSchema());
+        return Facet.of(declaration, run -> {
+            var code = run.currency(option);
+            if (code.isEmpty())
+                return Optional.<ReportingCurrency>empty();
+            return Optional.of(of(code.get(), run.client(), run));
+        }, (reporting, out) -> reporting.ifPresent(currency -> currency.report(out)));
+    }
 
-        private static ReportingCurrency of(String code, CommandContext context, Client client)
-        {
-            return new ReportingCurrency(code, client, RateCache.desktop(context::env, context.osName()),
-                            LocalDate.now(context.clock()));
-        }
+    private static Declaration declaration(OptionSpec option, Counting counting)
+    {
+        var warnings = counting == Counting.ITEMS ? WARNINGS_COUNTING_ITEMS : WARNINGS_COUNTING_DAYS;
+        return Declaration.empty().options(option).warnings(warnings.toArray(WarningSpec[]::new)).needingClient();
+    }
+
+    private static ReportingCurrency of(String code, Client client, CommandContext run)
+    {
+        return new ReportingCurrency(code, client, RateCache.desktop(run::env, run.osName()),
+                        LocalDate.now(run.clock()));
+    }
+
+    private void report(Facet.Report out)
+    {
+        out.meta(META_CURRENCY, code);
+        var meta = new LinkedHashMap<String, Object>();
+        putRatesInto(meta);
+        if (meta.containsKey(META_RATES))
+            out.meta(META_RATES, meta.get(META_RATES));
+        warnings().forEach(out::warn);
     }
 
     /**
@@ -183,30 +231,8 @@ public final class ReportingCurrency
         this.today = today;
     }
 
-    /** The <code>--currency</code> option, described as the command uses it. */
-    public static OptionSpec option(String description)
-    {
-        return new OptionSpec("currency", "code", description);
-    }
-
-    /**
-     * The value of the option, if given.
-     *
-     * @throws CliException
-     *             <code>invalid-option-value</code> if core doesn't know the currency
-     */
-    public static Requested requested(CommandContext context, OptionSpec option) throws CliException
-    {
-        var raw = context.text(option);
-        if (raw.isPresent() && CurrencyUnit.getInstance(raw.get()) == null)
-            throw CliException.usage(ErrorCode.INVALID_OPTION_VALUE, "Invalid option value",
-                            "Option '--" + option.name() + "' must be an ISO currency code known to core.")
-                            .with("option", option.name()).with("value", raw.get());
-        return new Requested(raw);
-    }
-
-    /** The meta member describing the cache, to add to a converting command's meta schema. */
-    public static Schema ratesMetaSchema()
+    /** The meta member describing the cache. */
+    private static Schema ratesMetaSchema()
     {
         return Schema.object("The ECB cache of the desktop app. Present only if the cache was read.")
                         .property("path", Schema.string("The cache file."))
@@ -300,14 +326,17 @@ public final class ReportingCurrency
         return new CoreFigures();
     }
 
-    /** Adds the meta member <code>exchangeRates</code>, if the cache was read. */
-    public void putRatesInto(Map<String, Object> meta)
+    /** Adds the meta member <code>exchangeRates</code>, if the cache was read; the facets report it. */
+    void putRatesInto(Map<String, Object> meta)
     {
         rates.putCacheInto(meta);
     }
 
-    /** The warnings about the rates looked up so far; see {@link ExchangeRates#warnings()}. */
-    public List<Warning> warnings()
+    /**
+     * The warnings about the rates looked up so far; see
+     * {@link ExchangeRates#warnings()}. The facets forward them.
+     */
+    List<Warning> warnings()
     {
         return rates.warnings();
     }

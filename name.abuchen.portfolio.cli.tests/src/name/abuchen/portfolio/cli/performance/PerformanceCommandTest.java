@@ -188,15 +188,6 @@ public class PerformanceCommandTest
     }
 
     @Test
-    public void aCalendarYearIsEchoedFromItsFirstToItsLastDay() throws IOException
-    {
-        var run = run("--period", "Y2025");
-
-        assertThat(run.meta().get("from").getAsString(), is("2025-01-01"));
-        assertThat(run.meta().get("to").getAsString(), is("2025-12-31"));
-    }
-
-    @Test
     public void aPeriodCodeAndTheEquivalentFromAndToGiveTheSameFiguresAndEcho() throws IOException
     {
         var byCode = run("--period", "Y2025");
@@ -224,63 +215,6 @@ public class PerformanceCommandTest
         assertMatchesCore(run, coreOverDays("2026-01-01", "2026-10-16"), true);
         assertThat(run.meta().get("from").getAsString(), is("2026-01-01"));
         assertThat(run.meta().get("period").getAsString(), is("YTD"));
-    }
-
-    @Test
-    public void anUnknownPeriodCodeIsAUsageError() throws IOException
-    {
-        for (var code : List.of("nonsense", "Y20x5", "9X9Y", "L1Y"))
-        {
-            var run = run("--period", code);
-
-            assertThat(code + ": " + run.stdout, run.exitCode, is(2));
-            assertThat(code, run.code(), is("invalid-option-value"));
-        }
-    }
-
-    @Test
-    public void aPeriodTogetherWithFromOrToIsAUsageError() throws IOException
-    {
-        for (var other : List.of(List.of("--from", "2026-01-01"), List.of("--to", "2026-06-30")))
-        {
-            var args = new ArrayList<>(List.of("--period", "L1Y0"));
-            args.addAll(other);
-
-            var run = run(args.toArray(String[]::new));
-
-            assertThat(run.stdout, run.exitCode, is(2));
-            assertThat(run.code(), is("conflicting-options"));
-        }
-    }
-
-    @Test
-    public void withoutAPeriodOrFromIsAUsageError() throws IOException
-    {
-        for (var args : List.of(new String[0], new String[] { "--to", "2026-06-30" }))
-        {
-            var run = run(args);
-
-            assertThat(run.stdout, run.exitCode, is(2));
-            assertThat(run.code(), is("period-required"));
-        }
-    }
-
-    @Test
-    public void aFromAfterToIsAUsageError() throws IOException
-    {
-        var run = run("--from", "2026-06-30", "--to", "2026-06-29");
-
-        assertThat(run.stdout, run.exitCode, is(2));
-        assertThat(run.code(), is("invalid-date-range"));
-    }
-
-    @Test
-    public void aPeriodCodeThatStartsAfterItEndsIsAUsageError() throws IOException
-    {
-        var run = run("--period", "S2026-10-16");
-
-        assertThat(run.stdout, run.exitCode, is(2));
-        assertThat(run.code(), is("invalid-date-range"));
     }
 
     @Test

@@ -53,7 +53,7 @@ public class ErrorCodeTest
     {
         assertThat(PerformanceCommand.SPEC.options().stream().anyMatch(OptionSpec::required),
                         is(false));
-        assertThat(codes(PerformanceCommand.SPEC), hasItem("option-required"));
+        assertThat(PerformanceCommand.SPEC.errorCodes(), hasItem(ErrorCode.OPTION_REQUIRED));
     }
 
     /** A command no hand-written list can name. */

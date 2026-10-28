@@ -84,8 +84,9 @@ public interface Facet<T>
     /**
      * A lone option. Its value is the parsed option: a <code>Boolean</code>
      * for a switch, an <code>Optional&lt;LocalDate&gt;</code> for a date, a
-     * <code>Long</code> for an integer, a <code>String</code> for a choice and
-     * an <code>Optional&lt;String&gt;</code> for free text. A reference
+     * <code>Long</code> for an integer, a <code>String</code> for a choice, a
+     * <code>List&lt;String&gt;</code> for a multi-choice and an
+     * <code>Optional&lt;String&gt;</code> for a currency or free text. A reference
      * option goes through {@link #option(ReferenceOption)}.
      */
     @SuppressWarnings("unchecked")
@@ -100,6 +101,8 @@ public interface Facet<T>
             case OptionSpec.IsoDate date -> run.date(spec);
             case OptionSpec.IntegerDomain domain -> run.integer(spec);
             case OptionSpec.Choice choice -> run.choice(spec);
+            case OptionSpec.Choices choices -> run.choices(spec);
+            case OptionSpec.Currency currency -> run.currency(spec);
             case OptionSpec.Text text -> run.text(spec);
             case OptionSpec.Reference reference -> throw new IllegalStateException();
         });

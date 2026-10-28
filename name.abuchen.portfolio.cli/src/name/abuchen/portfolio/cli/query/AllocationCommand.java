@@ -8,21 +8,19 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalLong;
-import java.util.stream.Stream;
 
 import name.abuchen.portfolio.cli.command.CliException;
+import name.abuchen.portfolio.cli.command.ClientFile;
 import name.abuchen.portfolio.cli.command.CommandContext;
 import name.abuchen.portfolio.cli.command.CommandSpec;
 import name.abuchen.portfolio.cli.command.Decimals;
+import name.abuchen.portfolio.cli.command.Declaration;
+import name.abuchen.portfolio.cli.command.Facet;
 import name.abuchen.portfolio.cli.command.MasterData;
-import name.abuchen.portfolio.cli.command.OptionSpec;
 import name.abuchen.portfolio.cli.command.ReferenceOption;
-import name.abuchen.portfolio.cli.command.Response;
-import name.abuchen.portfolio.cli.command.ResponseMeta;
 import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.cli.command.Warning;
 import name.abuchen.portfolio.cli.command.WarningSpec;
-import name.abuchen.portfolio.cli.currency.Prices;
 import name.abuchen.portfolio.cli.currency.ReportingCurrency;
 import name.abuchen.portfolio.cli.currency.StalePrices;
 import name.abuchen.portfolio.model.Classification;
@@ -50,18 +48,34 @@ import name.abuchen.portfolio.snapshot.ClientSnapshot;
  */
 public final class AllocationCommand
 {
-    private static final ReferenceOption<Taxonomy> TAXONOMY = ReferenceOption.taxonomy("taxonomy",
-                    "Taxonomy to allocate by. List the taxonomies with the taxonomies command.")
-                                    .asRequired();
+    private static final ReferenceOption<Taxonomy> TAXONOMY_OPTION = ReferenceOption.taxonomy("taxonomy",
+                    "Taxonomy to allocate by. List the taxonomies with the taxonomies command.").asRequired();
 
-    private static final OptionSpec DATE = OptionSpec.date("date",
-                    "Day to value the allocation at. Defaults to today. Valuation uses the prices on or before this day, and conversions the rates on or before it.");
+    /** The taxonomy to allocate by; <code>meta</code> gets its identity. */
+    private static final Facet<Taxonomy> TAXONOMY = Facet.of(Declaration.empty().options(TAXONOMY_OPTION.spec())
+                    .meta("taxonomy", Schema.object("The taxonomy the reference resolved to.")
+                                    .property("uuid", Schema.string("Canonical UUID."))
+                                    .property("name", Schema.string("Taxonomy name; empty if the file has none."))),
+                    run -> run.reference(TAXONOMY_OPTION, run.client()).orElseThrow(), (taxonomy, out) -> {
+                        var reference = new LinkedHashMap<String, Object>();
+                        MasterData.putIdentity(reference, taxonomy.getId(), taxonomy.getName());
+                        out.meta("taxonomy", reference);
+                    });
 
-    private static final OptionSpec CURRENCY = ReportingCurrency.option(
-                    "ISO currency of the values and the total. Defaults to the base currency of the file.");
+    private static final Facet<LocalDate> DATE = ValuationDay.facet(
+                    "Day to value the allocation at. Defaults to today. Valuation uses the prices on or before this day, and conversions the rates on or before it.",
+                    "The day the allocation is valued at: as given, otherwise today.");
+
+    private static final Facet<ReportingCurrency> CURRENCY = ReportingCurrency.facet(
+                    "ISO currency of the values and the total. Defaults to the base currency of the file.",
+                    ReportingCurrency.Counting.ITEMS);
 
     static final WarningSpec OVER_ASSIGNED = new WarningSpec("over-assigned",
                     "An instrument or cash account is assigned more than 100% in the taxonomy. It is counted as core counts it. Carries the instrument or cashAccount UUID and the totalWeight as a fraction.");
+
+    /** The handler warns of over-assigned holdings. */
+    private static final Facet<Void> OVER_ASSIGNMENT = Facet.of(Declaration.empty().warnings(OVER_ASSIGNED),
+                    run -> null);
 
     private static final Schema ROW = Schema.object("One classification, or the unassigned rest.")
                     .optionalProperty("uuid", Schema.string("Canonical UUID. Absent on the unassigned row."))
@@ -84,20 +98,10 @@ public final class AllocationCommand
                     .optionalProperty("total", Schema.number(
                                     "Total assets (cash and instruments) of the client in the reporting currency. Absent if an exchange rate is missing."));
 
-    private static final Schema META = ResponseMeta.fileSchema()
-                    .property("date", Schema.string("The day the allocation is valued at: as given, otherwise today."))
-                    .property("currency", Schema.string("The reporting currency of the values: as given, otherwise the base currency."))
-                    .property("taxonomy", Schema.object("The taxonomy the reference resolved to.")
-                                    .property("uuid", Schema.string("Canonical UUID."))
-                                    .property("name", Schema.string("Taxonomy name; empty if the file has none.")))
-                    .optionalProperty("exchangeRates", ReportingCurrency.ratesMetaSchema());
-
-    private static final List<WarningSpec> WARNINGS = Stream
-                    .concat(Stream.of(Prices.STALE_PRICE, OVER_ASSIGNED), ReportingCurrency.WARNINGS.stream()).toList();
-
-    public static final CommandSpec SPEC = new CommandSpec("allocation",
+    public static final CommandSpec SPEC = CommandSpec.of("allocation",
                     "How the value of the client splits across the classifications of one taxonomy at a date: one flat row per classification at every depth plus an unassigned row, with value and share in the base currency or --currency.",
-                    true, List.of(TAXONOMY.spec(), DATE, CURRENCY), DATA, META, WARNINGS, AllocationCommand::execute);
+                    DATA, AllocationCommand::execute, ClientFile.READ, TAXONOMY, DATE, StalePrices.FACET,
+                    OVER_ASSIGNMENT, CURRENCY);
 
     /** Something owned that takes part in the allocation, and what it is worth in its own currency. */
     private record Holding(InvestmentVehicle vehicle, Money value)
@@ -113,24 +117,22 @@ public final class AllocationCommand
     {
     }
 
-    private static Response execute(CommandContext context) throws CliException
+    private static Map<String, Object> execute(CommandContext run) throws CliException
     {
-        var date = context.date(DATE).orElse(LocalDate.now(context.clock()));
-        var requested = ReportingCurrency.requested(context, CURRENCY);
-        var client = context.loadClient().client();
-        var taxonomy = context.reference(TAXONOMY, client).orElseThrow();
-
-        var reporting = requested.orBase(context, client);
+        var date = run.get(DATE);
+        var client = run.client();
+        var taxonomy = run.get(TAXONOMY);
+        var reporting = run.get(CURRENCY);
         var core = reporting.coreFigures();
         // only the holdings in their own currencies are read from this one
         var snapshot = ClientSnapshot.create(client, core.unreported(), date);
 
         var holdings = new ArrayList<Holding>();
-        var stalePrices = new StalePrices(date);
+        var stalePrices = run.get(StalePrices.FACET);
         for (var position : snapshot.getJointPortfolio().getPositions())
         {
             holdings.add(new Holding(position.getInvestmentVehicle(), position.calculateValue()));
-            stalePrices.note(position.getSecurity(), position.getPrice());
+            stalePrices.note(position.getSecurity(), position.getPrice(), date);
         }
         for (var account : snapshot.getAccounts())
         {
@@ -163,19 +165,8 @@ public final class AllocationCommand
         data.put("items", items);
         total.ifPresent(t -> data.put("total", Decimals.of(t, Values.Amount)));
 
-        var meta = ResponseMeta.of(context, client);
-        meta.put("date", date.toString());
-        meta.put("currency", reporting.code());
-        var reference = new LinkedHashMap<String, Object>();
-        MasterData.putIdentity(reference, taxonomy.getId(), taxonomy.getName());
-        meta.put("taxonomy", reference);
-        reporting.putRatesInto(meta);
-
-        var response = Response.of(data, meta);
-        stalePrices.warnings().forEach(response::warn);
-        overAssigned(taxonomy, holdings).forEach(response::warn);
-        reporting.warnings().forEach(response::warn);
-        return response;
+        overAssigned(taxonomy, holdings).forEach(run::warn);
+        return data;
     }
 
     private static Map<String, Object> row(TaxonomyTree.Node node, OptionalLong value, OptionalLong total)

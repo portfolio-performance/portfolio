@@ -255,6 +255,10 @@ final class HelpText
                 facts.add("one of " + String.join(", ", choice.values()));
                 facts.add("default " + choice.defaultValue());
             }
+            case OptionSpec.Choices choices -> facts.add("one or more of " + String.join(", ", choices.values()));
+            case OptionSpec.Currency currency ->
+            {
+            }
             case OptionSpec.Text text ->
             {
             }
