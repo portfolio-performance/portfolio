@@ -98,7 +98,8 @@ public final class ReportingCurrency
     private static Declaration declaration(OptionSpec option, Counting counting)
     {
         var warnings = counting == Counting.ITEMS ? WARNINGS_COUNTING_ITEMS : WARNINGS_COUNTING_DAYS;
-        return Declaration.empty().options(option).warnings(warnings.toArray(WarningSpec[]::new)).needingClient();
+        return Declaration.empty().options(option).warnings(warnings.toArray(WarningSpec[]::new)).needingClient()
+                        .sample("--" + option.name(), "USD");
     }
 
     private static ReportingCurrency of(String code, Client client, CommandContext run)

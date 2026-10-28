@@ -2,6 +2,7 @@ package name.abuchen.portfolio.cli;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import com.google.gson.Gson;
@@ -10,6 +11,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
+import name.abuchen.portfolio.cli.command.CommandSpec;
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.OutputFormat;
 import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.cli.command.WarningSpec;
@@ -18,7 +21,8 @@ import name.abuchen.portfolio.cli.command.WarningSpec;
  * What the per-command help promises about a successful response: an envelope
  * of <code>data</code>, <code>meta</code> and <code>warnings</code>, whose data
  * and meta conform to the command's declared schemas and whose warnings carry
- * only declared codes. {@link CliRun} checks every run against it, so each
+ * only declared codes; and that a failure's code is one the command's help
+ * lists. {@link CliRun} checks every run against it, so each
  * test of the suite also proves that the help tells the truth.
  */
 final class ResponseContract
@@ -31,11 +35,14 @@ final class ResponseContract
 
     /**
      * @return one message per broken promise; empty if the run conforms or
-     *         promised no JSON response (a failure, help or a table)
+     *         promised no JSON response (help or a table)
      */
     static List<String> violations(List<String> args, int exitCode, String stdout)
     {
-        if (exitCode != 0 || args.isEmpty() || args.contains(HelpText.OPTION) || isTable(args))
+        if (exitCode != 0)
+            return failureViolations(args, stdout);
+
+        if (args.isEmpty() || args.contains(HelpText.OPTION) || isTable(args))
             return List.of();
 
         var command = Commands.find(args.get(0));
@@ -78,6 +85,36 @@ final class ResponseContract
                 errors.add("undeclared warning code: " + warning);
         }
         return errors;
+    }
+
+    /**
+     * A failed command's problem document carries a code that the command's
+     * help lists, i.e. one of its {@link CommandSpec#errorCodes()}.
+     */
+    private static List<String> failureViolations(List<String> args, String stdout)
+    {
+        var command = args.isEmpty() ? Optional.<CommandSpec>empty() : Commands.find(args.get(0));
+        if (command.isEmpty())
+            return List.of();
+
+        JsonElement json;
+        try
+        {
+            json = JsonParser.parseString(stdout);
+        }
+        catch (JsonParseException e)
+        {
+            return List.of();
+        }
+        if (!json.isJsonObject() || !json.getAsJsonObject().has("code"))
+            return List.of();
+
+        var code = json.getAsJsonObject().get("code").getAsString();
+        var listed = command.get().errorCodes().stream().map(ErrorCode::code).toList();
+        if (!listed.contains(code))
+            return List.of("failed with '" + code + "', which the help of '" + command.get().name()
+                            + "' does not list: " + listed);
+        return List.of();
     }
 
     static JsonObject json(Schema schema)

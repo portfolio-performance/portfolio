@@ -21,7 +21,9 @@ enum CostMethod
 
     /** <code>--cost-method</code> as a facet; <code>meta.costMethod</code> echoes the method used. */
     static final Facet<CostMethod> FACET = Facet.of(
-                    Declaration.empty().options(OPTION).meta("costMethod", schema()), CostMethod::parse,
+                    Declaration.empty().options(OPTION).meta("costMethod", schema())
+                                    .sample("--" + OPTION.name(), "moving-average"),
+                    CostMethod::parse,
                     (method, out) -> out.meta("costMethod", method.id()));
 
     private final String id;

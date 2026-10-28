@@ -51,6 +51,12 @@ public interface Facet<T>
     {
     }
 
+    /** The same facet with more sample arguments; see {@link Declaration#sample}. */
+    default Facet<T> withSample(String... arguments)
+    {
+        return of(declaration().sample(arguments), this::resolve, this::report);
+    }
+
     static <T> Facet<T> of(Declaration declaration, Resolver<T> resolver)
     {
         return of(declaration, resolver, (value, out) -> {
