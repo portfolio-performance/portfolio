@@ -528,6 +528,12 @@ public final class EntityJson
                 status.add(value.getWireName());
         json.add("status", status); //$NON-NLS-1$
 
+        // only when asked for: a response without them covers every trade
+        if (params.from() != null)
+            json.addProperty("from", params.from().toString()); //$NON-NLS-1$
+        if (params.to() != null)
+            json.addProperty("to", params.to().toString()); //$NON-NLS-1$
+
         return json;
     }
 
