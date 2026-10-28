@@ -89,6 +89,25 @@ exists. Same switch, same port, same tokens; there is nothing extra to install.
   token; `tools/call` requires one and, lacking it, returns HTTP 200 with `isError: true`. A `401`
   is invisible in a chat client's UI, so the refusal has to reach the chat. `/.well-known/*` answers
   `404`: there is no authorization server here.
+- **A tool result is compact; its values are the REST API's.** Not one number is rounded or
+  recomputed, but the shape is cut down for a model: `items` becomes a table (`columns` once, then
+  one array per row, nested groups as dotted columns such as `gains.realizedCapitalGains`); an
+  amount in the `reportingCurrency` is a bare number, while one in another currency - or a column
+  holding even one such amount - keeps a `<column>.currency` beside it, and a `price` always keeps
+  its currency; a holding's four price-age fields become one `priceNote`, present only for a stale
+  or a hand-maintained price; the file list drops `id` (always `use` again) and `path`; in a table
+  of 20 rows or more, the fields only one row in ten or fewer has move into one column `more` - an
+  object per row, or `null`. Each result says in a line what applies to it, and only what applies:
+  the `null` line only where a `null` is sent.
+- **A list too large for one result comes back as its first page.** The instruments and the trades
+  take `offset` and `limit`; when the whole list does not fit, the result holds as many whole items
+  as do, a `page` (`offset`, `limit`, `total`, `nextOffset`) and a line before the items naming the
+  `offset` to ask for next. Any other result cut to fit ends after a whole row, and says so.
+- **One result holds at most 100,000 characters** — under Claude Desktop's measured 150,000. A
+  client that keeps less, such as Claude Code (25,000 tokens), cuts a larger result blindly; set the
+  limit below what it keeps, and the server sends a page or a marked cut instead:
+  `-Dname.abuchen.portfolio.rest.mcpMaxResultChars=45000` in `PortfolioPerformance.ini` after
+  `-vmargs`, from 10,000 to 150,000, read when the server starts.
 - **Deliberately outside `/v1`,** because MCP negotiates its own version, and therefore outside the
   additive-only promise.
 - **The last refused connection is shown on the preference page.** A client with a wrong token never

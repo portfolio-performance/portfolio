@@ -29,6 +29,7 @@ import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.rest.ApiRoutes;
 import name.abuchen.portfolio.rest.RejectedConnections;
 import name.abuchen.portfolio.rest.RestApiConstants;
+import name.abuchen.portfolio.rest.RestApiLimits;
 import name.abuchen.portfolio.rest.internal.ApiException;
 import name.abuchen.portfolio.rest.internal.Request;
 import name.abuchen.portfolio.rest.internal.Response;
@@ -67,11 +68,13 @@ import name.abuchen.portfolio.rest.internal.VersionHandler;
 public final class McpEndpoint
 {
     /**
-     * The cap on what one tool call may return. Sits under Claude Desktop's
-     * measured 150,000 truncation point, is roughly 25,000 tokens, and clears a
-     * personal portfolio on every collection. Revise on measured evidence.
+     * The default cap on what one tool call may return. Sits under Claude
+     * Desktop's measured 150,000 truncation point, is roughly 25,000 tokens, and
+     * clears a personal portfolio on every collection. Revise on measured
+     * evidence. The cap in force is {@link RestApiLimits#mcpMaxResultChars()},
+     * which a client that keeps less can lower.
      */
-    public static final int MAX_RESULT_CHARS = 100_000;
+    public static final int MAX_RESULT_CHARS = RestApiLimits.DEFAULT_MCP_MAX_RESULT_CHARS;
 
     /**
      * How many JSON-RPC messages one HTTP request may carry. Protocol
@@ -90,6 +93,9 @@ public final class McpEndpoint
     /** an entity uuid as {@code pp_list_instruments} reports one */
     private static final Pattern UUID_PATTERN = Pattern.compile(
                     "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}");
+
+    /** an integer argument as a model writes one: digits, no fraction, no exponent */
+    private static final Pattern WHOLE_NUMBER = Pattern.compile("-?[0-9]+");
 
     private static final String NEWEST_SUPPORTED_PROTOCOL_VERSION = "2025-06-18";
 
@@ -576,7 +582,7 @@ public final class McpEndpoint
                 payload = deleted;
             }
 
-            return toolResult(fit(tool, arguments, payload, MAX_RESULT_CHARS,
+            return toolResult(fit(tool, arguments, payload, RestApiLimits.mcpMaxResultChars(),
                             changed == null ? null : Boolean.valueOf(changed)));
         }
         catch (ApiException e)
@@ -741,6 +747,11 @@ public final class McpEndpoint
         if (enumeration != null && enumeration.isJsonArray() && !holds(enumeration.getAsJsonArray(), value))
             return "`" + argument + "` must be one of " + namesOf(enumeration.getAsJsonArray());
 
+        var minimum = schema.get("minimum");
+        if (minimum != null && value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber()
+                        && value.getAsBigDecimal().compareTo(minimum.getAsBigDecimal()) < 0)
+            return "`" + argument + "` must be at least " + minimum.getAsString();
+
         var minLength = schema.get("minLength");
         if (minLength != null && value.isJsonPrimitive() && value.getAsJsonPrimitive().isString()
                         && value.getAsString().length() < minLength.getAsInt())
@@ -815,7 +826,10 @@ public final class McpEndpoint
         return switch (type)
         {
             case "string" -> value.isJsonPrimitive() && value.getAsJsonPrimitive().isString();
-            case "number", "integer" -> value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber();
+            case "number" -> value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber();
+            // as written, not as valued: 5.0 would reach the route as "5.0"
+            case "integer" -> value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber()
+                            && WHOLE_NUMBER.matcher(value.getAsString()).matches();
             case "boolean" -> value.isJsonPrimitive() && value.getAsJsonPrimitive().isBoolean();
             case "array" -> value.isJsonArray();
             case "object" -> value.isJsonObject();
@@ -966,6 +980,12 @@ public final class McpEndpoint
             return McpEnvelope.render(tool, narrowed, smallerPayload, plan.get().dropped(),
                             McpEnvelope.oversizeAdvice(tool, plan.get().dropped()), maxChars);
         }
+
+        // a list that can be paged is sent as its first page, not cut: the
+        // reader is told where the next one starts instead of what was lost
+        var page = McpEnvelope.fitPage(tool, arguments, payload, maxChars, changed);
+        if (page != null)
+            return page;
 
         var advice = McpEnvelope.oversizeAdvice(tool, arguments, payload);
         return McpEnvelope.render(tool, arguments, payload, List.of(), advice, maxChars, changed);
