@@ -5,7 +5,7 @@ import java.text.MessageFormat;
 import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.CompletableFuture;
 
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Inject;
@@ -97,23 +97,54 @@ public class RestApiAddon
         }
 
         @Override
-        public <T> T syncExec(Callable<T> callable) throws Exception
+        public <T> CompletableFuture<T> asyncExec(Callable<T> callable)
         {
-            var result = new AtomicReference<T>();
-            var failure = new AtomicReference<Exception>();
-            Display.getDefault().syncExec(() -> {
-                try
-                {
-                    result.set(callable.call());
-                }
-                catch (Exception e)
-                {
-                    failure.set(e);
-                }
-            });
-            if (failure.get() != null)
-                throw failure.get();
-            return result.get();
+            var display = Display.getDefault();
+
+            // on the UI thread already: queueing the callable behind the code
+            // that is running and waiting for it would wait for ever
+            if (display.getThread() == Thread.currentThread())
+                return run(callable);
+
+            var future = new CompletableFuture<T>();
+            try
+            {
+                display.asyncExec(() -> {
+                    try
+                    {
+                        future.complete(callable.call());
+                    }
+                    catch (Exception e)
+                    {
+                        future.completeExceptionally(e);
+                    }
+                    catch (Error e)
+                    {
+                        // the caller learns of it; the application's error
+                        // handler still sees it, as it did with syncExec
+                        future.completeExceptionally(e);
+                        throw e;
+                    }
+                });
+            }
+            catch (RuntimeException e)
+            {
+                // the display is disposed: the application is shutting down
+                future.completeExceptionally(e);
+            }
+            return future;
+        }
+
+        private static <T> CompletableFuture<T> run(Callable<T> callable)
+        {
+            try
+            {
+                return CompletableFuture.completedFuture(callable.call());
+            }
+            catch (Exception e)
+            {
+                return CompletableFuture.failedFuture(e);
+            }
         }
 
         @Override
