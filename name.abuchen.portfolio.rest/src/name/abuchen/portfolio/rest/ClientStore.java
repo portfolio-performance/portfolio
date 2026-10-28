@@ -284,6 +284,11 @@ public class ClientStore
             return;
         }
 
+        // an empty file holds no tokens, so there is nothing a save could
+        // destroy - an interrupted write of an older version can leave one
+        if (raw.isBlank())
+            return;
+
         JsonElement root;
         try
         {

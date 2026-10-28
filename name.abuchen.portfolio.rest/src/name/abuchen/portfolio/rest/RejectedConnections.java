@@ -39,6 +39,12 @@ public final class RejectedConnections
     private static final Pattern CONTROL_CHARACTERS = Pattern.compile("[\\p{Cc}\\u2028\\u2029]"); //$NON-NLS-1$
 
     /**
+     * Invisible format characters - bidi overrides and isolates, zero-width
+     * characters - which would let a caller reorder how its label reads
+     */
+    private static final Pattern FORMAT_CHARACTERS = Pattern.compile("\\p{Cf}"); //$NON-NLS-1$
+
+    /**
      * @param userAgent
      *            what the caller called itself, or null - the one field that
      *            says which connector this was
@@ -84,7 +90,8 @@ public final class RejectedConnections
         if (value == null)
             return null;
 
-        var cleaned = CONTROL_CHARACTERS.matcher(value).replaceAll(" "); //$NON-NLS-1$
+        var visible = FORMAT_CHARACTERS.matcher(value).replaceAll(""); //$NON-NLS-1$
+        var cleaned = CONTROL_CHARACTERS.matcher(visible).replaceAll(" "); //$NON-NLS-1$
         return cleaned.length() <= MAX_DISPLAY_CHARS ? cleaned : cleaned.substring(0, MAX_DISPLAY_CHARS) + "\u2026"; //$NON-NLS-1$
     }
 }

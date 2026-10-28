@@ -353,6 +353,19 @@ public class ClientStoreTest
         assertThat(newStore().listClients(), hasSize(0)); // nothing was written over the old content
     }
 
+    /** an empty file holds nothing to protect: it reads as no clients and is written as usual */
+    @Test
+    public void testAnEmptyFileIsAnEmptyClientList() throws Exception
+    {
+        writeStore("  \n");
+
+        var store = newStore();
+        assertThat(store.listClients(), hasSize(0));
+        store.addPersistentClient("Claude Code");
+
+        assertThat(newStore().listClients(), hasSize(1));
+    }
+
     /** the same holds for content that is not parseable at all */
     @Test
     public void testUnparseableContentIsNeverOverwritten() throws Exception
