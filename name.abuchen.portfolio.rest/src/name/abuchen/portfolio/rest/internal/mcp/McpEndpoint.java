@@ -68,6 +68,12 @@ public final class McpEndpoint
      */
     private static final int MAX_BATCH_MESSAGES = 32;
 
+    /**
+     * How deeply a message may nest objects and arrays. No tool argument comes
+     * near it; the bound is there because the parser recurses.
+     */
+    private static final int MAX_NESTING = 64;
+
     /** an entity uuid as {@code pp_list_instruments} reports one */
     private static final Pattern UUID_PATTERN = Pattern.compile(
                     "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}");
@@ -171,7 +177,7 @@ public final class McpEndpoint
      */
     private static JsonElement readMessage(JsonReader reader) throws IOException
     {
-        var value = readValue(reader);
+        var value = readValue(reader, 0);
 
         if (reader.peek() != JsonToken.END_DOCUMENT)
             throw new JsonSyntaxException("unexpected content after the JSON message");
@@ -179,14 +185,19 @@ public final class McpEndpoint
         return value;
     }
 
-    private static JsonElement readValue(JsonReader reader) throws IOException
+    private static JsonElement readValue(JsonReader reader, int depth) throws IOException
     {
+        // the walk recurses per object or array, and the body limit bounds the
+        // size, not the nesting: a megabyte of brackets would overflow the stack
+        if (depth > MAX_NESTING)
+            throw new JsonSyntaxException("the message is nested more than " + MAX_NESTING + " levels deep");
+
         var token = reader.peek();
 
         return switch (token)
         {
-            case BEGIN_OBJECT -> readObject(reader);
-            case BEGIN_ARRAY -> readArray(reader);
+            case BEGIN_OBJECT -> readObject(reader, depth + 1);
+            case BEGIN_ARRAY -> readArray(reader, depth + 1);
             case STRING -> new JsonPrimitive(reader.nextString());
             case NUMBER -> JsonParser.parseString(reader.nextString());
             case BOOLEAN -> new JsonPrimitive(reader.nextBoolean());
@@ -199,7 +210,7 @@ public final class McpEndpoint
         };
     }
 
-    private static JsonElement readObject(JsonReader reader) throws IOException
+    private static JsonElement readObject(JsonReader reader, int depth) throws IOException
     {
         var object = new JsonObject();
         var seen = new HashSet<String>();
@@ -210,20 +221,20 @@ public final class McpEndpoint
             var name = reader.nextName();
             if (!seen.add(name))
                 throw new JsonSyntaxException("duplicate key \"" + name + "\"");
-            object.add(name, readValue(reader));
+            object.add(name, readValue(reader, depth));
         }
         reader.endObject();
 
         return object;
     }
 
-    private static JsonElement readArray(JsonReader reader) throws IOException
+    private static JsonElement readArray(JsonReader reader, int depth) throws IOException
     {
         var array = new JsonArray();
 
         reader.beginArray();
         while (reader.peek() != JsonToken.END_ARRAY)
-            array.add(readValue(reader));
+            array.add(readValue(reader, depth));
         reader.endArray();
 
         return array;
