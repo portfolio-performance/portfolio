@@ -109,6 +109,12 @@ final class ApplyBatch
         failures.add(failure);
     }
 
+    /** Whether an operation has reported a failure. */
+    boolean failed(int index)
+    {
+        return failures.stream().anyMatch(failure -> failure.operationIndex() == index);
+    }
+
     /** @return the index of the operation that claimed the entity first, or empty if it is this one */
     OptionalInt claim(String uuid, int index)
     {

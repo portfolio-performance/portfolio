@@ -2,13 +2,9 @@ package name.abuchen.portfolio.cli.transaction;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import com.google.gson.JsonObject;
 
 import name.abuchen.portfolio.cli.command.MasterData;
 import name.abuchen.portfolio.cli.command.MinorUnits;
@@ -250,10 +246,6 @@ public final class TransactionShape
                     FROM.uuid(), FROM.name(), TO.uuid(), TO.name(), EX_DATE, GROSS_AMOUNT, NOTE, SOURCE, UPDATED_AT,
                     UNITS);
 
-    /** The names of the members of a record that are input. */
-    private static final Set<String> INPUT = MEMBERS.stream().filter(Member::isInput).map(Member::name)
-                    .collect(Collectors.toUnmodifiableSet());
-
     private TransactionShape()
     {
     }
@@ -312,25 +304,9 @@ public final class TransactionShape
      * update takes them: every one is optional, and the optional ones can be
      * cleared with null.
      */
-    public static Schema declarePatch(Schema object)
+    static Schema declarePatch(Schema object)
     {
         return declare(object, MEMBERS, Member::declarePatch);
-    }
-
-    /** The input members of a record as output, which is the input that adds the same record again. */
-    public static JsonObject inputOf(JsonObject record)
-    {
-        var input = new JsonObject();
-        for (var member : record.entrySet())
-        {
-            var name = member.getKey();
-            var value = member.getValue();
-            // the output has "units": [] for a record without units, but a
-            // transfer refuses the member even when it is empty, so leave it out
-            if (INPUT.contains(name) && !(name.equals(UNITS.name()) && value.getAsJsonArray().isEmpty()))
-                input.add(name, value);
-        }
-        return input;
     }
 
     private static Schema declare(Schema object, List<Member> members, BiConsumer<Member, Schema> how)

@@ -61,7 +61,6 @@ public final class OperationContext implements OperationSpec.Context
     private final List<Change> created;
     private final List<Change> updated;
     private final List<Change> deleted;
-    private int failureCount;
 
     OperationContext(ApplyBatch batch, int index, JsonObject input)
     {
@@ -106,13 +105,13 @@ public final class OperationContext implements OperationSpec.Context
 
     private void fail(FieldFailure failure)
     {
-        failureCount++;
         batch.report(new Failure(index, failure));
     }
 
+    /** Whether the batch has a failure of this operation. */
     boolean failed()
     {
-        return failureCount > 0;
+        return batch.failed(index);
     }
 
     /**

@@ -83,6 +83,13 @@ public record TransactionRecord(String id, String type, Optional<TransferKind> k
                         && !side.getCurrencyCode().equals(primary.getCurrencyCode()));
     }
 
+    /** The unit of a cross-currency cash transfer that stores its rate, if it has one. */
+    Optional<Transaction.Unit> transferRate()
+    {
+        return crossCurrencyIncoming().flatMap(incoming -> primary.getUnit(Transaction.Unit.Type.GROSS_VALUE)
+                        .filter(unit -> unit.getForex().getCurrencyCode().equals(incoming.getCurrencyCode())));
+    }
+
     /** Portfolio sides always have shares; of the cash sides only a dividend, and only when it states them. */
     boolean hasShares()
     {
