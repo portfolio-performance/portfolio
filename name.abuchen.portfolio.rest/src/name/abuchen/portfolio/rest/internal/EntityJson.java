@@ -223,7 +223,7 @@ public final class EntityJson
         }
 
         json.add("valuation", toJson(position.getValuation())); //$NON-NLS-1$
-        json.add("weight", decimal(totalAssets.isZero() ? 0d : position.getShare())); //$NON-NLS-1$
+        json.add("weight", weight(totalAssets.isZero() ? 0d : position.getShare())); //$NON-NLS-1$
 
         // the value before conversion into the reporting currency; only worth
         // stating when the two differ
@@ -266,6 +266,7 @@ public final class EntityJson
         var json = new JsonObject();
         json.addProperty("openingDate", openingDate.toString()); //$NON-NLS-1$
         json.addProperty("closingDate", closingDate.toString()); //$NON-NLS-1$
+        json.addProperty("timeWeightedUntil", CalcParams.timeWeightedUntil(closingDate).toString()); //$NON-NLS-1$
         json.addProperty("reportingCurrency", reportingCurrency); //$NON-NLS-1$
         json.addProperty("costMethod", CalcParams.wireName(costMethod)); //$NON-NLS-1$
         json.add("ttwror", ratio(ttwror)); //$NON-NLS-1$
@@ -296,6 +297,8 @@ public final class EntityJson
         var json = new JsonObject();
         json.addProperty("openingDate", params.openingDate().toString()); //$NON-NLS-1$
         json.addProperty("closingDate", params.closingDate().toString()); //$NON-NLS-1$
+        json.addProperty("timeWeightedUntil", //$NON-NLS-1$
+                        CalcParams.timeWeightedUntil(params.closingDate()).toString());
         json.addProperty("reportingCurrency", params.currency()); //$NON-NLS-1$
         json.addProperty("costMethod", CalcParams.wireName(params.costMethod())); //$NON-NLS-1$
         json.addProperty("taxesAndFees", CalcParams.wireName(params.taxesAndFees())); //$NON-NLS-1$
@@ -379,10 +382,14 @@ public final class EntityJson
             json.add("expenses", expenses); //$NON-NLS-1$
         }
 
+        // a period entirely after today has no price movement to measure: the
+        // engines would answer 0, which reads as a measured flat return
+        var measurable = CalcParams.hasAPast(params.openingDate());
+
         if (metrics.contains(MetricGroup.MONEY_WEIGHTED))
         {
             var moneyWeighted = new JsonObject();
-            moneyWeighted.add("irr", ratio(record.getIrr())); //$NON-NLS-1$
+            moneyWeighted.add("irr", ratio(measurable ? record.getIrr() : Double.NaN)); //$NON-NLS-1$
             json.add("moneyWeighted", moneyWeighted); //$NON-NLS-1$
         }
 
@@ -392,19 +399,36 @@ public final class EntityJson
         if (metrics.contains(MetricGroup.TIME_WEIGHTED))
         {
             var timeWeighted = new JsonObject();
-            timeWeighted.add("ttwror", ratio(record.getTrueTimeWeightedRateOfReturn())); //$NON-NLS-1$
-            timeWeighted.add("ttwrorAnnualized", ratio(record.getTrueTimeWeightedRateOfReturnAnnualized())); //$NON-NLS-1$
+            timeWeighted.add("ttwror", //$NON-NLS-1$
+                            ratio(measurable ? record.getTrueTimeWeightedRateOfReturn() : Double.NaN));
+            timeWeighted.add("ttwrorAnnualized", //$NON-NLS-1$
+                            ratio(measurable ? record.getTrueTimeWeightedRateOfReturnAnnualized() : Double.NaN));
             json.add("timeWeighted", timeWeighted); //$NON-NLS-1$
         }
 
-        if (metrics.contains(MetricGroup.RISK))
+        if (metrics.contains(MetricGroup.RISK) && !measurable)
+        {
+            var risk = new JsonObject();
+            risk.add("volatility", JsonNull.INSTANCE); //$NON-NLS-1$
+            risk.add("semiVolatility", JsonNull.INSTANCE); //$NON-NLS-1$
+            risk.add("maxDrawdown", JsonNull.INSTANCE); //$NON-NLS-1$
+            // an integer the 1.0 contract declares non-null - nullable would break
+            // it - so the length of a stretch that was never measured is 0
+            risk.addProperty("longestDrawdownDays", 0); //$NON-NLS-1$
+            json.add("risk", risk); //$NON-NLS-1$
+        }
+        else if (metrics.contains(MetricGroup.RISK))
         {
             var drawdown = record.getDrawdown();
             var volatility = record.getVolatility();
 
+            // a spread needs two returns; one would come back as 0, which reads
+            // as a measured absence of risk
+            var spread = CalcParams.hasTwoReturns(params.openingDate(), params.closingDate());
+
             var risk = new JsonObject();
-            risk.add("volatility", ratio(volatility.getStandardDeviation())); //$NON-NLS-1$
-            risk.add("semiVolatility", ratio(volatility.getSemiDeviation())); //$NON-NLS-1$
+            risk.add("volatility", ratio(spread ? volatility.getStandardDeviation() : Double.NaN)); //$NON-NLS-1$
+            risk.add("semiVolatility", ratio(spread ? volatility.getSemiDeviation() : Double.NaN)); //$NON-NLS-1$
             // a positive fraction, as the model reports it - the charts' sign
             // convention is a presentation choice, not the datum
             risk.add("maxDrawdown", ratio(drawdown.getMaxDrawdown())); //$NON-NLS-1$
@@ -442,11 +466,18 @@ public final class EntityJson
     }
 
     /**
-     * Decimal places kept for a rate. Not applied to a weight: a weight can be
-     * legitimately tiny (a dust holding is a real fraction of a portfolio),
-     * where a rate that small is only ever noise.
+     * Decimal places kept for a rate - and for a weight. A weight is not noisy
+     * the way a rate is, but its seventeen digits are bytes that say nothing:
+     * 1e-8 is a millionth of a percent, and a holding below it still carries
+     * its exact {@code valuation}.
      */
     private static final int RATE_SCALE = 8;
+
+    /** a holding's fraction of total assets, at the same scale as a rate */
+    static JsonElement weight(double value)
+    {
+        return decimal(BigDecimal.valueOf(value).setScale(RATE_SCALE, RoundingMode.HALF_UP));
+    }
 
     private static Money negate(Money money)
     {

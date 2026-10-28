@@ -70,6 +70,25 @@ public class InstrumentPerformanceTest
     // -- shape and echoes ------------------------------------------------
 
     /**
+     * A standard deviation needs two returns. Monday to Tuesday is one, and a
+     * volatility of 0 would read as a measured absence of risk; Friday to
+     * Tuesday spans two trading days and is measured.
+     */
+    @Test
+    public void testOneDailyReturnHasNoSpread()
+    {
+        var oneDay = onlyItem(list(heldPosition(), "2024-12-30", "2024-12-31", null, null, null, "risk"))
+                        .getAsJsonObject("risk");
+        assertThat(oneDay.get("volatility").isJsonNull(), is(true));
+        assertThat(oneDay.get("semiVolatility").isJsonNull(), is(true));
+        assertThat(oneDay.get("maxDrawdown").isJsonNull(), is(false));
+
+        var twoDays = onlyItem(list(heldPosition(), "2024-12-27", "2024-12-31", null, null, null, "risk"))
+                        .getAsJsonObject("risk");
+        assertThat(twoDays.get("volatility").isJsonNull(), is(false));
+    }
+
+    /**
      * A position carried through the whole interval: 10 shares valued 1000 at
      * the start and 1200 at the end, no trades. Per M1 the cost basis of a
      * carried-in lot is its opening valuation, not what was once paid for it -
@@ -115,6 +134,7 @@ public class InstrumentPerformanceTest
 
         assertThat(result.get("openingDate").getAsString(), is(OPENING));
         assertThat(result.get("closingDate").getAsString(), is(CLOSING));
+        assertThat(result.get("timeWeightedUntil").getAsString(), is(CLOSING));
         assertThat(result.get("reportingCurrency").getAsString(), is("USD"));
         assertThat(result.get("costMethod").getAsString(), is("moving-average"));
         assertThat(result.get("taxesAndFees").getAsString(), is("excluded"));
@@ -223,6 +243,52 @@ public class InstrumentPerformanceTest
         for (var warning : report.get("fxWarnings").getAsJsonArray())
             currencies.add(warning.getAsJsonObject().get("currency").getAsString());
         return currencies;
+    }
+
+    /**
+     * A closing date in the future stays allowed - a planned transaction is how
+     * a user simulates - but the time-weighted and risk figures stop at today,
+     * and the context says so on the collection and on the item route alike.
+     */
+    @Test
+    public void testAFutureClosingDateSaysWhereTheTimeWeightedFiguresStopped()
+    {
+        var today = LocalDate.now().toString();
+        var future = LocalDate.now().plusDays(30).toString();
+        var client = heldPosition();
+
+        var result = list(client, OPENING, future, null, null, null, null);
+        assertThat(result.get("closingDate").getAsString(), is(future));
+        assertThat(result.get("timeWeightedUntil").getAsString(), is(today));
+
+        var uuid = client.getSecurities().get(0).getUUID();
+        var item = InstrumentPerformanceHandler.get(client, new ExchangeRateProviderFactory(client), uuid, OPENING,
+                        future, null, null, null, null).getAsJsonObject();
+        assertThat(item.get("timeWeightedUntil").getAsString(), is(today));
+    }
+
+    /**
+     * A period that opens today or later has no price movement to measure:
+     * every return and risk ratio is null rather than a measured zero, and the
+     * money figures are still there.
+     */
+    @Test
+    public void testAPeriodEntirelyAfterTodayHasNoReturnsOrRiskRatios()
+    {
+        var opening = LocalDate.now().plusDays(1).toString();
+        var closing = LocalDate.now().plusDays(60).toString();
+
+        var row = onlyItem(list(heldPosition(), opening, closing, null, null, null, null));
+
+        assertThat(row.getAsJsonObject("moneyWeighted").get("irr").isJsonNull(), is(true));
+        assertThat(row.getAsJsonObject("timeWeighted").get("ttwror").isJsonNull(), is(true));
+        assertThat(row.getAsJsonObject("timeWeighted").get("ttwrorAnnualized").isJsonNull(), is(true));
+        assertThat(row.getAsJsonObject("risk").get("volatility").isJsonNull(), is(true));
+        assertThat(row.getAsJsonObject("risk").get("semiVolatility").isJsonNull(), is(true));
+        assertThat(row.getAsJsonObject("risk").get("maxDrawdown").isJsonNull(), is(true));
+        // non-null in the 1.0 contract, so 0 rather than null
+        assertThat(row.getAsJsonObject("risk").get("longestDrawdownDays").getAsInt(), is(0));
+        assertThat(row.getAsJsonObject("valuation").get("closingValue").isJsonNull(), is(false));
     }
 
     /** the echo states the value that was applied, not an omitted property */
