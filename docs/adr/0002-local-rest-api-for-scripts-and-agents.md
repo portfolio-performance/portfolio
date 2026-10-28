@@ -90,6 +90,14 @@ becomes a later thin adapter over the same service layer. The individual decisio
   `server-busy`). Two slots by default; the system property
   `name.abuchen.portfolio.rest.calculationSlots` allows 1 to 8, at most the processors less one.
   Deliberately no preference: every slot is a whole file's daily valuation in memory.
+- **Lists can be paged, and an MCP result too large for one answer is sent as a page.** `offset` and
+  `limit` on the instruments and the trades are opt-in: without them REST answers the whole list, as
+  before. Over MCP, a list larger than one result is sent as many whole items as fit, with `page`
+  and a line naming the next `offset`, instead of being cut - a client that cuts a result itself
+  loses what it cut, and a cut answer cannot say where the rest is. The result size is 100,000
+  characters by default (Claude Desktop cuts at 150,000) and can be lowered with the system property
+  `name.abuchen.portfolio.rest.mcpMaxResultChars` for a client that keeps less; like the slots, it is
+  no preference, because only someone who knows their client's limit can set it sensibly.
 - **The API vocabulary is deliberately more general than the model** (`Security` → *instrument*,
   `Portfolio` → *investment account*), because the contract cannot be renamed once clients exist.
   Java class names keep the model's vocabulary; the mapping and its rationale are in the README.
