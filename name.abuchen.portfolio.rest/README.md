@@ -82,6 +82,10 @@ exists. Same switch, same port, same tokens; there is nothing extra to install.
   additive-only promise.
 - **The last refused connection is shown on the preference page.** A client with a wrong token never
   becomes an entry in the client list and reports nothing itself.
+- **Keep the connector name short — 27 characters at most.** Some clients, Claude among them, cap a
+  tool's full name at 64 characters, counting a prefix made from the name you give the connector:
+  `mcp__<name>__pp_list_instrument_performance`, whose tool part is the longest at 30 characters.
+  `portfolio-performance` fits; a longer name gets tool names truncated and suffixed with a hash.
 
 The tools themselves — names, descriptions, `inputSchema`, annotations — are `mcp-tools.json` in
 this bundle. See [For contributors](#for-contributors) before editing a word of it.
