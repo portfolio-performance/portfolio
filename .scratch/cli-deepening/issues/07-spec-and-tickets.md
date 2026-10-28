@@ -6,6 +6,10 @@ Blocked by: 01, 02, 03, 04, 05, 06
 
 Map: [map.md](../map.md). This ticket reaches the map's destination.
 
+Graduated from the map's fog after ticket 06: the spec must list the contract-change ripple as work, nothing left to decide:
+
+- Help text, skill (`SKILL.md`) and SkillDriftTest updates for the `Change.entity` enum, the declared failure codes, the multi-choice `--type` help line, and any `Response meta:` line the golden help test shows changed (ticket 02). From ticket 05: the `--currency` help line, if the typed option renders differently, and Allocation's possible count-1 `exchange-rate-missing` when only core lacks a rate. The `Change.entity` enum (ticket 03) is now fixed. From ticket 06: the new "Failure codes:" section of `apply --help <op>`, the pointer line and two batch codes on `apply --help`, and SKILL.md's `validation-failed` row pointing at `apply --help <op>`.
+
 ## Question
 
 With every interface decided or ruled out, what goes into the hand-off spec (`.scratch/cli-deepening/spec.md`), and in what order should the implementation tickets go so the suite stays green after each one and each fits in one agent session?

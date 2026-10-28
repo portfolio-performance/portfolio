@@ -101,6 +101,10 @@ _Avoid_: identifier, selector, lookup key
 A **Master data** entity, **Taxonomy** or **Transaction record** that a write operation names by UUID and that was already in the **Client file** when the batch started; one created by an earlier operation of the same batch is not existing. Unlike a **Reference**, it is always a UUID.
 _Avoid_: pre-batch entity, reference (on the write side), target
 
+**Failure**:
+One check that one operation of a batch did not pass, named by the operation's index, the field and a failure code. A batch with any failure writes nothing. A failure code names one failed check; it is not the error code of the whole problem document, which for a batch with failures is always `validation-failed`.
+_Avoid_: error (for one check), violation, field error
+
 **Price**:
 The value of one unit of an **Instrument** on a date, in the instrument's currency.
 _Avoid_: quote, rate
