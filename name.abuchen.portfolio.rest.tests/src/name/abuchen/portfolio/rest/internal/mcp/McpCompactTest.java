@@ -3,8 +3,10 @@ package name.abuchen.portfolio.rest.internal.mcp;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.not;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +27,8 @@ public class McpCompactTest
     private static final McpTool HOLDINGS = McpTools.byName("pp_list_holdings").orElseThrow();
     private static final McpTool FILES = McpTools.byName("pp_list_files").orElseThrow();
     private static final McpTool PERFORMANCE = McpTools.byName("pp_get_overall_performance").orElseThrow();
+    private static final McpTool INSTRUMENTS = McpTools.byName("pp_list_instruments").orElseThrow();
+    private static final McpTool TRADES = McpTools.byName("pp_list_trades").orElseThrow();
 
     /** a holding in the reporting currency, one in USD, and a cash account */
     private static final String HOLDINGS_PAYLOAD = """
@@ -229,6 +233,140 @@ public class McpCompactTest
         var rendered = McpEnvelope.render(HOLDINGS, new JsonObject(), JsonParser.parseString(payload), List.of());
         assertThat(rendered, containsString("A column `<name>.currency` gives the currency of the column before it."));
         assertThat(rendered, not(containsString("Amounts without a currency")));
+    }
+
+    /**
+     * In a long table, the fields only a few rows have go into `more`: per
+     * row an object of the ones it has, or null - and every value is still
+     * there, under its column name.
+     */
+    @Test
+    public void testSparseColumnsOfALongTableGoIntoMore()
+    {
+        var items = new StringBuilder();
+        for (int ii = 0; ii < 40; ii++)
+        {
+            if (ii > 0)
+                items.append(',');
+            items.append("{\"uuid\":\"u").append(ii).append("\",\"name\":\"I ").append(ii).append('"');
+            if (ii == 3)
+                items.append(",\"note\":\"kept\",\"attributes\":{\"ter\":0.002}");
+            if (ii == 7)
+                items.append(",\"attributes\":{\"aum\":12}");
+            // set in every row: stays a column
+            items.append(",\"isin\":\"X").append(ii).append("\"}");
+        }
+        var result = McpCompact.compact(INSTRUMENTS, JsonParser.parseString("{\"items\":[" + items + "]}"));
+        var table = result.payload().getAsJsonObject().getAsJsonObject("items");
+
+        assertThat(columns(table), is(List.of("uuid", "name", "isin", "more")));
+        assertThat(result.moreColumn(), is(true));
+        assertThat(cell(table, 3, "more").getAsJsonObject().get("note").getAsString(), is("kept"));
+        assertThat(cell(table, 3, "more").getAsJsonObject().get("attributes.ter").getAsDouble(), is(0.002));
+        assertThat(cell(table, 7, "more").toString(), is("{\"attributes.aum\":12}"));
+        assertThat(cell(table, 0, "more").isJsonNull(), is(true));
+
+        var rendered = McpEnvelope.render(INSTRUMENTS, new JsonObject(),
+                        JsonParser.parseString("{\"items\":[" + items + "]}"), List.of());
+        assertThat(rendered, containsString("`more` holds the fields only a few rows have"));
+    }
+
+    /** a short table, or one with a single sparse column, keeps its columns */
+    @Test
+    public void testAShortTableOrASingleSparseColumnStaysAsItIs()
+    {
+        var shortTable = McpCompact.compact(INSTRUMENTS, JsonParser.parseString(
+                        "{\"items\":[{\"name\":\"A\",\"note\":\"n\"},{\"name\":\"B\"},{\"name\":\"C\",\"wkn\":\"1\"}]}"));
+        assertThat(shortTable.moreColumn(), is(false));
+
+        var items = new StringBuilder();
+        for (int ii = 0; ii < 40; ii++)
+            items.append(ii > 0 ? "," : "").append("{\"name\":\"I").append(ii).append('"')
+                            .append(ii == 5 ? ",\"note\":\"n\"}" : "}");
+        var oneSparse = McpCompact.compact(INSTRUMENTS, JsonParser.parseString("{\"items\":[" + items + "]}"));
+        assertThat(oneSparse.moreColumn(), is(false));
+        assertThat(columns(oneSparse.payload().getAsJsonObject().getAsJsonObject("items")),
+                        is(List.of("name", "note")));
+    }
+
+    /** the null line only where a null is sent: a table without one does not get it */
+    @Test
+    public void testTheNullNoteOnlyWhereANullIsSent()
+    {
+        var files = McpEnvelope.render(FILES, new JsonObject(), JsonParser.parseString(
+                        "{\"items\":[{\"id\":\"a\",\"use\":\"a\",\"label\":\"A\",\"path\":\"/a\"}]}"), List.of());
+        assertThat(files, not(containsString("`null` means")));
+
+        var withNull = McpEnvelope.render(FILES, new JsonObject(), JsonParser.parseString(
+                        "{\"items\":[{\"use\":\"a\",\"label\":\"A\",\"alias\":\"x\"},{\"use\":\"b\",\"label\":\"B\"}]}"),
+                        List.of());
+        assertThat(withNull, containsString("`null` means"));
+    }
+
+    /** an irr annualized from a few days is named as such, with the largest of them */
+    @Test
+    public void testAnExtremeIrrIsNamed()
+    {
+        var payload = JsonParser.parseString("""
+                        {"reportingCurrency":"EUR","items":[
+                         {"instrument":{"uuid":"a","name":"A"},"holdingPeriodDays":1,"irr":25586198.51754072,"return":0.0478},
+                         {"instrument":{"uuid":"b","name":"B"},"holdingPeriodDays":400,"irr":0.08,"return":0.09},
+                         {"instrument":{"uuid":"c","name":"C"},"holdingPeriodDays":6,"irr":-150.5,"return":-0.2}]}""");
+
+        var rendered = McpEnvelope.render(TRADES, new JsonObject(), payload, List.of());
+
+        assertThat(rendered, containsString("2 `irr` values are above 10,000% a year in size (up to 25586199)"));
+        assertThat(rendered, containsString("Report `return` for those rows instead."));
+
+        var ordinary = McpEnvelope.render(TRADES, new JsonObject(), JsonParser.parseString(
+                        "{\"items\":[{\"irr\":0.5,\"return\":0.1}]}"), List.of());
+        assertThat(ordinary, not(containsString("10,000%")));
+    }
+
+    /** a trade counting transactions booked ahead is named before the figures */
+    @Test
+    public void testATradeWithLaterTransactionsIsNamedBeforeTheFigures()
+    {
+        var payload = JsonParser.parseString("""
+                        {"valuationDate":"2026-10-28","items":[
+                         {"instrument":{"uuid":"a","name":"ZF"},"shares":12.4073,"transactionsAfterValuationDate":5},
+                         {"instrument":{"uuid":"b","name":"B"},"shares":1}]}""");
+
+        var rendered = McpEnvelope.render(TRADES, new JsonObject(), payload, List.of());
+
+        assertThat(rendered, containsString("**1 trade includes transactions dated after `valuationDate`**"));
+        assertThat(rendered.indexOf("1 trade includes"), is(lessThan(rendered.indexOf("\"rows\""))));
+    }
+
+    /** a stale exchange rate is named before the figures, with the pair */
+    @Test
+    public void testAStaleExchangeRateIsNamedBeforeTheFigures()
+    {
+        var payload = JsonParser.parseString("""
+                        {"reportingCurrency":"RUB","ttwror":0.12,"fxWarnings":[],
+                         "fxStaleRates":[{"currency":"EUR","reportingCurrency":"RUB","rateDate":"2022-03-01","daysOld":1702}]}""");
+
+        var rendered = McpEnvelope.render(PERFORMANCE, new JsonObject(), payload, List.of());
+
+        assertThat(rendered, containsString("**Exchange rates out of date.** 1 currency pair was converted"));
+        assertThat(rendered, containsString("\"daysOld\":1702"));
+        assertThat(McpEnvelope.render(PERFORMANCE, new JsonObject(), JsonParser.parseString(
+                        "{\"fxWarnings\":[],\"fxStaleRates\":[]}"), List.of()), not(containsString("out of date")));
+    }
+
+    /** valued at a future date, the price note says that its age is today's */
+    @Test
+    public void testThePriceNoteOfAFutureDateSaysAsOfToday()
+    {
+        var future = LocalDate.now().plusYears(2).toString();
+        var payload = HOLDINGS_PAYLOAD.replace("\"date\":\"2026-10-28\"", "\"date\":\"" + future + "\"");
+
+        var table = compact(HOLDINGS, payload).getAsJsonObject("items");
+        assertThat(cell(table, 1, "priceNote").getAsString(),
+                        is("stale: 47 trading days without a quote as of today"));
+
+        var today = compact(HOLDINGS, HOLDINGS_PAYLOAD).getAsJsonObject("items");
+        assertThat(cell(today, 1, "priceNote").getAsString(), is("stale: 47 trading days without a quote"));
     }
 
     /**
