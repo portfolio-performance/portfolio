@@ -173,6 +173,14 @@ public class Router
 
     private static String[] split(String path)
     {
-        return path.replaceAll("^/+|/+$", "").split("/"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        // scanned, not matched: "/+$" tries a run of slashes again from each of
+        // its characters, which is quadratic in the length of the run
+        var start = 0;
+        while (start < path.length() && path.charAt(start) == '/')
+            start++;
+        var end = path.length();
+        while (end > start && path.charAt(end - 1) == '/')
+            end--;
+        return path.substring(start, end).split("/"); //$NON-NLS-1$
     }
 }
