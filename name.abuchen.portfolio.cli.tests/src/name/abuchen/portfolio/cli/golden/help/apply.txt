@@ -27,17 +27,17 @@ Response data: The outcome of the batch.
     operationIndex (integer) Position in the batch, from 0.
     operation (string) Operation name.
     created (array of object) Entities the operation created.
-      entity (string) Kind of entity: instrument, cash-account, investment-account or transaction.
+      entity (string, one of instrument, cash-account, investment-account, transaction, taxonomy-assignment) Kind of entity.
       uuid (string) UUID of the entity.
       before (object, any members, optional) The changed fields as they were, or for a deleted entity all its fields; absent for a created entity. A field that was unset is null.
       after (object, any members) A created entity's fields that are set, or an updated entity's changed fields as they are now; a cleared field is null. Empty for a deleted entity.
     updated (array of object) Entities the operation changed.
-      entity (string) Kind of entity: instrument, cash-account, investment-account or transaction.
+      entity (string, one of instrument, cash-account, investment-account, transaction, taxonomy-assignment) Kind of entity.
       uuid (string) UUID of the entity.
       before (object, any members, optional) The changed fields as they were, or for a deleted entity all its fields; absent for a created entity. A field that was unset is null.
       after (object, any members) A created entity's fields that are set, or an updated entity's changed fields as they are now; a cleared field is null. Empty for a deleted entity.
     deleted (array of object) Entities the operation deleted.
-      entity (string) Kind of entity: instrument, cash-account, investment-account or transaction.
+      entity (string, one of instrument, cash-account, investment-account, transaction, taxonomy-assignment) Kind of entity.
       uuid (string) UUID of the entity.
       before (object, any members, optional) The changed fields as they were, or for a deleted entity all its fields; absent for a created entity. A field that was unset is null.
       after (object, any members) A created entity's fields that are set, or an updated entity's changed fields as they are now; a cleared field is null. Empty for a deleted entity.

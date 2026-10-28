@@ -4,6 +4,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
+import name.abuchen.portfolio.cli.command.OperationSpec;
+import name.abuchen.portfolio.cli.command.Outcome;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.util.Isin;
@@ -12,7 +14,7 @@ import name.abuchen.portfolio.util.Isin;
 public final class InstrumentOperations
 {
     private static final EntityOperations<Security> OPERATIONS = new EntityOperations<>(
-                    new EntityOperations.Definition<Security>("instrument", //
+                    new EntityOperations.Definition<Security>(Outcome.Entity.INSTRUMENT, //
                                     "Adds an instrument. Only the name is required.",
                                     "Updates an instrument by UUID. Only the fields present change; null or an empty string clears an optional field. The currency can't change once the instrument has transactions.",
                                     List.of(EntityOperations.Field.required("name", "Instrument name; never empty.",
@@ -38,9 +40,9 @@ public final class InstrumentOperations
                                     // setName leaves it unset, and the binary format cannot store an instrument without it
                                     security -> security.setUpdatedAt(Instant.now())));
 
-    static final OperationSpec ADD = OPERATIONS.addOperation();
-    static final OperationSpec UPDATE = OPERATIONS.updateOperation();
-    public static final List<OperationSpec> ALL = List.of(ADD, UPDATE);
+    static final OperationSpec<OperationContext> ADD = OPERATIONS.addOperation();
+    static final OperationSpec<OperationContext> UPDATE = OPERATIONS.updateOperation();
+    static final List<OperationSpec<OperationContext>> ALL = List.of(ADD, UPDATE);
 
     private InstrumentOperations()
     {

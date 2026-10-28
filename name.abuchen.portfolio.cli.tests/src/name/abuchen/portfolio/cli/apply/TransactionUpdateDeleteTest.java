@@ -22,6 +22,7 @@ import com.google.gson.JsonParser;
 import name.abuchen.portfolio.cli.CliFixture;
 import name.abuchen.portfolio.cli.TransactionFixtures;
 import name.abuchen.portfolio.cli.command.CliException;
+import name.abuchen.portfolio.cli.command.OperationSpec;
 import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -469,8 +470,8 @@ public class TransactionUpdateDeleteTest
         {
             var deposit = new AccountTransaction(TransactionFixtures.at("2026-03-02"), "EUR", 100_000, null,
                             AccountTransaction.Type.DEPOSIT);
-            var probe = new OperationSpec("probe", "Adds the deposit.",
-                            Schema.object("A probe.").property(ApplyBatch.OPERATION_MEMBER,
+            var probe = new OperationSpec<OperationContext>("probe", "Adds the deposit.",
+                            Schema.object("A probe.").property(OperationSpec.OPERATION_MEMBER,
                                             Schema.enumOf("Operation name.", List.of("probe"))),
                             context -> eur.addTransaction(deposit));
             var specs = new ArrayList<>(TransactionOperations.ALL);

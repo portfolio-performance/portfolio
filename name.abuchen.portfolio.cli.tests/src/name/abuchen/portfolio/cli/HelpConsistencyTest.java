@@ -22,6 +22,7 @@ import org.junit.rules.TemporaryFolder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import name.abuchen.portfolio.cli.apply.Operations;
 import name.abuchen.portfolio.cli.command.CommandSpec;
 import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.junit.AccountBuilder;
@@ -83,7 +84,7 @@ public class HelpConsistencyTest
         }
 
         var apply = CliRun.run("apply", "--help");
-        for (var operation : Commands.OPERATIONS)
+        for (var operation : Operations.ALL)
         {
             assertThat(operation.name(), apply.stdout, containsString("  " + operation.name() + " "));
 
@@ -184,7 +185,7 @@ public class HelpConsistencyTest
     private void assertOperationInputsConform(Path batch) throws IOException
     {
         var inputs = new HashMap<String, JsonObject>();
-        Commands.OPERATIONS.forEach(o -> inputs.put(o.name(), ResponseContract.json(o.input())));
+        Operations.ALL.forEach(o -> inputs.put(o.name(), ResponseContract.json(o.input())));
 
         var operations = JsonParser.parseString(Files.readString(batch)).getAsJsonObject()
                         .getAsJsonArray("operations");

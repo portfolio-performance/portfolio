@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.cli.apply.Operations;
 import name.abuchen.portfolio.cli.command.CommandSpec;
 import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.OptionSpec;
@@ -129,7 +130,7 @@ public class SkillDriftTest
         // a dotted name is either an operation or a member path in a response, e.g. converted.amount
         var token = span.strip();
         if (OPERATION.matcher(token).matches()
-                        && Commands.OPERATIONS.stream().noneMatch(o -> o.name().equals(token))
+                        && Operations.ALL.stream().noneMatch(o -> o.name().equals(token))
                         && responseMembers().stream().noneMatch(m -> m.equals(token) || m.endsWith("." + token)))
             problems.add(where + "neither an operation nor a response member");
 

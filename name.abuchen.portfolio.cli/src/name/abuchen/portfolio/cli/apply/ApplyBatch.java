@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalInt;
 import java.util.Set;
 
 import com.google.gson.JsonArray;
@@ -14,6 +15,8 @@ import com.google.gson.JsonObject;
 
 import name.abuchen.portfolio.cli.command.CliException;
 import name.abuchen.portfolio.cli.command.ErrorCode;
+import name.abuchen.portfolio.cli.command.OperationInput;
+import name.abuchen.portfolio.cli.command.OperationSpec;
 import name.abuchen.portfolio.model.Client;
 
 /**
@@ -24,8 +27,6 @@ import name.abuchen.portfolio.model.Client;
  */
 final class ApplyBatch
 {
-    static final String OPERATION_MEMBER = "operation";
-
     private final Client client;
     private final Set<Object> existedBeforeBatch = Collections.newSetFromMap(new IdentityHashMap<>());
     private final Map<String, Integer> claims = new HashMap<>();
@@ -47,7 +48,7 @@ final class ApplyBatch
      * @throws CliException
      *             <code>validation-failed</code> listing every failure
      */
-    static List<Map<String, Object>> run(Client client, JsonArray operations, List<OperationSpec> specs)
+    static List<Map<String, Object>> run(Client client, JsonArray operations, List<OperationSpec<OperationContext>> specs)
                     throws CliException
     {
         var batch = new ApplyBatch(client);
@@ -64,7 +65,7 @@ final class ApplyBatch
         return results;
     }
 
-    private Map<String, Object> apply(int index, JsonElement element, List<OperationSpec> specs)
+    private Map<String, Object> apply(int index, JsonElement element, List<OperationSpec<OperationContext>> specs)
     {
         if (!element.isJsonObject())
         {
@@ -80,8 +81,8 @@ final class ApplyBatch
         var spec = specs.stream().filter(s -> s.name().equals(name)).findFirst();
         if (spec.isEmpty())
         {
-            context.fail(OPERATION_MEMBER, "unknown-operation", name == null
-                            ? "The operation needs an '" + OPERATION_MEMBER + "' member naming it."
+            context.fail(OperationSpec.OPERATION_MEMBER, "unknown-operation", name == null
+                            ? "The operation needs an '" + OperationSpec.OPERATION_MEMBER + "' member naming it."
                             : "Unknown operation '" + name + "'. Known operations: "
                                             + String.join(", ", specs.stream().map(OperationSpec::name).toList()));
             return context.result(String.valueOf(name));
@@ -94,8 +95,8 @@ final class ApplyBatch
 
     private static String operationName(JsonObject input)
     {
-        var member = input.get(OPERATION_MEMBER);
-        return member != null && OperationContext.isText(member) ? member.getAsString() : null;
+        var member = input.get(OperationSpec.OPERATION_MEMBER);
+        return member != null && OperationInput.isText(member) ? member.getAsString() : null;
     }
 
     Client client()
@@ -108,10 +109,11 @@ final class ApplyBatch
         failures.add(failure);
     }
 
-    /** @return the index of the operation that claimed the entity first, or null */
-    Integer claim(String uuid, int index)
+    /** @return the index of the operation that claimed the entity first, or empty if it is this one */
+    OptionalInt claim(String uuid, int index)
     {
-        return claims.putIfAbsent(uuid, index);
+        var earlier = claims.putIfAbsent(uuid, index);
+        return earlier == null ? OptionalInt.empty() : OptionalInt.of(earlier);
     }
 
     boolean existedBeforeBatch(Object entity)

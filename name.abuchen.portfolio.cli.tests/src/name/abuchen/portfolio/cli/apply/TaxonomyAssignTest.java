@@ -170,6 +170,17 @@ public class TaxonomyAssignTest
     }
 
     @Test
+    public void aDryRunReportsATaxonomyAssignmentChangeThatTheResultsSchemaDeclares() throws IOException
+    {
+        // CliRun checks every response against the declared schema, whose entity is an enum
+        var run = cli.applyWith(List.of("--dry-run"), assignOp(classes, alpha, to(america, "1")));
+
+        assertThat(run.stdout, run.exitCode, is(0));
+        assertThat(run.result(0).getAsJsonArray("updated").get(0).getAsJsonObject().get("entity").getAsString(),
+                        is("taxonomy-assignment"));
+    }
+
+    @Test
     public void reportsTheAssignmentBeforeAndAfterAsOneUpdatedChange() throws IOException
     {
         var run = cli.apply(assignOp(classes, alpha, to(america, "0.4"), to(bonds, "0.6")));

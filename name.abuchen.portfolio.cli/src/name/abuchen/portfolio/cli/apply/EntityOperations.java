@@ -11,6 +11,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import name.abuchen.portfolio.cli.command.EntityKind;
+import name.abuchen.portfolio.cli.command.OperationInput;
+import name.abuchen.portfolio.cli.command.OperationSpec;
+import name.abuchen.portfolio.cli.command.Outcome;
 import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -102,7 +106,7 @@ final class EntityOperations<T>
      * @param initialize
      *            what a new entity needs beyond its fields, or null
      */
-    record Definition<T>(String entity, String addSummary, String updateSummary, List<Field<T>> fields,
+    record Definition<T>(Outcome.Entity entity, String addSummary, String updateSummary, List<Field<T>> fields,
                     Function<Client, Collection<T>> all, Supplier<T> create, BiConsumer<Client, T> add,
                     Function<T, String> uuid, Validator<T> validator, Consumer<T> initialize)
     {
@@ -114,17 +118,17 @@ final class EntityOperations<T>
     EntityOperations(Definition<T> definition)
     {
         this.definition = definition;
-        this.kind = definition.entity().replace('-', ' ');
+        this.kind = definition.entity().id().replace('-', ' ');
     }
 
-    OperationSpec addOperation()
+    OperationSpec<OperationContext> addOperation()
     {
-        return new OperationSpec(definition.entity() + ".add", definition.addSummary(), schema(false), this::add);
+        return new OperationSpec<>(definition.entity().id() + ".add", definition.addSummary(), schema(false), this::add);
     }
 
-    OperationSpec updateOperation()
+    OperationSpec<OperationContext> updateOperation()
     {
-        return new OperationSpec(definition.entity() + ".update", definition.updateSummary(),
+        return new OperationSpec<>(definition.entity().id() + ".update", definition.updateSummary(),
                         schema(true).property(UUID_MEMBER, Schema.string("UUID of the " + kind + ".")),
                         this::update);
     }
@@ -148,10 +152,10 @@ final class EntityOperations<T>
 
     private Schema schema(boolean update)
     {
-        var schema = Schema.object("Fields of the " + kind + "; they match the " + definition.entity()
+        var schema = Schema.object("Fields of the " + kind + "; they match the " + definition.entity().id()
                         + "s output.");
-        var operation = definition.entity() + (update ? ".update" : ".add");
-        schema.property(ApplyBatch.OPERATION_MEMBER, Schema.enumOf("Operation name.", List.of(operation)));
+        var operation = definition.entity().id() + (update ? ".update" : ".add");
+        schema.property(OperationSpec.OPERATION_MEMBER, Schema.enumOf("Operation name.", List.of(operation)));
 
         for (var field : definition.fields())
         {
@@ -262,7 +266,7 @@ final class EntityOperations<T>
             context.fail(UUID_MEMBER, "required", "An update needs the UUID of the " + kind + ".");
             return null;
         }
-        if (!OperationContext.isText(member))
+        if (!OperationInput.isText(member))
         {
             context.fail(UUID_MEMBER, "invalid-type", "The UUID must be a string.");
             return null;
@@ -303,7 +307,7 @@ final class EntityOperations<T>
             {
                 values.put(field.name(), null);
             }
-            else if (OperationContext.isText(member))
+            else if (OperationInput.isText(member))
             {
                 values.put(field.name(), member.getAsString().isBlank() ? null : member.getAsString());
             }

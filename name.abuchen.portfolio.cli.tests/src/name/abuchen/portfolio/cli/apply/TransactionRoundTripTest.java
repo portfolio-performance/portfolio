@@ -16,6 +16,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import name.abuchen.portfolio.cli.CliFixture;
+import name.abuchen.portfolio.cli.command.OperationSpec;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
@@ -177,7 +178,7 @@ public class TransactionRoundTripTest
     private static String asInput(JsonObject record)
     {
         var input = new JsonObject();
-        input.addProperty(ApplyBatch.OPERATION_MEMBER, TransactionOperations.ADD.name());
+        input.addProperty(OperationSpec.OPERATION_MEMBER, TransactionOperations.ADD.name());
         for (var name : INPUT)
         {
             var value = record.get(name);

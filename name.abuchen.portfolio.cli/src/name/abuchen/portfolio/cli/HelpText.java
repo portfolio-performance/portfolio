@@ -7,12 +7,13 @@ import java.util.Optional;
 import java.util.Set;
 
 import name.abuchen.portfolio.cli.apply.ApplyCommand;
-import name.abuchen.portfolio.cli.apply.OperationSpec;
+import name.abuchen.portfolio.cli.apply.Operations;
 import name.abuchen.portfolio.cli.command.CliException;
 import name.abuchen.portfolio.cli.command.CommandContext;
 import name.abuchen.portfolio.cli.command.CommandSpec;
 import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.MinorUnits;
+import name.abuchen.portfolio.cli.command.OperationSpec;
 import name.abuchen.portfolio.cli.command.OptionSpec;
 import name.abuchen.portfolio.cli.command.OutputFormat;
 import name.abuchen.portfolio.cli.currency.RateCache;
@@ -150,8 +151,8 @@ final class HelpText
         {
             out.blank();
             out.line("Operations (pp-cli apply --help <operation> shows the input schema of one):");
-            var width = Commands.OPERATIONS.stream().mapToInt(o -> o.name().length()).max().orElse(0);
-            for (var operation : Commands.OPERATIONS)
+            var width = Operations.ALL.stream().mapToInt(o -> o.name().length()).max().orElse(0);
+            for (var operation : Operations.ALL)
                 out.line("  " + pad(operation.name(), width) + "  " + oneLine(operation.summary()));
         }
 
@@ -181,9 +182,9 @@ final class HelpText
 
     private static String operation(String name) throws CliException
     {
-        var operation = Commands.OPERATIONS.stream().filter(o -> o.name().equals(name)).findFirst()
+        var operation = Operations.ALL.stream().filter(o -> o.name().equals(name)).findFirst()
                         .orElseThrow(() -> HELP.invalid(name, "one of the operations " + String.join(", ",
-                                        Commands.OPERATIONS.stream().map(OperationSpec::name).toList())));
+                                        Operations.ALL.stream().map(OperationSpec::name).toList())));
 
         var out = new Text();
         out.line("pp-cli apply operation " + operation.name() + ": " + operation.summary());
