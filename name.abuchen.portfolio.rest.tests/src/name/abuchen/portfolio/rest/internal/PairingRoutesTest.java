@@ -145,7 +145,7 @@ public class PairingRoutesTest
         var id = json(call("POST", "/v1/auth/requests", "{\"clientName\":\"Claude Code\"}")).get("id").getAsString();
         call("GET", "/v1/auth/requests/" + id, null);
 
-        assertThat(host.syncExecResults(), is(List.of()));
+        assertThat(host.uiThreadResults(), is(List.of()));
     }
 
     private void assertStatus(String method, String path, String body, int expectedStatus) throws Exception
