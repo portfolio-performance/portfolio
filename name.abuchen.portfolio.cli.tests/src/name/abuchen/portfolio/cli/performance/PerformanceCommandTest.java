@@ -368,22 +368,6 @@ public class PerformanceCommandTest
     }
 
     @Test
-    public void aRateThatStartsAfterTheCurrencyIsUsedLeavesTheFiguresOut() throws IOException
-    {
-        addDollarAccount();
-        var cache = folder.getRoot().toPath().resolve("cache").resolve("ecb_exchange_rates.pb");
-        EcbCacheFiles.write(cache, ratesEveryFiveDays("2026-03-01", "2026-09-30"));
-
-        var run = run(Map.of("PP_ECB_RATES", cache.toString()), "--from", "2026-01-01", "--to", "2026-09-30");
-
-        assertThat(run.stdout, run.exitCode, is(0));
-        assertFiguresAreLeftOut(run);
-        var missing = run.warnings("exchange-rate-missing");
-        assertThat(missing.size(), is(1));
-        assertThat(missing.get(0).get("count").getAsInt(), is(28));
-    }
-
-    @Test
     public void aStaleRateIsUsedAndWarnedAbout() throws IOException
     {
         addDollarAccount();

@@ -162,7 +162,7 @@ public final class HoldingsCommand
         var filter = context.reference(INVESTMENT_ACCOUNT, client);
 
         var reporting = requested.orBase(context, client);
-        var snapshot = ClientSnapshot.create(client, reporting.coreConverter(), date);
+        var snapshot = ClientSnapshot.create(client, reporting.coreFigures().unreported(), date);
 
         var blocks = new ArrayList<Block>();
         if (context.flag(BY_ACCOUNT) || filter.isPresent())

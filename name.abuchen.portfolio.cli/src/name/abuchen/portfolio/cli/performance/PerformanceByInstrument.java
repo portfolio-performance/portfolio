@@ -12,8 +12,9 @@ import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.MasterData;
 import name.abuchen.portfolio.cli.command.OptionSpec;
 import name.abuchen.portfolio.cli.command.Schema;
-import name.abuchen.portfolio.cli.currency.StrictConverter;
+import name.abuchen.portfolio.cli.currency.ReportingCurrency;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.snapshot.security.CalculationLineItem;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
@@ -92,9 +93,10 @@ final class PerformanceByInstrument
      * @param narrowed
      *            the client as far as the scope covers it
      */
-    static List<Map<String, Object>> items(Client narrowed, StrictConverter converter, PerformancePeriod period,
-                    CostMethod costMethod)
+    static List<Map<String, Object>> items(Client narrowed, ReportingCurrency.CoreFigures core,
+                    PerformancePeriod period, CostMethod costMethod)
     {
+        var converter = core.converter();
         var records = new ArrayList<>(
                         LazySecurityPerformanceSnapshot.create(narrowed, converter, period.interval()).getRecords());
         records.sort(MasterData.byNameThenUuid((LazySecurityPerformanceRecord r) -> r.getSecurity().getName(),
@@ -103,13 +105,9 @@ final class PerformanceByInstrument
         var items = new ArrayList<Map<String, Object>>();
         for (var record : records)
         {
-            // core calculates lazily: the rates a record needs are known once all its figures are read
-            converter.reset();
-            var figures = figures(record, converter, period, costMethod);
-
+            // judged record by record: the figures of one do not depend on the rates another lacked
             var item = identity(record);
-            if (converter.isComplete())
-                item.putAll(figures);
+            core.trusted(() -> figures(record, converter, period, costMethod)).ifPresent(item::putAll);
             items.add(item);
         }
         return items;
@@ -127,7 +125,7 @@ final class PerformanceByInstrument
         return json;
     }
 
-    private static Map<String, Object> figures(LazySecurityPerformanceRecord record, StrictConverter converter,
+    private static Map<String, Object> figures(LazySecurityPerformanceRecord record, CurrencyConverter converter,
                     PerformancePeriod period, CostMethod costMethod)
     {
         var figures = new LinkedHashMap<String, Object>();
