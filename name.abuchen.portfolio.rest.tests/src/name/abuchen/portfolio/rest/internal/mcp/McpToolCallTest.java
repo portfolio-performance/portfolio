@@ -239,6 +239,25 @@ public class McpToolCallTest
         assertThat(client.getSecurities().size(), is(0));
     }
 
+    /** `query` and the trade period reach their routes as query parameters */
+    @Test
+    public void testQueryAndPeriodArgumentsReachTheirRoutes()
+    {
+        var found = call("pp_list_instruments", "{\"file\":\"sample\",\"query\":\"acm\"}");
+        assertThat(isError(found), is(false));
+        assertThat(text(found), containsString(security.getUUID()));
+
+        var none = text(call("pp_list_instruments", "{\"file\":\"sample\",\"query\":\"zzz\"}"));
+        assertThat(none, containsString("\"items\":[]"));
+
+        var trades = call("pp_list_trades", "{\"file\":\"sample\",\"from\":\"2020-01-01\",\"to\":\"2020-12-31\"}");
+        assertThat(isError(trades), is(false));
+        assertThat(text(trades), containsString("\"from\":\"2020-01-01\""));
+
+        var reversed = text(call("pp_list_trades", "{\"file\":\"sample\",\"from\":\"2021-01-01\",\"to\":\"2020-01-01\"}"));
+        assertThat(reversed, containsString("invalid-range"));
+    }
+
     /** an array query argument is comma-joined, which is how the API spells it */
     @Test
     public void testAnArrayArgumentReachesTheRouteAsOneCommaJoinedParameter()
