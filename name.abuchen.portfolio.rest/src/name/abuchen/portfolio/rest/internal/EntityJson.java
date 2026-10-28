@@ -14,7 +14,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.AttributeFieldType;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Portfolio;
@@ -108,7 +107,7 @@ public final class EntityJson
                             if (value == null)
                                 return;
 
-                            var fieldType = AttributeFieldType.of(type);
+                            var fieldType = AttributeCodec.fieldType(type);
                             if (fieldType == null || !AttributeCodec.isSupported(fieldType))
                                 return;
 
