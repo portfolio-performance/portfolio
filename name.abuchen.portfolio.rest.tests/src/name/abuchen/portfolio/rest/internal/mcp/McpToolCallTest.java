@@ -279,39 +279,122 @@ public class McpToolCallTest
             assertThat(name, isError(call(name, "{}")), is(true));
     }
 
-    /** an unmarked truncation is read as a complete answer */
+    /**
+     * A list too large for one result is sent as its first page, not cut: as
+     * many whole instruments as fit, a page that says where they lie, and the
+     * offset of the next page named before the items - so the rest is one
+     * call away instead of lost.
+     */
     @Test
-    public void testAnOversizedResultIsTruncatedWithAMarker()
+    public void testAnOversizedListComesBackAsItsFirstPage()
     {
         for (int ii = 0; ii < 200; ii++)
             new SecurityBuilder().addTo(client).setName("ACME " + ii + " " + "x".repeat(600));
 
-        var result = call("pp_list_instruments", "{\"file\":\"sample\"}");
+        var result = text(call("pp_list_instruments", "{\"file\":\"sample\"}"));
 
-        // the guidance is reserved before the payload is cut, so the result uses
-        // at most the allowance rather than filling it exactly
-        assertThat(text(result).length(), is(lessThanOrEqualTo(McpEndpoint.MAX_RESULT_CHARS)));
-        assertThat(text(result), containsString("TRUNCATED"));
-        assertThat(text(result), containsString("ask a narrower question"));
+        assertThat(result.length(), is(lessThanOrEqualTo(McpEndpoint.MAX_RESULT_CHARS)));
+        assertThat(result, not(containsString("TRUNCATED")));
+        assertThat(result, containsString("**One page of " + client.getSecurities().size() + ".**"));
+        assertThat(result, containsString("`query` is quicker than paging"));
+
+        var body = body(result);
+        var page = body.getAsJsonObject("page");
+        var rows = body.getAsJsonObject("items").getAsJsonArray("rows");
+        assertThat(page.get("offset").getAsInt(), is(0));
+        assertThat(page.get("total").getAsInt(), is(client.getSecurities().size()));
+        assertThat(page.get("nextOffset").getAsInt(), is(rows.size()));
+        assertThat(result, containsString("`offset: " + rows.size() + "`"));
+        // the guidance comes before the items, where a reader still sees it
+        assertThat(result.indexOf("One page of"), is(lessThan(result.indexOf("\"rows\""))));
+    }
+
+    /** following nextOffset walks the whole list, each instrument exactly once and in the file's order */
+    @Test
+    public void testThePagesOfAListFitTogether()
+    {
+        for (int ii = 0; ii < 200; ii++)
+            new SecurityBuilder().addTo(client).setName("ACME " + ii + " " + "x".repeat(600));
+
+        var seen = new java.util.ArrayList<String>();
+        JsonElement next = new JsonPrimitive(0);
+        var calls = 0;
+        while (!next.isJsonNull())
+        {
+            assertThat("the pages must end", ++calls, is(lessThan(10)));
+            var body = body(text(call("pp_list_instruments",
+                            "{\"file\":\"sample\",\"offset\":" + next.getAsInt() + "}")));
+            var columns = body.getAsJsonObject("items").getAsJsonArray("columns");
+            var uuid = columns.asList().indexOf(new JsonPrimitive("uuid"));
+            for (var row : body.getAsJsonObject("items").getAsJsonArray("rows"))
+                seen.add(row.getAsJsonArray().get(uuid).getAsString());
+            next = body.getAsJsonObject("page").get("nextOffset");
+        }
+
+        assertThat(calls, is(greaterThan(1)));
+        assertThat(seen, is(client.getSecurities().stream().map(Security::getUUID).toList()));
+    }
+
+    /** a page the caller asked for says where the next one starts, even when it fits */
+    @Test
+    public void testARequestedPageNamesTheNextOffset()
+    {
+        for (int ii = 0; ii < 5; ii++)
+            new SecurityBuilder().addTo(client).setName("ACME " + ii);
+
+        var result = text(call("pp_list_instruments", "{\"file\":\"sample\",\"limit\":2}"));
+
+        assertThat(result, containsString("This is one page of `page.total` items"));
+        var page = body(result).getAsJsonObject("page");
+        assertThat(page.get("limit").getAsInt(), is(2));
+        assertThat(page.get("nextOffset").getAsInt(), is(2));
+    }
+
+    /** a limit or an offset of the wrong shape is refused before it reaches the route */
+    @Test
+    public void testAPagingArgumentOfTheWrongShapeIsRefused()
+    {
+        var fraction = call("pp_list_instruments", "{\"file\":\"sample\",\"limit\":2.5}");
+        assertThat(isError(fraction), is(true));
+        assertThat(text(fraction), containsString("`limit` must be `integer`"));
+
+        var negative = call("pp_list_trades", "{\"file\":\"sample\",\"offset\":-1}");
+        assertThat(isError(negative), is(true));
+        assertThat(text(negative), containsString("`offset` must be at least 0"));
     }
 
     /**
-     * The advice is the part that tells a model to ask smaller, so it has to
-     * survive the cut. Appending it after the cap put it past the limit where
-     * nothing reads it, and the marker alone only says the answer was cut.
+     * An unmarked truncation is read as a complete answer. A list that cannot
+     * be paged - the holdings - is still cut after a whole item, and says so,
+     * with the advice surviving the cut.
      */
     @Test
-    public void testTheOversizeAdviceSurvivesTheCut()
+    public void testAnOversizedResultThatCannotBePagedIsTruncatedWithAMarker()
     {
-        for (int ii = 0; ii < 200; ii++)
-            new SecurityBuilder().addTo(client).setName("ACME " + ii + " " + "x".repeat(600));
+        var tool = McpTools.byName("pp_list_holdings").orElseThrow();
 
-        var instruments = text(call("pp_list_instruments", "{\"file\":\"sample\"}"));
+        var items = new JsonArray();
+        for (int ii = 0; ii < 300; ii++)
+        {
+            var holding = new JsonObject();
+            holding.addProperty("type", "instrument");
+            holding.addProperty("name", "ACME " + ii + " " + "x".repeat(600));
+            holding.addProperty("weight", 0.001);
+            items.add(holding);
+        }
+        var payload = new JsonObject();
+        payload.addProperty("date", "2024-12-31");
+        payload.add("items", items);
 
-        assertThat(instruments.length(), is(lessThanOrEqualTo(McpEndpoint.MAX_RESULT_CHARS)));
-        assertThat(instruments, containsString("pp_get_instrument"));
-        assertThat(instruments, containsString("again with `query`"));
-        assertThat(instruments, containsString("TRUNCATED"));
+        var fitted = McpEndpoint.fit(tool, JsonParser.parseString("{\"file\":\"sample\"}").getAsJsonObject(),
+                        payload, McpEndpoint.MAX_RESULT_CHARS);
+
+        // the guidance is reserved before the payload is cut, so the result uses
+        // at most the allowance rather than filling it exactly
+        assertThat(fitted.length(), is(lessThanOrEqualTo(McpEndpoint.MAX_RESULT_CHARS)));
+        assertThat(fitted, containsString("TRUNCATED"));
+        assertThat(fitted, containsString("ask a narrower question"));
+        assertThat(fitted, containsString("more positions than fit in one answer"));
     }
 
     /**
@@ -581,6 +664,13 @@ public class McpToolCallTest
     private static boolean isError(JsonObject result)
     {
         return result.has("isError") && result.get("isError").getAsBoolean();
+    }
+
+    /** the JSON a result carries after its guidance */
+    private static JsonObject body(String text)
+    {
+        var start = text.startsWith("{") ? 0 : text.indexOf("\n\n{\"") + 2;
+        return JsonParser.parseString(text.substring(start)).getAsJsonObject();
     }
 
     private static String text(JsonObject result)

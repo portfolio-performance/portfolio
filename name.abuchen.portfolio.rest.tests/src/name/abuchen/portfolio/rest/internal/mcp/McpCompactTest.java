@@ -25,6 +25,7 @@ public class McpCompactTest
     private static final McpTool HOLDINGS = McpTools.byName("pp_list_holdings").orElseThrow();
     private static final McpTool FILES = McpTools.byName("pp_list_files").orElseThrow();
     private static final McpTool PERFORMANCE = McpTools.byName("pp_get_overall_performance").orElseThrow();
+    private static final McpTool INSTRUMENTS = McpTools.byName("pp_list_instruments").orElseThrow();
 
     /** a holding in the reporting currency, one in USD, and a cash account */
     private static final String HOLDINGS_PAYLOAD = """
@@ -229,6 +230,74 @@ public class McpCompactTest
         var rendered = McpEnvelope.render(HOLDINGS, new JsonObject(), JsonParser.parseString(payload), List.of());
         assertThat(rendered, containsString("A column `<name>.currency` gives the currency of the column before it."));
         assertThat(rendered, not(containsString("Amounts without a currency")));
+    }
+
+    /**
+     * In a long table, the fields only a few rows have go into `more`: per
+     * row an object of the ones it has, or null - and every value is still
+     * there, under its column name.
+     */
+    @Test
+    public void testSparseColumnsOfALongTableGoIntoMore()
+    {
+        var items = new StringBuilder();
+        for (int ii = 0; ii < 40; ii++)
+        {
+            if (ii > 0)
+                items.append(',');
+            items.append("{\"uuid\":\"u").append(ii).append("\",\"name\":\"I ").append(ii).append('"');
+            if (ii == 3)
+                items.append(",\"note\":\"kept\",\"attributes\":{\"ter\":0.002}");
+            if (ii == 7)
+                items.append(",\"attributes\":{\"aum\":12}");
+            // set in every row: stays a column
+            items.append(",\"isin\":\"X").append(ii).append("\"}");
+        }
+        var result = McpCompact.compact(INSTRUMENTS, JsonParser.parseString("{\"items\":[" + items + "]}"));
+        var table = result.payload().getAsJsonObject().getAsJsonObject("items");
+
+        assertThat(columns(table), is(List.of("uuid", "name", "isin", "more")));
+        assertThat(result.moreColumn(), is(true));
+        assertThat(cell(table, 3, "more").getAsJsonObject().get("note").getAsString(), is("kept"));
+        assertThat(cell(table, 3, "more").getAsJsonObject().get("attributes.ter").getAsDouble(), is(0.002));
+        assertThat(cell(table, 7, "more").toString(), is("{\"attributes.aum\":12}"));
+        assertThat(cell(table, 0, "more").isJsonNull(), is(true));
+
+        var rendered = McpEnvelope.render(INSTRUMENTS, new JsonObject(),
+                        JsonParser.parseString("{\"items\":[" + items + "]}"), List.of());
+        assertThat(rendered, containsString("`more` holds the fields only a few rows have"));
+    }
+
+    /** a short table, or one with a single sparse column, keeps its columns */
+    @Test
+    public void testAShortTableOrASingleSparseColumnStaysAsItIs()
+    {
+        var shortTable = McpCompact.compact(INSTRUMENTS, JsonParser.parseString(
+                        "{\"items\":[{\"name\":\"A\",\"note\":\"n\"},{\"name\":\"B\"},{\"name\":\"C\",\"wkn\":\"1\"}]}"));
+        assertThat(shortTable.moreColumn(), is(false));
+
+        var items = new StringBuilder();
+        for (int ii = 0; ii < 40; ii++)
+            items.append(ii > 0 ? "," : "").append("{\"name\":\"I").append(ii).append('"')
+                            .append(ii == 5 ? ",\"note\":\"n\"}" : "}");
+        var oneSparse = McpCompact.compact(INSTRUMENTS, JsonParser.parseString("{\"items\":[" + items + "]}"));
+        assertThat(oneSparse.moreColumn(), is(false));
+        assertThat(columns(oneSparse.payload().getAsJsonObject().getAsJsonObject("items")),
+                        is(List.of("name", "note")));
+    }
+
+    /** the null line only where a null is sent: a table without one does not get it */
+    @Test
+    public void testTheNullNoteOnlyWhereANullIsSent()
+    {
+        var files = McpEnvelope.render(FILES, new JsonObject(), JsonParser.parseString(
+                        "{\"items\":[{\"id\":\"a\",\"use\":\"a\",\"label\":\"A\",\"path\":\"/a\"}]}"), List.of());
+        assertThat(files, not(containsString("`null` means")));
+
+        var withNull = McpEnvelope.render(FILES, new JsonObject(), JsonParser.parseString(
+                        "{\"items\":[{\"use\":\"a\",\"label\":\"A\",\"alias\":\"x\"},{\"use\":\"b\",\"label\":\"B\"}]}"),
+                        List.of());
+        assertThat(withNull, containsString("`null` means"));
     }
 
     /**

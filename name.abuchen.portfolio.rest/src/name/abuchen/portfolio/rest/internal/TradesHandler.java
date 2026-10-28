@@ -39,7 +39,7 @@ public final class TradesHandler
      */
     /* package */ record Params(Set<TradeStatus> status, TradeGrouping grouping, CostMethod costMethod,
                     TaxesAndFees taxesAndFees, String currency, LocalDate valuationDate, LocalDate from,
-                    LocalDate to)
+                    LocalDate to, Paging paging)
     {
         /**
          * Whether the trade was held at some point of the period: it started on
@@ -86,8 +86,16 @@ public final class TradesHandler
                     String groupingParam, String costMethodParam, String taxesAndFeesParam, String currencyParam,
                     String fromParam, String toParam)
     {
+        return list(client, factory, statusParam, groupingParam, costMethodParam, taxesAndFeesParam, currencyParam,
+                        fromParam, toParam, null, null);
+    }
+
+    public static JsonElement list(Client client, ExchangeRateProviderFactory factory, String statusParam,
+                    String groupingParam, String costMethodParam, String taxesAndFeesParam, String currencyParam,
+                    String fromParam, String toParam, String offsetParam, String limitParam)
+    {
         var params = parse(client, statusParam, groupingParam, costMethodParam, taxesAndFeesParam, currencyParam,
-                        fromParam, toParam);
+                        fromParam, toParam, offsetParam, limitParam);
         return respond(collect(client, factory, client.getSecurities(), params), params);
     }
 
@@ -103,18 +111,27 @@ public final class TradesHandler
                     String statusParam, String groupingParam, String costMethodParam, String taxesAndFeesParam,
                     String currencyParam, String fromParam, String toParam)
     {
+        return forInstrument(client, factory, uuid, statusParam, groupingParam, costMethodParam, taxesAndFeesParam,
+                        currencyParam, fromParam, toParam, null, null);
+    }
+
+    public static JsonElement forInstrument(Client client, ExchangeRateProviderFactory factory, String uuid,
+                    String statusParam, String groupingParam, String costMethodParam, String taxesAndFeesParam,
+                    String currencyParam, String fromParam, String toParam, String offsetParam, String limitParam)
+    {
         // resolve the resource before validating query parameters
         var security = SecuritiesHandler.find(client, uuid);
 
         var params = parse(client, statusParam, groupingParam, costMethodParam, taxesAndFeesParam, currencyParam,
-                        fromParam, toParam);
+                        fromParam, toParam, offsetParam, limitParam);
 
         // sub-collection: an untraded instrument has an empty list, not a 404
         return respond(collect(client, factory, List.of(security), params), params);
     }
 
     private static Params parse(Client client, String statusParam, String groupingParam, String costMethodParam,
-                    String taxesAndFeesParam, String currencyParam, String fromParam, String toParam)
+                    String taxesAndFeesParam, String currencyParam, String fromParam, String toParam,
+                    String offsetParam, String limitParam)
     {
         var errors = new ArrayList<ApiException.FieldError>();
 
@@ -129,11 +146,13 @@ public final class TradesHandler
         if (from != null && to != null && to.isBefore(from))
             errors.add(new ApiException.FieldError("to", "invalid-range", "to must not be before from")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
+        var paging = Paging.parse(offsetParam, limitParam, errors);
+
         if (!errors.isEmpty())
             throw ApiException.badRequest(errors);
 
         // one valuation date for every open trade in the response
-        return new Params(status, grouping, costMethod, taxesAndFees, currency, LocalDate.now(), from, to);
+        return new Params(status, grouping, costMethod, taxesAndFees, currency, LocalDate.now(), from, to, paging);
     }
 
     /* package */ record Collected(List<Trade> trades, List<Warning> warnings, ConversionRecorder conversions)
@@ -219,7 +238,9 @@ public final class TradesHandler
         FxWarnings.attach(json, collected.conversions());
         // always present so clients can detect partial success
         json.add("warnings", warnings); //$NON-NLS-1$
-        json.add("items", items); //$NON-NLS-1$
+        // every trade is rendered, the page only cut from them: fxWarnings and
+        // warnings describe the whole list, whichever page is asked for
+        params.paging().apply(json, items);
         return json;
     }
 }

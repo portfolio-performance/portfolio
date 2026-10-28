@@ -95,8 +95,19 @@ exists. Same switch, same port, same tokens; there is nothing extra to install.
   amount in the `reportingCurrency` is a bare number, while one in another currency - or a column
   holding even one such amount - keeps a `<column>.currency` beside it, and a `price` always keeps
   its currency; a holding's four price-age fields become one `priceNote`, present only for a stale
-  or a hand-maintained price; the file list drops `id` (always `use` again) and `path`. Each result
-  says in a line what applies to it. A result cut to fit ends after a whole row.
+  or a hand-maintained price; the file list drops `id` (always `use` again) and `path`; in a table
+  of 20 rows or more, the fields only one row in ten or fewer has move into one column `more` - an
+  object per row, or `null`. Each result says in a line what applies to it, and only what applies:
+  the `null` line only where a `null` is sent.
+- **A list too large for one result comes back as its first page.** The instruments and the trades
+  take `offset` and `limit`; when the whole list does not fit, the result holds as many whole items
+  as do, a `page` (`offset`, `limit`, `total`, `nextOffset`) and a line before the items naming the
+  `offset` to ask for next. Any other result cut to fit ends after a whole row, and says so.
+- **One result holds at most 100,000 characters** — under Claude Desktop's measured 150,000. A
+  client that keeps less, such as Claude Code (25,000 tokens), cuts a larger result blindly; set the
+  limit below what it keeps, and the server sends a page or a marked cut instead:
+  `-Dname.abuchen.portfolio.rest.mcpMaxResultChars=45000` in `PortfolioPerformance.ini` after
+  `-vmargs`, from 10,000 to 150,000, read when the server starts.
 - **Deliberately outside `/v1`,** because MCP negotiates its own version, and therefore outside the
   additive-only promise.
 - **The last refused connection is shown on the preference page.** A client with a wrong token never
@@ -127,8 +138,11 @@ named by the `referenceCashAccount` field.
 ## Endpoints
 
 All list responses are an envelope — `{"items": [...]}`, never a bare array — so that fields beside
-`items` can be added later without breaking clients. A list response is always complete: v1 has no
-pagination and will not start truncating results. Any later paging must be opt-in by the caller.
+`items` can be added later without breaking clients. A list response is complete unless the caller
+asks for a page: `offset` and `limit` on the instruments and the trades are opt-in, and only a
+response to them carries `page` — `offset`, `limit` (or `null`), `total` and `nextOffset` (`null`
+on the last page). The list is recomputed for every request, so pages fit together only while the
+file is not changed in between. REST never truncates.
 
 ### `GET /v1/files` — the files you may address
 
@@ -156,7 +170,10 @@ identity and enablement.
 `?query=` narrows the list to the instruments it finds: a name that contains it, or an ISIN, WKN or
 ticker symbol equal to it — ignoring case and surrounding whitespace. A large file holds more
 instruments than one MCP answer carries, so this is how a client gets from a name to a `uuid`. A
-blank `query` is a `400`.
+blank `query` is a `400`. `?offset=` and `?limit=` return one page of the list, in the file's order.
+
+The trades (`GET .../trades`, `GET .../instruments/{uuid}/trades`) take the same `offset` and
+`limit`; their `fxWarnings` and `warnings` describe the whole list, whichever page is asked for.
 
 ### `PATCH /v1/files/{file}/instruments/{uuid}`
 

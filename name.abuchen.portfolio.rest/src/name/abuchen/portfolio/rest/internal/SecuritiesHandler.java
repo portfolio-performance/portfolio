@@ -93,19 +93,56 @@ public final class SecuritiesHandler
      */
     public static JsonElement list(Client client, String query)
     {
-        if (query == null)
-            return EntityJson.envelope(client.getSecurities(), s -> EntityJson.toJson(client, s));
+        return list(client, query, null, null);
+    }
 
-        var wanted = query.strip();
-        if (wanted.isEmpty())
-            throw ApiException.badRequest(List.of(new ApiException.FieldError("query", "invalid-value", //$NON-NLS-1$ //$NON-NLS-2$
-                            "query must not be blank; omit it to list every instrument"))); //$NON-NLS-1$
+    /**
+     * As above, one page of them with {@code offset} and {@code limit}: the
+     * instruments in the order of the file, the found ones in the same order.
+     */
+    public static JsonElement list(Client client, String query, String offsetParam, String limitParam)
+    {
+        var errors = new ArrayList<ApiException.FieldError>();
 
-        var lower = wanted.toLowerCase(Locale.ROOT);
-        var found = client.getSecurities().stream() //
-                        .filter(security -> matches(security, wanted, lower)) //
-                        .toList();
-        return EntityJson.envelope(found, s -> EntityJson.toJson(client, s));
+        var wanted = query == null ? null : query.strip();
+        if (wanted != null && wanted.isEmpty())
+            errors.add(new ApiException.FieldError("query", "invalid-value", //$NON-NLS-1$ //$NON-NLS-2$
+                            "query must not be blank; omit it to list every instrument")); //$NON-NLS-1$
+
+        var paging = Paging.parse(offsetParam, limitParam, errors);
+
+        if (!errors.isEmpty())
+            throw ApiException.badRequest(errors);
+
+        var securities = client.getSecurities();
+        if (wanted != null)
+        {
+            var lower = wanted.toLowerCase(Locale.ROOT);
+            securities = securities.stream() //
+                            .filter(security -> matches(security, wanted, lower)) //
+                            .toList();
+        }
+
+        var items = new JsonArray();
+        var from = paging.given() ? Math.min(paging.offset(), securities.size()) : 0;
+        // only the page is rendered; the rest of the list is counted, not built
+        var response = new JsonObject();
+        if (!paging.given())
+        {
+            securities.forEach(security -> items.add(EntityJson.toJson(client, security)));
+            response.add("items", items); //$NON-NLS-1$
+            return response;
+        }
+
+        var to = paging.limit() == null ? securities.size()
+                        : (int) Math.min((long) from + paging.limit(), securities.size());
+        for (var ii = from; ii < to; ii++)
+            items.add(EntityJson.toJson(client, securities.get(ii)));
+
+        response.add("page", Paging.describe(paging.offset(), paging.limit(), securities.size(), //$NON-NLS-1$
+                        to < securities.size() ? Integer.valueOf(to) : null));
+        response.add("items", items); //$NON-NLS-1$
+        return response;
     }
 
     private static boolean matches(Security security, String wanted, String lower)

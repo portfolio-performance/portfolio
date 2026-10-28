@@ -12,6 +12,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import name.abuchen.portfolio.rest.internal.Paging;
+
 /**
  * The result envelope: payload, plus the guidance that response actually needs.
  * <p/>
@@ -117,7 +119,7 @@ public final class McpEnvelope
         var found = scan(payload);
         var compacted = McpCompact.compact(tool, payload);
         var guidance = guidanceBefore(found, payload, droppedMetrics);
-        var notes = notesFor(tool, arguments, found, changed, compacted);
+        var notes = notesFor(tool, arguments, found, changed, compacted, advice);
         if (!notes.isEmpty())
             guidance.add(notes.stream().map(note -> "- " + note).reduce((a, b) -> a + "\n" + b).orElseThrow());
         if (advice != null && !advice.isEmpty())
@@ -232,12 +234,31 @@ public final class McpEnvelope
 
     /** guidance that applies to this payload, in the order it should be read */
     private static List<String> notesFor(McpTool tool, JsonObject arguments, Scan found, Boolean changed,
-                    McpCompact.Result compacted)
+                    McpCompact.Result compacted, String advice)
     {
         var notes = new ArrayList<String>();
 
         if (compacted.tabulated())
             notes.add("`items` is a table: each row holds its values in the order of `columns`.");
+
+        // a page the caller asked for says where the next one starts; one that
+        // was paged to fit says so in its own guidance, before this
+        var page = compacted.payload() != null && compacted.payload().isJsonObject()
+                        ? compacted.payload().getAsJsonObject().get("page")
+                        : null;
+        var next = page != null && page.isJsonObject() ? page.getAsJsonObject().get("nextOffset") : null;
+        if (next != null && !next.isJsonNull() && (advice == null || advice.isEmpty()))
+        {
+            notes.add("This is one page of `page.total` items: call again with `offset` set to `page.nextOffset` "
+                            + "for the next one.");
+        }
+
+        if (compacted.moreColumn())
+        {
+            // the fields only a few rows have: named per row, not per column
+            notes.add("`more` holds the fields only a few rows have, by column name; `null` there means the row has "
+                            + "none of them.");
+        }
 
         // only what the payload has: the column sentence where a table has
         // such a column, not on a single report that has none
@@ -262,11 +283,13 @@ public final class McpEnvelope
             notes.add("Rates and weights are **fractions, not percentages**: `0.0723` is 7.23%.");
         }
 
-        if (found.hasNulls() || compacted.tabulated())
+        if (compacted.hasNull())
         {
             // deliberately wider than "undefined for this interval", which is
             // false of an instrument's currencyCode, null when it is an index -
-            // and a table cell of a field that row does not have
+            // and a table cell of a field that row does not have. Only where a
+            // null is actually sent: a note about nothing in the answer is a
+            // line every call pays for
             notes.add("`null` means **unknown or does not apply**, never zero: say it is unavailable.");
         }
 
@@ -634,6 +657,109 @@ public final class McpEnvelope
             return !value.getAsJsonArray().isEmpty();
 
         return value.isJsonPrimitive() && !value.getAsString().isBlank();
+    }
+
+    /**
+     * A list too large for one result, sent as its first page instead of cut:
+     * as many whole items as fit, a {@code page} that says where they lie in
+     * the whole, and guidance - before the items - naming the {@code offset}
+     * the next page starts at. Nothing is lost, and nothing has to be guessed:
+     * a cut marks the end of what arrived, a page says how to get the rest.
+     * <p/>
+     * Only for a tool that takes {@code offset}. A list that already is a
+     * page - the call named {@code offset} or {@code limit} - is paged further
+     * from where it starts. Null when not even one item fits, which leaves the
+     * cut to say so.
+     */
+    public static String fitPage(McpTool tool, JsonObject arguments, JsonElement payload, int maxChars,
+                    Boolean changed)
+    {
+        if (tool.binding("offset") == null || payload == null || !payload.isJsonObject()) //$NON-NLS-1$
+            return null;
+
+        var report = payload.getAsJsonObject();
+        var items = report.get("items");
+        if (items == null || !items.isJsonArray() || items.getAsJsonArray().size() < 2)
+            return null;
+
+        var all = items.getAsJsonArray();
+        var page = report.get("page");
+        var offset = intOf(page, "offset", 0);
+        var total = intOf(page, "total", offset + all.size());
+
+        // the most whole items that fit: rendering is cheap next to the
+        // calculation behind it, and a page that fits is a single answer
+        String best = null;
+        var low = 1;
+        var high = all.size() - 1;
+        while (low <= high)
+        {
+            var count = (low + high) >>> 1;
+            var rendered = renderPage(tool, arguments, report, all, offset, count, total, changed);
+            if (rendered.length() <= maxChars)
+            {
+                best = rendered;
+                low = count + 1;
+            }
+            else
+            {
+                high = count - 1;
+            }
+        }
+        return best;
+    }
+
+    private static String renderPage(McpTool tool, JsonObject arguments, JsonObject report, JsonArray all, int offset,
+                    int count, int total, Boolean changed)
+    {
+        var slice = new JsonArray();
+        for (var ii = 0; ii < count; ii++)
+            slice.add(all.get(ii));
+
+        // the page first, then the items: what the reader needs to ask for
+        // the rest must not sit behind them
+        var paged = new JsonObject();
+        for (var entry : report.entrySet())
+        {
+            if (!"items".equals(entry.getKey()) && !"page".equals(entry.getKey()))
+                paged.add(entry.getKey(), entry.getValue());
+        }
+        paged.add("page", Paging.describe(offset, count, total,
+                        offset + count < total ? Integer.valueOf(offset + count) : null));
+        paged.add("items", slice);
+
+        return render(tool, arguments, paged, List.of(), pageAdvice(tool, offset, count, total), Integer.MAX_VALUE,
+                        changed);
+    }
+
+    /** what the reader of a page is told, before the items it holds */
+    private static String pageAdvice(McpTool tool, int offset, int count, int total)
+    {
+        var advice = new StringBuilder("**One page of " + total + ".** This answer holds items " + (offset + 1)
+                        + " to " + (offset + count) + "; the others are not in it. Call " + tool.name()
+                        + " again with the same arguments and `offset: " + (offset + count)
+                        + "` for the next page - `page.nextOffset` says the same - and do not present this page as "
+                        + "the whole list.");
+
+        switch (tool.name())
+        {
+            case "pp_list_instruments" -> advice.append(" To find one instrument, `query` is quicker than paging.");
+            case "pp_list_trades" -> advice.append(" A question about a period or one instrument is answered "
+                            + "faster with `from`/`to`, `status`, or pp_list_instrument_trades.");
+            default -> {
+                // the paging itself is the advice
+            }
+        }
+        return advice.toString();
+    }
+
+    private static int intOf(JsonElement object, String key, int fallback)
+    {
+        if (object == null || !object.isJsonObject())
+            return fallback;
+        var value = object.getAsJsonObject().get(key);
+        return value != null && value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber() ? value.getAsInt()
+                        : fallback;
     }
 
     /**

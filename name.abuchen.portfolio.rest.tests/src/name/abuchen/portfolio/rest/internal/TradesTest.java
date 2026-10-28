@@ -556,6 +556,75 @@ public class TradesTest
         }
     }
 
+    /**
+     * One page of the trades: cut from the whole sorted list, with a page
+     * that says where it lies - and the warnings of the whole list, whichever
+     * page is asked for.
+     */
+    @Test
+    public void testOnePageOfTheTrades()
+    {
+        var client = closedTrade(); // ACME
+        var other = new SecurityBuilder() //
+                        .addPrice("2026-07-01", Values.Quote.factorize(50)) //
+                        .addTo(client);
+        other.setName("BETA");
+        new PortfolioBuilder(client.getAccounts().get(0)) //
+                        .buy(other, "2026-02-01", Values.Share.factorize(10), Values.Amount.factorize(400)) //
+                        .addTo(client);
+
+        var first = page(client, null, "1");
+        assertThat(names(first), is(List.of("ACME")));
+        var page = first.getAsJsonObject("page");
+        assertThat(page.get("offset").getAsInt(), is(0));
+        assertThat(page.get("limit").getAsInt(), is(1));
+        assertThat(page.get("total").getAsInt(), is(2));
+        assertThat(page.get("nextOffset").getAsInt(), is(1));
+        assertThat(first.has("warnings"), is(true));
+        assertThat(first.has("fxWarnings"), is(true));
+
+        var second = page(client, "1", null);
+        assertThat(names(second), is(List.of("BETA")));
+        assertThat(second.getAsJsonObject("page").get("nextOffset").isJsonNull(), is(true));
+        assertThat(second.getAsJsonObject("page").get("limit").isJsonNull(), is(true));
+
+        // past the end, an empty page
+        var beyond = page(client, "5", "2");
+        assertThat(beyond.get("items").getAsJsonArray().size(), is(0));
+        assertThat(beyond.getAsJsonObject("page").get("total").getAsInt(), is(2));
+
+        // without either parameter, the whole list and no page - as before
+        assertThat(trades(client).has("page"), is(false));
+    }
+
+    @Test
+    public void testPagingRejectsAMalformedOffsetOrLimit()
+    {
+        var client = closedTrade();
+
+        for (var bad : List.of(new String[] { "-1", null }, new String[] { "x", null }, new String[] { null, "0" },
+                        new String[] { null, "1.5" }))
+        {
+            try
+            {
+                page(client, bad[0], bad[1]);
+                Assert.fail("expected ApiException for offset " + bad[0] + ", limit " + bad[1]);
+            }
+            catch (ApiException e)
+            {
+                assertThat(e.getStatus(), is(400));
+                assertThat(e.getErrors().get(0).field(), is(bad[0] != null ? "offset" : "limit"));
+                assertThat(e.getErrors().get(0).code(), is("invalid-value"));
+            }
+        }
+    }
+
+    private static JsonObject page(Client client, String offset, String limit)
+    {
+        return TradesHandler.list(client, new ExchangeRateProviderFactory(client), null, null, null, null, null, null,
+                        null, offset, limit).getAsJsonObject();
+    }
+
     private static JsonObject period(Client client, String status, String from, String to)
     {
         return TradesHandler.list(client, new ExchangeRateProviderFactory(client), status, null, null, null, null,
