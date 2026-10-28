@@ -50,7 +50,8 @@ record PerformancePeriod(LocalDate firstDay, LocalDate lastDay, Optional<String>
                     .meta("to", Schema.string(
                                     "Last day of the period, as resolved: as given with --to, otherwise today, or the last day of the --period code. It can lie after today, e.g. for the code of a year not yet over."))
                     .optionalMeta("period", Schema.string("The reporting-period code, as given. Absent with --from."))
-                    .codes(ErrorCode.PERIOD_REQUIRED, ErrorCode.CONFLICTING_OPTIONS, ErrorCode.INVALID_DATE_RANGE),
+                    .codes(ErrorCode.PERIOD_REQUIRED, ErrorCode.CONFLICTING_OPTIONS, ErrorCode.INVALID_DATE_RANGE)
+                    .sample("--" + FROM.name(), "2019-12-31", "--" + TO.name(), "2026-10-01"),
                     PerformancePeriod::resolve, (period, out) -> {
                         out.meta("from", period.firstDay().toString());
                         out.meta("to", period.lastDay().toString());

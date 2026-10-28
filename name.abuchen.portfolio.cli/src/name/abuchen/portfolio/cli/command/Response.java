@@ -1,25 +1,44 @@
 package name.abuchen.portfolio.cli.command;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
  * The result of a successful command: the <code>{data, meta, warnings}</code>
- * envelope.
+ * envelope. Immutable, and built only by {@link CommandSpec} from the
+ * handler's data and its facets' reports.
  */
-public record Response(Object data, Map<String, Object> meta, List<Warning> warnings)
+public final class Response
 {
-    public static Response of(Object data, Map<String, Object> meta)
+    private final Object data;
+    private final Map<String, Object> meta;
+    private final List<Warning> warnings;
+
+    Response(Object data, Map<String, Object> meta, List<Warning> warnings)
     {
-        return new Response(data, meta, new ArrayList<>());
+        this.data = data;
+        // a meta member may be null, which Map.copyOf would reject
+        this.meta = Collections.unmodifiableMap(new LinkedHashMap<>(meta));
+        this.warnings = List.copyOf(warnings);
     }
 
-    public Response warn(Warning warning)
+    public Object data()
     {
-        warnings.add(warning);
-        return this;
+        return data;
+    }
+
+    /** Unmodifiable, in schema order. */
+    public Map<String, Object> meta()
+    {
+        return meta;
+    }
+
+    /** Unmodifiable. */
+    public List<Warning> warnings()
+    {
+        return warnings;
     }
 
     public Map<String, Object> toEnvelope()

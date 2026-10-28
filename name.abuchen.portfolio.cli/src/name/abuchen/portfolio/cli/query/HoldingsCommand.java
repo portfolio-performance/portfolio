@@ -57,8 +57,9 @@ public final class HoldingsCommand
     private static final Facet<Boolean> BY_ACCOUNT = Facet.option(OptionSpec.flag("by-account",
                     "Split the holdings into one block per investment account instead of one aggregate."));
 
-    private static final Facet<Boolean> INCLUDE_ZERO = Facet.option(OptionSpec.flag("include-zero",
-                    "Also list instruments held before the date and fully sold by it, with zero shares. They are hidden by default."));
+    private static final Facet<Boolean> INCLUDE_ZERO = Facet.<Boolean> option(OptionSpec.flag("include-zero",
+                    "Also list instruments held before the date and fully sold by it, with zero shares. They are hidden by default."))
+                    .withSample("--include-zero");
 
     private static final Facet<ReportingCurrency> CURRENCY = ReportingCurrency.facet(
                     "ISO currency of the totals and converted amounts. Defaults to the base currency of the file. Amounts stay in their native currency as well.",

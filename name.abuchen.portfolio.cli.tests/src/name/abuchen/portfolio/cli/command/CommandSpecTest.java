@@ -211,6 +211,31 @@ public class CommandSpecTest
         assertThrows(IllegalStateException.class, () -> run(spec, Map.of()));
     }
 
+    @Test
+    public void aResponseCannotBeChangedAfterTheFrameworkBuiltIt() throws CliException
+    {
+        var spec = CommandSpec.of("probe", "A probe.", DATA, run -> {
+            run.warn(new Warning("odd", "Odd."));
+            return null;
+        }, DECLARES_A, Facet.of(Declaration.empty().warnings(ODD), run -> null));
+
+        var response = run(spec, Map.of());
+
+        assertThrows(UnsupportedOperationException.class, () -> response.meta().put("b", 2));
+        assertThrows(UnsupportedOperationException.class, () -> response.warnings().add(new Warning("odd", "Odd.")));
+        assertThrows(UnsupportedOperationException.class, () -> response.warnings().clear());
+    }
+
+    @Test
+    public void theSampleIsTheFacetsSamplesInFacetOrder()
+    {
+        var spec = CommandSpec.of("probe", "A probe.", DATA, run -> null,
+                        Facet.option(NAME).withSample("--name", "x"),
+                        Facet.of(Declaration.empty().sample("--other"), run -> null), DECLARES_A);
+
+        assertThat(spec.sample(), is(List.of("--name", "x", "--other")));
+    }
+
     private static Response run(CommandSpec spec, Map<String, String> options) throws CliException
     {
         return spec.handler().execute(context(options).withClient(new LoadedClient(new Client(), FileFormat.XML)));

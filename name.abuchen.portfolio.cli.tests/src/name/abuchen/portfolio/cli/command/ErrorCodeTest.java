@@ -6,7 +6,6 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
@@ -35,7 +34,7 @@ public class ErrorCodeTest
     @Test
     public void aCommandWithAReferenceOptionCanFailToResolveIt()
     {
-        var withReference = probe(Instruments.INSTRUMENTS.option("instrument", "An instrument.").spec());
+        var withReference = probe(Instruments.INSTRUMENTS.option("instrument", "An instrument."));
 
         assertThat(codes(withReference), hasItems("reference-not-found", "reference-ambiguous"));
         assertThat(codes(probe(TEXT)), not(hasItem("reference-not-found")));
@@ -60,12 +59,18 @@ public class ErrorCodeTest
     /** A command no hand-written list can name. */
     private static CommandSpec probe(OptionSpec option)
     {
-        return new CommandSpec("probe", "A probe.", true, List.of(option), Schema.object("Data."),
-                        Schema.object("Meta."), context -> null);
+        return CommandSpec.of("probe", "A probe.", Schema.object("Data."), run -> null, ClientFile.READ,
+                        Facet.option(option));
+    }
+
+    private static CommandSpec probe(ReferenceOption<?> option)
+    {
+        return CommandSpec.of("probe", "A probe.", Schema.object("Data."), run -> null, ClientFile.READ,
+                        Facet.option(option));
     }
 
     private static List<String> codes(CommandSpec command)
     {
-        return Arrays.stream(ErrorCode.values()).filter(e -> e.appliesTo(command)).map(ErrorCode::code).toList();
+        return command.errorCodes().stream().map(ErrorCode::code).toList();
     }
 }

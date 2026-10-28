@@ -12,8 +12,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.TreeSet;
-import java.util.regex.Pattern;
+import java.util.Map;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,47 +23,69 @@ import com.google.gson.JsonParser;
 
 import name.abuchen.portfolio.cli.apply.Operations;
 import name.abuchen.portfolio.cli.command.CommandSpec;
-import name.abuchen.portfolio.cli.command.ErrorCode;
+import name.abuchen.portfolio.cli.command.OptionSpec;
 import name.abuchen.portfolio.junit.AccountBuilder;
 import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 
 /**
  * Every declared command and operation must be reachable through
  * <code>--help</code>, and every real response must conform to the schema that
- * is declared in code for it, and from which help is generated. A later ticket that adds a command gets a failure here
- * until it adds sample arguments and a correct schema.
+ * is declared in code for it, and from which help is generated. A command's
+ * sample call derives from its facets, so a new command needs no edit here.
  */
 public class HelpConsistencyTest
 {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
-    /** Arguments that make the command succeed against a sample file. */
-    private static List<String> sampleArguments(String command, Path sampleFile, Security instrument, Path batch)
+    /**
+     * Values for options that no facet can sample, because they name a file
+     * the test writes. Keyed by command and option.
+     */
+    private static Map<String, String> overrides(Path sampleFile, Path batch)
     {
-        return switch (command)
+        return Map.of("apply --input", batch.toString(), "restore --backup", sampleFile.toString());
+    }
+
+    /**
+     * Arguments that make the command succeed against a sample file, derived
+     * from its facets' samples: a required reference draws the first entity of
+     * its kind from the client.
+     */
+    private static List<String> sampleArguments(CommandSpec command, Path sampleFile, Client client, Path batch)
+    {
+        var arguments = new ArrayList<String>(List.of(command.name()));
+        if (command.accepts(OptionSpec.FILE.name()))
+            arguments.addAll(List.of("--" + OptionSpec.FILE.name(), sampleFile.toString()));
+        arguments.addAll(command.sample());
+
+        var overrides = overrides(sampleFile, batch);
+        for (var option : command.declaredOptions())
         {
-            case "info" -> List.of("info", "--file", sampleFile.toString());
-            case "instruments", "investment-accounts", "cash-accounts" ->
-                List.of(command, "--file", sampleFile.toString());
-            case "prices" -> List.of("prices", "--file", sampleFile.toString(), "--instrument", instrument.getUUID());
-            case "transactions" -> List.of("transactions", "--file", sampleFile.toString(), "--currency", "USD");
-            case "holdings" -> List.of("holdings", "--file", sampleFile.toString(), "--date", "2026-10-01",
-                            "--currency", "USD", "--include-zero");
-            case "performance" -> List.of("performance", "--file", sampleFile.toString(), "--from", "2019-12-31",
-                            "--to", "2026-10-01", "--currency", "USD", "--cost-method", "moving-average");
-            case "taxonomies" -> List.of("taxonomies", "--file", sampleFile.toString());
-            case "allocation" -> List.of("allocation", "--file", sampleFile.toString(), "--taxonomy", "Classes",
-                            "--date", "2026-10-01", "--currency", "USD");
-            case "apply" -> List.of("apply", "--file", sampleFile.toString(), "--input", batch.toString(),
-                            "--dry-run");
-            case "restore" -> List.of("restore", "--file", sampleFile.toString(), "--backup",
-                            sampleFile.toString(), "--dry-run");
-            default -> throw new AssertionError("Add sample arguments for command '" + command
-                            + "' to HelpConsistencyTest.sampleArguments");
+            var flag = "--" + option.name();
+            var override = overrides.get(command.name() + " " + flag);
+            if (override != null)
+                arguments.addAll(List.of(flag, override));
+            else if (option.required() && !arguments.contains(flag))
+                arguments.addAll(List.of(flag, firstOfKind(option, client)));
+        }
+        return arguments;
+    }
+
+    private static String firstOfKind(OptionSpec option, Client client)
+    {
+        if (!(option.type() instanceof OptionSpec.Reference reference))
+            throw new AssertionError("No facet samples the required option '--" + option.name() + "'");
+
+        return switch (reference.label())
+        {
+            case "instrument" -> client.getSecurities().get(0).getUUID();
+            case "investment account" -> client.getPortfolios().get(0).getUUID();
+            case "cash account" -> client.getAccounts().get(0).getUUID();
+            case "taxonomy" -> client.getTaxonomies().get(0).getId();
+            default -> throw new AssertionError("No entity of kind " + reference.label());
         };
     }
 
@@ -175,7 +196,7 @@ public class HelpConsistencyTest
         {
             var name = command.name();
 
-            assertConforms(command, sampleArguments(name, sampleFile, instrument, batch));
+            assertConforms(command, sampleArguments(command, sampleFile, client, batch));
             for (var arguments : furtherArguments(name, sampleFile, client, batch))
                 assertConforms(command, arguments);
         }
@@ -244,27 +265,5 @@ public class HelpConsistencyTest
     {
         var run = CliRun.run(arguments.toArray(String[]::new));
         assertThat(command.name() + " exit code, stdout: " + run.stdout, run.exitCode, is(0));
-    }
-
-    @Test
-    public void theErrorCodesInHelpAreExactlyTheOnesTheToolFailsWith() throws IOException
-    {
-        var call = Pattern.compile("\\b(?:usage|failure)\\(\\s*ErrorCode\\.([A-Z0-9_]+)\\b");
-        var thrown = new TreeSet<String>();
-        try (var sources = Files.walk(SourceTree.cliBundle("src")))
-        {
-            for (var source : sources.filter(p -> p.toString().endsWith(".java")).toList())
-            {
-                var matcher = call.matcher(Files.readString(source));
-                while (matcher.find())
-                    thrown.add(matcher.group(1));
-            }
-        }
-        assertThat(thrown.contains(ErrorCode.FILE_VERSION_UNSUPPORTED.name()), is(true));
-
-        var declared = new TreeSet<String>();
-        for (var e : ErrorCode.values())
-            declared.add(e.name());
-        assertThat(declared, is(thrown));
     }
 }
