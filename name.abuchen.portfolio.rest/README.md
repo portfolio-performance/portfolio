@@ -104,8 +104,11 @@ named by the `referenceCashAccount` field.
 ## Endpoints
 
 All list responses are an envelope — `{"items": [...]}`, never a bare array — so that fields beside
-`items` can be added later without breaking clients. A list response is always complete: v1 has no
-pagination and will not start truncating results. Any later paging must be opt-in by the caller.
+`items` can be added later without breaking clients. A list response is complete unless the caller
+asks for a page: `offset` and `limit` on the instruments and the trades are opt-in, and only a
+response to them carries `page` — `offset`, `limit` (or `null`), `total` and `nextOffset` (`null`
+on the last page). The list is recomputed for every request, so pages fit together only while the
+file is not changed in between. REST never truncates.
 
 ### `GET /v1/files` — the files you may address
 
@@ -132,7 +135,10 @@ identity and enablement.
 `?query=` narrows the list to the instruments it finds: a name that contains it, or an ISIN, WKN or
 ticker symbol equal to it — ignoring case and surrounding whitespace. A large file holds more
 instruments than one MCP answer carries, so this is how a client gets from a name to a `uuid`. A
-blank `query` is a `400`.
+blank `query` is a `400`. `?offset=` and `?limit=` return one page of the list, in the file's order.
+
+The trades (`GET .../trades`, `GET .../instruments/{uuid}/trades`) take the same `offset` and
+`limit`; their `fxWarnings` and `warnings` describe the whole list, whichever page is asked for.
 
 ### `PATCH /v1/files/{file}/instruments/{uuid}`
 

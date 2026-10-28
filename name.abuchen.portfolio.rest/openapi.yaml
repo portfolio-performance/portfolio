@@ -444,8 +444,13 @@ paths:
         A large file can hold hundreds of instruments; `query` is how a client
         gets from a name, ISIN, WKN or ticker symbol to the `uuid` without
         reading them all.
+
+        With `offset` or `limit` the response is one page of that list, in
+        the file's order, and says in `page` where it lies in the whole.
       parameters:
         - $ref: "#/components/parameters/InstrumentQuery"
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Limit"
       responses:
         "200":
           description: The instruments in the file
@@ -455,6 +460,8 @@ paths:
                 type: object
                 required: [items]
                 properties:
+                  page:
+                    $ref: "#/components/schemas/Page"
                   items:
                     type: array
                     items:
@@ -1220,6 +1227,8 @@ paths:
         - $ref: "#/components/parameters/ReportingCurrency"
         - $ref: "#/components/parameters/TradeFrom"
         - $ref: "#/components/parameters/TradeTo"
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Limit"
       responses:
         "200":
           description: The file's trades
@@ -1324,6 +1333,8 @@ paths:
         - $ref: "#/components/parameters/ReportingCurrency"
         - $ref: "#/components/parameters/TradeFrom"
         - $ref: "#/components/parameters/TradeTo"
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Limit"
       responses:
         "200":
           description: The instrument's trades
@@ -1547,6 +1558,29 @@ components:
       schema:
         type: string
         format: date
+    Offset:
+      name: offset
+      in: query
+      required: false
+      description: |
+        How many items of the list to skip: where a page starts, usually the
+        `page.nextOffset` of the page before. Defaults to 0. A whole number of
+        at least 0 (`invalid-value` otherwise); past the end, the page is
+        empty. With `offset` or `limit` the response carries `page`.
+      schema:
+        type: integer
+        minimum: 0
+    Limit:
+      name: limit
+      in: query
+      required: false
+      description: |
+        At most this many items. Omit it for every item from `offset` on. A
+        whole number of at least 1 (`invalid-value` otherwise). With `offset`
+        or `limit` the response carries `page`.
+      schema:
+        type: integer
+        minimum: 1
     TradeGrouping:
       name: grouping
       in: query
@@ -1670,6 +1704,8 @@ components:
           $ref: "#/components/schemas/FxWarnings"
         fxStaleRates:
           $ref: "#/components/schemas/FxStaleRates"
+        page:
+          $ref: "#/components/schemas/Page"
         warnings:
           type: array
           description: |
@@ -1683,6 +1719,31 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Trade"
+
+    Page:
+      type: object
+      description: |
+        Where a page lies in the whole list - present only when the request
+        named `offset` or `limit`. The list is recomputed for every request,
+        so pages fit together only while the file is not changed in between.
+        For trades, `fxWarnings` and `warnings` describe the whole list, not
+        only the page.
+      required: [offset, limit, total, nextOffset]
+      properties:
+        offset:
+          type: integer
+          description: How many items were skipped.
+        limit:
+          type: [integer, "null"]
+          description: The `limit` asked for, or `null` for none.
+        total:
+          type: integer
+          description: How many items the whole list holds.
+        nextOffset:
+          type: [integer, "null"]
+          description: |
+            The `offset` of the next page, or `null` when this is the last
+            one.
 
     TradeWarning:
       type: object
