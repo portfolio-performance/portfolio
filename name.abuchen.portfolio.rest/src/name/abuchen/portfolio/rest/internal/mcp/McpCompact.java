@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.rest.internal.mcp;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -31,6 +33,11 @@ import com.google.gson.JsonPrimitive;
  * price. The price date stays in every row.</li>
  * <li>The file list loses {@code id}, which is always {@code use} again, and the
  * local {@code path}, which no tool takes.</li>
+ * <li>In a long table, the fields only a few rows have - nine of ten cells
+ * {@code null} - leave their columns for one column {@code more}: per row an
+ * object of the ones it has, or {@code null}. Every {@code null} of a sparse
+ * column costs as much as a short value, and a column of them carries
+ * nothing.</li>
  * </ul>
  * The REST API is left as it is: its contract only grows by additions, and a
  * script reading it wants the objects.
@@ -40,12 +47,23 @@ import com.google.gson.JsonPrimitive;
     /**
      * What was done to a payload, which decides the notes it needs:
      * {@code currencyColumn} when a table carries a {@code <name>.currency}
-     * column - beside amounts in another currency, or beside a price.
+     * column - beside amounts in another currency, or beside a price -,
+     * {@code moreColumn} when its sparse fields went into {@code more}, and
+     * {@code hasNull} when the payload as sent holds a {@code null} anywhere.
      */
     /* package */ record Result(JsonElement payload, boolean tabulated, String currencyDropped,
-                    boolean currencyColumn)
+                    boolean currencyColumn, boolean moreColumn, boolean hasNull)
     {
     }
+
+    /** the column that holds the sparse fields of a long table */
+    /* package */ static final String MORE = "more"; //$NON-NLS-1$
+
+    /** a table this long has sparse columns worth folding; a short one does not */
+    private static final int MIN_ROWS_FOR_MORE = 20;
+
+    /** a column is sparse when at most one cell in this many holds a value */
+    private static final int SPARSE_RATIO = 10;
 
     private static final String ITEMS = "items"; //$NON-NLS-1$
     private static final String VALUE = "value"; //$NON-NLS-1$
@@ -62,7 +80,9 @@ import com.google.gson.JsonPrimitive;
     /* package */ static Result compact(McpTool tool, JsonElement payload)
     {
         if (payload == null || !payload.isJsonObject())
-            return new Result(payload, false, null, false);
+            // a 204 renders as a sentence, not as null, and a bare list is not this
+            // API's shape: neither has a null worth explaining
+            return new Result(payload, false, null, false, false, false);
 
         var report = payload.getAsJsonObject().deepCopy();
         var currency = stringOf(report.get("reportingCurrency")); //$NON-NLS-1$
@@ -73,7 +93,11 @@ import com.google.gson.JsonPrimitive;
                 item.remove("path"); //$NON-NLS-1$
             });
 
-        forEachItem(report, McpCompact::notePriceAge);
+        // valued at a future date, an age is measured to today - which the
+        // note then says, or it reads as the age on the date asked for
+        var date = stringOf(report.get("date")); //$NON-NLS-1$
+        var future = date != null && isAfterToday(date);
+        forEachItem(report, item -> notePriceAge(item, future));
 
         var dropped = new boolean[1];
         for (var entry : report.entrySet())
@@ -84,21 +108,23 @@ import com.google.gson.JsonPrimitive;
 
         var tabulated = false;
         var currencyColumn = new boolean[1];
+        var moreColumn = new boolean[1];
         var items = report.get(ITEMS);
         if (items != null && items.isJsonArray() && !items.getAsJsonArray().isEmpty()
                         && allObjects(items.getAsJsonArray()))
         {
-            report.add(ITEMS, table(items.getAsJsonArray(), currency, dropped, currencyColumn));
+            report.add(ITEMS, table(items.getAsJsonArray(), currency, dropped, currencyColumn, moreColumn));
             tabulated = true;
         }
 
-        return new Result(report, tabulated, dropped[0] ? currency : null, currencyColumn[0]);
+        return new Result(report, tabulated, dropped[0] ? currency : null, currencyColumn[0], moreColumn[0],
+                        hasNull(report));
     }
 
     // ── price age ───────────────────────────────────────────────────────────
 
     /** the four price-age fields as one note, or none when the price is fresh */
-    private static void notePriceAge(JsonObject item)
+    private static void notePriceAge(JsonObject item, boolean asOfToday)
     {
         if (!item.has("priceStale")) //$NON-NLS-1$
             return;
@@ -113,6 +139,8 @@ import com.google.gson.JsonPrimitive;
             note = "manual price, " + ageDays + " days old"; //$NON-NLS-1$ //$NON-NLS-2$
         else if (stale)
             note = "stale: " + missed + " trading days without a quote"; //$NON-NLS-1$ //$NON-NLS-2$
+        if (note != null && asOfToday)
+            note += " as of today"; //$NON-NLS-1$
 
         // in the place of the fields it replaces, next to the price it is about
         var entries = new ArrayList<>(item.entrySet());
@@ -180,7 +208,7 @@ import com.google.gson.JsonPrimitive;
      * {@code null} cell - which a model is already told means "does not apply".
      */
     private static JsonObject table(JsonArray items, String currency, boolean[] dropped,
-                    boolean[] currencyColumn)
+                    boolean[] currencyColumn, boolean[] moreColumn)
     {
         var flattened = new ArrayList<Map<String, JsonElement>>();
         var names = new ArrayList<String>();
@@ -191,6 +219,11 @@ import com.google.gson.JsonPrimitive;
             flattened.add(cells);
             merge(names, cells.keySet());
         }
+
+        // the fields only a few rows have go into one column at the end
+        var sparse = sparseColumns(flattened, names);
+        names.removeAll(sparse);
+        moreColumn[0] = !sparse.isEmpty();
 
         // a column of amounts: bare values when every one is in the reporting
         // currency, otherwise values and a currency column beside them
@@ -226,8 +259,23 @@ import com.google.gson.JsonPrimitive;
                 if (!moneyColumns.get(name))
                     row.add(isMoney(cell) ? cell.getAsJsonObject().get(CURRENCY) : JsonNull.INSTANCE);
             }
+
+            if (!sparse.isEmpty())
+            {
+                var more = new JsonObject();
+                for (var name : sparse)
+                {
+                    var cell = cells.get(name);
+                    if (cell != null && !cell.isJsonNull())
+                        more.add(name, cell);
+                }
+                row.add(more.isEmpty() ? JsonNull.INSTANCE : more);
+            }
             rows.add(row);
         }
+
+        if (!sparse.isEmpty())
+            columns.add(MORE);
 
         // an amount in another currency, or a price, which keeps its own
         for (var name : columns)
@@ -283,6 +331,62 @@ import com.google.gson.JsonPrimitive;
         }
     }
 
+    /**
+     * The columns that are {@code null} in nine of ten rows or more, when there
+     * are at least two of them in a table long enough to make them worth
+     * folding. An amount stays a column: its currency is decided per column,
+     * and moving it would move that decision too.
+     */
+    private static List<String> sparseColumns(List<Map<String, JsonElement>> rows, List<String> names)
+    {
+        if (rows.size() < MIN_ROWS_FOR_MORE)
+            return List.of();
+
+        var sparse = new ArrayList<String>();
+        for (var name : names)
+        {
+            if (MORE.equals(name) || isMoneyColumn(rows, name))
+                continue;
+
+            var filled = 0;
+            for (var cells : rows)
+            {
+                var cell = cells.get(name);
+                if (cell != null && !cell.isJsonNull())
+                    filled++;
+            }
+            if (filled * SPARSE_RATIO <= rows.size())
+                sparse.add(name);
+        }
+
+        // one sparse column saves nothing: its nulls become nulls in `more`
+        return sparse.size() >= 2 ? sparse : List.of();
+    }
+
+    /** whether a {@code null} appears anywhere in this element */
+    private static boolean hasNull(JsonElement element)
+    {
+        if (element == null || element.isJsonNull())
+            return true;
+        if (element.isJsonObject())
+        {
+            for (var entry : element.getAsJsonObject().entrySet())
+            {
+                if (hasNull(entry.getValue()))
+                    return true;
+            }
+        }
+        else if (element.isJsonArray())
+        {
+            for (var child : element.getAsJsonArray())
+            {
+                if (hasNull(child))
+                    return true;
+            }
+        }
+        return false;
+    }
+
     private static boolean isMoneyColumn(List<Map<String, JsonElement>> rows, String name)
     {
         var any = false;
@@ -336,6 +440,18 @@ import com.google.gson.JsonPrimitive;
                 return false;
         }
         return true;
+    }
+
+    private static boolean isAfterToday(String date)
+    {
+        try
+        {
+            return LocalDate.parse(date).isAfter(LocalDate.now());
+        }
+        catch (DateTimeParseException e)
+        {
+            return false;
+        }
     }
 
     private static boolean isTrue(JsonElement element)
