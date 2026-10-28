@@ -403,6 +403,28 @@ public class TransactionUpdateTest
     }
 
     @Test
+    public void aStoredValueTheTypeRefusesRefusesTheUpdateUnlessThePatchClearsIt()
+    {
+        var f = new Fixture();
+        var interest = TransactionFixtures.cash(f.eur, AccountTransaction.Type.INTEREST, "2026-03-02", 1_000);
+        interest.setSecurity(f.acme);
+        TransactionFixtures.buy(f.depot, f.eur, f.acme, "2026-03-02", shares(10), 100_000);
+        var transfer = TransactionFixtures.securityTransfer(f.depot, f.otherDepot, f.acme, "2026-03-09", shares(6),
+                        62_000);
+        transfer.getSourceTransaction().addUnit(new Transaction.Unit(Transaction.Unit.Type.FEE, Money.of("EUR", 100)));
+        var before = f.snapshot();
+
+        assertThat(failures(f.update(interest.getUUID(), "\"note\":\"n\"")),
+                        is(Set.of("instrument/instrument-not-allowed")));
+        assertThat(failures(f.update(transfer.getTargetTransaction().getUUID(), "\"note\":\"n\"")),
+                        is(Set.of("units/units-not-allowed")));
+        assertThat(f.snapshot(), is(before));
+
+        applied(f.update(interest.getUUID(), "\"instrument\":null"));
+        assertThat(interest.getSecurity() == null, is(true));
+    }
+
+    @Test
     public void onlyARecordInTheFileBeforeTheBatchCanBeFound()
     {
         var f = new Fixture();

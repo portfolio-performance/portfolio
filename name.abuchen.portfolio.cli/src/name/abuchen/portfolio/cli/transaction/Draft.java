@@ -33,8 +33,10 @@ import name.abuchen.portfolio.model.TransactionOwner;
  * {@link TransactionAdd}'s, the same for both.
  * <p>
  * The type and the kind of a transfer fix the {@link RuleTable} row. A draft
- * holds only the members its row takes, so a stored value the row refuses,
- * such as an ex-date on interest, is not part of the record an update builds.
+ * holds only the members its row takes. A stored value the row refuses, such
+ * as a security on interest, refuses the update (see
+ * {@link #refuseStoredValues}); only an ex-date on another type than a
+ * dividend is dropped.
  */
 final class Draft
 {
@@ -67,6 +69,9 @@ final class Draft
 
     /** The members whose value failed its own check; they are not reported as missing as well. */
     final Set<String> failed = new HashSet<>();
+
+    /** The members the record stores although its row refuses them; an update refuses them. */
+    private final List<RuleTable.Ruled> storedRefused = new ArrayList<>();
 
     /**
      * @param type
@@ -102,6 +107,18 @@ final class Draft
 
         if (draft.row == null)
             return draft;
+
+        draft.storedRefused(RuleTable.Ruled.INSTRUMENT, primary.getSecurity() != null);
+        draft.storedRefused(RuleTable.Ruled.SHARES, record.hasShares());
+        var transferRate = record.transferRate();
+        draft.storedRefused(RuleTable.Ruled.UNITS, primary.getUnits()
+                        .anyMatch(unit -> transferRate.isEmpty() || unit != transferRate.get()));
+        for (var side : sides)
+        {
+            if (!draft.takes(RuleTable.Ruled.FROM))
+                draft.storedRefused(side.owner() instanceof Portfolio ? RuleTable.Ruled.INVESTMENT_ACCOUNT
+                                : RuleTable.Ruled.CASH_ACCOUNT, true);
+        }
 
         if (draft.takes(RuleTable.Ruled.TARGET_AMOUNT))
             record.crossCurrencyIncoming().ifPresent(incoming -> draft.targetAmount = incoming.getAmount());
@@ -141,6 +158,28 @@ final class Draft
         }
 
         return draft;
+    }
+
+    private void storedRefused(RuleTable.Ruled member, boolean stored)
+    {
+        if (stored && !takes(member) && !storedRefused.contains(member))
+            storedRefused.add(member);
+    }
+
+    /**
+     * Refuses the stored values that the row refuses, unless the patch names
+     * the member: then the patch's value is checked instead, and null clears
+     * it. An ex-date stored on another type than a dividend is not refused;
+     * the update drops it, as core ignores it.
+     *
+     * @return a failure under the member's refusal code per such value
+     */
+    List<FieldFailure> refuseStoredValues(JsonObject patch)
+    {
+        return storedRefused.stream().filter(member -> !patch.has(member.id()))
+                        .map(member -> new FieldFailure(member.id(), member.refusalCode(),
+                                        member.refusalMessage(row.label()), null))
+                        .toList();
     }
 
     /** Whether the row takes the member at all. */

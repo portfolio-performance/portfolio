@@ -144,6 +144,8 @@ final class TransactionUpdate
         if (!failures.isEmpty())
             return refused();
 
+        failures.addAll(draft.refuseStoredValues(patch));
+
         // a member an add doesn't declare refuses the patch; it is reported above if at all
         var unknown = TransactionInput.lay(input, failures, draft, ADDRESSING);
         var built = TransactionAdd.build(draft, failures, existing.sides(), unknown).built();
