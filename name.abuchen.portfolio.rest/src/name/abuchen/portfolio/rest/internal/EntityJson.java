@@ -145,6 +145,11 @@ public final class EntityJson
         json.addProperty("id", access.uuid()); //$NON-NLS-1$
         if (access.alias() != null)
             json.addProperty("alias", access.alias()); //$NON-NLS-1$
+        // the one value a caller must send as {file}: always the uuid. An alias is
+        // accepted as an address, but the user can rename it between listing and
+        // the next call, and a stable address is worth more than a readable one -
+        // the label and the alias are there for display
+        json.addProperty("use", access.uuid()); //$NON-NLS-1$
         json.addProperty("label", file.getLabel()); //$NON-NLS-1$
         json.addProperty("path", file.getPath()); //$NON-NLS-1$
         return json;
