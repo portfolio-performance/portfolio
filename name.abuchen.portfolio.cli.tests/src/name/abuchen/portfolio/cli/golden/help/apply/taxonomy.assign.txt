@@ -1,0 +1,9 @@
+pp-cli apply operation taxonomy.assign: Replaces the complete assignment of one instrument within one existing taxonomy. The assignments list names classifications by UUID, each with a weight as a fraction of one, as in the taxonomies output; an empty list removes the instrument from the taxonomy. Weights must be positive and at most 100% in total, a classification may appear only once, and only leaf classifications, those that no other classification names as its parent, can be used. The response is one updated change, with the assignments before and after, whose uuid is the instrument.
+
+Input: one element of "operations" in the batch given with --input. The complete assignment of one instrument within one taxonomy.
+  operation (string, one of taxonomy.assign) Operation name.
+  taxonomy (string) UUID of the taxonomy.
+  instrument (string) UUID of the instrument.
+  assignments (array of object) The classifications to place the instrument in; empty to remove it from the taxonomy.
+    classification (string) UUID of a leaf classification of the taxonomy.
+    weight (number) Positive fraction of one, e.g. 0.6 for 60%, with at most four decimal places.

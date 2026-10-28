@@ -1,0 +1,9 @@
+pp-cli apply operation cash-account.update: Updates a cash account by UUID. Only the fields present change; null or an empty string clears the note. The currency can't change once the account has transactions.
+
+Input: one element of "operations" in the batch given with --input. Fields of the cash account; they match the cash-accounts output.
+  operation (string, one of cash-account.update) Operation name.
+  name (string, optional) Account name; never empty.
+  currencyCode (string, optional) ISO currency code of the account.
+  note (string or null, optional) Note.
+  retired (boolean, optional) Whether the cash account is retired.
+  uuid (string) UUID of the cash account.

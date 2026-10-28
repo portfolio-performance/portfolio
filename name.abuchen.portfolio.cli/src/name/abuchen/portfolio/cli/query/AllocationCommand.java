@@ -190,6 +190,7 @@ public final class AllocationCommand
     {
         value.ifPresent(v -> json.put("value", Decimals.of(v, Values.Amount)));
         if (value.isPresent() && total.isPresent() && total.getAsLong() != 0)
+            // mirrors core's AssetCategory.getShare(); ADR 0007-cli-arithmetic-mirrors-core-rounding-per-site.md
             json.put("share", Decimals.of(BigDecimal.valueOf((double) value.getAsLong() / (double) total.getAsLong())));
     }
 

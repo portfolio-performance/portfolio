@@ -1,0 +1,23 @@
+pp-cli restore: Rolls the client file back to a backup, as written by apply or an earlier restore. Follows the same safe-write sequence as apply, including a backup of the file it replaces, reported in meta.backupPath, so a restore can itself be undone. Refused, with nothing changed, if the backup is missing, unreadable or has a newer file version than this pp-cli supports, if it would introduce a consistency issue that the backup did not already have, or if the file changed on disk since it was read. The file keeps the format of the backup.
+
+Usage: pp-cli restore --backup <path> [options]
+
+Options:
+  --backup <path>  Backup to restore: the backupPath that apply or an earlier restore reported. There is no command that lists backups. (required)
+  --dry-run  Check the backup and report the would-be backup of the current file without writing any file, backup or lock. (switch, default off)
+  --backup-dir <path>  Folder for the backup of the original file. Default: a backups folder next to the client file. Created if missing.
+  --keep <n>  How many of the newest pp-cli backups of this file to keep in the backup folder; older ones are deleted after a successful write. 0 keeps all. Only backups named like the ones pp-cli writes are ever deleted; the app's own .backup file is never touched. (integer 0 to 2147483647, default 20)
+  --force  Write even if the file seems to be open in another program. Only macOS can tell: pp-cli asks lsof, and without --force refuses a file that is open. (switch, default off)
+  Global options (pp-cli --help): --file <path>, --format <format> (json), --verbose
+
+Response data: The outcome of the restore.
+  restoredFrom (string) Absolute path of the backup the client file was restored from.
+
+Response meta: fileVersionBefore, fileVersionAfter, asOf, dryRun, backupPath
+
+Warnings:
+  file-migrated  The file was written by an older version and is saved at the current file version, which an older desktop app can no longer open. With --dry-run this is what a write would do.
+  consistency-issues-preexisting  Core's consistency checker found issues in the file that the change did not cause, listed in issues; the write went ahead.
+  file-open-in-app  The file seemed to be open in another program, probably the app, and was written because of --force.
+
+Error codes (meanings: pp-cli --help): unexpected-argument, unknown-option, option-value-required, option-required, invalid-option-value, file-required, file-not-found, file-unreadable, file-version-unsupported, password-required, incorrect-password, consistency-check-failed, file-open-in-app, file-locked, file-changed, write-failed, backup-not-found, internal-error

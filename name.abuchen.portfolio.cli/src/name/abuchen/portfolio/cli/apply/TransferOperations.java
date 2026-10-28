@@ -175,6 +175,7 @@ final class TransferOperations
         if (amount == null || targetAmount == null)
             return null;
 
+        // mirrors desktop AccountTransferModel.setAmount; ADR 0007-cli-arithmetic-mirrors-core-rounding-per-site.md
         var derived = BigDecimal.valueOf(amount).divide(BigDecimal.valueOf(targetAmount), RATE_SCALE,
                         RoundingMode.HALF_UP);
 

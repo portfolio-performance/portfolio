@@ -1,0 +1,8 @@
+pp-cli apply operation cash-account.add: Adds a cash account. The name and the currency are required.
+
+Input: one element of "operations" in the batch given with --input. Fields of the cash account; they match the cash-accounts output.
+  operation (string, one of cash-account.add) Operation name.
+  name (string) Account name; never empty.
+  currencyCode (string) ISO currency code of the account.
+  note (string or null, optional) Note.
+  retired (boolean, optional) Whether the cash account is retired; defaults to false.

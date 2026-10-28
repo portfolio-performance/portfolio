@@ -1,0 +1,68 @@
+pp-cli reads and writes a Portfolio Performance client file. Output is one JSON document on stdout.
+Built from upstream tag 0.89.0; reads client files up to version 70 (pp-cli info reports both).
+
+Usage:
+  pp-cli <command> [options]
+  pp-cli <command> --help           Options, response fields and error codes of one command.
+  pp-cli apply --help <operation>   Input schema of one write operation.
+References (the <ref> option values): a UUID. Reads also accept an exact name, and for instruments an ISIN or ticker; writes take UUIDs only.
+
+Commands:
+  info                 File version, supported version ceiling, format, base currency and entity counts.
+  instruments          Instruments (securities, indices, exchange rates): UUID, name, currency, ISIN, ticker, WKN, note, ...
+  investment-accounts  Investment accounts: UUID, name, reference cash account, note and retired flag, sorted by name ...
+  cash-accounts        Cash accounts: UUID, name, currency, note and retired flag, sorted by name (default) or updatedAt, ...
+  prices               Price history of one instrument by date, ascending unless --order desc, within an optional date ...
+  transactions         Business events as transaction records, each joining the sides of a buy, sell or transfer, filtered ...
+  holdings             What is held at a date and what it is worth: holdings aggregated across investment accounts, or per ...
+  performance          IRR, TTWROR and gains of the whole client, one investment account (optionally with its reference ...
+  taxonomies           Taxonomies in the order the app shows them (--sort position, the default) or by name, each with its ...
+  allocation           How the value of the client splits across the classifications of one taxonomy at a date: one flat ...
+  apply                Applies a batch of write operations atomically; see the operations list.
+  restore              Rolls the client file back to a backup, as written by apply or an earlier restore.
+
+Global options:
+  --file <path>  Client file to read. Falls back to the PP_FILE environment variable. Not for commands that read no file.
+  --format <format>  How to write the result: json (the default; the only format for agents) or table (an aligned text table for reading in a terminal). (one of json, table, default json) Only the commands whose help lists it offer table.
+  --verbose  Show core's INFO and OK status messages on stderr, such as the line logged when a file is loaded; hidden by default. Warnings and errors always show; stdout is unaffected. (switch, default off)
+  --help  Show this help, or the help of the command before it. Needs no file.
+
+Environment variables:
+  PP_FILE  Client file to read, used when --file is not given.
+  PP_ECB_RATES  Path of the desktop app's ECB exchange-rate cache (ecb_exchange_rates.pb), read-only, used by commands that convert currencies. If unset, the app's default workspace is searched (%LOCALAPPDATA%\PortfolioPerformance\workspace on Windows, ~/Library/Application Support/name.abuchen.portfolio.product/workspace on macOS, ~/.PortfolioPerformance/workspace on Linux); a custom workspace needs this variable. Core's built-in rates are never used; without a cache, rates still come from transactions and exchange-rate instruments.
+  PP_PASSWORD  Password of an encrypted client file. If unset, it is read as one line from stdin (the prompt goes to stderr). There is no password option; a missing or wrong one gives password-required or incorrect-password.
+
+Exit codes: 0 success; 2 usage error; 1 any other failure. A failure is a problem+json document on stdout whose code is one of:
+  unknown-command  The command does not exist; the detail lists the known commands.
+  unexpected-argument  An argument is not an option; options look like --name value.
+  unknown-option  The command has no such option.
+  option-value-required  An option that takes a value was given without one.
+  option-required  A required option is missing, or an option needs another option.
+  invalid-option-value  An option value is not accepted, including an unknown operation after apply --help; the detail states the expected value.
+  conflicting-options  Options were combined that can't be used together.
+  invalid-date-range  The start of the period is after its end.
+  period-required  performance needs --from or --period.
+  file-required  No client file was given: pass --file or set PP_FILE.
+  file-not-found  There is no client file at the given path.
+  file-unreadable  The client file exists but could not be read or parsed.
+  file-version-unsupported  The client file is newer than this CLI supports (fileVersion > maxSupportedVersion), usually because the desktop app is newer than the CLI's core. Rebuild the CLI from the matching upstream tag.
+  password-required  The client file is encrypted and no password was given: set PP_PASSWORD.
+  incorrect-password  The client file could not be decrypted with the given password.
+  reference-not-found  No entity of the expected kind matches the reference.
+  reference-ambiguous  The reference matches several entities; candidates lists their UUIDs.
+  no-reference-cash-account  The investment account has no reference cash account to include.
+  input-unreadable  The --input file could not be read.
+  invalid-input  The --input batch is not valid JSON or not shaped as a batch.
+  validation-failed  One or more operations of the batch failed validation; failures lists every one with its operationIndex, field and code. Nothing was written.
+  consistency-check-failed  The change would introduce inconsistencies into the client file. Nothing was written.
+  file-open-in-app  Another process, probably the Portfolio Performance app, has the client file open. Nothing was written; close the file there first.
+  file-locked  Another pp-cli is writing the client file, or crashed while doing so; the detail names the lock file.
+  file-changed  The client file changed on disk after it was read. Nothing was written; run the command again.
+  write-failed  The client file or its lock file could not be written. The file was not changed.
+  backup-not-found  There is no backup file at the given path.
+  internal-error  An unexpected failure inside the tool.
+
+Limits (do not promise these):
+  - Unsaved edits inside a running Portfolio Performance app can't be detected; a file open in the app may be out of date on disk.
+  - PDF import is not available.
+  - Prices can't be written: there are no price writes, and quotes are neither fetched nor edited.
