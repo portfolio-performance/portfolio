@@ -6,8 +6,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import com.google.gson.JsonArray;
@@ -31,16 +36,24 @@ import name.abuchen.portfolio.rest.internal.Router;
 import name.abuchen.portfolio.rest.internal.VersionHandler;
 
 /**
- * The Model Context Protocol front door: one route, {@code POST /mcp}, serving
- * the sixteen tools of {@code mcp-tools.json} over Streamable HTTP.
+ * The Model Context Protocol front door: {@code POST /mcp}, serving the
+ * sixteen tools of {@code mcp-tools.json} over Streamable HTTP, and
+ * {@code DELETE /mcp} to end a session.
  * <p/>
- * <b>No session model.</b> No {@code Mcp-Session-Id} is issued, responses are
- * plain {@code application/json} whatever {@code Accept} asks for, and
- * {@code GET} and {@code DELETE} fall through to the router's 405 - an SSE
- * stream is a parked request, which is why ADR 0002 already refused
- * long-polling. Everything a session could hold travels per request instead. If
- * a client ever demands a session id, emit a constant one and ignore it coming
- * back.
+ * <b>A tool call is answered as a stream</b> when the client accepts
+ * {@code text/event-stream}: progress notifications while it waits for the UI
+ * thread, for a calculation slot or for the calculation - if it sent a
+ * {@code progressToken} - heartbeats in any case, and the result as the last
+ * event. Everything else, and every client that accepts only JSON, gets plain
+ * {@code application/json} as before. {@code GET} stays the router's 405: there
+ * is nothing the server would say without being asked.
+ * <p/>
+ * <b>A session is optional and holds little.</b> {@code initialize} issues an
+ * {@code Mcp-Session-Id}; with it, a {@code notifications/cancelled} finds the
+ * call it names. A request without one is served as before and only cannot be
+ * cancelled; one with an id this endpoint does not know - the application was
+ * restarted - is answered 404, which tells the client to initialize again.
+ * Everything else still travels per request.
  * <p/>
  * <b>Authorisation is per JSON-RPC method</b> (ADR 0005): {@code initialize},
  * {@code tools/list} and {@code ping} answer without a token, because all they
@@ -93,10 +106,31 @@ public final class McpEndpoint
      */
     public static void register(Router router)
     {
-        router.add("POST", RestApiConstants.MCP_ENDPOINT, request -> handle(router, request));
+        var sessions = new McpSessions();
+        router.add("POST", RestApiConstants.MCP_ENDPOINT, request -> handle(router, sessions, request));
+        router.add("DELETE", RestApiConstants.MCP_ENDPOINT, request -> terminate(sessions, request));
     }
 
+    /**
+     * How often a streamed call sends a heartbeat. Well inside the watchdog of
+     * the server and the idle timeouts of the usual HTTP clients. Not final: a
+     * test shortens it.
+     */
+    /* package */ static volatile long heartbeatMillis = 15_000;
+
+    /** sends the heartbeats of every streamed call */
+    private static final ScheduledExecutorService HEARTBEATS = Executors.newSingleThreadScheduledExecutor(
+                    Thread.ofPlatform().name("Portfolio Performance MCP heartbeat").daemon(true).factory()); //$NON-NLS-1$
+
+    /** the JSON-RPC error a request with an unknown session id gets, alongside HTTP 404 */
+    private static final int SESSION_NOT_FOUND = -32001;
+
     static Response handle(Router router, Request request)
+    {
+        return handle(router, new McpSessions(), request);
+    }
+
+    static Response handle(Router router, McpSessions sessions, Request request)
     {
         JsonElement message;
         try
@@ -115,6 +149,18 @@ public final class McpEndpoint
             return Response.json(400, error(JsonNull.INSTANCE, PARSE_ERROR, describeParseFailure(e)));
         }
 
+        var sessionId = request.header("mcp-session-id");
+
+        // an id this endpoint does not know - issued before a restart, or
+        // displaced - is a 404, which is the protocol's way of saying
+        // "initialize again". An initialize itself starts over and is let through.
+        if (sessionId != null && !isInitialize(message) && !sessions.exists(sessionId))
+            return Response.json(404, error(JsonNull.INSTANCE, SESSION_NOT_FOUND,
+                            "unknown session - initialize again to get a new one"));
+
+        if (isToolCall(message) && acceptsStream(request))
+            return stream(router, sessions, sessionId, message.getAsJsonObject(), request);
+
         if (message.isJsonArray())
         {
             var batch = message.getAsJsonArray();
@@ -127,7 +173,7 @@ public final class McpEndpoint
             var replies = new JsonArray();
             for (JsonElement element : batch)
             {
-                var reply = handleMessage(router, element, request);
+                var reply = handleMessage(router, sessions, sessionId, element, request);
                 if (reply != null)
                     replies.add(reply);
             }
@@ -135,8 +181,111 @@ public final class McpEndpoint
             return replies.isEmpty() ? accepted() : Response.json(200, replies);
         }
 
-        var reply = handleMessage(router, message, request);
-        return reply == null ? accepted() : Response.json(200, reply);
+        var reply = handleMessage(router, sessions, sessionId, message, request);
+        if (reply == null)
+            return accepted();
+
+        var response = Response.json(200, reply);
+        // a session for every successful handshake; the id comes back on every
+        // request after it
+        if (isInitialize(message) && reply.has("result"))
+            response = response.withHeader("Mcp-Session-Id", sessions.open());
+        return response;
+    }
+
+    /** {@code DELETE /mcp}: the client is done with its session */
+    private static Response terminate(McpSessions sessions, Request request)
+    {
+        var sessionId = request.header("mcp-session-id");
+        if (sessionId == null)
+            return Response.json(400, error(JsonNull.INSTANCE, INVALID_REQUEST,
+                            "DELETE ends a session and needs its Mcp-Session-Id header"));
+
+        return sessions.close(sessionId) ? Response.noContent()
+                        : Response.json(404, error(JsonNull.INSTANCE, SESSION_NOT_FOUND, "unknown session"));
+    }
+
+    private static boolean isInitialize(JsonElement message)
+    {
+        return isCall(message, "initialize");
+    }
+
+    /** a tools/call request - a request, with an id, not a notification */
+    private static boolean isToolCall(JsonElement message)
+    {
+        return isCall(message, "tools/call") && message.getAsJsonObject().has("id")
+                        && message.getAsJsonObject().get("id").isJsonPrimitive()
+                        && !message.getAsJsonObject().get("id").getAsJsonPrimitive().isBoolean()
+                        && !message.getAsJsonObject().has("result") && !message.getAsJsonObject().has("error");
+    }
+
+    private static boolean isCall(JsonElement message, String method)
+    {
+        if (!message.isJsonObject())
+            return false;
+        var declared = message.getAsJsonObject().get("method");
+        return declared != null && declared.isJsonPrimitive() && declared.getAsJsonPrimitive().isString()
+                        && method.equals(declared.getAsString());
+    }
+
+    private static boolean acceptsStream(Request request)
+    {
+        var accept = request.header("accept");
+        return accept != null && accept.toLowerCase(Locale.ROOT).contains("text/event-stream");
+    }
+
+    /**
+     * A tool call answered as an event stream. The call runs while the stream
+     * is open, on the thread that writes it; progress and heartbeats go out on
+     * the same stream from the threads that produce them. A call its client
+     * cancelled - or hung up on - ends the stream without a result, as the
+     * protocol asks.
+     */
+    private static Response stream(Router router, McpSessions sessions, String sessionId, JsonObject message,
+                    Request request)
+    {
+        var id = message.get("id");
+        var params = message.has("params") && message.get("params").isJsonObject()
+                        ? message.getAsJsonObject("params")
+                        : new JsonObject();
+
+        var call = new McpCall(progressTokenOf(params));
+        var session = sessions.get(sessionId);
+
+        return Response.streamed(200, "text/event-stream", sink -> { //$NON-NLS-1$
+            call.attach(sink);
+            if (session != null)
+                session.register(id, call);
+            var heartbeat = HEARTBEATS.scheduleAtFixedRate(call::heartbeat, heartbeatMillis, heartbeatMillis,
+                            TimeUnit.MILLISECONDS);
+            try
+            {
+                var result = callTool(router, params, request.withProgress(call));
+                if (!call.isCancelled())
+                    call.send(reply(id, result));
+            }
+            catch (CancellationException e)
+            {
+                // cancelled: the client said it no longer wants the answer
+            }
+            finally
+            {
+                heartbeat.cancel(false);
+                if (session != null)
+                    session.unregister(id, call);
+            }
+        });
+    }
+
+    /** the token the client asked progress to be reported under, or null */
+    private static JsonElement progressTokenOf(JsonObject params)
+    {
+        var meta = params.get("_meta");
+        if (meta == null || !meta.isJsonObject())
+            return null;
+        var token = meta.getAsJsonObject().get("progressToken");
+        // a string or an integer, says the protocol; anything else asks for nothing
+        return token != null && token.isJsonPrimitive() && !token.getAsJsonPrimitive().isBoolean() ? token : null;
     }
 
     /**
@@ -241,7 +390,8 @@ public final class McpEndpoint
      *
      * @return the reply, or null where the specification says not to answer
      */
-    private static JsonObject handleMessage(Router router, JsonElement element, Request request)
+    private static JsonObject handleMessage(Router router, McpSessions sessions, String sessionId,
+                    JsonElement element, Request request)
     {
         if (!element.isJsonObject())
             return error(JsonNull.INSTANCE, INVALID_REQUEST, "a JSON-RPC message must be an object");
@@ -262,7 +412,14 @@ public final class McpEndpoint
         // that is not a string - is malformed, and 202 would tell a client that
         // waits for an answer that all was well.
         if (id == null && methodIsString)
+        {
+            // the one notification that does something: it finds the call by
+            // its request id within the session, and is ignored without one
+            if ("notifications/cancelled".equals(declared.getAsString()) && message.has("params")
+                            && message.get("params").isJsonObject())
+                sessions.cancel(sessionId, message.getAsJsonObject("params").get("requestId"));
             return null;
+        }
 
         // An id is a string or a number, never null, an object, an array or a
         // boolean. JSON-RPC 2.0 says so; an id that is not a scalar cannot be
@@ -394,7 +551,7 @@ public final class McpEndpoint
             var doomed = "DELETE".equals(tool.method()) ? McpDispatch.readBeforeDelete(router, tool, arguments)
                             : null;
 
-            var response = McpDispatch.call(router, tool, arguments);
+            var response = McpDispatch.call(router, tool, arguments, request.progress());
             // a PATCH says whether a stored value changed, which decides whether
             // the user has anything to save
             var changed = response.headers().get(ApiRoutes.CHANGED_HEADER);
@@ -408,12 +565,17 @@ public final class McpEndpoint
                 payload = deleted;
             }
 
-            return toolResult(fit(router, tool, arguments, payload, MAX_RESULT_CHARS,
+            return toolResult(fit(tool, arguments, payload, MAX_RESULT_CHARS,
                             changed == null ? null : Boolean.valueOf(changed)));
         }
         catch (ApiException e)
         {
             return toolError(explain(router, tool, arguments, e));
+        }
+        catch (CancellationException e)
+        {
+            // not a failure: the caller gave up, and gets no answer
+            throw e;
         }
         catch (Exception e)
         {
@@ -757,10 +919,9 @@ public final class McpEndpoint
      * Not private: a test in this package drives it with a payload no fixture
      * would ever produce, which is how the cap is checked at its real limit.
      */
-    /* package */ static String fit(Router router, McpTool tool, JsonObject arguments, JsonElement payload,
-                    int maxChars)
+    /* package */ static String fit(McpTool tool, JsonObject arguments, JsonElement payload, int maxChars)
     {
-        return fit(router, tool, arguments, payload, maxChars, null);
+        return fit(tool, arguments, payload, maxChars, null);
     }
 
     /**
@@ -768,8 +929,8 @@ public final class McpEndpoint
      *            for a write, whether a stored value changed; null when the
      *            response does not say
      */
-    /* package */ static String fit(Router router, McpTool tool, JsonObject arguments, JsonElement payload,
-                    int maxChars, Boolean changed)
+    /* package */ static String fit(McpTool tool, JsonObject arguments, JsonElement payload, int maxChars,
+                    Boolean changed)
     {
         var rendered = McpEnvelope.render(tool, arguments, payload, List.of(), null, Integer.MAX_VALUE, changed);
         if (rendered.length() <= maxChars)
@@ -778,33 +939,21 @@ public final class McpEndpoint
         var plan = McpEnvelope.planNarrowing(tool, arguments);
         if (plan.isPresent())
         {
-            try
-            {
-                var narrowed = arguments.deepCopy();
-                var metrics = new JsonArray();
-                plan.get().keep().forEach(metrics::add);
-                narrowed.add("metrics", metrics);
+            var narrowed = arguments.deepCopy();
+            var metrics = new JsonArray();
+            plan.get().keep().forEach(metrics::add);
+            narrowed.add("metrics", metrics);
 
-                var smallerPayload = payloadOf(McpDispatch.call(router, tool, narrowed));
-                var smaller = McpEnvelope.render(tool, narrowed, smallerPayload, plan.get().dropped());
-                if (smaller.length() <= maxChars)
-                    return smaller;
+            // cut from the answer at hand, not asked for again: the full
+            // calculation already ran, and a second one would take another slot
+            var smallerPayload = McpEnvelope.narrow(payload, plan.get().keep());
+            var smaller = McpEnvelope.render(tool, narrowed, smallerPayload, plan.get().dropped());
+            if (smaller.length() <= maxChars)
+                return smaller;
 
-                // the dropped groups are not advice any more: they are already gone
-                return McpEnvelope.render(tool, narrowed, smallerPayload, plan.get().dropped(),
-                                McpEnvelope.oversizeAdvice(tool, plan.get().dropped()), maxChars);
-            }
-            catch (ApiException e)
-            {
-                // The narrowed re-request was refused - the UI thread busy, a
-                // deadline passed. The first answer is still true, just too
-                // large, so truncate that rather than losing it.
-            }
-            catch (Exception e)
-            {
-                // the same, but unexpected - worth a log entry
-                PortfolioLog.error(e);
-            }
+            // the dropped groups are not advice any more: they are already gone
+            return McpEnvelope.render(tool, narrowed, smallerPayload, plan.get().dropped(),
+                            McpEnvelope.oversizeAdvice(tool, plan.get().dropped()), maxChars);
         }
 
         var advice = McpEnvelope.oversizeAdvice(tool, arguments, payload);

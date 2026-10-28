@@ -112,18 +112,22 @@ public final class McpEnvelope
     public static String render(McpTool tool, JsonObject arguments, JsonElement payload, List<String> droppedMetrics,
                     String advice, int maxChars, Boolean changed)
     {
+        // the guidance reads the payload as the REST API serves it; only the
+        // body the model reads is compacted
         var found = scan(payload);
+        var compacted = McpCompact.compact(tool, payload);
         var guidance = guidanceBefore(found, payload, droppedMetrics);
-        var notes = notesFor(tool, arguments, found, changed);
+        var notes = notesFor(tool, arguments, found, changed, compacted);
         if (!notes.isEmpty())
             guidance.add(notes.stream().map(note -> "- " + note).reduce((a, b) -> a + "\n" + b).orElseThrow());
         if (advice != null && !advice.isEmpty())
             guidance.add(advice);
 
-        // unrounded: the same portfolio must not read differently through curl
+        // the numbers exactly as the REST API serves them - the same portfolio
+        // must not read differently through curl - in a shape that costs less
         var body = payload.isJsonNull()
                         ? "Portfolio Performance accepted the call and returned nothing to show for it."
-                        : payload.toString();
+                        : compacted.payload().toString();
 
         var rendered = String.join("\n\n", guidance) + "\n\n" + body;
         if (rendered.length() <= maxChars)
@@ -199,7 +203,7 @@ public final class McpEnvelope
         {
             // "missing" alone reads as zero. These groups were never asked for in
             // this response, so their figures are unknown, not zero.
-            sections.add("**Narrowed to fit.** The full response was too large to return, so it was re-requested with "
+            sections.add("**Narrowed to fit.** The full response was too large to return, so it is cut down to "
                             + "only `" + String.join(",", NARROWED_METRICS) + "`. These groups are **absent, so they "
                             + "are not necessarily zero**: `" + String.join(", ", droppedMetrics) + "`. Ask again with "
                             + "an explicit `metrics` selection if you need one of them.");
@@ -227,24 +231,43 @@ public final class McpEnvelope
     }
 
     /** guidance that applies to this payload, in the order it should be read */
-    private static List<String> notesFor(McpTool tool, JsonObject arguments, Scan found, Boolean changed)
+    private static List<String> notesFor(McpTool tool, JsonObject arguments, Scan found, Boolean changed,
+                    McpCompact.Result compacted)
     {
         var notes = new ArrayList<String>();
+
+        if (compacted.tabulated())
+            notes.add("`items` is a table: each row holds its values in the order of `columns`.");
+
+        // only what the payload has: the column sentence where a table has
+        // such a column, not on a single report that has none
+        var currencyColumn = compacted.currencyColumn()
+                        ? "A column `<name>.currency` gives the currency of the column before it."
+                        : null;
+        if (compacted.currencyDropped() != null)
+        {
+            // stated with the currency itself: the reader has to apply it to
+            // every bare amount below, and must not have to look it up
+            notes.add("Amounts without a currency are in **" + compacted.currencyDropped()
+                            + "**, the `reportingCurrency`." + (currencyColumn != null ? " " + currencyColumn : ""));
+        }
+        else if (currencyColumn != null)
+        {
+            notes.add(currencyColumn);
+        }
 
         if (found.hasFractions())
         {
             // the most consequential misreading available
-            notes.add("Rates and weights below are **fractions, not percentages** — multiply by 100 before showing "
-                            + "one: `0.0723` is 7.23%.");
+            notes.add("Rates and weights are **fractions, not percentages**: `0.0723` is 7.23%.");
         }
 
-        if (found.hasNulls())
+        if (found.hasNulls() || compacted.tabulated())
         {
             // deliberately wider than "undefined for this interval", which is
-            // false of an instrument's currencyCode, null when it is an index
-            notes.add("A `null` means the value is **unknown or does not apply**, never zero — for a computed figure, "
-                            + "that it is undefined over this interval. Say it is unavailable rather than reporting a "
-                            + "zero.");
+            // false of an instrument's currencyCode, null when it is an index -
+            // and a table cell of a field that row does not have
+            notes.add("`null` means **unknown or does not apply**, never zero: say it is unavailable.");
         }
 
         if (found.hasLocalDateTimes())
@@ -258,10 +281,8 @@ public final class McpEnvelope
             // measured: without this the cash accounts get dropped from a
             // ranking, and in a real file they can be the largest positions in
             // it - which moves every rank below them, not just one line
-            notes.add("The `cash-account` lines below **are holdings**. A cash balance is a position like any other "
-                            + "and can outrank every security, so include them when ranking, totalling or reporting "
-                            + "the largest holdings. If the user asked about securities only, leave them out and say "
-                            + "that you did.");
+            notes.add("`cash-account` rows **are holdings** and can outrank every security: include them when "
+                            + "ranking or totalling, or say that you left them out.");
         }
 
         if (!tool.isReadOnly())
@@ -562,6 +583,50 @@ public final class McpEnvelope
         return Optional.of(new Narrowing(NARROWED_METRICS, List.copyOf(dropped)));
     }
 
+    /**
+     * The report as the narrowed request would have returned it, cut from the
+     * full one instead of computed again: every metric group is a key of its
+     * own - on each item of a list, at the top of a single instrument - so
+     * dropping a group is dropping its key, and the {@code metrics} echo is set
+     * to what is kept. The full calculation already paid for the expensive
+     * groups; asking the engines a second time would pay again, and take a
+     * second calculation slot to do it.
+     * <p/>
+     * {@code fxWarnings} stay as computed. They name the pairs the full
+     * calculation converted, which for the kept groups are the same pairs.
+     */
+    public static JsonElement narrow(JsonElement payload, List<String> keep)
+    {
+        if (payload == null || !payload.isJsonObject())
+            return payload;
+
+        var dropped = new LinkedHashSet<>(METRIC_GROUPS);
+        dropped.removeAll(keep);
+
+        var report = payload.getAsJsonObject().deepCopy();
+        if (report.has("metrics"))
+        {
+            var metrics = new JsonArray();
+            // in the order of the groups, as the server echoes a selection
+            METRIC_GROUPS.stream().filter(keep::contains).forEach(metrics::add);
+            report.add("metrics", metrics);
+        }
+
+        dropped.forEach(report::remove);
+
+        var items = report.get("items");
+        if (items != null && items.isJsonArray())
+        {
+            for (var item : items.getAsJsonArray())
+            {
+                if (item.isJsonObject())
+                    dropped.forEach(item.getAsJsonObject()::remove);
+            }
+        }
+
+        return report;
+    }
+
     /** whether a metrics argument names at least one group */
     private static boolean namesSomething(JsonElement value)
     {
@@ -667,7 +732,7 @@ public final class McpEnvelope
     {
         if ("pp_list_instrument_performance".equals(tool.name()) && !alreadyDropped.isEmpty())
         {
-            return "This report was already re-requested without " + joinedNames(alreadyDropped)
+            return "This report already leaves out " + joinedNames(alreadyDropped)
                     + ", and it still did not fit. Dropping those groups again changes nothing: shorten the interval, "
                     + "or use pp_get_instrument_performance for one instrument at a time.";
         }
@@ -807,10 +872,19 @@ public final class McpEnvelope
         return cut;
     }
 
-    /** whether the containers still open end in an array, which is where an item boundary is */
+    /**
+     * Whether the containers still open end in an array, which is where an item
+     * boundary is - unless that array is itself inside an array: that is a row
+     * of a table, and a cut between two of its cells would leave a row short of
+     * its columns, which reads as a complete row with wrong values.
+     */
     private static boolean endsArrayElement(ArrayDeque<Character> open)
     {
-        return !open.isEmpty() && open.peek() == '[';
+        if (open.isEmpty() || open.peek() != '[')
+            return false;
+        var outward = open.iterator();
+        outward.next();
+        return !outward.hasNext() || outward.next() != '[';
     }
 
     /** the brackets that close the containers still open, innermost first */

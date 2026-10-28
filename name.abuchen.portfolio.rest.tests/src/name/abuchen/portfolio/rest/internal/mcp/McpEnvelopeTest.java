@@ -444,13 +444,13 @@ public class McpEnvelopeTest
     {
         var after = McpEnvelope.oversizeAdvice(PERFORMANCE, List.of("timeWeighted", "risk"));
 
-        assertThat(after, containsString("already re-requested without `timeWeighted` and `risk`"));
+        assertThat(after, containsString("already leaves out `timeWeighted` and `risk`"));
         assertThat(after, not(containsString("ask again without them")));
         assertThat(after, containsString("shorten the interval"));
         assertThat(after, containsString("pp_get_instrument_performance"));
 
         // without a narrowing there is nothing already dropped to name
-        assertThat(McpEnvelope.oversizeAdvice(PERFORMANCE), not(containsString("already re-requested")));
+        assertThat(McpEnvelope.oversizeAdvice(PERFORMANCE), not(containsString("already leaves out")));
     }
 
     /**
@@ -649,7 +649,7 @@ public class McpEnvelopeTest
         assertThat(rendered, containsString("**are holdings**"));
         assertThat(rendered, containsString("can outrank every security"));
         // and the way out is naming the exclusion, not making it silently
-        assertThat(rendered, containsString("leave them out and say that you did"));
+        assertThat(rendered, containsString("or say that you left them out"));
     }
 
     @Test

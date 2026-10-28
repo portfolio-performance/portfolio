@@ -14,7 +14,7 @@
       "operationId": "listFiles",
       "method": "GET",
       "pathTemplate": "/v1/files",
-      "description": "List the portfolio files this connector may address. Every other tool needs one of them as its `file`: send each file's `use` value exactly. It is always the file's stable `id`; an `alias` or a `label` is for display, so never pass one. Start here — there is no default file and no active file. Only files the user has open in Portfolio Performance *and* has individually enabled appear.",
+      "description": "List the portfolio files this connector may address. Every other tool needs one of them as its `file`: send its `use` value exactly; a `label` or an `alias` is for display, never an address. Start here — there is no default file and no active file. Only files the user has open in Portfolio Performance *and* has individually enabled appear.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -39,7 +39,7 @@
         "properties": {
           "file": {
             "type": "string",
-            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. It is the file's stable `id`; a `label` or an `alias` is for display, never an address. Required; there is no default file."
+            "description": "The `use` value from pp_list_files, sent exactly as given. Required: there is no default file."
           },
           "query": {
             "type": "string",
@@ -82,7 +82,7 @@
         "properties": {
           "file": {
             "type": "string",
-            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. It is the file's stable `id`; a `label` or an `alias` is for display, never an address. Required; there is no default file."
+            "description": "The `use` value from pp_list_files, sent exactly as given. Required: there is no default file."
           },
           "uuid": {
             "type": "string",
@@ -125,7 +125,7 @@
         "properties": {
           "file": {
             "type": "string",
-            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. It is the file's stable `id`; a `label` or an `alias` is for display, never an address. Required; there is no default file."
+            "description": "The `use` value from pp_list_files, sent exactly as given. Required: there is no default file."
           },
           "uuid": {
             "type": "string",
@@ -263,7 +263,7 @@
         "properties": {
           "file": {
             "type": "string",
-            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. It is the file's stable `id`; a `label` or an `alias` is for display, never an address. Required; there is no default file."
+            "description": "The `use` value from pp_list_files, sent exactly as given. Required: there is no default file."
           },
           "uuid": {
             "type": "string",
@@ -306,7 +306,7 @@
         "properties": {
           "file": {
             "type": "string",
-            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. It is the file's stable `id`; a `label` or an `alias` is for display, never an address. Required; there is no default file."
+            "description": "The `use` value from pp_list_files, sent exactly as given. Required: there is no default file."
           }
         },
         "required": [
@@ -339,7 +339,7 @@
         "properties": {
           "file": {
             "type": "string",
-            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. It is the file's stable `id`; a `label` or an `alias` is for display, never an address. Required; there is no default file."
+            "description": "The `use` value from pp_list_files, sent exactly as given. Required: there is no default file."
           }
         },
         "required": [
@@ -372,7 +372,7 @@
         "properties": {
           "file": {
             "type": "string",
-            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. It is the file's stable `id`; a `label` or an `alias` is for display, never an address. Required; there is no default file."
+            "description": "The `use` value from pp_list_files, sent exactly as given. Required: there is no default file."
           },
           "uuid": {
             "type": "string",
@@ -415,7 +415,7 @@
         "properties": {
           "file": {
             "type": "string",
-            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. It is the file's stable `id`; a `label` or an `alias` is for display, never an address. Required; there is no default file."
+            "description": "The `use` value from pp_list_files, sent exactly as given. Required: there is no default file."
           }
         },
         "required": [
@@ -448,7 +448,7 @@
         "properties": {
           "file": {
             "type": "string",
-            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. It is the file's stable `id`; a `label` or an `alias` is for display, never an address. Required; there is no default file."
+            "description": "The `use` value from pp_list_files, sent exactly as given. Required: there is no default file."
           },
           "uuid": {
             "type": "string",
@@ -485,13 +485,13 @@
       "operationId": "listHoldings",
       "method": "GET",
       "pathTemplate": "/v1/files/{file}/holdings",
-      "description": "The statement of assets: everything the file holds on one date and what it is worth, instrument positions and cash account balances in a single list, each with its share of total assets. This is the only place a cash balance can be read and the only place a position's value can be, because the account tools carry neither.\n\nEach position is valued at the most recent price on or before the date, and that price's own date travels with it, so a quote that has gone stale is visible rather than hidden. `priceStale` says whether it has: true only when more than one trading day of the instrument's own calendar passed without a quote (`priceMissedTradingDays`), so a weekend or a holiday never makes a price stale, and a price the user maintains by hand (quote feed `MANUAL`) is never flagged - such a holding carries `priceManual: true`, and its age fields still say how old the price is. Name a stale price when you report a value built on it. Positions already closed by the date drop out; cash accounts stay in even at zero. A cash account can hold a negative balance - a loan or a credit card - and then has a negative weight, while the others are divided by the smaller net total and can exceed 1; the weights always add up to 1 - unless total assets are zero, when every weight is 0.",
+      "description": "The statement of assets: everything the file holds on one date and what it is worth, instrument positions and cash account balances in a single list, each with its share of total assets. This is the only place a cash balance can be read and the only place a position's value can be, because the account tools carry neither.\n\nEach position is valued at the most recent price on or before the date, in the instrument's own currency, and that price's own date travels with it. A `priceNote` says when that price needs naming: stale - more than one trading day of the instrument's own calendar passed without a quote, so a weekend or a holiday never counts - or maintained by hand, with its age. Name it when you report a value built on that price. Positions already closed by the date drop out; cash accounts stay in even at zero. A cash account can hold a negative balance - a loan or a credit card - and then has a negative weight, while the others are divided by the smaller net total and can exceed 1; the weights add up to 1 within their rounding to 8 decimals - unless total assets are zero, when every weight is 0.",
       "inputSchema": {
         "type": "object",
         "properties": {
           "file": {
             "type": "string",
-            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. It is the file's stable `id`; a `label` or an `alias` is for display, never an address. Required; there is no default file."
+            "description": "The `use` value from pp_list_files, sent exactly as given. Required: there is no default file."
           },
           "date": {
             "type": "string",
@@ -500,7 +500,7 @@
           },
           "reportingCurrency": {
             "type": "string",
-            "description": "Express every amount in this ISO 4217 currency. Defaults to the file's own base currency. A currency pair the file has no exchange rate series for converts at 1:1, and the response names every such pair in `fxWarnings`; an amount that arrived unchanged and is not named there needed no conversion rather than being refused. Ratios are computed in this currency as well, so a return can differ from what the file's own currency reports - the interval's exchange-rate movements are attributed differently, and the performance shows that part as `currencyGains`, which is zero when the reporting currency is the base currency."
+            "description": "Express every amount in this ISO 4217 currency; defaults to the file's base currency. A pair without an exchange rate converts at 1:1 and is named in `fxWarnings` - the details are on pp_get_overall_performance."
           }
         },
         "required": [
@@ -543,7 +543,7 @@
         "properties": {
           "file": {
             "type": "string",
-            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. It is the file's stable `id`; a `label` or an `alias` is for display, never an address. Required; there is no default file."
+            "description": "The `use` value from pp_list_files, sent exactly as given. Required: there is no default file."
           },
           "openingDate": {
             "type": "string",
@@ -566,7 +566,7 @@
               "moving-average"
             ],
             "default": "fifo",
-            "description": "`fifo` (the default) or `moving-average`. It moves the cost basis that gains are measured against, and with it the split between realized and unrealized gain. It never changes `irr` or a time-weighted return: `irr` always comes from the actual cash flows — on a trade, those of the lots matched first in, first out, as in the application's own trades view. Under `moving-average` a trade's `irr` can therefore disagree in sign with its `profitLoss`; say which basis each figure is on when you report both. Where the moving average cost is undefined — every short trade — `entryValue`, `profitLoss` and `return` come back `null`, never recomputed some other way."
+            "description": "`fifo` (the default) or `moving-average`: the cost basis gains are measured against. It never changes `irr` or a time-weighted return - the details are on pp_list_trades."
           }
         },
         "required": [
@@ -620,21 +620,21 @@
         "properties": {
           "file": {
             "type": "string",
-            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. It is the file's stable `id`; a `label` or an `alias` is for display, never an address. Required; there is no default file."
+            "description": "The `use` value from pp_list_files, sent exactly as given. Required: there is no default file."
           },
           "openingDate": {
             "type": "string",
             "format": "date",
-            "description": "Start of the period, as YYYY-MM-DD. A transaction dated on this exact day counts as part of the starting position rather than as activity within the period."
+            "description": "Start of the period, as YYYY-MM-DD; a transaction on this day counts as part of the starting position."
           },
           "closingDate": {
             "type": "string",
             "format": "date",
-            "description": "End of the period, as YYYY-MM-DD. Defaults to today, and must be strictly after the opening date. A future date is accepted and values at the latest known prices — it does not forecast: the money figures then include transactions dated after today, while the time-weighted figures stop at today, which the response states as `timeWeightedUntil`. A period that opens today or later has nothing to measure, so its returns are null."
+            "description": "End of the period, as YYYY-MM-DD, after the opening date; defaults to today. For a date in the future see pp_get_overall_performance."
           },
           "reportingCurrency": {
             "type": "string",
-            "description": "Express every amount in this ISO 4217 currency. Defaults to the file's own base currency. A currency pair the file has no exchange rate series for converts at 1:1, and the response names every such pair in `fxWarnings`; an amount that arrived unchanged and is not named there needed no conversion rather than being refused. Ratios are computed in this currency as well, so a return can differ from what the file's own currency reports - the interval's exchange-rate movements are attributed differently, and the performance shows that part as `currencyGains`, which is zero when the reporting currency is the base currency."
+            "description": "Express every amount in this ISO 4217 currency; defaults to the file's base currency. A pair without an exchange rate converts at 1:1 and is named in `fxWarnings` - the details are on pp_get_overall_performance."
           },
           "costMethod": {
             "type": "string",
@@ -643,7 +643,7 @@
               "moving-average"
             ],
             "default": "fifo",
-            "description": "`fifo` (the default) or `moving-average`. It moves the cost basis that gains are measured against, and with it the split between realized and unrealized gain. It never changes `irr` or a time-weighted return: `irr` always comes from the actual cash flows — on a trade, those of the lots matched first in, first out, as in the application's own trades view. Under `moving-average` a trade's `irr` can therefore disagree in sign with its `profitLoss`; say which basis each figure is on when you report both. Where the moving average cost is undefined — every short trade — `entryValue`, `profitLoss` and `return` come back `null`, never recomputed some other way."
+            "description": "`fifo` (the default) or `moving-average`: the cost basis gains are measured against. It never changes `irr` or a time-weighted return - the details are on pp_list_trades."
           },
           "taxesAndFees": {
             "type": "string",
@@ -733,7 +733,7 @@
         "properties": {
           "file": {
             "type": "string",
-            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. It is the file's stable `id`; a `label` or an `alias` is for display, never an address. Required; there is no default file."
+            "description": "The `use` value from pp_list_files, sent exactly as given. Required: there is no default file."
           },
           "uuid": {
             "type": "string",
@@ -742,16 +742,16 @@
           "openingDate": {
             "type": "string",
             "format": "date",
-            "description": "Start of the period, as YYYY-MM-DD. A transaction dated on this exact day counts as part of the starting position rather than as activity within the period."
+            "description": "Start of the period, as YYYY-MM-DD; a transaction on this day counts as part of the starting position."
           },
           "closingDate": {
             "type": "string",
             "format": "date",
-            "description": "End of the period, as YYYY-MM-DD. Defaults to today, and must be strictly after the opening date. A future date is accepted and values at the latest known prices — it does not forecast: the money figures then include transactions dated after today, while the time-weighted figures stop at today, which the response states as `timeWeightedUntil`. A period that opens today or later has nothing to measure, so its returns are null."
+            "description": "End of the period, as YYYY-MM-DD, after the opening date; defaults to today. For a date in the future see pp_get_overall_performance."
           },
           "reportingCurrency": {
             "type": "string",
-            "description": "Express every amount in this ISO 4217 currency. Defaults to the file's own base currency. A currency pair the file has no exchange rate series for converts at 1:1, and the response names every such pair in `fxWarnings`; an amount that arrived unchanged and is not named there needed no conversion rather than being refused. Ratios are computed in this currency as well, so a return can differ from what the file's own currency reports - the interval's exchange-rate movements are attributed differently, and the performance shows that part as `currencyGains`, which is zero when the reporting currency is the base currency."
+            "description": "Express every amount in this ISO 4217 currency; defaults to the file's base currency. A pair without an exchange rate converts at 1:1 and is named in `fxWarnings` - the details are on pp_get_overall_performance."
           },
           "costMethod": {
             "type": "string",
@@ -760,7 +760,7 @@
               "moving-average"
             ],
             "default": "fifo",
-            "description": "`fifo` (the default) or `moving-average`. It moves the cost basis that gains are measured against, and with it the split between realized and unrealized gain. It never changes `irr` or a time-weighted return: `irr` always comes from the actual cash flows — on a trade, those of the lots matched first in, first out, as in the application's own trades view. Under `moving-average` a trade's `irr` can therefore disagree in sign with its `profitLoss`; say which basis each figure is on when you report both. Where the moving average cost is undefined — every short trade — `entryValue`, `profitLoss` and `return` come back `null`, never recomputed some other way."
+            "description": "`fifo` (the default) or `moving-average`: the cost basis gains are measured against. It never changes `irr` or a time-weighted return - the details are on pp_list_trades."
           },
           "taxesAndFees": {
             "type": "string",
@@ -769,7 +769,7 @@
               "excluded"
             ],
             "default": "included",
-            "description": "`included` (the default) or `excluded`: whether the taxes and fees charged on a purchase or a sale count towards what it cost. It moves cost basis and capital gains together so the two stay comparable, and leaves the fee and tax totals themselves, and every return ratio, alone."
+            "description": "`included` (the default) or `excluded`: whether the charges on a purchase or a sale count towards its cost. It moves cost basis and capital gains, not the fee and tax totals or any return ratio."
           },
           "metrics": {
             "type": "array",
@@ -856,7 +856,7 @@
         "properties": {
           "file": {
             "type": "string",
-            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. It is the file's stable `id`; a `label` or an `alias` is for display, never an address. Required; there is no default file."
+            "description": "The `use` value from pp_list_files, sent exactly as given. Required: there is no default file."
           },
           "status": {
             "type": "array",
@@ -899,11 +899,11 @@
               "excluded"
             ],
             "default": "included",
-            "description": "`included` (the default) or `excluded`: whether the taxes and fees charged on a purchase or a sale count towards what it cost. It moves cost basis and capital gains together so the two stay comparable, and leaves the fee and tax totals themselves, and every return ratio, alone."
+            "description": "`included` (the default) or `excluded`: whether the charges on a purchase or a sale count towards its cost. It moves cost basis and capital gains, not the fee and tax totals or any return ratio."
           },
           "reportingCurrency": {
             "type": "string",
-            "description": "Express every amount in this ISO 4217 currency. Defaults to the file's own base currency. A currency pair the file has no exchange rate series for converts at 1:1, and the response names every such pair in `fxWarnings`; an amount that arrived unchanged and is not named there needed no conversion rather than being refused. Ratios are computed in this currency as well, so a return can differ from what the file's own currency reports - the interval's exchange-rate movements are attributed differently, and the performance shows that part as `currencyGains`, which is zero when the reporting currency is the base currency."
+            "description": "Express every amount in this ISO 4217 currency; defaults to the file's base currency. A pair without an exchange rate converts at 1:1 and is named in `fxWarnings` - the details are on pp_get_overall_performance."
           },
           "from": {
             "type": "string",
@@ -981,7 +981,7 @@
         "properties": {
           "file": {
             "type": "string",
-            "description": "Which portfolio file to work in — the `use` value from pp_list_files, sent exactly as it was given. It is the file's stable `id`; a `label` or an `alias` is for display, never an address. Required; there is no default file."
+            "description": "The `use` value from pp_list_files, sent exactly as given. Required: there is no default file."
           },
           "uuid": {
             "type": "string",
@@ -1001,7 +1001,7 @@
                 "closed"
               ]
             },
-            "description": "`open`, `closed`, or both — the default. A closed trade has been sold out and its result is realized; an open one is still held, so its exit side is a valuation at today's price and the same trade reports different numbers on different days. An empty list names no status and is refused."
+            "description": "`open`, `closed`, or both - the default; as on pp_list_trades."
           },
           "grouping": {
             "type": "string",
@@ -1010,7 +1010,7 @@
               "per-lot"
             ],
             "default": "combined",
-            "description": "`combined` (the default) reports the purchases that one sale closed as a single trade; `per-lot` reports each purchase as a trade of its own. This does not pick a matching strategy — lots are always matched first in, first out."
+            "description": "`combined` (the default) or `per-lot`; as on pp_list_trades."
           },
           "costMethod": {
             "type": "string",
@@ -1019,7 +1019,7 @@
               "moving-average"
             ],
             "default": "fifo",
-            "description": "`fifo` (the default) or `moving-average`. It moves the cost basis that gains are measured against, and with it the split between realized and unrealized gain. It never changes `irr` or a time-weighted return: `irr` always comes from the actual cash flows — on a trade, those of the lots matched first in, first out, as in the application's own trades view. Under `moving-average` a trade's `irr` can therefore disagree in sign with its `profitLoss`; say which basis each figure is on when you report both. Where the moving average cost is undefined — every short trade — `entryValue`, `profitLoss` and `return` come back `null`, never recomputed some other way."
+            "description": "`fifo` (the default) or `moving-average`: the cost basis gains are measured against. It never changes `irr` or a time-weighted return - the details are on pp_list_trades."
           },
           "taxesAndFees": {
             "type": "string",
@@ -1028,21 +1028,21 @@
               "excluded"
             ],
             "default": "included",
-            "description": "`included` (the default) or `excluded`: whether the taxes and fees charged on a purchase or a sale count towards what it cost. It moves cost basis and capital gains together so the two stay comparable, and leaves the fee and tax totals themselves, and every return ratio, alone."
+            "description": "`included` (the default) or `excluded`: whether the charges on a purchase or a sale count towards its cost. It moves cost basis and capital gains, not the fee and tax totals or any return ratio."
           },
           "reportingCurrency": {
             "type": "string",
-            "description": "Express every amount in this ISO 4217 currency. Defaults to the file's own base currency. A currency pair the file has no exchange rate series for converts at 1:1, and the response names every such pair in `fxWarnings`; an amount that arrived unchanged and is not named there needed no conversion rather than being refused. Ratios are computed in this currency as well, so a return can differ from what the file's own currency reports - the interval's exchange-rate movements are attributed differently, and the performance shows that part as `currencyGains`, which is zero when the reporting currency is the base currency."
+            "description": "Express every amount in this ISO 4217 currency; defaults to the file's base currency. A pair without an exchange rate converts at 1:1 and is named in `fxWarnings` - the details are on pp_get_overall_performance."
           },
           "from": {
             "type": "string",
             "format": "date",
-            "description": "First day of the period, as YYYY-MM-DD. Only trades still held on or after it are returned - a trade closed before it is left out. Omit it for no lower bound."
+            "description": "First day of the period, as YYYY-MM-DD; keeps the trades still held on or after it, as on pp_list_trades."
           },
           "to": {
             "type": "string",
             "format": "date",
-            "description": "Last day of the period, as YYYY-MM-DD, on or after `from`. Only trades that started on or before it are returned. Together with `from` this keeps the trades held at some point of the period: closed within it, or open through it. Omit it for no upper bound."
+            "description": "Last day of the period, as YYYY-MM-DD; keeps the trades that started on or before it, as on pp_list_trades."
           }
         },
         "required": [

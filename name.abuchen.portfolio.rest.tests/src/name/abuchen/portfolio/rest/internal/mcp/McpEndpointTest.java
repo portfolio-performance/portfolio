@@ -11,8 +11,11 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
@@ -48,6 +51,7 @@ public class McpEndpointTest
     private IEclipsePreferences node;
     private RestApiServer server;
     private HttpClient http;
+    private FakeHost host;
 
     @Before
     public void setUp() throws Exception
@@ -60,7 +64,7 @@ public class McpEndpointTest
         registry.setEnabled(FILE, true);
         registry.setAlias(FILE, "sample");
 
-        var host = new FakeHost(List.of(new FakeHost.FakeOpenFile(FILE, "mcp", client)));
+        host = new FakeHost(List.of(new FakeHost.FakeOpenFile(FILE, "mcp", client)));
         var router = ApiRoutes.create(registry, host,
                         new PairingService(new ClientStore(Path.of("target", "unused-client-store")), host));
 
@@ -73,6 +77,7 @@ public class McpEndpointTest
     @After
     public void tearDown() throws Exception
     {
+        McpEndpoint.heartbeatMillis = 15_000;
         server.stop();
         node.removeNode();
     }
@@ -143,35 +148,185 @@ public class McpEndpointTest
 
     // ── the transport ───────────────────────────────────────────────────────
 
-    /** an SSE stream would park one of two worker threads; a client issued no session asks for neither */
+    /** there is nothing the server says unasked, so there is no stream to open */
     @Test
-    public void testGetAndDeleteAreNotAllowed() throws Exception
+    public void testGetIsNotAllowed() throws Exception
     {
         assertThat(send(HttpRequest.newBuilder(uri()).header("Authorization", "Bearer " + TOKEN).GET()).statusCode(),
                         is(405));
-        assertThat(send(HttpRequest.newBuilder(uri()).header("Authorization", "Bearer " + TOKEN).DELETE()).statusCode(),
-                        is(405));
     }
 
+    // ── sessions ────────────────────────────────────────────────────────────
+
     @Test
-    public void testNoSessionIdIsEverIssued() throws Exception
+    public void testInitializeIssuesASession() throws Exception
     {
         var response = rpc(null, "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{}}");
 
-        assertThat(response.headers().firstValue("Mcp-Session-Id").isPresent(), is(false));
+        assertThat(response.statusCode(), is(200));
+        assertThat(response.headers().firstValue("Mcp-Session-Id").orElse("").length() > 30, is(true));
         assertThat(response.headers().firstValue("Content-Type").orElseThrow(), containsString("application/json"));
+
+        // and a request in it is served as any other
+        var ping = send(session(HttpRequest.newBuilder(uri()), initialize())
+                        .POST(HttpRequest.BodyPublishers.ofString("{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"ping\"}")));
+        assertThat(ping.statusCode(), is(200));
     }
 
-    /** the client sends this on every request and is perfectly happy with JSON */
+    /** a session from before a restart: 404 is how the client learns to initialize again */
     @Test
-    public void testAnEventStreamIsNeverServed() throws Exception
+    public void testAnUnknownSessionIsNotFound() throws Exception
+    {
+        var response = send(session(HttpRequest.newBuilder(uri()), "no-such-session")
+                        .POST(HttpRequest.BodyPublishers.ofString("{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"ping\"}")));
+
+        assertThat(response.statusCode(), is(404));
+        assertThat(body(response).getAsJsonObject().getAsJsonObject("error").get("code").getAsInt(), is(-32001));
+    }
+
+    /** the handshake itself starts over: the stale id it may still carry is no obstacle */
+    @Test
+    public void testInitializeWithAStaleSessionStartsANewOne() throws Exception
+    {
+        var response = send(session(HttpRequest.newBuilder(uri()), "no-such-session").POST(HttpRequest.BodyPublishers
+                        .ofString("{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{}}")));
+
+        assertThat(response.statusCode(), is(200));
+        assertThat(response.headers().firstValue("Mcp-Session-Id").orElseThrow(), is(not("no-such-session")));
+    }
+
+    /** a request without a session is served as before - it only cannot be cancelled */
+    @Test
+    public void testARequestWithoutASessionIsServed() throws Exception
+    {
+        assertThat(rpc(null, "{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"ping\"}").statusCode(), is(200));
+    }
+
+    @Test
+    public void testDeleteEndsTheSession() throws Exception
+    {
+        var id = initialize();
+
+        assertThat(send(session(HttpRequest.newBuilder(uri()), id).DELETE()).statusCode(), is(204));
+        assertThat(send(session(HttpRequest.newBuilder(uri()), id).DELETE()).statusCode(), is(404));
+        assertThat(send(HttpRequest.newBuilder(uri()).DELETE()).statusCode(), is(400));
+    }
+
+    // ── streamed tool calls ─────────────────────────────────────────────────
+
+    /** only a tool call is streamed; a ping is answered as JSON whatever the client accepts */
+    @Test
+    public void testOnlyAToolCallIsStreamed() throws Exception
     {
         var response = send(HttpRequest.newBuilder(uri()) //
-                        .header("Accept", "text/event-stream, application/json") //
+                        .header("Accept", "application/json, text/event-stream") //
                         .POST(HttpRequest.BodyPublishers.ofString("{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"ping\"}")));
 
         assertThat(response.statusCode(), is(200));
         assertThat(response.headers().firstValue("Content-Type").orElseThrow(), containsString("application/json"));
+    }
+
+    /** a client that accepts only JSON gets JSON, for a tool call too */
+    @Test
+    public void testAToolCallIsJsonWithoutAStreamInTheAcceptHeader() throws Exception
+    {
+        var response = rpc(TOKEN, call("pp_list_files", "{}"));
+
+        assertThat(response.headers().firstValue("Content-Type").orElseThrow(), containsString("application/json"));
+        assertThat(text(body(response).getAsJsonObject().getAsJsonObject("result")), containsString("sample"));
+    }
+
+    @Test
+    public void testAToolCallIsStreamedWhenTheClientTakesAStream() throws Exception
+    {
+        var response = stream(call("pp_list_files", "{}"));
+
+        assertThat(response.statusCode(), is(200));
+        assertThat(response.headers().firstValue("Content-Type").orElseThrow(), containsString("text/event-stream"));
+
+        var events = events(response.body());
+        var last = events.get(events.size() - 1);
+        assertThat(last.get("id").getAsInt(), is(9));
+        assertThat(text(last.getAsJsonObject("result")), containsString("sample"));
+    }
+
+    /** with a progress token, the stages of a calculation are reported before the result */
+    @Test
+    public void testACalculationReportsItsProgress() throws Exception
+    {
+        var events = events(stream(callWithToken("pp_list_holdings", "{\"file\":\"sample\"}", "\"p-1\"")).body());
+
+        var progress = events.stream().filter(event -> event.has("method")).toList();
+        assertThat(progress.isEmpty(), is(false));
+        assertThat(progress.get(0).get("method").getAsString(), is("notifications/progress"));
+        assertThat(progress.get(0).getAsJsonObject("params").get("progressToken").getAsString(), is("p-1"));
+        assertThat(progress.stream().anyMatch(event -> "calculating"
+                        .equals(event.getAsJsonObject("params").get("message").getAsString())), is(true));
+
+        // each value larger than the one before, as the protocol requires
+        var last = 0L;
+        for (var event : progress)
+        {
+            var value = event.getAsJsonObject("params").get("progress").getAsLong();
+            assertThat(value > last, is(true));
+            last = value;
+        }
+
+        assertThat(events.get(events.size() - 1).get("id").getAsInt(), is(9));
+    }
+
+    /** without a token nothing but the result: progress is reported only when asked for */
+    @Test
+    public void testNoProgressWithoutAToken() throws Exception
+    {
+        var events = events(stream(call("pp_list_holdings", "{\"file\":\"sample\"}")).body());
+
+        assertThat(events.size(), is(1));
+        assertThat(events.get(0).get("id").getAsInt(), is(9));
+    }
+
+    /** a call that waits says so on the wire, so that the connection is not taken for dead */
+    @Test
+    public void testAWaitingCallSendsHeartbeats() throws Exception
+    {
+        McpEndpoint.heartbeatMillis = 50;
+        var gate = new CountDownLatch(1);
+        host.blockUiThreadUntil(gate);
+
+        var pending = http.sendAsync(streamRequest(call("pp_list_files", "{}"), null).build(),
+                        HttpResponse.BodyHandlers.ofString());
+        Thread.sleep(400);
+        gate.countDown();
+
+        var body = pending.get(10, TimeUnit.SECONDS).body();
+        assertThat(body, containsString(": keepalive"));
+        assertThat(events(body).get(events(body).size() - 1).get("id").getAsInt(), is(9));
+    }
+
+    /**
+     * A cancellation is a request of its own, and the session is how it finds
+     * the call it names. The call is held on the UI thread until it arrives; the
+     * stream then ends without an answer, as the protocol asks.
+     */
+    @Test
+    public void testACancelledCallEndsWithoutAnAnswer() throws Exception
+    {
+        var id = initialize();
+        var gate = new CountDownLatch(1);
+        host.blockUiThreadUntil(gate);
+
+        var pending = http.sendAsync(
+                        streamRequest(callWithToken("pp_list_holdings", "{\"file\":\"sample\"}", "\"c-1\""), id).build(),
+                        HttpResponse.BodyHandlers.ofString());
+        Thread.sleep(300);
+
+        var cancel = send(session(HttpRequest.newBuilder(uri()), id).POST(HttpRequest.BodyPublishers.ofString(
+                        "{\"jsonrpc\":\"2.0\",\"method\":\"notifications/cancelled\",\"params\":{\"requestId\":9}}")));
+        assertThat(cancel.statusCode(), is(202));
+        gate.countDown();
+
+        var body = pending.get(10, TimeUnit.SECONDS).body();
+        assertThat(events(body).stream().anyMatch(event -> event.has("id")), is(false));
     }
 
     @Test
@@ -511,6 +666,55 @@ public class McpEndpointTest
             messages.append("{\"jsonrpc\":\"2.0\",\"id\":").append(ii).append(",\"method\":\"ping\"}");
         }
         return messages.append("]").toString();
+    }
+
+    /** a tool call that asks for progress under that token */
+    private static String callWithToken(String tool, String arguments, String token)
+    {
+        return "{\"jsonrpc\":\"2.0\",\"id\":9,\"method\":\"tools/call\",\"params\":{\"name\":\"" + tool
+                        + "\",\"arguments\":" + arguments + ",\"_meta\":{\"progressToken\":" + token + "}}}";
+    }
+
+    /** a new session's id */
+    private String initialize() throws Exception
+    {
+        return rpc(null, "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{}}").headers()
+                        .firstValue("Mcp-Session-Id").orElseThrow();
+    }
+
+    private static HttpRequest.Builder session(HttpRequest.Builder request, String id)
+    {
+        return request.header("Mcp-Session-Id", id);
+    }
+
+    /** a request as a Streamable HTTP client sends it, with the token, in the session if one is given */
+    private HttpRequest.Builder streamRequest(String body, String sessionId)
+    {
+        var request = HttpRequest.newBuilder(uri()) //
+                        .header("Authorization", "Bearer " + TOKEN) //
+                        .header("Accept", "application/json, text/event-stream") //
+                        .POST(HttpRequest.BodyPublishers.ofString(body));
+        return sessionId != null ? session(request, sessionId) : request;
+    }
+
+    private HttpResponse<String> stream(String body) throws Exception
+    {
+        return send(streamRequest(body, null));
+    }
+
+    /** the JSON-RPC messages of an event stream, in order; comments are not events */
+    private static List<JsonObject> events(String stream)
+    {
+        var events = new ArrayList<JsonObject>();
+        for (var event : stream.split("\n\n"))
+        {
+            for (var line : event.split("\n"))
+            {
+                if (line.startsWith("data: "))
+                    events.add(JsonParser.parseString(line.substring("data: ".length())).getAsJsonObject());
+            }
+        }
+        return events;
     }
 
     private HttpResponse<String> rpc(String token, String body) throws Exception

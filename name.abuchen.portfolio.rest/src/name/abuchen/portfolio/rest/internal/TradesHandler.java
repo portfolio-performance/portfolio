@@ -158,8 +158,16 @@ public final class TradesHandler
         // the collector keeps no state between securities
         var collector = new TradeCollector(client, converter, params.grouping(), snapshotCache);
 
+        // a streamed MCP call hears how far the collection has come, and stops
+        // between two instruments when its caller gave up
+        var progress = Progress.current();
+        var done = 0;
+
         for (var security : securities)
         {
+            progress.checkCancelled();
+            progress.step(done++, securities.size(), "matching the trades of instrument " + done + " of " //$NON-NLS-1$ //$NON-NLS-2$
+                            + securities.size());
             try
             {
                 for (var trade : collector.collect(security))

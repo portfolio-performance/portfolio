@@ -228,7 +228,7 @@ public final class EntityJson
         }
 
         json.add("valuation", toJson(position.getValuation())); //$NON-NLS-1$
-        json.add("weight", decimal(totalAssets.isZero() ? 0d : position.getShare())); //$NON-NLS-1$
+        json.add("weight", weight(totalAssets.isZero() ? 0d : position.getShare())); //$NON-NLS-1$
 
         // the value before conversion into the reporting currency; only worth
         // stating when the two differ
@@ -471,11 +471,18 @@ public final class EntityJson
     }
 
     /**
-     * Decimal places kept for a rate. Not applied to a weight: a weight can be
-     * legitimately tiny (a dust holding is a real fraction of a portfolio),
-     * where a rate that small is only ever noise.
+     * Decimal places kept for a rate - and for a weight. A weight is not noisy
+     * the way a rate is, but its seventeen digits are bytes that say nothing:
+     * 1e-8 is a millionth of a percent, and a holding below it still carries
+     * its exact {@code valuation}.
      */
     private static final int RATE_SCALE = 8;
+
+    /** a holding's fraction of total assets, at the same scale as a rate */
+    static JsonElement weight(double value)
+    {
+        return decimal(BigDecimal.valueOf(value).setScale(RATE_SCALE, RoundingMode.HALF_UP));
+    }
 
     private static Money negate(Money money)
     {

@@ -2,7 +2,9 @@ package name.abuchen.portfolio.rest.internal.mcp;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.Matchers.not;
 
@@ -19,6 +21,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
@@ -176,8 +179,11 @@ public class McpToolCallTest
         // always the id, even with an alias set: an alias can be renamed between
         // the listing and the next call
         var files = text(call("pp_list_files", "{}"));
-        assertThat(files, containsString("\"use\":\"" + fileId + "\""));
-        assertThat(files, containsString("\"alias\":\"sample\""));
+        assertThat(files, containsString("\"columns\":[\"alias\",\"use\",\"label\"]"));
+        assertThat(files, containsString("[\"sample\",\"" + fileId + "\",\"mcp\"]"));
+        // the id is the use value again, and the local path no tool takes
+        assertThat(files, not(containsString("\"id\"")));
+        assertThat(files, not(containsString("\"path\"")));
 
         // and that value is what a tool accepts
         assertThat(isError(call("pp_list_instruments", "{\"file\":\"" + fileId + "\"}")), is(false));
@@ -340,7 +346,7 @@ public class McpToolCallTest
         var arguments = JsonParser.parseString("{\"file\":\"sample\",\"openingDate\":\"2024-01-01\"}")
                         .getAsJsonObject();
 
-        var fitted = McpEndpoint.fit(router, tool, arguments, payload, McpEndpoint.MAX_RESULT_CHARS);
+        var fitted = McpEndpoint.fit(tool, arguments, payload, McpEndpoint.MAX_RESULT_CHARS);
 
         assertThat(fitted.length(), is(lessThanOrEqualTo(McpEndpoint.MAX_RESULT_CHARS)));
         assertThat(fitted, containsString("TRUNCATED"));
@@ -395,11 +401,84 @@ public class McpToolCallTest
 
         assertThat(result.length(), is(lessThanOrEqualTo(McpEndpoint.MAX_RESULT_CHARS)));
         assertThat(result, containsString("TRUNCATED"));
-        assertThat(result, containsString("already re-requested without"));
+        assertThat(result, containsString("already leaves out"));
         assertThat(result, containsString("`timeWeighted`"));
         assertThat(result, not(containsString("ask again without them")));
         assertThat(result, containsString("pp_get_instrument_performance"));
         assertThat(result, containsString("pp_get_instrument_performance for one instrument at a time."));
+    }
+
+    /**
+     * Cutting the metric groups from the answer at hand gives exactly what the
+     * narrowed request would have returned - for the list and for one item -
+     * which is what makes it safe to skip the second calculation.
+     */
+    @Test
+    public void testNarrowingIsWhatTheNarrowedRequestReturns() throws Exception
+    {
+        var account = new AccountBuilder().addTo(client);
+        Security traded = null;
+        for (int ii = 0; ii < 3; ii++)
+        {
+            traded = new SecurityBuilder().addPrice("2024-03-01", Values.Quote.factorize(100 + ii))
+                            .addPrice("2024-06-01", Values.Quote.factorize(120 + ii)).addTo(client);
+            traded.setName("Traded " + ii);
+            new PortfolioBuilder(account) //
+                            .buy(traded, "2024-02-01", Values.Share.factorize(10), Values.Amount.factorize(1000)) //
+                            .sell(traded, "2024-09-01", Values.Share.factorize(5), Values.Amount.factorize(700)) //
+                            .addTo(client);
+        }
+
+        var keep = McpEnvelope.NARROWED_METRICS;
+        var narrowedQuery = Map.of("openingDate", "2024-01-01", "closingDate", "2024-12-31", "metrics",
+                        String.join(",", keep));
+        var fullQuery = Map.of("openingDate", "2024-01-01", "closingDate", "2024-12-31");
+
+        var list = "/v1/files/" + fileId + "/performance/instruments";
+        assertThat(McpEnvelope.narrow(get(list, fullQuery), keep), is(get(list, narrowedQuery)));
+
+        var item = list + "/" + traded.getUUID();
+        assertThat(McpEnvelope.narrow(get(item, fullQuery), keep), is(get(item, narrowedQuery)));
+    }
+
+    /**
+     * A report too large to return is cut down from the answer already
+     * computed: one trip to the UI thread for the file, one calculation - not a
+     * second one for the narrowed question, which would take another slot.
+     */
+    @Test
+    public void testAnOversizedReportIsNarrowedWithoutASecondCalculation() throws Exception
+    {
+        var account = new AccountBuilder().addTo(client);
+        // in a table the names dominate, and narrowing cannot shorten them: many
+        // instruments with short names are what makes the groups count
+        for (int ii = 0; ii < 1000; ii++)
+        {
+            var traded = new SecurityBuilder().addPrice("2024-06-01", Values.Quote.factorize(1000)).addTo(client);
+            traded.setName("ACME " + ii);
+            new PortfolioBuilder(account) //
+                            .buy(traded, "2024-02-01", Values.Share.factorize(10), Values.Amount.factorize(1000)) //
+                            .sell(traded, "2024-09-01", Values.Share.factorize(10), Values.Amount.factorize(1200)) //
+                            .addTo(client);
+        }
+
+        var path = "/v1/files/" + fileId + "/performance/instruments";
+        var full = get(path, Map.of("openingDate", "2024-01-01", "closingDate", "2024-12-31"));
+        // the fixture is built so that only the narrowed report fits, as the
+        // model reads it
+        var tool = McpTools.byName("pp_list_instrument_performance").orElseThrow();
+        assertThat(McpEnvelope.render(tool, new JsonObject(), full, List.of()).length(),
+                        is(greaterThan(McpEndpoint.MAX_RESULT_CHARS)));
+        assertThat(McpEnvelope.render(tool, new JsonObject(), McpEnvelope.narrow(full, McpEnvelope.NARROWED_METRICS),
+                        List.of()).length(), is(lessThan(McpEndpoint.MAX_RESULT_CHARS - 2_000)));
+
+        var before = host.callablesRun();
+        var result = text(call("pp_list_instrument_performance",
+                        "{\"file\":\"sample\",\"openingDate\":\"2024-01-01\",\"closingDate\":\"2024-12-31\"}"));
+
+        assertThat(result, containsString("Narrowed to fit"));
+        assertThat(result, not(containsString("TRUNCATED")));
+        assertThat(host.callablesRun() - before, is(1));
     }
 
     /** and an ordinary portfolio stays well below the cap */
@@ -475,6 +554,14 @@ public class McpToolCallTest
     }
 
     // ── helpers ─────────────────────────────────────────────────────────────
+
+    /** a REST read through the same routing table, as parsed JSON */
+    private JsonElement get(String path, Map<String, String> query) throws Exception
+    {
+        var match = router.match("GET", path);
+        var response = match.handler().handle(new Request("GET", path, match.pathParams(), query, new byte[0]));
+        return JsonParser.parseString(new String(response.body(), StandardCharsets.UTF_8));
+    }
 
     private JsonObject call(String tool, String arguments)
     {

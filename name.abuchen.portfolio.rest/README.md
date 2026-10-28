@@ -71,13 +71,32 @@ operations above as named tools. Point a client at `http://127.0.0.1:5712/mcp` a
 `Authorization: Bearer …` header — **Add client** assembles both, at the one moment the token
 exists. Same switch, same port, same tokens; there is nothing extra to install.
 
-- **No session.** No `Mcp-Session-Id` is issued, responses are plain `application/json`, and `GET`
-  and `DELETE` answer `405` — an SSE stream would park one of the server's two worker threads, which
-  is the reason ADR 0002 already rejected long-polling.
+- **A tool call is streamed when the client takes a stream.** With `Accept: text/event-stream` a
+  `tools/call` is answered as an event stream: `notifications/progress` while it waits for the UI
+  thread, for a calculation slot or for the calculation — if the call carries a
+  `_meta.progressToken` — a `: keepalive` comment every 15 seconds in any case, and the result as
+  the last event. Everything else, and a client that accepts only JSON, gets `application/json`.
+  `GET` answers `405`: the server has nothing to say unasked.
+- **A session is optional.** `initialize` returns an `Mcp-Session-Id`. With it, a
+  `notifications/cancelled` stops the call it names: a call still waiting for a slot leaves the
+  queue, and the per-instrument calculations stop before the next instrument — the engines below
+  cannot be interrupted, so a single long calculation inside them still runs to its end. A client
+  that hangs up on a stream counts as having cancelled. `DELETE /mcp` ends the session. A request
+  without a session id is served as before and only cannot be cancelled; one with an id the server
+  does not know — the application was restarted — is answered `404`, the protocol's signal to
+  initialize again.
 - **Authorisation is per JSON-RPC method.** `initialize`, `tools/list` and `ping` answer without a
   token; `tools/call` requires one and, lacking it, returns HTTP 200 with `isError: true`. A `401`
   is invisible in a chat client's UI, so the refusal has to reach the chat. `/.well-known/*` answers
   `404`: there is no authorization server here.
+- **A tool result is compact; its values are the REST API's.** Not one number is rounded or
+  recomputed, but the shape is cut down for a model: `items` becomes a table (`columns` once, then
+  one array per row, nested groups as dotted columns such as `gains.realizedCapitalGains`); an
+  amount in the `reportingCurrency` is a bare number, while one in another currency - or a column
+  holding even one such amount - keeps a `<column>.currency` beside it, and a `price` always keeps
+  its currency; a holding's four price-age fields become one `priceNote`, present only for a stale
+  or a hand-maintained price; the file list drops `id` (always `use` again) and `path`. Each result
+  says in a line what applies to it. A result cut to fit ends after a whole row.
 - **Deliberately outside `/v1`,** because MCP negotiates its own version, and therefore outside the
   additive-only promise.
 - **The last refused connection is shown on the preference page.** A client with a wrong token never
@@ -227,7 +246,7 @@ save.
 | 503 | `ui-busy` | the app's UI thread did not take the request on in time; it was not executed (or it was a read) — **retry**, see `Retry-After` |
 | 503 | `ui-request-underway` | a write was already running on the UI thread and will finish — **do not retry**, read the state back |
 | 503 | `calculation-timeout` | a calculation did not finish in time — ask a smaller question (shorter interval, one instrument) |
-| 503 | `server-busy` | more requests in flight than the server serves at once, or every calculation slot taken — retry after `Retry-After` |
+| 503 | `server-busy` | more requests in flight than the server serves at once, or no calculation slot came free in time — retry after `Retry-After` |
 
 Three of these regularly surprise clients:
 
@@ -252,10 +271,26 @@ again is the only way to get the answer that was thrown away.
 Calculations (holdings, performance, trades) run off the UI thread with their own deadline (120
 seconds). `calculation-timeout` means the answer did not come in time; the same question would take
 just as long again, so narrow it. The engines cannot be interrupted, so a calculation past its
-deadline still runs to its end — and keeps one of the two calculation slots until it does.
-`server-busy` means more requests are in flight than the server serves at once (8), or both
-calculation slots are taken; it is refused before any work starts, so retrying after `Retry-After`
-is cheap.
+deadline still runs to its end — and keeps its calculation slot until it does.
+
+Two calculations run at once. One that finds both slots taken waits for a free one, first come first
+served, for up to 30 seconds; at most two per slot may wait. `server-busy` means more requests are in
+flight than the server serves at once, the queue is full, or no slot came free in time; no work was
+started, so retrying after `Retry-After` is cheap.
+
+The number of slots can be raised from 1 to 8 with a system property in `PortfolioPerformance.ini`,
+after `-vmargs`; it is read when the server starts:
+
+```
+-Dname.abuchen.portfolio.rest.calculationSlots=4
+```
+
+At most the number of processors less one is used, so that one stays free for the user interface;
+an invalid value is logged and replaced by the default. The server then serves three requests per
+slot plus six more at once (12 with the default), so that every running and waiting calculation has
+room and the cheap calls still get through. Each calculation holds a whole file's daily valuation in
+memory, so raise the number only when several questions are really asked at the same time — one
+calculation does not get faster.
 
 ## Computed collections
 

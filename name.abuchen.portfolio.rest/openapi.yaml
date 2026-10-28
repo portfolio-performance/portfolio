@@ -120,9 +120,9 @@ info:
     `-0.000000000002438937940496544`.
 
     A rate the model cannot define for the interval is `null`, never `0` — handle
-    it rather than assuming a number. A **weight** is not a rate and is not
-    rounded: a dust holding is a legitimately tiny fraction of a portfolio, where
-    a rate that small is only ever noise.
+    it rather than assuming a number. A **weight** is not a rate, but it is
+    served at the same 8 decimal places: 1e-8 is a millionth of a percent, and a
+    holding below that still carries its exact `valuation`.
 
     ## Methods
 
@@ -183,7 +183,8 @@ info:
     - `calculation-timeout`: a calculation did not finish within 120 seconds.
       The same question takes just as long again — ask a smaller one.
     - `server-busy`: more requests are in flight than the server serves at once,
-      or every calculation slot is taken — a calculation keeps its slot until it
+      or no calculation slot came free while the request waited for one (up to
+      30 seconds, a few requests at most) — a calculation keeps its slot until it
       really ends, even past its deadline. Retry after `Retry-After`.
 
 servers:
@@ -2264,8 +2265,9 @@ components:
             The holding's fraction of total assets — not a percentage. A cash
             account can hold a negative balance (a loan, a credit card); its
             weight is then negative and the others are divided by the smaller
-            net total, so a weight can exceed 1. The weights always add up to 1,
-            unless total assets are zero - then every weight is 0.
+            net total, so a weight can exceed 1. Rounded to 8 decimal places, so
+            the weights add up to 1 within that rounding, unless total assets are
+            zero - then every weight is 0.
         localValuation:
           allOf:
             - $ref: "#/components/schemas/MonetaryValue"

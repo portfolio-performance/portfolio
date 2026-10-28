@@ -185,8 +185,9 @@ public final class McpExplain
                                 + "trades.";
 
             case "server-busy":
-                return "Portfolio Performance is answering too many requests at once, or calculations that ran out of "
-                                + "time are still finishing" + retryAfter(problem)
+                return "Portfolio Performance is answering too many requests at once, or every calculation slot "
+                                + "stayed taken while this call waited for one - calculations that ran out of time keep "
+                                + "theirs until they finish" + retryAfter(problem)
                                 + ". Send fewer calls in parallel and try again.";
 
             case "request-too-large":

@@ -11,8 +11,12 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
@@ -27,7 +31,9 @@ import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.rest.internal.ApiException;
+import name.abuchen.portfolio.rest.internal.Progress;
 import name.abuchen.portfolio.rest.internal.Request;
+import name.abuchen.portfolio.rest.internal.Response;
 import name.abuchen.portfolio.rest.internal.Router;
 import name.abuchen.portfolio.rest.testsupport.FakeHost;
 
@@ -83,7 +89,7 @@ public class UiDeadlineHonestyTest
     public void testAWriteTheUiThreadNeverTookOnIsRefusedAndNeverRuns() throws Exception
     {
         var gate = new CountDownLatch(1);
-        host.blockSyncExecUntil(gate);
+        host.blockUiThreadUntil(gate);
 
         var path = "/v1/files/" + fileId + "/instruments/" + security.getUUID();
         var match = router.match("PATCH", path);
@@ -115,7 +121,7 @@ public class UiDeadlineHonestyTest
     public void testAReadTheUiThreadNeverTookOnIsRetryable() throws Exception
     {
         var gate = new CountDownLatch(1);
-        host.blockSyncExecUntil(gate);
+        host.blockUiThreadUntil(gate);
 
         var path = "/v1/files/" + fileId + "/instruments/" + security.getUUID();
         var match = router.match("GET", path);
@@ -147,7 +153,7 @@ public class UiDeadlineHonestyTest
 
         try
         {
-            ApiRoutes.syncExecBounded(host, () -> {
+            ApiRoutes.uiExecBounded(host, () -> {
                 started.countDown();
                 release.await(10, TimeUnit.SECONDS);
                 return "done";
@@ -163,7 +169,7 @@ public class UiDeadlineHonestyTest
 
         assertThat(started.getCount(), is(0L));
         release.countDown();
-        waitUntil(() -> host.syncExecResults().contains("done"));
+        waitUntil(() -> host.uiThreadResults().contains("done"));
     }
 
     /**
@@ -179,7 +185,7 @@ public class UiDeadlineHonestyTest
 
         try
         {
-            ApiRoutes.syncExecBounded(host, () -> {
+            ApiRoutes.uiExecBounded(host, () -> {
                 started.countDown();
                 release.await(10, TimeUnit.SECONDS);
                 return "read";
@@ -194,14 +200,14 @@ public class UiDeadlineHonestyTest
 
         assertThat(started.getCount(), is(0L));
         release.countDown();
-        waitUntil(() -> host.syncExecResults().contains("read"));
+        waitUntil(() -> host.uiThreadResults().contains("read"));
     }
 
     /** an answer within the deadline is simply the answer */
     @Test
     public void testAnAnswerWithinTheDeadlineIsReturned() throws Exception
     {
-        assertThat(ApiRoutes.syncExecBounded(host, () -> "fast", UI_DEADLINE), is("fast"));
+        assertThat(ApiRoutes.uiExecBounded(host, () -> "fast", UI_DEADLINE), is("fast"));
     }
 
     /**
@@ -218,7 +224,7 @@ public class UiDeadlineHonestyTest
             ApiRoutes.computeBounded(() -> {
                 release.await(10, TimeUnit.SECONDS);
                 return null;
-            }, Duration.ofMillis(200), new Semaphore(1));
+            }, Duration.ofMillis(200), slots(1, 0, Duration.ofSeconds(5)));
             fail("expected the calculation deadline to expire");
         }
         catch (ApiException e)
@@ -237,13 +243,13 @@ public class UiDeadlineHonestyTest
     /**
      * Reported in review: the engines never check for an interrupt, so a
      * calculation past its deadline keeps running. It keeps its slot until it
-     * really ends, and while every slot is taken a new calculation is refused
-     * at once instead of starting next to it.
+     * really ends, and with no room to wait a new calculation is refused at once
+     * instead of starting next to it.
      */
     @Test
     public void testACalculationPastItsDeadlineKeepsItsSlot() throws Exception
     {
-        var slots = new Semaphore(1);
+        var slots = slots(1, 0, Duration.ofSeconds(5));
         var finish = new AtomicBoolean(false);
 
         try
@@ -262,7 +268,7 @@ public class UiDeadlineHonestyTest
         }
 
         // still running, still counted
-        assertThat(slots.availablePermits(), is(0));
+        assertThat(slots.available(), is(0));
         try
         {
             ApiRoutes.computeBounded(() -> null, Duration.ofSeconds(5), slots);
@@ -275,8 +281,316 @@ public class UiDeadlineHonestyTest
         }
 
         finish.set(true);
-        waitUntil(() -> slots.availablePermits() == 1);
+        waitUntil(() -> slots.available() == 1);
         assertThat(ApiRoutes.computeBounded(() -> null, Duration.ofSeconds(5), slots), is(nullValue()));
+    }
+
+    /**
+     * Every slot taken is not a refusal: a model asks several questions in one
+     * turn, and the one that finds no slot waits for the next to come free.
+     */
+    @Test
+    public void testACalculationWaitsForAFreeSlot() throws Exception
+    {
+        var slots = slots(1, 2, Duration.ofSeconds(5));
+        var release = new CountDownLatch(1);
+
+        var first = holdSlot(slots, release);
+        waitUntil(() -> slots.available() == 0);
+
+        var second = new CompletableFuture<Response>();
+        Thread.ofPlatform().start(() -> complete(second,
+                        () -> ApiRoutes.computeBounded(() -> Response.noContent(), Duration.ofSeconds(5), slots)));
+
+        waitUntil(() -> slots.waiting() == 1);
+        assertThat(second.isDone(), is(false));
+
+        release.countDown();
+        assertThat(second.get(5, TimeUnit.SECONDS).status(), is(204));
+        first.get(5, TimeUnit.SECONDS);
+        assertThat(slots.available(), is(1));
+    }
+
+    /** first come, first served: a later arrival does not overtake one that waits */
+    @Test
+    public void testWaitingCalculationsAreServedInTurn() throws Exception
+    {
+        var slots = slots(1, 3, Duration.ofSeconds(5));
+        var release = new CountDownLatch(1);
+        var order = new CopyOnWriteArrayList<String>();
+
+        var first = holdSlot(slots, release);
+        waitUntil(() -> slots.available() == 0);
+
+        var b = new CompletableFuture<Response>();
+        Thread.ofPlatform().start(() -> complete(b, () -> ApiRoutes.computeBounded(() -> {
+            order.add("b");
+            return null;
+        }, Duration.ofSeconds(5), slots)));
+        waitUntil(() -> slots.waiting() == 1);
+
+        var c = new CompletableFuture<Response>();
+        Thread.ofPlatform().start(() -> complete(c, () -> ApiRoutes.computeBounded(() -> {
+            order.add("c");
+            return null;
+        }, Duration.ofSeconds(5), slots)));
+        waitUntil(() -> slots.waiting() == 2);
+
+        release.countDown();
+        b.get(5, TimeUnit.SECONDS);
+        c.get(5, TimeUnit.SECONDS);
+        first.get(5, TimeUnit.SECONDS);
+
+        assertThat(order, is(List.of("b", "c")));
+    }
+
+    /** the queue is bounded: one more than fits is refused at once, not after the wait */
+    @Test
+    public void testAFullQueueRefusesAtOnce() throws Exception
+    {
+        var slots = slots(1, 1, Duration.ofSeconds(30));
+        var release = new CountDownLatch(1);
+
+        try
+        {
+            var first = holdSlot(slots, release);
+            waitUntil(() -> slots.available() == 0);
+
+            var waiter = new CompletableFuture<Response>();
+            Thread.ofPlatform().start(() -> complete(waiter,
+                            () -> ApiRoutes.computeBounded(() -> null, Duration.ofSeconds(5), slots)));
+            waitUntil(() -> slots.waiting() == 1);
+
+            var started = System.nanoTime();
+            try
+            {
+                ApiRoutes.computeBounded(() -> null, Duration.ofSeconds(5), slots);
+                fail("expected the calculation to be refused while the queue is full");
+            }
+            catch (ApiException e)
+            {
+                assertThat(e.getType(), is("server-busy"));
+            }
+            assertThat(Duration.ofNanos(System.nanoTime() - started).toMillis() < 1_000, is(true));
+
+            release.countDown();
+            waiter.get(5, TimeUnit.SECONDS);
+            first.get(5, TimeUnit.SECONDS);
+        }
+        finally
+        {
+            release.countDown();
+        }
+    }
+
+    /** the wait is bounded in time as well: it ends in a refusal, not in silence */
+    @Test
+    public void testAWaitThatRunsOutIsRefused() throws Exception
+    {
+        var slots = slots(1, 1, Duration.ofMillis(200));
+        var release = new CountDownLatch(1);
+
+        try
+        {
+            holdSlot(slots, release);
+            waitUntil(() -> slots.available() == 0);
+
+            try
+            {
+                ApiRoutes.computeBounded(() -> null, Duration.ofSeconds(5), slots);
+                fail("expected the wait for a slot to run out");
+            }
+            catch (ApiException e)
+            {
+                assertThat(e.getType(), is("server-busy"));
+            }
+            assertThat(slots.waiting(), is(0));
+        }
+        finally
+        {
+            release.countDown();
+        }
+    }
+
+    /** a caller who gave up leaves the queue at once, and its place goes to the next */
+    @Test
+    public void testACancelledWaitLeavesTheQueue() throws Exception
+    {
+        var slots = slots(1, 2, Duration.ofSeconds(30));
+        var release = new CountDownLatch(1);
+        var cancelled = new CancellableProgress();
+
+        try
+        {
+            holdSlot(slots, release);
+            waitUntil(() -> slots.available() == 0);
+
+            var waiter = new CompletableFuture<Response>();
+            Thread.ofPlatform().start(() -> complete(waiter,
+                            () -> ApiRoutes.computeBounded(() -> null, Duration.ofSeconds(5), slots, cancelled)));
+            waitUntil(() -> slots.waiting() == 1);
+
+            cancelled.cancel();
+            try
+            {
+                waiter.get(5, TimeUnit.SECONDS);
+                fail("expected the cancelled wait to end in a cancellation");
+            }
+            catch (CancellationException e)
+            {
+                // a future completed with a cancellation throws it as it is
+            }
+            assertThat(slots.waiting(), is(0));
+            // it never took the slot, so the one running still holds the only one
+            assertThat(slots.available(), is(0));
+        }
+        finally
+        {
+            release.countDown();
+        }
+    }
+
+    /**
+     * A running calculation whose caller gave up: the caller stops waiting at
+     * once, and the slot comes free when the work stops - here at the point
+     * where it checks, as the API's own loops do.
+     */
+    @Test
+    public void testACancelledCalculationStopsAndGivesBackItsSlot() throws Exception
+    {
+        var slots = slots(1, 0, Duration.ofSeconds(5));
+        var cancelled = new CancellableProgress();
+        var started = new CountDownLatch(1);
+
+        var caller = new CompletableFuture<Response>();
+        Thread.ofPlatform().start(() -> complete(caller, () -> ApiRoutes.computeBounded(() -> {
+            started.countDown();
+            while (true)
+            {
+                Progress.current().checkCancelled();
+                Thread.onSpinWait();
+            }
+        }, Duration.ofSeconds(30), slots, cancelled)));
+
+        assertThat(started.await(5, TimeUnit.SECONDS), is(true));
+        cancelled.cancel();
+
+        try
+        {
+            caller.get(5, TimeUnit.SECONDS);
+            fail("expected the cancelled calculation to end in a cancellation");
+        }
+        catch (CancellationException e)
+        {
+            // a future completed with a cancellation throws it as it is
+        }
+        waitUntil(() -> slots.available() == 1);
+    }
+
+    /**
+     * A calculation whose deadline passes before any thread took it up never
+     * runs - and so never reaches the code that gives its slot back. The caller
+     * gives it back instead, exactly once: when the thread finally comes free,
+     * the task does nothing and the slot is not returned a second time.
+     */
+    @Test
+    public void testACalculationThatNeverStartedGivesBackItsSlotOnTimeout() throws Exception
+    {
+        assertSlotComesBackWhenNeverStarted(false);
+    }
+
+    /** the same for a calculation whose caller cancelled before it started */
+    @Test
+    public void testACalculationThatNeverStartedGivesBackItsSlotOnCancellation() throws Exception
+    {
+        assertSlotComesBackWhenNeverStarted(true);
+    }
+
+    private void assertSlotComesBackWhenNeverStarted(boolean cancel) throws Exception
+    {
+        var slots = slots(1, 0, Duration.ofSeconds(5));
+        var progress = new CancellableProgress();
+        var ran = new AtomicBoolean();
+
+        // the only thread is busy, so the calculation stays queued behind it
+        var busy = new CountDownLatch(1);
+        var executor = Executors.newSingleThreadExecutor();
+        try
+        {
+            executor.execute(() -> {
+                try
+                {
+                    busy.await(10, TimeUnit.SECONDS);
+                }
+                catch (InterruptedException e)
+                {
+                    Thread.currentThread().interrupt();
+                }
+            });
+
+            if (cancel)
+                progress.cancel();
+
+            try
+            {
+                ApiRoutes.computeBounded(() -> {
+                    ran.set(true);
+                    return null;
+                }, cancel ? Duration.ofSeconds(5) : Duration.ofMillis(300), slots, progress, executor);
+                fail("expected the calculation to be given up on");
+            }
+            catch (CancellationException e)
+            {
+                assertThat(cancel, is(true));
+            }
+            catch (ApiException e)
+            {
+                assertThat(cancel, is(false));
+                assertThat(e.getType(), is("calculation-timeout"));
+            }
+
+            assertThat(slots.available(), is(1));
+        }
+        finally
+        {
+            busy.countDown();
+            executor.shutdown();
+            assertThat(executor.awaitTermination(5, TimeUnit.SECONDS), is(true));
+        }
+
+        assertThat(ran.get(), is(false));
+        // given back once, not once more when the thread got to the task
+        assertThat(slots.available(), is(1));
+    }
+
+    /** the stages a calculation passes through are reported, in order */
+    @Test
+    public void testACalculationReportsWaitingAndCalculating() throws Exception
+    {
+        var slots = slots(1, 1, Duration.ofSeconds(5));
+        var release = new CountDownLatch(1);
+        var phases = new CopyOnWriteArrayList<String>();
+        var recording = new CancellableProgress()
+        {
+            @Override
+            public void phase(String message)
+            {
+                phases.add(message);
+            }
+        };
+
+        var first = holdSlot(slots, release);
+        waitUntil(() -> slots.available() == 0);
+
+        var waiter = new CompletableFuture<Response>();
+        Thread.ofPlatform().start(() -> complete(waiter,
+                        () -> ApiRoutes.computeBounded(() -> null, Duration.ofSeconds(5), slots, recording)));
+        waitUntil(() -> !phases.isEmpty());
+        release.countDown();
+        waiter.get(5, TimeUnit.SECONDS);
+        first.get(5, TimeUnit.SECONDS);
+
+        assertThat(phases, is(List.of("waiting for a calculation slot to come free", "calculating")));
     }
 
     /** a failure inside the calculation is that failure, not a timeout */
@@ -287,12 +601,69 @@ public class UiDeadlineHonestyTest
         {
             ApiRoutes.computeBounded(() -> {
                 throw ApiException.notFound();
-            }, Duration.ofSeconds(5), new Semaphore(1));
+            }, Duration.ofSeconds(5), slots(1, 0, Duration.ofSeconds(5)));
             fail("expected the calculation's own exception");
         }
         catch (ApiException e)
         {
             assertThat(e.getType(), is("not-found"));
+        }
+    }
+
+    /** a progress that reports nothing and is cancelled when told */
+    private static class CancellableProgress implements Progress
+    {
+        private volatile boolean cancelled;
+
+        void cancel()
+        {
+            cancelled = true;
+        }
+
+        @Override
+        public void phase(String message)
+        {
+            // not recorded
+        }
+
+        @Override
+        public void step(int done, int total, String message)
+        {
+            // not recorded
+        }
+
+        @Override
+        public boolean isCancelled()
+        {
+            return cancelled;
+        }
+    }
+
+    private static ApiRoutes.CalculationSlots slots(int running, int queue, Duration wait)
+    {
+        return new ApiRoutes.CalculationSlots(running, queue, wait);
+    }
+
+    /** a calculation on a thread of its own that holds a slot until the latch opens */
+    private static CompletableFuture<Response> holdSlot(ApiRoutes.CalculationSlots slots, CountDownLatch release)
+    {
+        var future = new CompletableFuture<Response>();
+        Thread.ofPlatform().start(() -> complete(future, () -> ApiRoutes.computeBounded(() -> {
+            release.await(10, TimeUnit.SECONDS);
+            return null;
+        }, Duration.ofSeconds(10), slots)));
+        return future;
+    }
+
+    private static void complete(CompletableFuture<Response> future, Callable<Response> call)
+    {
+        try
+        {
+            future.complete(call.call());
+        }
+        catch (Throwable t)
+        {
+            future.completeExceptionally(t);
         }
     }
 

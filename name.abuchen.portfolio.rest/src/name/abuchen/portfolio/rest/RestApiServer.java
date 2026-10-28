@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -12,6 +15,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -21,6 +25,7 @@ import com.sun.net.httpserver.HttpServer;
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.rest.internal.ApiException;
 import name.abuchen.portfolio.rest.internal.ProblemJson;
+import name.abuchen.portfolio.rest.internal.Progress;
 import name.abuchen.portfolio.rest.internal.Request;
 import name.abuchen.portfolio.rest.internal.Response;
 import name.abuchen.portfolio.rest.internal.Router;
@@ -57,16 +62,9 @@ public class RestApiServer
      */
     private static final int IO_DEADLINE_SECONDS = 30;
 
-    /**
-     * How many requests are served at once. Every request runs on its own
-     * virtual thread, so without a bound any local process could open
-     * connections until the application runs out of memory - each may carry a
-     * body of up to {@link #MAX_REQUEST_BODY}, and the pairing and MCP endpoints
-     * read it before a token is checked. A personal API has one or two clients;
-     * a request beyond the bound is refused at once with a 503 and a
-     * Retry-After rather than queued.
-     */
-    private static final int MAX_CONCURRENT_REQUESTS = 8;
+    /** the request headers carried to the handler, see {@link #forwardedHeaders} */
+    private static final List<String> FORWARDED_HEADERS = List.of("accept", "mcp-session-id", //$NON-NLS-1$ //$NON-NLS-2$
+                    "mcp-protocol-version"); //$NON-NLS-1$
 
     /** the bearer scheme, matched case-insensitively below */
     private static final String BEARER_PREFIX = "Bearer "; //$NON-NLS-1$
@@ -102,9 +100,20 @@ public class RestApiServer
         }
     };
 
+    /**
+     * Serves at most {@link RestApiLimits#maxConcurrentRequests()} requests at
+     * once. Every request runs on its own virtual thread, so without a bound any
+     * local process could open connections until the application runs out of
+     * memory - each may carry a body of up to {@link #MAX_REQUEST_BODY}, and the
+     * pairing and MCP endpoints read it before a token is checked. The bound
+     * leaves room for every calculation running or waiting for a slot, plus a
+     * reserve; a request beyond it is refused at once with a 503 and a
+     * Retry-After rather than queued.
+     */
     public RestApiServer(int port, Predicate<String> tokenValidator, Router router)
     {
-        this(port, tokenValidator, router, MAX_CONCURRENT_REQUESTS, TimeUnit.SECONDS.toMillis(IO_DEADLINE_SECONDS));
+        this(port, tokenValidator, router, RestApiLimits.maxConcurrentRequests(),
+                        TimeUnit.SECONDS.toMillis(IO_DEADLINE_SECONDS));
     }
 
     /** for tests: a smaller bound and a shorter watchdog than any real client should see */
@@ -228,7 +237,8 @@ public class RestApiServer
 
                 var request = new Request(exchange.getRequestMethod(), path, match.pathParams(),
                                 Request.parseQuery(exchange.getRequestURI().getRawQuery()), body, authorization,
-                                exchange.getRequestHeaders().getFirst("User-Agent")); //$NON-NLS-1$
+                                exchange.getRequestHeaders().getFirst("User-Agent"), forwardedHeaders(exchange), //$NON-NLS-1$
+                                Progress.NONE);
                 response = match.handler().handle(request);
             }
             catch (ApiException e)
@@ -242,8 +252,17 @@ public class RestApiServer
             }
 
             receiving.cancel(false);
-            sending = watchdog.schedule(exchange::close, ioDeadlineMillis, TimeUnit.MILLISECONDS);
-            write(exchange, response);
+            if (response.isStreamed())
+            {
+                // a stream may rightly be quiet for long stretches while its
+                // request runs; what must not stall is each piece it sends
+                stream(exchange, response);
+            }
+            else
+            {
+                sending = watchdog.schedule(exchange::close, ioDeadlineMillis, TimeUnit.MILLISECONDS);
+                write(exchange, response);
+            }
         }
         catch (IOException e)
         {
@@ -410,6 +429,62 @@ public class RestApiServer
     {
         var body = ProblemJson.toJson(exception).toString().getBytes(StandardCharsets.UTF_8);
         return new Response(exception.getStatus(), ProblemJson.CONTENT_TYPE, body, exception.getHeaders());
+    }
+
+    /**
+     * The request headers a handler may read, by lower-case name: whether the
+     * client takes a stream, and the MCP session it belongs to. Nothing else is
+     * carried, so no handler starts to depend on headers by accident.
+     */
+    private static Map<String, String> forwardedHeaders(HttpExchange exchange)
+    {
+        var headers = new HashMap<String, String>();
+        for (var name : FORWARDED_HEADERS)
+        {
+            var value = exchange.getRequestHeaders().getFirst(name);
+            if (value != null)
+                headers.put(name, value);
+        }
+        return Map.copyOf(headers);
+    }
+
+    /**
+     * Writes a streamed response. The length is unknown, so the body is sent
+     * chunked, and each piece is flushed at once - a progress message held in
+     * a buffer reaches nobody. Every piece is bounded by the watchdog on its
+     * own: the stream may be silent between pieces for as long as its request
+     * runs, but a client that stops reading cannot hold the connection.
+     */
+    private void stream(HttpExchange exchange, Response response) throws IOException
+    {
+        for (var header : response.headers().entrySet())
+            exchange.getResponseHeaders().set(header.getKey(), header.getValue());
+        exchange.getResponseHeaders().set("Content-Type", response.contentType()); //$NON-NLS-1$
+        exchange.getResponseHeaders().set("Cache-Control", "no-cache"); //$NON-NLS-1$ //$NON-NLS-2$
+        exchange.sendResponseHeaders(response.status(), 0);
+
+        // the pieces come from more than one thread - the request, its
+        // calculation, the heartbeat - and a lock rather than a monitor keeps a
+        // virtual thread that writes to the socket from being pinned
+        var writing = new ReentrantLock();
+        try (var out = exchange.getResponseBody())
+        {
+            response.stream().writeTo(text -> {
+                var bytes = text.getBytes(StandardCharsets.UTF_8);
+                writing.lock();
+                var sending = watchdog.schedule(exchange::close, ioDeadlineMillis, TimeUnit.MILLISECONDS);
+                try
+                {
+                    out.write(bytes);
+                    out.flush();
+                }
+                finally
+                {
+                    sending.cancel(false);
+                    writing.unlock();
+                }
+            });
+        }
     }
 
     private static void write(HttpExchange exchange, Response response) throws IOException
