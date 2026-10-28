@@ -117,9 +117,27 @@ public class McpToolCallTest
         assertThat(unknownFile, containsString("not sharing a file called `nope`"));
         assertThat(unknownFile, containsString("These files are available"));
 
-        var unknownEntity = text(call("pp_get_instrument", "{\"file\":\"sample\",\"uuid\":\"no-such-uuid\"}"));
+        var unknownEntity = text(call("pp_get_instrument", "{\"file\":\"sample\",\"uuid\":\"00000000-0000-0000-0000-000000000000\"}"));
         assertThat(unknownEntity, containsString("The file is shared"));
         assertThat(unknownEntity, containsString("will not start working"));
+    }
+
+    /**
+     * A uuid is case-insensitive on input, and a stray space around an id is
+     * not part of it: both used to be refused - one as not found, the other as
+     * misshapen.
+     */
+    @Test
+    public void testIdsAreFoundWhateverTheirCaseAndSurroundingSpace()
+    {
+        var upper = text(call("pp_get_instrument",
+                        "{\"file\":\"sample\",\"uuid\":\"" + security.getUUID().toUpperCase() + "\"}"));
+        assertThat(upper, containsString("\"uuid\":\"" + security.getUUID() + "\""));
+
+        var padded = call("pp_get_instrument",
+                        "{\"file\":\" sample \",\"uuid\":\"" + security.getUUID() + " \"}");
+        assertThat(isError(padded), is(false));
+        assertThat(text(padded), containsString("\"uuid\":\"" + security.getUUID() + "\""));
     }
 
     /** the listing names the value to send as `file`, which is what stops a guess */
@@ -204,11 +222,62 @@ public class McpToolCallTest
         assertThat(text(result), containsString("ask for a narrower question"));
     }
 
+    /**
+     * An optional argument that is explicitly null says "no preference", which is
+     * what omitting it says. Rejecting it would refuse questions the API can
+     * answer, and a model writes null for that often enough to matter.
+     */
+    @Test
+    public void testAnOptionalArgumentExplicitlyNullIsAccepted()
+    {
+        var holdings = call("pp_list_holdings",
+                        "{\"file\":\"sample\",\"date\":null,\"reportingCurrency\":null}");
+        assertThat(isError(holdings), is(false));
+
+        var trades = call("pp_list_trades", "{\"file\":\"sample\",\"status\":null,\"grouping\":null}");
+        assertThat(isError(trades), is(false));
+
+        var performance = call("pp_get_overall_performance",
+                        "{\"file\":\"sample\",\"openingDate\":\"2024-01-01\",\"closingDate\":null,\"costMethod\":null}");
+        assertThat(isError(performance), is(false));
+    }
+
     /** and an ordinary portfolio stays well below the cap */
     @Test
     public void testAnOrdinaryResultIsNotTruncated()
     {
         assertThat(text(call("pp_list_instruments", "{\"file\":\"sample\"}")), not(containsString("TRUNCATED")));
+    }
+
+    /** a wrong type is refused here rather than surfacing as an endpoint validation error */
+    @Test
+    public void testAnArgumentOfTheWrongShapeIsRefusedWithTheDeclaredShape()
+    {
+        var result = call("pp_list_holdings", "{\"file\":\"sample\",\"date\":20260101}");
+
+        assertThat(isError(result), is(true));
+        assertThat(text(result), containsString("`date` must be `string`, not a number"));
+    }
+
+    /** an empty selection is a mistake; silently defaulting would answer another question */
+    @Test
+    public void testAnEmptySelectionIsRefusedRatherThanDefaulted()
+    {
+        var result = call("pp_list_trades", "{\"file\":\"sample\",\"status\":[]}");
+
+        assertThat(isError(result), is(true));
+        assertThat(text(result), containsString("`status` must hold at least 1 value"));
+        assertThat(text(result), containsString("an empty list names nothing"));
+    }
+
+    /** a metric group sent as a bare string is the same mistake as an unknown value */
+    @Test
+    public void testAMetricsSentAsASingleValueIsRefusedRatherThanAccepted()
+    {
+        var result = call("pp_list_instrument_performance", "{\"file\":\"sample\",\"openingDate\":\"2024-01-01\",\"metrics\":\"risk\"}");
+
+        assertThat(isError(result), is(true));
+        assertThat(text(result), containsString("`metrics` must be `array`, not the string `risk`"));
     }
 
     // ── helpers ─────────────────────────────────────────────────────────────

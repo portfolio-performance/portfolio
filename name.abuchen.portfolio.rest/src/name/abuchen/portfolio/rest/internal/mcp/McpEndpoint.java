@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -65,6 +66,10 @@ public final class McpEndpoint
      * calls against the server.
      */
     private static final int MAX_BATCH_MESSAGES = 32;
+
+    /** an entity uuid as {@code pp_list_instruments} reports one */
+    private static final Pattern UUID_PATTERN = Pattern.compile(
+                    "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}");
 
     private static final String NEWEST_SUPPORTED_PROTOCOL_VERSION = "2025-06-18";
 
@@ -363,9 +368,9 @@ public final class McpEndpoint
             return toolError("There is no tool called `" + name + "` here. Call tools/list to see what there is.");
 
         var tool = found.get();
-        var arguments = params.has("arguments") && params.get("arguments").isJsonObject()
+        var arguments = trimPathArguments(tool, params.has("arguments") && params.get("arguments").isJsonObject()
                         ? params.getAsJsonObject("arguments")
-                        : new JsonObject();
+                        : new JsonObject());
 
         var rejected = rejectUnknownArguments(tool, arguments);
         if (rejected != null)
@@ -374,6 +379,10 @@ public final class McpEndpoint
         var missing = missingArguments(tool, arguments);
         if (!missing.isEmpty())
             return toolError(explainMissing(router, tool, missing));
+
+        var misshapen = rejectMisshapenArguments(tool, arguments);
+        if (misshapen != null)
+            return toolError(misshapen);
 
         try
         {
@@ -391,6 +400,32 @@ public final class McpEndpoint
                             + ". Nothing the user did caused this, and retrying the same call will probably fail the "
                             + "same way.");
         }
+    }
+
+    /**
+     * A file id or an entity uuid with a stray space around it was refused
+     * once as misshapen and once as not found, depending on which argument
+     * carried it. Neither can contain whitespace, so it is dropped before
+     * either check sees it; nothing else about the arguments is touched.
+     */
+    private static JsonObject trimPathArguments(McpTool tool, JsonObject arguments)
+    {
+        JsonObject trimmed = null;
+        for (McpTool.Binding binding : tool.bindings())
+        {
+            if (binding.where() != McpTool.Where.PATH)
+                continue;
+            var value = arguments.get(binding.arg());
+            if (value == null || !value.isJsonPrimitive() || !value.getAsJsonPrimitive().isString())
+                continue;
+            var text = value.getAsString();
+            if (text.strip().equals(text))
+                continue;
+            if (trimmed == null)
+                trimmed = arguments.deepCopy();
+            trimmed.addProperty(binding.arg(), text.strip());
+        }
+        return trimmed != null ? trimmed : arguments;
     }
 
     /** the fault behind an unauthenticated call, spelled for the preference page */
@@ -442,6 +477,194 @@ public final class McpEndpoint
                 missing.add(required);
         }
         return missing;
+    }
+
+    /**
+     * Whether an argument has a shape the route can use. Dispatch turns an
+     * argument into a path segment, a comma-joined query value or a body field,
+     * so a number where a segment is expected or an object where a query value is
+     * expected would be answered with data for a question nobody asked. The tool
+     * declares these types in its schema, which is what a model is told to
+     * produce; checking them is cheaper than trusting that it did.
+     * <p/>
+     * Body fields are not checked beyond their own type: the handler validates
+     * each patch field against the model and names the field it rejected.
+     */
+    private static String rejectMisshapenArguments(McpTool tool, JsonObject arguments)
+    {
+        var properties = tool.inputSchema().getAsJsonObject("properties");
+        if (properties == null)
+            return null;
+
+        var problems = new ArrayList<String>();
+        for (var entry : arguments.entrySet())
+        {
+            var schema = properties.get(entry.getKey());
+            if (schema == null || !schema.isJsonObject())
+                continue;
+
+            var problem = describeMisshapenValue(tool, entry.getKey(), schema.getAsJsonObject(), entry.getValue());
+            if (problem != null)
+                problems.add("- " + problem);
+        }
+
+        if (problems.isEmpty())
+            return null;
+
+        return "Some arguments are not of the shape `" + tool.name() + "` declares:\n"
+                        + String.join("\n", problems);
+    }
+
+    private static String describeMisshapenValue(McpTool tool, String argument, JsonObject schema, JsonElement value)
+    {
+        // An explicit null on an optional query argument is what not sending it
+        // means: the handler applies the endpoint's default (today, the base
+        // currency, the latest quote). A body field of null means something else
+        // - clearing that field - so it stays checked. A required argument that
+        // arrives as null was already refused as missing.
+        var binding = tool.binding(argument);
+        if (value.isJsonNull() && binding != null && binding.where() == McpTool.Where.QUERY)
+            return null;
+
+        var declared = schema.get("type");
+        if (declared != null && !matchesType(value, declared))
+            return "`" + argument + "` must be " + typesOf(declared) + ", not " + shapeOf(value);
+
+        var enumeration = schema.get("enum");
+        if (enumeration != null && enumeration.isJsonArray() && !holds(enumeration.getAsJsonArray(), value))
+            return "`" + argument + "` must be one of " + namesOf(enumeration.getAsJsonArray());
+
+        var minLength = schema.get("minLength");
+        if (minLength != null && value.isJsonPrimitive() && value.getAsJsonPrimitive().isString()
+                        && value.getAsString().length() < minLength.getAsInt())
+            return "`" + argument + "` must not be empty";
+
+        var items = schema.get("items");
+        if (items != null && items.isJsonObject() && value.isJsonArray())
+        {
+            var itemSchema = items.getAsJsonObject();
+            var declaredItems = itemSchema.get("type");
+            var permitted = itemSchema.get("enum");
+
+            for (JsonElement element : value.getAsJsonArray())
+            {
+                if (declaredItems != null && !matchesType(element, declaredItems))
+                    return "`" + argument + "` must hold " + typesOf(declaredItems) + ", not " + shapeOf(element);
+
+                if (permitted != null && permitted.isJsonArray() && !holds(permitted.getAsJsonArray(), element))
+                    return "`" + argument + "` must hold one of " + namesOf(permitted.getAsJsonArray());
+            }
+        }
+
+        var minItems = schema.get("minItems");
+        if (minItems != null && value.isJsonArray() && value.getAsJsonArray().size() < minItems.getAsInt())
+            return "`" + argument + "` must hold at least " + minItems.getAsInt()
+                    + " value" + (minItems.getAsInt() == 1 ? "" : "s") + "; an empty list names nothing";
+
+        if (binding != null && binding.where() == McpTool.Where.PATH)
+        {
+            var text = value.isJsonPrimitive() ? value.getAsString() : value.toString();
+            if (text.isBlank())
+                return "`" + argument + "` must name something; a blank value resolves no path";
+
+            // A uuid is substituted into a path, and a path whose segment is a
+            // reserved literal belongs to another endpoint: "attribute-types"
+            // would answer with attribute types instead of one instrument.
+            if ("uuid".equals(binding.wire()) && !UUID_PATTERN.matcher(text).matches())
+                return "`" + argument + "` must be an entity uuid as " + listingOf(tool) + " reports it, not `"
+                        + text + "`";
+        }
+
+        return null;
+    }
+
+    /** the tool that lists the entities a uuid-taking tool addresses */
+    private static String listingOf(McpTool tool)
+    {
+        if (tool.name().contains("cash_account"))
+            return "pp_list_cash_accounts";
+        if (tool.name().contains("investment_account"))
+            return "pp_list_investment_accounts";
+        return "pp_list_instruments";
+    }
+
+    private static boolean matchesType(JsonElement value, JsonElement declared)
+    {
+        if (declared.isJsonArray())
+        {
+            for (JsonElement type : declared.getAsJsonArray())
+            {
+                if (matchesType(value, type))
+                    return true;
+            }
+            return false;
+        }
+
+        return matchesSingleType(value, declared.getAsString());
+    }
+
+    private static boolean matchesSingleType(JsonElement value, String type)
+    {
+        return switch (type)
+        {
+            case "string" -> value.isJsonPrimitive() && value.getAsJsonPrimitive().isString();
+            case "number", "integer" -> value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber();
+            case "boolean" -> value.isJsonPrimitive() && value.getAsJsonPrimitive().isBoolean();
+            case "array" -> value.isJsonArray();
+            case "object" -> value.isJsonObject();
+            case "null" -> value.isJsonNull();
+            default -> true;
+        };
+    }
+
+    private static String typesOf(JsonElement declared)
+    {
+        if (!declared.isJsonArray())
+            return "`" + declared.getAsString() + "`";
+
+        var names = new ArrayList<String>();
+        for (JsonElement type : declared.getAsJsonArray())
+            names.add("`" + type.getAsString() + "`");
+
+        return String.join(" or ", names);
+    }
+
+    private static String shapeOf(JsonElement value)
+    {
+        if (value.isJsonNull())
+            return "null";
+        if (value.isJsonArray())
+            return "an array";
+        if (value.isJsonObject())
+            return "an object";
+        if (value.getAsJsonPrimitive().isBoolean())
+            return "a boolean";
+        if (value.getAsJsonPrimitive().isNumber())
+            return "a number";
+
+        return "the string `" + value.getAsString() + "`";
+    }
+
+    private static boolean holds(JsonArray permitted, JsonElement value)
+    {
+        if (!value.isJsonPrimitive())
+            return false;
+
+        for (JsonElement candidate : permitted)
+        {
+            if (candidate.equals(value))
+                return true;
+        }
+        return false;
+    }
+
+    private static String namesOf(JsonArray permitted)
+    {
+        var names = new ArrayList<String>();
+        for (JsonElement element : permitted)
+            names.add("`" + element.getAsString() + "`");
+
+        return String.join(", ", names);
     }
 
     /** a missing {@code file} hands the files back inline, so the model recovers in this same call */

@@ -50,12 +50,17 @@ public final class McpDispatch
             switch (binding.where())
             {
                 case PATH:
+                    // Every path argument is required, so McpEndpoint has already
+                    // refused a null or a blank one. Substituting null would put
+                    // the literal placeholder back into the template, which is a
+                    // path another route owns.
                     if (!value.isJsonNull())
                         path = path.replace("{" + binding.wire() + "}", asText(value)); //$NON-NLS-1$ //$NON-NLS-2$
                     break;
                 case QUERY:
-                    if (!value.isJsonNull())
-                        query.put(binding.wire(), asQueryValue(value));
+                    var wireValue = asQueryValue(value);
+                    if (wireValue != null)
+                        query.put(binding.wire(), wireValue);
                     break;
                 case BODY:
                     body.add(binding.wire(), value);
@@ -109,15 +114,23 @@ public final class McpDispatch
      * Comma-joined, which is how this API spells a multi-valued parameter
      * throughout. Repetition has no representation in a {@code Map<String,
      * String>} and none is declared; McpToolsDriftTest holds that true.
+     * <p/>
+     * A {@code null} is not sent at all, so the endpoint applies its own
+     * default. An empty list never gets here: every list argument declares
+     * {@code minItems: 1}, and McpEndpoint refuses an empty one before dispatch.
      */
     private static String asQueryValue(JsonElement value)
     {
+        if (value.isJsonNull())
+            return null;
+
         if (!value.isJsonArray())
             return asText(value);
 
         var parts = new ArrayList<String>();
         for (JsonElement element : (JsonArray) value)
             parts.add(asText(element));
+
         return String.join(",", parts); //$NON-NLS-1$
     }
 }
