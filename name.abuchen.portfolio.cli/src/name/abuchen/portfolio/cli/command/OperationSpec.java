@@ -28,19 +28,24 @@ public record OperationSpec<C>(String name, String summary, Schema input, Handle
     }
 
     /**
-     * What a write handler outside <code>apply</code> sees of the batch: the
-     * model, the operation's input, the claims, and where its outcome goes.
+     * What a handler declared outside <code>apply</code> sees of the batch:
+     * its input, the evolving model, the claims and where its outcome goes.
      */
     public interface Context
     {
-        Client client();
-
-        boolean existedBeforeBatch(Object entity);
-
+        /** The input of this operation. */
         JsonObject json();
 
+        /** The evolving model. */
+        Client client();
+
+        /** Whether the object of the model was in the file before the batch started. */
+        boolean existedBeforeBatch(Object entity);
+
+        /** Claims entities for this operation. */
         Claims claims();
 
+        /** Reports what the operation did: its change or its failures. */
         void record(Outcome outcome);
     }
 }

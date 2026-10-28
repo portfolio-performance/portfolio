@@ -133,14 +133,12 @@ public final class OperationContext implements OperationSpec.Context
         return false;
     }
 
-    /** Claims entities for this operation. */
     @Override
     public Claims claims()
     {
         return uuid -> batch.claim(uuid, index);
     }
 
-    /** Whether the entity was already in the file before the batch started. */
     @Override
     public boolean existedBeforeBatch(Object entity)
     {
