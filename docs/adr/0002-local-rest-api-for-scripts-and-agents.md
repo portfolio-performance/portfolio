@@ -67,6 +67,20 @@ becomes a later thin adapter over the same service layer. The individual decisio
   was *already running* will complete, so that one carries no `Retry-After` and must not be resent,
   because a second write would apply the same change twice. A read is the exception: it changes
   nothing, so even one that had started is refused as retryable.
+- **Calculations and the connection have deadlines of their own.** A calculation that does not
+  finish within 120 s is answered with 503 `calculation-timeout` instead of a dropped connection.
+  Receiving a request and sending its response are each bounded by a 30 s watchdog against clients
+  that stall. At most three requests per calculation slot plus six are served at
+  once (12 by default), and one over the bound is refused (503 `server-busy`) before its body is
+  read, so no local process can make the application buffer an arbitrary number of request bodies.
+  The engines never check for an interrupt, so a calculation past its deadline runs on; it keeps its
+  calculation slot until it really ends. A calculation that finds every slot taken waits for one,
+  first come first served, rather than being refused at once — a model sends several tool calls in
+  one turn, and refusing one of them only makes it ask again — but the wait is bounded in time (30 s)
+  and in size (two per slot), so it cannot pile up; past either bound it is refused (503
+  `server-busy`). Two slots by default; the system property
+  `name.abuchen.portfolio.rest.calculationSlots` allows 1 to 8, at most the processors less one.
+  Deliberately no preference: every slot is a whole file's daily valuation in memory.
 - **The API vocabulary is deliberately more general than the model** (`Security` → *instrument*,
   `Portfolio` → *investment account*), because the contract cannot be renamed once clients exist.
   Java class names keep the model's vocabulary; the mapping and its rationale are in the README.
