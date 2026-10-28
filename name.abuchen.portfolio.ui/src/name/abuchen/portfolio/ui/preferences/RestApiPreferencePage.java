@@ -13,6 +13,7 @@ import java.util.Map;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -424,7 +425,13 @@ public class RestApiPreferencePage extends PreferencePage
             if (selected != null)
             {
                 // takes effect immediately; a misclick is recoverable (re-pair)
-                clientStore.revoke(selected.id());
+                if (!clientStore.revoke(selected.id()))
+                    // gone from this run, but the file still holds the hash: the
+                    // token comes back with the next start, and the table alone
+                    // would say it did not
+                    MessageDialog.openWarning(getShell(), Messages.PrefTitleRestApi,
+                            Messages.PrefMsgRestApiRevokeNotPersisted);
+
                 clientsViewer.setInput(clientStore.listClients());
                 revokeButton.setEnabled(false);
             }
@@ -451,6 +458,13 @@ public class RestApiPreferencePage extends PreferencePage
             return;
 
         var token = clientStore.addPersistentClient(dialog.getValue());
+
+        // the token works, but only until the application quits: the user has
+        // to know before copying it into a connector that expects it to last
+        if (!clientStore.survivesRestart(token))
+            MessageDialog.openWarning(getShell(), Messages.PrefTitleRestApi,
+                            Messages.PrefMsgRestApiClientNotPersisted);
+
         new ShowTokenDialog(getShell(), token, currentPort()).open();
         clientsViewer.setInput(clientStore.listClients());
     }
