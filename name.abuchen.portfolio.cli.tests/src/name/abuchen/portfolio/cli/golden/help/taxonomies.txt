@@ -1,0 +1,34 @@
+pp-cli taxonomies: Taxonomies in the order the app shows them (--sort position, the default) or by name, each with its classification tree flattened in pre-order: UUID, name, parent, path, target weight and direct assignments. --order desc reverses.
+
+Usage: pp-cli taxonomies [options]
+
+Options:
+  --limit <n>  Maximum number of items to return. (integer 1 to 1000, default 200)
+  --offset <n>  Number of items to skip; continue with nextOffset of the previous page. (integer at least 0, default 0)
+  --sort <field>  Field to sort by. (one of position, name, default position)
+  --order <asc|desc>  Direction of the sort. desc reverses the whole order, ties by id included. (one of asc, desc, default asc)
+  Global options (pp-cli --help): --file <path>, --format <format> (json), --verbose
+
+Response data: A page of the taxonomies.
+  items (array of object) The items of this page.
+    uuid (string) Canonical UUID.
+    name (string) Taxonomy name; empty if the file has none.
+    classifications (array of object) All classifications at every depth, flattened in tree pre-order: siblings by the rank the app shows, then name, then UUID. Not paged.
+      uuid (string) Canonical UUID.
+      name (string) Classification name; empty if the file has none.
+      parent (string, optional) UUID of the parent classification. Absent at the top level.
+      path (array of string) Names of the ancestors, top level first, excluding this classification.
+      targetWeight (number) The rebalancing target of the classification as an unrounded fraction of its parent. 0 if not set.
+      key (string, optional) The key of the classification, if set.
+      note (string, optional) Note, if set.
+      assignments (array of object) The assignments made directly to this classification, not to its subtree, ordered by name then UUID. Retired instruments and accounts are included.
+        instrument (string, optional) UUID of the instrument. Present for an instrument.
+        cashAccount (string, optional) UUID of the cash account. Present for a cash account.
+        name (string) Name of the instrument or account; empty if the file has none.
+        weight (number) The share of the instrument or account placed here, as a fraction of one. Unrounded.
+  total (integer) Number of items in the whole list.
+  nextOffset (integer, optional) Offset of the next page. Absent on the last page.
+
+Response meta: fileVersion, asOf, limit, offset, sort, order
+
+Error codes (meanings: pp-cli --help): unexpected-argument, unknown-option, option-value-required, invalid-option-value, file-required, file-not-found, file-unreadable, file-version-unsupported, password-required, incorrect-password, internal-error

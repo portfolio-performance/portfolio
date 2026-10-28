@@ -1,0 +1,5 @@
+pp-cli apply operation transaction.delete: Deletes a whole transaction record, both sides, found by the UUID of either of its sides. The response is one deleted change whose uuid is the record id, with the record as it was in before. A delete that would make an investment account's holding of an instrument negative at the end of any date, by removing a buy or a delivery or transfer into it, is refused.
+
+Input: one element of "operations" in the batch given with --input. The record to delete.
+  operation (string, one of transaction.delete) Operation name.
+  uuid (string) UUID of either side of the record.

@@ -1,0 +1,29 @@
+pp-cli apply operation transaction.add: Adds a transaction in the shape the transactions output uses. Cash-account events (deposit, removal, interest, dividend, fee, tax, refund) are one-sided. BUY and SELL create an investment-account side and a cash-account side together; TRANSFER creates both sides of a cash or security transfer; DELIVERY_INBOUND and DELIVERY_OUTBOUND move shares without a cash side. The response is one created change whose uuid is the record id. A write that would make an investment account's holding of an instrument negative at the end of any date is refused.
+
+Input: one element of "operations" in the batch given with --input. A transaction, in the shape the transactions output uses.
+  operation (string, one of transaction.add) Operation name.
+  type (string, one of BUY, SELL, DEPOSIT, REMOVAL, INTEREST, INTEREST_CHARGE, DIVIDENDS, FEES, FEES_REFUND, TAXES, TAX_REFUND, DELIVERY_INBOUND, DELIVERY_OUTBOUND, TRANSFER) Transaction type. TRANSFER needs a kind, from and to; BUY and SELL need an investmentAccount and a cashAccount; deliveries need an investmentAccount; the others need a cashAccount.
+  kind (string, one of cash, security, optional) Of a TRANSFER only: cash or security.
+  date (string) ISO date of the event.
+  time (string, optional) HH:mm; omit for midnight.
+  amount (number) Positive net amount. Of a BUY or SELL in the cash account's currency, of a cash transfer in the currency of from, of a security transfer in the instrument's currency.
+  currencyCode (string) ISO currency code of amount: the cash account's, or for a transfer the currency of from (cash) or of the instrument (security). A delivery may use any currency; if it is not the instrument's, a GROSS_VALUE unit is required.
+  targetAmount (number, optional) Of a cash transfer between accounts of different currencies: positive, in the currency of to. Refused when the currencies are the same.
+  exchangeRate (number, optional) Of a cross-currency cash transfer: optional, only checked against core's rounding tolerance. The stored rate is always amount divided by targetAmount and is returned in the record.
+  instrument (string, optional) UUID of the instrument. Required for DIVIDENDS, BUY, SELL, deliveries and security transfers; optional for fees and taxes; refused for deposits, removals, interest and cash transfers.
+  shares (number, optional) Positive number of shares. Required for BUY, SELL, deliveries and security transfers; accepted on a dividend; refused otherwise.
+  investmentAccount (string, optional) UUID of the investment account; it must already be in the file. Required for BUY, SELL and deliveries; refused for cash-account events and transfers.
+  cashAccount (string, optional) UUID of the cash account; it must already be in the file. Required for cash-account events, BUY and SELL; refused for deliveries and transfers.
+  from (string, optional) Of a TRANSFER only: UUID of the account it leaves, a cash account for a cash transfer and an investment account for a security transfer. Must differ from to.
+  to (string, optional) Of a TRANSFER only: UUID of the account it enters, of the same kind as from.
+  exDate (string, optional) ISO ex-date; accepted only on a dividend with an instrument and never after the date.
+  grossAmount (number, optional) Optional cross-check: amount plus or minus fees and taxes (for a BUY or inbound delivery amount minus them). Refused if it does not reconcile and on transfers; amount stays authoritative.
+  note (string, optional) Note.
+  source (string, optional) Where the record came from.
+  units (array of object, optional) Fees, taxes and the forex gross value an instrument in another currency needs. Taxes are accepted only on DIVIDENDS and INTEREST and fees only on DIVIDENDS, as in core's import check; refused on transfers.
+    type (string, one of FEE, TAX, GROSS_VALUE) Kind of unit.
+    amount (number) Positive amount, in the transaction's currency.
+    currencyCode (string) ISO currency code of amount; the transaction's currency.
+    forexAmount (number, optional) Original amount in the instrument's currency.
+    forexCurrencyCode (string, optional) ISO currency code of forexAmount.
+    exchangeRate (number, optional) Positive, unrounded: forexAmount times exchangeRate is approximately amount.

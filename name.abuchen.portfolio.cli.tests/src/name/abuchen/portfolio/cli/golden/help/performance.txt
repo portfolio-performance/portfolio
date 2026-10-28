@@ -1,0 +1,57 @@
+pp-cli performance: IRR, TTWROR and gains of the whole client, one investment account (optionally with its reference cash account), one cash account or one instrument over a period (--from and --to, or --period), by FIFO or moving-average cost, in the base currency or --currency; or with --by instrument, one record per instrument active in the period.
+
+Usage: pp-cli performance [options]
+
+Options:
+  --from <yyyy-MM-dd>  First day of the period: activity on it counts. With --to; not with --period.
+  --to <yyyy-MM-dd>  Last day of the period, inclusive. Defaults to today. Not with --period.
+  --period <code>  A reporting-period code of the desktop app, resolved by core relative to today: for example L1Y0 (last year), X or YTD (year to date), Y2025 (the year 2025), L0Y6 (last six months), S2025-01-15 (since a day). Instead of --from and --to.
+  --investment-account <ref>  Report this investment account only. One scope option at most.
+  --cash-account <ref>  Report this cash account only. One scope option at most.
+  --instrument <ref>  Report this instrument only. One scope option at most.
+  --with-reference-cash-account  Report the investment account together with its reference cash account. Only with --investment-account; fails with no-reference-cash-account if the account has none. (switch, default off)
+  --cost-method <method>  How capital gains are costed: fifo (the default) or moving-average. Echoed in meta.
+  --currency <code>  ISO currency of the figures. Defaults to the base currency of the file.
+  --by <dimension>  Break the figures down: instrument is the only dimension. Returns one record per instrument active in the period, sorted by name, instead of the figures of the scope. With the whole client or an investment account.
+  Global options (pp-cli --help): --file <path>, --format <format> (json), --verbose
+
+Response data: How the scope performed over the period. Every amount is in the reporting currency. Every figure but the currency is left out if an exchange rate is missing, with the warning exchange-rate-missing, and for a quiet instrument, with no-activity-in-period. With --by instrument, the currency and items instead.
+  currencyCode (string) The reporting currency of every amount.
+  items (array of object, optional) With --by instrument only: one record per instrument active in the period, sorted by name (case-insensitive, ordinal) then UUID. Not paged, with no total.
+    uuid (string) UUID of the instrument.
+    name (string) Name of the instrument.
+    retired (boolean) Whether the instrument is retired.
+    isin (string, optional) ISIN, if set.
+    tickerSymbol (string, optional) Ticker symbol, if set.
+    irr (number, optional) Internal rate of return of the instrument over the period, annualized, as a fraction: 0.05 is 5 %. It can differ slightly from irr at --instrument scope, which core calculates differently. Absent if core finds none.
+    ttwror (number, optional) True time-weighted rate of return over the period, not annualized, as a fraction: 0.05 is 5 %.
+    initialValue (number, optional) Value of the holding at the start of the period.
+    finalValue (number, optional) Market value of the holding at the end of the period.
+    dividends (number, optional) Dividends received in the period.
+    fees (number, optional) Fees paid in the period.
+    taxes (number, optional) Taxes paid in the period.
+    absoluteGain (number, optional) Market value at the end and sales and dividends, less the value at the start, purchases, fees and taxes. Core's delta: it does not depend on the cost method.
+    realizedCapitalGains (number, optional) Realized capital gains of the period, by the cost method.
+    unrealizedCapitalGains (number, optional) Unrealized capital gains on the holding at the end, by the cost method.
+  irr (number, optional) Internal rate of return over the period, annualized, as a fraction: 0.05 is 5 %. Absent if core finds none.
+  ttwror (number, optional) True time-weighted rate of return over the period, not annualized, as a fraction: 0.05 is 5 %.
+  absoluteGain (number, optional) Capital gains, realized capital gains, earnings and currency gains, less fees and taxes.
+  initialValue (number, optional) Value of the client at the start of the period.
+  finalValue (number, optional) Value of the client at the end of the period.
+  capitalGains (number, optional) Unrealized capital gains of the period, by the cost method.
+  realizedCapitalGains (number, optional) Realized capital gains of the period, by the cost method.
+  earnings (number, optional) Dividends and interest, net of interest charges.
+  fees (number, optional) Fees paid.
+  taxes (number, optional) Taxes paid.
+  currencyGains (number, optional) Gains and losses from changes of exchange rates.
+  transfers (number, optional) Deposits less removals, and deliveries in less deliveries out.
+
+Response meta: fileVersion, asOf, from, to, scope, costMethod, currency; optional: period, exchangeRates
+
+Warnings:
+  no-activity-in-period  The instrument of --instrument was not held at the start or end of the period and had no transaction in it, so no figure is reported. Carries the uuid and name of the instrument.
+  exchange-rate-missing  No usable exchange rate was found for a currency pair on a day core needed it, so the figures are left out. Carries baseCurrency, termCurrency and the count of days without a rate.
+  stale-exchange-rate  An exchange rate more than 7 days before the day needed was used. Carries baseCurrency, termCurrency, the count of days and the maxAgeDays.
+  exchange-rate-cache-unavailable  The desktop app's ECB rate cache is missing, unreadable or invalid, so it is not used. Carries the path if known and a reason: not-configured, not-found, unreadable or unparsable.
+
+Error codes (meanings: pp-cli --help): unexpected-argument, unknown-option, option-value-required, option-required, invalid-option-value, conflicting-options, invalid-date-range, period-required, file-required, file-not-found, file-unreadable, file-version-unsupported, password-required, incorrect-password, reference-not-found, reference-ambiguous, no-reference-cash-account, internal-error

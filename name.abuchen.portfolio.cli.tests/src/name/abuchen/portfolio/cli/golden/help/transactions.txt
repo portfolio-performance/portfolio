@@ -1,0 +1,70 @@
+pp-cli transactions: Business events as transaction records, each joining the sides of a buy, sell or transfer, filtered by date range, account, instrument and type.
+
+Usage: pp-cli transactions [options]
+
+Options:
+  --investment-account <ref>  Only records with a side in this investment account.
+  --cash-account <ref>  Only records with a side in this cash account.
+  --instrument <ref>  Only records of this instrument, including its dividends, fees and taxes.
+  --type <types>  Only records of these types: comma-separated, case-insensitive values of the type field.
+  --from <yyyy-MM-dd>  First day of the range, inclusive. Without it, no lower bound.
+  --to <yyyy-MM-dd>  Last day of the range, inclusive. Defaults to today.
+  --currency <code>  Adds converted to every record: its amount in this ISO currency, with rate, date and source. amount stays in the record's currency.
+  --limit <n>  Maximum number of items to return. (integer 1 to 1000, default 200)
+  --offset <n>  Number of items to skip; continue with nextOffset of the previous page. (integer at least 0, default 0)
+  --sort <field>  Field to sort by. (one of date, updatedAt, default date)
+  --order <asc|desc>  Direction of the sort. desc reverses the whole order, ties by id included. (one of asc, desc, default asc)
+  Global options (pp-cli --help): --file <path>, --format <format> (json), --verbose
+
+Response data: A page of the transaction records.
+  items (array of object) The items of this page.
+    id (string) UUID of the investment-account side of a buy or sell, the outgoing side of a transfer, else of the transaction.
+    type (string, e.g. BUY, SELL, DEPOSIT, REMOVAL, INTEREST, INTEREST_CHARGE, DIVIDENDS, FEES, FEES_REFUND, TAXES, TAX_REFUND, DELIVERY_INBOUND, DELIVERY_OUTBOUND, TRANSFER, TRANSFER_IN, TRANSFER_OUT) Core's transaction type. An open enum: new values may appear. An intact transfer is TRANSFER; a side without its partner keeps its raw type, e.g. TRANSFER_OUT.
+    kind (string, one of cash, security, optional) Of a TRANSFER.
+    date (string) ISO date.
+    time (string, optional) HH:mm; absent if the stored time is midnight.
+    sides (array of string) UUIDs of every side of the event, id first.
+    amount (number) Net amount as stored, of the investment-account side of a buy or sell and the outgoing side of a transfer. The currency may be a minor currency unit, such as ILA (1/100 ILS) or GBX (1/100 GBP); the figure is then in that unit. The value in the currency asked for with --currency is in converted.
+    currencyCode (string) ISO currency code of amount. Minor units: as above.
+    targetAmount (number, optional) Amount of the incoming side of a cross-currency transfer.
+    targetCurrencyCode (string, optional) ISO currency code of targetAmount.
+    exchangeRate (number, optional) Of a cross-currency cash transfer with a rate: unrounded as stored, targetAmount times exchangeRate is approximately amount.
+    instrument (string, optional) UUID of the instrument.
+    instrumentName (string, optional) Name for instrument, empty if none. Present exactly when it is.
+    shares (number, optional) Number of shares.
+    investmentAccount (string, optional) UUID of the investment account.
+    investmentAccountName (string, optional) Name for investmentAccount, empty if none. Present exactly when it is.
+    cashAccount (string, optional) UUID of the cash account.
+    cashAccountName (string, optional) Name for cashAccount, empty if none. Present exactly when it is.
+    from (string, optional) Of a TRANSFER: UUID of the account it leaves.
+    fromName (string, optional) Name for from, empty if none. Present exactly when it is.
+    to (string, optional) Of a TRANSFER: UUID of the account it enters.
+    toName (string, optional) Name for to, empty if none. Present exactly when it is.
+    exDate (string, optional) ISO ex-date of a dividend.
+    note (string, optional) The note.
+    source (string, optional) Where the record was imported from.
+    updatedAt (string, optional) When the record last changed: the latest of its sides, as an ISO-8601 UTC instant such as 2026-10-24T15:04:57Z. Absent if none has one.
+    units (array of object) Fees, taxes and forex of the record; empty if none.
+      type (string, one of FEE, TAX, GROSS_VALUE) Kind of unit.
+      amount (number) Amount in the currency of the record. Minor units: as above.
+      currencyCode (string) ISO currency code of the amount. Minor units: as above.
+      forexAmount (number, optional) Original amount in a foreign currency. Minor units: as above.
+      forexCurrencyCode (string, optional) ISO currency code of forexAmount. Minor units: as above.
+      exchangeRate (number, optional) Unrounded as stored: forexAmount times exchangeRate is approximately amount.
+    converted (object, optional) The amount in the currency asked for with --currency. Absent if no rate was found.
+      currencyCode (string) The ISO currency code asked for.
+      amount (number) The amount converted, rounded to minor units like core does.
+      rate (number) Unrounded factor from the native to the converted currency.
+      rateDate (string) ISO date of the rate; of the oldest if chained.
+      rateSource (string, one of identity, transaction, instrument, ecb, fixed) Where the rate comes from: transaction is the record's own forex unit or transfer rate, instrument an exchange-rate instrument of the file, ecb the desktop app's ECB cache, fixed one of core's fixed pairs such as GBX to GBP.
+  total (integer) Number of items in the whole list.
+  nextOffset (integer, optional) Offset of the next page. Absent on the last page.
+
+Response meta: fileVersion, asOf, limit, offset, sort, order, to; optional: from, currency, investmentAccount, cashAccount, instrument, types, exchangeRates
+
+Warnings:
+  exchange-rate-missing  No usable exchange rate for a currency pair; its figures are left out. Carries baseCurrency, termCurrency and the count of affected items.
+  stale-exchange-rate  An exchange rate over 7 days older than the day needed was used. Carries baseCurrency, termCurrency, the count of records and maxAgeDays.
+  exchange-rate-cache-unavailable  The desktop app's ECB rate cache is missing, unreadable or invalid, so it is not used. Carries the path if known and a reason: not-configured, not-found, unreadable or unparsable.
+
+Error codes (meanings: pp-cli --help): unexpected-argument, unknown-option, option-value-required, invalid-option-value, invalid-date-range, file-required, file-not-found, file-unreadable, file-version-unsupported, password-required, incorrect-password, reference-not-found, reference-ambiguous, internal-error
