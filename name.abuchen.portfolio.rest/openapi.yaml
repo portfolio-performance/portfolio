@@ -169,6 +169,24 @@ info:
     **normal and temporary**: respect the `Retry-After` header and try again. Reads
     are unaffected.
 
+    ## Busy, slow or overloaded
+
+    Any request may be answered with a `503`, whose `type` says what to do:
+
+    - `ui-busy`: the application did not take the request on within 10 seconds.
+      It was not executed and never will be — retry after `Retry-After`. A read
+      gets this answer even when it had started: it changes nothing, so sending
+      it again is safe.
+    - `ui-request-underway`: a write was already running when the wait expired
+      and will complete. There is no `Retry-After`: do not send it again, read
+      the state back instead.
+    - `calculation-timeout`: a calculation did not finish within 120 seconds.
+      The same question takes just as long again — ask a smaller one.
+    - `server-busy`: more requests are in flight than the server serves at once,
+      or no calculation slot came free while the request waited for one (up to
+      30 seconds, a few requests at most) — a calculation keeps its slot until it
+      really ends, even past its deadline. Retry after `Retry-After`.
+
 servers:
   - url: http://127.0.0.1:{port}
     description: Loopback interface of the running application
@@ -2466,6 +2484,10 @@ components:
             - https://portfolio-performance.info/rest/problems/pairing-pending
             - https://portfolio-performance.info/rest/problems/pairing-cooldown
             - https://portfolio-performance.info/rest/problems/internal-error
+            - https://portfolio-performance.info/rest/problems/ui-busy
+            - https://portfolio-performance.info/rest/problems/ui-request-underway
+            - https://portfolio-performance.info/rest/problems/calculation-timeout
+            - https://portfolio-performance.info/rest/problems/server-busy
         title:
           type: string
           description: Short, human-readable summary of the problem kind.

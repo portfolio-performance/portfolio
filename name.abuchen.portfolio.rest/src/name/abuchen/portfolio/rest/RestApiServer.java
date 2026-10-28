@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
@@ -71,6 +72,7 @@ public class RestApiServer
     private final int port;
     private final Predicate<String> tokenValidator;
     private final Router router;
+    private final Semaphore permits;
     private final long ioDeadlineMillis;
 
     private HttpServer server;
@@ -89,17 +91,30 @@ public class RestApiServer
         }
     };
 
+    /**
+     * Serves at most {@link RestApiLimits#maxConcurrentRequests()} requests at
+     * once. Every request runs on its own virtual thread, so without a bound any
+     * local process could open connections until the application runs out of
+     * memory - each may carry a body of up to {@link #MAX_REQUEST_BODY}, and the
+     * pairing and MCP endpoints read it before a token is checked. The bound
+     * leaves room for every calculation running or waiting for a slot, plus a
+     * reserve; a request beyond it is refused at once with a 503 and a
+     * Retry-After rather than queued.
+     */
     public RestApiServer(int port, Predicate<String> tokenValidator, Router router)
     {
-        this(port, tokenValidator, router, TimeUnit.SECONDS.toMillis(IO_DEADLINE_SECONDS));
+        this(port, tokenValidator, router, RestApiLimits.maxConcurrentRequests(),
+                        TimeUnit.SECONDS.toMillis(IO_DEADLINE_SECONDS));
     }
 
-    /** for tests: a shorter watchdog than any real client should see */
-    /* package */ RestApiServer(int port, Predicate<String> tokenValidator, Router router, long ioDeadlineMillis)
+    /** for tests: a smaller bound and a shorter watchdog than any real client should see */
+    /* package */ RestApiServer(int port, Predicate<String> tokenValidator, Router router, int maxConcurrentRequests,
+                    long ioDeadlineMillis)
     {
         this.port = port;
         this.tokenValidator = tokenValidator;
         this.router = router;
+        this.permits = new Semaphore(maxConcurrentRequests);
         this.ioDeadlineMillis = ioDeadlineMillis;
     }
 
@@ -137,7 +152,42 @@ public class RestApiServer
 
     private void dispatch(HttpExchange exchange)
     {
-        serve(exchange);
+        if (!permits.tryAcquire())
+        {
+            refuseBusy(exchange);
+            return;
+        }
+
+        try
+        {
+            serve(exchange);
+        }
+        finally
+        {
+            permits.release();
+        }
+    }
+
+    /**
+     * Refused before anything is read: the point of the bound is that a request
+     * over it costs nothing but this answer.
+     */
+    private void refuseBusy(HttpExchange exchange)
+    {
+        var sending = watchdog.schedule(exchange::close, ioDeadlineMillis, TimeUnit.MILLISECONDS);
+        try
+        {
+            write(exchange, problem(ApiException.serverBusy()));
+        }
+        catch (IOException e)
+        {
+            // the caller is gone; there is nobody left to tell
+        }
+        finally
+        {
+            sending.cancel(false);
+            exchange.close();
+        }
     }
 
     private void serve(HttpExchange exchange)

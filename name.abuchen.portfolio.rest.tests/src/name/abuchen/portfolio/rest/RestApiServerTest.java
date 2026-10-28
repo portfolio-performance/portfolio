@@ -14,7 +14,11 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Before;
@@ -373,6 +377,52 @@ public class RestApiServerTest
     }
 
     /**
+     * Requests beyond the bound are refused at once, with a Retry-After, rather
+     * than each holding a thread and a buffered body.
+     */
+    @Test
+    public void testRequestsBeyondTheConcurrencyBoundAreRefused() throws Exception
+    {
+        var entered = new CountDownLatch(2);
+        var release = new CountDownLatch(1);
+
+        var router = new Router();
+        router.add("GET", "/v1/slow", request -> {
+            entered.countDown();
+            release.await(10, TimeUnit.SECONDS);
+            return Response.json(200, JsonParser.parseString("{}"));
+        });
+
+        var bounded = new RestApiServer(0, TOKEN::equals, router, 2, 30_000);
+        bounded.start();
+        try
+        {
+            var pending = new ArrayList<CompletableFuture<HttpResponse<String>>>();
+            for (int ii = 0; ii < 2; ii++)
+                pending.add(http.sendAsync(slow(bounded), HttpResponse.BodyHandlers.ofString()));
+
+            assertThat(entered.await(5, TimeUnit.SECONDS), is(true));
+
+            var refused = http.send(slow(bounded), HttpResponse.BodyHandlers.ofString());
+            assertThat(refused.statusCode(), is(503));
+            assertThat(refused.body(), containsString("server-busy"));
+            assertThat(refused.headers().firstValue("Retry-After").orElse(""), is("1"));
+
+            release.countDown();
+            for (var response : pending)
+                assertThat(response.get(5, TimeUnit.SECONDS).statusCode(), is(200));
+
+            // and the permits come back
+            assertThat(http.send(slow(bounded), HttpResponse.BodyHandlers.ofString()).statusCode(), is(200));
+        }
+        finally
+        {
+            release.countDown();
+            bounded.stop();
+        }
+    }
+
+    /**
      * A client that announces a body and never sends it is cut off by the
      * watchdog, and does not keep the server from answering anyone else.
      */
@@ -384,7 +434,7 @@ public class RestApiServerTest
                         request -> Response.json(201, JsonParser.parseString("{\"status\":\"pending\"}")));
         router.add("GET", "/v1/ping", request -> Response.json(200, JsonParser.parseString("{\"pong\":true}")));
 
-        var guarded = new RestApiServer(0, TOKEN::equals, router, 500);
+        var guarded = new RestApiServer(0, TOKEN::equals, router, 1, 500);
         guarded.start();
         try (var socket = new Socket(InetAddress.getLoopbackAddress(), guarded.getPort()))
         {
@@ -398,7 +448,7 @@ public class RestApiServerTest
             // closed without an answer: end of stream, not a timeout
             assertThat(socket.getInputStream().read(), is(-1));
 
-            // the server answers again
+            // the one permit is free again
             var response = http.send(HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + guarded.getPort()
                             + "/v1/ping")).header("Authorization", "Bearer " + TOKEN).GET().build(),
                             HttpResponse.BodyHandlers.ofString());
@@ -408,6 +458,12 @@ public class RestApiServerTest
         {
             guarded.stop();
         }
+    }
+
+    private HttpRequest slow(RestApiServer target)
+    {
+        return HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + target.getPort() + "/v1/slow"))
+                        .header("Authorization", "Bearer " + TOKEN).GET().build();
     }
 
     /** the raw response head, exactly as the wire sent it */
