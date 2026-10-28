@@ -120,9 +120,9 @@ info:
     `-0.000000000002438937940496544`.
 
     A rate the model cannot define for the interval is `null`, never `0` — handle
-    it rather than assuming a number. A **weight** is not a rate and is not
-    rounded: a dust holding is a legitimately tiny fraction of a portfolio, where
-    a rate that small is only ever noise.
+    it rather than assuming a number. A **weight** is not a rate, but it is
+    served at the same 8 decimal places: 1e-8 is a millionth of a percent, and a
+    holding below that still carries its exact `valuation`.
 
     ## Methods
 
@@ -864,12 +864,24 @@ paths:
         closing value:
         `openingValue + unrealizedCapitalGains + realizedCapitalGains + income +
         fees + taxes + currencyGains + netDeposits = closingValue`. `fees` and
-        `taxes` are therefore negative. `netDeposits` is the external capital
+        `taxes` are therefore negative when they cost money, and positive for a
+        refund. The identity usually holds to the cent; first-in-first-out
+        rounding can leave a few cents, and with foreign currencies the terms
+        are converted at the dates they happened and the opening and closing
+        values at the interval's ends, which can leave a larger residual — the
+        application's own calculation shows the same figures.
+
+        Capital gains are stated before fees and taxes, which stand as terms of
+        their own — the same as the per-instrument report with
+        `taxesAndFees=excluded`, and the only way the sum can add up. `taxes` is
+        what was booked in the period (withholding, advance lump sums, taxes on
+        sales), not a tax computed from the period's gains, so it can exceed them. `netDeposits` is the external capital
         flow (deposits less removals) over the period; it is *not* part of the
         performance-driven change, but is required for the value reconciliation.
 
         `costMethod` chooses how a security's gains split into realized and
-        unrealized; it does not affect their sum, nor the returns.
+        unrealized; it does not affect their sum beyond rounding, nor the
+        returns.
 
         `openingDate` and `closingDate` are **valuation snapshot dates, not a
         record range**. The opening balance is measured as of the end of
@@ -898,7 +910,9 @@ paths:
             The closing valuation date (default: today). `closingValue` equals
             `GET .../holdings?date={closingDate}`'s `totalAssets`. Must be
             strictly after `openingDate`; an empty or inverted range is rejected
-            `400 invalid-range`.
+            `400 invalid-range`. Future dates are accepted and value at the last
+            known prices; `ttwror` stops at today, which the response states as
+            `timeWeightedUntil`.
           schema:
             type: string
             format: date
@@ -925,6 +939,7 @@ paths:
                   value:
                     openingDate: "2024-01-01"
                     closingDate: "2024-12-31"
+                    timeWeightedUntil: "2024-12-31"
                     reportingCurrency: EUR
                     costMethod: fifo
                     ttwror: 0.0723
@@ -979,6 +994,11 @@ paths:
         series. A request for all groups over every instrument of a large file
         with a long interval is slow; there is no pagination.
 
+        **Matching the aggregate report.** Capital gains match the aggregate
+        endpoint with `taxesAndFees=excluded`, its fees and taxes being separate
+        terms there. The rows still do not add up to it: cash accounts, account
+        fees and fees on transfers belong to no instrument.
+
         **Signs.** Every money field here is a magnitude: `fees` is the sum of
         the fees charged and is positive. Only fields that are terms of a
         reconciling sum are signed, which is why the aggregate endpoint's
@@ -1014,6 +1034,7 @@ paths:
                   value:
                     openingDate: "2025-01-01"
                     closingDate: "2025-12-31"
+                    timeWeightedUntil: "2025-12-31"
                     reportingCurrency: EUR
                     costMethod: fifo
                     taxesAndFees: included
@@ -1104,6 +1125,7 @@ paths:
                   value:
                     openingDate: "2025-01-01"
                     closingDate: "2025-12-31"
+                    timeWeightedUntil: "2025-12-31"
                     reportingCurrency: EUR
                     costMethod: fifo
                     taxesAndFees: included
@@ -1388,7 +1410,8 @@ components:
         The closing valuation date (default: today). Must be strictly after
         `openingDate`; an empty or inverted range is rejected `400
         invalid-range`. Future dates are accepted and value at the last known
-        prices.
+        prices; the time-weighted figures stop at today, which the response
+        states as `timeWeightedUntil`.
       schema:
         type: string
         format: date
@@ -1501,8 +1524,11 @@ components:
         average cost of the shares rather than the matched lots.
 
         It does **not** change `irr`, which is derived from the actual cash
-        flows and has no moving-average counterpart — so a request with
-        `moving-average` returns a deliberately mixed-basis item. Nor does it
+        flows of the lots matched first in, first out — as in the
+        application's trades view — and has no moving-average counterpart. A
+        request with `moving-average` therefore returns a deliberately
+        mixed-basis item, whose `irr` can even differ in sign from its
+        `profitLoss`. Nor does it
         change `exitValue`, which is what the shares realized or are worth.
 
         `entryValue`, `profitLoss` and `return` are `null` — always all three
@@ -1758,9 +1784,11 @@ components:
           type: [number, "null"]
           description: |
             The internal rate of return as a fraction (0.0523 is 5.23 %),
-            annualized, from the trade's actual cash flows. Does **not** follow
-            `costMethod` or `taxesAndFees` — there is no variant of it. `null`
-            when the model cannot define it.
+            annualized, from the actual cash flows of the lots matched first
+            in, first out. Does **not** follow `costMethod` or `taxesAndFees` —
+            there is no variant of it — so under `moving-average` it can differ
+            in sign from `profitLoss`. Annualizing makes it extreme for a short
+            holding period. `null` when the model cannot define it.
         return:
           type: [number, "null"]
           description: |
@@ -2183,7 +2211,13 @@ components:
           description: The holding's value in the reporting currency.
         weight:
           type: number
-          description: The holding's fraction (0–1) of total assets — not a percentage.
+          description: |
+            The holding's fraction of total assets — not a percentage. A cash
+            account can hold a negative balance (a loan, a credit card); its
+            weight is then negative and the others are divided by the smaller
+            net total, so a weight can exceed 1. Rounded to 8 decimal places, so
+            the weights add up to 1 within that rounding, unless total assets are
+            zero - then every weight is 0.
         localValuation:
           allOf:
             - $ref: "#/components/schemas/MonetaryValue"
@@ -2198,6 +2232,7 @@ components:
       required:
         - openingDate
         - closingDate
+        - timeWeightedUntil
         - reportingCurrency
         - costMethod
         - ttwror
@@ -2213,6 +2248,18 @@ components:
           type: string
           format: date
           description: The effective closing valuation date.
+        timeWeightedUntil:
+          type: string
+          format: date
+          description: |
+            The last day `ttwror` is measured to: `closingDate`, or today when
+            `closingDate` lies in the future, because the time-weighted engine
+            never runs past today. The breakdown and `irr` run to `closingDate`
+            and include the transactions dated after today, valued at the
+            latest known prices — a planned transaction shows its effect there.
+            When the two dates differ the report mixes two periods, and neither
+            return is a forecast. When `openingDate` is today or later nothing
+            could be measured, and `ttwror` and `irr` are `null`.
         reportingCurrency:
           type: string
           description: |
@@ -2232,13 +2279,18 @@ components:
           description: |
             The true time-weighted rate of return over the interval, as a
             fraction (0.0723 is 7.23 %) — not a percentage. `null` when the
-            model cannot define it for the interval.
+            model cannot define it for the interval, when `openingDate` is
+            today or later - such a period has no price movement to measure -
+            and when the file held nothing and moved no money at any time in
+            the interval, which leaves no capital to measure a return on.
         irr:
           type: [number, "null"]
           description: |
             The internal (money-weighted) rate of return over the interval, as a
-            fraction — not a percentage. `null` when the model cannot define it
-            for the interval.
+            fraction — not a percentage, and annualized, so over a period of a
+            few days it can be extreme. `null` when `openingDate` is today or
+            later, when the file held nothing in the interval (see `ttwror`),
+            and when the model cannot define it for the interval.
         breakdown:
           $ref: "#/components/schemas/PerformanceBreakdown"
         fxWarnings:
@@ -2314,6 +2366,7 @@ components:
       required:
         - openingDate
         - closingDate
+        - timeWeightedUntil
         - reportingCurrency
         - costMethod
         - taxesAndFees
@@ -2328,6 +2381,20 @@ components:
           type: string
           format: date
           description: The effective closing valuation date.
+        timeWeightedUntil:
+          type: string
+          format: date
+          description: |
+            The last day the `timeWeighted` and `risk` figures are measured to:
+            `closingDate`, or today when `closingDate` lies in the future,
+            because the time-weighted engine never runs past today. Valuation,
+            gains, income, expenses and `moneyWeighted` run to `closingDate`
+            and include the transactions dated after today, valued at the latest
+            known prices. When the two dates differ the report mixes two
+            periods, and neither return is a forecast. When `openingDate` is
+            today or later nothing could be measured: every return and every
+            risk ratio is `null`; `longestDrawdownDays`, which the 1.0 contract
+            keeps non-null, is `0`.
         reportingCurrency:
           type: string
           description: |
@@ -2516,20 +2583,25 @@ components:
       description: |
         What the instrument cost during the interval: the charges embedded in
         its trades and dividends, plus the standalone fee and tax bookings
-        attributed to it, net of refunds.
+        attributed to it, net of refunds. Both are positive magnitudes as a
+        rule, but negative when refunds outweigh the charges in the interval —
+        a tax refund booked against the instrument, for example.
       required: [fees, taxes]
       properties:
         fees:
           allOf:
             - $ref: "#/components/schemas/MonetaryValue"
           description: |
-            The fees charged, as a positive magnitude — unlike the aggregate
-            endpoint's `breakdown.fees`, which is negated so that its
-            decomposition adds up.
+            The fees charged net of fee refunds, as a positive magnitude unless
+            refunds outweigh them — unlike the aggregate endpoint's
+            `breakdown.fees`, which is negated so that its decomposition adds
+            up.
         taxes:
           allOf:
             - $ref: "#/components/schemas/MonetaryValue"
-          description: The taxes charged, as a positive magnitude.
+          description: |
+            The taxes charged net of tax refunds, as a positive magnitude
+            unless refunds outweigh them.
 
     InstrumentRisk:
       type: object
@@ -2540,10 +2612,16 @@ components:
       properties:
         volatility:
           type: [number, "null"]
-          description: The standard deviation of the return series.
+          description: |
+            The standard deviation of the return series. `null` when the
+            interval has fewer than two daily returns (counted over weekdays up
+            to `timeWeightedUntil`): one return has no spread, and 0 would read
+            as a measured absence of risk.
         semiVolatility:
           type: [number, "null"]
-          description: The standard deviation of the negative returns only.
+          description: |
+            The standard deviation of the negative returns only. `null` under
+            the same condition as `volatility`.
         maxDrawdown:
           type: [number, "null"]
           description: |
@@ -2559,7 +2637,9 @@ components:
             between data points, it is never shorter than the sampling interval
             — a period with no drawdown at all still reports 1. This is **not**
             the duration of the deepest drawdown, which is a different and
-            shorter interval — hence the name.
+            shorter interval — hence the name. `0` when `openingDate` is today
+            or later: nothing could be measured, and the 1.0 contract keeps this
+            field non-null — the `null` ratios next to it say so.
 
     FieldError:
       type: object
