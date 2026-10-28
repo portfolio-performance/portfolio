@@ -294,7 +294,8 @@ public final class ApiRoutes
         router.add("GET", "/v1/files", onUiThread(ui, true, files::list)); //$NON-NLS-1$ //$NON-NLS-2$
 
         router.add("GET", "/v1/files/{file}/instruments", read(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$
-                        (client, req) -> SecuritiesHandler.list(client)));
+                        (client, req) -> SecuritiesHandler.list(client, req.queryParam("query"))), //$NON-NLS-1$
+                        "query"); //$NON-NLS-1$
         // literal sub-collection: the Router prefers it over the {uuid} route
         // because it has fewer placeholders, whatever the registration order
         router.add("GET", "/v1/files/{file}/instruments/attribute-types", read(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$
