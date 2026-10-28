@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli;
+package name.abuchen.portfolio.cli.command;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
@@ -6,14 +6,11 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.cli.command.CommandSpec;
-import name.abuchen.portfolio.cli.command.OptionSpec;
-import name.abuchen.portfolio.cli.command.ReferenceOption;
-import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.cli.performance.PerformanceCommand;
 
 /**
@@ -21,9 +18,18 @@ import name.abuchen.portfolio.cli.performance.PerformanceCommand;
  * from its declared options apply to any command that declares such an
  * option, including one no hand-written list names.
  */
-public class ErrorSpecTest
+public class ErrorCodeTest
 {
     private static final OptionSpec TEXT = new OptionSpec("name", "text", "A text.");
+
+    @Test
+    public void aProblemDocumentCarriesThePublishedCode()
+    {
+        var problem = CliException.usage(ErrorCode.INVALID_DATE_RANGE, "Invalid date range", "Detail.").toProblem();
+
+        assertThat(problem.get("code"), is("invalid-date-range"));
+        assertThat(problem.get("type"), is("urn:pp-cli:error:invalid-date-range"));
+    }
 
     @Test
     public void aCommandWithAReferenceOptionCanFailToResolveIt()
@@ -59,6 +65,6 @@ public class ErrorSpecTest
 
     private static List<String> codes(CommandSpec command)
     {
-        return ErrorSpec.ALL.stream().filter(e -> e.appliesTo(command)).map(ErrorSpec::code).toList();
+        return Arrays.stream(ErrorCode.values()).filter(e -> e.appliesTo(command)).map(ErrorCode::code).toList();
     }
 }

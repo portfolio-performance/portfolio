@@ -97,7 +97,7 @@ final class References
     static <T> T resolve(Kind<T> kind, Client client, String option, String value) throws CliException
     {
         if (value.isBlank())
-            throw CliException.usage("invalid-option-value", "Invalid option value",
+            throw CliException.usage(ErrorCode.INVALID_OPTION_VALUE, "Invalid option value",
                             "Option '--" + option + "' needs a reference, not a blank value.")
                             .with("option", option).with("value", value);
 
@@ -120,13 +120,13 @@ final class References
             return matches.get(0);
 
         if (matches.isEmpty())
-            throw CliException.failure("reference-not-found", "Reference not found",
+            throw CliException.failure(ErrorCode.REFERENCE_NOT_FOUND, "Reference not found",
                             "No " + kind.label() + " matches '" + value + "'.", 404).with("option", option)
                             .with("value", value);
 
         var candidates = matches.stream().sorted(kind.source().ordering()).map(m -> candidate(kind, m, value))
                         .toList();
-        throw CliException.failure("reference-ambiguous", "Reference ambiguous", "'" + value + "' matches "
+        throw CliException.failure(ErrorCode.REFERENCE_AMBIGUOUS, "Reference ambiguous", "'" + value + "' matches "
                         + candidates.size() + " " + kind.label() + "s. Use one of the candidate UUIDs.", 409)
                         .with("option", option).with("value", value).with("candidates", candidates);
     }

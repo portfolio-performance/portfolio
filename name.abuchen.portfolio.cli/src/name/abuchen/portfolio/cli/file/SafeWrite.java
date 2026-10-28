@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.cli.command.CliException;
 import name.abuchen.portfolio.cli.command.CommandContext;
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.OptionSpec;
 import name.abuchen.portfolio.cli.command.Warning;
 import name.abuchen.portfolio.cli.command.WarningSpec;
@@ -239,7 +240,7 @@ public final class SafeWrite
 
                 settings.environment().beforeRecheck(file);
                 if (!fingerprint.equals(Fingerprint.of(file)))
-                    throw CliException.failure("file-changed", "Client file changed while it was being written",
+                    throw CliException.failure(ErrorCode.FILE_CHANGED, "Client file changed while it was being written",
                                     "The client file was changed by someone else after it was read, for example"
                                                     + " by a save in the app. Nothing was written. Run the command again.",
                                     409).with("file", file.toString());
@@ -274,7 +275,7 @@ public final class SafeWrite
 
     private static CliException writeFailed(Exception e)
     {
-        return CliException.failure("write-failed", "Client file could not be written",
+        return CliException.failure(ErrorCode.WRITE_FAILED, "Client file could not be written",
                         "The client file was not changed: " + e.getMessage(), 500, e);
     }
 
@@ -328,7 +329,7 @@ public final class SafeWrite
             return;
 
         if (!settings.force())
-            throw CliException.failure("file-open-in-app", "Client file is open in another program",
+            throw CliException.failure(ErrorCode.FILE_OPEN_IN_APP, "Client file is open in another program",
                             "Another process has the file open, probably the Portfolio Performance app. Close it there first, or pass --force to write anyway; unsaved changes in the app would then overwrite this change when saved.",
                             409).with("file", file.toString());
 
@@ -444,7 +445,7 @@ public final class SafeWrite
             }
             catch (IOException e)
             {
-                throw CliException.failure("write-failed", "Client file could not be locked",
+                throw CliException.failure(ErrorCode.WRITE_FAILED, "Client file could not be locked",
                                 "The lock file " + path + " could not be created: " + e.getMessage(), 500, e);
             }
 
@@ -456,7 +457,7 @@ public final class SafeWrite
             catch (IOException e)
             {
                 lock.close();
-                throw CliException.failure("write-failed", "Client file could not be locked",
+                throw CliException.failure(ErrorCode.WRITE_FAILED, "Client file could not be locked",
                                 "The lock file " + path + " could not be written: " + e.getMessage(), 500, e);
             }
             return lock;
@@ -474,7 +475,7 @@ public final class SafeWrite
                 holder = "";
             }
 
-            var problem = CliException.failure("file-locked", "Client file is locked",
+            var problem = CliException.failure(ErrorCode.FILE_LOCKED, "Client file is locked",
                             "Another pp-cli is writing this file, or crashed while doing so. Lock file: " + path
                                             + (holder.isEmpty() ? "" : " (PID " + holder + ")")
                                             + ". Delete it if no other pp-cli is running.",

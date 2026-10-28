@@ -23,7 +23,7 @@ public record DateRange(Optional<LocalDate> from, LocalDate to)
         var to = context.date(toOption).orElse(LocalDate.now(context.clock()));
 
         if (from.isPresent() && from.get().isAfter(to))
-            throw CliException.usage("invalid-date-range", "Invalid date range",
+            throw CliException.usage(ErrorCode.INVALID_DATE_RANGE, "Invalid date range",
                             "Option '--" + fromOption.name() + "' (" + from.get() + ") must not be after '--"
                                             + toOption.name() + "' (" + to + ").")
                             .with("from", from.get().toString()).with("to", to.toString());

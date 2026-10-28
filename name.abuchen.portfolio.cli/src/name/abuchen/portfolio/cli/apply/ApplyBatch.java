@@ -13,6 +13,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import name.abuchen.portfolio.cli.command.CliException;
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.model.Client;
 
 /**
@@ -56,7 +57,7 @@ final class ApplyBatch
             results.add(batch.apply(index, operations.get(index), specs));
 
         if (!batch.failures.isEmpty())
-            throw CliException.failure("validation-failed", "Validation failed",
+            throw CliException.failure(ErrorCode.VALIDATION_FAILED, "Validation failed",
                             batch.failures.size() + " check(s) failed. Nothing was written.", 422).with("failures",
                                             batch.failures.stream().map(OperationContext.Failure::toJson).toList());
 

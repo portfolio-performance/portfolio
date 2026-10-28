@@ -13,6 +13,7 @@ import name.abuchen.portfolio.cli.apply.TaxonomyOperations;
 import name.abuchen.portfolio.cli.apply.TransactionOperations;
 import name.abuchen.portfolio.cli.command.CliException;
 import name.abuchen.portfolio.cli.command.CommandSpec;
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.performance.PerformanceCommand;
 import name.abuchen.portfolio.cli.query.AllocationCommand;
 import name.abuchen.portfolio.cli.query.CashAccountsCommand;
@@ -51,7 +52,7 @@ public final class Commands
      */
     static CommandSpec require(String name) throws CliException
     {
-        return find(name).orElseThrow(() -> CliException.usage("unknown-command", "Unknown command",
+        return find(name).orElseThrow(() -> CliException.usage(ErrorCode.UNKNOWN_COMMAND, "Unknown command",
                         "Unknown command '" + name + "'. Known commands: "
                                         + String.join(", ", ALL.stream().map(CommandSpec::name).toList())));
     }

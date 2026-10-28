@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import org.junit.Test;
 
 import name.abuchen.portfolio.cli.command.CommandSpec;
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.OptionSpec;
 
 /**
@@ -148,7 +149,8 @@ public class SkillDriftTest
     private static Set<String> codes(Set<String> commands)
     {
         var codes = new HashSet<String>();
-        ErrorSpec.ALL.forEach(e -> codes.add(e.code()));
+        for (var e : ErrorCode.values())
+            codes.add(e.code());
         Commands.ALL.forEach(c -> c.warnings().forEach(w -> codes.add(w.code())));
         codes.addAll(commands);
         return codes;

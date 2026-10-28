@@ -10,6 +10,7 @@ import java.util.List;
 import name.abuchen.portfolio.cli.command.CliException;
 import name.abuchen.portfolio.cli.command.CommandContext;
 import name.abuchen.portfolio.cli.command.CommandSpec;
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.OptionSpec;
 import name.abuchen.portfolio.cli.command.Response;
 import name.abuchen.portfolio.cli.command.ResponseMeta;
@@ -77,8 +78,8 @@ public final class RestoreCommand
 
             var path = Path.of(raw).toAbsolutePath();
             if (!Files.isRegularFile(path))
-                throw CliException.failure("backup-not-found", "Backup not found", "No backup file at " + path, 404)
-                                .with("backup", path.toString());
+                throw CliException.failure(ErrorCode.BACKUP_NOT_FOUND, "Backup not found",
+                                "No backup file at " + path, 404).with("backup", path.toString());
             return path;
         }
         catch (InvalidPathException e)

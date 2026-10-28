@@ -15,6 +15,7 @@ import org.junit.Test;
 import com.google.gson.JsonObject;
 
 import name.abuchen.portfolio.cli.command.CommandSpec;
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.OptionSpec;
 import name.abuchen.portfolio.cli.command.OutputFormat;
 
@@ -38,7 +39,7 @@ public class HelpTest
             assertThat(run.stdout, containsString("  " + command.name() + " "));
             assertThat(run.stdout, containsString(start(command.summary())));
         }
-        for (var error : ErrorSpec.ALL)
+        for (var error : ErrorCode.values())
             assertThat(run.stdout, containsString(error.code()));
     }
 
@@ -193,11 +194,11 @@ public class HelpTest
         for (var command : Commands.ALL)
             all.append(CliRun.run(command.name(), "--help").stdout);
 
-        for (var error : ErrorSpec.ALL)
+        for (var error : ErrorCode.values())
             assertThat(error.code(), all.toString(), containsString(error.code()));
 
         var commands = Commands.ALL.stream().map(CommandSpec::name).toList();
-        for (var error : ErrorSpec.ALL)
+        for (var error : ErrorCode.values())
             assertThat(error.code(), commands.containsAll(error.commands()), is(true));
     }
 

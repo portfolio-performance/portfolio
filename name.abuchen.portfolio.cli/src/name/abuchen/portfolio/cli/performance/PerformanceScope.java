@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import name.abuchen.portfolio.cli.command.CliException;
 import name.abuchen.portfolio.cli.command.CommandContext;
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.MasterData;
 import name.abuchen.portfolio.cli.command.OptionSpec;
 import name.abuchen.portfolio.cli.command.ReferenceOption;
@@ -215,7 +216,7 @@ final class PerformanceScope
                 given.add("--" + option.name());
         }
         if (given.size() > 1)
-            throw CliException.usage("conflicting-options", "Conflicting options",
+            throw CliException.usage(ErrorCode.CONFLICTING_OPTIONS, "Conflicting options",
                             "At most one of --" + INVESTMENT_ACCOUNT.name() + ", --" + CASH_ACCOUNT.name()
                                             + " and --" + INSTRUMENT.name() + " is allowed, but got "
                                             + String.join(" and ", given) + ".")
@@ -224,7 +225,7 @@ final class PerformanceScope
         var withReferenceCashAccount = context.flag(WITH_REFERENCE_CASH_ACCOUNT);
         var investmentAccount = context.reference(INVESTMENT_ACCOUNT, client);
         if (withReferenceCashAccount && investmentAccount.isEmpty())
-            throw CliException.usage("option-required", "Option required",
+            throw CliException.usage(ErrorCode.OPTION_REQUIRED, "Option required",
                             "Option '--" + WITH_REFERENCE_CASH_ACCOUNT.name() + "' needs the option '--"
                                             + INVESTMENT_ACCOUNT.name() + " <" + INVESTMENT_ACCOUNT.spec().valueName()
                                             + ">'.")
@@ -234,7 +235,7 @@ final class PerformanceScope
         {
             var account = investmentAccount.get();
             if (withReferenceCashAccount && account.getReferenceAccount() == null)
-                throw CliException.failure("no-reference-cash-account", "No reference cash account",
+                throw CliException.failure(ErrorCode.NO_REFERENCE_CASH_ACCOUNT, "No reference cash account",
                                 "The investment account '" + MasterData.orEmpty(account.getName())
                                                 + "' has no reference cash account.",
                                 422).with("uuid", account.getUUID());

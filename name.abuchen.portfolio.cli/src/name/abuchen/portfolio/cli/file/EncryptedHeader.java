@@ -16,6 +16,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import name.abuchen.portfolio.cli.CoreVersion;
 import name.abuchen.portfolio.cli.command.CliException;
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.model.ClientFactory;
 
 /**
@@ -77,7 +78,7 @@ record EncryptedHeader(FileFormat format, int version)
 
         if (contentType < 1 || contentType > 2 || version < 1
                         || version > CoreVersion.MAX_SUPPORTED_FILE_VERSION + PLAUSIBLE_VERSIONS_AHEAD)
-            throw CliException.failure("incorrect-password", "Incorrect password", //$NON-NLS-1$ //$NON-NLS-2$
+            throw CliException.failure(ErrorCode.INCORRECT_PASSWORD, "Incorrect password", //$NON-NLS-1$
                             "The client file could not be decrypted with the given password.", 401);
 
         return new EncryptedHeader(FileFormat.encrypted(contentType == 2, keyBits), version);

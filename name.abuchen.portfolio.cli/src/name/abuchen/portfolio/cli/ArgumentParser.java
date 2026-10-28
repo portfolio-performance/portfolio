@@ -6,6 +6,7 @@ import java.util.Map;
 
 import name.abuchen.portfolio.cli.command.CliException;
 import name.abuchen.portfolio.cli.command.CommandSpec;
+import name.abuchen.portfolio.cli.command.ErrorCode;
 
 /** Turns raw arguments into a command and its option values. */
 final class ArgumentParser
@@ -29,20 +30,20 @@ final class ArgumentParser
             var arg = args.get(ii);
 
             if (!arg.startsWith("--"))
-                throw CliException.usage("unexpected-argument", "Unexpected argument",
+                throw CliException.usage(ErrorCode.UNEXPECTED_ARGUMENT, "Unexpected argument",
                                 "Unexpected argument '" + arg + "'. Options look like --name value.");
 
             var equals = arg.indexOf('=');
             var optionName = equals < 0 ? arg.substring(2) : arg.substring(2, equals);
 
             if (!command.accepts(optionName))
-                throw CliException.usage("unknown-option", "Unknown option",
+                throw CliException.usage(ErrorCode.UNKNOWN_OPTION, "Unknown option",
                                 "Command '" + name + "' has no option '--" + optionName + "'.");
 
             if (command.option(optionName).isFlag())
             {
                 if (equals >= 0)
-                    throw CliException.usage("invalid-option-value", "Invalid option value",
+                    throw CliException.usage(ErrorCode.INVALID_OPTION_VALUE, "Invalid option value",
                                     "Option '--" + optionName + "' is a switch and takes no value.")
                                     .with("option", optionName).with("value", arg.substring(equals + 1));
 
@@ -60,7 +61,7 @@ final class ArgumentParser
             }
             else
             {
-                throw CliException.usage("option-value-required", "Option value required",
+                throw CliException.usage(ErrorCode.OPTION_VALUE_REQUIRED, "Option value required",
                                 "Option '--" + optionName + "' needs a value.");
             }
 
@@ -70,7 +71,7 @@ final class ArgumentParser
         for (var option : command.options())
         {
             if (option.required() && !options.containsKey(option.name()))
-                throw CliException.usage("option-required", "Option required",
+                throw CliException.usage(ErrorCode.OPTION_REQUIRED, "Option required",
                                 "Command '" + name + "' needs the option '--" + option.name() + " <"
                                                 + option.valueName() + ">'.").with("option", option.name());
         }

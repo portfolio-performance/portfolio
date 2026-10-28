@@ -163,7 +163,7 @@ public final class CommandContext
     {
         return text(OptionSpec.FILE).filter(p -> !p.isBlank())
                         .or(() -> env("PP_FILE").filter(p -> !p.isBlank()))
-                        .orElseThrow(() -> CliException.usage("file-required", "Client file required",
+                        .orElseThrow(() -> CliException.usage(ErrorCode.FILE_REQUIRED, "Client file required",
                                         "Pass --file <path> or set the PP_FILE environment variable."));
     }
 

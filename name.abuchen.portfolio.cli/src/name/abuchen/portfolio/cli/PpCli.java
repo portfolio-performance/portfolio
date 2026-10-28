@@ -12,6 +12,7 @@ import com.google.gson.GsonBuilder;
 
 import name.abuchen.portfolio.cli.command.CliException;
 import name.abuchen.portfolio.cli.command.CommandContext;
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.OptionSpec;
 import name.abuchen.portfolio.cli.command.OutputFormat;
 import name.abuchen.portfolio.cli.command.TableFormat;
@@ -105,7 +106,7 @@ public final class PpCli
         catch (RuntimeException | LinkageError e)
         {
             e.printStackTrace(stderr);
-            print(stdout, CliException.failure("internal-error", "Internal error", String.valueOf(e), 500)
+            print(stdout, CliException.failure(ErrorCode.INTERNAL_ERROR, "Internal error", String.valueOf(e), 500)
                             .toProblem());
             return CliException.EXIT_FAILURE;
         }
