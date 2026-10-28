@@ -111,10 +111,10 @@ public final class ReportingCurrency
     {
         out.meta(META_CURRENCY, code);
         var meta = new LinkedHashMap<String, Object>();
-        rates.putCacheInto(meta);
+        putRatesInto(meta);
         if (meta.containsKey(META_RATES))
             out.meta(META_RATES, meta.get(META_RATES));
-        rates.warnings().forEach(out::warn);
+        warnings().forEach(out::warn);
     }
 
     /**
@@ -231,11 +231,8 @@ public final class ReportingCurrency
         this.today = today;
     }
 
-    /**
-     * The meta member describing the cache. Transitional: public only for the
-     * performance command, until it is composed of facets.
-     */
-    public static Schema ratesMetaSchema()
+    /** The meta member describing the cache. */
+    private static Schema ratesMetaSchema()
     {
         return Schema.object("The ECB cache of the desktop app. Present only if the cache was read.")
                         .property("path", Schema.string("The cache file."))
@@ -329,22 +326,17 @@ public final class ReportingCurrency
         return new CoreFigures();
     }
 
-    /**
-     * Adds the meta member <code>exchangeRates</code>, if the cache was read.
-     * Transitional: for the performance command, until it is composed of
-     * facets.
-     */
-    public void putRatesInto(Map<String, Object> meta)
+    /** Adds the meta member <code>exchangeRates</code>, if the cache was read; the facets report it. */
+    void putRatesInto(Map<String, Object> meta)
     {
         rates.putCacheInto(meta);
     }
 
     /**
      * The warnings about the rates looked up so far; see
-     * {@link ExchangeRates#warnings()}. Transitional: for the performance
-     * command, until it is composed of facets.
+     * {@link ExchangeRates#warnings()}. The facets forward them.
      */
-    public List<Warning> warnings()
+    List<Warning> warnings()
     {
         return rates.warnings();
     }

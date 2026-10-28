@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.junit.Rule;
@@ -64,7 +63,7 @@ public class CurrencyFacetsTest
         return security;
     }
 
-    private static FacetHarness.Result<StalePrices> noting(Consumer<StalePrices> handler)
+    private static FacetHarness.Result<StalePrices> noting(FacetHarness.Body<StalePrices> handler)
     {
         return FacetHarness.run(StalePrices.FACET, List.of(), null, Map.of(), handler);
     }

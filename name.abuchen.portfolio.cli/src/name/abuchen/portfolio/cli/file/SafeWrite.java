@@ -71,7 +71,7 @@ public final class SafeWrite
      * @param force
      *            write even if the file seems to be open in the app
      */
-    record Settings(Clock clock, boolean dryRun, Path backupDir, int keep, boolean force, String osName,
+    public record Settings(Clock clock, boolean dryRun, Path backupDir, int keep, boolean force, String osName,
                     WriteEnvironment environment)
     {
     }

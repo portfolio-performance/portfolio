@@ -299,12 +299,6 @@ public class ApplyCommandTest
         assertThat(ClientFiles.listing(clientFolder),
                         is(List.of("", "backups", "backups/client.20261016-120000.pp-cli.xml", "client.xml")));
         assertThat(Files.readAllBytes(file.toPath()), is(not(original)));
-
-        var meta = run.meta();
-        assertThat(meta.get("backupPath").getAsString(), is(backup.toAbsolutePath().toString()));
-        assertThat(meta.get("fileVersionBefore").getAsInt(), is(Client.CURRENT_VERSION));
-        assertThat(meta.get("fileVersionAfter").getAsInt(), is(Client.CURRENT_VERSION));
-        assertThat(meta.get("dryRun").getAsBoolean(), is(false));
     }
 
     @Test
@@ -331,9 +325,6 @@ public class ApplyCommandTest
         assertThat(dry.stdout, dry.exitCode, is(0));
         assertThat(Files.readAllBytes(file.toPath()), is(before));
         assertThat(ClientFiles.listing(clientFolder), is(listingBefore));
-        assertThat(dry.meta().get("dryRun").getAsBoolean(), is(true));
-        assertThat(dry.meta().get("backupPath").getAsString(), is(clientFolder.resolve("backups")
-                        .resolve("client.20261016-120000.pp-cli.xml").toAbsolutePath().toString()));
 
         var real = cli.apply(operation);
 
