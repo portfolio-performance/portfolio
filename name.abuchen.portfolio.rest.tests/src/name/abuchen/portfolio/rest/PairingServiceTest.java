@@ -1,10 +1,12 @@
 package name.abuchen.portfolio.rest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
+import java.nio.file.Files;
 import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
@@ -70,6 +72,7 @@ public class PairingServiceTest
         assertThat(client.isPresent(), is(true));
         assertThat(client.get().session(), is(false));
         assertThat(client.get().name(), is("Claude Code"));
+        assertThat(result.persistent(), is(true));
 
         assertStatusIs(id, 404);
     }
@@ -83,6 +86,27 @@ public class PairingServiceTest
         var result = service.poll(id);
         assertThat(result.status(), is(PairingStatus.APPROVED));
         assertThat(store.authenticate(result.token()).get().session(), is(true));
+        assertThat(result.persistent(), is(false));
+    }
+
+    /**
+     * "Allow always" that the client file could not take is a session grant
+     * after all, and the client that asked to keep its token has to hear that.
+     */
+    @Test
+    public void testAPersistentGrantThatCouldNotBeWrittenSaysSo() throws Exception
+    {
+        Files.createDirectories(tempFolder.getRoot().toPath().resolve("api-clients.json"));
+        var unwritable = new ClientStore(tempFolder.getRoot().toPath(), () -> now);
+        var pairing = new PairingService(unwritable, host, () -> now);
+
+        var id = pairing.create("Claude Code");
+        host.lastAccessRequest().allowAlways();
+
+        var result = pairing.poll(id);
+        assertThat(result.status(), is(PairingStatus.APPROVED));
+        assertThat(result.token(), is(notNullValue()));
+        assertThat(result.persistent(), is(false));
     }
 
     @Test
@@ -130,6 +154,43 @@ public class PairingServiceTest
         assertThat(service.create("Claude Code"), is(notNullValue()));
     }
 
+    /**
+     * The token is minted when it is delivered, not when the user approves. A
+     * request the client never polls must not leave a client in the store whose
+     * token nobody holds - it would be a grant that cannot be revoked by anyone.
+     */
+    @Test
+    public void testAnApprovedRequestThatIsNeverPolledCreatesNoClient()
+    {
+        var id = service.create("Claude Code");
+        host.lastAccessRequest().allowAlways();
+
+        advanceSeconds(PairingService.OUTCOME_TTL.toSeconds() + 1);
+
+        assertStatusIs(id, 404);
+        assertThat(store.listClients(), is(List.of()));
+    }
+
+    /** outcomes nobody polled are dropped, so a long-running server does not accumulate them */
+    @Test
+    public void testPairingsNobodyPollsDoNotAccumulate()
+    {
+        for (int ii = 0; ii < 120; ii++)
+        {
+            service.create("Client " + ii);
+            host.lastAccessRequest().allowAlways();
+            advanceSeconds(PairingService.OUTCOME_TTL.toSeconds() + 1);
+            assertThat(store.listClients(), is(List.of()));
+        }
+
+        var id = service.create("Last");
+        host.lastAccessRequest().allowAlways();
+
+        assertThat(service.poll(id).token(), is(notNullValue()));
+        assertThat(store.listClients(), hasSize(1));
+    }
+
+    /** a decision that arrives after the request is gone grants nothing, and says so */
     @Test
     public void testDecisionAfterExpiryIsIgnored()
     {
