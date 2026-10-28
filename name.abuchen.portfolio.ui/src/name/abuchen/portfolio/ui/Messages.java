@@ -1320,6 +1320,7 @@ public class Messages extends NLS
     public static String PrefMsgRestApiEnterClientName;
     public static String PrefMsgRestApiInvalidPort;
     public static String PrefMsgRestApiRejectedInvalidToken;
+    public static String PrefMsgRestApiRejectedNoBearerScheme;
     public static String PrefMsgRestApiRejectedNoToken;
     public static String PrefMsgRestApiRevokeNotPersisted;
     public static String PrefMsgRestApiTokenShownOnce;

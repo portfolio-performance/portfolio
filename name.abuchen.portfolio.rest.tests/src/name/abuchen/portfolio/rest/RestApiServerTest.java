@@ -292,4 +292,29 @@ public class RestApiServerTest
         assertThat(response.statusCode(), is(404));
         assertThat(response.body(), containsString("problems/not-found"));
     }
+
+    /** the scheme name is case-insensitive; the token itself is not */
+    @Test
+    public void testTheBearerSchemeIsReadCaseInsensitively() throws Exception
+    {
+        assertThat(http.send(request("/v1/ping").header("Authorization", "bearer " + TOKEN).GET().build(),
+                        HttpResponse.BodyHandlers.ofString()).statusCode(), is(200));
+        assertThat(http.send(request("/v1/ping").header("Authorization", "Bearer " + TOKEN.toUpperCase()).GET().build(),
+                        HttpResponse.BodyHandlers.ofString()).statusCode(), is(401));
+    }
+
+    /** a token under another scheme is a wrong scheme, not an absent token */
+    @Test
+    public void testAHeaderThatIsNotBearerIsRecordedAsAWrongScheme() throws Exception
+    {
+        RejectedConnections.clear();
+
+        var response = http.send(request("/v1/ping").header("Authorization", "Token " + TOKEN).GET().build(),
+                        HttpResponse.BodyHandlers.ofString());
+
+        assertThat(response.statusCode(), is(401));
+        var rejection = RejectedConnections.last().orElseThrow();
+        assertThat(rejection.reason(), is(RejectedConnections.Reason.NO_BEARER_SCHEME));
+        assertThat(rejection.tokenPresented(), is(false));
+    }
 }
