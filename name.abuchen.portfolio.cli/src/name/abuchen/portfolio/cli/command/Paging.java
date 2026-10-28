@@ -20,6 +20,16 @@ public record Paging(int limit, long offset)
     /** Both paging options, to declare on a list command. */
     public static final List<OptionSpec> OPTIONS = List.of(LIMIT, OFFSET);
 
+    /** <code>--limit</code> and <code>--offset</code>; <code>meta</code> gets both as resolved. */
+    public static final Facet<Paging> FACET = Facet.of(
+                    Declaration.empty().options(LIMIT, OFFSET).meta("limit", Schema.integer("Page size used."))
+                                    .meta("offset", Schema.integer("Index of the first item returned."))
+                                    .in(Declaration.Slot.PAGING),
+                    Paging::parse, (paging, out) -> {
+                        out.meta("limit", paging.limit());
+                        out.meta("offset", paging.offset());
+                    });
+
     /** One page of a list, and where the next one starts. */
     public record Page<T>(List<T> items, int total, OptionalInt nextOffset)
     {

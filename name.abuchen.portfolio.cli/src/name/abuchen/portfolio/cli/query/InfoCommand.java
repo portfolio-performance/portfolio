@@ -2,14 +2,12 @@ package name.abuchen.portfolio.cli.query;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.Map;
 
 import name.abuchen.portfolio.cli.CoreVersion;
-import name.abuchen.portfolio.cli.command.CliException;
+import name.abuchen.portfolio.cli.command.ClientFile;
 import name.abuchen.portfolio.cli.command.CommandContext;
 import name.abuchen.portfolio.cli.command.CommandSpec;
-import name.abuchen.portfolio.cli.command.Response;
-import name.abuchen.portfolio.cli.command.ResponseMeta;
 import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.cli.file.FileFormat;
 
@@ -32,18 +30,18 @@ public final class InfoCommand
                     .property("pinnedUpstreamTag",
                                     Schema.string("Upstream release the bundled core is built from."));
 
-    public static final CommandSpec SPEC = new CommandSpec("info",
-                    "File version, supported version ceiling, format, base currency and entity counts.", true,
-                    List.of(), DATA, ResponseMeta.SCHEMA, InfoCommand::execute);
+    public static final CommandSpec SPEC = CommandSpec.of("info",
+                    "File version, supported version ceiling, format, base currency and entity counts.", DATA,
+                    InfoCommand::execute, ClientFile.READ);
 
     private InfoCommand()
     {
     }
 
-    private static Response execute(CommandContext context) throws CliException
+    private static Map<String, Object> execute(CommandContext run)
     {
-        var loaded = context.loadClient();
-        var client = loaded.client();
+        var file = run.get(ClientFile.READ);
+        var client = file.client();
 
         var counts = new LinkedHashMap<String, Object>();
         counts.put("instruments", client.getSecurities().size());
@@ -55,11 +53,11 @@ public final class InfoCommand
         var data = new LinkedHashMap<String, Object>();
         data.put("fileVersion", client.getFileVersionAfterRead());
         data.put("maxSupportedVersion", CoreVersion.MAX_SUPPORTED_FILE_VERSION);
-        data.put("format", loaded.format().id());
+        data.put("format", file.format().id());
         data.put("baseCurrency", client.getBaseCurrency());
         data.put("counts", counts);
         data.put("pinnedUpstreamTag", CoreVersion.PINNED_UPSTREAM_TAG);
 
-        return Response.of(data, ResponseMeta.of(context, client));
+        return data;
     }
 }

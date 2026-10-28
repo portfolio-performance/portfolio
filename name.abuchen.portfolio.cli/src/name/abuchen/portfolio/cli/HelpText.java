@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.cli;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -175,8 +174,8 @@ final class HelpText
         }
 
         out.blank();
-        out.line("Error codes (meanings: pp-cli --help): " + String.join(", ", Arrays.stream(ErrorCode.values())
-                        .filter(e -> e.appliesTo(command)).map(ErrorCode::code).toList()));
+        out.line("Error codes (meanings: pp-cli --help): " + String.join(", ",
+                        command.errorCodes().stream().map(ErrorCode::code).toList()));
         return out.toString();
     }
 

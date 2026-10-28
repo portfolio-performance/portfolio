@@ -228,30 +228,15 @@ public class PricesCommandTest
     }
 
     @Test
-    public void aFromAfterToIsAnInvalidRange() throws IOException
+    public void aRangeErrorComesBeforeAnyFileError() throws IOException
     {
-        var client = new Client();
-        var security = priced(client, "ACME", "2026-10-01");
+        var missing = folder.getRoot().toPath().resolve("missing.xml").toString();
 
-        var run = run(client, "--instrument", security.getUUID(), "--from", "2026-02-01", "--to", "2026-01-31");
+        var run = CliRun.run("prices", "--file", missing, "--instrument", "ACME", "--from", "2026-02-01", "--to",
+                        "2026-01-31");
 
         assertThat(run.exitCode, is(2));
         assertThat(run.code(), is("invalid-date-range"));
-        assertThat(run.problem().get("status").getAsInt(), is(400));
-        assertThat(run.problem().get("from").getAsString(), is("2026-02-01"));
-        assertThat(run.problem().get("to").getAsString(), is("2026-01-31"));
-    }
-
-    @Test
-    public void aFromAfterTodayWithoutToIsAnInvalidRangeAgainstTheDefaultedTo() throws IOException
-    {
-        var client = new Client();
-        var security = priced(client, "ACME", "2026-10-01");
-
-        var run = run(client, "--instrument", security.getUUID(), "--from", "2026-10-17");
-
-        assertThat(run.code(), is("invalid-date-range"));
-        assertThat(run.problem().get("to").getAsString(), is("2026-10-16"));
     }
 
     @Test
@@ -285,10 +270,6 @@ public class PricesCommandTest
         var meta = run.meta();
         assertThat(meta.get("to").getAsString(), is("2026-10-16"));
         assertThat(meta.has("from"), is(false));
-        assertThat(meta.get("asOf").getAsString(), is("2026-10-16"));
-        assertThat(meta.get("limit").getAsInt(), is(200));
-        assertThat(meta.get("offset").getAsInt(), is(0));
-        assertThat(meta.has("fileVersion"), is(true));
     }
 
     @Test

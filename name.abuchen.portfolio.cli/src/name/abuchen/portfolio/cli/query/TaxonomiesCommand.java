@@ -5,17 +5,15 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import name.abuchen.portfolio.cli.command.CliException;
+import name.abuchen.portfolio.cli.command.ClientFile;
 import name.abuchen.portfolio.cli.command.CommandContext;
 import name.abuchen.portfolio.cli.command.CommandSpec;
 import name.abuchen.portfolio.cli.command.Decimals;
 import name.abuchen.portfolio.cli.command.MasterData;
 import name.abuchen.portfolio.cli.command.MasterDataList;
 import name.abuchen.portfolio.cli.command.Paging;
-import name.abuchen.portfolio.cli.command.Response;
-import name.abuchen.portfolio.cli.command.ResponseMeta;
 import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.cli.command.Sorting;
 import name.abuchen.portfolio.model.Classification;
@@ -67,27 +65,23 @@ public final class TaxonomiesCommand
                     new Sorting.Field<Taxonomy>("position", client -> Comparator.comparingInt(client.getTaxonomies()::indexOf)),
                     Sorting.Field.of("name", MasterData.byName(Taxonomy::getName)));
 
-    public static final CommandSpec SPEC = new CommandSpec("taxonomies",
+    public static final CommandSpec SPEC = CommandSpec.of("taxonomies",
                     "Taxonomies in the order the app shows them (--sort position, the default) or by name, each with its classification tree flattened in pre-order: UUID, name, parent, path, target weight and direct assignments. --order desc reverses.",
-                    true, Stream.concat(Paging.OPTIONS.stream(), SORT.options().stream()).toList(),
-                    Paging.pageSchema("A page of the taxonomies.", ITEM), ResponseMeta.pagedSchema(SORT),
-                    TaxonomiesCommand::execute);
+                    Paging.pageSchema("A page of the taxonomies.", ITEM), TaxonomiesCommand::list, ClientFile.READ,
+                    Paging.FACET, SORT);
 
     private TaxonomiesCommand()
     {
     }
 
-    private static Response execute(CommandContext context) throws CliException
+    private static Map<String, Object> list(CommandContext run) throws CliException
     {
-        var paging = Paging.parse(context);
-        var sorting = SORT.parse(context);
-        var client = context.loadClient().client();
-
-        var page = paging.of(sorting.sort(client, client.getTaxonomies()));
+        var client = run.client();
+        var page = run.get(Paging.FACET).of(run.get(SORT).sort(client, client.getTaxonomies()));
 
         var data = new LinkedHashMap<String, Object>();
         page.putInto(data, TaxonomiesCommand::render);
-        return Response.of(data, ResponseMeta.paged(context, client, paging, sorting));
+        return data;
     }
 
     private static Map<String, Object> render(Taxonomy taxonomy)

@@ -12,6 +12,24 @@ import java.util.Optional;
 public record DateRange(Optional<LocalDate> from, LocalDate to)
 {
     /**
+     * <code>--from</code> and <code>--to</code> as a facet, with the
+     * descriptions of one command; <code>meta</code> gets the range.
+     */
+    public static Facet<DateRange> facet(String fromDescription, String toDescription)
+    {
+        var fromOption = OptionSpec.date("from", fromDescription);
+        var toOption = OptionSpec.date("to", toDescription);
+        var declaration = Declaration.empty().options(fromOption, toOption)
+                        .optionalMeta("from", Schema.string("First day of the range, as given. Absent if not given."))
+                        .meta("to", Schema.string("Last day of the range: as given, otherwise today."))
+                        .codes(ErrorCode.INVALID_DATE_RANGE);
+        return Facet.of(declaration, run -> parse(run, fromOption, toOption), (range, out) -> {
+            range.from().ifPresent(date -> out.meta("from", date.toString()));
+            out.meta("to", range.to().toString());
+        });
+    }
+
+    /**
      * @throws CliException
      *             <code>invalid-option-value</code> for a malformed date,
      *             <code>invalid-date-range</code> if the range is empty

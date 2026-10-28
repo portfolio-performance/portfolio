@@ -16,14 +16,14 @@ import name.abuchen.portfolio.cli.command.Schema;
  * known values (<code>examples</code>) of an open enum are deliberately not
  * enforced. Extending {@link Schema} means extending this too.
  */
-final class SchemaValidator
+public final class SchemaValidator
 {
     private SchemaValidator()
     {
     }
 
     /** @return one message per violation; empty if the value conforms */
-    static List<String> validate(JsonElement value, JsonObject schema)
+    public static List<String> validate(JsonElement value, JsonObject schema)
     {
         var errors = new ArrayList<String>();
         validate(value, schema, "$", errors);
