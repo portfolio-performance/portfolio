@@ -10,7 +10,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import name.abuchen.portfolio.model.AttributeFieldType;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
@@ -176,7 +175,7 @@ public final class SecuritiesHandler
         client.getSettings().getAttributeTypes() //
                         .filter(type -> type.supports(Security.class)) //
                         .forEach(type -> {
-                            var fieldType = AttributeFieldType.of(type);
+                            var fieldType = AttributeCodec.fieldType(type);
                             if (fieldType == null)
                                 return;
 
@@ -313,7 +312,7 @@ public final class SecuritiesHandler
                 continue;
             }
 
-            var fieldType = AttributeFieldType.of(type);
+            var fieldType = AttributeCodec.fieldType(type);
             if (fieldType == null || !AttributeCodec.isSupported(fieldType))
             {
                 errors.add(new ApiException.FieldError(field, "unsupported-attribute-type", //$NON-NLS-1$

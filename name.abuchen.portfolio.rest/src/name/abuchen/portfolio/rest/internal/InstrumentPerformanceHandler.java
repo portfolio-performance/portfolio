@@ -69,9 +69,12 @@ public final class InstrumentPerformanceHandler
         var records = snapshot(client, converters, params).getRecords();
 
         // the model yields the records in the iteration order of a HashMap, so
-        // sorting is what makes repeated calls comparable at all
+        // sorting is what makes repeated calls comparable at all; two instruments
+        // of the same name - or of names the collator holds equal - are told
+        // apart by their uuid
         var sorted = new ArrayList<>(records);
-        sorted.sort(Comparator.comparing(LazySecurityPerformanceRecord::getSecurityName, TextUtil::compare));
+        sorted.sort(Comparator.comparing(LazySecurityPerformanceRecord::getSecurityName, TextUtil::compare)
+                        .thenComparing(record -> record.getSecurity().getUUID()));
 
         // serializing a record is what computes its lazy figures - the daily
         // series behind timeWeighted and risk above all - so this loop is where

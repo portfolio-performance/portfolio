@@ -1010,7 +1010,8 @@ paths:
       description: |
         Per-instrument return, valuation, gains, income, expenses and risk over
         the same interval the aggregate `GET .../performance` covers, in the
-        reporting currency. Items are sorted by name.
+        reporting currency. Items are sorted by name, then by `uuid` for
+        instruments of the same name.
 
         **Which instruments appear.** Every instrument the interval touched:
         any transaction inside it, or a non-zero position at either end. A
@@ -2292,7 +2293,10 @@ components:
         rateDate:
           type: string
           format: date
-          description: The date of the oldest rate a conversion of this pair used.
+          description: |
+            The date of the oldest rate a conversion of this pair used. For a
+            pair reached through a third currency (USD to CHF through EUR),
+            the oldest of its steps.
         daysOld:
           type: integer
           description: |

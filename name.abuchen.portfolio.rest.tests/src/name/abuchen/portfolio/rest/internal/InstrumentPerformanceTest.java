@@ -426,6 +426,24 @@ public class InstrumentPerformanceTest
         assertThat(names(list(client)), is(List.of("Alpha", "Mu", "Zeta")));
     }
 
+    /**
+     * Instruments of the same name - one fund held in two currencies, say - are
+     * ordered by their uuid, so their order does not follow the HashMap either.
+     */
+    @Test
+    public void testInstrumentsOfTheSameNameAreOrderedByUuid()
+    {
+        var client = new Client();
+        var expected = new ArrayList<String>();
+        for (var ii = 0; ii < 5; ii++)
+            expected.add(heldSecurity(client, "ACME", CurrencyUnit.EUR, (account, security) -> {},
+                            (portfolio, security) -> {}).getUUID());
+        expected.sort(null);
+
+        assertThat(uuids(list(client)), is(expected));
+        assertThat(uuids(list(client)), is(expected));
+    }
+
     // -- interval boundaries ---------------------------------------------
 
     /**
@@ -987,6 +1005,14 @@ public class InstrumentPerformanceTest
         result.get("items").getAsJsonArray()
                         .forEach(element -> names.add(element.getAsJsonObject().get("name").getAsString()));
         return names;
+    }
+
+    private static List<String> uuids(JsonObject result)
+    {
+        var uuids = new ArrayList<String>();
+        result.get("items").getAsJsonArray()
+                        .forEach(element -> uuids.add(element.getAsJsonObject().get("uuid").getAsString()));
+        return uuids;
     }
 
     private static void assertFieldError(Runnable call, String field, String code)

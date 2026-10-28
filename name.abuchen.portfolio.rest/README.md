@@ -337,7 +337,8 @@ position held today, which `GET .../holdings` gives.
 
 **An old exchange rate is named.** Every computed report carries `fxStaleRates` beside `fxWarnings`:
 the pairs it converted at a rate more than seven days older than the conversion date (or than today,
-for a later date), with the oldest `rateDate` and `daysOld`. A series that stopped being published
+for a later date), with the oldest `rateDate` and `daysOld` — for a pair reached through a third
+currency (USD to CHF through EUR), the oldest of its steps. A series that stopped being published
 goes on answering with its last rate, and the currency effect is then frozen rather than measured.
 It is a real rate, not a 1:1 fallback, so it is not an `fxWarnings` entry.
 

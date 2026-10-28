@@ -237,6 +237,54 @@ public class ConversionRecorderTest
         assertThat(old.staleRates(), contains(new FxWarnings.StaleRate("ARS", "EUR", "2026-01-02", 31)));
     }
 
+    /**
+     * A pair reached through a third currency is a chain, and the chain dates
+     * its rate with the date asked for: an old step must still be found. ARS
+     * reaches BBD through EUR - ARS/EUR stopped on 2026-01-02, EUR/BBD is
+     * current.
+     */
+    @Test
+    public void testAnOldStepOfAChainIsRecordedAsStale()
+    {
+        var client = new Client();
+        var rates = rates();
+        rates.addPrice(new SecurityPrice(LocalDate.of(2026, 1, 2), Values.Quote.factorize(965)));
+        client.addSecurity(rates);
+        var bbd = new Security("EUR/BBD", CurrencyUnit.EUR);
+        bbd.setTargetCurrencyCode("BBD");
+        bbd.addPrice(new SecurityPrice(LocalDate.of(2026, 7, 29), Values.Quote.factorize(2.2)));
+        client.addSecurity(bbd);
+        var conversions = new ConversionRecorder(new ExchangeRateProviderFactory(client), LocalDate.of(2026, 10, 28));
+
+        converter(conversions, client, "BBD").convert(LocalDate.of(2026, 7, 30),
+                        Money.of("ARS", Values.Amount.factorize(10)));
+
+        assertThat(conversions.fallbacks(), is(empty()));
+        assertThat(conversions.staleRates(),
+                        contains(new FxWarnings.StaleRate("ARS", "BBD", "2026-01-02", 209)));
+    }
+
+    /** a chain whose steps are all current is not stale */
+    @Test
+    public void testAChainOfCurrentStepsIsNotStale()
+    {
+        var client = new Client();
+        var rates = rates();
+        rates.addPrice(new SecurityPrice(LocalDate.of(2026, 7, 28), Values.Quote.factorize(965)));
+        client.addSecurity(rates);
+        var bbd = new Security("EUR/BBD", CurrencyUnit.EUR);
+        bbd.setTargetCurrencyCode("BBD");
+        bbd.addPrice(new SecurityPrice(LocalDate.of(2026, 7, 29), Values.Quote.factorize(2.2)));
+        client.addSecurity(bbd);
+        var conversions = new ConversionRecorder(new ExchangeRateProviderFactory(client), LocalDate.of(2026, 10, 28));
+
+        converter(conversions, client, "BBD").convert(LocalDate.of(2026, 7, 30),
+                        Money.of("ARS", Values.Amount.factorize(10)));
+
+        assertThat(conversions.fallbacks(), is(empty()));
+        assertThat(conversions.staleRates(), is(empty()));
+    }
+
     private static Security rates()
     {
         var rates = new Security("ARS/EUR", "ARS");
