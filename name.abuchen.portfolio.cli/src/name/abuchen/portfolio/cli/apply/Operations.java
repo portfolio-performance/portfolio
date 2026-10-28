@@ -7,6 +7,7 @@ import name.abuchen.portfolio.cli.command.OperationSpec;
 import name.abuchen.portfolio.cli.masterdata.CashAccounts;
 import name.abuchen.portfolio.cli.masterdata.Instruments;
 import name.abuchen.portfolio.cli.masterdata.InvestmentAccounts;
+import name.abuchen.portfolio.cli.transaction.TransactionRecords;
 
 /** The single list of write operations, applied by the <code>apply</code> command. */
 public final class Operations
@@ -14,7 +15,8 @@ public final class Operations
     public static final List<OperationSpec<OperationContext>> ALL = Stream
                     .of(adapt(Instruments.INSTRUMENTS.operations()), adapt(CashAccounts.CASH_ACCOUNTS.operations()),
                                     adapt(InvestmentAccounts.INVESTMENT_ACCOUNTS.operations()),
-                                    TransactionOperations.ALL, TaxonomyOperations.ALL)
+                                    List.of(adapt(TransactionRecords.ADD)), TransactionOperations.ALL,
+                                    TaxonomyOperations.ALL)
                     .flatMap(List::stream).toList();
 
     private Operations()

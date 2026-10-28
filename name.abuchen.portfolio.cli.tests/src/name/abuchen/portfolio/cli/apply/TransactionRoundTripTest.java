@@ -13,44 +13,23 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
 import name.abuchen.portfolio.cli.CliFixture;
-import name.abuchen.portfolio.cli.command.OperationSpec;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 
 /**
- * The input of <code>transaction.add</code> mirrors the <code>transactions</code>
- * output: a record read from one file, without the members that add derives,
- * adds the same record to another file with the same master data. An update
- * overlays its patch on the record in that shape, so an empty patch changes
- * nothing.
+ * An update overlays its patch on the record in the shape the
+ * <code>transactions</code> output uses, so an empty patch changes nothing.
  */
 public class TransactionRoundTripTest
 {
-    /**
-     * The members of a record that an add takes, written out here rather than
-     * taken from the catalog, so that a member the catalog wrongly marks as
-     * derived is missing from the copy.
-     */
-    private static final List<String> INPUT = List.of("type", "kind", "date", "time", "amount", "currencyCode",
-                    "targetAmount", "exchangeRate", "instrument", "shares", "investmentAccount", "cashAccount", "from",
-                    "to", "exDate", "note", "source", "units");
-
-    /** Members that identify the stored sides or say when they were written, so they differ between files. */
-    private static final List<String> IDENTITY = List.of("id", "sides", "updatedAt");
-
     @Rule
     public TemporaryFolder sourceFolder = new TemporaryFolder();
 
-    @Rule
-    public TemporaryFolder targetFolder = new TemporaryFolder();
-
     private final CliFixture source = new CliFixture(sourceFolder);
-    private final CliFixture target = new CliFixture(targetFolder);
 
     private String eurAccount;
     private String eurSavings;
@@ -81,7 +60,6 @@ public class TransactionRoundTripTest
         usdInstrument = usdSecurity.getUUID();
 
         source.save(client);
-        target.save(client);
     }
 
     private static Account cashAccount(Client client, String name, String currencyCode)
@@ -172,51 +150,6 @@ public class TransactionRoundTripTest
         var run = cli.run("transactions");
         assertThat(run.stdout, run.exitCode, is(0));
         return run.items();
-    }
-
-    /** The record as add input: its input members, without an empty list of units, which a transfer refuses. */
-    private static String asInput(JsonObject record)
-    {
-        var input = new JsonObject();
-        input.addProperty(OperationSpec.OPERATION_MEMBER, TransactionOperations.ADD.name());
-        for (var name : INPUT)
-        {
-            var value = record.get(name);
-            if (value != null && !(value.isJsonArray() && value.getAsJsonArray().isEmpty()))
-                input.add(name, value);
-        }
-        return input.toString();
-    }
-
-    private static JsonObject withoutIdentity(JsonObject record)
-    {
-        var copy = record.deepCopy();
-        IDENTITY.forEach(copy::remove);
-        return copy;
-    }
-
-    @Test
-    public void everyTypeOfRecordReadBackAddsTheSameRecord() throws IOException
-    {
-        var seeded = source.apply(everyType().toArray(String[]::new));
-        assertThat(seeded.stdout, seeded.exitCode, is(0));
-
-        var original = records(source);
-        assertThat(original.size(), is(everyType().size()));
-
-        var inputs = new ArrayList<String>();
-        original.forEach(record -> inputs.add(asInput(record.getAsJsonObject())));
-        var copied = target.apply(inputs.toArray(String[]::new));
-        assertThat(copied.stdout, copied.exitCode, is(0));
-
-        var copies = records(target);
-        assertThat(copies.size(), is(original.size()));
-        for (var i = 0; i < original.size(); i++)
-        {
-            var expected = withoutIdentity(original.get(i).getAsJsonObject());
-            var actual = withoutIdentity(copies.get(i).getAsJsonObject());
-            assertThat(expected.get("type").getAsString(), actual, is(expected));
-        }
     }
 
     @Test

@@ -1,12 +1,13 @@
-package name.abuchen.portfolio.cli.apply;
+package name.abuchen.portfolio.cli.transaction;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.TreeMap;
 
-import name.abuchen.portfolio.cli.transaction.BuiltRecord;
+import name.abuchen.portfolio.cli.command.FieldFailure;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -50,8 +51,8 @@ final class OversellGuard
     }
 
     /**
-     * Reports a <code>negative-holding</code> failure for every holding that
-     * the change would oversell.
+     * A <code>negative-holding</code> failure for every holding that the
+     * change would oversell.
      *
      * @param field
      *            the field the failure is reported on
@@ -61,18 +62,20 @@ final class OversellGuard
      * @param added
      *            effects that the change adds
      */
-    static void check(OperationContext context, String field, List<Effect> removed, List<Effect> added)
+    static List<FieldFailure> check(String field, List<Effect> removed, List<Effect> added)
     {
         var pairs = new LinkedHashSet<Pair>();
         removed.forEach(e -> pairs.add(new Pair(e.portfolio(), e.security())));
         added.forEach(e -> pairs.add(new Pair(e.portfolio(), e.security())));
 
+        var failures = new ArrayList<FieldFailure>();
         for (var pair : pairs)
-            check(context, field, pair, removed, added);
+            check(field, pair, removed, added, failures);
+        return failures;
     }
 
-    private static void check(OperationContext context, String field, Pair pair, List<Effect> removed,
-                    List<Effect> added)
+    private static void check(String field, Pair pair, List<Effect> removed, List<Effect> added,
+                    List<FieldFailure> failures)
     {
         var before = new TreeMap<LocalDate, Long>();
         for (var transaction : pair.portfolio().getTransactions())
@@ -94,10 +97,11 @@ final class OversellGuard
 
             if (holdingAfter < 0 && holdingAfter < holdingBefore)
             {
-                context.fail(field, "negative-holding",
+                failures.add(new FieldFailure(field, "negative-holding",
                                 pair.portfolio().getName() + " would hold " + plain(holdingAfter) + " of "
                                                 + pair.security().getName() + " at the end of " + day
-                                                + ", a shortfall of " + plain(-holdingAfter) + " shares.");
+                                                + ", a shortfall of " + plain(-holdingAfter) + " shares.",
+                                null));
                 return;
             }
         }

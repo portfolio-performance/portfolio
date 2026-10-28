@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli.apply;
+package name.abuchen.portfolio.cli.transaction;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -6,16 +6,12 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
+import name.abuchen.portfolio.cli.command.EntityKind;
 import name.abuchen.portfolio.cli.command.OperationInput;
-import name.abuchen.portfolio.cli.masterdata.CashAccounts;
-import name.abuchen.portfolio.cli.masterdata.Instruments;
-import name.abuchen.portfolio.cli.masterdata.InvestmentAccounts;
-import name.abuchen.portfolio.cli.transaction.TransactionShape;
 import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -23,43 +19,64 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 /**
- * Reads the members that every kind of <code>transaction.add</code> shares:
- * accounts, instrument, date, currency, amounts and units, with the rules of a
- * transaction record. Failures are reported on the operation.
+ * Reads the members of a record to add, by the rules of its row of the
+ * {@link RuleTable}: a refused member that is present is reported, a required
+ * one that is missing is reported, and an optional one is read if it is
+ * there. Failures go to the sink of the {@link OperationInput}.
  */
 final class TransactionInput
 {
     private static final DateTimeFormatter TIME = DateTimeFormatter.ofPattern("HH:mm");
 
-    /** The failure code for a member that the kind of transaction doesn't take. */
-    private static final Map<String, String> NOT_ALLOWED = Map.ofEntries(
-                    Map.entry("cashAccount", "cash-account-not-allowed"),
-                    Map.entry("investmentAccount", "investment-account-not-allowed"),
-                    Map.entry("instrument", "instrument-not-allowed"), Map.entry("shares", "shares-not-allowed"),
-                    Map.entry("units", "units-not-allowed"), Map.entry("exDate", "exdate-not-allowed"),
-                    Map.entry("grossAmount", "gross-amount-not-allowed"), Map.entry("kind", "kind-not-allowed"),
-                    Map.entry("from", "from-not-allowed"), Map.entry("to", "to-not-allowed"),
-                    Map.entry("targetAmount", "target-amount-not-allowed"),
-                    Map.entry("exchangeRate", "exchange-rate-not-allowed"));
-
-    private final OperationContext context;
     private final OperationInput input;
+    private final String type;
+    private final RuleTable.Row row;
 
-    TransactionInput(OperationContext context)
+    /**
+     * @param type
+     *            the record's type, or null if it is not known
+     * @param row
+     *            the row of the record's type, or null if the type or the
+     *            kind is not known; then no member that depends on the row is
+     *            read
+     */
+    TransactionInput(OperationInput input, String type, RuleTable.Row row)
     {
-        this.context = context;
-        this.input = context.input();
+        this.input = input;
+        this.type = type;
+        this.row = row;
     }
 
-    /** Reports a failure for each of the members that is present, because the kind of transaction doesn't take it. */
-    void refuse(String... members)
+    /** The rule of the row for the member; without a row, read nothing. */
+    private RuleTable.Rule rule(RuleTable.Ruled member)
     {
-        for (var member : members)
-        {
-            if (input.has(member))
-                context.fail(member, NOT_ALLOWED.get(member),
-                                "This kind of transaction must not have " + member + ".");
-        }
+        return row == null ? RuleTable.Rule.REFUSED : row.rule(member);
+    }
+
+    /**
+     * Reports each member that is present although the row refuses it.
+     * Without a row, those that every row of the type refuses.
+     */
+    void refuseByTable()
+    {
+        var refused = row != null
+                        ? Arrays.stream(RuleTable.Ruled.values())
+                                        .filter(member -> row.rule(member) == RuleTable.Rule.REFUSED).toList()
+                        : RuleTable.refusedByEveryRowOf(type);
+        refused.forEach(this::refuseIfPresent);
+    }
+
+    /** Reports the member if it is present, under its refusal code. */
+    void refuseIfPresent(RuleTable.Ruled member)
+    {
+        refuseIfPresent(member, member.refusalMessage(row != null ? row.label() : type));
+    }
+
+    /** Reports the member if it is present, under its refusal code, because a rule across members refuses it. */
+    void refuseIfPresent(RuleTable.Ruled member, String message)
+    {
+        if (input.has(member.id()))
+            input.fail(member.id(), member.refusalCode(), message);
     }
 
     String text(String member)
@@ -67,26 +84,29 @@ final class TransactionInput
         return input.text(member);
     }
 
-    Account cashAccount()
+    /** The existing entity the member names, by the rule of the row; null if refused, absent or failed. */
+    <T> T reference(RuleTable.Ruled member, EntityKind<T> kind)
     {
-        return cashAccount("cashAccount");
+        return switch (rule(member))
+        {
+            case REFUSED -> null;
+            case REQUIRED -> input.existing(member.id(), kind, "A transaction needs " + member.id() + ".");
+            case OPTIONAL -> {
+                var uuid = input.text(member.id());
+                yield uuid == null ? null : input.find(member.id(), uuid, kind);
+            }
+        };
     }
 
-    Account cashAccount(String member)
+    /** A positive number of the member, by the rule of the row; null if refused, absent or failed. */
+    Long number(RuleTable.Ruled member, Values<Long> values)
     {
-        return input.existing(member, CashAccounts.CASH_ACCOUNTS.entityKind(),
-                        "A transaction needs " + member + ".");
-    }
-
-    Portfolio investmentAccount()
-    {
-        return investmentAccount("investmentAccount");
-    }
-
-    Portfolio investmentAccount(String member)
-    {
-        return input.existing(member, InvestmentAccounts.INVESTMENT_ACCOUNTS.entityKind(),
-                        "A transaction needs " + member + ".");
+        return switch (rule(member))
+        {
+            case REFUSED -> null;
+            case REQUIRED -> input.amount(member.id(), values, true, "A transaction needs " + member.id() + ".");
+            case OPTIONAL -> input.amount(member.id(), values, true, null);
+        };
     }
 
     LocalDateTime dateTime()
@@ -102,7 +122,7 @@ final class TransactionInput
         }
         catch (DateTimeParseException e)
         {
-            context.fail("date", "invalid-date", "'" + date + "' is not an ISO date (yyyy-MM-dd).");
+            input.fail("date", "invalid-date", "'" + date + "' is not an ISO date (yyyy-MM-dd).");
             return null;
         }
 
@@ -116,7 +136,7 @@ final class TransactionInput
         }
         catch (DateTimeParseException e)
         {
-            context.fail("time", "invalid-time", "'" + timeText + "' is not a time of day (HH:mm).");
+            input.fail("time", "invalid-time", "'" + timeText + "' is not a time of day (HH:mm).");
             return null;
         }
     }
@@ -134,37 +154,17 @@ final class TransactionInput
 
         if (!CurrencyUnit.containsCurrencyCode(code))
         {
-            context.fail("currencyCode", "invalid-currency", "'" + code + "' is not a known ISO currency code.");
+            input.fail("currencyCode", "invalid-currency", "'" + code + "' is not a known ISO currency code.");
             return null;
         }
 
         if (account != null && !code.equals(account.getCurrencyCode()))
         {
-            context.fail("currencyCode", "currency-mismatch", "The amount must be in the cash account's currency "
+            input.fail("currencyCode", "currency-mismatch", "The amount must be in the cash account's currency "
                             + account.getCurrencyCode() + ", not " + code + ".");
             return null;
         }
         return code;
-    }
-
-    Security instrument(boolean allowed, boolean required)
-    {
-        var uuid = input.text("instrument");
-        if (uuid == null)
-        {
-            if (required)
-                context.fail("instrument", "required", "This kind of transaction needs an instrument.");
-            return null;
-        }
-
-        if (!allowed)
-        {
-            context.fail("instrument", "instrument-not-allowed",
-                            "This kind of transaction must not have an instrument.");
-            return null;
-        }
-
-        return input.find("instrument", uuid, Instruments.INSTRUMENTS.entityKind());
     }
 
     /** A positive amount, read at the given precision; a missing one is required. */
@@ -176,10 +176,11 @@ final class TransactionInput
     /** Checks the optional gross amount against the amount, fees and taxes. */
     void grossAmount(boolean credit, Long amount, List<Transaction.Unit> units)
     {
-        if (!input.has("grossAmount"))
+        var member = RuleTable.Ruled.GROSS_AMOUNT.id();
+        if (rule(RuleTable.Ruled.GROSS_AMOUNT) == RuleTable.Rule.REFUSED || !input.has(member))
             return;
 
-        var gross = input.amount("grossAmount", Values.Amount, false, "A transaction needs grossAmount.");
+        var gross = input.amount(member, Values.Amount, false, null);
         if (gross == null || amount == null)
             return;
 
@@ -189,16 +190,54 @@ final class TransactionInput
         var expected = amount + (credit ? taxAndFees : -taxAndFees);
 
         if (gross != expected)
-            context.fail("grossAmount", "gross-amount-mismatch",
+            input.fail(member, "gross-amount-mismatch",
                             "The gross amount does not reconcile with the amount, fees and taxes.");
+    }
+
+    /**
+     * The valid ex-date to store, or null if it is absent, refused or
+     * invalid. It is never after the payment date.
+     */
+    LocalDate exDate(LocalDateTime dateTime)
+    {
+        var member = RuleTable.Ruled.EX_DATE.id();
+        if (rule(RuleTable.Ruled.EX_DATE) == RuleTable.Rule.REFUSED || !input.has(member))
+            return null;
+
+        var text = input.json().get(member);
+        if (!OperationInput.isText(text))
+        {
+            input.fail(member, "invalid-type", "The ex-date must be a string.");
+            return null;
+        }
+
+        LocalDate ex;
+        try
+        {
+            ex = LocalDate.parse(text.getAsString());
+        }
+        catch (DateTimeParseException e)
+        {
+            input.fail(member, "invalid-date", "'" + text.getAsString() + "' is not an ISO date (yyyy-MM-dd).");
+            return null;
+        }
+
+        if (dateTime != null && ex.isAfter(dateTime.toLocalDate()))
+        {
+            input.fail(member, "exdate-after-payment", "The ex-date must not be after the payment date.");
+            return null;
+        }
+        return ex;
     }
 
     /** The valid units; an instrument in another currency needs a forex gross value. */
     List<Transaction.Unit> units(String currencyCode, Security security)
     {
         var units = new ArrayList<Transaction.Unit>();
+        if (rule(RuleTable.Ruled.UNITS) == RuleTable.Rule.REFUSED)
+            return units;
 
-        input.eachObject("units", "A unit must be a JSON object.", element -> {
+        input.eachObject(RuleTable.Ruled.UNITS.id(), "A unit must be a JSON object.", element -> {
             var unit = unit(element, currencyCode, security);
             if (unit != null)
                 units.add(unit);
@@ -291,7 +330,7 @@ final class TransactionInput
         return new Transaction.Unit(unitType, amountMoney, forexMoney, rate);
     }
 
-    /** A dividend on an instrument in another currency needs a forex gross-value unit in that currency. */
+    /** A record on an instrument in another currency needs a forex gross-value unit in that currency. */
     private void requireForexGrossValue(String currencyCode, Security security, List<Transaction.Unit> units)
     {
         if (security == null || currencyCode == null || security.getCurrencyCode() == null
@@ -302,7 +341,7 @@ final class TransactionInput
                         .anyMatch(u -> u.getForex() != null
                                         && security.getCurrencyCode().equals(u.getForex().getCurrencyCode()));
         if (!hasMatch)
-            context.fail("units", "forex-gross-value-required",
+            input.fail(RuleTable.Ruled.UNITS.id(), "forex-gross-value-required",
                             "The instrument is in " + security.getCurrencyCode() + " but the transaction is in "
                                             + currencyCode
                                             + "; add a GROSS_VALUE unit with its forex amount and exchange rate.");

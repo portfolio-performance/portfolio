@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import com.google.gson.JsonObject;
 
@@ -62,7 +61,6 @@ public final class OperationContext implements OperationSpec.Context
     private final List<Change> created;
     private final List<Change> updated;
     private final List<Change> deleted;
-    private final Optional<TransactionUpdates.Existing> replacing;
     private int failureCount;
 
     OperationContext(ApplyBatch batch, int index, JsonObject input)
@@ -73,34 +71,6 @@ public final class OperationContext implements OperationSpec.Context
         this.created = new ArrayList<>();
         this.updated = new ArrayList<>();
         this.deleted = new ArrayList<>();
-        this.replacing = Optional.empty();
-    }
-
-    private OperationContext(OperationContext outer, JsonObject input, TransactionUpdates.Existing replacing)
-    {
-        this.batch = outer.batch;
-        this.index = outer.index;
-        this.input = new OperationInput(input, batch.client(), batch::existedBeforeBatch, this::fail);
-        this.created = outer.created;
-        this.updated = outer.updated;
-        this.deleted = outer.deleted;
-        this.replacing = Optional.of(replacing);
-    }
-
-    /**
-     * A context of the same operation whose input is the given one and whose
-     * add of a transaction replaces the existing record instead. Changes go to
-     * this operation's result; failures are counted separately.
-     */
-    OperationContext replacing(JsonObject merged, TransactionUpdates.Existing existing)
-    {
-        return new OperationContext(this, merged, existing);
-    }
-
-    /** The record that the transaction being built replaces, if this is an update. */
-    Optional<TransactionUpdates.Existing> replacing()
-    {
-        return replacing;
     }
 
     @Override
