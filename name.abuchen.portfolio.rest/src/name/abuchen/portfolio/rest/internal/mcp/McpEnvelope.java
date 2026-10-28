@@ -264,6 +264,13 @@ public final class McpEnvelope
         if (compacted.tabulated())
             notes.add("`items` is a table: each row holds its values in the order of `columns`.");
 
+        if (compacted.moreColumn())
+        {
+            // the fields only a few rows have: named per row, not per column
+            notes.add("`more` holds the fields only a few rows have, by column name; `null` there means the row has "
+                            + "none of them.");
+        }
+
         // only what the payload has: the column sentence where a table has
         // such a column, not on a single report that has none
         var currencyColumn = compacted.currencyColumn()
@@ -287,11 +294,13 @@ public final class McpEnvelope
             notes.add("Rates and weights are **fractions, not percentages**: `0.0723` is 7.23%.");
         }
 
-        if (found.hasNulls() || compacted.tabulated())
+        if (compacted.hasNull())
         {
             // deliberately wider than "undefined for this interval", which is
             // false of an instrument's currencyCode, null when it is an index -
-            // and a table cell of a field that row does not have
+            // and a table cell of a field that row does not have. Only where a
+            // null is actually sent: a note about nothing in the answer is a
+            // line every call pays for
             notes.add("`null` means **unknown or does not apply**, never zero: say it is unavailable.");
         }
 
