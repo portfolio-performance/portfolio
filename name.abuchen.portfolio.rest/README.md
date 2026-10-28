@@ -274,6 +274,12 @@ a result, never both. `warnings` is always present, empty when nothing failed, s
 wrong" is distinguishable from "this endpoint cannot report problems". **A client that ignores
 `warnings` reads a partial list as a complete one.**
 
+**A trade can count transactions booked ahead.** Trades are matched over every transaction, as in
+the application's trades view, while an open trade is valued at the price of `valuationDate`. A trade
+with transactions dated after it — a savings plan booked ahead — carries
+`transactionsAfterValuationDate`: its shares and values are those after the last of them, not the
+position held today, which `GET .../holdings` gives.
+
 **An old exchange rate is named.** Every computed report carries `fxStaleRates` beside `fxWarnings`:
 the pairs it converted at a rate more than seven days older than the conversion date (or than today,
 for a later date), with the oldest `rateDate` and `daysOld` — for a pair reached through a third

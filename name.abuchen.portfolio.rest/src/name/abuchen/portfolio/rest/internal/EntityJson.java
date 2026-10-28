@@ -602,6 +602,19 @@ public final class EntityJson
         if (note != null && !note.isBlank())
             json.addProperty("note", note); //$NON-NLS-1$
 
+        // the collector matches every transaction, also those dated after the
+        // valuation date - a savings plan books ahead - while an open trade is
+        // valued at today's price: its shares and values are then those after
+        // the last of them, not the position held on valuationDate. The
+        // application's trades view does the same; this says so, per trade,
+        // and only where it applies
+        var later = trade.getTransactions().stream()
+                        .filter(pair -> pair.getTransaction().getDateTime().toLocalDate()
+                                        .isAfter(params.valuationDate()))
+                        .count();
+        if (later > 0)
+            json.addProperty("transactionsAfterValuationDate", later); //$NON-NLS-1$
+
         return json;
     }
 

@@ -978,7 +978,8 @@ paths:
       description: |
         Per-instrument return, valuation, gains, income, expenses and risk over
         the same interval the aggregate `GET .../performance` covers, in the
-        reporting currency. Items are sorted by name.
+        reporting currency. Items are sorted by name, then by `uuid` for
+        instruments of the same name.
 
         **Which instruments appear.** Every instrument the interval touched:
         any transaction inside it, or a non-zero position at either end. A
@@ -1780,6 +1781,17 @@ components:
           description: |
             The share-weighted average number of days the shares were held,
             counted to `end` or, for an open trade, to `valuationDate`.
+        transactionsAfterValuationDate:
+          type: integer
+          description: |
+            How many of the trade's transactions are dated after
+            `valuationDate` — a savings plan booked ahead, say. Omitted when
+            none is. Trades are matched over every transaction, as in the
+            application's trades view, while an open trade is valued at the
+            price of `valuationDate`: with such transactions, `shares`,
+            `entryValue`, `exitValue` and `profitLoss` are those after the last
+            of them, not the position held on `valuationDate`. That position is
+            in `GET .../holdings`.
         irr:
           type: [number, "null"]
           description: |
