@@ -49,6 +49,7 @@ public class McpToolsDriftTest
      */
     private static final Set<String> ROUTES_WITHOUT_A_TOOL = Set.of( //
                     "POST /mcp", //
+                    "DELETE /mcp", //
                     "GET /v1/openapi.yaml", //
                     "GET /v1/version", //
                     "POST /v1/auth/requests", //
