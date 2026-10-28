@@ -19,6 +19,9 @@ becomes a later thin adapter over the same service layer. The individual decisio
   portfolio file. Move or rename ⇒ identity lost ⇒ fails closed. Files may additionally carry a
   user-assigned alias (`[a-z0-9-]{1,32}`, may not parse as a UUID, unique case-insensitively across
   all records) so an alias can never shadow a file UUID in the shared `/files/{id}` segment.
+  The file listing names the address to send as `use`, and that is always the UUID: an alias can be
+  renamed between listing the files and the next call, and a stable address is worth more than a
+  readable one. Aliases stay accepted for hand-written scripts.
 - **Explicit targeting only.** Every data route is scoped `/v1/files/{id}/…`. There is no "active
   file": the user switching tabs must never retarget a running script.
 - **Per-file opt-in is the authorization grant.** Server off by default; a global preference enables
