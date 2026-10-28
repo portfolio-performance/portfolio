@@ -3,6 +3,7 @@ package name.abuchen.portfolio.rest;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -13,6 +14,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
@@ -44,6 +46,8 @@ public class RestApiServerTest
                         request -> Response.json(201, JsonParser.parseString("{\"status\":\"pending\"}")));
         router.add("GET", "/v1/auth/requests/{id}",
                         request -> Response.json(200, JsonParser.parseString("{\"status\":\"pending\"}")));
+        router.add("DELETE", "/v1/nocontent", request -> Response.noContent());
+        router.add("POST", "/v1/accepted", request -> new Response(202, null, new byte[0], Map.of()));
 
         server = new RestApiServer(0, TOKEN::equals, router);
         server.start();
@@ -293,6 +297,28 @@ public class RestApiServerTest
         assertThat(response.body(), containsString("problems/not-found"));
     }
 
+    /**
+     * A trailing slash is the same path, not a second one: routing and the
+     * token-free exemption are both decided on the normalized path, so a client
+     * that writes `/v1/auth/requests/` is not told it needs a token.
+     */
+    @Test
+    public void testATrailingSlashIsTheSameRoute() throws Exception
+    {
+        assertThat(http.send(request("/v1/ping/").header("Authorization", "Bearer " + TOKEN).GET().build(),
+                        HttpResponse.BodyHandlers.ofString()).statusCode(), is(200));
+
+        var pairing = http.send(request("/v1/auth/requests/")
+                        .POST(HttpRequest.BodyPublishers.ofString("{\"clientName\":\"x\"}")).build(),
+                        HttpResponse.BodyHandlers.ofString());
+        assertThat(pairing.statusCode(), is(201));
+
+        assertThat(http.send(request("/v1/ping///").GET().build(), HttpResponse.BodyHandlers.ofString()).statusCode(),
+                        is(401));
+        assertThat(http.send(request("/v1//ping").header("Authorization", "Bearer " + TOKEN).GET().build(),
+                        HttpResponse.BodyHandlers.ofString()).statusCode(), is(404));
+    }
+
     /** the scheme name is case-insensitive; the token itself is not */
     @Test
     public void testTheBearerSchemeIsReadCaseInsensitively() throws Exception
@@ -316,5 +342,95 @@ public class RestApiServerTest
         var rejection = RejectedConnections.last().orElseThrow();
         assertThat(rejection.reason(), is(RejectedConnections.Reason.NO_BEARER_SCHEME));
         assertThat(rejection.tokenPresented(), is(false));
+    }
+
+    /**
+     * A 204 carries no body and must not announce one - neither a chunked
+     * stream nor a length.
+     */
+    @Test
+    public void testANoContentResponseAnnouncesNoBody() throws Exception
+    {
+        var head = rawHead("DELETE", "/v1/nocontent", "Bearer " + TOKEN).toLowerCase();
+
+        assertThat(head, containsString(" 204 "));
+        assertThat(head, not(containsString("transfer-encoding")));
+        assertThat(head, not(containsString("content-length")));
+    }
+
+    /**
+     * An empty 202 - the answer to an MCP notification - must not announce a
+     * chunked stream either. {@code com.sun.net.httpserver} reads a length of 0
+     * as "chunked", which is why an empty body is sent with -1.
+     */
+    @Test
+    public void testAnEmptyAcceptedResponseIsNotChunked() throws Exception
+    {
+        var head = rawHead("POST", "/v1/accepted", "Bearer " + TOKEN).toLowerCase();
+
+        assertThat(head, containsString(" 202 "));
+        assertThat(head, not(containsString("transfer-encoding")));
+    }
+
+    /**
+     * A client that announces a body and never sends it is cut off by the
+     * watchdog, and does not keep the server from answering anyone else.
+     */
+    @Test
+    public void testAStalledRequestIsClosedByTheWatchdog() throws Exception
+    {
+        var router = new Router();
+        router.add("POST", "/v1/auth/requests",
+                        request -> Response.json(201, JsonParser.parseString("{\"status\":\"pending\"}")));
+        router.add("GET", "/v1/ping", request -> Response.json(200, JsonParser.parseString("{\"pong\":true}")));
+
+        var guarded = new RestApiServer(0, TOKEN::equals, router, 500);
+        guarded.start();
+        try (var socket = new Socket(InetAddress.getLoopbackAddress(), guarded.getPort()))
+        {
+            var request = "POST /v1/auth/requests HTTP/1.1\r\n" //
+                            + "Host: 127.0.0.1:" + guarded.getPort() + "\r\n" //
+                            + "Content-Length: 100\r\n\r\n{";
+            socket.getOutputStream().write(request.getBytes(StandardCharsets.US_ASCII));
+            socket.getOutputStream().flush();
+            socket.setSoTimeout(5_000);
+
+            // closed without an answer: end of stream, not a timeout
+            assertThat(socket.getInputStream().read(), is(-1));
+
+            // the server answers again
+            var response = http.send(HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + guarded.getPort()
+                            + "/v1/ping")).header("Authorization", "Bearer " + TOKEN).GET().build(),
+                            HttpResponse.BodyHandlers.ofString());
+            assertThat(response.statusCode(), is(200));
+        }
+        finally
+        {
+            guarded.stop();
+        }
+    }
+
+    /** the raw response head, exactly as the wire sent it */
+    private String rawHead(String method, String path, String authorization) throws Exception
+    {
+        try (var socket = new Socket(InetAddress.getLoopbackAddress(), server.getPort()))
+        {
+            var request = method + " " + path + " HTTP/1.1\r\n" //
+                            + "Host: 127.0.0.1:" + server.getPort() + "\r\n" //
+                            + "Authorization: " + authorization + "\r\n" //
+                            + "Content-Length: 0\r\n" //
+                            + "Connection: close\r\n\r\n";
+            socket.getOutputStream().write(request.getBytes(StandardCharsets.US_ASCII));
+            socket.getOutputStream().flush();
+
+            var reader = new BufferedReader(
+                            new InputStreamReader(socket.getInputStream(), StandardCharsets.US_ASCII));
+            var head = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null && !line.isEmpty())
+                head.append(line).append('\n');
+
+            return head.toString();
+        }
     }
 }
