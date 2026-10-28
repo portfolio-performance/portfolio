@@ -178,8 +178,8 @@ public class ApiException extends RuntimeException
     }
 
     /**
-     * More requests are in flight than the server serves at once. Refused before
-     * the body is read, which is what keeps the bound cheap to enforce.
+     * More requests are in flight than the server serves at once. Refused without
+     * keeping the body, which is what keeps the bound cheap to enforce.
      */
     public static ApiException serverBusy()
     {
