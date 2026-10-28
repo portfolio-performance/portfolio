@@ -412,8 +412,9 @@ public class RestApiServerTest
             for (var response : pending)
                 assertThat(response.get(5, TimeUnit.SECONDS).statusCode(), is(200));
 
-            // and the permits come back
-            assertThat(http.send(slow(bounded), HttpResponse.BodyHandlers.ofString()).statusCode(), is(200));
+            // and the permits come back - released just after the responses were
+            // written, so the client may be a moment ahead of them
+            assertThat(statusEventually(slow(bounded)), is(200));
         }
         finally
         {
@@ -448,11 +449,10 @@ public class RestApiServerTest
             // closed without an answer: end of stream, not a timeout
             assertThat(socket.getInputStream().read(), is(-1));
 
-            // the one permit is free again
-            var response = http.send(HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + guarded.getPort()
-                            + "/v1/ping")).header("Authorization", "Bearer " + TOKEN).GET().build(),
-                            HttpResponse.BodyHandlers.ofString());
-            assertThat(response.statusCode(), is(200));
+            // the one permit is free again - released just after the socket closed
+            var ping = HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + guarded.getPort() + "/v1/ping"))
+                            .header("Authorization", "Bearer " + TOKEN).GET().build();
+            assertThat(statusEventually(ping), is(200));
         }
         finally
         {
@@ -487,6 +487,24 @@ public class RestApiServerTest
                 head.append(line).append('\n');
 
             return head.toString();
+        }
+    }
+
+    /**
+     * The status of a request sent until it is no longer refused as busy, for
+     * at most five seconds. The server releases a permit after it closed the
+     * exchange, so a client can see the end of a response before the permit
+     * is back.
+     */
+    private int statusEventually(HttpRequest request) throws Exception
+    {
+        var until = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+        while (true)
+        {
+            var status = http.send(request, HttpResponse.BodyHandlers.ofString()).statusCode();
+            if (status != 503 || System.nanoTime() > until)
+                return status;
+            Thread.sleep(20);
         }
     }
 }
