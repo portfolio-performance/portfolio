@@ -44,16 +44,48 @@ public final class FxWarnings
     {
     }
 
+    /**
+     * One pair converted at a rate much older than the date it converted at:
+     * the series stopped answering with new rates. Not a 1:1 conversion - a
+     * real rate, but an old one - and therefore not an {@code fxWarnings} entry,
+     * whose every reason means "converted at 1:1".
+     *
+     * @param rateDate
+     *            the date of the oldest rate a conversion used
+     * @param daysOld
+     *            how many days that rate was older than the date it converted
+     *            at, or than today for a later date
+     */
+    public record StaleRate(String currency, String reportingCurrency, String rateDate, long daysOld)
+    {
+    }
+
     private FxWarnings()
     {
     }
 
-    /** adds {@code fxWarnings} for every pair the recorder saw fall back */
+    /**
+     * Adds {@code fxWarnings} for every pair the recorder saw fall back, and
+     * {@code fxStaleRates} for every pair it saw converted at a stale rate -
+     * both always present, empty when there is nothing to say.
+     */
     public static void attach(JsonObject report, ConversionRecorder conversions)
     {
         var warnings = new JsonArray();
         for (var warning : conversions.fallbacks())
             warnings.add(EntityJson.toJson(warning));
         report.add("fxWarnings", warnings); //$NON-NLS-1$
+
+        var stale = new JsonArray();
+        for (var rate : conversions.staleRates())
+        {
+            var json = new JsonObject();
+            json.addProperty("currency", rate.currency()); //$NON-NLS-1$
+            json.addProperty("reportingCurrency", rate.reportingCurrency()); //$NON-NLS-1$
+            json.addProperty("rateDate", rate.rateDate()); //$NON-NLS-1$
+            json.addProperty("daysOld", rate.daysOld()); //$NON-NLS-1$
+            stale.add(json);
+        }
+        report.add("fxStaleRates", stale); //$NON-NLS-1$
     }
 }

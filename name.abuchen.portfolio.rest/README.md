@@ -165,7 +165,8 @@ identity and enablement.
  "isin": "US0378331005", "wkn": "865985", "tickerSymbol": "AAPL", "note": "…"}
 ```
 
-`isin`, `wkn`, `tickerSymbol` and `note` are omitted when not set.
+`isin`, `wkn`, `tickerSymbol` and `note` are omitted when not set; a blank `note` counts as not set,
+on cash and investment accounts too.
 
 `?query=` narrows the list to the instruments it finds: a name that contains it, or an ISIN, WKN or
 ticker symbol equal to it — ignoring case and surrounding whitespace. A large file holds more
@@ -327,6 +328,18 @@ hundred, and `problem+json` stays reserved for a *total* failure — a response 
 a result, never both. `warnings` is always present, empty when nothing failed, so that "nothing went
 wrong" is distinguishable from "this endpoint cannot report problems". **A client that ignores
 `warnings` reads a partial list as a complete one.**
+
+**A trade can count transactions booked ahead.** Trades are matched over every transaction, as in
+the application's trades view, while an open trade is valued at the price of `valuationDate`. A trade
+with transactions dated after it — a savings plan booked ahead — carries
+`transactionsAfterValuationDate`: its shares and values are those after the last of them, not the
+position held today, which `GET .../holdings` gives.
+
+**An old exchange rate is named.** Every computed report carries `fxStaleRates` beside `fxWarnings`:
+the pairs it converted at a rate more than seven days older than the conversion date (or than today,
+for a later date), with the oldest `rateDate` and `daysOld`. A series that stopped being published
+goes on answering with its last rate, and the currency effect is then frozen rather than measured.
+It is a real rate, not a 1:1 fallback, so it is not an `fxWarnings` entry.
 
 ## Query parameters are strict
 

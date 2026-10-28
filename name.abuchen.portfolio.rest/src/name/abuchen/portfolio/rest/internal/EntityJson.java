@@ -81,7 +81,9 @@ public final class EntityJson
             json.addProperty("wkn", security.getWkn()); //$NON-NLS-1$
         if (security.getTickerSymbol() != null)
             json.addProperty("tickerSymbol", security.getTickerSymbol()); //$NON-NLS-1$
-        if (security.getNote() != null)
+        // a blank note is no note: omitted as an unset one is, so that "no
+        // note" has one shape and not three
+        if (security.getNote() != null && !security.getNote().isBlank())
             json.addProperty("note", security.getNote()); //$NON-NLS-1$
 
         var attributes = attributesJson(client, security);
@@ -136,7 +138,7 @@ public final class EntityJson
         json.addProperty("uuid", account.getUUID()); //$NON-NLS-1$
         json.addProperty("name", account.getName()); //$NON-NLS-1$
         json.addProperty("currencyCode", account.getCurrencyCode()); //$NON-NLS-1$
-        if (account.getNote() != null)
+        if (account.getNote() != null && !account.getNote().isBlank())
             json.addProperty("note", account.getNote()); //$NON-NLS-1$
         return json;
     }
@@ -613,6 +615,19 @@ public final class EntityJson
         if (note != null && !note.isBlank())
             json.addProperty("note", note); //$NON-NLS-1$
 
+        // the collector matches every transaction, also those dated after the
+        // valuation date - a savings plan books ahead - while an open trade is
+        // valued at today's price: its shares and values are then those after
+        // the last of them, not the position held on valuationDate. The
+        // application's trades view does the same; this says so, per trade,
+        // and only where it applies
+        var later = trade.getTransactions().stream()
+                        .filter(pair -> pair.getTransaction().getDateTime().toLocalDate()
+                                        .isAfter(params.valuationDate()))
+                        .count();
+        if (later > 0)
+            json.addProperty("transactionsAfterValuationDate", later); //$NON-NLS-1$
+
         return json;
     }
 
@@ -693,7 +708,7 @@ public final class EntityJson
         var json = new JsonObject();
         json.addProperty("uuid", portfolio.getUUID()); //$NON-NLS-1$
         json.addProperty("name", portfolio.getName()); //$NON-NLS-1$
-        if (portfolio.getNote() != null)
+        if (portfolio.getNote() != null && !portfolio.getNote().isBlank())
             json.addProperty("note", portfolio.getNote()); //$NON-NLS-1$
         if (portfolio.getReferenceAccount() != null)
             json.addProperty("referenceCashAccount", portfolio.getReferenceAccount().getUUID()); //$NON-NLS-1$

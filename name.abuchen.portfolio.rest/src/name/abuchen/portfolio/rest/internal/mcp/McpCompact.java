@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.rest.internal.mcp;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -91,7 +93,11 @@ import com.google.gson.JsonPrimitive;
                 item.remove("path"); //$NON-NLS-1$
             });
 
-        forEachItem(report, McpCompact::notePriceAge);
+        // valued at a future date, an age is measured to today - which the
+        // note then says, or it reads as the age on the date asked for
+        var date = stringOf(report.get("date")); //$NON-NLS-1$
+        var future = date != null && isAfterToday(date);
+        forEachItem(report, item -> notePriceAge(item, future));
 
         var dropped = new boolean[1];
         for (var entry : report.entrySet())
@@ -118,7 +124,7 @@ import com.google.gson.JsonPrimitive;
     // ── price age ───────────────────────────────────────────────────────────
 
     /** the four price-age fields as one note, or none when the price is fresh */
-    private static void notePriceAge(JsonObject item)
+    private static void notePriceAge(JsonObject item, boolean asOfToday)
     {
         if (!item.has("priceStale")) //$NON-NLS-1$
             return;
@@ -133,6 +139,8 @@ import com.google.gson.JsonPrimitive;
             note = "manual price, " + ageDays + " days old"; //$NON-NLS-1$ //$NON-NLS-2$
         else if (stale)
             note = "stale: " + missed + " trading days without a quote"; //$NON-NLS-1$ //$NON-NLS-2$
+        if (note != null && asOfToday)
+            note += " as of today"; //$NON-NLS-1$
 
         // in the place of the fields it replaces, next to the price it is about
         var entries = new ArrayList<>(item.entrySet());
@@ -432,6 +440,18 @@ import com.google.gson.JsonPrimitive;
                 return false;
         }
         return true;
+    }
+
+    private static boolean isAfterToday(String date)
+    {
+        try
+        {
+            return LocalDate.parse(date).isAfter(LocalDate.now());
+        }
+        catch (DateTimeParseException e)
+        {
+            return false;
+        }
     }
 
     private static boolean isTrue(JsonElement element)

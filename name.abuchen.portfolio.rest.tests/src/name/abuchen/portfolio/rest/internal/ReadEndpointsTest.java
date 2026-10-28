@@ -125,6 +125,27 @@ public class ReadEndpointsTest
         }
     }
 
+    /** a blank note is no note: omitted on instruments and accounts as an unset one is */
+    @Test
+    public void testABlankNoteIsOmitted()
+    {
+        var client = new Client();
+        var blank = new SecurityBuilder().addTo(client);
+        blank.setNote("  ");
+        var set = new SecurityBuilder().addTo(client);
+        set.setNote("kept");
+
+        var items = SecuritiesHandler.list(client, null).getAsJsonObject().get("items").getAsJsonArray();
+        assertThat(items.get(0).getAsJsonObject().has("note"), is(false));
+        assertThat(items.get(1).getAsJsonObject().get("note").getAsString(), is("kept"));
+
+        var account = new name.abuchen.portfolio.model.Account();
+        account.setName("Giro");
+        account.setCurrencyCode("EUR");
+        account.setNote("");
+        assertThat(EntityJson.toJson(account).has("note"), is(false));
+    }
+
     /**
      * The retired flag is not part of the API until the naming ("retired" in the
      * model, "deactivated" in the UI) is settled.

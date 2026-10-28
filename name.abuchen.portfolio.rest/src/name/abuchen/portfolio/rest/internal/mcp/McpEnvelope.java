@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.rest.internal.mcp;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -119,7 +120,7 @@ public final class McpEnvelope
         var found = scan(payload);
         var compacted = McpCompact.compact(tool, payload);
         var guidance = guidanceBefore(found, payload, droppedMetrics);
-        var notes = notesFor(tool, arguments, found, changed, compacted, advice);
+        var notes = notesFor(tool, arguments, payload, found, changed, compacted, advice);
         if (!notes.isEmpty())
             guidance.add(notes.stream().map(note -> "- " + note).reduce((a, b) -> a + "\n" + b).orElseThrow());
         if (advice != null && !advice.isEmpty())
@@ -168,6 +169,30 @@ public final class McpEnvelope
                     + " nothing to convert with, so amounts in those currencies were multiplied by "
                     + "1 and are shown at face value. Say that they are unconverted; do not present them as if the "
                     + "exchange rate had been applied. The pairs:\n" + preview(found.fxWarnings(), "fxWarnings"));
+        }
+
+        // a real rate, but an old one: the currency effect is frozen, not measured
+        var stale = topLevelArray(payload, "fxStaleRates");
+        if (stale.size() > 0)
+        {
+            sections.add("**Exchange rates out of date.** " + stale.size() + " currency pair"
+                            + (stale.size() == 1 ? " was" : "s were")
+                            + " converted at a rate that had not been updated for a long time (`daysOld`, from "
+                            + "`rateDate`) - the series stopped being published - so the currency effect of those "
+                            + "amounts is frozen at that rate, not measured. Say so when you report figures in or "
+                            + "from those currencies. The pairs:\n" + preview(stale, "fxStaleRates"));
+        }
+
+        // an open trade that counts transactions booked ahead is not the
+        // position held on its valuation date
+        var later = countWith(payload, "transactionsAfterValuationDate");
+        if (later > 0)
+        {
+            sections.add("**" + later + (later == 1 ? " trade includes" : " trades include")
+                            + " transactions dated after `valuationDate`** (`transactionsAfterValuationDate`), such "
+                            + "as a savings plan booked ahead. Their shares and values are those after the last of "
+                            + "them, priced at today's price - not the position held today, and the profit is not "
+                            + "today's. Say so; pp_list_holdings gives the position held today.");
         }
 
         // a period ending in the future mixes two kinds of figure, and neither
@@ -233,8 +258,8 @@ public final class McpEnvelope
     }
 
     /** guidance that applies to this payload, in the order it should be read */
-    private static List<String> notesFor(McpTool tool, JsonObject arguments, Scan found, Boolean changed,
-                    McpCompact.Result compacted, String advice)
+    private static List<String> notesFor(McpTool tool, JsonObject arguments, JsonElement payload, Scan found,
+                    Boolean changed, McpCompact.Result compacted, String advice)
     {
         var notes = new ArrayList<String>();
 
@@ -291,6 +316,17 @@ public final class McpEnvelope
             // null is actually sent: a note about nothing in the answer is a
             // line every call pays for
             notes.add("`null` means **unknown or does not apply**, never zero: say it is unavailable.");
+        }
+
+        // an annualized rate from a few days is a number, but not a return
+        var extreme = extremeIrr(payload, new double[] { 0, 0 });
+        if (extreme[0] > 0)
+        {
+            notes.add((int) extreme[0] + " `irr` value" + (extreme[0] == 1 ? " is" : "s are")
+                            + " above 10,000% a year in size (up to "
+                            + BigDecimal.valueOf(extreme[1]).setScale(0, RoundingMode.HALF_UP).toPlainString()
+                            + "): annualized from a holding period of a few days, no one earned that. Report "
+                            + "`return` for those rows instead.");
         }
 
         if (found.hasLocalDateTimes())
@@ -541,6 +577,55 @@ public final class McpEnvelope
 
         var value = payload.getAsJsonObject().get(key);
         return value != null && value.isJsonArray() ? value.getAsJsonArray() : new JsonArray();
+    }
+
+    /** an {@code irr} at or above this in size is 10,000% a year: annualization, not a return */
+    private static final double EXTREME_IRR = 100;
+
+    /**
+     * How many {@code irr} values are extreme, and the largest of them in
+     * size: {@code found[0]} counts, {@code found[1]} is the largest.
+     */
+    private static double[] extremeIrr(JsonElement node, double[] found)
+    {
+        if (node == null)
+            return found;
+        if (node.isJsonArray())
+        {
+            node.getAsJsonArray().forEach(item -> extremeIrr(item, found));
+            return found;
+        }
+        if (!node.isJsonObject())
+            return found;
+
+        for (var entry : node.getAsJsonObject().entrySet())
+        {
+            var value = entry.getValue();
+            if ("irr".equals(entry.getKey()) && value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber())
+            {
+                var size = Math.abs(value.getAsDouble());
+                if (size >= EXTREME_IRR)
+                {
+                    found[0]++;
+                    found[1] = Math.max(found[1], size);
+                }
+            }
+            extremeIrr(value, found);
+        }
+        return found;
+    }
+
+    /** how many items of a list carry this field */
+    private static int countWith(JsonElement payload, String key)
+    {
+        var items = topLevelArray(payload, "items");
+        var count = 0;
+        for (var item : items)
+        {
+            if (item.isJsonObject() && item.getAsJsonObject().has(key))
+                count++;
+        }
+        return count;
     }
 
     /** {@code flags} is fractions, nulls, local date-times, cash accounts - in that order */

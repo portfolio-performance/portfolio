@@ -3,8 +3,10 @@ package name.abuchen.portfolio.rest.internal.mcp;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.not;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +28,7 @@ public class McpCompactTest
     private static final McpTool FILES = McpTools.byName("pp_list_files").orElseThrow();
     private static final McpTool PERFORMANCE = McpTools.byName("pp_get_overall_performance").orElseThrow();
     private static final McpTool INSTRUMENTS = McpTools.byName("pp_list_instruments").orElseThrow();
+    private static final McpTool TRADES = McpTools.byName("pp_list_trades").orElseThrow();
 
     /** a holding in the reporting currency, one in USD, and a cash account */
     private static final String HOLDINGS_PAYLOAD = """
@@ -298,6 +301,72 @@ public class McpCompactTest
                         "{\"items\":[{\"use\":\"a\",\"label\":\"A\",\"alias\":\"x\"},{\"use\":\"b\",\"label\":\"B\"}]}"),
                         List.of());
         assertThat(withNull, containsString("`null` means"));
+    }
+
+    /** an irr annualized from a few days is named as such, with the largest of them */
+    @Test
+    public void testAnExtremeIrrIsNamed()
+    {
+        var payload = JsonParser.parseString("""
+                        {"reportingCurrency":"EUR","items":[
+                         {"instrument":{"uuid":"a","name":"A"},"holdingPeriodDays":1,"irr":25586198.51754072,"return":0.0478},
+                         {"instrument":{"uuid":"b","name":"B"},"holdingPeriodDays":400,"irr":0.08,"return":0.09},
+                         {"instrument":{"uuid":"c","name":"C"},"holdingPeriodDays":6,"irr":-150.5,"return":-0.2}]}""");
+
+        var rendered = McpEnvelope.render(TRADES, new JsonObject(), payload, List.of());
+
+        assertThat(rendered, containsString("2 `irr` values are above 10,000% a year in size (up to 25586199)"));
+        assertThat(rendered, containsString("Report `return` for those rows instead."));
+
+        var ordinary = McpEnvelope.render(TRADES, new JsonObject(), JsonParser.parseString(
+                        "{\"items\":[{\"irr\":0.5,\"return\":0.1}]}"), List.of());
+        assertThat(ordinary, not(containsString("10,000%")));
+    }
+
+    /** a trade counting transactions booked ahead is named before the figures */
+    @Test
+    public void testATradeWithLaterTransactionsIsNamedBeforeTheFigures()
+    {
+        var payload = JsonParser.parseString("""
+                        {"valuationDate":"2026-10-28","items":[
+                         {"instrument":{"uuid":"a","name":"ZF"},"shares":12.4073,"transactionsAfterValuationDate":5},
+                         {"instrument":{"uuid":"b","name":"B"},"shares":1}]}""");
+
+        var rendered = McpEnvelope.render(TRADES, new JsonObject(), payload, List.of());
+
+        assertThat(rendered, containsString("**1 trade includes transactions dated after `valuationDate`**"));
+        assertThat(rendered.indexOf("1 trade includes"), is(lessThan(rendered.indexOf("\"rows\""))));
+    }
+
+    /** a stale exchange rate is named before the figures, with the pair */
+    @Test
+    public void testAStaleExchangeRateIsNamedBeforeTheFigures()
+    {
+        var payload = JsonParser.parseString("""
+                        {"reportingCurrency":"RUB","ttwror":0.12,"fxWarnings":[],
+                         "fxStaleRates":[{"currency":"EUR","reportingCurrency":"RUB","rateDate":"2022-03-01","daysOld":1702}]}""");
+
+        var rendered = McpEnvelope.render(PERFORMANCE, new JsonObject(), payload, List.of());
+
+        assertThat(rendered, containsString("**Exchange rates out of date.** 1 currency pair was converted"));
+        assertThat(rendered, containsString("\"daysOld\":1702"));
+        assertThat(McpEnvelope.render(PERFORMANCE, new JsonObject(), JsonParser.parseString(
+                        "{\"fxWarnings\":[],\"fxStaleRates\":[]}"), List.of()), not(containsString("out of date")));
+    }
+
+    /** valued at a future date, the price note says that its age is today's */
+    @Test
+    public void testThePriceNoteOfAFutureDateSaysAsOfToday()
+    {
+        var future = LocalDate.now().plusYears(2).toString();
+        var payload = HOLDINGS_PAYLOAD.replace("\"date\":\"2026-10-28\"", "\"date\":\"" + future + "\"");
+
+        var table = compact(HOLDINGS, payload).getAsJsonObject("items");
+        assertThat(cell(table, 1, "priceNote").getAsString(),
+                        is("stale: 47 trading days without a quote as of today"));
+
+        var today = compact(HOLDINGS, HOLDINGS_PAYLOAD).getAsJsonObject("items");
+        assertThat(cell(today, 1, "priceNote").getAsString(), is("stale: 47 trading days without a quote"));
     }
 
     /**

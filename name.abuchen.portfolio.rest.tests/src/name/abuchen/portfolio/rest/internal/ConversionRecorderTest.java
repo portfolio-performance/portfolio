@@ -178,6 +178,65 @@ public class ConversionRecorderTest
     }
 
     /** an exchange-rate security ARS/EUR, without prices */
+    /**
+     * A series that stopped answering with new rates is used with its last
+     * one: recorded as stale with the largest gap met, not as a fallback.
+     */
+    @Test
+    public void testAConversionAtAnOldRateIsRecordedAsStale()
+    {
+        var client = new Client();
+        var rates = rates();
+        rates.addPrice(new SecurityPrice(LocalDate.of(2026, 1, 2), Values.Quote.factorize(965)));
+        client.addSecurity(rates);
+        var conversions = new ConversionRecorder(new ExchangeRateProviderFactory(client), LocalDate.of(2026, 10, 28));
+
+        var converter = converter(conversions, client, CurrencyUnit.EUR);
+        converter.convert(LocalDate.of(2026, 3, 1), Money.of("ARS", Values.Amount.factorize(10)));
+        converter.convert(LocalDate.of(2026, 7, 30), Money.of("ARS", Values.Amount.factorize(10)));
+        converter.convert(LocalDate.of(2026, 5, 1), Money.of("ARS", Values.Amount.factorize(10)));
+
+        assertThat(conversions.fallbacks(), is(empty()));
+        assertThat(conversions.staleRates(),
+                        contains(new FxWarnings.StaleRate("ARS", "EUR", "2026-01-02", 209)));
+    }
+
+    /** a week-old rate is a weekend with holidays, not a stale one */
+    @Test
+    public void testARecentRateIsNotStale()
+    {
+        var client = new Client();
+        var rates = rates();
+        rates.addPrice(new SecurityPrice(LocalDate.of(2026, 1, 2), Values.Quote.factorize(965)));
+        client.addSecurity(rates);
+        var conversions = new ConversionRecorder(new ExchangeRateProviderFactory(client), LocalDate.of(2026, 10, 28));
+
+        converter(conversions, client, CurrencyUnit.EUR).convert(LocalDate.of(2026, 1, 9),
+                        Money.of("ARS", Values.Amount.factorize(10)));
+
+        assertThat(conversions.staleRates(), is(empty()));
+    }
+
+    /** no rate can be younger than today's: a later date is measured from today */
+    @Test
+    public void testAFutureDateIsMeasuredFromToday()
+    {
+        var client = new Client();
+        var rates = rates();
+        rates.addPrice(new SecurityPrice(LocalDate.of(2026, 1, 2), Values.Quote.factorize(965)));
+        client.addSecurity(rates);
+
+        var fresh = new ConversionRecorder(new ExchangeRateProviderFactory(client), LocalDate.of(2026, 1, 5));
+        converter(fresh, client, CurrencyUnit.EUR).convert(LocalDate.of(2030, 12, 31),
+                        Money.of("ARS", Values.Amount.factorize(10)));
+        assertThat(fresh.staleRates(), is(empty()));
+
+        var old = new ConversionRecorder(new ExchangeRateProviderFactory(client), LocalDate.of(2026, 2, 2));
+        converter(old, client, CurrencyUnit.EUR).convert(LocalDate.of(2030, 12, 31),
+                        Money.of("ARS", Values.Amount.factorize(10)));
+        assertThat(old.staleRates(), contains(new FxWarnings.StaleRate("ARS", "EUR", "2026-01-02", 31)));
+    }
+
     private static Security rates()
     {
         var rates = new Security("ARS/EUR", "ARS");

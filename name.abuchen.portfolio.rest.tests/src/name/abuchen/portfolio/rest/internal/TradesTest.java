@@ -619,6 +619,34 @@ public class TradesTest
         }
     }
 
+    /**
+     * A trade counting a transaction dated after the valuation date says so;
+     * one that does not carries no such field.
+     */
+    @Test
+    public void testATradeWithATransactionAfterTheValuationDateSaysSo()
+    {
+        var client = closedTrade(); // ACME, all in the past
+        var planned = new SecurityBuilder() //
+                        .addPrice("2026-01-02", Values.Quote.factorize(50)) //
+                        .addTo(client);
+        planned.setName("PLAN");
+        var later = LocalDate.now().plusMonths(2).toString();
+        new PortfolioBuilder(client.getAccounts().get(0)) //
+                        .buy(planned, "2026-01-02", Values.Share.factorize(10), Values.Amount.factorize(500)) //
+                        .buy(planned, later, Values.Share.factorize(2), Values.Amount.factorize(100)) //
+                        .addTo(client);
+
+        var items = trades(client).get("items").getAsJsonArray();
+        var acme = items.get(0).getAsJsonObject();
+        var plan = items.get(1).getAsJsonObject();
+
+        assertThat(acme.has("transactionsAfterValuationDate"), is(false));
+        assertThat(plan.get("transactionsAfterValuationDate").getAsInt(), is(1));
+        // the shares are those after the planned purchase, as in the application
+        assertThat(plan.get("shares").getAsDouble(), is(12.0));
+    }
+
     private static JsonObject page(Client client, String offset, String limit)
     {
         return TradesHandler.list(client, new ExchangeRateProviderFactory(client), null, null, null, null, null, null,

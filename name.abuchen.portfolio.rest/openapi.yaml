@@ -836,6 +836,8 @@ paths:
                     $ref: "#/components/schemas/MonetaryValue"
                   fxWarnings:
                     $ref: "#/components/schemas/FxWarnings"
+                  fxStaleRates:
+                    $ref: "#/components/schemas/FxStaleRates"
                   items:
                     type: array
                     items:
@@ -1719,6 +1721,8 @@ components:
             enum: [open, closed]
         fxWarnings:
           $ref: "#/components/schemas/FxWarnings"
+        fxStaleRates:
+          $ref: "#/components/schemas/FxStaleRates"
         page:
           $ref: "#/components/schemas/Page"
         warnings:
@@ -1914,6 +1918,17 @@ components:
           description: |
             The share-weighted average number of days the shares were held,
             counted to `end` or, for an open trade, to `valuationDate`.
+        transactionsAfterValuationDate:
+          type: integer
+          description: |
+            How many of the trade's transactions are dated after
+            `valuationDate` — a savings plan booked ahead, say. Omitted when
+            none is. Trades are matched over every transaction, as in the
+            application's trades view, while an open trade is valued at the
+            price of `valuationDate`: with such transactions, `shares`,
+            `entryValue`, `exitValue` and `profitLoss` are those after the last
+            of them, not the position held on `valuationDate`. That position is
+            in `GET .../holdings`.
         irr:
           type: [number, "null"]
           description: |
@@ -2024,7 +2039,7 @@ components:
           description: Omitted when not set.
         note:
           type: string
-          description: Omitted when not set.
+          description: Omitted when not set or blank.
         attributes:
           type: object
           description: |
@@ -2147,7 +2162,7 @@ components:
           description: ISO 4217 currency code.
         note:
           type: string
-          description: Omitted when not set.
+          description: Omitted when not set or blank.
 
     InvestmentAccount:
       type: object
@@ -2167,7 +2182,7 @@ components:
             when not set.
         note:
           type: string
-          description: Omitted when not set.
+          description: Omitted when not set or blank.
 
     MonetaryValue:
       type: object
@@ -2249,6 +2264,40 @@ components:
         can tell "nothing fell back" apart from "this report did not look".
       items:
         $ref: "#/components/schemas/FxWarning"
+
+    FxStaleRates:
+      type: array
+      description: |
+        Every currency pair this report converted at a rate more than seven
+        days older than the date it converted at (or than today, for a later
+        date) — a series that stopped being published goes on answering with
+        its last rate, and the currency effect of those amounts is then frozen
+        at it rather than measured. Not a 1:1 conversion, so not in
+        `fxWarnings`. Always present, empty when every rate used was recent.
+      items:
+        $ref: "#/components/schemas/FxStaleRate"
+
+    FxStaleRate:
+      type: object
+      required: [currency, reportingCurrency, rateDate, daysOld]
+      properties:
+        currency:
+          type: string
+          description: The currency the amounts were natively in.
+        reportingCurrency:
+          type: string
+          description: |
+            The currency they were converted into: the report's reporting
+            currency, or an instrument's own currency for its local figures.
+        rateDate:
+          type: string
+          format: date
+          description: The date of the oldest rate a conversion of this pair used.
+        daysOld:
+          type: integer
+          description: |
+            How many days that rate was older than the date it converted at —
+            the largest gap the calculation met for this pair.
 
     Holding:
       type: object
@@ -2406,6 +2455,8 @@ components:
           $ref: "#/components/schemas/PerformanceBreakdown"
         fxWarnings:
           $ref: "#/components/schemas/FxWarnings"
+        fxStaleRates:
+          $ref: "#/components/schemas/FxStaleRates"
 
     PerformanceBreakdown:
       type: object
@@ -2530,6 +2581,8 @@ components:
               [valuation, gains, income, expenses, moneyWeighted, timeWeighted, risk]
         fxWarnings:
           $ref: "#/components/schemas/FxWarnings"
+        fxStaleRates:
+          $ref: "#/components/schemas/FxStaleRates"
 
     InstrumentPerformance:
       type: object
