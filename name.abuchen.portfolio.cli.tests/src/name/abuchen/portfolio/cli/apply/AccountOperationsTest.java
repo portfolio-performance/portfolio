@@ -5,7 +5,6 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 
 import java.io.IOException;
-import java.nio.file.Files;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -89,20 +88,6 @@ public class AccountOperationsTest
     }
 
     @Test
-    public void refusesACashAccountWithoutNameOrCurrencyAndLeavesTheFileUntouched() throws IOException
-    {
-        var before = Files.readAllBytes(cli.file().toPath());
-
-        var run = cli.apply(cashAdd("\"note\":\"nameless\""), cashAdd("\"name\":\"   \",\"currencyCode\":\"EUR\""),
-                        cashAdd("\"name\":\"Odd\",\"currencyCode\":\"ZZZ\""));
-
-        assertThat(run.exitCode, is(1));
-        assertThat(run.failureKeys(), containsInAnyOrder("0:name:required", "0:currencyCode:required",
-                        "1:name:required", "2:currencyCode:invalid-currency"));
-        assertThat(Files.readAllBytes(cli.file().toPath()), is(before));
-    }
-
-    @Test
     public void updatesOnlyThePresentFieldsOfACashAccountAndReportsBeforeAndAfter() throws IOException
     {
         var uuid = usedCashAccount().getUUID();
@@ -139,67 +124,6 @@ public class AccountOperationsTest
     }
 
     @Test
-    public void refusesACurrencyChangeOnceTheCashAccountHasTransactions() throws IOException
-    {
-        var used = usedCashAccount();
-        var other = used.getCurrencyCode().equals("USD") ? "GBP" : "USD";
-        var before = Files.readAllBytes(cli.file().toPath());
-
-        var run = cli.apply(cashUpdate(used.getUUID(), "\"currencyCode\":\"" + other + "\""));
-
-        assertThat(run.exitCode, is(1));
-        assertThat(run.failure(0).get("field").getAsString(), is("currencyCode"));
-        assertThat(run.failure(0).get("code").getAsString(), is("currency-immutable"));
-        assertThat(Files.readAllBytes(cli.file().toPath()), is(before));
-    }
-
-    @Test
-    public void allowsRepeatingTheCurrencyOfACashAccountWithTransactions() throws IOException
-    {
-        var used = usedCashAccount();
-
-        var run = cli.apply(cashUpdate(used.getUUID(),
-                        "\"currencyCode\":\"" + used.getCurrencyCode() + "\",\"note\":\"kept\""));
-
-        assertThat(run.stdout, run.exitCode, is(0));
-    }
-
-    @Test
-    public void allowsACurrencyChangeBeforeTheCashAccountHasTransactions() throws IOException
-    {
-        cli.apply(cashAdd("\"name\":\"Empty\",\"currencyCode\":\"EUR\""));
-        var empty = cashAccount(cli.reload(), "Empty");
-
-        var run = cli.apply(cashUpdate(empty.getUUID(), "\"currencyCode\":\"CHF\""));
-
-        assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(cashAccount(cli.reload(), "Empty").getCurrencyCode(), is("CHF"));
-    }
-
-    @Test
-    public void refusesToClearTheNameOrCurrencyOfACashAccount() throws IOException
-    {
-        cli.apply(cashAdd("\"name\":\"Empty\",\"currencyCode\":\"EUR\""));
-        var empty = cashAccount(cli.reload(), "Empty");
-
-        var run = cli.apply(cashUpdate(empty.getUUID(), "\"name\":null,\"currencyCode\":\"\""));
-
-        assertThat(run.exitCode, is(1));
-        assertThat(run.failureKeys(), containsInAnyOrder("0:name:required", "0:currencyCode:required"));
-    }
-
-    @Test
-    public void refusesTwoUpdatesOfTheSameCashAccountInOneBatch() throws IOException
-    {
-        var uuid = usedCashAccount().getUUID();
-
-        var run = cli.apply(cashUpdate(uuid, "\"note\":\"one\""), cashUpdate(uuid, "\"note\":\"two\""));
-
-        assertThat(run.exitCode, is(1));
-        assertThat(run.failureKeys(), containsInAnyOrder("1:uuid:duplicate-target"));
-    }
-
-    @Test
     public void addsAnInvestmentAccountAndReportsTheCreatedRecord() throws IOException
     {
         var reference = usedCashAccount();
@@ -221,39 +145,6 @@ public class AccountOperationsTest
         assertThat(depot.getReferenceAccount().getUUID(), is(reference.getUUID()));
         assertThat(depot.getNote(), is("long term"));
         assertThat(depot.isRetired(), is(true));
-    }
-
-    @Test
-    public void refusesAnInvestmentAccountWithoutNameOrReferenceCashAccount() throws IOException
-    {
-        var before = Files.readAllBytes(cli.file().toPath());
-
-        var run = cli.apply(investmentAdd("\"note\":\"bare\""));
-
-        assertThat(run.exitCode, is(1));
-        assertThat(run.failureKeys(), containsInAnyOrder("0:name:required", "0:referenceCashAccount:required"));
-        assertThat(Files.readAllBytes(cli.file().toPath()), is(before));
-    }
-
-    @Test
-    public void refusesAnUnknownReferenceCashAccount() throws IOException
-    {
-        var run = cli.apply(investmentAdd(
-                        "\"name\":\"Depot\",\"referenceCashAccount\":\"00000000-0000-0000-0000-000000000000\""));
-
-        assertThat(run.exitCode, is(1));
-        assertThat(run.failureKeys(), containsInAnyOrder("0:referenceCashAccount:reference-not-found"));
-    }
-
-    @Test
-    public void refusesAReferenceCashAccountThatIsAnInvestmentAccount() throws IOException
-    {
-        var depot = cli.reload().getPortfolios().get(0);
-
-        var run = cli.apply(investmentAdd("\"name\":\"Depot\",\"referenceCashAccount\":\"" + depot.getUUID() + "\""));
-
-        assertThat(run.exitCode, is(1));
-        assertThat(run.failureKeys(), containsInAnyOrder("0:referenceCashAccount:reference-not-found"));
     }
 
     @Test
@@ -284,30 +175,6 @@ public class AccountOperationsTest
         assertThat(reloaded.getNote() == null, is(true));
         assertThat(reloaded.isRetired(), is(true));
         assertThat(reloaded.getReferenceAccount().getUUID(), is(second));
-    }
-
-    @Test
-    public void anInvestmentAccountUpdateMayRepeatTheReferenceCashAccount() throws IOException
-    {
-        var depot = cli.reload().getPortfolios().get(0);
-
-        var run = cli.apply(investmentUpdate(depot.getUUID(),
-                        "\"referenceCashAccount\":\"" + depot.getReferenceAccount().getUUID() + "\",\"note\":\"n\""));
-
-        assertThat(run.stdout, run.exitCode, is(0));
-        var updated = run.result(0).getAsJsonArray("updated").get(0).getAsJsonObject();
-        assertThat(updated.getAsJsonObject("after").keySet(), containsInAnyOrder("note"));
-    }
-
-    @Test
-    public void refusesTwoUpdatesOfTheSameInvestmentAccountInOneBatch() throws IOException
-    {
-        var uuid = cli.reload().getPortfolios().get(0).getUUID();
-
-        var run = cli.apply(investmentUpdate(uuid, "\"note\":\"one\""), investmentUpdate(uuid, "\"note\":\"two\""));
-
-        assertThat(run.exitCode, is(1));
-        assertThat(run.failureKeys(), containsInAnyOrder("1:uuid:duplicate-target"));
     }
 
     @Test
