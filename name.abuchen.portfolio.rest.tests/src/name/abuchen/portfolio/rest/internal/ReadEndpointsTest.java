@@ -3,6 +3,8 @@ package name.abuchen.portfolio.rest.internal;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -31,6 +33,54 @@ public class ReadEndpointsTest
         assertThat(single.get("name").getAsString(), is("ACME"));
         assertThat(single.get("isin").getAsString(), is("DE0001234567"));
         assertThat(single.get("uuid").getAsString(), is(security.getUUID()));
+    }
+
+    /**
+     * `query` finds by part of the name, or by the whole ISIN, WKN or ticker -
+     * ignoring case and surrounding whitespace. A large file is more than one
+     * answer can carry, and this is how a name becomes a uuid without it.
+     */
+    @Test
+    public void testInstrumentQuery()
+    {
+        var client = new Client();
+        var acme = new SecurityBuilder().addTo(client);
+        acme.setName("ACME Corp.");
+        acme.setIsin("DE0005557508");
+        acme.setWkn("555750");
+        acme.setTickerSymbol("ACM.DE");
+        var other = new SecurityBuilder().addTo(client);
+        other.setName("Other Inc.");
+        other.setIsin("US0378331005");
+        other.setWkn("865985");
+        other.setTickerSymbol("OTH.F");
+
+        for (var query : List.of("acme", " corp ", "de0005557508", "555750", "acm.de"))
+        {
+            var items = SecuritiesHandler.list(client, query).getAsJsonObject().get("items").getAsJsonArray();
+            assertThat(query, items.size(), is(1));
+            assertThat(items.get(0).getAsJsonObject().get("uuid").getAsString(), is(acme.getUUID()));
+        }
+
+        // an ISIN is matched whole, not as part of one
+        assertThat(SecuritiesHandler.list(client, "DE000555").getAsJsonObject().get("items").getAsJsonArray().size(),
+                        is(0));
+        // nothing found is an empty list, not an error
+        assertThat(SecuritiesHandler.list(client, "nothing").getAsJsonObject().get("items").getAsJsonArray().size(),
+                        is(0));
+        // without a query, everything
+        assertThat(SecuritiesHandler.list(client, null).getAsJsonObject().get("items").getAsJsonArray().size(), is(2));
+
+        try
+        {
+            SecuritiesHandler.list(client, "   ");
+            Assert.fail("expected ApiException");
+        }
+        catch (ApiException e)
+        {
+            assertThat(e.getStatus(), is(400));
+            assertThat(e.getErrors().get(0).field(), is("query"));
+        }
     }
 
     /**
