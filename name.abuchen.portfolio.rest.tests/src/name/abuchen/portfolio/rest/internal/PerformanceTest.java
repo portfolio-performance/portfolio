@@ -221,6 +221,99 @@ public class PerformanceTest
     }
 
     /**
+     * Reported from a test run: with a closing date in the future, the closing
+     * value and the deposits grew with planned transactions while `ttwror` stood
+     * still - the time-weighted engine stops at today. The future date stays
+     * allowed, because a planned transaction is how a user simulates, and
+     * `timeWeightedUntil` says where the time-weighted figure stopped.
+     */
+    @Test
+    public void testAFutureClosingDateKeepsPlannedTransactionsAndSaysWhereTtwrorStopped()
+    {
+        var today = LocalDate.now();
+        var future = today.plusDays(30);
+        var client = heldPosition(account -> account.deposit_(today.plusDays(10).toString(),
+                        Values.Amount.factorize(500)));
+
+        var result = perf(client, "2024-01-01", future.toString(), null, null);
+
+        assertThat(result.get("closingDate").getAsString(), is(future.toString()));
+        assertThat(result.get("timeWeightedUntil").getAsString(), is(today.toString()));
+
+        // the planned deposit is in the money figures, and they still reconcile
+        var breakdown = result.get("breakdown").getAsJsonObject();
+        assertThat(value(breakdown, "netDeposits"), is(500.0));
+        assertReconciles(breakdown);
+
+        // ... and the time-weighted figure ignores it, as the engine always did
+        var untilToday = perf(client, "2024-01-01", today.toString(), null, null);
+        assertThat(result.get("ttwror").getAsDouble(), closeTo(untilToday.get("ttwror").getAsDouble(), 1e-12));
+    }
+
+    /**
+     * A period that opens today or later has no price movement in it. The
+     * engines would report 0 - a measured flat return - so both returns are
+     * null, while the money figures still show the planned transactions.
+     */
+    @Test
+    public void testAPeriodEntirelyAfterTodayHasNoReturns()
+    {
+        var today = LocalDate.now();
+        var client = heldPosition(account -> account.deposit_(today.plusDays(40).toString(),
+                        Values.Amount.factorize(500)));
+
+        for (var opening : List.of(today, today.plusDays(30)))
+        {
+            var result = perf(client, opening.toString(), today.plusDays(90).toString(), null, null);
+
+            assertThat(result.get("timeWeightedUntil").getAsString(), is(today.toString()));
+            assertThat(result.get("ttwror").isJsonNull(), is(true));
+            assertThat(result.get("irr").isJsonNull(), is(true));
+
+            var breakdown = result.get("breakdown").getAsJsonObject();
+            assertThat(value(breakdown, "netDeposits"), is(500.0));
+            assertReconciles(breakdown);
+        }
+
+        // a period that opened yesterday has a past, and its returns are measured
+        var yesterday = perf(client, today.minusDays(1).toString(), today.plusDays(90).toString(), null, null);
+        assertThat(yesterday.get("ttwror").isJsonNull(), is(false));
+    }
+
+    /**
+     * Before the file's first transaction there is no capital to measure a
+     * return on. The engines answer 0 there, which would read as a measured
+     * flat result - the returns are null instead, and the breakdown is all 0.
+     */
+    @Test
+    public void testAPeriodBeforeAnyHoldingHasNoReturns()
+    {
+        var result = perf(heldPosition(), "2020-01-01", "2021-01-01", null, null);
+
+        assertThat(result.get("ttwror").isJsonNull(), is(true));
+        assertThat(result.get("irr").isJsonNull(), is(true));
+        var breakdown = result.get("breakdown").getAsJsonObject();
+        assertThat(value(breakdown, "closingValue"), is(0.0));
+        assertReconciles(breakdown);
+
+        // the same file over a period it held something in is measured
+        var held = perf(heldPosition(), "2024-01-01", "2024-12-31", null, null);
+        assertThat(held.get("ttwror").isJsonNull(), is(false));
+        assertThat(held.get("irr").isJsonNull(), is(false));
+    }
+
+    /** a closing date up to today is where the time-weighted figure stops, too */
+    @Test
+    public void testTimeWeightedUntilIsTheClosingDateWhenItIsNotInTheFuture()
+    {
+        var result = perf(heldPosition(), "2024-01-01", "2024-12-31", null, null);
+        assertThat(result.get("timeWeightedUntil").getAsString(), is("2024-12-31"));
+
+        var today = perf(heldPosition(), "2024-01-01", null, null, null);
+        assertThat(today.get("timeWeightedUntil").getAsString(), is(LocalDate.now().toString()));
+    }
+
+    /**
      * The reporting currency is echoed on the envelope - a stored response must
      * not force the reader to infer it from an arbitrary nested money object.
      */
