@@ -487,6 +487,19 @@ public final class EntityJson
     }
 
     /**
+     * One currency pair that was converted at 1:1 because there is nothing to
+     * convert with. See {@link FxWarnings} for what the two reasons mean.
+     */
+    public static JsonObject toJson(FxWarnings.Warning warning)
+    {
+        var json = new JsonObject();
+        json.addProperty("currency", warning.currency()); //$NON-NLS-1$
+        json.addProperty("reportingCurrency", warning.reportingCurrency()); //$NON-NLS-1$
+        json.addProperty("reason", warning.reason()); //$NON-NLS-1$
+        return json;
+    }
+
+    /**
      * One matched trade, using the requested cost and fee parameters.
      */
     public static JsonObject toJson(Trade trade, TradesHandler.Params params)
