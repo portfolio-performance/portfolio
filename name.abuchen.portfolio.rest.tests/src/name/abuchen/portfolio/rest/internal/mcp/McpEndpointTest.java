@@ -357,6 +357,19 @@ public class McpEndpointTest
                         containsString("\"id\" must be a string or a number"));
     }
 
+    /** the parser recurses per level, so a deeply nested body is refused rather than overflowing the stack */
+    @Test
+    public void testADeeplyNestedMessageIsAParseError() throws Exception
+    {
+        var nested = "[".repeat(10_000) + "]".repeat(10_000);
+        var response = rpc(null, "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"ping\",\"params\":{\"a\":" + nested + "}}");
+
+        assertThat(response.statusCode(), is(400));
+        var error = body(response).getAsJsonObject().getAsJsonObject("error");
+        assertThat(error.get("code").getAsInt(), is(-32700));
+        assertThat(error.get("message").getAsString(), containsString("nested more than 64 levels"));
+    }
+
     /**
      * A duplicate key silently keeps whichever value Gson happened to take last,
      * so a body that says `"id":1,"id":2` is a malformed message, not a choice we
