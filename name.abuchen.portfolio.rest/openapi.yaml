@@ -401,7 +401,8 @@ paths:
       summary: List the files you may address
       description: |
         Lists only files that are **open and enabled**. Address a file in the
-        `{file}` path segment below by either its `id` or its `alias`.
+        `{file}` path segment below by its `use` value, which is always its
+        `id`; an `alias` is accepted too, for hand-written scripts.
       responses:
         "200":
           description: The addressable files
@@ -421,7 +422,7 @@ paths:
                     items:
                       - id: 5f3c1e2a-0b7d-4a1e-9c2f-8d6b3a1e0f42
                         alias: main
-                        use: main
+                        use: 5f3c1e2a-0b7d-4a1e-9c2f-8d6b3a1e0f42
                         label: portfolio.xml
                         path: /Users/me/portfolio.xml
                       - id: 9a2d7c30-4e18-4b27-8f35-6c04d1b7e2a9
