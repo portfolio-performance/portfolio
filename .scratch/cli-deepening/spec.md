@@ -1,6 +1,6 @@
 # Deepen the pp-cli modules
 
-Status: ready-for-agent
+Status: resolved
 
 Source: the wayfinding map in [map.md](map.md), its resolved tickets 01–06 in [issues/](issues/), and the [architecture review](architecture-review.html). Each section below gists one decision and links the ticket that holds it in full. **The ticket is the authority**; this spec doesn't restate its interfaces in full. Vocabulary: [GLOSSARY.md](../../GLOSSARY.md) (AI/CLI vocabulary) and the `codebase-design` skill (module, interface, seam, adapter, depth, leverage, locality). Implementation tickets: [issues/08](issues/08-guard-rails.md) to [issues/22](issues/22-declared-failure-codes.md).
 

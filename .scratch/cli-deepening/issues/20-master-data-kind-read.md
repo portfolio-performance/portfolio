@@ -1,7 +1,7 @@
 # 20: MasterDataKind read side
 
 Type: task
-Status: ready-for-agent
+Status: resolved
 Blocked by: 10, 16
 
 Spec: [spec.md](../spec.md), "Master data kinds". Decision: [ticket 03](03-master-data-kind.md).
@@ -36,3 +36,7 @@ Create `name.abuchen.portfolio.cli.masterdata` with `MasterDataKind<T>` and one 
 - `ReferencesTest`, taken over by the per-kind lookup tests (taxonomy lookup cases move to a taxonomy reference test)
 - The render cases of `InstrumentsCommandTest`, `CashAccountsCommandTest` and `InvestmentAccountsCommandTest`. Keep one or two smoke runs per list command.
 - Keep `ListPagingTest`, `SortAndOrderTest` and `InstrumentAttributesTest`.
+
+## Answer
+
+Implemented on integration branch `feat/cli-deepening`, merge commit bc599600f. MasterDataKind read side in cli.masterdata; Reference<T> in cli.command (resolver stays there as a default method).

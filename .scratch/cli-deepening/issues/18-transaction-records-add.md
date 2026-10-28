@@ -1,7 +1,7 @@
 # 18: TransactionRecords add and the rule table
 
 Type: task
-Status: ready-for-agent
+Status: resolved
 Blocked by: 17
 
 Spec: [spec.md](../spec.md), "Transaction records". Decision: [ticket 01](01-transaction-record-module.md), "Per-type rules", "Help prose", "OversellGuard".
@@ -45,3 +45,7 @@ Spec: [spec.md](../spec.md), "Transaction records". Decision: [ticket 01](01-tra
 
 - The cases in `TransactionAddTest` and `TransactionAddTradesTest` that the matrix, round-trip and oversell tests duplicate. Keep one or two CliFixture smoke runs per add flavour (cash, trade, transfer) and one batch-atomicity run (a later failing operation leaves nothing written).
 - The add round-trip cases of `TransactionRoundTripTest`
+
+## Answer
+
+Implemented on integration branch `feat/cli-deepening`, merge commit 9c5fe64ad. TransactionRecords.add with RuleTable, TransactionAdd cross-field rules, RuleTableProseTest drift test.

@@ -1,7 +1,7 @@
 # 15: Finish facets: derived scope, immutable Response, derived samples
 
 Type: task
-Status: ready-for-agent
+Status: resolved
 Blocked by: 11, 13, 14
 
 Spec: [spec.md](../spec.md), "Command facets" and "Testing Decisions". Decision: [ticket 02](02-command-facets.md).
@@ -35,3 +35,7 @@ Every command is on `CommandSpec.of`. Remove the transitional parts and close th
 - `HelpConsistencyTest.theErrorCodesInHelpAreExactlyTheOnesTheToolFailsWith` (the regex scan), replaced by the CliRun check and the static test
 - The hand-written `sampleArguments` switch
 - Per-command help-scope cases in `HelpTest.commandHelpListsOnlyTheErrorCodesTheCommandCanReturn` that only restate command-name lists. Keep one case per scope rule.
+
+## Answer
+
+Implemented on integration branch `feat/cli-deepening`, merge commit 2594c550f. CommandSpec.of only; ErrorCode scope GLOBAL/EVERY_COMMAND/BY_USE; immutable Response; CliRun code-in-scope check; facet samples.

@@ -1,7 +1,7 @@
 # 22: Declared failure codes
 
 Type: task
-Status: ready-for-agent
+Status: resolved
 Blocked by: 15, 19, 21
 
 Spec: [spec.md](../spec.md), "Declared failure codes" and "Contract-change ripple". Decision: [ticket 06](06-write-failure-codes.md).
@@ -36,3 +36,7 @@ Spec: [spec.md](../spec.md), "Declared failure codes" and "Contract-change rippl
 ## Tests deleted
 
 None. There is no reachability probe; tickets 18, 19 and 21's interface tests already exercise the codes.
+
+## Answer
+
+Implemented on integration branch `feat/cli-deepening`, merge commit 32947c223. Field codes in ErrorCode; derived OperationSpec.failureCodes(); Failure codes sections in apply help; CliRun failures[].code check.

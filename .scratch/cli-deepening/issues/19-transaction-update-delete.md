@@ -1,7 +1,7 @@
 # 19: TransactionRecords update and delete
 
 Type: task
-Status: ready-for-agent
+Status: resolved
 Blocked by: 18
 
 Spec: [spec.md](../spec.md), "Transaction records". Decision: [ticket 01](01-transaction-record-module.md), "Update path".
@@ -37,3 +37,7 @@ Spec: [spec.md](../spec.md), "Transaction records". Decision: [ticket 01](01-tra
 
 - The cases in `TransactionUpdateDeleteTest` that the interface tests duplicate. Keep one CliFixture smoke run each for update and delete.
 - The remaining update round-trip cases of `TransactionRoundTripTest`. Delete the class if nothing is left.
+
+## Answer
+
+Implemented on integration branch `feat/cli-deepening`, merge commit 0f0110744. TransactionRecords.update/delete via Draft; replacing() and transitional methods removed. Draft made fully typed in the code-review fixes (a23c8ca68).

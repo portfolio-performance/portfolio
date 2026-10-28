@@ -1,7 +1,7 @@
 # 11: `ClientFile.write` facet: apply and restore
 
 Type: task
-Status: ready-for-agent
+Status: resolved
 Blocked by: 10
 
 Spec: [spec.md](../spec.md), "Command facets". Decision: [ticket 02](02-command-facets.md), "Write".
@@ -31,3 +31,7 @@ Turn the write scaffolding into one facet, and move `apply` and `restore` onto `
 ## Tests deleted
 
 - Cases in `ApplyCommandTest` and `RestoreCommandTest` that only re-check the write meta members or the forwarded `SafeWrite` warnings, now covered by the `ClientFile.write` facet test. `SafeWriteTest` stays: it tests the safe-write sequence, not the facet.
+
+## Answer
+
+Implemented on integration branch `feat/cli-deepening`, merge commit f098c095d. ClientFile.write facet with Writer; apply and restore on facets.

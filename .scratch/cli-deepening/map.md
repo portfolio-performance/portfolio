@@ -30,6 +30,8 @@ A hand-off-ready refactoring spec for `name.abuchen.portfolio.cli` and its tests
 - [How do write operations declare their failure codes?](issues/06-write-failure-codes.md): field codes join ticket 02's `ErrorCode` enum (no second enum, since `reference-*` overlaps); `FieldFailure` takes it. An operation's set is derived: codes implied by its input `Schema`, plus those its module declares (`TransactionRecords`, `MasterDataKind`, `taxonomy.assign`); `BATCH` owns `invalid-operation`/`unknown-operation`. `apply --help <op>` gains a "Failure codes:" section; the global help lists only facet codes. CliRun checks each `failures[].code` against its operation's set; no reachability probe. Glossary gains **Failure**.
 - [Write the refactoring spec and its implementation tickets](issues/07-spec-and-tickets.md): [spec.md](spec.md) plus 15 `ready-for-agent` tickets (08–22). Golden help test first, then `ErrorCode`, facets and commands; the ReportingCurrency seam in parallel; the shared write framework, then TransactionRecords and MasterDataKind; failure codes last. Each contract change and its skill ripple lands in the ticket that causes it.
 
+- Implementation (tickets 08–22): all resolved on integration branch `feat/cli-deepening` (merge commits c07c6e228 … 32947c223), plus code-review fixes a23c8ca68 (typed update Draft, instruments order restored, glossary naming, option-type switches folded). CLI suite green, 589 tests.
+
 ## Not yet specified
 
 Nothing: the destination is reached. The hand-off is [spec.md](spec.md) with implementation tickets 08–22.

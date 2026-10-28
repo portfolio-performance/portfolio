@@ -1,7 +1,7 @@
 # 16: Shared write framework in `cli.command`
 
 Type: task
-Status: ready-for-agent
+Status: resolved
 Blocked by: 11
 
 Spec: [spec.md](../spec.md), "Transaction records" and "Master data kinds". Decisions: [ticket 01](01-transaction-record-module.md), "Shared framework change"; [ticket 03](03-master-data-kind.md), "Dependency direction" and "`Change.entity`". Ticket 11 is a blocker only to avoid conflicting rewrites of `ApplyCommand`.
@@ -32,3 +32,7 @@ Move the parts both write modules build on, so they can depend on `cli.command` 
 ## Tests deleted
 
 - `OperationInputTest` moves to `cli.command` and asserts through the sink. Delete its cases that only checked `OperationContext` bookkeeping.
+
+## Answer
+
+Implemented on integration branch `feat/cli-deepening`, merge commit f74fbef29. OperationInput, EntityKind, OperationSpec, FieldFailure, Claims, Outcome in cli.command; Change.entity enum incl. taxonomy-assignment; registry in apply.Operations.

@@ -1,7 +1,7 @@
 # 10: Facet framework and the plain read commands
 
 Type: task
-Status: ready-for-agent
+Status: resolved
 Blocked by: 09
 
 Spec: [spec.md](../spec.md), "Command facets". Decision: [ticket 02](02-command-facets.md).
@@ -43,3 +43,7 @@ If deriving the meta order changes a `Response meta:` block, update the golden f
 
 - The per-command `invalid-date-range` cases in `PricesCommandTest` (the other copies go in tickets 13 and 14)
 - Paging and sorting meta cases in `PricesCommandTest`, now covered by `FacetHarness`. `ListPagingTest` and `SortAndOrderTest` stay as the end-to-end paging and sorting runs.
+
+## Answer
+
+Implemented on integration branch `feat/cli-deepening`, merge commit a3e2d1711. Facet framework (Facet, Declaration, ClientFile.READ, Filters, FacetHarness); info, prices, taxonomies and the list commands on it. info keeps ClientFile.READ because it publishes --file, fileVersion and asOf.

@@ -1,7 +1,7 @@
 # 09: `ErrorCode` enum
 
 Type: task
-Status: ready-for-agent
+Status: resolved
 Blocked by: 08
 
 Spec: [spec.md](../spec.md), "Command facets". Decision: [ticket 02](02-command-facets.md), "Error codes".
@@ -26,3 +26,7 @@ Replace the `ErrorSpec` record and its `ALL` list with an `ErrorCode` enum in `c
 ## Tests deleted
 
 None. `ErrorSpecTest` is renamed to `ErrorCodeTest` and kept.
+
+## Answer
+
+Implemented on integration branch `feat/cli-deepening`, merge commit ff9395fd5. ErrorSpec replaced by the ErrorCode enum.

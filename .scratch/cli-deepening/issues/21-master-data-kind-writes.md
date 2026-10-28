@@ -1,7 +1,7 @@
 # 21: MasterDataKind writes
 
 Type: task
-Status: ready-for-agent
+Status: resolved
 Blocked by: 20
 
 Spec: [spec.md](../spec.md), "Master data kinds". Decision: [ticket 03](03-master-data-kind.md), "Members are the read item", "Checks", "Write interface".
@@ -28,3 +28,7 @@ Give writable members a writer, and derive the master data operations from the k
 - The cases in `AccountOperationsTest` that the interface tests duplicate
 - The instrument cases of `ApplyCommandTest`
 - Keep one or two CliFixture smoke runs per master data operation.
+
+## Answer
+
+Implemented on integration branch `feat/cli-deepening`, merge commit 62449a461. MasterDataKind writes (Writer, Writes, Checks, validator). Instruments read order restored to wkn before tickerSymbol in the code-review fixes (a23c8ca68).

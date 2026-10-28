@@ -1,7 +1,7 @@
 # 14: Performance on facets
 
 Type: task
-Status: ready-for-agent
+Status: resolved
 Blocked by: 10, 12
 
 Spec: [spec.md](../spec.md), "Command facets". Decisions: [ticket 02](02-command-facets.md), [ticket 05](05-valuation-facet.md).
@@ -27,3 +27,7 @@ Move `performance` onto `CommandSpec.of`.
 
 - The `invalid-date-range` copy in `PerformanceCommandTest`
 - Period and scope validation cases in `PerformanceScopesTest` and `PerformanceCommandTest` that the two facet tests cover (keep one smoke run per scope)
+
+## Answer
+
+Implemented on integration branch `feat/cli-deepening`, merge commit e8c333e03. PerformancePeriod, PerformanceScope (absorbs --by) and CostMethod facets. performance --help lists --by after --with-reference-cash-account (facet order).

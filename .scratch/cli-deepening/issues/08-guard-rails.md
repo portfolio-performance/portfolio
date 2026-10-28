@@ -1,7 +1,7 @@
 # 08: Golden help test and ADR 0007 comments
 
 Type: task
-Status: ready-for-agent
+Status: resolved
 Blocked by:
 
 Spec: [spec.md](../spec.md), "Migration order" and "Ruled out: an amounts & rates module". Decisions: [ticket 02](02-command-facets.md) (help contract guard), [ticket 04](04-amounts-and-rates.md).
@@ -28,3 +28,7 @@ No production behaviour changes.
 ## Tests deleted
 
 None. This ticket only adds a guard.
+
+## Answer
+
+Implemented on integration branch `feat/cli-deepening`, merge commit c07c6e228. Golden help test (GoldenHelpTest, golden/help/) and the two ADR 0007 comments.

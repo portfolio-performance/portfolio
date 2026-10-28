@@ -1,7 +1,7 @@
 # 17: TransactionRecords read side
 
 Type: task
-Status: ready-for-agent
+Status: resolved
 Blocked by: 13, 16
 
 Spec: [spec.md](../spec.md), "Transaction records". Decision: [ticket 01](01-transaction-record-module.md). Ticket 13 is a blocker only to avoid conflicting rewrites of `TransactionsCommand`.
@@ -30,3 +30,7 @@ Create the `name.abuchen.portfolio.cli.transaction` package with the read half o
 ## Tests deleted
 
 - The render cases of `TransactionsCommandTest`: field-by-field member checks per type. Keep its filter, paging and sort cases.
+
+## Answer
+
+Implemented on integration branch `feat/cli-deepening`, merge commit 40d2546bb. TransactionRecords.open/all/find/render in cli.transaction.

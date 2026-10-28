@@ -1,7 +1,7 @@
 # 13: Converting commands on facets: holdings, allocation, transactions
 
 Type: task
-Status: ready-for-agent
+Status: resolved
 Blocked by: 10, 12
 
 Spec: [spec.md](../spec.md), "Command facets" and "Valuation". Decisions: [ticket 02](02-command-facets.md), [ticket 05](05-valuation-facet.md).
@@ -32,3 +32,7 @@ Spec: [spec.md](../spec.md), "Command facets" and "Valuation". Decisions: [ticke
 - `--type` parsing cases in `TransactionsCommandTest`, covered by an `OptionSpec.choices` unit test
 - The `--currency` validation cases repeated across `HoldingsCommandTest`, `AllocationCommandTest` and `TransactionsConversionTest`, covered by the facet test (keep one smoke run per command)
 - `StalePricesTest` cases duplicated by the `StalePrices.FACET` harness test
+
+## Answer
+
+Implemented on integration branch `feat/cli-deepening`, merge commit e5eb0aead. ReportingCurrency.facet/ifGiven, StalePrices.FACET, OptionSpec.currency/choices; holdings, allocation, transactions on facets. HelpTest.SIZE_LIMIT raised 6656 -> 6912 for the --type line.

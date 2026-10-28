@@ -1,7 +1,7 @@
 # 12: ReportingCurrency seam and trust call
 
 Type: task
-Status: ready-for-agent
+Status: resolved
 Blocked by: 08
 
 Spec: [spec.md](../spec.md), "Valuation". Decision: [ticket 05](05-valuation-facet.md).
@@ -37,3 +37,7 @@ The commands keep their current option, meta and warning wiring in this ticket; 
 
 - The old construction-level cases of `ReportingCurrencyTest`, rewritten as above
 - The per-command missing, stale and cache-unavailable cases in `HoldingsCommandTest`, `AllocationCommandTest`, `PerformanceCommandTest` and `TransactionsConversionTest` that the new interface test covers. Keep one smoke run per converting command for a missing rate and one for a stale rate.
+
+## Answer
+
+Implemented on integration branch `feat/cli-deepening`, merge commit 3d18650fa. RateCache seam (desktop, in-memory) and coreFigures().trusted/unreported. trusted(items, ...) also takes the valuation day.
