@@ -8,6 +8,7 @@ import java.util.Optional;
 import name.abuchen.portfolio.cli.command.CliException;
 import name.abuchen.portfolio.cli.command.CommandContext;
 import name.abuchen.portfolio.cli.command.DateRange;
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.OptionSpec;
 import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
@@ -56,7 +57,7 @@ record PerformancePeriod(LocalDate firstDay, LocalDate lastDay, Optional<String>
             return fromCode(context, code.get());
 
         var range = DateRange.parse(context, FROM, TO);
-        var from = range.from().orElseThrow(() -> CliException.usage("period-required", "Period required",
+        var from = range.from().orElseThrow(() -> CliException.usage(ErrorCode.PERIOD_REQUIRED, "Period required",
                         "Pass --" + FROM.name() + " <date> (with an optional --" + TO.name() + "), or --"
                                         + PERIOD.name() + " <code>."));
         return new PerformancePeriod(from, range.to(), Optional.empty());
@@ -65,7 +66,7 @@ record PerformancePeriod(LocalDate firstDay, LocalDate lastDay, Optional<String>
     private static PerformancePeriod fromCode(CommandContext context, String code) throws CliException
     {
         if (context.given(FROM) || context.given(TO))
-            throw CliException.usage("conflicting-options", "Conflicting options",
+            throw CliException.usage(ErrorCode.CONFLICTING_OPTIONS, "Conflicting options",
                             "Option '--" + PERIOD.name() + "' cannot be combined with '--" + FROM.name() + "' or '--"
                                             + TO.name() + "'.")
                             .with("option", PERIOD.name());
@@ -76,7 +77,7 @@ record PerformancePeriod(LocalDate firstDay, LocalDate lastDay, Optional<String>
 
         // core answers a period that ends on its start day (e.g. "since" a future day) with an empty interval
         if (firstDay.isAfter(interval.getEnd()))
-            throw CliException.usage("invalid-date-range", "Invalid date range",
+            throw CliException.usage(ErrorCode.INVALID_DATE_RANGE, "Invalid date range",
                             "The period '" + code + "' starts on " + firstDay + ", after it ends on "
                                             + interval.getEnd() + ".")
                             .with("from", firstDay.toString()).with("to", interval.getEnd().toString());

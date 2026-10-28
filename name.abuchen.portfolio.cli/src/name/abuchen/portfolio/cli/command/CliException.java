@@ -17,13 +17,13 @@ public class CliException extends Exception
     /** Exit code for every other failure. */
     public static final int EXIT_FAILURE = 1;
 
-    private final String code;
+    private final ErrorCode code;
     private final String title;
     private final int status;
     private final int exitCode;
     private final transient Map<String, Object> extensions = new LinkedHashMap<>();
 
-    private CliException(String code, String title, String detail, int status, int exitCode, Throwable cause)
+    private CliException(ErrorCode code, String title, String detail, int status, int exitCode, Throwable cause)
     {
         super(detail, cause);
         this.code = code;
@@ -32,17 +32,17 @@ public class CliException extends Exception
         this.exitCode = exitCode;
     }
 
-    public static CliException usage(String code, String title, String detail)
+    public static CliException usage(ErrorCode code, String title, String detail)
     {
         return new CliException(code, title, detail, 400, EXIT_USAGE, null);
     }
 
-    public static CliException failure(String code, String title, String detail, int status)
+    public static CliException failure(ErrorCode code, String title, String detail, int status)
     {
         return new CliException(code, title, detail, status, EXIT_FAILURE, null);
     }
 
-    public static CliException failure(String code, String title, String detail, int status, Throwable cause)
+    public static CliException failure(ErrorCode code, String title, String detail, int status, Throwable cause)
     {
         return new CliException(code, title, detail, status, EXIT_FAILURE, cause);
     }
@@ -54,9 +54,10 @@ public class CliException extends Exception
         return this;
     }
 
+    /** The published code, as it appears in the problem document. */
     public String getCode()
     {
-        return code;
+        return code.code();
     }
 
     public int getExitCode()
@@ -67,10 +68,10 @@ public class CliException extends Exception
     public Map<String, Object> toProblem()
     {
         var problem = new LinkedHashMap<String, Object>();
-        problem.put("type", "urn:pp-cli:error:" + code);
+        problem.put("type", "urn:pp-cli:error:" + code.code());
         problem.put("title", title);
         problem.put("status", status);
-        problem.put("code", code);
+        problem.put("code", code.code());
         problem.put("detail", getMessage());
         problem.putAll(extensions);
         return problem;

@@ -16,6 +16,7 @@ import name.abuchen.portfolio.cli.Commands;
 import name.abuchen.portfolio.cli.command.CliException;
 import name.abuchen.portfolio.cli.command.CommandContext;
 import name.abuchen.portfolio.cli.command.CommandSpec;
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.OptionSpec;
 import name.abuchen.portfolio.cli.command.Response;
 import name.abuchen.portfolio.cli.command.ResponseMeta;
@@ -98,7 +99,7 @@ public final class ApplyCommand
         }
         catch (IOException | RuntimeException e)
         {
-            throw CliException.usage("input-unreadable", "Input could not be read",
+            throw CliException.usage(ErrorCode.INPUT_UNREADABLE, "Input could not be read",
                             "The input " + source + " could not be read: " + e.getMessage())
                                             .with("option", INPUT.name());
         }
@@ -120,6 +121,6 @@ public final class ApplyCommand
 
     private static CliException invalidInput(String detail)
     {
-        return CliException.usage("invalid-input", "Invalid input", detail).with("option", INPUT.name());
+        return CliException.usage(ErrorCode.INVALID_INPUT, "Invalid input", detail).with("option", INPUT.name());
     }
 }

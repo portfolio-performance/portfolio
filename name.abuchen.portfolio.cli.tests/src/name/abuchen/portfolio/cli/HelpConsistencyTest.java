@@ -23,6 +23,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import name.abuchen.portfolio.cli.command.CommandSpec;
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.junit.AccountBuilder;
 import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.model.Client;
@@ -247,7 +248,7 @@ public class HelpConsistencyTest
     @Test
     public void theErrorCodesInHelpAreExactlyTheOnesTheToolFailsWith() throws IOException
     {
-        var call = Pattern.compile("\\b(?:usage|failure)\\(\\s*\"([a-z0-9-]+)\"");
+        var call = Pattern.compile("\\b(?:usage|failure)\\(\\s*ErrorCode\\.([A-Z0-9_]+)\\b");
         var thrown = new TreeSet<String>();
         try (var sources = Files.walk(SourceTree.cliBundle("src")))
         {
@@ -258,10 +259,11 @@ public class HelpConsistencyTest
                     thrown.add(matcher.group(1));
             }
         }
-        assertThat(thrown.contains("file-version-unsupported"), is(true));
+        assertThat(thrown.contains(ErrorCode.FILE_VERSION_UNSUPPORTED.name()), is(true));
 
         var declared = new TreeSet<String>();
-        ErrorSpec.ALL.forEach(e -> declared.add(e.code()));
+        for (var e : ErrorCode.values())
+            declared.add(e.name());
         assertThat(declared, is(thrown));
     }
 }

@@ -112,7 +112,7 @@ public record OptionSpec(String name, String valueName, String description, Type
     /** The usage error for a value of this option that is not <code>expected</code>. */
     public CliException invalid(String text, String expected)
     {
-        return CliException.usage("invalid-option-value", "Invalid option value",
+        return CliException.usage(ErrorCode.INVALID_OPTION_VALUE, "Invalid option value",
                         "Option '--" + name + "' must be " + expected + ".").with("option", name).with("value",
                                         text);
     }

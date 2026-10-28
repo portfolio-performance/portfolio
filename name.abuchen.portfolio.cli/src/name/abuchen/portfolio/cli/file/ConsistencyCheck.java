@@ -9,6 +9,7 @@ import java.util.Map;
 import name.abuchen.portfolio.checks.Checker;
 import name.abuchen.portfolio.checks.Issue;
 import name.abuchen.portfolio.cli.command.CliException;
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.Warning;
 import name.abuchen.portfolio.cli.command.WarningSpec;
 import name.abuchen.portfolio.model.Account;
@@ -89,7 +90,7 @@ final class ConsistencyCheck
         }
 
         if (!introduced.isEmpty())
-            throw CliException.failure("consistency-check-failed", "Change would make the file inconsistent",
+            throw CliException.failure(ErrorCode.CONSISTENCY_CHECK_FAILED, "Change would make the file inconsistent",
                             "The change introduces " + introduced.size()
                                             + " consistency issue(s) that core's checker did not find before. Nothing was written.",
                             422).with("issues", introduced.stream().map(Finding::toJson).toList());
