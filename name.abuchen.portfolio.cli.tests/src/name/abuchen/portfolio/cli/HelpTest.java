@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.startsWith;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 
@@ -165,28 +166,24 @@ public class HelpTest
         assertThat(stdout, containsString("\n    instruments (integer) Instruments."));
     }
 
+    /** One case per scope rule: every command, global, declared by a facet, implied by an option type. */
     @Test
     public void commandHelpListsOnlyTheErrorCodesTheCommandCanReturn()
     {
         var info = CliRun.run("info", "--help").stdout;
-        assertThat(info, containsString("file-not-found"));
         assertThat(info, containsString("unknown-option"));
+        assertThat(info, not(containsString("unknown-command")));
+        assertThat(info, containsString("file-not-found"));
         assertThat(info, not(containsString("period-required")));
-        assertThat(info, not(containsString("file-locked")));
-        assertThat(info, not(containsString("command-required")));
+        assertThat(info, not(containsString("reference-not-found")));
+        assertThat(info, not(containsString("option-required")));
 
         var performance = CliRun.run("performance", "--help").stdout;
         assertThat(performance, containsString("period-required"));
         assertThat(performance, containsString("reference-not-found"));
-        assertThat(performance, not(containsString("file-locked")));
 
-        var apply = CliRun.run("apply", "--help").stdout;
-        assertThat(apply, containsString("file-locked"));
-        assertThat(apply, containsString("validation-failed"));
-        assertThat(apply, not(containsString("period-required")));
-
-        var restore = CliRun.run("restore", "--help").stdout;
-        assertThat(restore, containsString("backup-not-found"));
+        var prices = CliRun.run("prices", "--help").stdout;
+        assertThat(prices, containsString("option-required"));
     }
 
     @Test
@@ -198,10 +195,19 @@ public class HelpTest
 
         for (var error : ErrorCode.values())
             assertThat(error.code(), all.toString(), containsString(error.code()));
+    }
 
-        var commands = Commands.ALL.stream().map(CommandSpec::name).toList();
+    /** A code scoped by use that no command uses would be listed by no command's help. */
+    @Test
+    public void everyCodeScopedByUseIsDeclaredBySomeCommand()
+    {
+        var used = Commands.ALL.stream().flatMap(c -> c.errorCodes().stream()).collect(Collectors.toSet());
+
         for (var error : ErrorCode.values())
-            assertThat(error.code(), commands.containsAll(error.commands()), is(true));
+        {
+            if (error.scope() == ErrorCode.Scope.BY_USE)
+                assertThat(error.code(), used.contains(error), is(true));
+        }
     }
 
     @Test

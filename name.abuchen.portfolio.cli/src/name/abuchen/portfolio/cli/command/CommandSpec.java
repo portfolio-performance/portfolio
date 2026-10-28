@@ -15,9 +15,8 @@ import java.util.Set;
  * command that declares table columns also accepts <code>--format
  * table</code>; its data must then be a page of items.
  * <p>
- * A command is built with {@link #of}: its options, meta schema, warnings and
- * error codes derive from its {@link Facet}s. The constructors are
- * transitional, for the commands not yet composed of facets.
+ * A command is built with {@link #of}, the only way to build one: its options,
+ * meta schema, warnings and error codes derive from its {@link Facet}s.
  */
 public final class CommandSpec
 {
@@ -36,45 +35,20 @@ public final class CommandSpec
 
     private final String name;
     private final String summary;
-    private final boolean usesClientFile;
     private final List<OptionSpec> declaredOptions;
     private final Schema dataSchema;
     private final Schema metaSchema;
     private final List<WarningSpec> warnings;
     private final List<TableColumn> tableColumns;
     private final CommandHandler handler;
-    /** Null for a command not composed of facets. */
     private final List<Facet<?>> facets;
 
-    public CommandSpec(String name, String summary, boolean usesClientFile, List<OptionSpec> declaredOptions,
-                    Schema dataSchema, Schema metaSchema, List<WarningSpec> warnings, List<TableColumn> tableColumns,
-                    CommandHandler handler)
-    {
-        this(name, summary, usesClientFile, declaredOptions, dataSchema, metaSchema, warnings, tableColumns, handler,
-                        null);
-    }
-
-    /** A command with warnings that can only answer in JSON. */
-    public CommandSpec(String name, String summary, boolean usesClientFile, List<OptionSpec> declaredOptions,
-                    Schema dataSchema, Schema metaSchema, List<WarningSpec> warnings, CommandHandler handler)
-    {
-        this(name, summary, usesClientFile, declaredOptions, dataSchema, metaSchema, warnings, List.of(), handler);
-    }
-
-    /** A command that emits no warnings and can only answer in JSON. */
-    public CommandSpec(String name, String summary, boolean usesClientFile, List<OptionSpec> declaredOptions,
-                    Schema dataSchema, Schema metaSchema, CommandHandler handler)
-    {
-        this(name, summary, usesClientFile, declaredOptions, dataSchema, metaSchema, List.of(), handler);
-    }
-
-    private CommandSpec(String name, String summary, boolean usesClientFile, List<OptionSpec> declaredOptions,
+    private CommandSpec(String name, String summary, List<OptionSpec> declaredOptions,
                     Schema dataSchema, Schema metaSchema, List<WarningSpec> warnings, List<TableColumn> tableColumns,
                     CommandHandler handler, List<Facet<?>> facets)
     {
         this.name = name;
         this.summary = summary;
-        this.usesClientFile = usesClientFile;
         this.declaredOptions = List.copyOf(declaredOptions);
         this.dataSchema = dataSchema;
         this.metaSchema = metaSchema;
@@ -110,10 +84,8 @@ public final class CommandSpec
         var meta = Schema.object("Assumptions behind the response.");
         reportOrder(list).forEach(facet -> facet.declaration().addTo(meta));
 
-        var usesFile = list.stream().anyMatch(f -> f.declaration().declares(OptionSpec.FILE));
-
         var spec = new CommandSpec[1];
-        spec[0] = new CommandSpec(name, summary, usesFile, options, dataSchema, meta, warnings, List.of(),
+        spec[0] = new CommandSpec(name, summary, options, dataSchema, meta, warnings, List.of(),
                         context -> spec[0].run(context, handler), list);
         return spec[0];
     }
@@ -121,9 +93,7 @@ public final class CommandSpec
     /** The same command, which also writes its page of items as a table with <code>--format table</code>. */
     public CommandSpec withTable(List<TableColumn> columns)
     {
-        if (facets == null)
-            throw new IllegalStateException("Only a command composed of facets takes table columns this way");
-        return new CommandSpec(name, summary, usesClientFile, declaredOptions, dataSchema, metaSchema, warnings,
+        return new CommandSpec(name, summary, declaredOptions, dataSchema, metaSchema, warnings,
                         columns, handler, facets);
     }
 
@@ -178,15 +148,14 @@ public final class CommandSpec
         var data = body.execute(context);
 
         var meta = new LinkedHashMap<String, Object>();
-        var response = Response.of(data, meta);
-        context.handlerWarnings().forEach(response::warn);
+        var warnings = new ArrayList<Warning>(context.handlerWarnings());
         for (var facet : reportOrder(facets))
-            report(context, facet, meta, response);
-        return response;
+            report(context, facet, meta, warnings);
+        return new Response(data, meta, warnings);
     }
 
     private static <T> void report(CommandContext context, Facet<T> facet, LinkedHashMap<String, Object> meta,
-                    Response response)
+                    List<Warning> warnings)
     {
         var declaration = facet.declaration();
         facet.report(context.get(facet), new Facet.Report()
@@ -204,7 +173,7 @@ public final class CommandSpec
             {
                 if (!declaration.declaresWarning(warning.code()))
                     throw new IllegalStateException("A facet emitted the undeclared warning " + warning.code());
-                response.warn(warning);
+                warnings.add(warning);
             }
         });
 
@@ -223,12 +192,6 @@ public final class CommandSpec
     public String summary()
     {
         return summary;
-    }
-
-    /** Transitional: whether the command reads a client file. */
-    public boolean usesClientFile()
-    {
-        return usesClientFile;
     }
 
     /** The command's own options, without the shared ones. */
@@ -263,15 +226,12 @@ public final class CommandSpec
     }
 
     /**
-     * The codes the command can fail with, in declaration order. For a command
-     * composed of facets: the codes of every command, those implied by its
-     * option types and those its facets declare.
+     * The codes the command can fail with, in declaration order: the codes of
+     * every command, those implied by its option types and those its facets
+     * declare.
      */
     public List<ErrorCode> errorCodes()
     {
-        if (facets == null)
-            return Arrays.stream(ErrorCode.values()).filter(e -> e.appliesTo(this)).toList();
-
         var codes = new HashSet<ErrorCode>();
         facets.forEach(f -> codes.addAll(f.declaration().codes()));
         for (var option : options())
@@ -285,11 +245,17 @@ public final class CommandSpec
                         .filter(e -> e.scope() == ErrorCode.Scope.EVERY_COMMAND || codes.contains(e)).toList();
     }
 
+    /** The facets' sample arguments, in facet order; see {@link Declaration#sample}. */
+    public List<String> sample()
+    {
+        return facets.stream().flatMap(f -> f.declaration().sample().stream()).toList();
+    }
+
     /** The global options this command accepts besides its declared ones. */
     public List<OptionSpec> sharedOptions()
     {
         var options = new ArrayList<OptionSpec>();
-        if (usesClientFile)
+        if (facets.stream().anyMatch(f -> f.declaration().declares(OptionSpec.FILE)))
             options.add(OptionSpec.FILE);
         options.add(OutputFormat.option(!tableColumns.isEmpty()));
         options.add(OptionSpec.VERBOSE);

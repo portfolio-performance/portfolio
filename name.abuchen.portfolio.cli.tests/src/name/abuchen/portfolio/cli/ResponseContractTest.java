@@ -83,9 +83,22 @@ public class ResponseContractTest
     }
 
     @Test
-    public void leavesFailuresHelpAndTablesAlone()
+    public void acceptsAFailureWithACodeTheCommandsHelpLists()
     {
         assertThat(ResponseContract.violations(List.of("info"), 1, "{\"code\":\"file-required\"}"), is(empty()));
+        assertThat(ResponseContract.violations(List.of("info"), 2, "{\"code\":\"unknown-option\"}"), is(empty()));
+    }
+
+    @Test
+    public void reportsAFailureWithACodeTheCommandsHelpDoesNotList()
+    {
+        assertThat(ResponseContract.violations(List.of("info"), 2, "{\"code\":\"period-required\"}"),
+                        contains(containsString("period-required")));
+    }
+
+    @Test
+    public void leavesHelpAndTablesAlone()
+    {
         assertThat(violations("Usage: pp-cli info", "info", "--help"), is(empty()));
         assertThat(violations("Usage: pp-cli", new String[0]), is(empty()));
         assertThat(violations("NAME  ISIN", "instruments", "--format", "table"), is(empty()));

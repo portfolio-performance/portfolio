@@ -147,7 +147,7 @@ public final class ClientFile
                         .codes(READ.declaration().codes().toArray(ErrorCode[]::new))
                         .codes(ErrorCode.CONSISTENCY_CHECK_FAILED, ErrorCode.FILE_OPEN_IN_APP, ErrorCode.FILE_LOCKED,
                                         ErrorCode.FILE_CHANGED, ErrorCode.WRITE_FAILED)
-                        .in(Declaration.Slot.ENVELOPE);
+                        .sample("--" + dryRun.name()).in(Declaration.Slot.ENVELOPE);
 
         // the file is opened by the write itself, inside the safe-write sequence, not before the handler
         return Facet.of(declaration, run -> new Writer(run, SafeWrite.settings(run, run.flag(dryRun))),
