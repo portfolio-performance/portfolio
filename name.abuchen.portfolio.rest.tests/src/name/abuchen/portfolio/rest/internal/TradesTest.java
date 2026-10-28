@@ -486,6 +486,77 @@ public class TradesTest
     }
 
     /**
+     * `from` and `to` keep the trades held at some point of the period: one
+     * closed before it starts is out, one opened after it ends is out, and an
+     * open one stays in for as long as it is held. Echoed only when given.
+     */
+    @Test
+    public void testPeriodFilter()
+    {
+        var client = closedTrade(); // ACME: 2026-01-15 to 2026-03-16
+
+        var other = new SecurityBuilder() //
+                        .addPrice("2026-07-01", Values.Quote.factorize(50)) //
+                        .addTo(client);
+        other.setName("BETA");
+        new PortfolioBuilder(client.getAccounts().get(0)) //
+                        .buy(other, "2026-02-01", Values.Share.factorize(10), Values.Amount.factorize(400)) //
+                        .addTo(client);
+
+        var afterAcmeClosed = period(client, null, "2026-04-01", null);
+        assertThat(names(afterAcmeClosed), is(List.of("BETA")));
+        assertThat(afterAcmeClosed.get("from").getAsString(), is("2026-04-01"));
+        assertThat(afterAcmeClosed.has("to"), is(false));
+
+        var beforeBetaOpened = period(client, null, null, "2026-01-31");
+        assertThat(names(beforeBetaOpened), is(List.of("ACME")));
+
+        // the day ACME closed is inside a period that ends on it
+        assertThat(names(period(client, null, "2026-03-16", "2026-03-16")), is(List.of("ACME", "BETA")));
+
+        // the per-instrument route filters the same way
+        var acme = client.getSecurities().get(0);
+        var forAcme = TradesHandler.forInstrument(client, new ExchangeRateProviderFactory(client), acme.getUUID(),
+                        null, null, null, null, null, "2026-04-01", null).getAsJsonObject();
+        assertThat(forAcme.get("items").getAsJsonArray().size(), is(0));
+
+        // without either bound nothing is filtered, and nothing is echoed
+        var all = trades(client);
+        assertThat(all.get("items").getAsJsonArray().size(), is(2));
+        assertThat(all.has("from"), is(false));
+        assertThat(all.has("to"), is(false));
+    }
+
+    @Test
+    public void testPeriodFilterRejectsAReversedOrMalformedPeriod()
+    {
+        var client = closedTrade();
+
+        try
+        {
+            period(client, null, "2026-05-01", "2026-04-01");
+            Assert.fail("expected ApiException");
+        }
+        catch (ApiException e)
+        {
+            assertThat(e.getStatus(), is(400));
+            assertThat(e.getErrors().get(0).field(), is("to"));
+            assertThat(e.getErrors().get(0).code(), is("invalid-range"));
+        }
+
+        try
+        {
+            period(client, null, "01.05.2026", null);
+            Assert.fail("expected ApiException");
+        }
+        catch (ApiException e)
+        {
+            assertThat(e.getErrors().get(0).field(), is("from"));
+            assertThat(e.getErrors().get(0).code(), is("invalid-value"));
+        }
+    }
+
+    /**
      * A trade counting a transaction dated after the valuation date says so;
      * one that does not carries no such field.
      */
@@ -511,6 +582,20 @@ public class TradesTest
         assertThat(plan.get("transactionsAfterValuationDate").getAsInt(), is(1));
         // the shares are those after the planned purchase, as in the application
         assertThat(plan.get("shares").getAsDouble(), is(12.0));
+    }
+
+    private static JsonObject period(Client client, String status, String from, String to)
+    {
+        return TradesHandler.list(client, new ExchangeRateProviderFactory(client), status, null, null, null, null,
+                        from, to).getAsJsonObject();
+    }
+
+    private static List<String> names(JsonObject trades)
+    {
+        var names = new ArrayList<String>();
+        for (var item : trades.get("items").getAsJsonArray())
+            names.add(item.getAsJsonObject().get("instrument").getAsJsonObject().get("name").getAsString());
+        return names;
     }
 
     @Test

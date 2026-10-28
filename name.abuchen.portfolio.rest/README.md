@@ -268,7 +268,8 @@ rules apply to all of them.
 
 **They have no ids.** A computed item gets no `uuid`, and there is no `…/trades/{id}`: an id minted
 per request would not survive the next one. Address such an item by the filter that produced it
-(`GET .../instruments/{uuid}/trades?status=closed`). Ordering carries the weight identity otherwise
+(`GET .../instruments/{uuid}/trades?status=closed`, or `?from=2025-01-01&to=2025-12-31` for the
+trades held at some point of a period). Ordering carries the weight identity otherwise
 would, so these collections sort stably — repeated identical requests return identical lists.
 
 **They can half succeed.** Where the computation runs over independent units and can fail on some of

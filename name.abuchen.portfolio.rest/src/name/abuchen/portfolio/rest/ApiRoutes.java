@@ -59,7 +59,7 @@ public final class ApiRoutes
 
     /** Query parameters shared by both trade routes. */
     private static final String[] TRADE_PARAMS = { "status", "grouping", "costMethod", "taxesAndFees", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-                    "reportingCurrency" }; //$NON-NLS-1$
+                    "reportingCurrency", "from", "to" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
     /**
      * How long a request may wait for the UI thread, and how long a calculation
@@ -362,13 +362,15 @@ public final class ApiRoutes
                         (context, req) -> Response.json(200, TradesHandler.list(context.client(), context.factory(),
                                         req.queryParam("status"), req.queryParam("grouping"), //$NON-NLS-1$ //$NON-NLS-2$
                                         req.queryParam("costMethod"), req.queryParam("taxesAndFees"), //$NON-NLS-1$ //$NON-NLS-2$
-                                        req.queryParam("reportingCurrency")))), //$NON-NLS-1$
+                                        req.queryParam("reportingCurrency"), req.queryParam("from"), //$NON-NLS-1$ //$NON-NLS-2$
+                                        req.queryParam("to")))), //$NON-NLS-1$
                         TRADE_PARAMS);
         router.add("GET", "/v1/files/{file}/instruments/{uuid}/trades", calc(resolver, ui, calculation, //$NON-NLS-1$ //$NON-NLS-2$
                         (context, req) -> Response.json(200, TradesHandler.forInstrument(context.client(),
                                         context.factory(), req.pathParam("uuid"), req.queryParam("status"), //$NON-NLS-1$ //$NON-NLS-2$
                                         req.queryParam("grouping"), req.queryParam("costMethod"), //$NON-NLS-1$ //$NON-NLS-2$
-                                        req.queryParam("taxesAndFees"), req.queryParam("reportingCurrency")))), //$NON-NLS-1$ //$NON-NLS-2$
+                                        req.queryParam("taxesAndFees"), req.queryParam("reportingCurrency"), //$NON-NLS-1$ //$NON-NLS-2$
+                                        req.queryParam("from"), req.queryParam("to")))), //$NON-NLS-1$ //$NON-NLS-2$
                         TRADE_PARAMS);
 
         return router;

@@ -1218,6 +1218,8 @@ paths:
         - $ref: "#/components/parameters/TradeCostMethod"
         - $ref: "#/components/parameters/TradeTaxesAndFees"
         - $ref: "#/components/parameters/ReportingCurrency"
+        - $ref: "#/components/parameters/TradeFrom"
+        - $ref: "#/components/parameters/TradeTo"
       responses:
         "200":
           description: The file's trades
@@ -1320,6 +1322,8 @@ paths:
         - $ref: "#/components/parameters/TradeCostMethod"
         - $ref: "#/components/parameters/TradeTaxesAndFees"
         - $ref: "#/components/parameters/ReportingCurrency"
+        - $ref: "#/components/parameters/TradeFrom"
+        - $ref: "#/components/parameters/TradeTo"
       responses:
         "200":
           description: The instrument's trades
@@ -1518,6 +1522,31 @@ components:
       schema:
         type: string
         minLength: 1
+    TradeFrom:
+      name: from
+      in: query
+      required: false
+      description: |
+        The first day of the period, as `YYYY-MM-DD`. Only trades still held
+        on or after it are returned: a trade that closed before it is left
+        out, an open one is kept. Omit it for no lower bound. Echoed in the
+        response when given.
+      schema:
+        type: string
+        format: date
+    TradeTo:
+      name: to
+      in: query
+      required: false
+      description: |
+        The last day of the period, as `YYYY-MM-DD`, not before `from`
+        (`invalid-range` otherwise). Only trades that started on or before it
+        are returned. With `from`, this keeps every trade held at some point
+        of the period — closed within it, or open through it. Omit it for no
+        upper bound. Echoed in the response when given.
+      schema:
+        type: string
+        format: date
     TradeGrouping:
       name: grouping
       in: query
@@ -1623,6 +1652,14 @@ components:
           description: |
             The date the open trades were valued at, and the date their holding
             period runs to. Closed trades do not depend on it.
+        from:
+          type: string
+          format: date
+          description: The `from` query parameter, when one was given.
+        to:
+          type: string
+          format: date
+          description: The `to` query parameter, when one was given.
         status:
           type: array
           description: The selected statuses, in declaration order.
