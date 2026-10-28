@@ -1,10 +1,6 @@
 package name.abuchen.portfolio.cli.query;
 
-import java.math.BigDecimal;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +12,6 @@ import name.abuchen.portfolio.cli.command.ClientFile;
 import name.abuchen.portfolio.cli.command.CommandContext;
 import name.abuchen.portfolio.cli.command.CommandSpec;
 import name.abuchen.portfolio.cli.command.DateRange;
-import name.abuchen.portfolio.cli.command.Decimals;
 import name.abuchen.portfolio.cli.command.Declaration;
 import name.abuchen.portfolio.cli.command.Facet;
 import name.abuchen.portfolio.cli.command.Filters;
@@ -27,15 +22,12 @@ import name.abuchen.portfolio.cli.command.ReferenceOption;
 import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.cli.command.Sorting;
 import name.abuchen.portfolio.cli.currency.ReportingCurrency;
+import name.abuchen.portfolio.cli.transaction.TransactionRecord;
+import name.abuchen.portfolio.cli.transaction.TransactionRecords;
+import name.abuchen.portfolio.cli.transaction.TransactionShape;
 import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.money.ExchangeRate;
-import name.abuchen.portfolio.money.Values;
 
 /**
  * <code>transactions</code>: every business event of the client as one
@@ -44,8 +36,6 @@ import name.abuchen.portfolio.money.Values;
  */
 public final class TransactionsCommand
 {
-    private static final DateTimeFormatter TIME = DateTimeFormatter.ofPattern("HH:mm");
-
     private static final Facet<Filters.Reference<Portfolio, TransactionRecord>> INVESTMENT_ACCOUNT = Filters
                     .reference(ReferenceOption.investmentAccount("investment-account",
                                     "Only records with a side in this investment account."), "investmentAccount",
@@ -86,7 +76,7 @@ public final class TransactionsCommand
 
     private static Schema recordSchema()
     {
-        return TransactionShape.recordSchema("One business event.")
+        return TransactionRecords.schema("One business event.")
                         .optionalProperty("converted", ReportingCurrency.convertedSchema(
                                         "The amount in the currency asked for with --currency. Absent if no rate was found."));
     }
@@ -116,118 +106,21 @@ public final class TransactionsCommand
                         && (types.isEmpty() || types.contains(record.type()));
         filter = filter.and(run.get(INVESTMENT_ACCOUNT)).and(run.get(CASH_ACCOUNT)).and(run.get(INSTRUMENT));
 
-        var records = run.get(SORT).sort(client, TransactionRecord.allOf(client).stream().filter(filter).toList());
+        var transactions = TransactionRecords.open(client, any -> true);
+        var records = run.get(SORT).sort(client, transactions.all().stream().filter(filter).toList());
         var page = run.get(Paging.FACET).of(records);
 
-        var names = new AccountNames(client);
         var reporting = run.get(CURRENCY);
         var data = new LinkedHashMap<String, Object>();
-        page.putInto(data, record -> render(record, names, reporting));
+        page.putInto(data, record -> render(transactions, record, reporting));
         return data;
     }
 
-    private static Map<String, Object> render(TransactionRecord record, AccountNames names,
+    private static Map<String, Object> render(TransactionRecords transactions, TransactionRecord record,
                     Optional<ReportingCurrency> reporting)
     {
-        var json = render(record, names);
+        var json = transactions.render(record);
         reporting.ifPresent(currency -> currency.putConvertedInto(json, figure(record, currency)));
-        return json;
-    }
-
-    /** The names of the accounts and investment accounts of a client by UUID. */
-    static final class AccountNames
-    {
-        private final Map<String, String> names = new HashMap<>();
-
-        AccountNames(Client client)
-        {
-            client.getAccounts().forEach(account -> names.put(account.getUUID(), account.getName()));
-            client.getPortfolios().forEach(portfolio -> names.put(portfolio.getUUID(), portfolio.getName()));
-        }
-
-        String of(String uuid)
-        {
-            return MasterData.orEmpty(names.get(uuid));
-        }
-    }
-
-    /** The record's fields as written, without the {@code --currency} conversion; also the shape writes return. */
-    public static Map<String, Object> render(TransactionRecord record, Client client)
-    {
-        return render(record, new AccountNames(client));
-    }
-
-    private static Map<String, Object> render(TransactionRecord record, AccountNames names)
-    {
-        var primary = record.primary();
-        var dateTime = primary.getDateTime();
-        var currencyCode = MasterData.orEmpty(primary.getCurrencyCode());
-
-        var json = new LinkedHashMap<String, Object>();
-        json.put(TransactionShape.ID.name(), record.id());
-        json.put(TransactionShape.TYPE.name(), record.type());
-        record.kind().ifPresent(kind -> json.put(TransactionShape.KIND.name(), kind.id()));
-        json.put(TransactionShape.DATE.name(), dateTime.toLocalDate().toString());
-        if (!dateTime.toLocalTime().equals(LocalTime.MIDNIGHT))
-            json.put(TransactionShape.TIME.name(), dateTime.format(TIME));
-        json.put(TransactionShape.SIDES.name(), record.sides());
-        json.put(TransactionShape.AMOUNT.name(), Decimals.of(primary.getAmount(), Values.Amount));
-        json.put(TransactionShape.CURRENCY_CODE.name(), currencyCode);
-
-        var crossCurrency = record.crossCurrencyIncoming();
-        var transferRate = crossCurrency.flatMap(incoming -> primary.getUnit(Transaction.Unit.Type.GROSS_VALUE)
-                        .filter(unit -> unit.getForex().getCurrencyCode().equals(incoming.getCurrencyCode())));
-        crossCurrency.ifPresent(incoming -> {
-            json.put(TransactionShape.TARGET_AMOUNT.name(), Decimals.of(incoming.getAmount(), Values.Amount));
-            json.put(TransactionShape.TARGET_CURRENCY_CODE.name(), MasterData.orEmpty(incoming.getCurrencyCode()));
-        });
-        transferRate.ifPresent(
-                        unit -> json.put(TransactionShape.EXCHANGE_RATE.name(), Decimals.of(unit.getExchangeRate())));
-
-        if (primary.getSecurity() != null)
-        {
-            TransactionShape.INSTRUMENT.put(json, primary.getSecurity().getUUID(),
-                            MasterData.orEmpty(primary.getSecurity().getName()));
-        }
-        if (record.hasShares())
-            json.put(TransactionShape.SHARES.name(), Decimals.of(primary.getShares(), Values.Share));
-        putAccount(json, TransactionShape.INVESTMENT_ACCOUNT, record.investmentAccount(), names);
-        putAccount(json, TransactionShape.CASH_ACCOUNT, record.cashAccount(), names);
-        putAccount(json, TransactionShape.FROM, record.from(), names);
-        putAccount(json, TransactionShape.TO, record.to(), names);
-        if (primary instanceof AccountTransaction account && account.getExDate() != null
-                        && account.getType() == AccountTransaction.Type.DIVIDENDS)
-            json.put(TransactionShape.EX_DATE.name(), account.getExDate().toLocalDate().toString());
-        MasterData.putIfSet(json, TransactionShape.NOTE.name(), primary.getNote());
-        MasterData.putIfSet(json, TransactionShape.SOURCE.name(), primary.getSource());
-        record.updatedAt().ifPresent(instant -> MasterData.putUpdatedAt(json, instant));
-
-        json.put(TransactionShape.UNITS.name(),
-                        primary.getUnits().filter(unit -> transferRate.isEmpty() || unit != transferRate.get())
-                                        .map(TransactionsCommand::render).toList());
-
-        return json;
-    }
-
-    /** The UUID and the name next to it, if there is an account. */
-    private static void putAccount(Map<String, Object> json, TransactionShape.NamedUuid member,
-                    Optional<String> uuid, AccountNames names)
-    {
-        uuid.ifPresent(value -> member.put(json, value, names.of(value)));
-    }
-
-    private static Map<String, Object> render(Transaction.Unit unit)
-    {
-        var json = new LinkedHashMap<String, Object>();
-        json.put(TransactionShape.UNIT_TYPE.name(), unit.getType().name());
-        json.put(TransactionShape.UNIT_AMOUNT.name(), Decimals.amount(unit.getAmount()));
-        json.put(TransactionShape.UNIT_CURRENCY_CODE.name(), unit.getAmount().getCurrencyCode());
-        if (unit.getForex() != null)
-        {
-            json.put(TransactionShape.UNIT_FOREX_AMOUNT.name(), Decimals.amount(unit.getForex()));
-            json.put(TransactionShape.UNIT_FOREX_CURRENCY_CODE.name(), unit.getForex().getCurrencyCode());
-            json.put(TransactionShape.UNIT_EXCHANGE_RATE.name(), Decimals.of(unit.getExchangeRate()));
-        }
         return json;
     }
 
@@ -236,22 +129,6 @@ public final class TransactionsCommand
     {
         var primary = record.primary();
         return reporting.figure(primary.getDateTime().toLocalDate(), MasterData.orEmpty(primary.getCurrencyCode()),
-                        primary.getAmount(), ownRate(record, reporting.code()));
-    }
-
-    /** The record's own rate into the reporting currency: that of its forex unit or of its transfer. */
-    private static Optional<BigDecimal> ownRate(TransactionRecord record, String reportingCode)
-    {
-        var forex = record.primary().getUnits().filter(unit -> unit.getType() == Transaction.Unit.Type.GROSS_VALUE)
-                        .filter(unit -> unit.getForex() != null && reportingCode.equals(unit.getForex().getCurrencyCode()))
-                        .map(Transaction.Unit::getExchangeRate);
-
-        var transfer = record.crossCurrencyIncoming().filter(incoming -> reportingCode.equals(incoming.getCurrencyCode()))
-                        .flatMap(incoming -> record.primary().getUnit(Transaction.Unit.Type.GROSS_VALUE))
-                        .map(Transaction.Unit::getExchangeRate);
-
-        // the stored rate converts into the record's currency, so the inverse converts out of it
-        return forex.findFirst().or(() -> transfer).filter(stored -> stored.signum() != 0)
-                        .map(stored -> ExchangeRate.inverse(stored));
+                        primary.getAmount(), record.ownRate(reporting.code()));
     }
 }

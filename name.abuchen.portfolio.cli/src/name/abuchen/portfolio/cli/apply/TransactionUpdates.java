@@ -9,15 +9,14 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import name.abuchen.portfolio.cli.command.EntityKind;
 import name.abuchen.portfolio.cli.command.OperationInput;
 import name.abuchen.portfolio.cli.command.OperationSpec;
 import name.abuchen.portfolio.cli.command.Outcome;
 import name.abuchen.portfolio.cli.command.Schema;
-import name.abuchen.portfolio.cli.query.BuiltRecord;
-import name.abuchen.portfolio.cli.query.TransactionRecord;
-import name.abuchen.portfolio.cli.query.TransactionShape;
-import name.abuchen.portfolio.cli.query.TransactionsCommand;
+import name.abuchen.portfolio.cli.transaction.BuiltRecord;
+import name.abuchen.portfolio.cli.transaction.TransactionRecord;
+import name.abuchen.portfolio.cli.transaction.TransactionRecords;
+import name.abuchen.portfolio.cli.transaction.TransactionShape;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
@@ -40,11 +39,6 @@ final class TransactionUpdates
     static final String UUID_MEMBER = "uuid";
 
     private static final Gson GSON = new Gson();
-
-    /** A record is named by the UUID of any of its sides. */
-    private static final EntityKind<TransactionRecord> RECORD = new EntityKind<>("transaction",
-                    TransactionRecord::allOf, (record, uuid) -> record.sides().contains(uuid),
-                    TransactionRecord::primary);
 
     static final OperationSpec<OperationContext> DELETE = new OperationSpec<>("transaction.delete",
                     "Deletes a whole transaction record, both sides, found by the UUID of either of its sides. The response is one deleted change whose uuid is the record id, with the record as it was in before. A delete that would make an investment account's holding of an instrument negative at the end of any date, by removing a buy or a delivery or transfer into it, is refused.",
@@ -91,7 +85,7 @@ final class TransactionUpdates
         if (context.failed())
             return;
 
-        var before = TransactionsCommand.render(existing.record(), context.client());
+        var before = TransactionRecords.open(context.client(), any -> true).render(existing.record());
         existing.sides().forEach(side -> detach(context.client(), side));
         context.deleted(new OperationContext.Change(Outcome.Entity.TRANSACTION, existing.record().id(), before,
                         Map.of()));
@@ -112,25 +106,28 @@ final class TransactionUpdates
             return null;
         }
 
-        var record = context.input().find(UUID_MEMBER, member.getAsString(), RECORD);
+        var uuid = member.getAsString();
+        var records = TransactionRecords.open(context.client(), context::existedBeforeBatch);
+        var record = records.find(uuid).orElse(null);
         if (record == null)
+        {
+            context.fail(UUID_MEMBER, "reference-not-found", "No transaction with UUID " + uuid + " in the file.");
             return null;
+        }
 
-        var client = context.client();
         for (var side : record.sides())
         {
             if (!context.claim(UUID_MEMBER, side))
                 return null;
         }
-        return new Existing(record, record.sides().stream()
-                        .map(side -> TransactionRecord.sideOf(client, side).orElseThrow()).toList());
+        return new Existing(record, records.sidesOf(record));
     }
 
     /** The current record in the shape of an add, with the members of the patch laid over it. */
     private static JsonObject overlay(OperationContext context, TransactionRecord record)
     {
-        var merged = TransactionShape.inputOf(
-                        GSON.toJsonTree(TransactionsCommand.render(record, context.client())).getAsJsonObject());
+        var merged = TransactionShape.inputOf(GSON.toJsonTree(TransactionRecords.open(context.client(), any -> true)
+                        .render(record)).getAsJsonObject());
 
         for (var member : context.input().json().entrySet())
         {
@@ -171,8 +168,8 @@ final class TransactionUpdates
             return;
         }
 
-        var client = context.client();
-        var before = TransactionsCommand.render(existing.record(), client);
+        var records = TransactionRecords.open(context.client(), any -> true);
+        var before = records.render(existing.record());
         var updatedAt = sides.stream().map(side -> side.transaction().getUpdatedAt()).toList();
 
         for (var i = 0; i < sides.size(); i++)
@@ -180,8 +177,7 @@ final class TransactionUpdates
         move(sides, built.sides());
 
         var id = existing.record().id();
-        var after = TransactionsCommand.render(TransactionRecord.allOf(client).stream()
-                        .filter(record -> record.id().equals(id)).findFirst().orElseThrow(), client);
+        var after = records.render(records.find(id).orElseThrow());
 
         var changedBefore = new LinkedHashMap<String, Object>();
         var changedAfter = new LinkedHashMap<String, Object>();

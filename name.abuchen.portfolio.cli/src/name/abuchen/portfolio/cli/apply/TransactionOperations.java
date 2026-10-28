@@ -13,10 +13,10 @@ import name.abuchen.portfolio.cli.command.OperationInput;
 import name.abuchen.portfolio.cli.command.OperationSpec;
 import name.abuchen.portfolio.cli.command.Outcome;
 import name.abuchen.portfolio.cli.command.Schema;
-import name.abuchen.portfolio.cli.query.BuiltRecord;
-import name.abuchen.portfolio.cli.query.TransactionRecord;
-import name.abuchen.portfolio.cli.query.TransactionShape;
-import name.abuchen.portfolio.cli.query.TransactionsCommand;
+import name.abuchen.portfolio.cli.transaction.BuiltRecord;
+import name.abuchen.portfolio.cli.transaction.TransactionRecord;
+import name.abuchen.portfolio.cli.transaction.TransactionRecords;
+import name.abuchen.portfolio.cli.transaction.TransactionShape;
 import name.abuchen.portfolio.datatransfer.ImportAction;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.actions.CheckForexGrossValueAction;
@@ -179,10 +179,10 @@ public final class TransactionOperations
     /** Reports the record the transaction is the primary side of as created. */
     private static void reportCreated(OperationContext context, Transaction primary)
     {
-        var record = TransactionRecord.allOf(context.client()).stream().filter(r -> r.primary() == primary).findFirst()
-                        .orElseThrow();
+        var records = TransactionRecords.open(context.client(), any -> true);
+        var record = records.find(primary.getUUID()).orElseThrow();
         context.created(new OperationContext.Change(Outcome.Entity.TRANSACTION, record.id(), null,
-                        TransactionsCommand.render(record, context.client())));
+                        records.render(record)));
     }
 
     private static String parseTypeName(OperationContext context)

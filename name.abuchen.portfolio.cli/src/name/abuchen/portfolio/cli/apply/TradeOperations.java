@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.cli.apply;
 
-import name.abuchen.portfolio.cli.query.BuiltRecord;
+import name.abuchen.portfolio.cli.transaction.BuiltRecord;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.Money;
