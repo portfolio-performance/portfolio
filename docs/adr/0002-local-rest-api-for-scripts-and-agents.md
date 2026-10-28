@@ -71,8 +71,10 @@ becomes a later thin adapter over the same service layer. The individual decisio
   finish within 120 s is answered with 503 `calculation-timeout` instead of a dropped connection.
   Receiving a request and sending its response are each bounded by a 30 s watchdog against clients
   that stall. At most three requests per calculation slot plus six are served at
-  once (12 by default), and one over the bound is refused (503 `server-busy`) before its body is
-  read, so no local process can make the application buffer an arbitrary number of request bodies.
+  once (12 by default), and one over the bound is refused (503 `server-busy`) without its body being
+  kept, so no local process can make the application buffer an arbitrary number of request bodies.
+  Every body is read - or read past - before any answer goes out: the JDK drains an unread body only
+  after the response headers, where the watchdog can no longer close a connection that stalls.
   The engines never check for an interrupt, so a calculation past its deadline runs on; it keeps its
   calculation slot until it really ends. A calculation that finds every slot taken waits for one,
   first come first served, rather than being refused at once — a model sends several tool calls in

@@ -460,6 +460,98 @@ public class RestApiServerTest
         }
     }
 
+    /**
+     * A refusal decided before the body is read - here: no token - must not
+     * leave the body for the JDK to drain after the answer. A client that
+     * announced one and stalls used to keep its permit until it hung up.
+     */
+    @Test
+    public void testAStalledBodyOnARefusalIsClosedByTheWatchdog() throws Exception
+    {
+        var router = new Router();
+        router.add("GET", "/v1/ping", request -> Response.json(200, JsonParser.parseString("{\"pong\":true}")));
+
+        var guarded = new RestApiServer(0, TOKEN::equals, router, 1, 500);
+        guarded.start();
+        try (var socket = stalledBody(guarded, "GET", "/v1/ping"))
+        {
+            socket.setSoTimeout(5_000);
+            assertThat(socket.getInputStream().read(), is(-1));
+
+            // the one permit is free again, while that client still holds its socket
+            var ping = HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + guarded.getPort() + "/v1/ping"))
+                            .header("Authorization", "Bearer " + TOKEN).GET().build();
+            assertThat(statusEventually(ping), is(200));
+        }
+        finally
+        {
+            guarded.stop();
+        }
+    }
+
+    /** the same for a request refused as busy: it holds no permit, but it must not hold a thread */
+    @Test
+    public void testAStalledBodyOnABusyRefusalIsClosedByTheWatchdog() throws Exception
+    {
+        var entered = new CountDownLatch(1);
+        var release = new CountDownLatch(1);
+
+        var router = new Router();
+        router.add("GET", "/v1/slow", request -> {
+            entered.countDown();
+            release.await(10, TimeUnit.SECONDS);
+            return Response.json(200, JsonParser.parseString("{}"));
+        });
+
+        var bounded = new RestApiServer(0, TOKEN::equals, router, 1, 500);
+        bounded.start();
+        try
+        {
+            var pending = http.sendAsync(slow(bounded), HttpResponse.BodyHandlers.ofString());
+            assertThat(entered.await(5, TimeUnit.SECONDS), is(true));
+
+            try (var socket = stalledBody(bounded, "GET", "/v1/slow"))
+            {
+                socket.setSoTimeout(5_000);
+                assertThat(socket.getInputStream().read(), is(-1));
+            }
+
+            release.countDown();
+            assertThat(pending.get(5, TimeUnit.SECONDS).statusCode(), is(200));
+        }
+        finally
+        {
+            release.countDown();
+            bounded.stop();
+        }
+    }
+
+    /**
+     * The path is normalized before authorization, so its cost is anyone's to
+     * choose. A long run of slashes in the middle used to take quadratic time.
+     */
+    @Test
+    public void testALongRunOfSlashesIsNormalizedInLinearTime() throws Exception
+    {
+        var started = System.nanoTime();
+        var head = rawHead("GET", "/v1" + "/".repeat(150_000) + "x", "Bearer " + TOKEN);
+
+        assertThat(head, containsString(" 404 "));
+        assertThat(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - started) < 3_000, is(true));
+    }
+
+    /** a socket that announces a body of 100 bytes, sends one, and then waits */
+    private static Socket stalledBody(RestApiServer target, String method, String path) throws Exception
+    {
+        var socket = new Socket(InetAddress.getLoopbackAddress(), target.getPort());
+        var request = method + " " + path + " HTTP/1.1\r\n" //
+                        + "Host: 127.0.0.1:" + target.getPort() + "\r\n" //
+                        + "Content-Length: 100\r\n\r\n{";
+        socket.getOutputStream().write(request.getBytes(StandardCharsets.US_ASCII));
+        socket.getOutputStream().flush();
+        return socket;
+    }
+
     private HttpRequest slow(RestApiServer target)
     {
         return HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + target.getPort() + "/v1/slow"))
