@@ -274,6 +274,13 @@ a result, never both. `warnings` is always present, empty when nothing failed, s
 wrong" is distinguishable from "this endpoint cannot report problems". **A client that ignores
 `warnings` reads a partial list as a complete one.**
 
+**An old exchange rate is named.** Every computed report carries `fxStaleRates` beside `fxWarnings`:
+the pairs it converted at a rate more than seven days older than the conversion date (or than today,
+for a later date), with the oldest `rateDate` and `daysOld` — for a pair reached through a third
+currency (USD to CHF through EUR), the oldest of its steps. A series that stopped being published
+goes on answering with its last rate, and the currency effect is then frozen rather than measured.
+It is a real rate, not a 1:1 fallback, so it is not an `fxWarnings` entry.
+
 ## Query parameters are strict
 
 An endpoint accepts only the query parameters documented for it, and one that documents none accepts

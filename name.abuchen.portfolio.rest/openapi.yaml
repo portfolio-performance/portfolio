@@ -804,6 +804,8 @@ paths:
                     $ref: "#/components/schemas/MonetaryValue"
                   fxWarnings:
                     $ref: "#/components/schemas/FxWarnings"
+                  fxStaleRates:
+                    $ref: "#/components/schemas/FxStaleRates"
                   items:
                     type: array
                     items:
@@ -1579,6 +1581,8 @@ components:
             enum: [open, closed]
         fxWarnings:
           $ref: "#/components/schemas/FxWarnings"
+        fxStaleRates:
+          $ref: "#/components/schemas/FxStaleRates"
         warnings:
           type: array
           description: |
@@ -2067,6 +2071,43 @@ components:
       items:
         $ref: "#/components/schemas/FxWarning"
 
+    FxStaleRates:
+      type: array
+      description: |
+        Every currency pair this report converted at a rate more than seven
+        days older than the date it converted at (or than today, for a later
+        date) — a series that stopped being published goes on answering with
+        its last rate, and the currency effect of those amounts is then frozen
+        at it rather than measured. Not a 1:1 conversion, so not in
+        `fxWarnings`. Always present, empty when every rate used was recent.
+      items:
+        $ref: "#/components/schemas/FxStaleRate"
+
+    FxStaleRate:
+      type: object
+      required: [currency, reportingCurrency, rateDate, daysOld]
+      properties:
+        currency:
+          type: string
+          description: The currency the amounts were natively in.
+        reportingCurrency:
+          type: string
+          description: |
+            The currency they were converted into: the report's reporting
+            currency, or an instrument's own currency for its local figures.
+        rateDate:
+          type: string
+          format: date
+          description: |
+            The date of the oldest rate a conversion of this pair used. For a
+            pair reached through a third currency (USD to CHF through EUR),
+            the oldest of its steps.
+        daysOld:
+          type: integer
+          description: |
+            How many days that rate was older than the date it converted at —
+            the largest gap the calculation met for this pair.
+
     Holding:
       type: object
       description: |
@@ -2161,6 +2202,8 @@ components:
           $ref: "#/components/schemas/PerformanceBreakdown"
         fxWarnings:
           $ref: "#/components/schemas/FxWarnings"
+        fxStaleRates:
+          $ref: "#/components/schemas/FxStaleRates"
 
     PerformanceBreakdown:
       type: object
@@ -2270,6 +2313,8 @@ components:
               [valuation, gains, income, expenses, moneyWeighted, timeWeighted, risk]
         fxWarnings:
           $ref: "#/components/schemas/FxWarnings"
+        fxStaleRates:
+          $ref: "#/components/schemas/FxStaleRates"
 
     InstrumentPerformance:
       type: object
