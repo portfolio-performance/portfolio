@@ -7,6 +7,9 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -18,6 +21,8 @@ import name.abuchen.portfolio.model.Client;
 /**
  * Everything a command gets from the outside world: parsed options, the
  * environment, stdin, stderr, the clock and the name of the operating system.
+ * For a command composed of facets it is also the run: the facets' values,
+ * the lazily loaded client file and the warnings of the handler.
  */
 public final class CommandContext
 {
@@ -30,6 +35,14 @@ public final class CommandContext
     private final Clock clock;
     private final String osName;
     private final WriteEnvironment writeEnvironment;
+
+    /** The facets of the running command; null for a command not composed of facets. */
+    private List<Facet<?>> facets;
+    private final Map<Facet<?>, Object> values = new IdentityHashMap<>();
+    /** The facet resolving right now; null while the handler runs. */
+    private Facet<?> resolving;
+    private LoadedClient loaded;
+    private final List<Warning> warnings = new ArrayList<>();
 
     public CommandContext(Map<String, String> options, Map<String, String> env, InputStream stdin, PrintStream stderr,
                     Clock clock, String osName, WriteEnvironment writeEnvironment)
@@ -109,7 +122,89 @@ public final class CommandContext
         if (!type.isInstance(option.type()))
             throw new IllegalArgumentException(
                             "Option '--" + option.name() + "' is not of type " + type.getSimpleName());
+        if (facets != null && (resolving == null || !resolving.declaration().declares(option)))
+            throw new IllegalStateException("Option '--" + option.name() + "' is read by "
+                            + (resolving == null ? "the handler" : "a facet") + " that does not declare it");
         return Optional.ofNullable(options.get(option.name()));
+    }
+
+    /**
+     * The value a facet of this command resolved to.
+     *
+     * @throws IllegalStateException
+     *             if the facet is not one of the command's or not resolved yet
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T get(Facet<T> facet)
+    {
+        if (!values.containsKey(facet))
+            throw new IllegalStateException("The facet is not part of the command or not resolved yet");
+        return (T) values.get(facet);
+    }
+
+    /**
+     * The client of the file named by <code>--file</code> or PP_FILE, loaded
+     * on the first call.
+     *
+     * @throws IllegalStateException
+     *             if called from a facet that does not declare it needs the
+     *             client
+     */
+    public Client client() throws CliException
+    {
+        return loaded().client();
+    }
+
+    LoadedClient loaded() throws CliException
+    {
+        if (resolving != null && !resolving.declaration().resolvesWithClient())
+            throw new IllegalStateException("A facet that does not need the client asked for it");
+        if (loaded == null)
+            loaded = loadClient();
+        return loaded;
+    }
+
+    /**
+     * Adds a warning to the response.
+     *
+     * @throws IllegalStateException
+     *             if no facet of the command declares the warning's code
+     */
+    public void warn(Warning warning)
+    {
+        if (facets == null || facets.stream().noneMatch(f -> f.declaration().declaresWarning(warning.code())))
+            throw new IllegalStateException("No facet of the command declares the warning " + warning.code());
+        warnings.add(warning);
+    }
+
+    /** Uses an already loaded client instead of the file; for tests of a facet. */
+    CommandContext withClient(LoadedClient client)
+    {
+        this.loaded = client;
+        return this;
+    }
+
+    void bind(List<Facet<?>> commandFacets)
+    {
+        this.facets = commandFacets;
+    }
+
+    <T> void resolve(Facet<T> facet) throws CliException
+    {
+        resolving = facet;
+        try
+        {
+            values.put(facet, facet.resolve(this));
+        }
+        finally
+        {
+            resolving = null;
+        }
+    }
+
+    List<Warning> handlerWarnings()
+    {
+        return warnings;
     }
 
     /** Whether the switch was given. */
@@ -161,7 +256,7 @@ public final class CommandContext
 
     private String clientPath() throws CliException
     {
-        return text(OptionSpec.FILE).filter(p -> !p.isBlank())
+        return Optional.ofNullable(options.get(OptionSpec.FILE.name())).filter(p -> !p.isBlank())
                         .or(() -> env("PP_FILE").filter(p -> !p.isBlank()))
                         .orElseThrow(() -> CliException.usage(ErrorCode.FILE_REQUIRED, "Client file required",
                                         "Pass --file <path> or set the PP_FILE environment variable."));

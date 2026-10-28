@@ -1,23 +1,22 @@
 package name.abuchen.portfolio.cli.query;
 
-import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import name.abuchen.portfolio.cli.command.CliException;
+import name.abuchen.portfolio.cli.command.ClientFile;
 import name.abuchen.portfolio.cli.command.CommandContext;
 import name.abuchen.portfolio.cli.command.CommandSpec;
 import name.abuchen.portfolio.cli.command.DateRange;
 import name.abuchen.portfolio.cli.command.Decimals;
+import name.abuchen.portfolio.cli.command.Declaration;
+import name.abuchen.portfolio.cli.command.Facet;
 import name.abuchen.portfolio.cli.command.MasterData;
 import name.abuchen.portfolio.cli.command.MinorUnits;
-import name.abuchen.portfolio.cli.command.OptionSpec;
 import name.abuchen.portfolio.cli.command.Paging;
 import name.abuchen.portfolio.cli.command.ReferenceOption;
-import name.abuchen.portfolio.cli.command.Response;
-import name.abuchen.portfolio.cli.command.ResponseMeta;
 import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.cli.command.Sorting;
 import name.abuchen.portfolio.cli.currency.Prices;
@@ -27,15 +26,16 @@ import name.abuchen.portfolio.money.Values;
 
 public final class PricesCommand
 {
-    private static final ReferenceOption<Security> INSTRUMENT = ReferenceOption.instrument("instrument",
-                    "Instrument to read.")
-                                    .asRequired();
+    private static final Facet<Optional<Security>> INSTRUMENT = Facet
+                    .option(ReferenceOption.instrument("instrument", "Instrument to read.").asRequired());
 
-    private static final OptionSpec FROM = OptionSpec.date("from",
-                    "First day of the history, inclusive. Without it the history has no lower bound.");
-
-    private static final OptionSpec TO = OptionSpec.date("to",
+    private static final Facet<DateRange> RANGE = DateRange.facet(
+                    "First day of the history, inclusive. Without it the history has no lower bound.",
                     "Last day of the history, inclusive. Defaults to today.");
+
+    /** The handler warns of a stale latest price. */
+    private static final Facet<Void> STALE_PRICE = Facet.of(Declaration.empty().warnings(Prices.STALE_PRICE),
+                    run -> null);
 
     private static Schema price(String description)
     {
@@ -57,32 +57,24 @@ public final class PricesCommand
     private static final Sorting.Spec<SecurityPrice> SORT = Sorting.Spec.of(price -> price.getDate().toString(),
                     "date", Sorting.Field.of("date", Comparator.comparing(SecurityPrice::getDate)));
 
-    private static final Schema META = DateRange.declareIn(ResponseMeta.pagedSchema(SORT));
-
-    public static final CommandSpec SPEC = new CommandSpec("prices",
+    public static final CommandSpec SPEC = CommandSpec.of("prices",
                     "Price history of one instrument by date, ascending unless --order desc, within an optional date range, with its latest price.",
-                    true,
-                    List.of(INSTRUMENT.spec(), FROM, TO, Paging.LIMIT, Paging.OFFSET, SORT.sortOption(),
-                                    Sorting.ORDER),
-                    DATA, META, List.of(Prices.STALE_PRICE), PricesCommand::execute);
+                    DATA, PricesCommand::execute, ClientFile.READ, INSTRUMENT, RANGE, Paging.FACET, SORT, STALE_PRICE);
 
     private PricesCommand()
     {
     }
 
-    private static Response execute(CommandContext context) throws CliException
+    private static Map<String, Object> execute(CommandContext run) throws CliException
     {
-        var paging = Paging.parse(context);
-        var sorting = SORT.parse(context);
-        var range = DateRange.parse(context, FROM, TO);
-        var asOf = LocalDate.now(context.clock());
-
-        var client = context.loadClient().client();
-        var security = context.reference(INSTRUMENT, client).orElseThrow();
+        var client = run.client();
+        var security = run.get(INSTRUMENT).orElseThrow();
+        var range = run.get(RANGE);
+        var asOf = run.get(ClientFile.READ).asOf();
 
         var history = security.getPricesIncludingLatest().stream().filter(price -> range.contains(price.getDate()))
                         .toList();
-        var page = paging.of(sorting.sort(client, history));
+        var page = run.get(Paging.FACET).of(run.get(SORT).sort(client, history));
         var latest = Prices.latest(security, asOf);
 
         var data = new LinkedHashMap<String, Object>();
@@ -90,12 +82,8 @@ public final class PricesCommand
         latest.ifPresent(price -> data.put("latest", render(price)));
         page.putInto(data, PricesCommand::render);
 
-        var meta = ResponseMeta.paged(context, client, paging, sorting);
-        range.putInto(meta);
-
-        var response = Response.of(data, meta);
-        latest.flatMap(price -> Prices.staleWarning(security, price, asOf)).ifPresent(response::warn);
-        return response;
+        latest.flatMap(price -> Prices.staleWarning(security, price, asOf)).ifPresent(run::warn);
+        return data;
     }
 
     private static Map<String, Object> instrument(Security security)

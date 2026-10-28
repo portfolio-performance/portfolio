@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.cli.command;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -57,14 +56,11 @@ public final class MasterDataList
                     Source<T> source, Function<T, Instant> updatedAt)
     {
         var sort = sortSpec(source, updatedAt);
-        var options = new ArrayList<>(Paging.OPTIONS);
-        options.addAll(sort.options());
 
-        return new CommandSpec(name,
-                        summary + ", sorted by name (default) or updatedAt, then UUID; --order desc reverses.", true,
-                        options, Paging.pageSchema("A page of the list.", item),
-                        ResponseMeta.pagedSchema(sort), List.of(), columns,
-                        context -> respond(context, source, sort));
+        return CommandSpec.of(name,
+                        summary + ", sorted by name (default) or updatedAt, then UUID; --order desc reverses.",
+                        Paging.pageSchema("A page of the list.", item), run -> list(run, source, sort),
+                        ClientFile.READ, Paging.FACET, sort).withTable(columns);
     }
 
     private static <T> Sorting.Spec<T> sortSpec(Source<T> source, Function<T, Instant> updatedAt)
@@ -74,19 +70,15 @@ public final class MasterDataList
                                         Sorting.byInstant(entity -> Sorting.lastModified(updatedAt.apply(entity)))));
     }
 
-    private static <T> Response respond(CommandContext context, Source<T> source, Sorting.Spec<T> sort)
+    private static <T> Map<String, Object> list(CommandContext run, Source<T> source, Sorting.Spec<T> sort)
                     throws CliException
     {
-        var paging = Paging.parse(context);
-        var sorting = sort.parse(context);
-        var client = context.loadClient().client();
-
-        var ordered = sorting.sort(client, source.entities().apply(client));
-        var page = paging.of(ordered);
+        var client = run.client();
+        var ordered = run.get(sort).sort(client, source.entities().apply(client));
+        var page = run.get(Paging.FACET).of(ordered);
 
         var data = new LinkedHashMap<String, Object>();
         page.putInto(data, source.renderer().apply(client));
-
-        return Response.of(data, ResponseMeta.paged(context, client, paging, sorting));
+        return data;
     }
 }

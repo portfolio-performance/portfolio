@@ -45,6 +45,7 @@ public record Sorting<T>(Spec<T> spec, String field, boolean descending)
      *            the field of a call without <code>--sort</code>
      */
     public record Spec<T>(Function<T, String> id, String defaultField, List<Field<T>> fields)
+                    implements Facet<Sorting<T>>
     {
         @SafeVarargs
         public static <T> Spec<T> of(Function<T, String> id, String defaultField, Field<T>... fields)
@@ -73,6 +74,30 @@ public record Sorting<T>(Spec<T> spec, String field, boolean descending)
             var field = context.choice(sortOption());
             var order = context.choice(ORDER);
             return new Sorting<>(this, field, DESCENDING.equals(order));
+        }
+
+        /** <code>--sort</code> and <code>--order</code>; <code>meta</code> gets both as resolved. */
+        @Override
+        public Declaration declaration()
+        {
+            return Declaration.empty().options(sortOption(), ORDER)
+                            .meta("sort", Schema.enumOf("Field the list is sorted by.", names()))
+                            .meta("order", Schema.enumOf("Direction of the sort: asc or desc.",
+                                            List.of(ASCENDING, DESCENDING)))
+                            .in(Declaration.Slot.SORTING);
+        }
+
+        @Override
+        public Sorting<T> resolve(CommandContext run) throws CliException
+        {
+            return parse(run);
+        }
+
+        @Override
+        public void report(Sorting<T> sorting, Facet.Report out)
+        {
+            out.meta("sort", sorting.field());
+            out.meta("order", sorting.descending() ? DESCENDING : ASCENDING);
         }
     }
 
