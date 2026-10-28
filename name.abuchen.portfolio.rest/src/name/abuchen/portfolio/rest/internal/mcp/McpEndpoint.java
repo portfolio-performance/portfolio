@@ -21,6 +21,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 
 import name.abuchen.portfolio.PortfolioLog;
+import name.abuchen.portfolio.rest.ApiRoutes;
 import name.abuchen.portfolio.rest.RejectedConnections;
 import name.abuchen.portfolio.rest.RestApiConstants;
 import name.abuchen.portfolio.rest.internal.ApiException;
@@ -356,16 +357,17 @@ public final class McpEndpoint
             return toolError(fault + "\n\nAsk the user to open Preferences → MCP Server & REST API in Portfolio "
                             + "Performance, add a client there, and copy the token it shows once into this connector's "
                             + "`Authorization` header as `Bearer <token>`. Nothing can be read or changed until they "
-                            + "have.");
+                            + "have." + hint("no-token", true));
         }
 
         var name = params.has("name") && params.get("name").isJsonPrimitive() ? params.get("name").getAsString() : null;
         if (name == null)
-            return toolError("A tool call needs a `name`.");
+            return toolError("A tool call needs a `name`." + hint("no-tool-name", false));
 
         var found = McpTools.byName(name);
         if (found.isEmpty())
-            return toolError("There is no tool called `" + name + "` here. Call tools/list to see what there is.");
+            return toolError("There is no tool called `" + name + "` here. Call tools/list to see what there is."
+                            + hint("unknown-tool", false));
 
         var tool = found.get();
         var arguments = trimPathArguments(tool, params.has("arguments") && params.get("arguments").isJsonObject()
@@ -374,20 +376,40 @@ public final class McpEndpoint
 
         var rejected = rejectUnknownArguments(tool, arguments);
         if (rejected != null)
-            return toolError(rejected);
+            return toolError(rejected + hint("unknown-argument", false));
 
         var missing = missingArguments(tool, arguments);
         if (!missing.isEmpty())
-            return toolError(explainMissing(router, tool, missing));
+            return toolError(explainMissing(router, tool, missing) + hint("missing-argument", false));
 
         var misshapen = rejectMisshapenArguments(tool, arguments);
         if (misshapen != null)
-            return toolError(misshapen);
+            return toolError(misshapen + hint("misshapen-argument", false));
 
         try
         {
+            // A delete answers 204 and nothing else, which leaves a model unable
+            // to say what it removed. The record is read first - through the
+            // same routing table - so the result can name it.
+            var doomed = "DELETE".equals(tool.method()) ? McpDispatch.readBeforeDelete(router, tool, arguments)
+                            : null;
+
             var response = McpDispatch.call(router, tool, arguments);
-            return toolResult(fit(router, tool, arguments, payloadOf(response), MAX_RESULT_CHARS));
+            // a PATCH says whether a stored value changed, which decides whether
+            // the user has anything to save
+            var changed = response.headers().get(ApiRoutes.CHANGED_HEADER);
+
+            var payload = payloadOf(response);
+            if (doomed != null && payload.isJsonNull())
+            {
+                var deleted = new JsonObject();
+                deleted.addProperty("deleted", true);
+                deleted.add("instrument", doomed);
+                payload = deleted;
+            }
+
+            return toolResult(fit(tool, arguments, payload, MAX_RESULT_CHARS,
+                            changed == null ? null : Boolean.valueOf(changed)));
         }
         catch (ApiException e)
         {
@@ -398,7 +420,7 @@ public final class McpEndpoint
             PortfolioLog.error(e);
             return toolError("Portfolio Performance hit an internal error handling " + tool.name()
                             + ". Nothing the user did caused this, and retrying the same call will probably fail the "
-                            + "same way.");
+                            + "same way." + hint("internal-error", false));
         }
     }
 
@@ -426,6 +448,18 @@ public final class McpEndpoint
             trimmed.addProperty(binding.arg(), text.strip());
         }
         return trimmed != null ? trimmed : arguments;
+    }
+
+    /**
+     * The machine-readable trailer of a refusal this endpoint raised itself.
+     * {@link McpExplain} adds the same trailer for a problem the REST layer
+     * raised; without it, a connector-level refusal would be the only kind a
+     * client could not act on as data. Retryable means only that the same call
+     * may succeed later unchanged - here, after the user has added a token.
+     */
+    private static String hint(String reasonCode, boolean retryable)
+    {
+        return "\n\nretryable: " + (retryable ? "yes" : "no") + " · reasonCode: " + reasonCode;
     }
 
     /** the fault behind an unauthenticated call, spelled for the preference page */
@@ -715,42 +749,53 @@ public final class McpEndpoint
 
     /**
      * Fits a response to the cap, in order of preference: it fits; it can be
-     * asked for less, and what was dropped is named; or it is truncated with a
-     * marker. Never silently - an unmarked truncation is the one outcome that
-     * produces a confident wrong answer.
+     * asked for less, and what was dropped is named; or the payload is cut and
+     * the guidance that says so is kept. Never silently - an unmarked truncation
+     * is the one outcome that produces a confident wrong answer, and a truncation
+     * that also dropped the notes is barely better.
+     * <p/>
+     * Not private: a test in this package drives it with a payload no fixture
+     * would ever produce, which is how the cap is checked at its real limit.
      */
-    private static String fit(Router router, McpTool tool, JsonObject arguments, JsonElement payload, int maxChars)
+    /* package */ static String fit(McpTool tool, JsonObject arguments, JsonElement payload, int maxChars)
     {
-        var rendered = McpEnvelope.render(tool, payload, List.of());
+        return fit(tool, arguments, payload, maxChars, null);
+    }
+
+    /**
+     * @param changed
+     *            for a write, whether a stored value changed; null when the
+     *            response does not say
+     */
+    /* package */ static String fit(McpTool tool, JsonObject arguments, JsonElement payload, int maxChars,
+                    Boolean changed)
+    {
+        var rendered = McpEnvelope.render(tool, arguments, payload, List.of(), null, Integer.MAX_VALUE, changed);
         if (rendered.length() <= maxChars)
             return rendered;
 
         var plan = McpEnvelope.planNarrowing(tool, arguments);
         if (plan.isPresent())
         {
-            try
-            {
-                var narrowed = arguments.deepCopy();
-                var metrics = new JsonArray();
-                plan.get().keep().forEach(metrics::add);
-                narrowed.add("metrics", metrics);
+            var narrowed = arguments.deepCopy();
+            var metrics = new JsonArray();
+            plan.get().keep().forEach(metrics::add);
+            narrowed.add("metrics", metrics);
 
-                var smaller = McpEnvelope.render(tool, payloadOf(McpDispatch.call(router, tool, narrowed)),
-                                plan.get().dropped());
-                if (smaller.length() <= maxChars)
-                    return smaller;
-                return McpEnvelope.cap(smaller + "\n\n" + McpEnvelope.oversizeAdvice(tool), maxChars);
-            }
-            catch (Exception e)
-            {
-                // The narrowed re-request failed. The first answer is still
-                // true, just too large, so truncate that rather than losing it
-                // to a transient problem.
-                PortfolioLog.error(e);
-            }
+            // cut from the answer at hand, not asked for again: the full
+            // calculation already ran, and a second one would take another slot
+            var smallerPayload = McpEnvelope.narrow(payload, plan.get().keep());
+            var smaller = McpEnvelope.render(tool, narrowed, smallerPayload, plan.get().dropped());
+            if (smaller.length() <= maxChars)
+                return smaller;
+
+            // the dropped groups are not advice any more: they are already gone
+            return McpEnvelope.render(tool, narrowed, smallerPayload, plan.get().dropped(),
+                            McpEnvelope.oversizeAdvice(tool, plan.get().dropped()), maxChars);
         }
 
-        return McpEnvelope.cap(rendered + "\n\n" + McpEnvelope.oversizeAdvice(tool), maxChars);
+        var advice = McpEnvelope.oversizeAdvice(tool, arguments, payload);
+        return McpEnvelope.render(tool, arguments, payload, List.of(), advice, maxChars, changed);
     }
 
     /** a 204 carries nothing to render; {@code pp_delete_instrument} is the one */

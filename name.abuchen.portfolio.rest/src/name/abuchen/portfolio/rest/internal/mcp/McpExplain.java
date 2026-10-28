@@ -2,6 +2,8 @@ package name.abuchen.portfolio.rest.internal.mcp;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 import name.abuchen.portfolio.rest.internal.ApiException;
 
@@ -54,7 +56,14 @@ public final class McpExplain
      */
     public static String describeFiles(List<FileSummary> files)
     {
-        if (files == null || files.isEmpty())
+        if (files == null)
+        {
+            // Nothing was looked up. Saying "no files are shared" here would be
+            // a claim about the user's application that this call never checked.
+            return "Which files are shared was not looked up for this call; pp_list_files answers it.";
+        }
+
+        if (files.isEmpty())
         {
             // Authorised, but nothing shared. Not an error, and not something
             // the model can fix by trying again with different arguments.
@@ -74,6 +83,13 @@ public final class McpExplain
 
     public static String explainProblem(ApiException problem, Context context)
     {
+        // the prose tells a model what to do; the trailer states the same thing
+        // as data, so a client can act on it instead of reading between sentences
+        return describeProblem(problem, context) + hints(problem);
+    }
+
+    private static String describeProblem(ApiException problem, Context context)
+    {
         var tool = context.toolName();
         var detail = problem.getDetail() != null ? problem.getDetail() : problem.getMessage();
 
@@ -92,8 +108,13 @@ public final class McpExplain
                 }
                 if (Boolean.TRUE.equals(context.fileIsShared()))
                 {
-                    return "The file is shared, so what was not found is the entity inside it: " + detail
-                                    + ". Check the id against a listing tool before trying again — the same id will "
+                    // the REST detail is the bare title "Not found", which only
+                    // repeated what the sentence already says
+                    return "The file is shared, so what was not found is the entity inside it"
+                                    + (problem.getDetail() != null ? ": " + problem.getDetail() : "")
+                                    + ". Each kind of id resolves only in its own tools — an instrument uuid in the "
+                                    + "instrument tools, a cash or investment account uuid in the account tools. Check "
+                                    + "the id against the matching listing tool before trying again — the same id will "
                                     + "not start working.";
                 }
                 return "Not found: " + detail;
@@ -116,11 +137,10 @@ public final class McpExplain
                                 + "usable. Use the id instead.\n\n" + describeFiles(context.files());
 
             case "delete-blocked":
-                // not a permissions problem, and no retry helps
-                return ("That instrument cannot be deleted while it is still referenced. "
-                                + (problem.getDetail() != null ? problem.getDetail() : "")
-                                + "\n\nThe user would have to remove the transactions that use it first, in Portfolio "
-                                + "Performance. Do not try again.").trim();
+                // not a permissions problem, and no retry helps. The reasons
+                // travel as field errors, and what the user has to remove
+                // depends on which of them applies.
+                return describeDeleteBlocked(problem);
 
             case "validation":
                 return tool + " was rejected as invalid:\n" + describeFieldErrors(problem, detail);
@@ -131,11 +151,44 @@ public final class McpExplain
 
             case "user-interaction":
                 // Explained, not retried: waiting for the dialog to close
-                // would park one of RestApiServer's two worker threads on a
-                // user, which is the same argument that refuses an SSE stream.
+                // would park a request on a user, which is the same argument
+                // that refuses an SSE stream.
                 return "Portfolio Performance has a dialog open and cannot answer until it is closed"
                                 + retryAfter(problem) + ". Ask the user to finish what they are doing in the "
                                 + "application, then try again.";
+
+            case "ui-busy":
+                // The UI thread did not take the request on within the bounded
+                // wait, and the request will never run - or it was a read, which
+                // changes nothing. Nobody can be asked to close anything:
+                // whatever is slow has to finish.
+                return "Portfolio Performance did not answer this request on its UI thread within the bounded wait"
+                                + retryAfter(problem) + ", so nothing was changed. Something else is holding "
+                                + "that thread - a long-running job or a large file. Try again after a moment; if it "
+                                + "keeps failing, say so rather than retrying in a loop.";
+
+            case "ui-request-underway":
+                // The request was already running on the UI thread when the
+                // wait expired. It will finish, and sending a write again would
+                // apply it twice, so this must not read as a clean refusal.
+                return "Portfolio Performance was already executing this request on its UI thread when the bounded "
+                                + "wait expired, and it will complete - do not send the same call again. Read the file "
+                                + "back with the tool that lists or describes what this call changes, and tell the "
+                                + "user which state it is in.";
+
+            case "calculation-timeout":
+                // asking the same question again takes just as long
+                return "Portfolio Performance could not finish this calculation in time"
+                                + (problem.getDetail() != null ? " - " + problem.getDetail().toLowerCase(Locale.ROOT) : "")
+                                + ". Asking again unchanged will take just as long. Ask a smaller question: a shorter "
+                                + "interval, a single instrument instead of all of them, or only open or only closed "
+                                + "trades.";
+
+            case "server-busy":
+                return "Portfolio Performance is answering too many requests at once, or every calculation slot "
+                                + "stayed taken while this call waited for one - calculations that ran out of time keep "
+                                + "theirs until they finish" + retryAfter(problem)
+                                + ". Send fewer calls in parallel and try again.";
 
             case "request-too-large":
                 return ("That edit was too large for Portfolio Performance to accept. "
@@ -154,6 +207,44 @@ public final class McpExplain
                 return "Portfolio Performance refused " + tool + " with " + problem.getStatus() + " "
                                 + problem.getMessage() + (problem.getDetail() != null ? " " + problem.getDetail() : "");
         }
+    }
+
+    /**
+     * Names what keeps the instrument alive - its transactions, an investment
+     * plan, or both - and only asks the user to remove what is actually there.
+     */
+    private static String describeDeleteBlocked(ApiException problem)
+    {
+        var fields = problem.getErrors().stream().map(ApiException.FieldError::field).toList();
+        var transactions = fields.contains("transactions");
+        var plans = fields.contains("plans");
+
+        String reason;
+        String remedy;
+        if (transactions && plans)
+        {
+            reason = "it has transactions and an investment plan uses it";
+            remedy = "delete its transactions and remove it from every investment plan";
+        }
+        else if (plans)
+        {
+            reason = "an investment plan uses it";
+            remedy = "remove it from every investment plan, or delete that plan";
+        }
+        else if (transactions)
+        {
+            reason = "it has transactions";
+            remedy = "delete the transactions that use it";
+        }
+        else
+        {
+            reason = "it is still referenced";
+            remedy = "remove what still refers to it";
+        }
+
+        return "That instrument cannot be deleted because " + reason + ". The user would have to " + remedy
+                        + " first, in Portfolio Performance. Do not try again."
+                        + (problem.getDetail() != null ? "\n\n" + problem.getDetail() : "");
     }
 
     /**
@@ -176,6 +267,29 @@ public final class McpExplain
     private static String retryAfter(ApiException problem)
     {
         var header = problem.getHeaders().get("Retry-After");
-        return header == null ? "" : " — it asked to be left for " + header + " seconds";
+        return header == null ? "" : " — try again in about " + header + " seconds";
+    }
+
+    /**
+     * The machine-readable trailer of a refusal: whether trying again can ever
+     * help, and which problem this is.
+     * <p/>
+     * Retryable means only that the same call may succeed later without changing
+     * anything - a dialog closing, a cooldown passing, a file being opened. It is
+     * not permission to retry in a loop: the prose above names who has to act.
+     * A 404 is never retryable, and neither is a rejection that names a field.
+     */
+    private static String hints(ApiException problem)
+    {
+        // a 503 is retryable unless it says the request is still running or
+        // would take just as long again
+        var notRetryable = Set.of("ui-request-underway", "calculation-timeout");
+        var retryable = !notRetryable.contains(problem.getType())
+                        && (problem.getStatus() == 423 || problem.getStatus() == 429 || problem.getStatus() == 503
+                                        || "file-not-open".equals(problem.getType()));
+
+        var trailer = "\n\nretryable: " + (retryable ? "yes" : "no") + " · reasonCode: " + problem.getType();
+        var header = problem.getHeaders().get("Retry-After");
+        return header == null ? trailer : trailer + " · retryAfterSeconds: " + header;
     }
 }

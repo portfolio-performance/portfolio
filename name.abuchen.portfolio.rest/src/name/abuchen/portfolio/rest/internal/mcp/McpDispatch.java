@@ -35,7 +35,12 @@ public final class McpDispatch
         var path = tool.pathTemplate();
         var query = new LinkedHashMap<String, String>();
         var body = new JsonObject();
-        var hasBody = false;
+
+        // A tool whose route takes a body always sends one, even when the caller
+        // named none of its fields: an empty merge patch is a documented no-op,
+        // whereas an empty request body is refused with "request body must be a
+        // JSON object" - a refusal to answer a call that asked for nothing.
+        var takesBody = tool.bindings().stream().anyMatch(binding -> binding.where() == McpTool.Where.BODY);
 
         for (McpTool.Binding binding : tool.bindings())
         {
@@ -64,7 +69,6 @@ public final class McpDispatch
                     break;
                 case BODY:
                     body.add(binding.wire(), value);
-                    hasBody = true;
                     break;
                 default:
                     break;
@@ -72,7 +76,39 @@ public final class McpDispatch
         }
 
         return route(router, tool.method(), path, query,
-                        hasBody ? body.toString().getBytes(StandardCharsets.UTF_8) : new byte[0]);
+                        takesBody ? body.toString().getBytes(StandardCharsets.UTF_8) : new byte[0]);
+    }
+
+    /**
+     * The record a delete is about to remove, read with a GET on the same path,
+     * or null when it cannot be read - the delete then answers for itself, with
+     * the same not-found or refusal it would have given anyway.
+     */
+    public static JsonElement readBeforeDelete(Router router, McpTool tool, JsonObject arguments)
+    {
+        var path = tool.pathTemplate();
+        for (McpTool.Binding binding : tool.bindings())
+        {
+            if (binding.where() != McpTool.Where.PATH || !arguments.has(binding.arg()))
+                continue;
+            var value = arguments.get(binding.arg());
+            if (value.isJsonNull())
+                return null;
+            path = path.replace("{" + binding.wire() + "}", asText(value)); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+
+        try
+        {
+            var response = route(router, "GET", path, Map.of(), new byte[0]); //$NON-NLS-1$
+            if (response.status() != 200 || response.body().length == 0)
+                return null;
+            return JsonParser.parseString(new String(response.body(), StandardCharsets.UTF_8));
+        }
+        catch (Exception e)
+        {
+            // a dialog open, the file gone: the delete itself will say so
+            return null;
+        }
     }
 
     /** the shared files, for disambiguating a 404: a call in this process, not an HTTP round trip */
