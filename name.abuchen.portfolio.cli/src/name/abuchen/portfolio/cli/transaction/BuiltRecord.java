@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli.query;
+package name.abuchen.portfolio.cli.transaction;
 
 import java.util.List;
 

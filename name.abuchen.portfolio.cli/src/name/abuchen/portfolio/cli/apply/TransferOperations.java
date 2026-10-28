@@ -3,8 +3,8 @@ package name.abuchen.portfolio.cli.apply;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import name.abuchen.portfolio.cli.query.BuiltRecord;
-import name.abuchen.portfolio.cli.query.TransactionRecord;
+import name.abuchen.portfolio.cli.transaction.BuiltRecord;
+import name.abuchen.portfolio.cli.transaction.TransactionRecord;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;

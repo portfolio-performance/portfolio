@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.cli.query;
+package name.abuchen.portfolio.cli.transaction;
 
 import java.util.List;
 import java.util.Map;
@@ -36,7 +36,7 @@ public final class TransactionShape
     private static final List<String> ORPHAN_TYPES = List.of("TRANSFER_IN", "TRANSFER_OUT");
 
     /** Every type a record can be read as: {@link #TYPES}, then those of orphaned sides. */
-    static final List<String> FILTERABLE_TYPES = Stream.concat(TYPES.stream(), ORPHAN_TYPES.stream()).toList();
+    public static final List<String> FILTERABLE_TYPES = Stream.concat(TYPES.stream(), ORPHAN_TYPES.stream()).toList();
 
     public static final List<String> UNIT_TYPES = List.of("FEE", "TAX", "GROSS_VALUE");
 

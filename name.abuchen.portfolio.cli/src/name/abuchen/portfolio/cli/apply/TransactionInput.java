@@ -11,7 +11,7 @@ import java.util.Map;
 
 import name.abuchen.portfolio.cli.command.EntityKind;
 import name.abuchen.portfolio.cli.command.OperationInput;
-import name.abuchen.portfolio.cli.query.TransactionShape;
+import name.abuchen.portfolio.cli.transaction.TransactionShape;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
