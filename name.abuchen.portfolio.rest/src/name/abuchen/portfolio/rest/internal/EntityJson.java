@@ -21,6 +21,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.rest.FileAccessRegistry.FileAccess;
 import name.abuchen.portfolio.rest.spi.OpenFile;
 import name.abuchen.portfolio.snapshot.AssetPosition;
@@ -29,6 +30,7 @@ import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.trades.Trade;
+import name.abuchen.portfolio.util.TradeCalendarManager;
 
 /**
  * Maps the model entities to the wire format. The API vocabulary is
@@ -166,12 +168,12 @@ public final class EntityJson
         var items = new JsonArray();
         snapshot.getAssetPositions() //
                         .sorted(new AssetPosition.ByDescription()) //
-                        .forEach(position -> items.add(toJson(position, total)));
+                        .forEach(position -> items.add(toJson(position, total, snapshot.getTime())));
         json.add("items", items); //$NON-NLS-1$
         return json;
     }
 
-    private static JsonObject toJson(AssetPosition position, Money totalAssets)
+    private static JsonObject toJson(AssetPosition position, Money totalAssets, LocalDate valuationDate)
     {
         var security = position.getSecurity();
         var vehicle = position.getInvestmentVehicle();
@@ -197,6 +199,27 @@ public final class EntityJson
             if (securityPrice.getDate() != null)
                 price.addProperty("date", securityPrice.getDate().toString()); //$NON-NLS-1$
             json.add("price", price); //$NON-NLS-1$
+
+            // the same staleness as `price.date`, but decided rather than left to
+            // the caller: measured in the trading days of the instrument's own
+            // calendar, so a weekend or a holiday does not make a quote stale
+            var priceDate = securityPrice.getDate();
+            if (priceDate != null)
+            {
+                var age = QuoteAge.asOf(priceDate, valuationDate, LocalDate.now(),
+                                TradeCalendarManager.getInstance(security));
+                // a manual price is updated when the user decides to, not every
+                // trading day - the data quality view ends a manual instrument's
+                // interval at its last quote - so it is never flagged; its age
+                // is still reported
+                var manual = QuoteFeed.MANUAL.equals(security.getFeed());
+                json.addProperty("priceStale", !manual && age.isStale()); //$NON-NLS-1$
+                json.addProperty("priceAgeDays", age.calendarDays()); //$NON-NLS-1$
+                json.addProperty("priceMissedTradingDays", age.missedTradingDays()); //$NON-NLS-1$
+                // present only when true: says why an old price is not flagged
+                if (manual)
+                    json.addProperty("priceManual", true); //$NON-NLS-1$
+            }
         }
 
         json.add("valuation", toJson(position.getValuation())); //$NON-NLS-1$
