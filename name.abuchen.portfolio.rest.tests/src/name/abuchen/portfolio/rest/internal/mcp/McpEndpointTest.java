@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
@@ -295,7 +296,10 @@ public class McpEndpointTest
 
         var pending = http.sendAsync(streamRequest(call("pp_list_files", "{}"), null).build(),
                         HttpResponse.BodyHandlers.ofString());
-        Thread.sleep(400);
+        // the stream is open once the call waits on the UI thread; then several
+        // heartbeat periods pass while it is held there
+        waitUntil(() -> host.callablesQueued() >= 1);
+        Thread.sleep(200);
         gate.countDown();
 
         var body = pending.get(10, TimeUnit.SECONDS).body();
@@ -318,7 +322,8 @@ public class McpEndpointTest
         var pending = http.sendAsync(
                         streamRequest(callWithToken("pp_list_holdings", "{\"file\":\"sample\"}", "\"c-1\""), id).build(),
                         HttpResponse.BodyHandlers.ofString());
-        Thread.sleep(300);
+        // the call is registered in its session before it queues on the UI thread
+        waitUntil(() -> host.callablesQueued() >= 1);
 
         var cancel = send(session(HttpRequest.newBuilder(uri()), id).POST(HttpRequest.BodyPublishers.ofString(
                         "{\"jsonrpc\":\"2.0\",\"method\":\"notifications/cancelled\",\"params\":{\"requestId\":9}}")));
@@ -679,6 +684,14 @@ public class McpEndpointTest
             messages.append("{\"jsonrpc\":\"2.0\",\"id\":").append(ii).append(",\"method\":\"ping\"}");
         }
         return messages.append("]").toString();
+    }
+
+    private static void waitUntil(BooleanSupplier condition) throws InterruptedException
+    {
+        var until = System.currentTimeMillis() + 5_000;
+        while (!condition.getAsBoolean() && System.currentTimeMillis() < until)
+            Thread.sleep(10);
+        assertThat(condition.getAsBoolean(), is(true));
     }
 
     /** a tool call that asks for progress under that token */
