@@ -421,8 +421,13 @@ paths:
                     items:
                       - id: 5f3c1e2a-0b7d-4a1e-9c2f-8d6b3a1e0f42
                         alias: main
+                        use: main
                         label: portfolio.xml
                         path: /Users/me/portfolio.xml
+                      - id: 9a2d7c30-4e18-4b27-8f35-6c04d1b7e2a9
+                        use: 9a2d7c30-4e18-4b27-8f35-6c04d1b7e2a9
+                        label: depot.xml
+                        path: /Users/me/depot.xml
         "400":
           $ref: "#/components/responses/BadRequest"
         "401":
@@ -1417,8 +1422,11 @@ components:
       in: path
       required: true
       description: |
-        A file's `id` or `alias`, as returned by `GET /v1/files`. An alias that
-        matches several records is rejected `409 ambiguous-alias`; use the `id`.
+        The file's `use` value, as returned by `GET /v1/files` — always its `id`.
+        Send it exactly; a `label` is a display name and never an address. An
+        `alias` is accepted too, for hand-written scripts, but the user can
+        rename it at any time; an alias that matches several records is
+        rejected `409 ambiguous-alias`.
       schema:
         type: string
     Uuid:
@@ -1945,16 +1953,25 @@ components:
     File:
       type: object
       description: An open, enabled portfolio file you may address.
-      required: [id, label, path]
+      required: [id, label, path, use]
       properties:
         id:
           type: string
           description: |
-            Stable identity of the file, keyed by path. Address the file by this or
-            by `alias`.
+            Stable identity of the file, keyed by path. This is what `use`
+            carries.
         alias:
           type: string
-          description: Optional human-friendly handle the user assigned to the file.
+          description: |
+            Optional human-friendly handle the user assigned to the file. It is
+            accepted as an address, but the user can rename it at any time, so
+            a client that stores an address should store `use`.
+        use:
+          type: string
+          description: |
+            The value to pass as the `{file}` path parameter — always the `id`,
+            because an alias can be renamed between listing the files and the
+            next call. Included so a caller never has to choose between the two.
         label:
           type: string
           description: The file's display label in the application.

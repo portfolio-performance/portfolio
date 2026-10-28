@@ -16,7 +16,12 @@ import name.abuchen.portfolio.rest.internal.ApiException;
 public final class McpExplain
 {
     /** a file as {@code GET /v1/files} reports it */
-    public record FileSummary(String id, String label, String alias)
+    /**
+     * @param use
+     *            the value to send as {@code file}, as {@code GET /v1/files}
+     *            reports it
+     */
+    public record FileSummary(String id, String label, String alias, String use)
     {
     }
 
@@ -60,8 +65,9 @@ public final class McpExplain
         var rows = new ArrayList<String>();
         for (FileSummary file : files)
         {
-            rows.add(file.alias() != null ? "- " + file.label() + " — use `" + file.alias() + "` or `" + file.id() + "`"
-                            : "- " + file.label() + " — use `" + file.id() + "`");
+            // only `use` is offered: naming both values here would undo what the
+            // tool descriptions say about there being one address
+            rows.add("- " + file.label() + " — use `" + file.use() + "`");
         }
         return "These files are available:\n" + String.join("\n", rows);
     }

@@ -85,7 +85,8 @@ public class McpToolCallTest
 
         assertThat(isError(result), is(true));
         assertThat(text(result), containsString("no default file"));
-        assertThat(text(result), containsString("sample"));
+        // the address to send, which is the id - the alias is for display
+        assertThat(text(result), containsString("use `" + fileId + "`"));
     }
 
     @Test
@@ -119,6 +120,20 @@ public class McpToolCallTest
         var unknownEntity = text(call("pp_get_instrument", "{\"file\":\"sample\",\"uuid\":\"no-such-uuid\"}"));
         assertThat(unknownEntity, containsString("The file is shared"));
         assertThat(unknownEntity, containsString("will not start working"));
+    }
+
+    /** the listing names the value to send as `file`, which is what stops a guess */
+    @Test
+    public void testTheFileListingNamesTheAddressToSend()
+    {
+        // always the id, even with an alias set: an alias can be renamed between
+        // the listing and the next call
+        var files = text(call("pp_list_files", "{}"));
+        assertThat(files, containsString("\"use\":\"" + fileId + "\""));
+        assertThat(files, containsString("\"alias\":\"sample\""));
+
+        // and that value is what a tool accepts
+        assertThat(isError(call("pp_list_instruments", "{\"file\":\"" + fileId + "\"}")), is(false));
     }
 
     @Test

@@ -114,12 +114,13 @@ file is not changed in between. REST never truncates.
 
 ```json
 {"items": [
-  {"id": "5f3c…", "alias": "main", "label": "portfolio.xml", "path": "/Users/me/portfolio.xml"}
+  {"id": "5f3c…", "use": "5f3c…", "alias": "main", "label": "portfolio.xml", "path": "/Users/me/portfolio.xml"}
 ]}
 ```
 
-Lists only files that are open *and* enabled. Address a file by its `id` or its `alias` in the
-`{file}` segment below. Check `path` if it matters to your script which file it is writing to: the
+Lists only files that are open *and* enabled. `use` is the value to send in the `{file}` segment
+below; it is always the `id`, because the user can rename an alias at any time. An `alias` is
+accepted as well, which is handy in a hand-written script. Check `path` if it matters to your script which file it is writing to: the
 identity is keyed by path, so a *different* file copied over an enabled path inherits that path's
 identity and enablement.
 
