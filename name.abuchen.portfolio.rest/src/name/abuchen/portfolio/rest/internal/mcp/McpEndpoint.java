@@ -6,8 +6,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import com.google.gson.JsonArray;
@@ -34,13 +39,17 @@ import name.abuchen.portfolio.rest.internal.VersionHandler;
  * The Model Context Protocol front door: one route, {@code POST /mcp}, serving
  * the sixteen tools of {@code mcp-tools.json} over Streamable HTTP.
  * <p/>
- * <b>No session model.</b> No {@code Mcp-Session-Id} is issued, responses are
- * plain {@code application/json} whatever {@code Accept} asks for, and
- * {@code GET} and {@code DELETE} fall through to the router's 405 - an SSE
- * stream is a parked request, which is why ADR 0002 already refused
- * long-polling. Everything a session could hold travels per request instead. If
- * a client ever demands a session id, emit a constant one and ignore it coming
- * back.
+ * <b>A tool call is answered as a stream</b> when the client accepts
+ * {@code text/event-stream}: progress notifications while it waits for the UI
+ * thread, for a calculation slot or for the calculation - if it sent a
+ * {@code progressToken} - heartbeats in any case, and the result as the last
+ * event. Everything else, and every client that accepts only JSON, gets plain
+ * {@code application/json} as before. {@code GET} stays the router's 405: there
+ * is nothing the server would say without being asked.
+ * <p/>
+ * <b>No session model yet.</b> No {@code Mcp-Session-Id} is issued, and
+ * {@code DELETE} falls through to the router's 405. Everything a session could
+ * hold travels per request instead.
  * <p/>
  * <b>Authorisation is per JSON-RPC method</b> (ADR 0005): {@code initialize},
  * {@code tools/list} and {@code ping} answer without a token, because all they
@@ -102,6 +111,17 @@ public final class McpEndpoint
         router.add("POST", RestApiConstants.MCP_ENDPOINT, request -> handle(router, request));
     }
 
+    /**
+     * How often a streamed call sends a heartbeat. Well inside the watchdog of
+     * the server and the idle timeouts of the usual HTTP clients. Not final: a
+     * test shortens it.
+     */
+    /* package */ static volatile long heartbeatMillis = 15_000;
+
+    /** sends the heartbeats of every streamed call */
+    private static final ScheduledExecutorService HEARTBEATS = Executors.newSingleThreadScheduledExecutor(
+                    Thread.ofPlatform().name("Portfolio Performance MCP heartbeat").daemon(true).factory()); //$NON-NLS-1$
+
     static Response handle(Router router, Request request)
     {
         JsonElement message;
@@ -120,6 +140,9 @@ public final class McpEndpoint
             // something a model ever sees, so it is answered on the wire.
             return Response.json(400, error(JsonNull.INSTANCE, PARSE_ERROR, describeParseFailure(e)));
         }
+
+        if (isToolCall(message) && acceptsStream(request))
+            return stream(router, message.getAsJsonObject(), request);
 
         if (message.isJsonArray())
         {
@@ -143,6 +166,78 @@ public final class McpEndpoint
 
         var reply = handleMessage(router, message, request);
         return reply == null ? accepted() : Response.json(200, reply);
+    }
+
+    /** a tools/call request - a request, with an id, not a notification */
+    private static boolean isToolCall(JsonElement message)
+    {
+        return isCall(message, "tools/call") && message.getAsJsonObject().has("id")
+                        && message.getAsJsonObject().get("id").isJsonPrimitive()
+                        && !message.getAsJsonObject().get("id").getAsJsonPrimitive().isBoolean()
+                        && !message.getAsJsonObject().has("result") && !message.getAsJsonObject().has("error");
+    }
+
+    private static boolean isCall(JsonElement message, String method)
+    {
+        if (!message.isJsonObject())
+            return false;
+        var declared = message.getAsJsonObject().get("method");
+        return declared != null && declared.isJsonPrimitive() && declared.getAsJsonPrimitive().isString()
+                        && method.equals(declared.getAsString());
+    }
+
+    private static boolean acceptsStream(Request request)
+    {
+        var accept = request.header("accept");
+        return accept != null && accept.toLowerCase(Locale.ROOT).contains("text/event-stream");
+    }
+
+    /**
+     * A tool call answered as an event stream. The call runs while the stream
+     * is open, on the thread that writes it; progress and heartbeats go out on
+     * the same stream from the threads that produce them. A call its client
+     * cancelled - or hung up on - ends the stream without a result, as the
+     * protocol asks.
+     */
+    private static Response stream(Router router, JsonObject message, Request request)
+    {
+        var id = message.get("id");
+        var params = message.has("params") && message.get("params").isJsonObject()
+                        ? message.getAsJsonObject("params")
+                        : new JsonObject();
+
+        var call = new McpCall(progressTokenOf(params));
+
+        return Response.streamed(200, "text/event-stream", sink -> { //$NON-NLS-1$
+            call.attach(sink);
+            var heartbeat = HEARTBEATS.scheduleAtFixedRate(call::heartbeat, heartbeatMillis, heartbeatMillis,
+                            TimeUnit.MILLISECONDS);
+            try
+            {
+                var result = callTool(router, params, request.withProgress(call));
+                if (!call.isCancelled())
+                    call.send(reply(id, result));
+            }
+            catch (CancellationException e)
+            {
+                // cancelled: the client said it no longer wants the answer
+            }
+            finally
+            {
+                heartbeat.cancel(false);
+            }
+        });
+    }
+
+    /** the token the client asked progress to be reported under, or null */
+    private static JsonElement progressTokenOf(JsonObject params)
+    {
+        var meta = params.get("_meta");
+        if (meta == null || !meta.isJsonObject())
+            return null;
+        var token = meta.getAsJsonObject().get("progressToken");
+        // a string or an integer, says the protocol; anything else asks for nothing
+        return token != null && token.isJsonPrimitive() && !token.getAsJsonPrimitive().isBoolean() ? token : null;
     }
 
     /**
@@ -405,7 +500,7 @@ public final class McpEndpoint
             var doomed = "DELETE".equals(tool.method()) ? McpDispatch.readBeforeDelete(router, tool, arguments)
                             : null;
 
-            var response = McpDispatch.call(router, tool, arguments);
+            var response = McpDispatch.call(router, tool, arguments, request.progress());
             // a PATCH says whether a stored value changed, which decides whether
             // the user has anything to save
             var changed = response.headers().get(ApiRoutes.CHANGED_HEADER);
@@ -425,6 +520,11 @@ public final class McpEndpoint
         catch (ApiException e)
         {
             return toolError(explain(router, tool, arguments, e));
+        }
+        catch (CancellationException e)
+        {
+            // not a failure: the caller gave up, and gets no answer
+            throw e;
         }
         catch (Exception e)
         {

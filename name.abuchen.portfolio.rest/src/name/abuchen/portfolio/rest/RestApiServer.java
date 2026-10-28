@@ -15,6 +15,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -251,8 +252,17 @@ public class RestApiServer
             }
 
             receiving.cancel(false);
-            sending = watchdog.schedule(exchange::close, ioDeadlineMillis, TimeUnit.MILLISECONDS);
-            write(exchange, response);
+            if (response.isStreamed())
+            {
+                // a stream may rightly be quiet for long stretches while its
+                // request runs; what must not stall is each piece it sends
+                stream(exchange, response);
+            }
+            else
+            {
+                sending = watchdog.schedule(exchange::close, ioDeadlineMillis, TimeUnit.MILLISECONDS);
+                write(exchange, response);
+            }
         }
         catch (IOException e)
         {
@@ -436,6 +446,45 @@ public class RestApiServer
                 headers.put(name, value);
         }
         return Map.copyOf(headers);
+    }
+
+    /**
+     * Writes a streamed response. The length is unknown, so the body is sent
+     * chunked, and each piece is flushed at once - a progress message held in
+     * a buffer reaches nobody. Every piece is bounded by the watchdog on its
+     * own: the stream may be silent between pieces for as long as its request
+     * runs, but a client that stops reading cannot hold the connection.
+     */
+    private void stream(HttpExchange exchange, Response response) throws IOException
+    {
+        for (var header : response.headers().entrySet())
+            exchange.getResponseHeaders().set(header.getKey(), header.getValue());
+        exchange.getResponseHeaders().set("Content-Type", response.contentType()); //$NON-NLS-1$
+        exchange.getResponseHeaders().set("Cache-Control", "no-cache"); //$NON-NLS-1$ //$NON-NLS-2$
+        exchange.sendResponseHeaders(response.status(), 0);
+
+        // the pieces come from more than one thread - the request, its
+        // calculation, the heartbeat - and a lock rather than a monitor keeps a
+        // virtual thread that writes to the socket from being pinned
+        var writing = new ReentrantLock();
+        try (var out = exchange.getResponseBody())
+        {
+            response.stream().writeTo(text -> {
+                var bytes = text.getBytes(StandardCharsets.UTF_8);
+                writing.lock();
+                var sending = watchdog.schedule(exchange::close, ioDeadlineMillis, TimeUnit.MILLISECONDS);
+                try
+                {
+                    out.write(bytes);
+                    out.flush();
+                }
+                finally
+                {
+                    sending.cancel(false);
+                    writing.unlock();
+                }
+            });
+        }
     }
 
     private static void write(HttpExchange exchange, Response response) throws IOException

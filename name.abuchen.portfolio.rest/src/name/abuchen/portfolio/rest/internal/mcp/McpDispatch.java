@@ -11,6 +11,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import name.abuchen.portfolio.rest.internal.Progress;
 import name.abuchen.portfolio.rest.internal.Request;
 import name.abuchen.portfolio.rest.internal.Response;
 import name.abuchen.portfolio.rest.internal.Router;
@@ -31,6 +32,13 @@ public final class McpDispatch
     }
 
     public static Response call(Router router, McpTool tool, JsonObject arguments) throws Exception
+    {
+        return call(router, tool, arguments, Progress.NONE);
+    }
+
+    /** as above, the routed request reporting to that progress */
+    public static Response call(Router router, McpTool tool, JsonObject arguments, Progress progress)
+                    throws Exception
     {
         var path = tool.pathTemplate();
         var query = new LinkedHashMap<String, String>();
@@ -76,7 +84,7 @@ public final class McpDispatch
         }
 
         return route(router, tool.method(), path, query,
-                        takesBody ? body.toString().getBytes(StandardCharsets.UTF_8) : new byte[0]);
+                        takesBody ? body.toString().getBytes(StandardCharsets.UTF_8) : new byte[0], progress);
     }
 
     /**
@@ -99,7 +107,7 @@ public final class McpDispatch
 
         try
         {
-            var response = route(router, "GET", path, Map.of(), new byte[0]); //$NON-NLS-1$
+            var response = route(router, "GET", path, Map.of(), new byte[0], Progress.NONE); //$NON-NLS-1$
             if (response.status() != 200 || response.body().length == 0)
                 return null;
             return JsonParser.parseString(new String(response.body(), StandardCharsets.UTF_8));
@@ -114,7 +122,7 @@ public final class McpDispatch
     /** the shared files, for disambiguating a 404: a call in this process, not an HTTP round trip */
     public static List<McpExplain.FileSummary> listFiles(Router router) throws Exception
     {
-        var response = route(router, "GET", "/v1/files", Map.of(), new byte[0]); //$NON-NLS-1$ //$NON-NLS-2$
+        var response = route(router, "GET", "/v1/files", Map.of(), new byte[0], Progress.NONE); //$NON-NLS-1$ //$NON-NLS-2$
         var payload = JsonParser.parseString(new String(response.body(), StandardCharsets.UTF_8));
 
         var files = new ArrayList<McpExplain.FileSummary>();
@@ -129,15 +137,16 @@ public final class McpDispatch
         return files;
     }
 
-    private static Response route(Router router, String method, String path, Map<String, String> query, byte[] body)
-                    throws Exception
+    private static Response route(Router router, String method, String path, Map<String, String> query, byte[] body,
+                    Progress progress) throws Exception
     {
         var match = router.match(method, path);
-        // the five-argument constructor is the authenticated one, and a /v1
-        // route never consults the flag anyway. It does not carry *which*
-        // client called: once tokens can be restricted, the caller
-        // must be passed through here, or every tool call bypasses the check
-        return match.handler().handle(new Request(method, path, match.pathParams(), query, body));
+        // the request counts as authenticated, and a /v1 route never consults
+        // the flag anyway. It does not carry *which* client called: once tokens
+        // can be restricted, the caller must be passed through here, or every
+        // tool call bypasses the check
+        return match.handler().handle(new Request(method, path, match.pathParams(), query, body,
+                        Request.Authorization.VALID, null, Map.of(), progress));
     }
 
     /** the value as the wire wants it, without JSON quoting around a string */
