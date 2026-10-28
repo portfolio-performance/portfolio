@@ -1,9 +1,11 @@
 package name.abuchen.portfolio.cli.command;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A small JSON Schema subset (type, properties, required, items, enum,
@@ -23,6 +25,7 @@ public final class Schema
     private boolean nullable;
     private boolean freeform;
     private List<String> alternativeTypes;
+    private boolean reference;
 
     private Schema(String type, String description)
     {
@@ -41,6 +44,18 @@ public final class Schema
     public static Schema string(String description)
     {
         return new Schema("string", description);
+    }
+
+    /**
+     * A string that names an existing entity by its UUID. It renders as a
+     * string; as the input of a write it implies
+     * <code>reference-not-found</code>.
+     */
+    public static Schema reference(String description)
+    {
+        var schema = new Schema("string", description);
+        schema.reference = true;
+        return schema;
     }
 
     public static Schema integer(String description)
@@ -162,6 +177,40 @@ public final class Schema
     public List<String> memberNames(boolean required)
     {
         return properties.keySet().stream().filter(name -> this.required.contains(name) == required).toList();
+    }
+
+    /**
+     * The failure codes that reading this value as the input of a write can
+     * give, by what {@link OperationInput} checks of it: a member brings
+     * <code>invalid-type</code>, a required one <code>required</code>, a
+     * number <code>not-positive</code> and <code>invalid-amount</code>
+     * (every number a write takes is a positive amount, rate or weight, or a
+     * stored amount) and a {@link #reference(String) reference}
+     * <code>reference-not-found</code>. Nested members count.
+     */
+    public Set<ErrorCode> impliedFailureCodes()
+    {
+        var codes = EnumSet.noneOf(ErrorCode.class);
+        collectFailureCodes(codes);
+        return codes;
+    }
+
+    private void collectFailureCodes(Set<ErrorCode> codes)
+    {
+        if (!properties.isEmpty())
+            codes.add(ErrorCode.INVALID_TYPE);
+        if (!required.isEmpty())
+            codes.add(ErrorCode.REQUIRED);
+        if ("number".equals(type) || alternativeTypes != null && alternativeTypes.contains("number"))
+        {
+            codes.add(ErrorCode.NOT_POSITIVE);
+            codes.add(ErrorCode.INVALID_AMOUNT);
+        }
+        if (reference)
+            codes.add(ErrorCode.REFERENCE_NOT_FOUND);
+        if (items != null)
+            items.collectFailureCodes(codes);
+        properties.values().forEach(member -> member.collectFailureCodes(codes));
     }
 
     private String typeLabel()

@@ -9,3 +9,12 @@ Input: one element of "operations" in the batch given with --input. Fields of th
   wkn (string or null, optional) WKN.
   note (string or null, optional) Note.
   retired (boolean, optional) Whether the instrument is retired; defaults to false.
+
+Failure codes (failures[].code of validation-failed):
+  unknown-field  The object has no such field.
+  required  A required field is missing or empty.
+  invalid-type  A field has the wrong JSON type.
+  invalid-currency  Not a known ISO currency code.
+  invalid-isin  Not a valid ISIN.
+  duplicate-isin  Another instrument has the ISIN.
+  currency-immutable  The currency can't change: there are transactions.

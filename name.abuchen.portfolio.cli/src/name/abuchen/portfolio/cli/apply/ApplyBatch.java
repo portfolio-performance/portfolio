@@ -70,7 +70,7 @@ final class ApplyBatch
         if (!element.isJsonObject())
         {
             var context = new OperationContext(this, index, new JsonObject());
-            context.fail("", "invalid-operation", "An operation must be a JSON object.");
+            context.fail("", ErrorCode.INVALID_OPERATION, "An operation must be a JSON object.");
             return context.result(null);
         }
 
@@ -81,7 +81,7 @@ final class ApplyBatch
         var spec = specs.stream().filter(s -> s.name().equals(name)).findFirst();
         if (spec.isEmpty())
         {
-            context.fail(OperationSpec.OPERATION_MEMBER, "unknown-operation", name == null
+            context.fail(OperationSpec.OPERATION_MEMBER, ErrorCode.UNKNOWN_OPERATION, name == null
                             ? "The operation needs an '" + OperationSpec.OPERATION_MEMBER + "' member naming it."
                             : "Unknown operation '" + name + "'. Known operations: "
                                             + String.join(", ", specs.stream().map(OperationSpec::name).toList()));

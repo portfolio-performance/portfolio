@@ -201,22 +201,22 @@ public final class TransactionShape
     static final Member EXCHANGE_RATE = new Member("exchangeRate", Schema::number,
                     sometimes("Of a cross-currency cash transfer with a rate: unrounded as stored, targetAmount times exchangeRate is approximately amount."),
                     optional("Of a cross-currency cash transfer: optional, only checked against core's rounding tolerance. The stored rate is always amount divided by targetAmount and is returned in the record."));
-    static final NamedUuid INSTRUMENT = named(new Member("instrument", Schema::string,
+    static final NamedUuid INSTRUMENT = named(new Member("instrument", Schema::reference,
                     sometimes("UUID of the instrument."),
                     optional("UUID of the instrument. Required for DIVIDENDS, BUY, SELL, deliveries and security transfers; optional for fees and taxes; refused for deposits, removals, interest and cash transfers.")));
     static final Member SHARES = new Member("shares", Schema::number,
                     sometimes("Number of shares."),
                     optional("Positive number of shares. Required for BUY, SELL, deliveries and security transfers; accepted on a dividend; refused otherwise."));
-    static final NamedUuid INVESTMENT_ACCOUNT = named(new Member("investmentAccount", Schema::string,
+    static final NamedUuid INVESTMENT_ACCOUNT = named(new Member("investmentAccount", Schema::reference,
                     sometimes("UUID of the investment account."),
                     optional("UUID of the investment account; it must already be in the file. Required for BUY, SELL and deliveries; refused for cash-account events and transfers.")));
-    static final NamedUuid CASH_ACCOUNT = named(new Member("cashAccount", Schema::string,
+    static final NamedUuid CASH_ACCOUNT = named(new Member("cashAccount", Schema::reference,
                     sometimes("UUID of the cash account."),
                     optional("UUID of the cash account; it must already be in the file. Required for cash-account events, BUY and SELL; refused for deliveries and transfers.")));
-    static final NamedUuid FROM = named(new Member("from", Schema::string,
+    static final NamedUuid FROM = named(new Member("from", Schema::reference,
                     sometimes("Of a TRANSFER: UUID of the account it leaves."),
                     optional("Of a TRANSFER only: UUID of the account it leaves, a cash account for a cash transfer and an investment account for a security transfer. Must differ from to.")));
-    static final NamedUuid TO = named(new Member("to", Schema::string,
+    static final NamedUuid TO = named(new Member("to", Schema::reference,
                     sometimes("Of a TRANSFER: UUID of the account it enters."),
                     optional("Of a TRANSFER only: UUID of the account it enters, of the same kind as from.")));
     static final Member EX_DATE = new Member("exDate", Schema::string,

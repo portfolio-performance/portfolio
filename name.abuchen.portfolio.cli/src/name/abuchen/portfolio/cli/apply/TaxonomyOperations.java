@@ -10,6 +10,7 @@ import java.util.Set;
 
 import name.abuchen.portfolio.cli.command.Decimals;
 import name.abuchen.portfolio.cli.command.EntityKind;
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.OperationInput;
 import name.abuchen.portfolio.cli.command.OperationSpec;
 import name.abuchen.portfolio.cli.command.Outcome;
@@ -32,13 +33,16 @@ public final class TaxonomyOperations
     private static final String OP = "taxonomy.assign";
 
     private static final Schema ASSIGNMENT = Schema.object("The share of the instrument that is placed in one classification.")
-                    .property("classification", Schema.string("UUID of a leaf classification of the taxonomy."))
+                    .property("classification", Schema.reference("UUID of a leaf classification of the taxonomy."))
                     .property("weight", Schema.number(
                                     "Positive fraction of one, e.g. 0.6 for 60%, with at most four decimal places."));
 
-    static final OperationSpec<OperationContext> ASSIGN = new OperationSpec<>(OP,
+    static final OperationSpec<OperationContext> ASSIGN = OperationSpec.<OperationContext> of(OP,
                     "Replaces the complete assignment of one instrument within one existing taxonomy. The assignments list names classifications by UUID, each with a weight as a fraction of one, as in the taxonomies output; an empty list removes the instrument from the taxonomy. Weights must be positive and at most 100% in total, a classification may appear only once, and only leaf classifications, those that no other classification names as its parent, can be used. The response is one updated change, with the assignments before and after, whose uuid is the instrument.",
-                    schema(), TaxonomyOperations::assign);
+                    schema(), TaxonomyOperations::assign)
+                    .declaring(ErrorCode.NOT_A_LEAF, ErrorCode.DUPLICATE_CLASSIFICATION,
+                                    ErrorCode.WEIGHT_TOTAL_EXCEEDED)
+                    .claiming();
 
     static final List<OperationSpec<OperationContext>> ALL = List.of(ASSIGN);
 
@@ -50,8 +54,8 @@ public final class TaxonomyOperations
     {
         return Schema.object("The complete assignment of one instrument within one taxonomy.")
                         .property(OperationSpec.OPERATION_MEMBER, Schema.enumOf("Operation name.", List.of(OP)))
-                        .property("taxonomy", Schema.string("UUID of the taxonomy."))
-                        .property("instrument", Schema.string("UUID of the instrument."))
+                        .property("taxonomy", Schema.reference("UUID of the taxonomy."))
+                        .property("instrument", Schema.reference("UUID of the instrument."))
                         .property("assignments", Schema.array(
                                         "The classifications to place the instrument in; empty to remove it from the taxonomy.",
                                         ASSIGNMENT));
@@ -113,7 +117,7 @@ public final class TaxonomyOperations
         var input = context.input();
         if (!input.has("assignments"))
         {
-            context.fail("assignments", "required", "This operation needs the assignments; an empty list removes the instrument.");
+            context.fail("assignments", ErrorCode.REQUIRED, "This operation needs the assignments; an empty list removes the instrument.");
             return null;
         }
 
@@ -135,7 +139,7 @@ public final class TaxonomyOperations
         var total = placements.stream().map(p -> BigDecimal.valueOf(p.weight())).reduce(BigDecimal.ZERO,
                         BigDecimal::add);
         if (total.compareTo(BigDecimal.valueOf(Classification.ONE_HUNDRED_PERCENT)) > 0)
-            context.fail("assignments", "weight-total-exceeded", "The weights add up to more than 100%.");
+            context.fail("assignments", ErrorCode.WEIGHT_TOTAL_EXCEEDED, "The weights add up to more than 100%.");
         return placements;
     }
 
@@ -146,14 +150,14 @@ public final class TaxonomyOperations
         var element = entry.json().get(member);
         if (entry.has(member) && !OperationInput.isText(element))
         {
-            entry.fail(member, "invalid-type", "The classification must be a string.");
+            entry.fail(member, ErrorCode.INVALID_TYPE, "The classification must be a string.");
             return null;
         }
 
         var uuid = entry.has(member) ? element.getAsString().trim() : "";
         if (uuid.isEmpty())
         {
-            entry.fail(member, "required", "An assignment needs a classification.");
+            entry.fail(member, ErrorCode.REQUIRED, "An assignment needs a classification.");
             return null;
         }
 
@@ -164,19 +168,19 @@ public final class TaxonomyOperations
         var found = nodes.stream().filter(n -> uuid.equals(n.uuid())).findFirst();
         if (found.isEmpty())
         {
-            entry.fail(member, "reference-not-found", "No classification with UUID " + uuid + " in the taxonomy.");
+            entry.fail(member, ErrorCode.REFERENCE_NOT_FOUND, "No classification with UUID " + uuid + " in the taxonomy.");
             return null;
         }
 
         var classification = found.get().classification();
         if (!seen.add(uuid))
         {
-            entry.fail(member, "duplicate-classification", "The classification is already listed above.");
+            entry.fail(member, ErrorCode.DUPLICATE_CLASSIFICATION, "The classification is already listed above.");
             return null;
         }
         if (!classification.getChildren().isEmpty())
         {
-            entry.fail(member, "not-a-leaf", "Only a classification without children can hold an assignment.");
+            entry.fail(member, ErrorCode.NOT_A_LEAF, "Only a classification without children can hold an assignment.");
             return null;
         }
         return classification;
@@ -195,7 +199,7 @@ public final class TaxonomyOperations
         }
         catch (ArithmeticException e)
         {
-            entry.fail("weight", "invalid-amount",
+            entry.fail("weight", ErrorCode.INVALID_AMOUNT,
                             "The weight has more decimal places than are stored; use at most four.");
             return null;
         }

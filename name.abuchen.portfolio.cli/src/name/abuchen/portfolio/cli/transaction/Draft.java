@@ -12,6 +12,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import name.abuchen.portfolio.cli.command.Decimals;
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.FieldFailure;
 import name.abuchen.portfolio.cli.command.MasterData;
 import name.abuchen.portfolio.cli.command.OperationInput;
@@ -133,13 +134,13 @@ final class Draft
             if (name.equals(TransactionShape.TYPE.name()))
             {
                 if (differs(value, record.type()))
-                    failures.add(new FieldFailure(name, "type-immutable",
+                    failures.add(new FieldFailure(name, ErrorCode.TYPE_IMMUTABLE,
                                     "The type of a record can't change; delete it and add a new one.", null));
             }
             else if (name.equals(TransactionShape.KIND.name()) && record.kind().isPresent())
             {
                 if (differs(value, record.kind().get().id()))
-                    failures.add(new FieldFailure(name, "kind-immutable",
+                    failures.add(new FieldFailure(name, ErrorCode.KIND_IMMUTABLE,
                                     "The kind of a transfer can't change; delete it and add a new one.", null));
             }
             else if (value.isJsonNull())

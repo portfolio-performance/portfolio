@@ -10,7 +10,7 @@ Options:
   --force  Write even if the file seems to be open in another program. Only macOS can tell: pp-cli asks lsof, and without --force refuses a file that is open. (switch, default off)
   Global options (pp-cli --help): --file <path>, --format <format> (json), --verbose
 
-Operations (pp-cli apply --help <operation> shows the input schema of one):
+Operations (pp-cli apply --help <operation> shows the input schema and failure codes of one):
   instrument.add             Adds an instrument.
   instrument.update          Updates an instrument by UUID.
   cash-account.add           Adds a cash account.
@@ -50,3 +50,8 @@ Warnings:
   file-open-in-app  The file seemed to be open in another program, probably the app, and was written because of --force.
 
 Error codes (meanings: pp-cli --help): unexpected-argument, unknown-option, option-value-required, option-required, invalid-option-value, file-required, file-not-found, file-unreadable, file-version-unsupported, password-required, incorrect-password, input-unreadable, invalid-input, validation-failed, consistency-check-failed, file-open-in-app, file-locked, file-changed, write-failed, internal-error
+
+Failure codes (failures[].code of validation-failed) of the batch:
+  invalid-operation  An operation is not a JSON object.
+  unknown-operation  The operation member is missing or names no operation.
+  Those of each operation: pp-cli apply --help <operation>.

@@ -45,24 +45,30 @@ public final class TransactionRecords
      * reports unknown members itself, so the add refuses them without
      * reporting them again.
      */
-    public static final OperationSpec<OperationSpec.Context> ADD = new OperationSpec<>(TransactionAdd.OPERATION,
+    public static final OperationSpec<OperationSpec.Context> ADD = OperationSpec.<OperationSpec.Context> of(
+                    TransactionAdd.OPERATION,
                     "Adds a transaction in the shape the transactions output uses. Cash-account events (deposit, removal, interest, dividend, fee, tax, refund) are one-sided. BUY and SELL create an investment-account side and a cash-account side together; TRANSFER creates both sides of a cash or security transfer; DELIVERY_INBOUND and DELIVERY_OUTBOUND move shares without a cash side. The response is one created change whose uuid is the record id. A write that would make an investment account's holding of an instrument negative at the end of any date is refused.",
                     TransactionAdd.SCHEMA, context -> context.record(
-                                    open(context.client(), context::existedBeforeBatch).add(context.json(), false)));
+                                    open(context.client(), context::existedBeforeBatch).add(context.json(), false)))
+                    .declaring(TransactionAdd.FAILURE_CODES);
 
     /** <code>transaction.update</code>: a thin adapter over {@link #update}. */
-    public static final OperationSpec<OperationSpec.Context> UPDATE = new OperationSpec<>(TransactionUpdate.UPDATE,
+    public static final OperationSpec<OperationSpec.Context> UPDATE = OperationSpec.<OperationSpec.Context> of(
+                    TransactionUpdate.UPDATE,
                     "Changes a whole transaction record, found by the UUID of either of its sides. Only the fields present change; null clears an optional field. The patch is overlaid on the current record and then validated exactly like an add, so a partial edit can't bypass validation and nothing is recomputed: fees, taxes and forex units that no longer fit a changed amount or shares are refused with a field-level error. The type, and the kind of a transfer, can't change; delete the record and add a new one. Both sides stay in step and keep their UUIDs. The response is one updated change, with before and after for the changed fields, whose uuid is the record id. A change that would make an investment account's holding of an instrument negative at the end of any date is refused.",
                     TransactionUpdate.PATCH_SCHEMA,
                     context -> context.record(open(context.client(), context::existedBeforeBatch)
-                                    .update(context.json(), context.claims(), false)));
+                                    .update(context.json(), context.claims(), false)))
+                    .declaring(TransactionUpdate.UPDATE_CODES).claiming();
 
     /** <code>transaction.delete</code>: a thin adapter over {@link #delete}. */
-    public static final OperationSpec<OperationSpec.Context> DELETE = new OperationSpec<>(TransactionUpdate.DELETE,
+    public static final OperationSpec<OperationSpec.Context> DELETE = OperationSpec.<OperationSpec.Context> of(
+                    TransactionUpdate.DELETE,
                     "Deletes a whole transaction record, both sides, found by the UUID of either of its sides. The response is one deleted change whose uuid is the record id, with the record as it was in before. A delete that would make an investment account's holding of an instrument negative at the end of any date, by removing a buy or a delivery or transfer into it, is refused.",
                     TransactionUpdate.DELETE_SCHEMA,
                     context -> context.record(open(context.client(), context::existedBeforeBatch)
-                                    .delete(context.json(), context.claims(), false)));
+                                    .delete(context.json(), context.claims(), false)))
+                    .declaring(TransactionUpdate.DELETE_CODES).claiming();
 
     private final Client client;
     private final Predicate<Object> existedBeforeBatch;

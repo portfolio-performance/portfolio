@@ -7,6 +7,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import name.abuchen.portfolio.cli.command.EntityKind;
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.Schema;
 
 /**
@@ -35,7 +36,7 @@ public final class Writer<T>
     }
 
     /** A check of the member's value alone; a value that fails it is not set. */
-    record Check(Predicate<String> valid, String code, Function<String, String> message, String coreCheck)
+    record Check(Predicate<String> valid, ErrorCode code, Function<String, String> message, String coreCheck)
     {
     }
 
@@ -44,14 +45,17 @@ public final class Writer<T>
     private final String needs;
     private final Setter<T> setter;
     private final List<Check> checks;
+    private final boolean reference;
 
-    private Writer(String description, Mode mode, String needs, Setter<T> setter, List<Check> checks)
+    private Writer(String description, Mode mode, String needs, Setter<T> setter, List<Check> checks,
+                    boolean reference)
     {
         this.description = description;
         this.mode = mode;
         this.needs = needs;
         this.setter = setter;
         this.checks = List.copyOf(checks);
+        this.reference = reference;
     }
 
     /**
@@ -63,7 +67,8 @@ public final class Writer<T>
      */
     public static <T> Writer<T> required(String description, String needs, BiConsumer<T, String> set)
     {
-        return new Writer<>(description, Mode.REQUIRED, needs, (w, e, v) -> set.accept(e, (String) v), List.of());
+        return new Writer<>(description, Mode.REQUIRED, needs, (w, e, v) -> set.accept(e, (String) v), List.of(),
+                        false);
     }
 
     /**
@@ -74,13 +79,14 @@ public final class Writer<T>
                     BiConsumer<T, A> set)
     {
         return new Writer<>(description, Mode.REQUIRED, needs,
-                        (w, e, v) -> set.accept(e, w.existing(kind, (String) v).orElseThrow()), List.of());
+                        (w, e, v) -> set.accept(e, w.existing(kind, (String) v).orElseThrow()), List.of(), true);
     }
 
     /** A string that null or a blank string clears. */
     public static <T> Writer<T> optional(String description, BiConsumer<T, String> set)
     {
-        return new Writer<>(description, Mode.OPTIONAL, null, (w, e, v) -> set.accept(e, (String) v), List.of());
+        return new Writer<>(description, Mode.OPTIONAL, null, (w, e, v) -> set.accept(e, (String) v), List.of(),
+                        false);
     }
 
     /**
@@ -91,7 +97,8 @@ public final class Writer<T>
      */
     public static <T> Writer<T> flag(String description, BiConsumer<T, Boolean> set)
     {
-        return new Writer<>(description, Mode.FLAG, null, (w, e, v) -> set.accept(e, (Boolean) v), List.of());
+        return new Writer<>(description, Mode.FLAG, null, (w, e, v) -> set.accept(e, (Boolean) v), List.of(),
+                        false);
     }
 
     /**
@@ -102,11 +109,11 @@ public final class Writer<T>
      * @param coreCheck
      *            the core check that decides, or null
      */
-    public Writer<T> check(Predicate<String> valid, String code, Function<String, String> message, String coreCheck)
+    public Writer<T> check(Predicate<String> valid, ErrorCode code, Function<String, String> message, String coreCheck)
     {
         var all = new ArrayList<>(checks);
         all.add(new Check(valid, code, message, coreCheck));
-        return new Writer<>(description, mode, needs, setter, all);
+        return new Writer<>(description, mode, needs, setter, all, reference);
     }
 
     Mode mode()
@@ -134,7 +141,7 @@ public final class Writer<T>
     {
         return switch (mode)
         {
-            case REQUIRED -> Schema.string(description);
+            case REQUIRED -> reference ? Schema.reference(description) : Schema.string(description);
             case OPTIONAL -> Schema.string(description).nullable();
             case FLAG -> Schema.bool(description + (update ? "." : "; defaults to false."));
         };

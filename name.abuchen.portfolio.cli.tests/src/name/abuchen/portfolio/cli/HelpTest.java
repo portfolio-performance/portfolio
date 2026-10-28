@@ -2,6 +2,8 @@ package name.abuchen.portfolio.cli;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
@@ -15,6 +17,7 @@ import org.junit.Test;
 
 import com.google.gson.JsonObject;
 
+import name.abuchen.portfolio.cli.apply.ApplyCommand;
 import name.abuchen.portfolio.cli.apply.Operations;
 import name.abuchen.portfolio.cli.command.CommandSpec;
 import name.abuchen.portfolio.cli.command.ErrorCode;
@@ -31,7 +34,7 @@ public class HelpTest
     private static final int SIZE_LIMIT = 6912;
 
     @Test
-    public void globalHelpListsEveryCommandWithASummaryAndEveryErrorCode()
+    public void globalHelpListsEveryCommandWithASummaryAndEveryErrorCodeOfAProblemDocument()
     {
         var run = CliRun.run("--help");
 
@@ -42,8 +45,15 @@ public class HelpTest
             assertThat(run.stdout, containsString("  " + command.name() + " "));
             assertThat(run.stdout, containsString(start(command.summary())));
         }
+        var declared = Commands.ALL.stream().flatMap(c -> c.errorCodes().stream()).collect(Collectors.toSet());
         for (var error : ErrorCode.values())
-            assertThat(run.stdout, containsString(error.code()));
+        {
+            var line = "\n  " + error.code() + "  " + error.description() + "\n";
+            if (error.scope() != ErrorCode.Scope.BY_USE || declared.contains(error))
+                assertThat(run.stdout, containsString(line));
+            else
+                assertThat("only a write operation or the batch declares it", run.stdout, not(containsString(line)));
+        }
     }
 
     @Test
@@ -192,22 +202,73 @@ public class HelpTest
         var all = new StringBuilder(CliRun.run("--help").stdout);
         for (var command : Commands.ALL)
             all.append(CliRun.run(command.name(), "--help").stdout);
+        for (var operation : Operations.ALL)
+            all.append(CliRun.run("apply", "--help", operation.name()).stdout);
 
         for (var error : ErrorCode.values())
             assertThat(error.code(), all.toString(), containsString(error.code()));
     }
 
-    /** A code scoped by use that no command uses would be listed by no command's help. */
+    /** A code scoped by use that nothing declares would be listed by no help: it is dead. */
     @Test
-    public void everyCodeScopedByUseIsDeclaredBySomeCommand()
+    public void everyCodeScopedByUseIsDeclaredBySomeFacetOperationOrTheBatch()
     {
         var used = Commands.ALL.stream().flatMap(c -> c.errorCodes().stream()).collect(Collectors.toSet());
+        Operations.ALL.forEach(operation -> used.addAll(operation.failureCodes()));
+        used.addAll(ApplyCommand.BATCH_FAILURE_CODES);
 
         for (var error : ErrorCode.values())
         {
             if (error.scope() == ErrorCode.Scope.BY_USE)
                 assertThat(error.code(), used.contains(error), is(true));
         }
+    }
+
+    @Test
+    public void applyHelpListsTheBatchFailureCodesAndPointsToThoseOfEachOperation()
+    {
+        var stdout = CliRun.run("apply", "--help").stdout;
+
+        for (var code : ApplyCommand.BATCH_FAILURE_CODES)
+            assertThat(stdout, containsString("\n  " + code.code() + "  " + code.description() + "\n"));
+        assertThat(stdout, containsString("pp-cli apply --help <operation>."));
+    }
+
+    @Test
+    public void applyHelpForEveryOperationListsItsFailureCodes()
+    {
+        for (var operation : Operations.ALL)
+        {
+            var stdout = CliRun.run("apply", "--help", operation.name()).stdout;
+            var section = stdout.substring(stdout.indexOf("Failure codes"));
+
+            assertThat(operation.name(), section.lines().count(), is(1L + operation.failureCodes().size()));
+            for (var code : operation.failureCodes())
+                assertThat(operation.name(), section,
+                                containsString("\n  " + code.code() + "  " + code.description() + "\n"));
+        }
+    }
+
+    /** One case per source: the schema, a claim and the owning module. */
+    @Test
+    public void anOperationsFailureCodesFollowFromItsSchemaItsClaimAndItsModule()
+    {
+        var codes = Operations.ALL.stream().collect(Collectors.toMap(o -> o.name(), o -> o.failureCodes()));
+
+        assertThat(codes.get("instrument.add"), hasItems(ErrorCode.UNKNOWN_FIELD, ErrorCode.REQUIRED,
+                        ErrorCode.INVALID_TYPE, ErrorCode.INVALID_ISIN, ErrorCode.DUPLICATE_ISIN));
+        assertThat(codes.get("instrument.add"), not(hasItem(ErrorCode.DUPLICATE_TARGET)));
+        assertThat(codes.get("instrument.add"), not(hasItem(ErrorCode.NOT_POSITIVE)));
+        assertThat(codes.get("instrument.update"), hasItems(ErrorCode.DUPLICATE_TARGET, ErrorCode.REFERENCE_NOT_FOUND));
+        assertThat(codes.get("taxonomy.assign"), hasItems(ErrorCode.NOT_POSITIVE, ErrorCode.INVALID_AMOUNT,
+                        ErrorCode.NOT_A_LEAF, ErrorCode.DUPLICATE_CLASSIFICATION, ErrorCode.WEIGHT_TOTAL_EXCEEDED));
+        assertThat(codes.get("transaction.add"), hasItems(ErrorCode.KIND_NOT_ALLOWED, ErrorCode.SAME_ACCOUNT,
+                        ErrorCode.IMPORT_CHECK_FAILED, ErrorCode.NEGATIVE_HOLDING, ErrorCode.REFERENCE_NOT_FOUND));
+        assertThat(codes.get("transaction.add"), not(hasItem(ErrorCode.TYPE_IMMUTABLE)));
+        assertThat(codes.get("transaction.update"), hasItems(ErrorCode.TYPE_IMMUTABLE, ErrorCode.RECORD_INCOMPLETE,
+                        ErrorCode.DUPLICATE_TARGET));
+        assertThat(codes.get("transaction.delete"), hasItems(ErrorCode.NEGATIVE_HOLDING, ErrorCode.DUPLICATE_TARGET));
+        assertThat(codes.get("transaction.delete"), not(hasItem(ErrorCode.SAME_ACCOUNT)));
     }
 
     @Test

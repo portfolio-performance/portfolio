@@ -3,3 +3,11 @@ pp-cli apply operation transaction.delete: Deletes a whole transaction record, b
 Input: one element of "operations" in the batch given with --input. The record to delete.
   operation (string, one of transaction.delete) Operation name.
   uuid (string) UUID of either side of the record.
+
+Failure codes (failures[].code of validation-failed):
+  reference-not-found  No entity of the expected kind matches the reference.
+  unknown-field  The object has no such field.
+  required  A required field is missing or empty.
+  invalid-type  A field has the wrong JSON type.
+  duplicate-target  An earlier operation changes the entity.
+  negative-holding  A holding would go negative.

@@ -7,3 +7,12 @@ Input: one element of "operations" in the batch given with --input. Fields of th
   note (string or null, optional) Note.
   retired (boolean, optional) Whether the cash account is retired.
   uuid (string) UUID of the cash account.
+
+Failure codes (failures[].code of validation-failed):
+  reference-not-found  No entity of the expected kind matches the reference.
+  unknown-field  The object has no such field.
+  required  A required field is missing or empty.
+  invalid-type  A field has the wrong JSON type.
+  duplicate-target  An earlier operation changes the entity.
+  invalid-currency  Not a known ISO currency code.
+  currency-immutable  The currency can't change: there are transactions.

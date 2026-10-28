@@ -3,6 +3,7 @@ package name.abuchen.portfolio.cli.masterdata;
 import java.util.Objects;
 import java.util.function.BooleanSupplier;
 
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.money.CurrencyUnit;
 
 /** The checks the master data kinds share. */
@@ -36,7 +37,7 @@ final class Checks
         var values = validation.values();
         if (values.containsKey(CURRENCY) && !Objects.equals(currentCode, values.get(CURRENCY))
                         && hasTransactions.getAsBoolean())
-            validation.fail(CURRENCY, "currency-immutable",
+            validation.fail(CURRENCY, ErrorCode.CURRENCY_IMMUTABLE,
                             "The currency can't change because the " + noun + " has transactions.");
     }
 }

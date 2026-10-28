@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.MasterData;
 import name.abuchen.portfolio.cli.command.MinorUnits;
 import name.abuchen.portfolio.cli.command.Schema;
@@ -40,10 +41,10 @@ public final class Instruments
                                                     + MinorUnits.CONVERTED_BY_HOLDINGS),
                                     Security::getCurrencyCode)
                     .write(Writer.optional("ISO currency code; omit for an index.", Security::setCurrencyCode)
-                                    .check(Checks::isCurrency, "invalid-currency", Checks::notACurrency, null))
+                                    .check(Checks::isCurrency, ErrorCode.INVALID_CURRENCY, Checks::notACurrency, null))
                     .ifSet(ISIN, Schema.string("ISIN, if set."), Security::getIsin)
                     .write(Writer.optional("ISIN: valid and not used by another instrument.", Security::setIsin)
-                                    .check(isin -> Isin.isValid(isin) && isin.matches(Isin.PATTERN), "invalid-isin",
+                                    .check(isin -> Isin.isValid(isin) && isin.matches(Isin.PATTERN), ErrorCode.INVALID_ISIN,
                                                     isin -> "'" + isin + "' is not a valid ISIN.", "Isin.isValid"))
                     .ifSet("tickerSymbol", Schema.string("Ticker symbol, if set."), Security::getTickerSymbol)
                     .write(Writer.optional("Ticker symbol.", Security::setTickerSymbol))
@@ -60,7 +61,7 @@ public final class Instruments
                     .candidateDetails(ISIN, "tickerSymbol", CURRENCY)
                     // setName leaves it unset, and the binary format cannot store an instrument without it
                     .creates(Security::new, Client::addSecurity, security -> security.setUpdatedAt(Instant.now()))
-                    .validator(Instruments::validate)
+                    .validator(Instruments::validate, ErrorCode.CURRENCY_IMMUTABLE, ErrorCode.DUPLICATE_ISIN)
                     .operations("Adds an instrument. Only the name is required.",
                                     "Updates an instrument by UUID. Only the fields present change; null or an empty string clears an optional field. The currency can't change once the instrument has transactions.")
                     .list("Instruments (securities, indices, exchange rates): UUID, name, currency, ISIN, ticker, WKN, note, retired flag and attributes",
@@ -87,7 +88,7 @@ public final class Instruments
         if (validation.values().get(ISIN) instanceof String isin)
             client.getSecurities().stream()
                             .filter(other -> other != existing && isin.equalsIgnoreCase(other.getIsin()))
-                            .findFirst().ifPresent(other -> validation.fail(ISIN, "duplicate-isin",
+                            .findFirst().ifPresent(other -> validation.fail(ISIN, ErrorCode.DUPLICATE_ISIN,
                                             "The ISIN is already used by instrument " + other.getUUID() + "."));
     }
 

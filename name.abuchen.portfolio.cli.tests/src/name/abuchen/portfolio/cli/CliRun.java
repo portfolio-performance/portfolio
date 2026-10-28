@@ -86,7 +86,7 @@ public final class CliRun
 
         var run = new CliRun(exitCode, out.toString(StandardCharsets.UTF_8), err.toString(StandardCharsets.UTF_8));
 
-        var violations = ResponseContract.violations(List.of(args), exitCode, run.stdout);
+        var violations = ResponseContract.violations(List.of(args), exitCode, run.stdout, stdin);
         if (!violations.isEmpty())
             throw new AssertionError("pp-cli " + String.join(" ", args) + " broke the response contract:\n  "
                             + String.join("\n  ", violations) + "\nstdout: " + run.stdout);

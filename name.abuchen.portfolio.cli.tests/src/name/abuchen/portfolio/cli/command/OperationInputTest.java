@@ -49,7 +49,7 @@ public class OperationInputTest
     /** The failures reported so far, as field/code/message. */
     private List<String> failures()
     {
-        return failures.stream().map(f -> f.field() + "/" + f.code() + "/" + f.message()).toList();
+        return failures.stream().map(f -> f.field() + "/" + f.code().code() + "/" + f.message()).toList();
     }
 
     @Test

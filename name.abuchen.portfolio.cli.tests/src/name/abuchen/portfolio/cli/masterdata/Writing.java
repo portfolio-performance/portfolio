@@ -62,7 +62,7 @@ final class Writing
     {
         assertThat(outcome.toString(), outcome, instanceOf(Outcome.Refused.class));
         var keys = new TreeSet<String>();
-        ((Outcome.Refused) outcome).failures().forEach(f -> keys.add(f.field() + ":" + f.code()));
+        ((Outcome.Refused) outcome).failures().forEach(f -> keys.add(f.field() + ":" + f.code().code()));
         return keys;
     }
 }

@@ -96,6 +96,32 @@ public class ResponseContractTest
                         contains(containsString("period-required")));
     }
 
+    private static List<String> validationFailed(String batch, String failure)
+    {
+        return ResponseContract.violations(List.of("apply", "--input", "-"), 1,
+                        "{\"code\":\"validation-failed\",\"failures\":[" + failure + "]}", batch);
+    }
+
+    @Test
+    public void acceptsFailuresWithACodeTheirOperationOrTheBatchDeclares()
+    {
+        assertThat(validationFailed("{\"operations\":[{\"operation\":\"instrument.add\"}]}",
+                        "{\"operationIndex\":0,\"field\":\"name\",\"code\":\"required\"}"), is(empty()));
+        assertThat(validationFailed("{\"operations\":[{\"operation\":\"instrument.explode\"}]}",
+                        "{\"operationIndex\":0,\"field\":\"operation\",\"code\":\"unknown-operation\"}"), is(empty()));
+    }
+
+    @Test
+    public void reportsAFailureWithACodeNeitherItsOperationNorTheBatchDeclares()
+    {
+        assertThat(validationFailed("{\"operations\":[{\"operation\":\"instrument.add\"}]}",
+                        "{\"operationIndex\":0,\"field\":\"name\",\"code\":\"not-a-leaf\"}"),
+                        contains(containsString("not-a-leaf")));
+        assertThat(validationFailed("{\"operations\":[{\"operation\":\"instrument.explode\"}]}",
+                        "{\"operationIndex\":0,\"field\":\"name\",\"code\":\"required\"}"),
+                        contains(containsString("required")));
+    }
+
     @Test
     public void leavesHelpAndTablesAlone()
     {
