@@ -646,6 +646,7 @@
           },
           "metrics": {
             "type": "array",
+            "minItems": 1,
             "items": {
               "type": "string",
               "enum": [
@@ -658,7 +659,7 @@
                 "risk"
               ]
             },
-            "description": "Which groups of figures to include. Defaults to all seven; an unselected group is simply absent, and a selected one means exactly what it means when all are asked for.\n\n- `valuation` — shares held, opening and closing value, the period's cost basis\n- `gains` — realized and unrealized capital gains, each with the part caused by exchange rates\n- `income` — dividends received, how many, and the date of the most recent\n- `expenses` — the fees and taxes charged, as positive amounts\n- `moneyWeighted` — the internal rate of return\n- `timeWeighted` — the true time-weighted return, plain and annualized\n- `risk` — volatility, semi-volatility, deepest drawdown, longest drawdown in days\n\n`timeWeighted` and `risk` each need a day-by-day valuation of every instrument, which is what makes a request expensive; the two share that work, so both together cost no more than either alone. The other five are cheap. Narrow this when a response is too large to return whole, and widen it when a figure you need is missing."
+            "description": "Which groups of figures to include. Defaults to all seven; an unselected group is simply absent, and a selected one means exactly what it means when all are asked for. An empty list names no group and is refused.\n\n- `valuation` — shares held, opening and closing value, the period's cost basis\n- `gains` — realized and unrealized capital gains, each with the part caused by exchange rates\n- `income` — dividends received, how many, and the date of the most recent\n- `expenses` — the fees and taxes charged, net of refunds: positive, but negative when refunds outweigh charges in the period\n- `moneyWeighted` — the annualized internal rate of return\n- `timeWeighted` — the true time-weighted return, plain and annualized\n- `risk` — volatility, semi-volatility, deepest drawdown, longest drawdown in days\n\n`timeWeighted` and `risk` each need a day-by-day valuation of every instrument in the file, which is what makes this request expensive; the two share that work, so both together cost no more than either alone. The other five are cheap. Narrow this when a response is too large to return whole, and widen it when a figure you need is missing."
           }
         },
         "required": [
@@ -707,8 +708,7 @@
         {
           "arg": "metrics",
           "where": "query",
-          "wire": "metrics",
-          "explode": false
+          "wire": "metrics"
         }
       ]
     },
@@ -763,6 +763,7 @@
           },
           "metrics": {
             "type": "array",
+            "minItems": 1,
             "items": {
               "type": "string",
               "enum": [
@@ -775,7 +776,7 @@
                 "risk"
               ]
             },
-            "description": "Which groups of figures to include. Defaults to all seven; an unselected group is simply absent, and a selected one means exactly what it means when all are asked for.\n\n- `valuation` — shares held, opening and closing value, the period's cost basis\n- `gains` — realized and unrealized capital gains, each with the part caused by exchange rates\n- `income` — dividends received, how many, and the date of the most recent\n- `expenses` — the fees and taxes charged, as positive amounts\n- `moneyWeighted` — the internal rate of return\n- `timeWeighted` — the true time-weighted return, plain and annualized\n- `risk` — volatility, semi-volatility, deepest drawdown, longest drawdown in days\n\n`timeWeighted` and `risk` each need a day-by-day valuation of every instrument, which is what makes a request expensive; the two share that work, so both together cost no more than either alone. The other five are cheap. Narrow this when a response is too large to return whole, and widen it when a figure you need is missing."
+            "description": "Which groups of figures to include. Defaults to all seven; an unselected group is simply absent, and a selected one means exactly what it means when all are asked for. An empty list names no group and is refused.\n\n- `valuation` — shares held, opening and closing value, the period's cost basis\n- `gains` — realized and unrealized capital gains, each with the part caused by exchange rates\n- `income` — dividends received, how many, and the date of the most recent\n- `expenses` — the fees and taxes charged, net of refunds: positive, but negative when refunds outweigh charges in the period\n- `moneyWeighted` — the annualized internal rate of return\n- `timeWeighted` — the true time-weighted return, plain and annualized\n- `risk` — volatility, semi-volatility, deepest drawdown, longest drawdown in days\n\n`timeWeighted` and `risk` each rest on a day-by-day valuation, computed here for this instrument alone; the two share that work, so both together cost no more than either alone. The other five are cheap. One instrument is rarely too large to return whole, so ask for what you need rather than trimming."
           }
         },
         "required": [
@@ -830,8 +831,7 @@
         {
           "arg": "metrics",
           "where": "query",
-          "wire": "metrics",
-          "explode": false
+          "wire": "metrics"
         }
       ]
     },
@@ -850,6 +850,7 @@
           },
           "status": {
             "type": "array",
+            "minItems": 1,
             "default": [
               "open",
               "closed"
@@ -861,7 +862,7 @@
                 "closed"
               ]
             },
-            "description": "`open`, `closed`, or both — the default. A closed trade has been sold out and its result is realized; an open one is still held, so its exit side is a valuation at today's price and the same trade reports different numbers on different days."
+            "description": "`open`, `closed`, or both — the default. A closed trade has been sold out and its result is realized; an open one is still held, so its exit side is a valuation at today's price and the same trade reports different numbers on different days. An empty list names no status and is refused."
           },
           "grouping": {
             "type": "string",
@@ -915,8 +916,7 @@
         {
           "arg": "status",
           "where": "query",
-          "wire": "status",
-          "explode": false
+          "wire": "status"
         },
         {
           "arg": "grouping",
@@ -959,6 +959,7 @@
           },
           "status": {
             "type": "array",
+            "minItems": 1,
             "default": [
               "open",
               "closed"
@@ -970,7 +971,7 @@
                 "closed"
               ]
             },
-            "description": "`open`, `closed`, or both — the default. A closed trade has been sold out and its result is realized; an open one is still held, so its exit side is a valuation at today's price and the same trade reports different numbers on different days."
+            "description": "`open`, `closed`, or both — the default. A closed trade has been sold out and its result is realized; an open one is still held, so its exit side is a valuation at today's price and the same trade reports different numbers on different days. An empty list names no status and is refused."
           },
           "grouping": {
             "type": "string",
@@ -1030,8 +1031,7 @@
         {
           "arg": "status",
           "where": "query",
-          "wire": "status",
-          "explode": false
+          "wire": "status"
         },
         {
           "arg": "grouping",
