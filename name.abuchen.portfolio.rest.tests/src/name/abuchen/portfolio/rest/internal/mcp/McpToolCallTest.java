@@ -179,8 +179,11 @@ public class McpToolCallTest
         // always the id, even with an alias set: an alias can be renamed between
         // the listing and the next call
         var files = text(call("pp_list_files", "{}"));
-        assertThat(files, containsString("\"use\":\"" + fileId + "\""));
-        assertThat(files, containsString("\"alias\":\"sample\""));
+        assertThat(files, containsString("\"columns\":[\"alias\",\"use\",\"label\"]"));
+        assertThat(files, containsString("[\"sample\",\"" + fileId + "\",\"mcp\"]"));
+        // the id is the use value again, and the local path no tool takes
+        assertThat(files, not(containsString("\"id\"")));
+        assertThat(files, not(containsString("\"path\"")));
 
         // and that value is what a tool accepts
         assertThat(isError(call("pp_list_instruments", "{\"file\":\"" + fileId + "\"}")), is(false));
@@ -447,9 +450,9 @@ public class McpToolCallTest
     public void testAnOversizedReportIsNarrowedWithoutASecondCalculation() throws Exception
     {
         var account = new AccountBuilder().addTo(client);
-        // enough instruments that the full report does not fit, few enough that
-        // the narrowed one does
-        for (int ii = 0; ii < 150; ii++)
+        // in a table the names dominate, and narrowing cannot shorten them: many
+        // instruments with short names are what makes the groups count
+        for (int ii = 0; ii < 1000; ii++)
         {
             var traded = new SecurityBuilder().addPrice("2024-06-01", Values.Quote.factorize(1000)).addTo(client);
             traded.setName("ACME " + ii);
