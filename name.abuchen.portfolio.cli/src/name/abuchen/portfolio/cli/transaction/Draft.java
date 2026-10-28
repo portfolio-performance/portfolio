@@ -1,164 +1,214 @@
 package name.abuchen.portfolio.cli.transaction;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
+import java.util.stream.IntStream;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import name.abuchen.portfolio.cli.command.Decimals;
 import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.FieldFailure;
 import name.abuchen.portfolio.cli.command.MasterData;
 import name.abuchen.portfolio.cli.command.OperationInput;
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.model.TransactionOwner;
 
 /**
- * The input an update checks: the members an add of the existing record would
- * take, read from its stored sides, with the members of the patch laid on
- * them. The type and the kind of a transfer are fixed; a patch that changes
- * them is refused here, before anything is built.
+ * A record to build, member by member, each value typed and checked on its
+ * own: what {@link TransactionInput} reads from the input of an add, or the
+ * members of a stored record with those of an update's patch read on top. A
+ * member is null if it has no value or its value failed its own check. The
+ * checks across members, the build and core's checks are
+ * {@link TransactionAdd}'s, the same for both.
+ * <p>
+ * The type and the kind of a transfer fix the {@link RuleTable} row. A draft
+ * holds only the members its row takes, so a stored value the row refuses,
+ * such as an ex-date on interest, is not part of the record an update builds.
  */
 final class Draft
 {
-    private static final DateTimeFormatter TIME = DateTimeFormatter.ofPattern("HH:mm");
-
-    private final TransactionRecord record;
-    private final JsonObject input;
-
-    private Draft(TransactionRecord record, JsonObject input)
+    /** A unit of the record, with the field its failures are reported under. */
+    record Unit(String field, Transaction.Unit unit)
     {
-        this.record = record;
-        this.input = input;
     }
 
-    /** The draft of the record as it is stored. */
-    static Draft of(TransactionRecord record)
+    final String type;
+    final TransactionRecord.TransferKind kind;
+    final RuleTable.Row row;
+
+    LocalDate date;
+    LocalTime time;
+    Long amount;
+    String currencyCode;
+    Long targetAmount;
+    BigDecimal exchangeRate;
+    Security instrument;
+    Long shares;
+    Portfolio investmentAccount;
+    Account cashAccount;
+    TransactionOwner<?> from;
+    TransactionOwner<?> to;
+    LocalDate exDate;
+    Long grossAmount;
+    String note;
+    String source;
+    List<Unit> units = List.of();
+
+    /** The members whose value failed its own check; they are not reported as missing as well. */
+    final Set<String> failed = new HashSet<>();
+
+    /**
+     * @param type
+     *            the record's type, or null if it is not known
+     * @param kind
+     *            the kind of a transfer, or null
+     */
+    Draft(String type, TransactionRecord.TransferKind kind)
     {
-        var primary = record.primary();
-        var json = new JsonObject();
-
-        json.addProperty(TransactionShape.TYPE.name(), record.type());
-        record.kind().ifPresent(kind -> json.addProperty(TransactionShape.KIND.name(), kind.id()));
-
-        var dateTime = primary.getDateTime();
-        json.addProperty(TransactionShape.DATE.name(), dateTime.toLocalDate().toString());
-        if (!dateTime.toLocalTime().equals(LocalTime.MIDNIGHT))
-            json.addProperty(TransactionShape.TIME.name(), dateTime.format(TIME));
-
-        json.add(TransactionShape.AMOUNT.name(), Decimals.of(primary.getAmount(), Values.Amount));
-        putIfSet(json, TransactionShape.CURRENCY_CODE.name(), primary.getCurrencyCode());
-
-        record.crossCurrencyIncoming().ifPresent(incoming -> json.add(TransactionShape.TARGET_AMOUNT.name(),
-                        Decimals.of(incoming.getAmount(), Values.Amount)));
-        var transferRate = record.transferRate();
-        transferRate.ifPresent(unit -> json.add(TransactionShape.EXCHANGE_RATE.name(),
-                        Decimals.of(unit.getExchangeRate())));
-
-        if (primary.getSecurity() != null)
-            json.addProperty(TransactionShape.INSTRUMENT.uuid().name(), primary.getSecurity().getUUID());
-        if (record.hasShares())
-            json.add(TransactionShape.SHARES.name(), Decimals.of(primary.getShares(), Values.Share));
-
-        putIfPresent(json, TransactionShape.INVESTMENT_ACCOUNT, record.investmentAccount());
-        putIfPresent(json, TransactionShape.CASH_ACCOUNT, record.cashAccount());
-        putIfPresent(json, TransactionShape.FROM, record.from());
-        putIfPresent(json, TransactionShape.TO, record.to());
-
-        if (primary instanceof AccountTransaction account && account.getExDate() != null
-                        && account.getType() == AccountTransaction.Type.DIVIDENDS)
-            json.addProperty(TransactionShape.EX_DATE.name(), account.getExDate().toLocalDate().toString());
-
-        putIfSet(json, TransactionShape.NOTE.name(), primary.getNote());
-        putIfSet(json, TransactionShape.SOURCE.name(), primary.getSource());
-
-        var units = new JsonArray();
-        primary.getUnits().filter(unit -> transferRate.isEmpty() || unit != transferRate.get())
-                        .forEach(unit -> units.add(unit(unit)));
-        if (!units.isEmpty())
-            json.add(TransactionShape.UNITS.name(), units);
-
-        return new Draft(record, json);
-    }
-
-    private static void putIfSet(JsonObject json, String member, String value)
-    {
-        if (MasterData.isSet(value))
-            json.addProperty(member, value);
-    }
-
-    private static void putIfPresent(JsonObject json, TransactionShape.NamedUuid member, Optional<String> uuid)
-    {
-        uuid.ifPresent(value -> json.addProperty(member.uuid().name(), value));
-    }
-
-    private static JsonObject unit(Transaction.Unit unit)
-    {
-        var json = new JsonObject();
-        json.addProperty(TransactionShape.UNIT_TYPE.name(), unit.getType().name());
-        json.add(TransactionShape.UNIT_AMOUNT.name(), Decimals.amount(unit.getAmount()));
-        json.addProperty(TransactionShape.UNIT_CURRENCY_CODE.name(), unit.getAmount().getCurrencyCode());
-        if (unit.getForex() != null)
-        {
-            json.add(TransactionShape.UNIT_FOREX_AMOUNT.name(), Decimals.amount(unit.getForex()));
-            json.addProperty(TransactionShape.UNIT_FOREX_CURRENCY_CODE.name(), unit.getForex().getCurrencyCode());
-            json.add(TransactionShape.UNIT_EXCHANGE_RATE.name(), Decimals.of(unit.getExchangeRate()));
-        }
-        return json;
+        this.type = type;
+        this.kind = kind;
+        this.row = type == null ? null : RuleTable.Row.of(type, kind).orElse(null);
     }
 
     /**
-     * Lays the members of the patch on the draft, except those named in
-     * <code>skip</code>: a value replaces the stored one, and null clears it.
+     * The draft of a record as it is stored.
+     *
+     * @param sides
+     *            the record's sides with their owners, in the record's order
+     */
+    static Draft of(TransactionRecord record, List<BuiltRecord.Side> sides)
+    {
+        var primary = record.primary();
+        var draft = new Draft(record.type(), record.kind().orElse(null));
+
+        var dateTime = primary.getDateTime();
+        draft.date = dateTime.toLocalDate();
+        draft.time = dateTime.toLocalTime().equals(LocalTime.MIDNIGHT) ? null : dateTime.toLocalTime();
+        draft.amount = primary.getAmount();
+        draft.currencyCode = MasterData.isSet(primary.getCurrencyCode()) ? primary.getCurrencyCode() : null;
+        draft.note = MasterData.isSet(primary.getNote()) ? primary.getNote() : null;
+        draft.source = MasterData.isSet(primary.getSource()) ? primary.getSource() : null;
+
+        if (draft.row == null)
+            return draft;
+
+        if (draft.takes(RuleTable.Ruled.TARGET_AMOUNT))
+            record.crossCurrencyIncoming().ifPresent(incoming -> draft.targetAmount = incoming.getAmount());
+        if (draft.takes(RuleTable.Ruled.EXCHANGE_RATE))
+            record.transferRate().ifPresent(unit -> draft.exchangeRate = unit.getExchangeRate());
+        if (draft.takes(RuleTable.Ruled.INSTRUMENT))
+            draft.instrument = primary.getSecurity();
+        if (draft.takes(RuleTable.Ruled.SHARES) && record.hasShares())
+            draft.shares = primary.getShares();
+
+        if (draft.takes(RuleTable.Ruled.FROM))
+        {
+            draft.from = sides.get(0).owner();
+            draft.to = sides.get(1).owner();
+        }
+        else
+        {
+            for (var side : sides)
+            {
+                if (side.owner() instanceof Portfolio portfolio && draft.takes(RuleTable.Ruled.INVESTMENT_ACCOUNT))
+                    draft.investmentAccount = portfolio;
+                else if (side.owner() instanceof Account account && draft.takes(RuleTable.Ruled.CASH_ACCOUNT))
+                    draft.cashAccount = account;
+            }
+        }
+
+        if (draft.takes(RuleTable.Ruled.EX_DATE) && primary instanceof AccountTransaction account
+                        && account.getExDate() != null)
+            draft.exDate = account.getExDate().toLocalDate();
+
+        if (draft.takes(RuleTable.Ruled.UNITS))
+        {
+            var stored = primary.getUnits().toList();
+            draft.units = IntStream.range(0, stored.size())
+                            .mapToObj(i -> new Unit(TransactionShape.UNITS.name() + "[" + i + "]", stored.get(i)))
+                            .toList();
+        }
+
+        return draft;
+    }
+
+    /** Whether the row takes the member at all. */
+    private boolean takes(RuleTable.Ruled member)
+    {
+        return row.rule(member) != RuleTable.Rule.REFUSED;
+    }
+
+    /** The value of a ruled member, or null if it has none. */
+    Object get(RuleTable.Ruled member)
+    {
+        return switch (member)
+        {
+            case KIND -> kind;
+            case TARGET_AMOUNT -> targetAmount;
+            case EXCHANGE_RATE -> exchangeRate;
+            case INSTRUMENT -> instrument;
+            case SHARES -> shares;
+            case INVESTMENT_ACCOUNT -> investmentAccount;
+            case CASH_ACCOUNT -> cashAccount;
+            case FROM -> from;
+            case TO -> to;
+            case EX_DATE -> exDate;
+            case GROSS_AMOUNT -> grossAmount;
+            case UNITS -> units.isEmpty() ? null : units;
+        };
+    }
+
+    /** Whether the member has a value, or was given one that failed its own check. */
+    boolean has(RuleTable.Ruled member)
+    {
+        return get(member) != null || failed.contains(member.id());
+    }
+
+    /** The date and time, or null if either failed or there is no date. */
+    LocalDateTime dateTime()
+    {
+        if (date == null || failed.contains(TransactionShape.TIME.name()))
+            return null;
+        return time == null ? date.atStartOfDay() : date.atTime(time);
+    }
+
+    /**
+     * Refuses a patch that changes the type or the kind of a transfer; they
+     * are fixed, so they are checked before any other member of the patch.
      *
      * @return the <code>type-immutable</code> and <code>kind-immutable</code>
-     *         failures; the type or kind they name is not laid on the draft
+     *         failures
      */
-    List<FieldFailure> lay(JsonObject patch, Set<String> skip)
+    List<FieldFailure> refuseTypeOrKindChange(JsonObject patch)
     {
         var failures = new ArrayList<FieldFailure>();
-        for (var member : patch.entrySet())
-        {
-            var name = member.getKey();
-            var value = member.getValue();
-            if (skip.contains(name))
-                continue;
 
-            if (name.equals(TransactionShape.TYPE.name()))
-            {
-                if (differs(value, record.type()))
-                    failures.add(new FieldFailure(name, ErrorCode.TYPE_IMMUTABLE,
-                                    "The type of a record can't change; delete it and add a new one.", null));
-            }
-            else if (name.equals(TransactionShape.KIND.name()) && record.kind().isPresent())
-            {
-                if (differs(value, record.kind().get().id()))
-                    failures.add(new FieldFailure(name, ErrorCode.KIND_IMMUTABLE,
-                                    "The kind of a transfer can't change; delete it and add a new one.", null));
-            }
-            else if (value.isJsonNull())
-                input.remove(name);
-            else
-                input.add(name, value);
-        }
+        var typeMember = TransactionShape.TYPE.name();
+        if (patch.has(typeMember) && differs(patch.get(typeMember), type))
+            failures.add(new FieldFailure(typeMember, ErrorCode.TYPE_IMMUTABLE,
+                            "The type of a record can't change; delete it and add a new one.", null));
+
+        var kindMember = TransactionShape.KIND.name();
+        if (kind != null && patch.has(kindMember) && differs(patch.get(kindMember), kind.id()))
+            failures.add(new FieldFailure(kindMember, ErrorCode.KIND_IMMUTABLE,
+                            "The kind of a transfer can't change; delete it and add a new one.", null));
+
         return failures;
     }
 
     private static boolean differs(JsonElement value, String current)
     {
         return !(OperationInput.isText(value) && current.equals(value.getAsString()));
-    }
-
-    /** The draft as the input of an add. */
-    JsonObject input()
-    {
-        return input;
     }
 }

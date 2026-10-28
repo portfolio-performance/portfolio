@@ -133,15 +133,20 @@ final class TransactionUpdate
             return refused();
         }
 
-        var draft = Draft.of(existing.record());
-        failures.addAll(draft.lay(patch, ADDRESSING));
+        var draft = Draft.of(existing.record(), existing.sides());
+        if (draft.row == null)
+        {
+            TransactionInput.unsupportedType(input, draft.type);
+            return refused();
+        }
+
+        failures.addAll(draft.refuseTypeOrKindChange(patch));
         if (!failures.isEmpty())
             return refused();
 
-        // unknown members were laid on the draft, so the add refuses them; they are reported above if at all
-        var result = TransactionAdd.build(client, existedBeforeBatch, draft.input(), existing.sides(), false);
-        failures.addAll(result.failures());
-        var built = result.built();
+        // a member an add doesn't declare refuses the patch; it is reported above if at all
+        var unknown = TransactionInput.lay(input, failures, draft, ADDRESSING);
+        var built = TransactionAdd.build(draft, failures, existing.sides(), unknown).built();
         if (built == null)
             return refused();
 

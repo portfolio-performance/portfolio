@@ -71,6 +71,12 @@ final class RuleTable
             return refusalCode;
         }
 
+        /** The ruled member of that name, if it is one. */
+        static Optional<Ruled> byId(String id)
+        {
+            return Arrays.stream(values()).filter(member -> member.id().equals(id)).findFirst();
+        }
+
         /** The message of a refusal of this member, for the type as {@link Row#label()} names it. */
         String refusalMessage(String label)
         {

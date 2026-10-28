@@ -1,208 +1,304 @@
 package name.abuchen.portfolio.cli.transaction;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
 
 import name.abuchen.portfolio.cli.command.EntityKind;
 import name.abuchen.portfolio.cli.command.ErrorCode;
+import name.abuchen.portfolio.cli.command.FieldFailure;
 import name.abuchen.portfolio.cli.command.OperationInput;
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.cli.masterdata.CashAccounts;
+import name.abuchen.portfolio.cli.masterdata.Instruments;
+import name.abuchen.portfolio.cli.masterdata.InvestmentAccounts;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 /**
- * Reads the members of a record to add, by the rules of its row of the
- * {@link RuleTable}: a refused member that is present is reported, a required
- * one that is missing is reported, and an optional one is read if it is
- * there. Failures go to the sink of the {@link OperationInput}.
+ * The read phase of a write: reads the members of the input into a
+ * {@link Draft}, by the rules of the record's row of the {@link RuleTable}. A
+ * member the row refuses is reported if it is present; every other member is
+ * read and checked on its own. Whether a member is missing, and every check
+ * that looks at more than one member, is left to {@link TransactionAdd}.
+ * Failures go to the sink of the {@link OperationInput}.
  */
 final class TransactionInput
 {
     private static final DateTimeFormatter TIME = DateTimeFormatter.ofPattern("HH:mm");
 
+    /** The members that every type takes. */
+    private static final List<String> COMMON = List.of(TransactionShape.DATE.name(), TransactionShape.TIME.name(),
+                    TransactionShape.AMOUNT.name(), TransactionShape.CURRENCY_CODE.name(),
+                    TransactionShape.NOTE.name(), TransactionShape.SOURCE.name());
+
     private final OperationInput input;
-    private final String type;
-    private final RuleTable.Row row;
+    private final List<FieldFailure> failures;
+    private final Draft draft;
 
     /**
-     * @param type
-     *            the record's type, or null if it is not known
-     * @param row
-     *            the row of the record's type, or null if the type or the
-     *            kind is not known; then no member that depends on the row is
-     *            read
+     * @param failures
+     *            the sink of the input, which tells whether reading a member
+     *            failed
      */
-    TransactionInput(OperationInput input, String type, RuleTable.Row row)
+    private TransactionInput(OperationInput input, List<FieldFailure> failures, Draft draft)
     {
         this.input = input;
-        this.type = type;
-        this.row = row;
+        this.failures = failures;
+        this.draft = draft;
     }
 
-    /** The rule of the row for the member; without a row, read nothing. */
-    private RuleTable.Rule rule(RuleTable.Ruled member)
+    /** Reads the input of an add into a draft. */
+    static Draft read(OperationInput input, List<FieldFailure> failures)
     {
-        return row == null ? RuleTable.Rule.REFUSED : row.rule(member);
+        var type = type(input);
+        var kind = TransactionRecord.TRANSFER.equals(type) ? kind(input) : null;
+        var reader = new TransactionInput(input, failures, new Draft(type, kind));
+
+        reader.refuseByTable();
+        reader.readable().forEach(reader::read);
+        return reader.draft;
+    }
+
+    /**
+     * Reads the members of a patch onto the draft of a stored record, each as
+     * an add reads it; null clears a member. The type and the kind are
+     * checked by {@link Draft#refuseTypeOrKindChange} before.
+     *
+     * @param skip
+     *            the members that address the record rather than change it
+     * @return whether the patch has a member that an add does not declare
+     */
+    static boolean lay(OperationInput patch, List<FieldFailure> failures, Draft draft, Set<String> skip)
+    {
+        var reader = new TransactionInput(patch, failures, draft);
+        var readable = reader.readable();
+        var unknown = false;
+
+        for (var member : patch.json().keySet())
+        {
+            if (skip.contains(member) || member.equals(TransactionShape.TYPE.name())
+                            || member.equals(TransactionShape.KIND.name()) && draft.kind != null)
+                continue;
+
+            if (!TransactionAdd.SCHEMA.declares(member))
+                unknown = true;
+            else if (readable.contains(member))
+                reader.read(member);
+            else
+                RuleTable.Ruled.byId(member).ifPresent(reader::refuseIfPresent);
+        }
+        return unknown;
+    }
+
+    /** The type of an add, or null after reporting why there is none. */
+    private static String type(OperationInput input)
+    {
+        var member = TransactionShape.TYPE.name();
+        var element = input.json().get(member);
+        if (element == null || element.isJsonNull())
+        {
+            input.fail(member, ErrorCode.REQUIRED, "A transaction needs a type.");
+            return null;
+        }
+        if (!OperationInput.isText(element))
+        {
+            input.fail(member, ErrorCode.INVALID_TYPE, "The type must be a string.");
+            return null;
+        }
+
+        var name = element.getAsString();
+        if (!TransactionShape.TYPES.contains(name))
+        {
+            unsupportedType(input, name);
+            return null;
+        }
+        return name;
+    }
+
+    /** Reports a type that no operation adds. */
+    static void unsupportedType(OperationInput input, String name)
+    {
+        input.fail(TransactionShape.TYPE.name(), ErrorCode.UNSUPPORTED_TYPE, "'" + name
+                        + "' is not a transaction type this operation adds. Supported: "
+                        + String.join(", ", TransactionShape.TYPES) + ".");
+    }
+
+    private static TransactionRecord.TransferKind kind(OperationInput input)
+    {
+        var member = TransactionShape.KIND.name();
+        var kinds = String.join(", ", TransactionRecord.TransferKind.ids());
+        var kind = input.requiredText(member, "A transfer needs a kind: " + kinds + ".");
+        if (kind == null)
+            return null;
+
+        for (var candidate : TransactionRecord.TransferKind.values())
+        {
+            if (candidate.id().equals(kind))
+                return candidate;
+        }
+
+        input.fail(member, ErrorCode.UNSUPPORTED_KIND, "'" + kind + "' is not a kind of transfer: " + kinds + ".");
+        return null;
+    }
+
+    /** The members to read: those every type takes and those the row doesn't refuse. */
+    private List<String> readable()
+    {
+        if (draft.row == null)
+            return COMMON;
+        return Stream.concat(COMMON.stream(), Arrays.stream(RuleTable.Ruled.values())
+                        .filter(member -> member != RuleTable.Ruled.KIND
+                                        && draft.row.rule(member) != RuleTable.Rule.REFUSED)
+                        .map(RuleTable.Ruled::id)).toList();
     }
 
     /**
      * Reports each member that is present although the row refuses it.
      * Without a row, those that every row of the type refuses.
      */
-    void refuseByTable()
+    private void refuseByTable()
     {
-        var refused = row != null
+        var refused = draft.row != null
                         ? Arrays.stream(RuleTable.Ruled.values())
-                                        .filter(member -> row.rule(member) == RuleTable.Rule.REFUSED).toList()
-                        : RuleTable.refusedByEveryRowOf(type);
+                                        .filter(member -> draft.row.rule(member) == RuleTable.Rule.REFUSED).toList()
+                        : RuleTable.refusedByEveryRowOf(draft.type);
         refused.forEach(this::refuseIfPresent);
     }
 
     /** Reports the member if it is present, under its refusal code. */
-    void refuseIfPresent(RuleTable.Ruled member)
-    {
-        refuseIfPresent(member, member.refusalMessage(row != null ? row.label() : type));
-    }
-
-    /** Reports the member if it is present, under its refusal code, because a rule across members refuses it. */
-    void refuseIfPresent(RuleTable.Ruled member, String message)
+    private void refuseIfPresent(RuleTable.Ruled member)
     {
         if (input.has(member.id()))
-            input.fail(member.id(), member.refusalCode(), message);
+            input.fail(member.id(), member.refusalCode(),
+                            member.refusalMessage(draft.row != null ? draft.row.label() : draft.type));
     }
 
-    String text(String member)
+    /** Reads one member onto the draft; null or absent clears it. */
+    private void read(String member)
     {
-        return input.text(member);
+        var before = failures.size();
+
+        var ruled = RuleTable.Ruled.byId(member);
+        if (ruled.isPresent())
+            read(ruled.get());
+        else if (member.equals(TransactionShape.DATE.name()))
+            draft.date = date();
+        else if (member.equals(TransactionShape.TIME.name()))
+            draft.time = time();
+        else if (member.equals(TransactionShape.AMOUNT.name()))
+            draft.amount = input.amount(member, Values.Amount, true, null);
+        else if (member.equals(TransactionShape.CURRENCY_CODE.name()))
+            draft.currencyCode = currency();
+        else if (member.equals(TransactionShape.NOTE.name()))
+            draft.note = input.text(member);
+        else if (member.equals(TransactionShape.SOURCE.name()))
+            draft.source = input.text(member);
+        else
+            throw new IllegalArgumentException(member);
+
+        if (failures.size() > before)
+            draft.failed.add(member);
+        else
+            draft.failed.remove(member);
     }
 
-    /** The existing entity the member names, by the rule of the row; null if refused, absent or failed. */
-    <T> T reference(RuleTable.Ruled member, EntityKind<T> kind)
+    private void read(RuleTable.Ruled member)
     {
-        return switch (rule(member))
+        var id = member.id();
+        switch (member)
         {
-            case REFUSED -> null;
-            case REQUIRED -> input.existing(member.id(), kind, "A transaction needs " + member.id() + ".");
-            case OPTIONAL -> {
-                var uuid = input.text(member.id());
-                yield uuid == null ? null : input.find(member.id(), uuid, kind);
-            }
-        };
+            case KIND -> throw new IllegalArgumentException(id);
+            case TARGET_AMOUNT -> draft.targetAmount = input.amount(id, Values.Amount, true, null);
+            case EXCHANGE_RATE -> draft.exchangeRate = input.number(id, null, true);
+            case INSTRUMENT -> draft.instrument = reference(member, Instruments.INSTRUMENTS.entityKind());
+            case SHARES -> draft.shares = input.amount(id, Values.Share, true, null);
+            case INVESTMENT_ACCOUNT -> draft.investmentAccount = reference(member,
+                            InvestmentAccounts.INVESTMENT_ACCOUNTS.entityKind());
+            case CASH_ACCOUNT -> draft.cashAccount = reference(member, CashAccounts.CASH_ACCOUNTS.entityKind());
+            case FROM -> draft.from = transferAccount(member);
+            case TO -> draft.to = transferAccount(member);
+            case EX_DATE -> draft.exDate = exDate();
+            case GROSS_AMOUNT -> draft.grossAmount = input.amount(id, Values.Amount, false, null);
+            case UNITS -> draft.units = units();
+        }
     }
 
-    /** A positive number of the member, by the rule of the row; null if refused, absent or failed. */
-    Long number(RuleTable.Ruled member, Values<Long> values)
+    /** The existing entity the member names; null if absent or not found. */
+    private <T> T reference(RuleTable.Ruled member, EntityKind<T> kind)
     {
-        return switch (rule(member))
-        {
-            case REFUSED -> null;
-            case REQUIRED -> input.amount(member.id(), values, true, "A transaction needs " + member.id() + ".");
-            case OPTIONAL -> input.amount(member.id(), values, true, null);
-        };
+        var uuid = input.text(member.id());
+        return uuid == null ? null : input.find(member.id(), uuid, kind);
     }
 
-    LocalDateTime dateTime()
+    /** A side of a transfer: a cash account or an investment account, by the kind. */
+    private TransactionOwner<?> transferAccount(RuleTable.Ruled member)
     {
-        var date = input.requiredText("date", "A transaction needs a date.");
-        if (date == null)
+        return draft.kind == TransactionRecord.TransferKind.CASH
+                        ? reference(member, CashAccounts.CASH_ACCOUNTS.entityKind())
+                        : reference(member, InvestmentAccounts.INVESTMENT_ACCOUNTS.entityKind());
+    }
+
+    private LocalDate date()
+    {
+        var member = TransactionShape.DATE.name();
+        var text = input.text(member);
+        if (text == null)
             return null;
 
-        LocalDate day;
         try
         {
-            day = LocalDate.parse(date);
+            return LocalDate.parse(text);
         }
         catch (DateTimeParseException e)
         {
-            input.fail("date", ErrorCode.INVALID_DATE, "'" + date + "' is not an ISO date (yyyy-MM-dd).");
-            return null;
-        }
-
-        var timeText = input.text("time");
-        if (timeText == null)
-            return day.atStartOfDay();
-
-        try
-        {
-            return LocalDateTime.of(day, LocalTime.parse(timeText, TIME));
-        }
-        catch (DateTimeParseException e)
-        {
-            input.fail("time", ErrorCode.INVALID_TIME, "'" + timeText + "' is not a time of day (HH:mm).");
+            input.fail(member, ErrorCode.INVALID_DATE, "'" + text + "' is not an ISO date (yyyy-MM-dd).");
             return null;
         }
     }
 
-    /**
-     * @param account
-     *            the cash account whose currency the amount must be in, or
-     *            null if any currency goes
-     */
-    String currency(Account account)
+    private LocalTime time()
     {
-        var code = input.requiredText("currencyCode", "A transaction needs a currency.");
-        if (code == null)
+        var member = TransactionShape.TIME.name();
+        var text = input.text(member);
+        if (text == null)
             return null;
 
-        if (!CurrencyUnit.containsCurrencyCode(code))
+        try
         {
-            input.fail("currencyCode", ErrorCode.INVALID_CURRENCY, "'" + code + "' is not a known ISO currency code.");
+            return LocalTime.parse(text, TIME);
+        }
+        catch (DateTimeParseException e)
+        {
+            input.fail(member, ErrorCode.INVALID_TIME, "'" + text + "' is not a time of day (HH:mm).");
             return null;
         }
+    }
 
-        if (account != null && !code.equals(account.getCurrencyCode()))
+    private String currency()
+    {
+        var member = TransactionShape.CURRENCY_CODE.name();
+        var code = input.text(member);
+        if (code != null && !CurrencyUnit.containsCurrencyCode(code))
         {
-            input.fail("currencyCode", ErrorCode.CURRENCY_MISMATCH, "The amount must be in the cash account's currency "
-                            + account.getCurrencyCode() + ", not " + code + ".");
+            input.fail(member, ErrorCode.INVALID_CURRENCY, "'" + code + "' is not a known ISO currency code.");
             return null;
         }
         return code;
     }
 
-    /** A positive amount, read at the given precision; a missing one is required. */
-    Long amount(String member, Values<Long> values)
-    {
-        return input.amount(member, values, true, "A transaction needs " + member + ".");
-    }
-
-    /** Checks the optional gross amount against the amount, fees and taxes. */
-    void grossAmount(boolean credit, Long amount, List<Transaction.Unit> units)
-    {
-        var member = RuleTable.Ruled.GROSS_AMOUNT.id();
-        if (rule(RuleTable.Ruled.GROSS_AMOUNT) == RuleTable.Rule.REFUSED || !input.has(member))
-            return;
-
-        var gross = input.amount(member, Values.Amount, false, null);
-        if (gross == null || amount == null)
-            return;
-
-        var taxAndFees = units.stream()
-                        .filter(u -> u.getType() == Transaction.Unit.Type.FEE || u.getType() == Transaction.Unit.Type.TAX)
-                        .mapToLong(u -> u.getAmount().getAmount()).sum();
-        var expected = amount + (credit ? taxAndFees : -taxAndFees);
-
-        if (gross != expected)
-            input.fail(member, ErrorCode.GROSS_AMOUNT_MISMATCH,
-                            "The gross amount does not reconcile with the amount, fees and taxes.");
-    }
-
-    /**
-     * The valid ex-date to store, or null if it is absent, refused or
-     * invalid. It is never after the payment date.
-     */
-    LocalDate exDate(LocalDateTime dateTime)
+    private LocalDate exDate()
     {
         var member = RuleTable.Ruled.EX_DATE.id();
-        if (rule(RuleTable.Ruled.EX_DATE) == RuleTable.Rule.REFUSED || !input.has(member))
+        if (!input.has(member))
             return null;
 
         var text = input.json().get(member);
@@ -212,43 +308,30 @@ final class TransactionInput
             return null;
         }
 
-        LocalDate ex;
         try
         {
-            ex = LocalDate.parse(text.getAsString());
+            return LocalDate.parse(text.getAsString());
         }
         catch (DateTimeParseException e)
         {
             input.fail(member, ErrorCode.INVALID_DATE, "'" + text.getAsString() + "' is not an ISO date (yyyy-MM-dd).");
             return null;
         }
-
-        if (dateTime != null && ex.isAfter(dateTime.toLocalDate()))
-        {
-            input.fail(member, ErrorCode.EXDATE_AFTER_PAYMENT, "The ex-date must not be after the payment date.");
-            return null;
-        }
-        return ex;
     }
 
-    /** The valid units; an instrument in another currency needs a forex gross value. */
-    List<Transaction.Unit> units(String currencyCode, Security security)
+    /** The units that pass the checks of the unit alone; an absent or null list is empty. */
+    private List<Draft.Unit> units()
     {
-        var units = new ArrayList<Transaction.Unit>();
-        if (rule(RuleTable.Ruled.UNITS) == RuleTable.Rule.REFUSED)
-            return units;
-
+        var units = new ArrayList<Draft.Unit>();
         input.eachObject(RuleTable.Ruled.UNITS.id(), "A unit must be a JSON object.", element -> {
-            var unit = unit(element, currencyCode, security);
+            var unit = unit(element);
             if (unit != null)
-                units.add(unit);
+                units.add(new Draft.Unit(element.field(""), unit));
         });
-
-        requireForexGrossValue(currencyCode, security, units);
         return units;
     }
 
-    private static Transaction.Unit unit(OperationInput unit, String currencyCode, Security security)
+    private static Transaction.Unit unit(OperationInput unit)
     {
         unit.rejectUnknownFields(TransactionShape.UNIT_INPUT);
 
@@ -265,9 +348,6 @@ final class TransactionInput
         var unitCurrency = unit.rawText("currencyCode");
         if (unitCurrency == null)
             unit.fail("currencyCode", ErrorCode.REQUIRED, "A unit needs a currency.");
-        else if (currencyCode != null && !unitCurrency.equals(currencyCode))
-            unit.fail("currencyCode", ErrorCode.CURRENCY_MISMATCH,
-                            "A unit must be in the transaction's currency " + currencyCode + ".");
 
         var json = unit.json();
         var hasForex = json.has("forexAmount") || json.has("forexCurrencyCode") || json.has("exchangeRate");
@@ -294,33 +374,21 @@ final class TransactionInput
                 unit.fail("exchangeRate", ErrorCode.NOT_POSITIVE, "The exchange rate must be positive.");
                 return null;
             }
-            if (!forexCurrency.equals(currencyCode) && !CurrencyUnit.containsCurrencyCode(forexCurrency))
+            if (!CurrencyUnit.containsCurrencyCode(forexCurrency))
             {
                 unit.fail("forexCurrencyCode", ErrorCode.INVALID_CURRENCY,
                                 "'" + forexCurrency + "' is not a known ISO currency code.");
                 return null;
             }
-            if (unitType != Transaction.Unit.Type.GROSS_VALUE && security != null
-                            && !forexCurrency.equals(security.getCurrencyCode()))
-            {
-                unit.fail("forexCurrencyCode", ErrorCode.FOREX_CURRENCY_MISMATCH,
-                                "A fee or tax may carry forex only in the instrument's currency "
-                                                + security.getCurrencyCode() + ".");
-                return null;
-            }
         }
 
-        if (amount == null || unitCurrency == null || currencyCode == null || !unitCurrency.equals(currencyCode))
+        if (amount == null || unitCurrency == null)
             return null;
 
+        var amountMoney = Money.of(unitCurrency, amount);
         if (!hasForex)
-        {
-            if (unitType == Transaction.Unit.Type.GROSS_VALUE)
-                return null;
-            return new Transaction.Unit(unitType, Money.of(currencyCode, amount));
-        }
+            return new Transaction.Unit(unitType, amountMoney);
 
-        var amountMoney = Money.of(currencyCode, amount);
         var forexMoney = Money.of(forexCurrency, forexAmount);
         if (!Transaction.Unit.isWithinRoundingTolerance(amountMoney, forexMoney, rate))
         {
@@ -329,22 +397,5 @@ final class TransactionInput
             return null;
         }
         return new Transaction.Unit(unitType, amountMoney, forexMoney, rate);
-    }
-
-    /** A record on an instrument in another currency needs a forex gross-value unit in that currency. */
-    private void requireForexGrossValue(String currencyCode, Security security, List<Transaction.Unit> units)
-    {
-        if (security == null || currencyCode == null || security.getCurrencyCode() == null
-                        || security.getCurrencyCode().equals(currencyCode))
-            return;
-
-        var hasMatch = units.stream().filter(u -> u.getType() == Transaction.Unit.Type.GROSS_VALUE)
-                        .anyMatch(u -> u.getForex() != null
-                                        && security.getCurrencyCode().equals(u.getForex().getCurrencyCode()));
-        if (!hasMatch)
-            input.fail(RuleTable.Ruled.UNITS.id(), ErrorCode.FOREX_GROSS_VALUE_REQUIRED,
-                            "The instrument is in " + security.getCurrencyCode() + " but the transaction is in "
-                                            + currencyCode
-                                            + "; add a GROSS_VALUE unit with its forex amount and exchange rate.");
     }
 }
