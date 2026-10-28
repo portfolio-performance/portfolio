@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.cli.apply;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -9,6 +10,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import name.abuchen.portfolio.cli.command.FieldFailure;
 import name.abuchen.portfolio.cli.command.OperationInput;
 import name.abuchen.portfolio.cli.command.OperationSpec;
 import name.abuchen.portfolio.cli.command.Outcome;
@@ -30,8 +32,8 @@ import name.abuchen.portfolio.model.TransactionOwner;
 
 /**
  * <code>transaction.update</code> and <code>transaction.delete</code>, both
- * addressing a whole record by the UUID of either side. An update runs the add
- * path on the patch overlaid on the record, then copies the result onto the
+ * addressing a whole record by the UUID of either side. An update checks the
+ * patch overlaid on the record like an add, then copies the result onto the
  * existing sides, because core can't give a transaction a UUID.
  */
 final class TransactionUpdates
@@ -51,10 +53,6 @@ final class TransactionUpdates
     /** The record that an update or delete addresses: its sides, primary first, with their owners. */
     record Existing(TransactionRecord record, List<BuiltRecord.Side> sides)
     {
-        List<OversellGuard.Effect> effects()
-        {
-            return OversellGuard.effectsOf(sides);
-        }
     }
 
     private TransactionUpdates()
@@ -68,11 +66,18 @@ final class TransactionUpdates
             return;
 
         var merged = overlay(context, existing.record());
-        // the replacing context counts its own failures, so it would not see the overlay's
         if (context.failed())
             return;
 
-        TransactionOperations.add(context.replacing(merged, existing));
+        var failures = new ArrayList<FieldFailure>();
+        var built = TransactionRecords.open(context.client(), context::existedBeforeBatch).replacement(merged,
+                        existing.sides(), failures::add);
+        if (!failures.isEmpty())
+            context.record(new Outcome.Refused(failures));
+        if (built == null)
+            return;
+
+        replace(context, existing, built);
     }
 
     private static void delete(OperationContext context)
@@ -81,11 +86,15 @@ final class TransactionUpdates
         if (existing == null)
             return;
 
-        OversellGuard.check(context, UUID_MEMBER, existing.effects(), List.of());
-        if (context.failed())
+        var records = TransactionRecords.open(context.client(), any -> true);
+        var oversold = records.oversoldWithout(existing.sides(), UUID_MEMBER);
+        if (!oversold.isEmpty())
+        {
+            context.record(new Outcome.Refused(oversold));
             return;
+        }
 
-        var before = TransactionRecords.open(context.client(), any -> true).render(existing.record());
+        var before = records.render(existing.record());
         existing.sides().forEach(side -> detach(context.client(), side));
         context.deleted(new OperationContext.Change(Outcome.Entity.TRANSACTION, existing.record().id(), before,
                         Map.of()));
@@ -158,7 +167,7 @@ final class TransactionUpdates
      * changed. Nothing is touched if the record has lost a side that the new
      * one has.
      */
-    static void replace(OperationContext context, Existing existing, BuiltRecord built)
+    private static void replace(OperationContext context, Existing existing, BuiltRecord built)
     {
         var sides = existing.sides();
         if (sides.size() != built.sides().size())

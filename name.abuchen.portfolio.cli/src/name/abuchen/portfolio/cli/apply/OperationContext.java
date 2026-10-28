@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import com.google.gson.JsonObject;
 
 import name.abuchen.portfolio.cli.command.Claims;
 import name.abuchen.portfolio.cli.command.FieldFailure;
 import name.abuchen.portfolio.cli.command.OperationInput;
+import name.abuchen.portfolio.cli.command.OperationSpec;
 import name.abuchen.portfolio.cli.command.Outcome;
 import name.abuchen.portfolio.model.Client;
 
@@ -18,7 +18,7 @@ import name.abuchen.portfolio.model.Client;
  * What one operation of a batch sees: the evolving model, its own input and
  * the places to report failures and changes.
  */
-public final class OperationContext
+public final class OperationContext implements OperationSpec.Context
 {
     /** One failed check of one operation. */
     record Failure(int operationIndex, FieldFailure failure)
@@ -61,7 +61,6 @@ public final class OperationContext
     private final List<Change> created;
     private final List<Change> updated;
     private final List<Change> deleted;
-    private final Optional<TransactionUpdates.Existing> replacing;
     private int failureCount;
 
     OperationContext(ApplyBatch batch, int index, JsonObject input)
@@ -72,37 +71,10 @@ public final class OperationContext
         this.created = new ArrayList<>();
         this.updated = new ArrayList<>();
         this.deleted = new ArrayList<>();
-        this.replacing = Optional.empty();
     }
 
-    private OperationContext(OperationContext outer, JsonObject input, TransactionUpdates.Existing replacing)
-    {
-        this.batch = outer.batch;
-        this.index = outer.index;
-        this.input = new OperationInput(input, batch.client(), batch::existedBeforeBatch, this::fail);
-        this.created = outer.created;
-        this.updated = outer.updated;
-        this.deleted = outer.deleted;
-        this.replacing = Optional.of(replacing);
-    }
-
-    /**
-     * A context of the same operation whose input is the given one and whose
-     * add of a transaction replaces the existing record instead. Changes go to
-     * this operation's result; failures are counted separately.
-     */
-    OperationContext replacing(JsonObject merged, TransactionUpdates.Existing existing)
-    {
-        return new OperationContext(this, merged, existing);
-    }
-
-    /** The record that the transaction being built replaces, if this is an update. */
-    Optional<TransactionUpdates.Existing> replacing()
-    {
-        return replacing;
-    }
-
-    Client client()
+    @Override
+    public Client client()
     {
         return batch.client();
     }
@@ -110,6 +82,12 @@ public final class OperationContext
     OperationInput input()
     {
         return input;
+    }
+
+    @Override
+    public JsonObject json()
+    {
+        return input.json();
     }
 
     void fail(String field, String code, String message)
@@ -156,19 +134,22 @@ public final class OperationContext
     }
 
     /** Claims entities for this operation. */
-    Claims claims()
+    @Override
+    public Claims claims()
     {
         return uuid -> batch.claim(uuid, index);
     }
 
     /** Whether the entity was already in the file before the batch started. */
-    boolean existedBeforeBatch(Object entity)
+    @Override
+    public boolean existedBeforeBatch(Object entity)
     {
         return batch.existedBeforeBatch(entity);
     }
 
     /** Reports the outcome of this operation as its change or its failures. */
-    void record(Outcome outcome)
+    @Override
+    public void record(Outcome outcome)
     {
         switch (outcome)
         {

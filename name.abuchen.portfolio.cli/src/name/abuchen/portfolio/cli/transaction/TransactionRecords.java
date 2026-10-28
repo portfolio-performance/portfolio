@@ -9,10 +9,16 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import com.google.gson.JsonObject;
+
 import name.abuchen.portfolio.cli.command.Decimals;
+import name.abuchen.portfolio.cli.command.FieldFailure;
 import name.abuchen.portfolio.cli.command.MasterData;
+import name.abuchen.portfolio.cli.command.OperationSpec;
+import name.abuchen.portfolio.cli.command.Outcome;
 import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -34,6 +40,16 @@ import name.abuchen.portfolio.money.Values;
 public final class TransactionRecords
 {
     private static final DateTimeFormatter TIME = DateTimeFormatter.ofPattern("HH:mm");
+
+    /**
+     * <code>transaction.add</code>: a thin adapter over {@link #add}. The batch
+     * reports unknown members itself, so the add refuses them without
+     * reporting them again.
+     */
+    public static final OperationSpec<OperationSpec.Context> ADD = new OperationSpec<>(TransactionAdd.OPERATION,
+                    "Adds a transaction in the shape the transactions output uses. Cash-account events (deposit, removal, interest, dividend, fee, tax, refund) are one-sided. BUY and SELL create an investment-account side and a cash-account side together; TRANSFER creates both sides of a cash or security transfer; DELIVERY_INBOUND and DELIVERY_OUTBOUND move shares without a cash side. The response is one created change whose uuid is the record id. A write that would make an investment account's holding of an instrument negative at the end of any date is refused.",
+                    TransactionAdd.SCHEMA, context -> context.record(
+                                    open(context.client(), context::existedBeforeBatch).add(context.json(), false)));
 
     private final Client client;
     private final Predicate<Object> existedBeforeBatch;
@@ -61,6 +77,12 @@ public final class TransactionRecords
         return TransactionShape.recordSchema(description);
     }
 
+    /** The input of an add: a record in the shape the output has, without the members an add derives. */
+    public static Schema addSchema()
+    {
+        return TransactionAdd.SCHEMA;
+    }
+
     /** All records of the client, in no particular order. */
     public List<TransactionRecord> all()
     {
@@ -76,6 +98,60 @@ public final class TransactionRecords
     {
         return all().stream().filter(record -> record.sides().contains(sideUuid)
                         && existedBeforeBatch.test(record.primary())).findFirst();
+    }
+
+    /**
+     * Adds the record the input describes. Every member is checked against
+     * the rules of its type, and the record is checked by core's import
+     * checks and against overselling an investment account's holding; only a
+     * record that passes all of them is put into the model.
+     *
+     * @return {@link Outcome.Applied} with the record as created, or
+     *         {@link Outcome.Refused} with every failure, the model untouched
+     */
+    public Outcome add(JsonObject input)
+    {
+        return add(input, true);
+    }
+
+    /**
+     * @param reportUnknown
+     *            whether a member the add does not declare is reported; if
+     *            not, it still refuses the input, so the failures of the
+     *            refusal may be empty
+     */
+    Outcome add(JsonObject input, boolean reportUnknown)
+    {
+        var result = TransactionAdd.build(client, existedBeforeBatch, input, List.of(), reportUnknown);
+        if (result.built() == null)
+            return new Outcome.Refused(result.failures());
+
+        result.built().insert().run();
+        var record = new Join(result.built().sides()).toRecord(result.built().primary()).orElseThrow();
+        return new Outcome.Applied(Outcome.Entity.TRANSACTION, record.id(), null, render(record));
+    }
+
+    /**
+     * The record the input describes, checked like an add, that replaces the
+     * given sides; null after reporting the failures. Not put into the model.
+     * Transitional: <code>transaction.update</code> needs it until it takes
+     * its own path into this module.
+     */
+    public BuiltRecord replacement(JsonObject input, List<BuiltRecord.Side> replaced, Consumer<FieldFailure> failures)
+    {
+        var result = TransactionAdd.build(client, existedBeforeBatch, input, replaced, false);
+        result.failures().forEach(failures);
+        return result.built();
+    }
+
+    /**
+     * The <code>negative-holding</code> failures, on the field, of removing
+     * the sides. Transitional: <code>transaction.delete</code> needs it until
+     * it moves into this module.
+     */
+    public List<FieldFailure> oversoldWithout(List<BuiltRecord.Side> sides, String field)
+    {
+        return OversellGuard.check(field, OversellGuard.effectsOf(sides), List.of());
     }
 
     /**
@@ -198,6 +274,18 @@ public final class TransactionRecords
             client.getAccounts().forEach(account -> account.getTransactions().forEach(t -> accountOwners.put(t, account)));
             client.getPortfolios().forEach(
                             portfolio -> portfolio.getTransactions().forEach(t -> portfolioOwners.put(t, portfolio)));
+        }
+
+        /** The join of just these sides, such as those of a record just built. */
+        Join(List<BuiltRecord.Side> sides)
+        {
+            for (var side : sides)
+            {
+                if (side.owner() instanceof Account account)
+                    accountOwners.put(side.transaction(), account);
+                else
+                    portfolioOwners.put(side.transaction(), (Portfolio) side.owner());
+            }
         }
 
         /** The record this side starts, or empty if its partner starts it. */

@@ -28,10 +28,6 @@ public final class TransactionShape
                     "DIVIDENDS", "FEES", "FEES_REFUND", "TAXES", "TAX_REFUND", "DELIVERY_INBOUND", "DELIVERY_OUTBOUND",
                     TransactionRecord.TRANSFER);
 
-    /** The types that are recorded in an investment account, as opposed to a cash account. */
-    public static final Set<String> INVESTMENT_ACCOUNT_TYPES = Set.of("BUY", "SELL", "DELIVERY_INBOUND",
-                    "DELIVERY_OUTBOUND");
-
     /** What an orphaned side can add under its raw core type. */
     private static final List<String> ORPHAN_TYPES = List.of("TRANSFER_IN", "TRANSFER_OUT");
 
@@ -169,7 +165,7 @@ public final class TransactionShape
                     UNIT_MEMBERS, Member::declareOutput);
 
     /** A fee, tax or forex gross value as input. */
-    public static final Schema UNIT_INPUT = declare(
+    static final Schema UNIT_INPUT = declare(
                     Schema.object("A fee, tax or forex gross value, in the shape the transactions output uses."),
                     UNIT_MEMBERS, Member::declareInput);
 
@@ -306,7 +302,7 @@ public final class TransactionShape
     }
 
     /** Declares the members of a record that are input on the object, as an add takes them. */
-    public static Schema declareInput(Schema object)
+    static Schema declareInput(Schema object)
     {
         return declare(object, MEMBERS, Member::declareInput);
     }
