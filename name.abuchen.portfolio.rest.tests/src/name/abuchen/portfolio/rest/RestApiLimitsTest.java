@@ -64,4 +64,24 @@ public class RestApiLimitsTest
         assertThat(RestApiLimits.maxConcurrentRequests(2), is(12));
         assertThat(RestApiLimits.maxConcurrentRequests(8), is(30));
     }
+
+    /** the MCP result size: the default without a value, the value within its bounds */
+    @Test
+    public void testTheMcpResultSizeIsTheDefaultOrTheValueWithinItsBounds()
+    {
+        assertThat(RestApiLimits.resolveMaxResultChars(null, false), is(100_000));
+        assertThat(RestApiLimits.resolveMaxResultChars(" ", false), is(100_000));
+        assertThat(RestApiLimits.resolveMaxResultChars("45000", false), is(45_000));
+        assertThat(RestApiLimits.resolveMaxResultChars(" 45_000 ", false), is(45_000));
+    }
+
+    /** outside its bounds the nearer bound, and no number the default */
+    @Test
+    public void testAnMcpResultSizeOutsideItsBoundsIsBounded()
+    {
+        assertThat(RestApiLimits.resolveMaxResultChars("500", false), is(10_000));
+        assertThat(RestApiLimits.resolveMaxResultChars("1000000", false), is(150_000));
+        assertThat(RestApiLimits.resolveMaxResultChars("big", false), is(100_000));
+        assertThat(RestApiLimits.resolveMaxResultChars("45000.5", false), is(100_000));
+    }
 }

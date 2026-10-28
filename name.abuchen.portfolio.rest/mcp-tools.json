@@ -33,7 +33,7 @@
       "operationId": "listInstruments",
       "method": "GET",
       "pathTemplate": "/v1/files/{file}/instruments",
-      "description": "List every instrument in a file — what the application itself labels a *security*: stocks, funds, bonds, crypto, and currency-less series such as an index. Each entry is the complete record, identical to what pp_get_instrument returns, including any custom attributes that are set.\n\nThis is how a name, ISIN, WKN or ticker becomes the `uuid` that every other instrument tool requires - pass it as `query` to get just the matching instruments rather than the whole list, which in a large file is more than one answer can carry.",
+      "description": "List every instrument in a file — what the application itself labels a *security*: stocks, funds, bonds, crypto, and currency-less series such as an index. Each entry is the complete record, identical to what pp_get_instrument returns, including any custom attributes that are set.\n\nThis is how a name, ISIN, WKN or ticker becomes the `uuid` that every other instrument tool requires - pass it as `query` to get just the matching instruments rather than the whole list, which in a large file is more than one answer can carry: it comes back one page at a time, and `page.nextOffset` says where the next one starts.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -45,6 +45,16 @@
             "type": "string",
             "minLength": 1,
             "description": "Only the instruments this finds: one whose name contains it, or whose ISIN, WKN or ticker symbol equals it - ignoring case and surrounding whitespace. Omit it to list every instrument. Use it whenever the user names an instrument: a large file has more instruments than fit in one answer, and a query returns just the ones meant, each with its `uuid`."
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Skip this many instruments: where a page starts, taken from `page.nextOffset` of the page before. Omit it to start at the first. A list too large for one answer comes back as its first page anyway, with `page` saying where the next one starts."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "At most this many instruments. Omit it for as many as fit in one answer."
           }
         },
         "required": [
@@ -68,6 +78,16 @@
           "arg": "query",
           "where": "query",
           "wire": "query"
+        },
+        {
+          "arg": "offset",
+          "where": "query",
+          "wire": "offset"
+        },
+        {
+          "arg": "limit",
+          "where": "query",
+          "wire": "limit"
         }
       ]
     },
@@ -850,7 +870,7 @@
       "operationId": "listTrades",
       "method": "GET",
       "pathTemplate": "/v1/files/{file}/trades",
-      "description": "Matched purchases and sales across the whole file, each with its profit and loss, its holding period and its return. Buys are paired against the sells that closed them, so this answers \"how did that position actually do\" — unlike pp_list_holdings, which values what is held now, and pp_list_instrument_performance, which measures a fixed interval.\n\nA large file has more trades than fit in one answer: narrow it with `from` and `to` to the period the question is about, or to one instrument with pp_list_instrument_trades.\n\nA trade has no id. It is recomputed on every call, it cannot be created or edited through this connector, and changing `grouping` or touching the transactions underneath re-cuts it into different trades entirely. Identify one by the filter that produced it; to change one, the user changes its transactions in the application.\n\nCheck `direction` before doing arithmetic. On a long trade the profit is exit less entry; on a short one it runs the other way, and since share counts are never negative there is nothing in the figures to tell you which.\n\nThe two rates are not the same kind of number: `return` is the gain over the holding period, while `irr` is compounded to a year — a trade held for a few days can show an enormous `irr`, which is the annualization, not a mistake, and for one held only a day or two it often cannot be computed at all and is `null`.\n\n`holdingPeriodDays` is the share-weighted average number of days the shares were held, so with several purchases it is shorter than `end` less `start`. A trade's `note` is the note of its last transaction.",
+      "description": "Matched purchases and sales across the whole file, each with its profit and loss, its holding period and its return. Buys are paired against the sells that closed them, so this answers \"how did that position actually do\" — unlike pp_list_holdings, which values what is held now, and pp_list_instrument_performance, which measures a fixed interval.\n\nA large file has more trades than fit in one answer: narrow it with `from` and `to` to the period the question is about, or to one instrument with pp_list_instrument_trades; what still does not fit comes back one page at a time (`offset`).\n\nWhat was sold in a period is `status: [\"closed\"]` with `from` and `to`, keeping the trades whose `end` lies in it - one sold later was held in the period too. Single purchases and sales are not available here: a trade is their matched result, not a transaction.\n\nA trade has no id. It is recomputed on every call, it cannot be created or edited through this connector, and changing `grouping` or touching the transactions underneath re-cuts it into different trades entirely. Identify one by the filter that produced it; to change one, the user changes its transactions in the application.\n\nCheck `direction` before doing arithmetic. On a long trade the profit is exit less entry; on a short one it runs the other way, and since share counts are never negative there is nothing in the figures to tell you which.\n\nThe two rates are not the same kind of number: `return` is the gain over the holding period, while `irr` is compounded to a year — a trade held for a few days can show an enormous `irr`, which is the annualization, not a mistake, and for one held only a day or two it often cannot be computed at all and is `null`.\n\n`holdingPeriodDays` is the share-weighted average number of days the shares were held, so with several purchases it is shorter than `end` less `start`. A trade's `note` is the note of its last transaction.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -914,6 +934,16 @@
             "type": "string",
             "format": "date",
             "description": "Last day of the period, as YYYY-MM-DD, on or after `from`. Only trades that started on or before it are returned. Together with `from` this keeps the trades held at some point of the period: closed within it, or open through it. Omit it for no upper bound."
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Skip this many trades, taken from `page.nextOffset` - as on pp_list_instruments."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "At most this many trades; omit it for as many as fit in one answer."
           }
         },
         "required": [
@@ -967,6 +997,16 @@
           "arg": "to",
           "where": "query",
           "wire": "to"
+        },
+        {
+          "arg": "offset",
+          "where": "query",
+          "wire": "offset"
+        },
+        {
+          "arg": "limit",
+          "where": "query",
+          "wire": "limit"
         }
       ]
     },
@@ -1043,6 +1083,16 @@
             "type": "string",
             "format": "date",
             "description": "Last day of the period, as YYYY-MM-DD, on or after `from`. Only trades that started on or before it are returned. Together with `from` this keeps the trades held at some point of the period: closed within it, or open through it. Omit it for no upper bound."
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Skip this many trades, taken from `page.nextOffset` - as on pp_list_instruments."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "At most this many trades; omit it for as many as fit in one answer."
           }
         },
         "required": [
@@ -1102,6 +1152,16 @@
           "arg": "to",
           "where": "query",
           "wire": "to"
+        },
+        {
+          "arg": "offset",
+          "where": "query",
+          "wire": "offset"
+        },
+        {
+          "arg": "limit",
+          "where": "query",
+          "wire": "limit"
         }
       ]
     }
