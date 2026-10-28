@@ -76,9 +76,19 @@ public final class InstrumentPerformanceHandler
         sorted.sort(Comparator.comparing(LazySecurityPerformanceRecord::getSecurityName, TextUtil::compare)
                         .thenComparing(record -> record.getSecurity().getUUID()));
 
+        // serializing a record is what computes its lazy figures - the daily
+        // series behind timeWeighted and risk above all - so this loop is where
+        // the time goes, and where a streamed MCP call hears how far it has come
+        // and stops between two instruments when its caller gave up
+        var progress = Progress.current();
         var items = new JsonArray();
         for (LazySecurityPerformanceRecord record : sorted)
+        {
+            progress.checkCancelled();
+            progress.step(items.size(), sorted.size(),
+                            "instrument " + (items.size() + 1) + " of " + sorted.size()); //$NON-NLS-1$ //$NON-NLS-2$
             items.add(EntityJson.instrumentPerformance(record, params));
+        }
 
         var json = EntityJson.instrumentPerformanceContext(params);
         json.add("items", items); //$NON-NLS-1$

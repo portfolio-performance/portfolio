@@ -12,6 +12,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
@@ -32,6 +33,7 @@ import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.rest.internal.ApiException;
+import name.abuchen.portfolio.rest.internal.Progress;
 import name.abuchen.portfolio.rest.internal.Request;
 import name.abuchen.portfolio.rest.internal.Response;
 import name.abuchen.portfolio.rest.internal.Router;
@@ -279,7 +281,7 @@ public class UiDeadlineHonestyTest
                     while (!finish.get())
                         Thread.onSpinWait();
                     return null;
-                }, Duration.ofMillis(200), slots, executor);
+                }, Duration.ofMillis(200), slots, Progress.NONE, executor);
                 fail("expected the calculation deadline to expire");
             }
             catch (ApiException e)
@@ -438,6 +440,81 @@ public class UiDeadlineHonestyTest
         }
     }
 
+    /** a caller who gave up leaves the queue at once, and its place goes to the next */
+    @Test
+    public void testACancelledWaitLeavesTheQueue() throws Exception
+    {
+        var slots = slots(1, 2, Duration.ofSeconds(30));
+        var release = new CountDownLatch(1);
+        var cancelled = new CancellableProgress();
+
+        try
+        {
+            holdSlot(slots, release);
+            waitUntil(() -> slots.available() == 0);
+
+            var waiter = new CompletableFuture<Response>();
+            Thread.ofPlatform().start(() -> complete(waiter,
+                            () -> ApiRoutes.computeBounded(() -> null, Duration.ofSeconds(5), slots, cancelled)));
+            waitUntil(() -> slots.waiting() == 1);
+
+            cancelled.cancel();
+            try
+            {
+                waiter.get(5, TimeUnit.SECONDS);
+                fail("expected the cancelled wait to end in a cancellation");
+            }
+            catch (CancellationException e)
+            {
+                // a future completed with a cancellation throws it as it is
+            }
+            assertThat(slots.waiting(), is(0));
+            // it never took the slot, so the one running still holds the only one
+            assertThat(slots.available(), is(0));
+        }
+        finally
+        {
+            release.countDown();
+        }
+    }
+
+    /**
+     * A running calculation whose caller gave up: the caller stops waiting at
+     * once, and the slot comes free when the work stops - here at the point
+     * where it checks, as the API's own loops do.
+     */
+    @Test
+    public void testACancelledCalculationStopsAndGivesBackItsSlot() throws Exception
+    {
+        var slots = slots(1, 0, Duration.ofSeconds(5));
+        var cancelled = new CancellableProgress();
+        var started = new CountDownLatch(1);
+
+        var caller = new CompletableFuture<Response>();
+        Thread.ofPlatform().start(() -> complete(caller, () -> ApiRoutes.computeBounded(() -> {
+            started.countDown();
+            while (true)
+            {
+                Progress.current().checkCancelled();
+                Thread.onSpinWait();
+            }
+        }, Duration.ofSeconds(30), slots, cancelled)));
+
+        assertThat(started.await(5, TimeUnit.SECONDS), is(true));
+        cancelled.cancel();
+
+        try
+        {
+            caller.get(5, TimeUnit.SECONDS);
+            fail("expected the cancelled calculation to end in a cancellation");
+        }
+        catch (CancellationException e)
+        {
+            // a future completed with a cancellation throws it as it is
+        }
+        waitUntil(() -> slots.available() == 1);
+    }
+
     /**
      * A waiter that gives up leaves only its own place in the queue - also when
      * it is not at the front: the one ahead of it keeps waiting and gets the
@@ -501,12 +578,20 @@ public class UiDeadlineHonestyTest
     @Test
     public void testACalculationThatNeverStartedGivesBackItsSlotOnTimeout() throws Exception
     {
-        assertSlotComesBackWhenNeverStarted();
+        assertSlotComesBackWhenNeverStarted(false);
     }
 
-    private void assertSlotComesBackWhenNeverStarted() throws Exception
+    /** the same for a calculation whose caller cancelled before it started */
+    @Test
+    public void testACalculationThatNeverStartedGivesBackItsSlotOnCancellation() throws Exception
+    {
+        assertSlotComesBackWhenNeverStarted(true);
+    }
+
+    private void assertSlotComesBackWhenNeverStarted(boolean cancel) throws Exception
     {
         var slots = slots(1, 0, Duration.ofSeconds(5));
+        var progress = new CancellableProgress();
         var ran = new AtomicBoolean();
 
         // the only thread is busy, so the calculation stays queued behind it
@@ -525,16 +610,24 @@ public class UiDeadlineHonestyTest
                 }
             });
 
+            if (cancel)
+                progress.cancel();
+
             try
             {
                 ApiRoutes.computeBounded(() -> {
                     ran.set(true);
                     return null;
-                }, Duration.ofMillis(300), slots, executor);
+                }, cancel ? Duration.ofSeconds(5) : Duration.ofMillis(300), slots, progress, executor);
                 fail("expected the calculation to be given up on");
+            }
+            catch (CancellationException e)
+            {
+                assertThat(cancel, is(true));
             }
             catch (ApiException e)
             {
+                assertThat(cancel, is(false));
                 assertThat(e.getType(), is("calculation-timeout"));
             }
 
@@ -583,7 +676,7 @@ public class UiDeadlineHonestyTest
                     ApiRoutes.computeBounded(() -> {
                         ran.set(true);
                         return null;
-                    }, Duration.ofSeconds(10), slots, executor);
+                    }, Duration.ofSeconds(10), slots, Progress.NONE, executor);
                     outcome.complete(null);
                 }
                 catch (Throwable t)
@@ -689,6 +782,36 @@ public class UiDeadlineHonestyTest
         }
     }
 
+    /** the stages a calculation passes through are reported, in order */
+    @Test
+    public void testACalculationReportsWaitingAndCalculating() throws Exception
+    {
+        var slots = slots(1, 1, Duration.ofSeconds(5));
+        var release = new CountDownLatch(1);
+        var phases = new CopyOnWriteArrayList<String>();
+        var recording = new CancellableProgress()
+        {
+            @Override
+            public void phase(String message)
+            {
+                phases.add(message);
+            }
+        };
+
+        var first = holdSlot(slots, release);
+        waitUntil(() -> slots.available() == 0);
+
+        var waiter = new CompletableFuture<Response>();
+        Thread.ofPlatform().start(() -> complete(waiter,
+                        () -> ApiRoutes.computeBounded(() -> null, Duration.ofSeconds(5), slots, recording)));
+        waitUntil(() -> !phases.isEmpty());
+        release.countDown();
+        waiter.get(5, TimeUnit.SECONDS);
+        first.get(5, TimeUnit.SECONDS);
+
+        assertThat(phases, is(List.of("waiting for a calculation slot to come free", "calculating")));
+    }
+
     /** a failure inside the calculation is that failure, not a timeout */
     @Test
     public void testACalculationFailureIsPassedThrough() throws Exception
@@ -703,6 +826,35 @@ public class UiDeadlineHonestyTest
         catch (ApiException e)
         {
             assertThat(e.getType(), is("not-found"));
+        }
+    }
+
+    /** a progress that reports nothing and is cancelled when told */
+    private static class CancellableProgress implements Progress
+    {
+        private volatile boolean cancelled;
+
+        void cancel()
+        {
+            cancelled = true;
+        }
+
+        @Override
+        public void phase(String message)
+        {
+            // not recorded
+        }
+
+        @Override
+        public void step(int done, int total, String message)
+        {
+            // not recorded
+        }
+
+        @Override
+        public boolean isCancelled()
+        {
+            return cancelled;
         }
     }
 
