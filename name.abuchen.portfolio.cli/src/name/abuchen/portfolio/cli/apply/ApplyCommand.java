@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParseException;
@@ -14,14 +12,14 @@ import com.google.gson.JsonParser;
 
 import name.abuchen.portfolio.cli.Commands;
 import name.abuchen.portfolio.cli.command.CliException;
+import name.abuchen.portfolio.cli.command.ClientFile;
 import name.abuchen.portfolio.cli.command.CommandContext;
 import name.abuchen.portfolio.cli.command.CommandSpec;
+import name.abuchen.portfolio.cli.command.Declaration;
 import name.abuchen.portfolio.cli.command.ErrorCode;
+import name.abuchen.portfolio.cli.command.Facet;
 import name.abuchen.portfolio.cli.command.OptionSpec;
-import name.abuchen.portfolio.cli.command.Response;
-import name.abuchen.portfolio.cli.command.ResponseMeta;
 import name.abuchen.portfolio.cli.command.Schema;
-import name.abuchen.portfolio.cli.file.SafeWrite;
 
 /**
  * <code>pp-cli apply</code>: applies a batch of write operations atomically
@@ -32,7 +30,13 @@ public final class ApplyCommand
     private static final OptionSpec INPUT = new OptionSpec("input", "file|-",
                     "JSON document {\"operations\": [...]} to apply: a file, or - for stdin. If stdin carries the batch, give the password of an encrypted file through PP_PASSWORD.")
                                     .asRequired();
-    private static final OptionSpec DRY_RUN = OptionSpec.flag("dry-run",
+
+    /** The batch of <code>--input</code>; validating its operations happens in the write. */
+    static final Facet<JsonArray> BATCH = Facet.of(Declaration.empty().options(INPUT).codes(
+                    ErrorCode.INPUT_UNREADABLE, ErrorCode.INVALID_INPUT, ErrorCode.VALIDATION_FAILED),
+                    ApplyCommand::readOperations);
+
+    private static final Facet<ClientFile.Writer> WRITE = ClientFile.write(
                     "Validate the batch and report the changes and the would-be backup path without writing any file, backup or lock.");
 
     private static final Schema CHANGE = Schema.object("What an operation did to one entity.")
@@ -52,39 +56,22 @@ public final class ApplyCommand
                                     .property("updated", Schema.array("Entities the operation changed.", CHANGE))
                                     .property("deleted", Schema.array("Entities the operation deleted.", CHANGE))));
 
-    public static final CommandSpec SPEC = new CommandSpec("apply",
+    public static final CommandSpec SPEC = CommandSpec.of("apply",
                     "Applies a batch of write operations atomically; see the operations list. Writes by default, keeping the file's format, after saving a backup in a backups folder next to it (--backup-dir, --keep). A write is refused, with nothing changed, if it would introduce a consistency issue that core's checker did not already find, if the file changed on disk since it was read, or on macOS if the file is open in another program (unless --force). On any validation failure nothing is written and every failure is reported with operationIndex, field, code and message.",
-                    true, applyOptions(), DATA, ResponseMeta.writeSchema(), SafeWrite.WARNINGS,
-                    ApplyCommand::execute);
+                    DATA, ApplyCommand::execute, BATCH, WRITE);
 
     private ApplyCommand()
     {
     }
 
-    private static List<OptionSpec> applyOptions()
+    private static Object execute(CommandContext run) throws CliException
     {
-        var options = new ArrayList<>(List.of(INPUT, DRY_RUN));
-        options.addAll(SafeWrite.OPTIONS);
-        return options;
-    }
+        var operations = run.get(BATCH);
+        var results = run.get(WRITE).write(client -> ApplyBatch.run(client, operations, Commands.OPERATIONS));
 
-    private static Response execute(CommandContext context) throws CliException
-    {
-        var operations = readOperations(context);
-        var dryRun = context.flag(DRY_RUN);
-
-        try (var opened = context.openClient())
-        {
-            var outcome = SafeWrite.run(opened, SafeWrite.settings(context, dryRun),
-                            client -> ApplyBatch.run(client, operations, Commands.OPERATIONS));
-
-            var data = new LinkedHashMap<String, Object>();
-            data.put("results", outcome.result());
-
-            var response = Response.of(data, ResponseMeta.written(context, outcome));
-            outcome.warnings().forEach(response::warn);
-            return response;
-        }
+        var data = new LinkedHashMap<String, Object>();
+        data.put("results", results);
+        return data;
     }
 
     private static JsonArray readOperations(CommandContext context) throws CliException

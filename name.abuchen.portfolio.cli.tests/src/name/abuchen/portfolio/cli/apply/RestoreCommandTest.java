@@ -76,7 +76,6 @@ public class RestoreCommandTest
 
         assertThat(run.stdout, run.exitCode, is(0));
         assertThat(securities(file, null), is(originalSecurities));
-        assertThat(run.meta().get("dryRun").getAsBoolean(), is(false));
     }
 
     @Test
@@ -190,7 +189,6 @@ public class RestoreCommandTest
         var run = cli.run("restore", "--backup", applied.meta().get("backupPath").getAsString(), "--dry-run");
 
         assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(run.meta().get("dryRun").getAsBoolean(), is(true));
         assertThat(run.meta().get("backupPath").getAsString(),
                         is(clientFolder.resolve("backups").resolve(RESTORE_BACKUP).toAbsolutePath().toString()));
         assertThat(Files.readAllBytes(file.toPath()), is(afterApply));

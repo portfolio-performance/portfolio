@@ -21,6 +21,7 @@ import name.abuchen.portfolio.cli.CliRun;
 import name.abuchen.portfolio.cli.SchemaValidator;
 import name.abuchen.portfolio.cli.file.FileFormat;
 import name.abuchen.portfolio.cli.file.LoadedClient;
+import name.abuchen.portfolio.cli.file.WriteEnvironment;
 import name.abuchen.portfolio.model.Client;
 
 /**
@@ -55,6 +56,13 @@ public final class FacetHarness
         }
     }
 
+    /** What the probe's handler does with the resolved value, e.g. write through a writer. */
+    @FunctionalInterface
+    public interface Body<T>
+    {
+        void accept(T value) throws CliException;
+    }
+
     private FacetHarness()
     {
     }
@@ -69,14 +77,25 @@ public final class FacetHarness
      */
     public static <T> Result<T> run(Facet<T> facet, List<String> args, Client client)
     {
+        return run(facet, args, client, value -> {
+        });
+    }
+
+    /**
+     * Like {@link #run(Facet, List, Client)}, but the probe's handler passes
+     * the value to <code>body</code> before the facet reports.
+     */
+    public static <T> Result<T> run(Facet<T> facet, List<String> args, Client client, Body<T> body)
+    {
         var resolved = new AtomicReference<T>();
         var probe = CommandSpec.of("probe", "A probe.", Schema.object("Data."), run -> {
             resolved.set(run.get(facet));
+            body.accept(run.get(facet));
             return Map.of();
         }, facet);
 
         var context = new CommandContext(options(facet, args), Map.of(), new ByteArrayInputStream(new byte[0]),
-                        new PrintStream(new ByteArrayOutputStream()), CliRun.CLOCK, "Linux", null);
+                        new PrintStream(new ByteArrayOutputStream()), CliRun.CLOCK, "Linux", WriteEnvironment.SYSTEM);
         if (client != null)
             context.withClient(new LoadedClient(client, FileFormat.XML));
 
