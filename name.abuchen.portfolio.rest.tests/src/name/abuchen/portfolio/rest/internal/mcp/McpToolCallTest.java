@@ -2,7 +2,10 @@ package name.abuchen.portfolio.rest.internal.mcp;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.Matchers.not;
 
 import java.nio.charset.StandardCharsets;
@@ -17,12 +20,18 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 
+import name.abuchen.portfolio.junit.AccountBuilder;
+import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.rest.ApiRoutes;
 import name.abuchen.portfolio.rest.ClientStore;
 import name.abuchen.portfolio.rest.FileAccessRegistry;
@@ -42,6 +51,7 @@ public class McpToolCallTest
 
     private IEclipsePreferences node;
     private Router router;
+    private FakeHost host;
     private Client client;
     private Security security;
     private String fileId;
@@ -59,7 +69,7 @@ public class McpToolCallTest
         registry.setAlias(FILE, "sample");
         fileId = registry.byPath(FILE).orElseThrow().uuid();
 
-        var host = new FakeHost(List.of(new FakeHost.FakeOpenFile(FILE, "mcp", client)));
+        host = new FakeHost(List.of(new FakeHost.FakeOpenFile(FILE, "mcp", client)));
         router = ApiRoutes.create(registry, host,
                         new PairingService(new ClientStore(Path.of("target", "unused-client-store")), host));
     }
@@ -140,6 +150,28 @@ public class McpToolCallTest
         assertThat(text(padded), containsString("\"uuid\":\"" + security.getUUID() + "\""));
     }
 
+    /**
+     * The prose tells a model what to do; the trailer states the same fact as
+     * data. A 404 is never retryable — the same id will not start working — and
+     * a locked server is, once the user has closed their dialog.
+     */
+    @Test
+    public void testARefusalSaysWhetherTryingAgainCanHelp()
+    {
+        var notFound = text(call("pp_get_instrument", "{\"file\":\"sample\",\"uuid\":\"00000000-0000-0000-0000-000000000000\"}"));
+        assertThat(notFound, containsString("retryable: no"));
+        assertThat(notFound, containsString("reasonCode: not-found"));
+        assertThat(notFound, not(containsString("retryAfterSeconds")));
+
+        // only a write is refused while the user edits; reads still answer
+        host.setUserEditing(true);
+        var locked = text(call("pp_update_instrument",
+                        "{\"file\":\"sample\",\"uuid\":\"" + security.getUUID() + "\",\"note\":\"seen\"}"));
+        assertThat(locked, containsString("retryable: yes"));
+        assertThat(locked, containsString("reasonCode: user-interaction"));
+        assertThat(locked, containsString("retryAfterSeconds: 5"));
+    }
+
     /** the listing names the value to send as `file`, which is what stops a guess */
     @Test
     public void testTheFileListingNamesTheAddressToSend()
@@ -165,6 +197,19 @@ public class McpToolCallTest
         assertThat(text(result), containsString("not saved to disk"));
     }
 
+    /** a patch that restates the stored value changed nothing, and says so */
+    @Test
+    public void testAPatchThatRestatesAValueSaysNothingChanged()
+    {
+        security.setNote("seen");
+        var result = call("pp_update_instrument",
+                        "{\"file\":\"sample\",\"uuid\":\"" + security.getUUID() + "\",\"note\":\"seen\"}");
+
+        assertThat(isError(result), is(false));
+        assertThat(text(result), containsString("already had that value"));
+        assertThat(text(result), not(containsString("not saved to disk")));
+    }
+
     /** a merge patch clears a field when given null, which absent must not do */
     @Test
     public void testAnExplicitNullClearsAndAnAbsentArgumentDoesNot()
@@ -179,13 +224,17 @@ public class McpToolCallTest
     }
 
     @Test
-    public void testADeleteHasNoPayloadButStillSaysItIsNotSaved()
+    public void testADeleteNamesWhatItRemovedAndSaysItIsNotSaved()
     {
+        var name = security.getName();
         var result = call("pp_delete_instrument",
                         "{\"file\":\"sample\",\"uuid\":\"" + security.getUUID() + "\"}");
 
         assertThat(isError(result), is(false));
-        assertThat(text(result), containsString("returned nothing to show"));
+        assertThat(text(result), containsString("\"deleted\":true"));
+        assertThat(text(result), containsString("\"uuid\":\"" + security.getUUID() + "\""));
+        assertThat(text(result), containsString("\"name\":" + new JsonPrimitive(name)));
+        assertThat(text(result), not(containsString("returned nothing to show")));
         assertThat(text(result), containsString("not saved to disk"));
         assertThat(client.getSecurities().size(), is(0));
     }
@@ -217,9 +266,69 @@ public class McpToolCallTest
 
         var result = call("pp_list_instruments", "{\"file\":\"sample\"}");
 
-        assertThat(text(result).length(), is(McpEndpoint.MAX_RESULT_CHARS));
+        // the guidance is reserved before the payload is cut, so the result uses
+        // at most the allowance rather than filling it exactly
+        assertThat(text(result).length(), is(lessThanOrEqualTo(McpEndpoint.MAX_RESULT_CHARS)));
         assertThat(text(result), containsString("TRUNCATED"));
-        assertThat(text(result), containsString("ask for a narrower question"));
+        assertThat(text(result), containsString("ask a narrower question"));
+    }
+
+    /**
+     * The advice is the part that tells a model to ask smaller, so it has to
+     * survive the cut. Appending it after the cap put it past the limit where
+     * nothing reads it, and the marker alone only says the answer was cut.
+     */
+    @Test
+    public void testTheOversizeAdviceSurvivesTheCut()
+    {
+        for (int ii = 0; ii < 200; ii++)
+            new SecurityBuilder().addTo(client).setName("ACME " + ii + " " + "x".repeat(600));
+
+        var instruments = text(call("pp_list_instruments", "{\"file\":\"sample\"}"));
+
+        assertThat(instruments.length(), is(lessThanOrEqualTo(McpEndpoint.MAX_RESULT_CHARS)));
+        assertThat(instruments, containsString("pp_get_instrument"));
+        assertThat(instruments, containsString("again with `query`"));
+        assertThat(instruments, containsString("TRUNCATED"));
+    }
+
+    /**
+     * The cap applied by the endpoint itself, on the one report that cannot be
+     * narrowed: `pp_get_overall_performance` has no metric groups to drop, so the
+     * advice is the only thing left worth keeping, and it is what tells a model to
+     * answer from the fragment rather than guess the rest of the reconciliation.
+     */
+    @Test
+    public void testTheAdviceForARouteThatCannotBeNarrowedSurvivesTheCap()
+    {
+        var tool = McpTools.byName("pp_get_overall_performance").orElseThrow();
+
+        // a payload no fixture produces on its own: an oversized report is what
+        // this path exists for, and only a synthetic one reaches the real limit
+        var payload = new JsonObject();
+        payload.addProperty("openingDate", "2024-01-01");
+        payload.addProperty("closingDate", "2024-12-31");
+        payload.addProperty("reportingCurrency", "EUR");
+
+        var warnings = new JsonArray();
+        for (int ii = 0; ii < 1_200; ii++)
+        {
+            var warning = new JsonObject();
+            warning.addProperty("currency", "X" + ii);
+            warning.addProperty("reportingCurrency", "EUR");
+            warning.addProperty("reason", "no exchange rate series for this pair, converted at 1:1 " + ii);
+            warnings.add(warning);
+        }
+        payload.add("fxWarnings", warnings);
+
+        var arguments = JsonParser.parseString("{\"file\":\"sample\",\"openingDate\":\"2024-01-01\"}")
+                        .getAsJsonObject();
+
+        var fitted = McpEndpoint.fit(tool, arguments, payload, McpEndpoint.MAX_RESULT_CHARS);
+
+        assertThat(fitted.length(), is(lessThanOrEqualTo(McpEndpoint.MAX_RESULT_CHARS)));
+        assertThat(fitted, containsString("TRUNCATED"));
+        assertThat(fitted, containsString("cannot be narrowed further"));
     }
 
     /**
@@ -242,11 +351,153 @@ public class McpToolCallTest
         assertThat(isError(performance), is(false));
     }
 
+    /**
+     * A report that was narrowed to fit and still did not fit cannot be told to
+     * narrow it again: the advice has to name what is left to change instead, and
+     * it has to survive the cut, which is the part a model acts on.
+     */
+    @Test
+    public void testTheAdviceAfterANarrowedReportNamesWhatIsLeftToChange()
+    {
+        var account = new AccountBuilder().addTo(client);
+
+        // an instrument the interval never touched is not in the report at all,
+        // so the fixture has to trade each one to make the report large
+        for (int ii = 0; ii < 200; ii++)
+        {
+            var security = new SecurityBuilder().addPrice("2024-06-01", Values.Quote.factorize(1000)).addTo(client);
+            security.setName("ACME " + ii + " " + "x".repeat(600));
+
+            new PortfolioBuilder(account) //
+                            .buy(security, "2024-02-01", Values.Share.factorize(10), Values.Amount.factorize(1000)) //
+                            .sell(security, "2024-09-01", Values.Share.factorize(10), Values.Amount.factorize(1200)) //
+                            .addTo(client);
+        }
+
+        var result = text(call("pp_list_instrument_performance",
+                        "{\"file\":\"sample\",\"openingDate\":\"2024-01-01\",\"closingDate\":\"2024-12-31\"}"));
+
+        assertThat(result.length(), is(lessThanOrEqualTo(McpEndpoint.MAX_RESULT_CHARS)));
+        assertThat(result, containsString("TRUNCATED"));
+        assertThat(result, containsString("already leaves out"));
+        assertThat(result, containsString("`timeWeighted`"));
+        assertThat(result, not(containsString("ask again without them")));
+        assertThat(result, containsString("pp_get_instrument_performance"));
+        assertThat(result, containsString("pp_get_instrument_performance for one instrument at a time."));
+    }
+
+    /**
+     * Cutting the metric groups from the answer at hand gives exactly what the
+     * narrowed request would have returned - for the list and for one item -
+     * which is what makes it safe to skip the second calculation.
+     */
+    @Test
+    public void testNarrowingIsWhatTheNarrowedRequestReturns() throws Exception
+    {
+        var account = new AccountBuilder().addTo(client);
+        Security traded = null;
+        for (int ii = 0; ii < 3; ii++)
+        {
+            traded = new SecurityBuilder().addPrice("2024-03-01", Values.Quote.factorize(100 + ii))
+                            .addPrice("2024-06-01", Values.Quote.factorize(120 + ii)).addTo(client);
+            traded.setName("Traded " + ii);
+            new PortfolioBuilder(account) //
+                            .buy(traded, "2024-02-01", Values.Share.factorize(10), Values.Amount.factorize(1000)) //
+                            .sell(traded, "2024-09-01", Values.Share.factorize(5), Values.Amount.factorize(700)) //
+                            .addTo(client);
+        }
+
+        var keep = McpEnvelope.NARROWED_METRICS;
+        var narrowedQuery = Map.of("openingDate", "2024-01-01", "closingDate", "2024-12-31", "metrics",
+                        String.join(",", keep));
+        var fullQuery = Map.of("openingDate", "2024-01-01", "closingDate", "2024-12-31");
+
+        var list = "/v1/files/" + fileId + "/performance/instruments";
+        assertThat(McpEnvelope.narrow(get(list, fullQuery), keep), is(get(list, narrowedQuery)));
+
+        var item = list + "/" + traded.getUUID();
+        assertThat(McpEnvelope.narrow(get(item, fullQuery), keep), is(get(item, narrowedQuery)));
+    }
+
+    /**
+     * A report too large to return is cut down from the answer already
+     * computed: one trip to the UI thread for the file, one calculation - not a
+     * second one for the narrowed question, which would take another slot.
+     */
+    @Test
+    public void testAnOversizedReportIsNarrowedWithoutASecondCalculation() throws Exception
+    {
+        var account = new AccountBuilder().addTo(client);
+        // enough instruments that the full report does not fit, few enough that
+        // the narrowed one does
+        for (int ii = 0; ii < 150; ii++)
+        {
+            var traded = new SecurityBuilder().addPrice("2024-06-01", Values.Quote.factorize(1000)).addTo(client);
+            traded.setName("ACME " + ii);
+            new PortfolioBuilder(account) //
+                            .buy(traded, "2024-02-01", Values.Share.factorize(10), Values.Amount.factorize(1000)) //
+                            .sell(traded, "2024-09-01", Values.Share.factorize(10), Values.Amount.factorize(1200)) //
+                            .addTo(client);
+        }
+
+        var path = "/v1/files/" + fileId + "/performance/instruments";
+        var full = get(path, Map.of("openingDate", "2024-01-01", "closingDate", "2024-12-31"));
+        // the fixture is built so that only the narrowed report fits, as the
+        // model reads it
+        var tool = McpTools.byName("pp_list_instrument_performance").orElseThrow();
+        assertThat(McpEnvelope.render(tool, new JsonObject(), full, List.of()).length(),
+                        is(greaterThan(McpEndpoint.MAX_RESULT_CHARS)));
+        assertThat(McpEnvelope.render(tool, new JsonObject(), McpEnvelope.narrow(full, McpEnvelope.NARROWED_METRICS),
+                        List.of()).length(), is(lessThan(McpEndpoint.MAX_RESULT_CHARS - 2_000)));
+
+        var before = host.callablesRun();
+        var result = text(call("pp_list_instrument_performance",
+                        "{\"file\":\"sample\",\"openingDate\":\"2024-01-01\",\"closingDate\":\"2024-12-31\"}"));
+
+        assertThat(result, containsString("Narrowed to fit"));
+        assertThat(result, not(containsString("TRUNCATED")));
+        assertThat(host.callablesRun() - before, is(1));
+    }
+
     /** and an ordinary portfolio stays well below the cap */
     @Test
     public void testAnOrdinaryResultIsNotTruncated()
     {
         assertThat(text(call("pp_list_instruments", "{\"file\":\"sample\"}")), not(containsString("TRUNCATED")));
+    }
+
+    /**
+     * A merge patch that names no writable field is a no-op the API accepts, not
+     * a 400 about the body: the tool's arguments live in the path, so the body it
+     * sends is empty, and an empty patch changes nothing rather than failing.
+     */
+    @Test
+    public void testAnEmptyPatchReturnsTheInstrumentAndSaysNothingChanged()
+    {
+        var result = call("pp_update_instrument", "{\"file\":\"sample\",\"uuid\":\"" + security.getUUID() + "\"}");
+
+        assertThat(isError(result), is(false));
+        assertThat(text(result), containsString("Nothing changed"));
+        assertThat(text(result), not(containsString("not saved to disk")));
+        assertThat(security.getNote(), is((String) null));
+    }
+
+    /** a value that cannot be an id must not reach a route that answers 404 - or worse */
+    @Test
+    public void testAUuidThatIsNotAnIdIsRefusedBeforeTheRoute()
+    {
+        var result = call("pp_get_instrument", "{\"file\":\"sample\",\"uuid\":\"attribute-types\"}");
+
+        assertThat(isError(result), is(true));
+        assertThat(text(result), containsString("`uuid` must be an entity uuid as pp_list_instruments reports it"));
+        assertThat(text(result), containsString("reasonCode: misshapen-argument"));
+        assertThat(text(result), containsString("retryable: no"));
+
+        // an account tool names the list its uuids come from, not the instruments
+        var cash = call("pp_get_cash_account", "{\"file\":\"sample\",\"uuid\":\"cash\"}");
+        assertThat(text(cash), containsString("as pp_list_cash_accounts reports it"));
+        var investment = call("pp_get_investment_account", "{\"file\":\"sample\",\"uuid\":\"depot\"}");
+        assertThat(text(investment), containsString("as pp_list_investment_accounts reports it"));
     }
 
     /** a wrong type is refused here rather than surfacing as an endpoint validation error */
@@ -281,6 +532,14 @@ public class McpToolCallTest
     }
 
     // ── helpers ─────────────────────────────────────────────────────────────
+
+    /** a REST read through the same routing table, as parsed JSON */
+    private JsonElement get(String path, Map<String, String> query) throws Exception
+    {
+        var match = router.match("GET", path);
+        var response = match.handler().handle(new Request("GET", path, match.pathParams(), query, new byte[0]));
+        return JsonParser.parseString(new String(response.body(), StandardCharsets.UTF_8));
+    }
 
     private JsonObject call(String tool, String arguments)
     {

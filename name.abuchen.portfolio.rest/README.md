@@ -172,7 +172,8 @@ file dirty. The response header `X-Portfolio-Changed: true|false` says which of 
 
 `204 No Content` on success. **409** if transactions or investment plans reference the instrument —
 deleting it in the application would cascade into transaction history, which the API refuses to do
-on a client's behalf. Watchlist and taxonomy membership do not block the delete.
+on a client's behalf. Watchlist and taxonomy membership do not block the delete. Over MCP the
+result names what was removed: `pp_delete_instrument` reads the instrument before deleting it.
 
 ### `GET /v1/files/{file}/cash-accounts[/{uuid}]`
 
