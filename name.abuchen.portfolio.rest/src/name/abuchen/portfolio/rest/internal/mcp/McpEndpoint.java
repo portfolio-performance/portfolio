@@ -1,7 +1,10 @@
 package name.abuchen.portfolio.rest.internal.mcp;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -11,7 +14,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.rest.RejectedConnections;
@@ -52,6 +58,14 @@ public final class McpEndpoint
      */
     public static final int MAX_RESULT_CHARS = 100_000;
 
+    /**
+     * How many JSON-RPC messages one HTTP request may carry. Protocol
+     * 2025-06-18 dropped batching; accepting a batch is leniency, and an
+     * unbounded one is how a single request queues an arbitrary number of tool
+     * calls against the server.
+     */
+    private static final int MAX_BATCH_MESSAGES = 32;
+
     private static final String NEWEST_SUPPORTED_PROTOCOL_VERSION = "2025-06-18";
 
     private static final Set<String> SUPPORTED_PROTOCOL_VERSIONS = Set.of("2025-06-18", "2025-03-26", "2024-11-05");
@@ -81,13 +95,18 @@ public final class McpEndpoint
         JsonElement message;
         try
         {
-            message = JsonParser.parseString(new String(request.body(), StandardCharsets.UTF_8));
+            // Gson keeps the last of repeated keys silently, and the Gson in the
+            // target platform has no way to ask for the other behaviour, so the
+            // message is read here name by name. A message that names one key
+            // twice is a fault in whatever built it, and the caller has to hear it.
+            var reader = new JsonReader(new StringReader(new String(request.body(), StandardCharsets.UTF_8)));
+            message = readMessage(reader);
         }
-        catch (JsonSyntaxException e)
+        catch (JsonSyntaxException | IOException e)
         {
             // A malformed body is a fault in whatever is speaking to us, not
             // something a model ever sees, so it is answered on the wire.
-            return Response.json(400, error(JsonNull.INSTANCE, PARSE_ERROR, "request body is not valid JSON"));
+            return Response.json(400, error(JsonNull.INSTANCE, PARSE_ERROR, describeParseFailure(e)));
         }
 
         if (message.isJsonArray())
@@ -95,6 +114,9 @@ public final class McpEndpoint
             var batch = message.getAsJsonArray();
             if (batch.isEmpty())
                 return Response.json(200, error(JsonNull.INSTANCE, INVALID_REQUEST, "a batch must not be empty"));
+            if (batch.size() > MAX_BATCH_MESSAGES)
+                return Response.json(200, error(JsonNull.INSTANCE, INVALID_REQUEST,
+                                "a batch must not exceed " + MAX_BATCH_MESSAGES + " messages"));
 
             var replies = new JsonArray();
             for (JsonElement element : batch)
@@ -109,6 +131,96 @@ public final class McpEndpoint
 
         var reply = handleMessage(router, message, request);
         return reply == null ? accepted() : Response.json(200, reply);
+    }
+
+    /**
+     * What a malformed body announces. Gson appends its own advice to a syntax
+     * error - a hint to switch the reader to lenient parsing, plus a documentation
+     * link - and that advice is a suggestion to accept the broken message, which is
+     * exactly the wrong thing to tell a caller. Only where the reader stopped is
+     * reported; a fault this reader raised itself is passed through as written.
+     */
+    private static String describeParseFailure(Exception e)
+    {
+        var message = e.getMessage();
+        if (message == null)
+            return "request body is not valid JSON";
+        var position = message.indexOf(" at line ");
+        if (position < 0)
+            return "request body is not valid JSON: " + message;
+
+        // Gson puts its advice on a second line after the position, so the position
+        // is kept and everything from the line break on is dropped
+        var end = message.indexOf('\n', position);
+        var where = message.substring(position + 1, end < 0 ? message.length() : end);
+        return "request body is not valid JSON, " + where;
+    }
+
+    /**
+     * The whole body as one JSON value, strict: no trailing content, no repeated
+     * key. Gson's reader would keep the last duplicate silently, and the Gson in
+     * the target platform cannot be told otherwise, so the structure is walked
+     * here. Number literals are handed to Gson so their text survives - an id is
+     * echoed back exactly as the client sent it.
+     */
+    private static JsonElement readMessage(JsonReader reader) throws IOException
+    {
+        var value = readValue(reader);
+
+        if (reader.peek() != JsonToken.END_DOCUMENT)
+            throw new JsonSyntaxException("unexpected content after the JSON message");
+
+        return value;
+    }
+
+    private static JsonElement readValue(JsonReader reader) throws IOException
+    {
+        var token = reader.peek();
+
+        return switch (token)
+        {
+            case BEGIN_OBJECT -> readObject(reader);
+            case BEGIN_ARRAY -> readArray(reader);
+            case STRING -> new JsonPrimitive(reader.nextString());
+            case NUMBER -> JsonParser.parseString(reader.nextString());
+            case BOOLEAN -> new JsonPrimitive(reader.nextBoolean());
+            case NULL ->
+            {
+                reader.nextNull();
+                yield JsonNull.INSTANCE;
+            }
+            default -> throw new JsonSyntaxException("unexpected token " + token);
+        };
+    }
+
+    private static JsonElement readObject(JsonReader reader) throws IOException
+    {
+        var object = new JsonObject();
+        var seen = new HashSet<String>();
+
+        reader.beginObject();
+        while (reader.peek() != JsonToken.END_OBJECT)
+        {
+            var name = reader.nextName();
+            if (!seen.add(name))
+                throw new JsonSyntaxException("duplicate key \"" + name + "\"");
+            object.add(name, readValue(reader));
+        }
+        reader.endObject();
+
+        return object;
+    }
+
+    private static JsonElement readArray(JsonReader reader) throws IOException
+    {
+        var array = new JsonArray();
+
+        reader.beginArray();
+        while (reader.peek() != JsonToken.END_ARRAY)
+            array.add(readValue(reader));
+        reader.endArray();
+
+        return array;
     }
 
     /**
@@ -129,25 +241,44 @@ public final class McpEndpoint
             return error(JsonNull.INSTANCE, INVALID_REQUEST, "a JSON-RPC message must be an object");
 
         var message = element.getAsJsonObject();
+        var declared = message.get("method");
+        var methodIsString = declared != null && declared.isJsonPrimitive()
+                        && declared.getAsJsonPrimitive().isString();
+        var id = message.has("id") ? message.get("id") : null;
 
-        if (message.has("result") || message.has("error"))
+        // A message carrying result or error and no method is the client's own
+        // reply, which answers nothing.
+        if (declared == null && (message.has("result") || message.has("error")))
             return null;
 
-        var id = message.has("id") ? message.get("id") : null;
-        var declared = message.get("method");
+        // A notification is a well-formed call without an id, and gets no
+        // response. A message that merely looks like one - no method, or a method
+        // that is not a string - is malformed, and 202 would tell a client that
+        // waits for an answer that all was well.
+        if (id == null && methodIsString)
+            return null;
 
-        if (declared == null || !declared.isJsonPrimitive() || !declared.getAsJsonPrimitive().isString())
-        {
-            return error(id != null ? id : JsonNull.INSTANCE, INVALID_REQUEST,
-                            "a JSON-RPC request needs a string \"method\"");
-        }
+        // An id is a string or a number, never null, an object, an array or a
+        // boolean. JSON-RPC 2.0 says so; an id that is not a scalar cannot be
+        // echoed as one, so a client sending it gets an error it can act on
+        // rather than a reply it cannot correlate.
+        if (id != null && (!id.isJsonPrimitive() || id.getAsJsonPrimitive().isBoolean()))
+            return error(JsonNull.INSTANCE, INVALID_REQUEST,
+                    "\"id\" must be a string or a number; a notification omits it");
+
+        // A message carrying method as well as result or error is not a reply: it
+        // is a call that was built wrongly, and 202 would tell a client that waits
+        // for an answer that all was well. Its id is echoed because a batch is only
+        // readable if every refusal names the message it belongs to.
+        if (message.has("result") || message.has("error"))
+            return error(id, INVALID_REQUEST,
+                    "a JSON-RPC request carries \"params\", not \"result\" or \"error\"");
+
+        if (!methodIsString)
+            return error(id == null ? JsonNull.INSTANCE : id, INVALID_REQUEST,
+                    "a JSON-RPC request needs a string \"method\"");
 
         var method = declared.getAsString();
-
-        // a notification: a call without an id, which gets no response
-        if (id == null)
-            return null;
-
         var params = message.has("params") && message.get("params").isJsonObject()
                         ? message.getAsJsonObject("params")
                         : new JsonObject();
