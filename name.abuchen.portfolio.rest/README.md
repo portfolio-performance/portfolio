@@ -329,6 +329,10 @@ endpoint takes none, so a new endpoint is strict without doing anything. Documen
 now return one. `OpenApiSpecDriftTest` fails if any of that drifts apart, and `McpToolsDriftTest`
 fails until the new route either has a tool or is listed as one that deliberately has none.
 
+`Authorization` is read case-insensitively (`bearer …` is accepted); a header that carries a token
+under a different scheme is refused as a wrong scheme rather than as a missing token, and the
+preference page says which of the two happened.
+
 The drift tests compare the specification with the code; the `openapi-compat` Maven profile
 compares it with the published contract. It runs [oasdiff](https://github.com/oasdiff/oasdiff)
 against `openapi.yaml` as tagged `rest-api-v1.0.0`, and fails on anything that would break a
