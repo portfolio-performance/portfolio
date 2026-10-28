@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -21,6 +24,7 @@ import com.sun.net.httpserver.HttpServer;
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.rest.internal.ApiException;
 import name.abuchen.portfolio.rest.internal.ProblemJson;
+import name.abuchen.portfolio.rest.internal.Progress;
 import name.abuchen.portfolio.rest.internal.Request;
 import name.abuchen.portfolio.rest.internal.Response;
 import name.abuchen.portfolio.rest.internal.Router;
@@ -56,6 +60,10 @@ public class RestApiServer
      * dropped connection (see {@link ApiRoutes.Deadlines}).
      */
     private static final int IO_DEADLINE_SECONDS = 30;
+
+    /** the request headers carried to the handler, see {@link #forwardedHeaders} */
+    private static final List<String> FORWARDED_HEADERS = List.of("accept", "mcp-session-id", //$NON-NLS-1$ //$NON-NLS-2$
+                    "mcp-protocol-version"); //$NON-NLS-1$
 
     /** the bearer scheme, matched case-insensitively below */
     private static final String BEARER_PREFIX = "Bearer "; //$NON-NLS-1$
@@ -228,7 +236,8 @@ public class RestApiServer
 
                 var request = new Request(exchange.getRequestMethod(), path, match.pathParams(),
                                 Request.parseQuery(exchange.getRequestURI().getRawQuery()), body, authorization,
-                                exchange.getRequestHeaders().getFirst("User-Agent")); //$NON-NLS-1$
+                                exchange.getRequestHeaders().getFirst("User-Agent"), forwardedHeaders(exchange), //$NON-NLS-1$
+                                Progress.NONE);
                 response = match.handler().handle(request);
             }
             catch (ApiException e)
@@ -410,6 +419,23 @@ public class RestApiServer
     {
         var body = ProblemJson.toJson(exception).toString().getBytes(StandardCharsets.UTF_8);
         return new Response(exception.getStatus(), ProblemJson.CONTENT_TYPE, body, exception.getHeaders());
+    }
+
+    /**
+     * The request headers a handler may read, by lower-case name: whether the
+     * client takes a stream, and the MCP session it belongs to. Nothing else is
+     * carried, so no handler starts to depend on headers by accident.
+     */
+    private static Map<String, String> forwardedHeaders(HttpExchange exchange)
+    {
+        var headers = new HashMap<String, String>();
+        for (var name : FORWARDED_HEADERS)
+        {
+            var value = exchange.getRequestHeaders().getFirst(name);
+            if (value != null)
+                headers.put(name, value);
+        }
+        return Map.copyOf(headers);
     }
 
     private static void write(HttpExchange exchange, Response response) throws IOException
