@@ -528,6 +528,10 @@ paths:
         Any field that is unknown or not writable is rejected `422`, never a silent
         no-op — a typo must not look like success. All violations are reported at
         once so they can be fixed in one round-trip.
+
+        A patch that only restates values the instrument already has changes
+        nothing and does not mark the file dirty; the `X-Portfolio-Changed`
+        response header says which of the two happened.
       requestBody:
         required: true
         content:
@@ -543,6 +547,15 @@ paths:
       responses:
         "200":
           description: The updated instrument
+          headers:
+            X-Portfolio-Changed:
+              description: |
+                `true` when a stored value changed and the file now has unsaved
+                changes; `false` when the patch named only values the instrument
+                already had, so nothing changed and nothing needs saving.
+              schema:
+                type: string
+                enum: ["true", "false"]
           content:
             application/json:
               schema:

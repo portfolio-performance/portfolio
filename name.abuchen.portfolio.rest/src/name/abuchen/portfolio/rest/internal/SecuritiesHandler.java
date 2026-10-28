@@ -272,7 +272,10 @@ public final class SecuritiesHandler
             }
         }
 
-        client.markDirty();
+        // a patch that only restates stored values changes nothing, so the user
+        // is not asked to save a file the API did not change
+        if (!changes.isEmpty())
+            client.markDirty();
         return new PatchResult(EntityJson.toJson(client, security), security.getName(), changes);
     }
 
