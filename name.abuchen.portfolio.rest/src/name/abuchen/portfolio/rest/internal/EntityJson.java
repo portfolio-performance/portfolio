@@ -75,16 +75,13 @@ public final class EntityJson
         json.addProperty("uuid", security.getUUID()); //$NON-NLS-1$
         json.addProperty("name", security.getName()); //$NON-NLS-1$
         json.addProperty("currencyCode", security.getCurrencyCode()); //$NON-NLS-1$
-        if (security.getIsin() != null)
-            json.addProperty("isin", security.getIsin()); //$NON-NLS-1$
-        if (security.getWkn() != null)
-            json.addProperty("wkn", security.getWkn()); //$NON-NLS-1$
-        if (security.getTickerSymbol() != null)
-            json.addProperty("tickerSymbol", security.getTickerSymbol()); //$NON-NLS-1$
-        // a blank note is no note: omitted as an unset one is, so that "no
-        // note" has one shape and not three
-        if (security.getNote() != null && !security.getNote().isBlank())
-            json.addProperty("note", security.getNote()); //$NON-NLS-1$
+        // a blank value is no value: omitted as an unset one is, so that "not
+        // set" has one shape and not two. A value that is set goes out as
+        // stored, surrounding spaces included - they are the user's data
+        addUnlessBlank(json, "isin", security.getIsin()); //$NON-NLS-1$
+        addUnlessBlank(json, "wkn", security.getWkn()); //$NON-NLS-1$
+        addUnlessBlank(json, "tickerSymbol", security.getTickerSymbol()); //$NON-NLS-1$
+        addUnlessBlank(json, "note", security.getNote()); //$NON-NLS-1$
 
         var attributes = attributesJson(client, security);
         if (attributes.size() > 0)
@@ -551,6 +548,13 @@ public final class EntityJson
         json.addProperty("code", warning.code()); //$NON-NLS-1$
         json.addProperty("message", warning.message()); //$NON-NLS-1$
         return json;
+    }
+
+    /** the field when it holds something other than whitespace, otherwise nothing */
+    private static void addUnlessBlank(JsonObject json, String field, String value)
+    {
+        if (value != null && !value.isBlank())
+            json.addProperty(field, value);
     }
 
     /**

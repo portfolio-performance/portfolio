@@ -125,7 +125,7 @@ public class ReadEndpointsTest
         }
     }
 
-    /** a blank note is no note: omitted on instruments and accounts as an unset one is */
+    /** a blank value is no value: omitted on instruments and accounts as an unset one is */
     @Test
     public void testABlankNoteIsOmitted()
     {
@@ -138,6 +138,20 @@ public class ReadEndpointsTest
         var items = SecuritiesHandler.list(client, null).getAsJsonObject().get("items").getAsJsonArray();
         assertThat(items.get(0).getAsJsonObject().has("note"), is(false));
         assertThat(items.get(1).getAsJsonObject().get("note").getAsString(), is("kept"));
+
+        // the codes as well, while a set value goes out as stored
+        var codes = new SecurityBuilder().addTo(client);
+        codes.setIsin("");
+        codes.setWkn(" ");
+        codes.setTickerSymbol("");
+        var spaced = new SecurityBuilder().addTo(client);
+        spaced.setWkn("A19PCG ");
+        items = SecuritiesHandler.list(client, null).getAsJsonObject().get("items").getAsJsonArray();
+        var blankCodes = items.get(2).getAsJsonObject();
+        assertThat(blankCodes.has("isin"), is(false));
+        assertThat(blankCodes.has("wkn"), is(false));
+        assertThat(blankCodes.has("tickerSymbol"), is(false));
+        assertThat(items.get(3).getAsJsonObject().get("wkn").getAsString(), is("A19PCG "));
 
         var account = new name.abuchen.portfolio.model.Account();
         account.setName("Giro");
