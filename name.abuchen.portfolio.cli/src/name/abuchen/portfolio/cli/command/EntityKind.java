@@ -24,13 +24,8 @@ public record EntityKind<T>(String noun, Function<Client, ? extends Collection<T
     /** The existing entities of the kind a reference reads. */
     public static <T> EntityKind<T> of(Reference<T> reference)
     {
-        return of(reference.noun(), reference::entities, reference::uuid);
-    }
-
-    public static <T> EntityKind<T> of(String noun, Function<Client, ? extends Collection<T>> all,
-                    Function<T, String> uuidOf)
-    {
-        return new EntityKind<>(noun, all, (entity, uuid) -> uuid.equals(uuidOf.apply(entity)), entity -> entity);
+        return new EntityKind<>(reference.noun(), reference::entities,
+                        (entity, uuid) -> uuid.equals(reference.uuid(entity)), entity -> entity);
     }
 
     /** The existing entity of this kind with the UUID, if there is one. */

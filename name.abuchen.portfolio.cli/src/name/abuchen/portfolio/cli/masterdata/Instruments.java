@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.cli.masterdata;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -13,10 +14,14 @@ import name.abuchen.portfolio.cli.command.TableColumn;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.util.Isin;
 
 /** The instrument kind: securities, indices and exchange rates. */
 public final class Instruments
 {
+    private static final String CURRENCY = "currencyCode";
+    private static final String ISIN = "isin";
+
     private static final Schema ATTRIBUTE = Schema.object("A user-defined attribute that has a value.")
                     .property("id", Schema.string("Attribute type id."))
                     .property("name", Schema.string("Attribute type name."))
@@ -29,20 +34,35 @@ public final class Instruments
                     .declare("instrument", "instrument", Client::getSecurities, Security::getUUID, Security::getName)
                     .item("An instrument: a security, index or exchange rate.",
                                     "Instrument name; empty if the file has none.")
-                    .ifSet("currencyCode",
+                    .write(Writer.required("Instrument name; never empty.", "a name", Security::setName))
+                    .ifSet(CURRENCY,
                                     Schema.string("ISO currency code; absent for indices."
                                                     + MinorUnits.CONVERTED_BY_HOLDINGS),
                                     Security::getCurrencyCode)
-                    .ifSet("isin", Schema.string("ISIN, if set."), Security::getIsin)
-                    .ifSet("wkn", Schema.string("WKN, if set."), Security::getWkn)
+                    .write(Writer.optional("ISO currency code; omit for an index.", Security::setCurrencyCode)
+                                    .check(Checks::isCurrency, "invalid-currency", Checks::notACurrency, null))
+                    .ifSet(ISIN, Schema.string("ISIN, if set."), Security::getIsin)
+                    .write(Writer.optional("ISIN: valid and not used by another instrument.", Security::setIsin)
+                                    .check(isin -> Isin.isValid(isin) && isin.matches(Isin.PATTERN), "invalid-isin",
+                                                    isin -> "'" + isin + "' is not a valid ISIN.", "Isin.isValid"))
                     .ifSet("tickerSymbol", Schema.string("Ticker symbol, if set."), Security::getTickerSymbol)
+                    .write(Writer.optional("Ticker symbol.", Security::setTickerSymbol))
+                    .ifSet("wkn", Schema.string("WKN, if set."), Security::getWkn)
+                    .write(Writer.optional("WKN.", Security::setWkn))
                     .ifSet("note", Schema.string("Note, if set."), Security::getNote)
+                    .write(Writer.optional("Note.", Security::setNote))
                     .retired("Whether the instrument is retired.", Security::isRetired)
+                    .write(Writer.flag("Whether the instrument is retired", Security::setRetired))
                     .alwaysPrepared("attributes", Schema.array("User-defined attributes that have a value.", ATTRIBUTE),
                                     Instruments::attributes)
                     .updatedAt(Security::getUpdatedAt)
-                    .lookupKeys("isin", "tickerSymbol", "name")
-                    .candidateDetails("isin", "tickerSymbol", "currencyCode")
+                    .lookupKeys(ISIN, "tickerSymbol", "name")
+                    .candidateDetails(ISIN, "tickerSymbol", CURRENCY)
+                    // setName leaves it unset, and the binary format cannot store an instrument without it
+                    .creates(Security::new, Client::addSecurity, security -> security.setUpdatedAt(Instant.now()))
+                    .validator(Instruments::validate)
+                    .operations("Adds an instrument. Only the name is required.",
+                                    "Updates an instrument by UUID. Only the fields present change; null or an empty string clears an optional field. The currency can't change once the instrument has transactions.")
                     .list("Instruments (securities, indices, exchange rates): UUID, name, currency, ISIN, ticker, WKN, note, retired flag and attributes",
                                     List.of(TableColumn.of("uuid", "UUID"), TableColumn.capped("name", "Name", 40),
                                                     TableColumn.of("currencyCode", "Currency"),
@@ -52,6 +72,31 @@ public final class Instruments
 
     private Instruments()
     {
+    }
+
+    /** The currency is kept once there are transactions, and an ISIN names one instrument only. */
+    private static void validate(Writes.Validation<Security> validation)
+    {
+        var existing = validation.existing();
+        var client = validation.client();
+
+        if (existing != null)
+            Checks.currencyKept(validation, "instrument", existing.getCurrencyCode(),
+                            () -> hasTransactions(client, existing));
+
+        if (validation.values().get(ISIN) instanceof String isin)
+            client.getSecurities().stream()
+                            .filter(other -> other != existing && isin.equalsIgnoreCase(other.getIsin()))
+                            .findFirst().ifPresent(other -> validation.fail(ISIN, "duplicate-isin",
+                                            "The ISIN is already used by instrument " + other.getUUID() + "."));
+    }
+
+    private static boolean hasTransactions(Client client, Security security)
+    {
+        return client.getAccounts().stream().flatMap(a -> a.getTransactions().stream())
+                        .anyMatch(t -> t.getSecurity() == security)
+                        || client.getPortfolios().stream().flatMap(p -> p.getTransactions().stream())
+                                        .anyMatch(t -> t.getSecurity() == security);
     }
 
     /** The attribute types are looked up once per client. */

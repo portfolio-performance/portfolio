@@ -11,6 +11,7 @@ import com.google.gson.JsonObject;
 import name.abuchen.portfolio.cli.command.Claims;
 import name.abuchen.portfolio.cli.command.FieldFailure;
 import name.abuchen.portfolio.cli.command.OperationInput;
+import name.abuchen.portfolio.cli.command.OperationSpec;
 import name.abuchen.portfolio.cli.command.Outcome;
 import name.abuchen.portfolio.model.Client;
 
@@ -18,7 +19,7 @@ import name.abuchen.portfolio.model.Client;
  * What one operation of a batch sees: the evolving model, its own input and
  * the places to report failures and changes.
  */
-public final class OperationContext
+public final class OperationContext implements OperationSpec.Context
 {
     /** One failed check of one operation. */
     record Failure(int operationIndex, FieldFailure failure)
@@ -102,7 +103,8 @@ public final class OperationContext
         return replacing;
     }
 
-    Client client()
+    @Override
+    public Client client()
     {
         return batch.client();
     }
@@ -110,6 +112,12 @@ public final class OperationContext
     OperationInput input()
     {
         return input;
+    }
+
+    @Override
+    public JsonObject json()
+    {
+        return input.json();
     }
 
     void fail(String field, String code, String message)
@@ -155,20 +163,21 @@ public final class OperationContext
         return false;
     }
 
-    /** Claims entities for this operation. */
-    Claims claims()
+    @Override
+    public Claims claims()
     {
         return uuid -> batch.claim(uuid, index);
     }
 
-    /** Whether the entity was already in the file before the batch started. */
-    boolean existedBeforeBatch(Object entity)
+    @Override
+    public boolean existedBeforeBatch(Object entity)
     {
         return batch.existedBeforeBatch(entity);
     }
 
     /** Reports the outcome of this operation as its change or its failures. */
-    void record(Outcome outcome)
+    @Override
+    public void record(Outcome outcome)
     {
         switch (outcome)
         {

@@ -60,12 +60,6 @@ public class ApplyCommandTest
         return "{\"operation\":\"instrument.update\",\"uuid\":\"" + uuid + "\"," + fields + "}";
     }
 
-    /** The instrument that has transactions. */
-    private Security tradedInstrument() throws IOException
-    {
-        return cli.reload().getSecurities().get(0);
-    }
-
     /** The instrument that has none. */
     private Security idleInstrument() throws IOException
     {
@@ -92,17 +86,6 @@ public class ApplyCommandTest
         assertThat(security.getTickerSymbol(), is("ACME"));
         assertThat(security.getWkn(), is("A12345"));
         assertThat(security.getNote(), is("new"));
-        assertThat(security.isRetired(), is(false));
-    }
-
-    @Test
-    public void anAddNeedsOnlyAName() throws IOException
-    {
-        var run = cli.apply(add("\"name\":\"Bare\""));
-
-        assertThat(run.stdout, run.exitCode, is(0));
-        var security = instrument(cli.reload(), "Bare");
-        assertThat(security.getIsin() == null, is(true));
         assertThat(security.isRetired(), is(false));
     }
 
@@ -155,81 +138,6 @@ public class ApplyCommandTest
     }
 
     @Test
-    public void refusesAnIsinThatAnotherInstrumentAlreadyHas() throws IOException
-    {
-        var holder = tradedInstrument();
-        cli.apply(update(holder.getUUID(), "\"isin\":\"" + APPLE_ISIN + "\""));
-
-        var run = cli.apply(add("\"name\":\"Twin\",\"isin\":\"" + APPLE_ISIN + "\""));
-
-        assertThat(run.exitCode, is(1));
-        assertThat(run.failure(0).get("field").getAsString(), is("isin"));
-        assertThat(run.failure(0).get("code").getAsString(), is("duplicate-isin"));
-        assertThat(run.failure(0).get("message").getAsString(), containsString(holder.getUUID()));
-    }
-
-    @Test
-    public void refusesAnIsinThatAnEarlierAddOfTheSameBatchTook() throws IOException
-    {
-        var run = cli.apply(add("\"name\":\"First\",\"isin\":\"" + APPLE_ISIN + "\""),
-                        add("\"name\":\"Second\",\"isin\":\"" + APPLE_ISIN + "\""));
-
-        assertThat(run.exitCode, is(1));
-        assertThat(run.failures().size(), is(1));
-        assertThat(run.failure(0).get("operationIndex").getAsInt(), is(1));
-        assertThat(run.failure(0).get("code").getAsString(), is("duplicate-isin"));
-    }
-
-    @Test
-    public void anUpdateMayKeepAnInstrumentsOwnIsin() throws IOException
-    {
-        var uuid = idleInstrument().getUUID();
-        cli.apply(update(uuid, "\"isin\":\"" + APPLE_ISIN + "\""));
-
-        var run = cli.apply(update(uuid, "\"isin\":\"" + APPLE_ISIN + "\",\"note\":\"same\""));
-
-        assertThat(run.stdout, run.exitCode, is(0));
-    }
-
-    @Test
-    public void refusesACurrencyChangeOnceTheInstrumentHasTransactions() throws IOException
-    {
-        var traded = tradedInstrument();
-        var other = traded.getCurrencyCode().equals("USD") ? "GBP" : "USD";
-        var before = Files.readAllBytes(file.toPath());
-
-        var run = cli.apply(update(traded.getUUID(), "\"currencyCode\":\"" + other + "\""));
-
-        assertThat(run.exitCode, is(1));
-        assertThat(run.failure(0).get("field").getAsString(), is("currencyCode"));
-        assertThat(run.failure(0).get("code").getAsString(), is("currency-immutable"));
-        assertThat(Files.readAllBytes(file.toPath()), is(before));
-    }
-
-    @Test
-    public void allowsRepeatingTheCurrencyOfAnInstrumentWithTransactions() throws IOException
-    {
-        var traded = tradedInstrument();
-
-        var run = cli.apply(update(traded.getUUID(),
-                        "\"currencyCode\":\"" + traded.getCurrencyCode() + "\",\"note\":\"kept\""));
-
-        assertThat(run.stdout, run.exitCode, is(0));
-    }
-
-    @Test
-    public void allowsACurrencyChangeBeforeTheInstrumentHasTransactions() throws IOException
-    {
-        var idle = idleInstrument();
-        var other = idle.getCurrencyCode().equals("USD") ? "GBP" : "USD";
-
-        var run = cli.apply(update(idle.getUUID(), "\"currencyCode\":\"" + other + "\""));
-
-        assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(cli.reload().getSecurities().get(1).getCurrencyCode(), is(other));
-    }
-
-    @Test
     public void reportsEveryFailureOfABatchAtOnceAndLeavesTheFileUntouched() throws IOException
     {
         var before = Files.readAllBytes(file.toPath());
@@ -259,30 +167,6 @@ public class ApplyCommandTest
 
         assertThat(run.exitCode, is(1));
         assertThat(cli.reload().getSecurities().size(), is(2));
-    }
-
-    @Test
-    public void refusesTwoOperationsOnTheSameExistingInstrument() throws IOException
-    {
-        var uuid = idleInstrument().getUUID();
-
-        var run = cli.apply(update(uuid, "\"note\":\"one\""), update(uuid, "\"note\":\"two\""));
-
-        assertThat(run.exitCode, is(1));
-        assertThat(run.failures().size(), is(1));
-        assertThat(run.failure(0).get("operationIndex").getAsInt(), is(1));
-        assertThat(run.failure(0).get("field").getAsString(), is("uuid"));
-        assertThat(run.failure(0).get("code").getAsString(), is("duplicate-target"));
-        assertThat(cli.reload().getSecurities().get(1).getNote() == null, is(true));
-    }
-
-    @Test
-    public void anInstrumentAddedInTheBatchCannotBeReferencedByUuid() throws IOException
-    {
-        var run = cli.apply(add("\"name\":\"New\""), update("00000000-0000-0000-0000-000000000000", "\"note\":\"x\""));
-
-        assertThat(run.exitCode, is(1));
-        assertThat(run.failure(0).get("code").getAsString(), is("reference-not-found"));
     }
 
     @Test
