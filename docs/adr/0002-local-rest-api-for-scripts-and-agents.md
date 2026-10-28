@@ -46,10 +46,12 @@ becomes a later thin adapter over the same service layer. The individual decisio
   edits: mutate the `Client`, mark it dirty, let the UI refresh live. Only the user saves. An agent's
   changes can be reviewed and discarded by closing without saving.
 - **Reads and writes that directly inspect or mutate model entities are marshalled to the UI thread**
-  (`Display.syncExec`): one mutator thread, the same guarantee UI code relies on, rather than
-  retrofitting locking onto the model. Calculation endpoints are the deliberate exception: they
-  resolve the open file and capture the per-file calculation context on the UI thread, then run the
-  expensive snapshot calculation on the HTTP worker thread. The calculation is read-only, and the
+  (`Display.asyncExec`, the caller waits on a future): one mutator thread, the same guarantee UI code
+  relies on, rather than retrofitting locking onto the model. Not `syncExec`: SWT waits there in
+  `synchronized`/`Object.wait()`, which on Java 21 pins a virtual thread and costs an OS thread for as
+  long as the wait lasts, also after the API gave up on it. Calculation endpoints are the deliberate
+  exception: they resolve the open file and capture the per-file calculation context on the UI
+  thread, then run the expensive snapshot calculation on a pool of platform threads of its own. The calculation is read-only, and the
   accepted tradeoff is that a concurrent UI edit can rarely produce a transiently inconsistent
   response or internal error; clients can retry, while the UI must not freeze behind a long-running
   valuation.
@@ -57,6 +59,14 @@ becomes a later thin adapter over the same service layer. The individual decisio
   dialogs such as `EditSecurityDialog` hold a stale copy of the entity that is written back wholesale
   on OK, and `syncExec` runnables *do* execute during a modal event loop — so an API write landing
   mid-dialog would be silently clobbered. Reads stay allowed.
+- **The wait for the UI thread is bounded, and the two outcomes are told apart** (503 `ui-busy` vs.
+  503 `ui-request-underway`). Parking the worker on a busy UI thread makes the API look dead, so the
+  wait has a deadline (10 s). Whether the request ran is decided on the UI thread itself by one
+  compare-and-set against the waiting caller: a request the UI thread had *not started* when the
+  deadline passed is refused, will never run, and is safe to retry (`Retry-After`); a request that
+  was *already running* will complete, so that one carries no `Retry-After` and must not be resent,
+  because a second write would apply the same change twice. A read is the exception: it changes
+  nothing, so even one that had started is refused as retryable.
 - **The API vocabulary is deliberately more general than the model** (`Security` → *instrument*,
   `Portfolio` → *investment account*), because the contract cannot be renamed once clients exist.
   Java class names keep the model's vocabulary; the mapping and its rationale are in the README.
