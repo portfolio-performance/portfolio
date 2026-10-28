@@ -43,7 +43,8 @@ public final class PerformanceHandler
         if (!errors.isEmpty())
             throw ApiException.badRequest(errors);
 
-        var converter = new CurrencyConverterImpl(factory, currency);
+        var conversions = new ConversionRecorder(factory);
+        var converter = conversions.wrap(new CurrencyConverterImpl(factory, currency));
         var interval = Interval.of(openingDate, closingDate);
 
         var performance = new ClientPerformanceSnapshot(client, converter, interval, costMethod.useFifo());
@@ -54,6 +55,8 @@ public final class PerformanceHandler
                         .getFinalAccumulatedPercentage();
         var irr = performance.getPerformanceIRR();
 
-        return EntityJson.performance(openingDate, closingDate, currency, costMethod, ttwror, irr, performance);
+        var report = EntityJson.performance(openingDate, closingDate, currency, costMethod, ttwror, irr, performance);
+        FxWarnings.attach(report, conversions);
+        return report;
     }
 }

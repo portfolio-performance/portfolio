@@ -19,6 +19,9 @@ import name.abuchen.portfolio.junit.AccountBuilder;
 import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
 
@@ -282,6 +285,130 @@ public class HoldingsTest
         var item = findByUuid(holdings, account.getUUID());
         assertThat(item.get("valuation").getAsJsonObject().get("currency").getAsString(), is("USD"));
         assertThat(item.get("localValuation").getAsJsonObject().get("currency").getAsString(), is("EUR"));
+    }
+
+    /**
+     * A report whose currency pairs all have rates converts normally, and says
+     * so by carrying an empty array - the array is always present, so a client
+     * can tell "nothing fell back" apart from "this report did not look".
+     */
+    @Test
+    public void testFxWarningsAlwaysPresentAndEmptyWhenNothingFallsBack()
+    {
+        var client = new Client();
+        new AccountBuilder("EUR").deposit_("2026-01-01", Values.Amount.factorize(200)).addTo(client);
+
+        var holdings = list(client, "2026-07-20", null).getAsJsonObject();
+        assertThat(holdings.get("fxWarnings").getAsJsonArray().size(), is(0));
+    }
+
+    /**
+     * A USD amount reported in EUR with no rates configured is shown at face
+     * value - the 1:1 fallback the UI applies - and the report names that pair
+     * rather than letting the number pass as converted. ARS is the example
+     * because no shipped provider has a series for it; USD does, through the
+     * built-in ECB defaults, so it would not exercise the fallback.
+     */
+    @Test
+    public void testFxWarningsNameThePairWithoutRates()
+    {
+        var client = new Client();
+        new AccountBuilder("EUR").deposit_("2026-01-01", Values.Amount.factorize(200)).addTo(client);
+        new AccountBuilder("ARS").deposit_("2026-01-01", Values.Amount.factorize(100)).addTo(client);
+
+        var holdings = list(client, "2026-07-20", null).getAsJsonObject();
+
+        var warnings = holdings.get("fxWarnings").getAsJsonArray();
+        assertThat(warnings.size(), is(1));
+
+        var warning = warnings.get(0).getAsJsonObject();
+        assertThat(warning.get("currency").getAsString(), is("ARS"));
+        assertThat(warning.get("reportingCurrency").getAsString(), is("EUR"));
+        assertThat(warning.get("reason").getAsString(), is("no-series"));
+    }
+
+    /** a pair with rates converts normally, so it is not reported */
+    @Test
+    public void testFxWarningsEmptyWhenRatesExist()
+    {
+        var client = new Client();
+        new AccountBuilder("ARS").deposit_("2026-01-01", Values.Amount.factorize(100)).addTo(client);
+
+        var rates = new Security("ARS/EUR", "ARS");
+        rates.setTargetCurrencyCode(CurrencyUnit.EUR);
+        rates.addPrice(new SecurityPrice(LocalDate.of(2026, 1, 2), Values.Quote.factorize(965)));
+        client.addSecurity(rates);
+
+        var holdings = list(client, "2026-07-20", null).getAsJsonObject();
+        assertThat(holdings.get("fxWarnings").getAsJsonArray().size(), is(0));
+    }
+
+    /**
+     * The other fallback shape: a series exists for the pair, but holds no
+     * rates at all, so it answers no date. Named apart from the missing series
+     * because the user's fix differs - a series with nothing in it is edited,
+     * a missing one is created.
+     */
+    @Test
+    public void testFxWarningsNameThePairWhoseSeriesHoldsNoRates()
+    {
+        var client = new Client();
+        new AccountBuilder("ARS").deposit_("2026-01-01", Values.Amount.factorize(100)).addTo(client);
+
+        var rates = new Security("ARS/EUR", "ARS");
+        rates.setTargetCurrencyCode(CurrencyUnit.EUR);
+        client.addSecurity(rates);
+
+        var holdings = list(client, "2026-07-20", null).getAsJsonObject();
+
+        var warnings = holdings.get("fxWarnings").getAsJsonArray();
+        assertThat(warnings.size(), is(1));
+        assertThat(warnings.get(0).getAsJsonObject().get("reason").getAsString(), is("no-rate"));
+    }
+
+    /**
+     * The valuation date decides, not today: an exchange-rate security whose
+     * quote on the valuation date is zero has no rate for that day, so the
+     * statement converts at 1:1 and has to say so - even though the series holds
+     * a valid rate today. On a day with a valid quote the same pair is silent.
+     */
+    @Test
+    public void testFxWarningsFollowTheValuationDateNotToday()
+    {
+        var client = new Client();
+        new AccountBuilder("ARS").deposit_("2026-01-01", Values.Amount.factorize(100)).addTo(client);
+
+        var rates = new Security("ARS/EUR", "ARS");
+        rates.setTargetCurrencyCode(CurrencyUnit.EUR);
+        rates.addPrice(new SecurityPrice(LocalDate.of(2026, 1, 2), Values.Quote.factorize(965)));
+        rates.addPrice(new SecurityPrice(LocalDate.of(2026, 7, 15), 0));
+        rates.addPrice(new SecurityPrice(LocalDate.of(2026, 7, 25), Values.Quote.factorize(970)));
+        client.addSecurity(rates);
+
+        var onAZeroQuote = list(client, "2026-07-20", null).getAsJsonObject().get("fxWarnings").getAsJsonArray();
+        assertThat(onAZeroQuote.size(), is(1));
+        assertThat(onAZeroQuote.get(0).getAsJsonObject().get("reason").getAsString(), is("no-rate"));
+
+        var onAValidQuote = list(client, "2026-07-30", null).getAsJsonObject().get("fxWarnings").getAsJsonArray();
+        assertThat(onAValidQuote.size(), is(0));
+    }
+
+    /**
+     * Only money the statement of assets converted is named. An empty account and
+     * a security that is no longer held contribute nothing to it, whatever their
+     * currency, so a warning about them would send the reader looking for
+     * amounts that are not in the response.
+     */
+    @Test
+    public void testFxWarningsDoNotNameCurrenciesTheStatementNeverConverted()
+    {
+        var client = new Client();
+        new AccountBuilder("EUR").deposit_("2026-01-01", Values.Amount.factorize(200)).addTo(client);
+        new AccountBuilder("ARS").addTo(client);
+        new SecurityBuilder("BBD").addPrice("2026-01-01", Values.Quote.factorize(10)).addTo(client);
+
+        var holdings = list(client, "2026-07-20", null).getAsJsonObject();
+        assertThat(holdings.get("fxWarnings").getAsJsonArray().size(), is(0));
     }
 
     @Test
