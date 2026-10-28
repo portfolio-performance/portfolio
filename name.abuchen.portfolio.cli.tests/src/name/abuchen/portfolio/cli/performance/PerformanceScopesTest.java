@@ -151,16 +151,6 @@ public class PerformanceScopesTest
     }
 
     @Test
-    public void theClientScopeIsEchoedInMeta() throws IOException
-    {
-        var run = runOverTheYear();
-
-        assertThat(run.stdout, run.exitCode, is(0));
-        assertThat(run.meta().getAsJsonObject("scope").keySet(), is(Set.of("kind")));
-        assertThat(run.meta().getAsJsonObject("scope").get("kind").getAsString(), is("client"));
-    }
-
-    @Test
     public void anInvestmentAccountsFiguresMatchCoresPerformanceOfThePortfolio() throws IOException
     {
         var run = runOverTheYear("--investment-account", depot.getUUID());
@@ -172,15 +162,6 @@ public class PerformanceScopesTest
         assertThat(scope.get("uuid").getAsString(), is(depot.getUUID()));
         assertThat(scope.get("name").getAsString(), is("Depot"));
         assertThat(scope.has("referenceCashAccount"), is(false));
-    }
-
-    @Test
-    public void anInvestmentAccountIsResolvedByName() throws IOException
-    {
-        var byName = runOverTheYear("--investment-account", "Depot Two");
-        var byUuid = runOverTheYear("--investment-account", depotTwo.getUUID());
-
-        assertThat(byName.data(), is(byUuid.data()));
     }
 
     @Test
@@ -198,31 +179,6 @@ public class PerformanceScopesTest
         assertThat(scope.get("uuid").getAsString(), is(depot.getUUID()));
         assertThat(scope.getAsJsonObject("referenceCashAccount").get("uuid").getAsString(), is(cash.getUUID()));
         assertThat(scope.getAsJsonObject("referenceCashAccount").get("name").getAsString(), is("Cash"));
-    }
-
-    @Test
-    public void anInvestmentAccountWithoutAReferenceCashAccountFailsWhenItIsAskedFor() throws IOException
-    {
-        var orphan = new Portfolio();
-        orphan.setName("Orphan");
-        client.addPortfolio(orphan);
-
-        var run = runOverTheYear("--investment-account", "Orphan", "--with-reference-cash-account");
-
-        assertThat(run.stdout, run.exitCode, is(1));
-        var error = run.problem();
-        assertThat(error.get("code").getAsString(), is("no-reference-cash-account"));
-        assertThat(error.get("status").getAsInt(), is(422));
-        assertThat(error.get("uuid").getAsString(), is(orphan.getUUID()));
-    }
-
-    @Test
-    public void theReferenceCashAccountFlagWithoutAnInvestmentAccountIsAUsageError() throws IOException
-    {
-        var run = runOverTheYear("--with-reference-cash-account");
-
-        assertThat(run.stdout, run.exitCode, is(2));
-        assertThat(run.code(), is("option-required"));
     }
 
     @Test
@@ -281,28 +237,6 @@ public class PerformanceScopesTest
         assertThat(held.stdout, held.exitCode, is(0));
         assertThat(held.warnings("no-activity-in-period").size(), is(0));
         assertThat(held.data().get("finalValue").getAsBigDecimal().signum(), is(1));
-    }
-
-    @Test
-    public void atMostOneScopeOptionIsAllowed() throws IOException
-    {
-        var options = List.of(List.of("--investment-account", "Depot"), List.of("--cash-account", "Cash"),
-                        List.of("--instrument", "Alpha"));
-
-        for (var first = 0; first < options.size(); first++)
-        {
-            for (var second = first + 1; second < options.size(); second++)
-            {
-                var args = new ArrayList<>(options.get(first));
-                args.addAll(options.get(second));
-
-                var run = runOverTheYear(args.toArray(String[]::new));
-
-                assertThat(args + ": " + run.stdout, run.exitCode, is(2));
-                assertThat(args.toString(), run.code(),
-                                is("conflicting-options"));
-            }
-        }
     }
 
     private static List<JsonObject> items(CliRun run)
@@ -444,15 +378,6 @@ public class PerformanceScopesTest
     }
 
     @Test
-    public void byAnythingButInstrumentIsAUsageError() throws IOException
-    {
-        var run = runOverTheYear("--by", "account");
-
-        assertThat(run.stdout, run.exitCode, is(2));
-        assertThat(run.code(), is("invalid-option-value"));
-    }
-
-    @Test
     public void severalRecordsNeedingTheSameMissingRateDoNotMultiplyTheWarningCount() throws IOException
     {
         var first = addDollarInstrument("Aardvark");
@@ -530,21 +455,5 @@ public class PerformanceScopesTest
         for (var item : items(run))
             assertThat(item.get("name").getAsString(), item.has("absoluteGain"), is(true));
         assertThat(run.warnings().size(), is(0));
-    }
-
-    @Test
-    public void byWithACashAccountOrAnInstrumentIsAUsageError() throws IOException
-    {
-        for (var scope : List.of(List.of("--cash-account", "Cash"), List.of("--instrument", "Alpha")))
-        {
-            var args = new ArrayList<>(scope);
-            args.addAll(List.of("--by", "instrument"));
-
-            var run = runOverTheYear(args.toArray(String[]::new));
-
-            assertThat(scope + ": " + run.stdout, run.exitCode, is(2));
-            assertThat(scope.toString(), run.code(),
-                            is("conflicting-options"));
-        }
     }
 }

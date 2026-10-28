@@ -5,6 +5,8 @@ import java.util.List;
 
 import name.abuchen.portfolio.cli.command.CliException;
 import name.abuchen.portfolio.cli.command.CommandContext;
+import name.abuchen.portfolio.cli.command.Declaration;
+import name.abuchen.portfolio.cli.command.Facet;
 import name.abuchen.portfolio.cli.command.OptionSpec;
 import name.abuchen.portfolio.cli.command.Schema;
 
@@ -14,8 +16,13 @@ enum CostMethod
     FIFO("fifo", name.abuchen.portfolio.model.CostMethod.FIFO),
     MOVING_AVERAGE("moving-average", name.abuchen.portfolio.model.CostMethod.MOVING_AVERAGE);
 
-    static final OptionSpec OPTION = new OptionSpec("cost-method", "method",
+    private static final OptionSpec OPTION = new OptionSpec("cost-method", "method",
                     "How capital gains are costed: fifo (the default) or moving-average. Echoed in meta.");
+
+    /** <code>--cost-method</code> as a facet; <code>meta.costMethod</code> echoes the method used. */
+    static final Facet<CostMethod> FACET = Facet.of(
+                    Declaration.empty().options(OPTION).meta("costMethod", schema()), CostMethod::parse,
+                    (method, out) -> out.meta("costMethod", method.id()));
 
     private final String id;
     private final name.abuchen.portfolio.model.CostMethod core;
@@ -44,7 +51,7 @@ enum CostMethod
     }
 
     /** The schema of the <code>costMethod</code> member of <code>meta</code>. */
-    static Schema schema()
+    private static Schema schema()
     {
         return Schema.enumOf("The cost method used: as given, otherwise fifo.", ids());
     }
@@ -53,7 +60,7 @@ enum CostMethod
      * @throws CliException
      *             a usage error if the value is not a cost method
      */
-    static CostMethod parse(CommandContext context) throws CliException
+    private static CostMethod parse(CommandContext context) throws CliException
     {
         var raw = context.text(OPTION);
         if (raw.isEmpty())

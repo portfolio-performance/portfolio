@@ -10,9 +10,9 @@ Options:
   --cash-account <ref>  Report this cash account only. One scope option at most.
   --instrument <ref>  Report this instrument only. One scope option at most.
   --with-reference-cash-account  Report the investment account together with its reference cash account. Only with --investment-account; fails with no-reference-cash-account if the account has none. (switch, default off)
+  --by <dimension>  Break the figures down: instrument is the only dimension. Returns one record per instrument active in the period, sorted by name, instead of the figures of the scope. With the whole client or an investment account.
   --cost-method <method>  How capital gains are costed: fifo (the default) or moving-average. Echoed in meta.
   --currency <code>  ISO currency of the figures. Defaults to the base currency of the file.
-  --by <dimension>  Break the figures down: instrument is the only dimension. Returns one record per instrument active in the period, sorted by name, instead of the figures of the scope. With the whole client or an investment account.
   Global options (pp-cli --help): --file <path>, --format <format> (json), --verbose
 
 Response data: How the scope performed over the period. Every amount is in the reporting currency. Every figure but the currency is left out if an exchange rate is missing, with the warning exchange-rate-missing, and for a quiet instrument, with no-activity-in-period. With --by instrument, the currency and items instead.
