@@ -157,6 +157,9 @@ UI's own rule), and `attributes` — a nested merge patch over the custom attrib
 attribute id (`null` clears one; see `openapi.yaml`). Everything else — prices, quote feeds,
 events — is read-only in v1.
 
+An `isin` is checked as the application's ISIN column checks it — twelve characters and a matching
+check digit after trimming, or `422 invalid-isin`; a blank value clears it like `null`.
+
 Any field that is unknown or not writable is a **422, never a silent no-op**: a typo must not look
 like success. All violations come back at once so you can fix them in one round-trip.
 

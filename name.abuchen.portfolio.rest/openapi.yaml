@@ -2051,6 +2051,11 @@ components:
             (`locked-by-transactions`), matching the UI's rule.
         isin:
           type: [string, "null"]
+          description: |
+            Checked as the application's ISIN column checks it: surrounding
+            whitespace is ignored, and what is left must be twelve characters
+            with a matching check digit, or the patch is rejected with
+            `invalid-isin`. A blank value clears the ISIN, like `null`.
         wkn:
           type: [string, "null"]
         tickerSymbol:
@@ -2800,6 +2805,7 @@ components:
             - unknown-currency
             - locked-by-transactions
             - exchange-rate-requires-currency
+            - invalid-isin
             - referenced
             - unknown-attribute
             - attribute-not-applicable
