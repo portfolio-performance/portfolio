@@ -20,4 +20,4 @@ Evidence from the review:
 - StrictConverter and ExchangeRates have no direct tests.
 - Holdings and Allocation both build `ClientSnapshot.create(client, coreConverter(), date)` plus StalePrices.
 
-Sub-questions to settle: how the module fits ticket 02's facet interface; the shape of the trust call (e.g. `trusted(Supplier)`); the cache-locator seam and its two adapters (desktop ECB file, in-memory rates); whether ticket 04's decision feeds its rounding.
+Sub-questions to settle: how the module fits ticket 02's facet interface; the shape of the trust call (e.g. `trusted(Supplier)`); the cache-locator seam and its two adapters (desktop ECB file, in-memory rates); the module's rate inversions call core's `ExchangeRate.inverse` instead of copying it, and no other rounding change applies (ticket 04, ADR 0007).

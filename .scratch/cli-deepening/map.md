@@ -34,4 +34,5 @@ A hand-off-ready refactoring spec for `name.abuchen.portfolio.cli` and its tests
 
 ## Out of scope
 
+- [Does an amounts & rates module pass the deletion test?](issues/04-amounts-and-rates.md): ruled out. Each rounding site copies a different core or UI convention, so a module would just pass through to them. The HALF_UP and double sites are intended, not bugs. Recorded in [ADR 0007](../../docs/adr/0007-cli-arithmetic-mirrors-core-rounding-per-site.md).
 - ADR numbering housekeeping (CLI ADRs share numbers 0002–0005 with the REST API ADRs; `docs/adr/README.md` indexes only the REST ones): documentation housekeeping with no decision in it; done directly, outside this map.
