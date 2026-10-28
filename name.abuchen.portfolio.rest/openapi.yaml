@@ -439,6 +439,13 @@ paths:
       operationId: listInstruments
       tags: [Instruments]
       summary: List the instruments in a file
+      description: |
+        Every instrument in the file, or with `query` only the ones it finds.
+        A large file can hold hundreds of instruments; `query` is how a client
+        gets from a name, ISIN, WKN or ticker symbol to the `uuid` without
+        reading them all.
+      parameters:
+        - $ref: "#/components/parameters/InstrumentQuery"
       responses:
         "200":
           description: The instruments in the file
@@ -1499,6 +1506,18 @@ components:
         default: [open, closed]
       style: form
       explode: false
+    InstrumentQuery:
+      name: query
+      in: query
+      required: false
+      description: |
+        Only the instruments this finds: one whose name contains it, or whose
+        ISIN, WKN or ticker symbol equals it — all ignoring case and
+        surrounding whitespace. Omit it to list every instrument; a blank
+        value is rejected `400 invalid-request`.
+      schema:
+        type: string
+        minLength: 1
     TradeGrouping:
       name: grouping
       in: query

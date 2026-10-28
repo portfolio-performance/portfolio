@@ -129,6 +129,11 @@ identity and enablement.
 
 `isin`, `wkn`, `tickerSymbol` and `note` are omitted when not set.
 
+`?query=` narrows the list to the instruments it finds: a name that contains it, or an ISIN, WKN or
+ticker symbol equal to it — ignoring case and surrounding whitespace. A large file holds more
+instruments than one MCP answer carries, so this is how a client gets from a name to a `uuid`. A
+blank `query` is a `400`.
+
 ### `PATCH /v1/files/{file}/instruments/{uuid}`
 
 A **JSON Merge Patch** (RFC 7386), *not* the full target state: fields you omit stay untouched, and
