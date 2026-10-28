@@ -329,9 +329,20 @@ endpoint takes none, so a new endpoint is strict without doing anything. Documen
 now return one. `OpenApiSpecDriftTest` fails if any of that drifts apart, and `McpToolsDriftTest`
 fails until the new route either has a tool or is listed as one that deliberately has none.
 
-`Authorization` is read case-insensitively (`bearer …` is accepted); a header that carries a token
-under a different scheme is refused as a wrong scheme rather than as a missing token, and the
-preference page says which of the two happened.
+`Router.match` answers with the **most specific** route of the ones that match, not the first
+registered: a route with fewer placeholders wins. A literal segment therefore reserves a name for
+free — `GET /v1/files/{file}/instruments/attribute-types` is never answered by
+`GET /v1/files/{file}/instruments/{uuid}` with `attribute-types` taken as a uuid, whichever is
+added first. Registration order only breaks a tie between routes of equal specificity, so adding an
+endpoint does not silently re-route an existing one.
+
+Paths are normalized before routing and before the bearer check, and both see the same result:
+repeated leading slashes collapse into one and trailing slashes are dropped, so `/v1/files/` is the
+same route as `/v1/files`, and `/mcp/` is exempt from the bearer check exactly like `/mcp`. An empty
+segment in the middle (`/v1//files`) stays unmatched. `Authorization` is read case-insensitively
+(`bearer …` is accepted); a header that carries a token under a different scheme is refused as a
+wrong scheme rather than as a missing token, and the preference page says which of the two
+happened.
 
 The drift tests compare the specification with the code; the `openapi-compat` Maven profile
 compares it with the published contract. It runs [oasdiff](https://github.com/oasdiff/oasdiff)
