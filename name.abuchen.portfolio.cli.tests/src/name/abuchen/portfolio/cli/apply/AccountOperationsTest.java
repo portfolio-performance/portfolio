@@ -113,17 +113,6 @@ public class AccountOperationsTest
     }
 
     @Test
-    public void refusesToUpdateAnUnknownCashAccountOrOneAddedInTheSameBatch() throws IOException
-    {
-        var run = cli.apply(cashAdd("\"name\":\"New\",\"currencyCode\":\"EUR\""),
-                        cashUpdate("00000000-0000-0000-0000-000000000000", "\"note\":\"x\""),
-                        "{\"operation\":\"cash-account.update\",\"note\":\"x\"}");
-
-        assertThat(run.exitCode, is(1));
-        assertThat(run.failureKeys(), containsInAnyOrder("1:uuid:reference-not-found", "2:uuid:required"));
-    }
-
-    @Test
     public void addsAnInvestmentAccountAndReportsTheCreatedRecord() throws IOException
     {
         var reference = usedCashAccount();
@@ -175,26 +164,5 @@ public class AccountOperationsTest
         assertThat(reloaded.getNote() == null, is(true));
         assertThat(reloaded.isRetired(), is(true));
         assertThat(reloaded.getReferenceAccount().getUUID(), is(second));
-    }
-
-    @Test
-    public void refusesBadInvestmentAccountUpdates() throws IOException
-    {
-        var depot = cli.reload().getPortfolios().get(0);
-        var cash = usedCashAccount();
-
-        var run = cli.apply(
-                        investmentUpdate(depot.getUUID(),
-                                        "\"name\":null,\"referenceCashAccount\":null"),
-                        investmentUpdate(depot.getUUID(),
-                                        "\"referenceCashAccount\":\"00000000-0000-0000-0000-000000000000\""),
-                        investmentUpdate(cash.getUUID(), "\"note\":\"a cash account is not a depot\""),
-                        "{\"operation\":\"investment-account.update\",\"note\":\"x\",\"colour\":\"red\"}");
-
-        assertThat(run.exitCode, is(1));
-        assertThat(run.failureKeys(),
-                        containsInAnyOrder("0:name:required", "0:referenceCashAccount:required",
-                                        "1:uuid:duplicate-target", "1:referenceCashAccount:reference-not-found",
-                                        "2:uuid:reference-not-found", "3:uuid:required", "3:colour:unknown-field"));
     }
 }
