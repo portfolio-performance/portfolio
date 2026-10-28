@@ -29,6 +29,15 @@ public class RejectedConnectionsTest
         assertThat(rejection.userAgent(), is("evil  agent  [31mred x"));
     }
 
+    /** a bidi override would make the label read in an order the caller chose */
+    @Test
+    public void testFormatCharactersAreRemoved()
+    {
+        RejectedConnections.record("/v1/ping", "safe\u202Etxt.exe\u200B", false, RejectedConnections.Reason.NO_HEADER);
+
+        assertThat(RejectedConnections.last().orElseThrow().userAgent(), is("safetxt.exe"));
+    }
+
     @Test
     public void testALongValueIsCut()
     {
