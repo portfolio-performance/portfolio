@@ -13,6 +13,7 @@ import java.util.function.Supplier;
 import name.abuchen.portfolio.cli.command.CliException;
 import name.abuchen.portfolio.cli.command.CommandContext;
 import name.abuchen.portfolio.cli.command.Decimals;
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.OptionSpec;
 import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.cli.command.Warning;
@@ -198,7 +199,7 @@ public final class ReportingCurrency
     {
         var raw = context.text(option);
         if (raw.isPresent() && CurrencyUnit.getInstance(raw.get()) == null)
-            throw CliException.usage("invalid-option-value", "Invalid option value",
+            throw CliException.usage(ErrorCode.INVALID_OPTION_VALUE, "Invalid option value",
                             "Option '--" + option.name() + "' must be an ISO currency code known to core.")
                             .with("option", option.name()).with("value", raw.get());
         return new Requested(raw);

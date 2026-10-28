@@ -10,6 +10,7 @@ import java.util.function.Supplier;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
 import name.abuchen.portfolio.cli.command.CliException;
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 
@@ -104,7 +105,7 @@ public final class ClientLoader
         var file = new File(path);
 
         if (!Files.isRegularFile(file.toPath()))
-            throw CliException.failure("file-not-found", "Client file not found",
+            throw CliException.failure(ErrorCode.FILE_NOT_FOUND, "Client file not found",
                             "No client file at " + file.getAbsolutePath(), 404);
 
         char[] password = null;
@@ -117,7 +118,7 @@ public final class ClientLoader
             {
                 password = passwords.get();
                 if (password == null || password.length == 0)
-                    throw CliException.failure("password-required", "Password required",
+                    throw CliException.failure(ErrorCode.PASSWORD_REQUIRED, "Password required",
                                     "The client file is encrypted. Set the PP_PASSWORD environment variable or"
                                                     + " provide the password on stdin.",
                                     401);
@@ -154,7 +155,7 @@ public final class ClientLoader
 
     private static CliException unreadable(Exception e)
     {
-        return CliException.failure("file-unreadable", "Client file could not be read",
+        return CliException.failure(ErrorCode.FILE_UNREADABLE, "Client file could not be read",
                         "The client file could not be read: " + e.getMessage(), 422, e);
     }
 
@@ -165,7 +166,7 @@ public final class ClientLoader
     private static void guard(OptionalInt fileVersion) throws CliException
     {
         if (fileVersion.isPresent() && fileVersion.getAsInt() > Client.CURRENT_VERSION)
-            throw CliException.failure("file-version-unsupported", "Client file version is not supported",
+            throw CliException.failure(ErrorCode.FILE_VERSION_UNSUPPORTED, "Client file version is not supported",
                             "The client file has version " + fileVersion.getAsInt()
                                             + " but this pp-cli only supports up to version " + Client.CURRENT_VERSION
                                             + ". Use a pp-cli built from the same release as the desktop app that saved the file.",

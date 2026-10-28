@@ -17,6 +17,7 @@ import name.abuchen.portfolio.cli.command.CommandContext;
 import name.abuchen.portfolio.cli.command.CommandSpec;
 import name.abuchen.portfolio.cli.command.DateRange;
 import name.abuchen.portfolio.cli.command.Decimals;
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.MasterData;
 import name.abuchen.portfolio.cli.command.OptionSpec;
 import name.abuchen.portfolio.cli.command.Paging;
@@ -164,7 +165,7 @@ public final class TransactionsCommand
         {
             var type = item.trim().toUpperCase(Locale.ROOT);
             if (!TransactionShape.FILTERABLE_TYPES.contains(type))
-                throw CliException.usage("invalid-option-value", "Invalid option value",
+                throw CliException.usage(ErrorCode.INVALID_OPTION_VALUE, "Invalid option value",
                                 "Option '--" + TYPE.name() + "' must be a comma-separated list of: "
                                                 + String.join(", ", TransactionShape.FILTERABLE_TYPES) + ".")
                                 .with("option", TYPE.name()).with("value", raw.get());

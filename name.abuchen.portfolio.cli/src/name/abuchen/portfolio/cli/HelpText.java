@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.cli;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -11,6 +12,7 @@ import name.abuchen.portfolio.cli.apply.OperationSpec;
 import name.abuchen.portfolio.cli.command.CliException;
 import name.abuchen.portfolio.cli.command.CommandContext;
 import name.abuchen.portfolio.cli.command.CommandSpec;
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.MinorUnits;
 import name.abuchen.portfolio.cli.command.OptionSpec;
 import name.abuchen.portfolio.cli.command.OutputFormat;
@@ -123,7 +125,7 @@ final class HelpText
 
         out.line("Exit codes: 0 success; 2 usage error; 1 any other failure. A failure is a problem+json document"
                         + " on stdout whose code is one of:");
-        errors(out, ErrorSpec.ALL);
+        errors(out, List.of(ErrorCode.values()));
         out.blank();
 
         out.line("Limits (do not promise these):");
@@ -173,8 +175,8 @@ final class HelpText
         }
 
         out.blank();
-        out.line("Error codes (meanings: pp-cli --help): " + String.join(", ", ErrorSpec.ALL.stream()
-                        .filter(e -> e.appliesTo(command)).map(ErrorSpec::code).toList()));
+        out.line("Error codes (meanings: pp-cli --help): " + String.join(", ", Arrays.stream(ErrorCode.values())
+                        .filter(e -> e.appliesTo(command)).map(ErrorCode::code).toList()));
         return out.toString();
     }
 
@@ -193,7 +195,7 @@ final class HelpText
         return out.toString();
     }
 
-    private static void errors(Text out, List<ErrorSpec> errors)
+    private static void errors(Text out, List<ErrorCode> errors)
     {
         for (var error : errors)
             out.line("  " + error.code() + "  " + error.description());

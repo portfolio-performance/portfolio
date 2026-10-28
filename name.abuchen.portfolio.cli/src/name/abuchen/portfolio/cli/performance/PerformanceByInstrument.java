@@ -8,6 +8,7 @@ import java.util.Map;
 import name.abuchen.portfolio.cli.command.CliException;
 import name.abuchen.portfolio.cli.command.CommandContext;
 import name.abuchen.portfolio.cli.command.Decimals;
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.MasterData;
 import name.abuchen.portfolio.cli.command.OptionSpec;
 import name.abuchen.portfolio.cli.command.Schema;
@@ -54,7 +55,7 @@ final class PerformanceByInstrument
      */
     static CliException unsupportedScope()
     {
-        return CliException.usage("conflicting-options", "Conflicting options",
+        return CliException.usage(ErrorCode.CONFLICTING_OPTIONS, "Conflicting options",
                         "Option '--" + BY.name()
                                         + "' works with the whole client or an investment account, not with '--cash-account' or '--instrument'.")
                         .with("option", BY.name());
