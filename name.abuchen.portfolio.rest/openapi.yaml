@@ -823,6 +823,9 @@ paths:
                         name: Apple Inc.
                         shares: 10
                         price: { value: 110.5, currency: USD, date: "2026-07-17" }
+                        priceStale: false
+                        priceAgeDays: 3
+                        priceMissedTradingDays: 0
                         valuation: { value: 1100, currency: EUR }
                         localValuation: { value: 1105, currency: USD }
                         weight: 0.6875
@@ -2136,6 +2139,44 @@ components:
           allOf:
             - $ref: "#/components/schemas/Price"
           description: Instruments only.
+        priceStale:
+          type: boolean
+          description: |
+            Instruments only, when `price.date` is known. Whether the quote behind
+            this valuation is out of date: `true` when more than one trading day
+            passed without a quote (`priceMissedTradingDays` > 1) — a quote feed
+            that stopped, or a valuation that fell back to the price of the last
+            transaction. A weekend or a holiday does not make a quote stale, and
+            one missed trading day is tolerated because funds publish their price
+            a day late. Never `true` for an instrument priced by hand (quote feed
+            `MANUAL`): its price changes when the user decides, as in the
+            application's data quality view — its age fields still say how old
+            the price is.
+        priceAgeDays:
+          type: integer
+          description: |
+            Instruments only, when `price.date` is known. Calendar days between
+            `price.date` and the response's `date` — or today, when `date` lies
+            in the future, since no quote can be younger than today's. Never
+            negative, so a quote dated after `date` reads 0 rather than implying
+            the valuation happened before it.
+        priceMissedTradingDays:
+          type: integer
+          description: |
+            Instruments only, when `price.date` is known. The trading days strictly
+            between `price.date` and the response's `date` — or today, when
+            `date` lies in the future — counted in the instrument's own trade
+            calendar. That end day itself does not count: its close cannot be
+            known before the day is over. On a Sunday, Friday's quote has missed
+            none, and valued at a future date today's quote has missed none
+            either.
+        priceManual:
+          type: boolean
+          description: |
+            Instruments only, present and `true` when the instrument is priced
+            by hand (quote feed `MANUAL`). Such a price changes when the user
+            decides, so `priceStale` is never `true` for it however old it is —
+            this field says why; the age fields still say how old it is.
         valuation:
           allOf:
             - $ref: "#/components/schemas/MonetaryValue"

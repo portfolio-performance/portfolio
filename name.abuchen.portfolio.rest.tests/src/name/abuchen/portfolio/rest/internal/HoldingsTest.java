@@ -24,6 +24,7 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.online.QuoteFeed;
 
 @SuppressWarnings("nls")
 public class HoldingsTest
@@ -81,6 +82,16 @@ public class HoldingsTest
         assertThat(price.get("currency").getAsString(), is("EUR"));
         assertThat(price.get("date").getAsString(), is("2026-07-01"));
 
+        // only a manually priced holding says so
+        assertThat(instrument.has("priceManual"), is(false));
+
+        // the same staleness, decided instead of left to the caller to compare
+        // the two dates: 2026-07-01 is 19 days before the valuation date, and
+        // twelve trading days passed in between without a quote
+        assertThat(instrument.get("priceStale").getAsBoolean(), is(true));
+        assertThat(instrument.get("priceAgeDays").getAsLong(), is(19L));
+        assertThat(instrument.get("priceMissedTradingDays").getAsLong(), is(12L));
+
         var valuation = instrument.get("valuation").getAsJsonObject();
         assertThat(valuation.get("value").getAsDouble(), is(1100d));
         assertThat(valuation.get("currency").getAsString(), is("EUR"));
@@ -91,8 +102,117 @@ public class HoldingsTest
         assertThat(cash.get("name").getAsString(), is("Cash"));
         assertThat(cash.has("shares"), is(false));
         assertThat(cash.has("price"), is(false));
+        assertThat(cash.has("priceStale"), is(false));
+        assertThat(cash.has("priceAgeDays"), is(false));
+        assertThat(cash.has("priceMissedTradingDays"), is(false));
         assertThat(cash.get("valuation").getAsJsonObject().get("value").getAsDouble(), is(500d));
         assertThat(cash.get("weight").getAsDouble(), closeTo(0.3125, 1e-10));
+    }
+
+    /** a quote dated exactly the valuation date is younger than it, not stale */
+    @Test
+    public void testQuoteOnTheValuationDateIsNotStale()
+    {
+        var client = new Client();
+
+        var security = new SecurityBuilder() //
+                        .addPrice("2026-07-20", Values.Quote.factorize(110)) //
+                        .addTo(client);
+
+        new PortfolioBuilder() //
+                        .inbound_delivery(security, "2026-01-15", Values.Share.factorize(10),
+                                        Values.Amount.factorize(1000)) //
+                        .addTo(client);
+
+        var holdings = list(client, "2026-07-20", null).getAsJsonObject();
+        var instrument = holdings.get("items").getAsJsonArray().get(0).getAsJsonObject();
+
+        assertThat(instrument.get("priceStale").getAsBoolean(), is(false));
+        assertThat(instrument.get("priceAgeDays").getAsLong(), is(0L));
+    }
+
+    /**
+     * A weekend is not a missed quote: valued on a Sunday, Friday's close is two
+     * days old and as fresh as a quote can be.
+     */
+    @Test
+    public void testFridaysQuoteOnASundayIsNotStale()
+    {
+        var client = new Client();
+
+        var security = new SecurityBuilder() //
+                        .addPrice("2026-10-23", Values.Quote.factorize(110)) //
+                        .addTo(client);
+
+        new PortfolioBuilder() //
+                        .inbound_delivery(security, "2026-01-15", Values.Share.factorize(10),
+                                        Values.Amount.factorize(1000)) //
+                        .addTo(client);
+
+        var holdings = list(client, "2026-10-25", null).getAsJsonObject();
+        var instrument = holdings.get("items").getAsJsonArray().get(0).getAsJsonObject();
+
+        assertThat(instrument.get("priceStale").getAsBoolean(), is(false));
+        assertThat(instrument.get("priceAgeDays").getAsLong(), is(2L));
+        assertThat(instrument.get("priceMissedTradingDays").getAsLong(), is(0L));
+    }
+
+    /**
+     * Reported in review: a price kept by hand changes when the user decides,
+     * not every trading day, and the data quality view ends a manual
+     * instrument's interval at its last quote. It is never flagged; its age is
+     * still reported.
+     */
+    @Test
+    public void testAManualPriceIsNeverStale()
+    {
+        var client = new Client();
+
+        var security = new SecurityBuilder() //
+                        .addPrice("2026-07-01", Values.Quote.factorize(110)) //
+                        .addTo(client);
+        security.setFeed(QuoteFeed.MANUAL);
+
+        new PortfolioBuilder() //
+                        .inbound_delivery(security, "2026-01-15", Values.Share.factorize(10),
+                                        Values.Amount.factorize(1000)) //
+                        .addTo(client);
+
+        var holdings = list(client, "2026-07-20", null).getAsJsonObject();
+        var instrument = holdings.get("items").getAsJsonArray().get(0).getAsJsonObject();
+
+        assertThat(instrument.get("priceStale").getAsBoolean(), is(false));
+        assertThat(instrument.get("priceAgeDays").getAsLong(), is(19L));
+        assertThat(instrument.get("priceMissedTradingDays").getAsLong(), is(12L));
+        // and it says why the old price is not flagged
+        assertThat(instrument.get("priceManual").getAsBoolean(), is(true));
+    }
+
+    /**
+     * Valued at a future date, today's quote is as fresh as a quote can be -
+     * the age is measured to today, not to the future date.
+     */
+    @Test
+    public void testTodaysQuoteIsNotStaleAtAFutureDate()
+    {
+        var client = new Client();
+        var today = LocalDate.now();
+
+        var security = new SecurityBuilder() //
+                        .addPrice(today.toString(), Values.Quote.factorize(110)) //
+                        .addTo(client);
+
+        new PortfolioBuilder() //
+                        .inbound_delivery(security, "2026-01-15", Values.Share.factorize(10),
+                                        Values.Amount.factorize(1000)) //
+                        .addTo(client);
+
+        var holdings = list(client, today.plusDays(66).toString(), null).getAsJsonObject();
+        var instrument = holdings.get("items").getAsJsonArray().get(0).getAsJsonObject();
+
+        assertThat(instrument.get("priceStale").getAsBoolean(), is(false));
+        assertThat(instrument.get("priceAgeDays").getAsLong(), is(0L));
+        assertThat(instrument.get("priceMissedTradingDays").getAsLong(), is(0L));
     }
 
     /**
