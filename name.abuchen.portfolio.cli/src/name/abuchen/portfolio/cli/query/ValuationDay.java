@@ -18,7 +18,8 @@ final class ValuationDay
     static Facet<LocalDate> facet(String description, String metaDescription)
     {
         var option = OptionSpec.date("date", description);
-        return Facet.of(Declaration.empty().options(option).meta("date", Schema.string(metaDescription)),
+        return Facet.of(Declaration.empty().options(option).meta("date", Schema.string(metaDescription))
+                                        .sample("--" + option.name(), "2026-10-01"),
                         run -> run.date(option).orElse(LocalDate.now(run.clock())),
                         (day, out) -> out.meta("date", day.toString()));
     }
