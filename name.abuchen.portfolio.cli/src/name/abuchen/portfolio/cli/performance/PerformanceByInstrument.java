@@ -5,12 +5,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import name.abuchen.portfolio.cli.command.CliException;
-import name.abuchen.portfolio.cli.command.CommandContext;
 import name.abuchen.portfolio.cli.command.Decimals;
-import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.MasterData;
-import name.abuchen.portfolio.cli.command.OptionSpec;
 import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.cli.currency.ReportingCurrency;
 import name.abuchen.portfolio.model.Client;
@@ -28,37 +24,8 @@ import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
  */
 final class PerformanceByInstrument
 {
-    static final String INSTRUMENT = "instrument";
-
-    static final OptionSpec BY = new OptionSpec("by", "dimension",
-                    "Break the figures down: instrument is the only dimension. Returns one record per instrument active in the period, sorted by name, instead of the figures of the scope. With the whole client or an investment account.");
-
     private PerformanceByInstrument()
     {
-    }
-
-    /**
-     * @return whether the figures are to be broken down by instrument
-     * @throws CliException
-     *             <code>invalid-option-value</code> for any other dimension
-     */
-    static boolean requested(CommandContext context) throws CliException
-    {
-        var value = context.text(BY);
-        if (value.isPresent() && !INSTRUMENT.equals(value.get()))
-            throw BY.invalid(value.get(), "'" + INSTRUMENT + "'");
-        return value.isPresent();
-    }
-
-    /**
-     * @return a usage error: the scope cannot be broken down by instrument
-     */
-    static CliException unsupportedScope()
-    {
-        return CliException.usage(ErrorCode.CONFLICTING_OPTIONS, "Conflicting options",
-                        "Option '--" + BY.name()
-                                        + "' works with the whole client or an investment account, not with '--cash-account' or '--instrument'.")
-                        .with("option", BY.name());
     }
 
     static Schema itemSchema()

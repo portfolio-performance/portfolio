@@ -1,14 +1,14 @@
 package name.abuchen.portfolio.cli.performance;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import name.abuchen.portfolio.cli.command.CliException;
 import name.abuchen.portfolio.cli.command.CommandContext;
 import name.abuchen.portfolio.cli.command.DateRange;
+import name.abuchen.portfolio.cli.command.Declaration;
 import name.abuchen.portfolio.cli.command.ErrorCode;
+import name.abuchen.portfolio.cli.command.Facet;
 import name.abuchen.portfolio.cli.command.OptionSpec;
 import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
@@ -39,7 +39,23 @@ record PerformancePeriod(LocalDate firstDay, LocalDate lastDay, Optional<String>
     private static final OptionSpec PERIOD = new OptionSpec("period", "code",
                     "A reporting-period code of the desktop app, resolved by core relative to today: for example L1Y0 (last year), X or YTD (year to date), Y2025 (the year 2025), L0Y6 (last six months), S2025-01-15 (since a day). Instead of --from and --to.");
 
-    static final List<OptionSpec> OPTIONS = List.of(FROM, TO, PERIOD);
+    /**
+     * The period as a facet: it owns <code>--from</code>, <code>--to</code>
+     * and <code>--period</code>, the rules between them, and echoes the
+     * resolved first and last day in <code>meta</code>.
+     */
+    static final Facet<PerformancePeriod> FACET = Facet.of(Declaration.empty().options(FROM, TO, PERIOD)
+                    .meta("from", Schema.string(
+                                    "First day of the period, as resolved: as given with --from, or the first day of the --period code."))
+                    .meta("to", Schema.string(
+                                    "Last day of the period, as resolved: as given with --to, otherwise today, or the last day of the --period code. It can lie after today, e.g. for the code of a year not yet over."))
+                    .optionalMeta("period", Schema.string("The reporting-period code, as given. Absent with --from."))
+                    .codes(ErrorCode.PERIOD_REQUIRED, ErrorCode.CONFLICTING_OPTIONS, ErrorCode.INVALID_DATE_RANGE),
+                    PerformancePeriod::resolve, (period, out) -> {
+                        out.meta("from", period.firstDay().toString());
+                        out.meta("to", period.lastDay().toString());
+                        period.code().ifPresent(c -> out.meta("period", c));
+                    });
 
     /** Core's code for "year to date"; agents also say <code>YTD</code>. */
     private static final String YEAR_TO_DATE_CODE = "X";
@@ -50,7 +66,7 @@ record PerformancePeriod(LocalDate firstDay, LocalDate lastDay, Optional<String>
      *             a usage error if the options are missing, conflict or are
      *             invalid, or if the period would end before it starts
      */
-    static PerformancePeriod resolve(CommandContext context) throws CliException
+    private static PerformancePeriod resolve(CommandContext context) throws CliException
     {
         var code = context.text(PERIOD);
         if (code.isPresent())
@@ -123,24 +139,5 @@ record PerformancePeriod(LocalDate firstDay, LocalDate lastDay, Optional<String>
     Interval interval()
     {
         return Interval.of(firstDay.minusDays(1), lastDay);
-    }
-
-    /** Adds the resolved first and last day and, if given, the code. */
-    void putInto(Map<String, Object> meta)
-    {
-        meta.put("from", firstDay.toString());
-        meta.put("to", lastDay.toString());
-        code.ifPresent(c -> meta.put("period", c));
-    }
-
-    /** Declares the members {@link #putInto} adds. */
-    static Schema declareIn(Schema meta)
-    {
-        return meta.property("from", Schema.string(
-                        "First day of the period, as resolved: as given with --from, or the first day of the --period code."))
-                        .property("to", Schema.string(
-                                        "Last day of the period, as resolved: as given with --to, otherwise today, or the last day of the --period code. It can lie after today, e.g. for the code of a year not yet over."))
-                        .optionalProperty("period",
-                                        Schema.string("The reporting-period code, as given. Absent with --from."));
     }
 }

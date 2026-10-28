@@ -13,7 +13,9 @@ import java.util.function.Supplier;
 import name.abuchen.portfolio.cli.command.CliException;
 import name.abuchen.portfolio.cli.command.CommandContext;
 import name.abuchen.portfolio.cli.command.Decimals;
+import name.abuchen.portfolio.cli.command.Declaration;
 import name.abuchen.portfolio.cli.command.ErrorCode;
+import name.abuchen.portfolio.cli.command.Facet;
 import name.abuchen.portfolio.cli.command.OptionSpec;
 import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.cli.command.Warning;
@@ -46,6 +48,35 @@ public final class ReportingCurrency
                                     "An exchange rate more than " + Prices.STALE_AFTER_DAYS
                                                     + " days before the day needed was used. Carries baseCurrency, termCurrency, the count of days and the maxAgeDays."),
                     ExchangeRates.CACHE_UNAVAILABLE);
+
+    /** What the rate warnings count: the items looked up, or the days core needed a rate on. */
+    public enum Counting
+    {
+        ITEMS, DAYS
+    }
+
+    /**
+     * The reporting currency as a facet: <code>--currency</code>, defaulting
+     * to the base currency of the file. <code>meta</code> gets the currency
+     * and, if the cache was read, <code>exchangeRates</code>; the rate
+     * warnings are forwarded after the handler.
+     */
+    public static Facet<ReportingCurrency> facet(String description, Counting counting)
+    {
+        var option = option(description);
+        var warnings = counting == Counting.DAYS ? WARNINGS_COUNTING_DAYS : WARNINGS;
+        var declaration = Declaration.empty().options(option)
+                        .meta("currency", Schema.string("The reporting currency: as given, otherwise the base currency."))
+                        .optionalMeta("exchangeRates", ratesMetaSchema())
+                        .warnings(warnings.toArray(WarningSpec[]::new)).needingClient();
+        return Facet.of(declaration, run -> requested(run, option).orBase(run, run.client()), (reporting, out) -> {
+            out.meta("currency", reporting.code());
+            var rates = new LinkedHashMap<String, Object>();
+            reporting.putRatesInto(rates);
+            rates.forEach(out::meta);
+            reporting.warnings().forEach(out::warn);
+        });
+    }
 
     /** The currency code of <code>--currency</code>, validated before the client is loaded. */
     public record Requested(Optional<String> code)
