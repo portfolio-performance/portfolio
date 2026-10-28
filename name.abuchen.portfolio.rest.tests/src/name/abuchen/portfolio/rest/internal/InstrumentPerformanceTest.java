@@ -2,13 +2,16 @@ package name.abuchen.portfolio.rest.internal;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.not;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +29,7 @@ import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -98,6 +102,9 @@ public class InstrumentPerformanceTest
 
         // a position held all year with no flows returns its bare 20 %
         assertThat(item.get("timeWeighted").getAsJsonObject().get("ttwror").getAsDouble(), closeTo(0.20, 1e-6));
+
+        // EUR reported in EUR: nothing fell back, but the array is still there
+        assertThat(result.get("fxWarnings").getAsJsonArray().size(), is(0));
     }
 
     /** all six parameters are echoed, so the numbers are self-describing */
@@ -114,6 +121,108 @@ public class InstrumentPerformanceTest
 
         assertThat(groupNames(result), is(List.of("valuation", "gains", "income", "expenses", "moneyWeighted",
                         "timeWeighted", "risk")));
+    }
+
+    /**
+     * A report in a currency the file has no rates for shows those amounts at
+     * face value, and names the pair: the echo of `reportingCurrency` alone
+     * would leave the reader assuming the exchange rate had been applied.
+     */
+    @Test
+    public void testFxWarningsNameThePairWithoutRates()
+    {
+        var result = list(heldPosition(), OPENING, CLOSING, "ARS", null, null, "valuation");
+
+        var warnings = result.get("fxWarnings").getAsJsonArray();
+        assertThat(warnings.size(), is(1));
+        assertThat(warnings.get(0).getAsJsonObject().get("currency").getAsString(), is("EUR"));
+        assertThat(warnings.get(0).getAsJsonObject().get("reportingCurrency").getAsString(), is("ARS"));
+        assertThat(warnings.get(0).getAsJsonObject().get("reason").getAsString(), is("no-series"));
+    }
+
+    /**
+     * The file's other currencies are not this report's business. An account in a
+     * currency no instrument in the response is about is not money that was
+     * converted, and naming it would point the reader at amounts that are not
+     * there - which the file's whole currency list did.
+     */
+    @Test
+    public void testFxWarningsDoNotNameCurrenciesTheReportNeverConverted()
+    {
+        var client = heldPosition();
+        new AccountBuilder("ARS").deposit_("2024-01-01", Values.Amount.factorize(100)).addTo(client);
+
+        assertThat(list(client).get("fxWarnings").getAsJsonArray().size(), is(0));
+        assertThat(item(client, instrumentOf(client).getUUID(), null).get("fxWarnings").getAsJsonArray().size(),
+                        is(0));
+    }
+
+    /**
+     * What the report converted is more than the instruments it names: a
+     * transaction can be recorded in a currency the instrument does not carry, and
+     * its fees are converted with it. That currency must be named. A fee that
+     * carries its own forex value is not such a conversion - the rate is stored on
+     * the unit, so the fee's other currency needs no rate series and must not be
+     * claimed as a fallback.
+     */
+    @Test
+    public void testFxWarningsNameTheCurrencyATransactionWasConvertedFrom()
+    {
+        var client = new Client();
+
+        var security = new SecurityBuilder().addPrice("2023-06-01", Values.Quote.factorize(100))
+                        .addPrice(CLOSING, Values.Quote.factorize(120)) //
+                        .addTo(client);
+        security.setName("ACME");
+
+        var account = new AccountBuilder().deposit_("2023-06-01", Values.Amount.factorize(1000)).addTo(client);
+        var portfolio = new PortfolioBuilder(account).addTo(client);
+
+        // bought in ARS; the fee carries its own BBD value with a stored rate, so
+        // only the transaction's currency is ever looked up in a rate series
+        var inside = new PortfolioTransaction(LocalDateTime.of(2024, 6, 1, 0, 0), "ARS",
+                        Values.Amount.factorize(1000), security, Values.Share.factorize(10),
+                        PortfolioTransaction.Type.BUY, 0, 0);
+        inside.addUnit(new Transaction.Unit(Transaction.Unit.Type.FEE, //
+                        Money.of("ARS", Values.Amount.factorize(30)), //
+                        Money.of("BBD", Values.Amount.factorize(25)), java.math.BigDecimal.valueOf(1.2)));
+        portfolio.addTransaction(inside);
+
+        // a currency the interval never touched is not this report's business
+        var outside = new PortfolioTransaction(LocalDateTime.of(2022, 1, 1, 0, 0), "CLP",
+                        Values.Amount.factorize(500), security, Values.Share.factorize(5),
+                        PortfolioTransaction.Type.DELIVERY_INBOUND, 0, 0);
+        portfolio.addTransaction(outside);
+
+        assertThat(currenciesOfWarnings(list(client)), contains("ARS"));
+        assertThat(currenciesOfWarnings(list(client)), not(hasItem("BBD")));
+        assertThat(currenciesOfWarnings(item(client, security.getUUID(), null)), contains("ARS"));
+    }
+
+    /**
+     * A dividend is booked on a cash account, not in the investment account, and
+     * is converted from that account's currency. An account in a currency with
+     * no rates therefore has to be named even though no trade of the instrument
+     * is in it.
+     */
+    @Test
+    public void testFxWarningsNameTheCurrencyOfADividendAccount()
+    {
+        var client = heldPosition();
+        var security = instrumentOf(client);
+        new AccountBuilder("ARS").dividend("2024-06-03", Values.Amount.factorize(50), security).addTo(client);
+
+        assertThat(currenciesOfWarnings(list(client)), contains("ARS"));
+        assertThat(currenciesOfWarnings(item(client, security.getUUID(), null)), contains("ARS"));
+    }
+
+    /** the currencies the report's {@code fxWarnings} named */
+    private static List<String> currenciesOfWarnings(JsonObject report)
+    {
+        var currencies = new ArrayList<String>();
+        for (var warning : report.get("fxWarnings").getAsJsonArray())
+            currencies.add(warning.getAsJsonObject().get("currency").getAsString());
+        return currencies;
     }
 
     /** the echo states the value that was applied, not an omitted property */

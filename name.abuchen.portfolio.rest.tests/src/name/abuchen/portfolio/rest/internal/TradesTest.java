@@ -2,10 +2,16 @@ package name.abuchen.portfolio.rest.internal;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -17,7 +23,9 @@ import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
@@ -66,6 +74,139 @@ public class TradesTest
         portfolio.setName("Depot");
 
         return client;
+    }
+
+    /**
+     * The trades response carries `fxWarnings` like every computed report: empty
+     * when nothing fell back, and naming the pair whose amounts were converted at
+     * 1:1 because the file has no rates for it. An open trade's exit side is a
+     * valuation at the market price, which is in the security's currency - ARS,
+     * which no shipped provider quotes; USD would resolve through the built-in
+     * ECB series and never fall back.
+     */
+    @Test
+    public void testFxWarningsNameTheCurrencyAnOpenTradeIsValuedIn()
+    {
+        var client = new Client();
+
+        var security = new SecurityBuilder("ARS") //
+                        .addPrice("2026-07-01", Values.Quote.factorize(130)) //
+                        .addTo(client);
+        security.setName("ACME ARS");
+
+        var account = new AccountBuilder() //
+                        .deposit_("2026-01-01", Values.Amount.factorize(5000)) //
+                        .addTo(client);
+
+        new PortfolioBuilder(account) //
+                        .buy(security, "2026-01-15", Values.Share.factorize(10), Values.Amount.factorize(1000)) //
+                        .addTo(client);
+
+        var warnings = trades(client).get("fxWarnings").getAsJsonArray();
+        assertThat(warnings.size(), is(1));
+        assertThat(warnings.get(0).getAsJsonObject().get("currency").getAsString(), is("ARS"));
+        assertThat(warnings.get(0).getAsJsonObject().get("reason").getAsString(), is("no-series"));
+    }
+
+    /**
+     * A closed trade is bought and sold in the account's currency: its exit side
+     * is the sale, not a market price, so the security's own currency was never
+     * converted and must not be named.
+     */
+    @Test
+    public void testFxWarningsDoNotNameTheCurrencyOfAClosedTradesSecurity()
+    {
+        var client = new Client();
+
+        var security = new SecurityBuilder("ARS") //
+                        .addPrice("2026-07-01", Values.Quote.factorize(130)) //
+                        .addTo(client);
+        security.setName("ACME ARS");
+
+        var account = new AccountBuilder() //
+                        .deposit_("2026-01-01", Values.Amount.factorize(5000)) //
+                        .addTo(client);
+
+        new PortfolioBuilder(account) //
+                        .buy(security, "2026-01-15", Values.Share.factorize(10), Values.Amount.factorize(1000)) //
+                        .sell(security, "2026-03-16", Values.Share.factorize(10), Values.Amount.factorize(1300)) //
+                        .addTo(client);
+
+        var response = trades(client);
+        assertThat(response.get("items").getAsJsonArray().size(), is(1));
+        assertThat(response.get("fxWarnings").getAsJsonArray().size(), is(0));
+    }
+
+    /**
+     * A trade's fees are converted with the transaction, so a trade recorded in a
+     * currency the report is not in has to name that currency - including for the
+     * fee it charged. A fee that carries its own forex value brings its own rate
+     * with it, so the fee's other currency needs no rate series and must not be
+     * claimed as a fallback.
+     */
+    @Test
+    public void testFxWarningsNameTheCurrencyATradeWasConvertedFrom()
+    {
+        var client = new Client();
+
+        var security = new SecurityBuilder() //
+                        .addPrice("2026-07-01", Values.Quote.factorize(130)) //
+                        .addTo(client);
+        security.setName("ACME");
+
+        var account = new AccountBuilder() //
+                        .deposit_("2026-01-01", Values.Amount.factorize(5000)) //
+                        .addTo(client);
+
+        var portfolio = new PortfolioBuilder(account).addTo(client);
+
+        // a trade recorded in ARS, with the fee spelled in BBD at a stored rate;
+        // only ARS is ever looked up in a rate series
+        var buy = new PortfolioTransaction(LocalDateTime.of(2026, 1, 15, 0, 0), "ARS",
+                        Values.Amount.factorize(1000), security, Values.Share.factorize(10),
+                        PortfolioTransaction.Type.BUY, 0, 0);
+        buy.addUnit(new Transaction.Unit(Transaction.Unit.Type.FEE, //
+                        Money.of("ARS", Values.Amount.factorize(30)), //
+                        Money.of("BBD", Values.Amount.factorize(25)), java.math.BigDecimal.valueOf(1.2)));
+        portfolio.addTransaction(buy);
+
+        var sell = new PortfolioTransaction(LocalDateTime.of(2026, 3, 16, 0, 0), "ARS",
+                        Values.Amount.factorize(1300), security, Values.Share.factorize(10),
+                        PortfolioTransaction.Type.SELL, 0, 0);
+        sell.addUnit(new Transaction.Unit(Transaction.Unit.Type.FEE, //
+                        Money.of("ARS", Values.Amount.factorize(24)), //
+                        Money.of("BBD", Values.Amount.factorize(20)), java.math.BigDecimal.valueOf(1.2)));
+        portfolio.addTransaction(sell);
+
+        var warnings = currenciesOfWarnings(trades(client));
+        assertThat(warnings, contains("ARS"));
+        assertThat(warnings, not(hasItem("BBD")));
+        assertThat(currenciesOfWarnings(forInstrument(client, security.getUUID())), contains("ARS"));
+    }
+
+    /** the currencies a report's {@code fxWarnings} named */
+    private static List<String> currenciesOfWarnings(JsonObject report)
+    {
+        var currencies = new ArrayList<String>();
+        for (var warning : report.get("fxWarnings").getAsJsonArray())
+            currencies.add(warning.getAsJsonObject().get("currency").getAsString());
+        return currencies;
+    }
+
+    /**
+     * A cash account in some other currency is not money this report converted.
+     * Naming it would tell the reader about unconverted amounts that are nowhere
+     * in the response - which is what the whole file's currency list did.
+     */
+    @Test
+    public void testFxWarningsDoNotNameACurrencyTheTradesNeverTouched()
+    {
+        var client = closedTrade();
+        new AccountBuilder("ARS").deposit_("2026-01-01", Values.Amount.factorize(100)).addTo(client);
+
+        assertThat(trades(client).get("fxWarnings").getAsJsonArray().size(), is(0));
+        assertThat(forInstrument(client, client.getSecurities().get(0).getUUID()).get("fxWarnings").getAsJsonArray()
+                        .size(), is(0));
     }
 
     @Test

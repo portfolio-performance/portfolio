@@ -786,7 +786,7 @@ paths:
             application/json:
               schema:
                 type: object
-                required: [date, reportingCurrency, totalAssets, items]
+                required: [date, reportingCurrency, totalAssets, fxWarnings, items]
                 properties:
                   date:
                     type: string
@@ -802,6 +802,8 @@ paths:
                       `currencyCode` (its own declared currency).
                   totalAssets:
                     $ref: "#/components/schemas/MonetaryValue"
+                  fxWarnings:
+                    $ref: "#/components/schemas/FxWarnings"
                   items:
                     type: array
                     items:
@@ -812,6 +814,7 @@ paths:
                     date: "2026-07-20"
                     reportingCurrency: EUR
                     totalAssets: { value: 1600, currency: EUR }
+                    fxWarnings: []
                     items:
                       - type: instrument
                         uuid: 8a1e0c4b-2f5d-4e6a-b1c3-7d9f0a2e4c68
@@ -931,6 +934,7 @@ paths:
                       currencyGains: { value: 210, currency: EUR }
                       netDeposits: { value: 5000, currency: EUR }
                       closingValue: { value: 111390, currency: EUR }
+                    fxWarnings: []
         "400":
           $ref: "#/components/responses/BadRequest"
         "401":
@@ -1010,6 +1014,7 @@ paths:
                     taxesAndFees: included
                     metrics:
                       [valuation, gains, income, expenses, moneyWeighted, timeWeighted, risk]
+                    fxWarnings: []
                     items:
                       - uuid: 5c1a0b7e-3d4f-4a2b-9c8e-1f0a2b3c4d5e
                         name: iShares Core MSCI World
@@ -1098,6 +1103,14 @@ paths:
                     costMethod: fifo
                     taxesAndFees: included
                     metrics: [valuation]
+                    # one pair with nothing to convert with: its ARS amounts are
+                    # shown at face value, not exchanged into EUR. USD would be
+                    # the more familiar example, but the built-in ECB series
+                    # covers it, so it would not be a fallback.
+                    fxWarnings:
+                      - currency: ARS
+                        reportingCurrency: EUR
+                        reason: no-series
                     uuid: 5c1a0b7e-3d4f-4a2b-9c8e-1f0a2b3c4d5e
                     name: iShares Core MSCI World
                     currencyCode: USD
@@ -1186,6 +1199,7 @@ paths:
                     grouping: combined
                     valuationDate: "2026-08-27"
                     status: [open, closed]
+                    fxWarnings: []
                     warnings: []
                     items:
                       - status: closed
@@ -1287,6 +1301,7 @@ paths:
                     grouping: combined
                     valuationDate: "2026-08-27"
                     status: [open, closed]
+                    fxWarnings: []
                     warnings: []
                     items:
                       - status: closed
@@ -1528,6 +1543,7 @@ components:
           grouping,
           valuationDate,
           status,
+          fxWarnings,
           warnings,
           items,
         ]
@@ -1561,6 +1577,8 @@ components:
           items:
             type: string
             enum: [open, closed]
+        fxWarnings:
+          $ref: "#/components/schemas/FxWarnings"
         warnings:
           type: array
           description: |
@@ -2006,6 +2024,49 @@ components:
           format: date
           description: The date the price is from.
 
+    FxWarning:
+      type: object
+      description: |
+        One currency pair a report converted at a rate of 1 because the file has
+        nothing to convert with — amounts of `currency` are shown at face value in
+        `reportingCurrency`, not exchanged. Only pairs the report's calculation
+        actually converted are named: an empty account or an instrument not held
+        never is.
+      required: [currency, reportingCurrency, reason]
+      properties:
+        currency:
+          type: string
+          description: The currency the amounts are natively in, shown unconverted.
+        reportingCurrency:
+          type: string
+          description: |
+            The currency the amounts were converted into: the report's reporting
+            currency, or an instrument's own currency for the figures stated in
+            it (such as `localValuation`).
+        reason:
+          type: string
+          description: |
+            **Open set:** further reasons may be added within v1; treat an unknown
+            one as "this pair was converted at 1:1, for a reason not described
+            here". `no-series` — no exchange rate series exists for the pair at
+            all. `no-rate` — a series exists but answered no rate for at least one
+            date the report converted at (it holds no rates, or — for a series
+            built from an exchange-rate instrument — its quote for that day is
+            zero). Neither is the case where a series holds rates and answers a
+            date before its first quote with that first quote, which is a
+            different inaccuracy and not reported here.
+          x-extensible-enum: [no-series, no-rate]
+
+    FxWarnings:
+      type: array
+      description: |
+        Every currency pair this report converted at 1:1 because nothing to
+        convert with was configured. Always present, empty when every pair has
+        rates — the same rule as `warnings` on a computed collection, so a client
+        can tell "nothing fell back" apart from "this report did not look".
+      items:
+        $ref: "#/components/schemas/FxWarning"
+
     Holding:
       type: object
       description: |
@@ -2060,6 +2121,7 @@ components:
         - ttwror
         - irr
         - breakdown
+        - fxWarnings
       properties:
         openingDate:
           type: string
@@ -2097,6 +2159,8 @@ components:
             for the interval.
         breakdown:
           $ref: "#/components/schemas/PerformanceBreakdown"
+        fxWarnings:
+          $ref: "#/components/schemas/FxWarnings"
 
     PerformanceBreakdown:
       type: object
@@ -2160,8 +2224,9 @@ components:
       type: object
       description: |
         The interval and the parameters a per-instrument report was computed
-        with. All six are echoed, so that a stored or forwarded response stays
-        interpretable — three of them move the numbers.
+        with, plus the currency pairs it converted at 1:1. All six parameters are
+        echoed, so that a stored or forwarded response stays interpretable —
+        three of them move the numbers.
       required:
         - openingDate
         - closingDate
@@ -2169,6 +2234,7 @@ components:
         - costMethod
         - taxesAndFees
         - metrics
+        - fxWarnings
       properties:
         openingDate:
           type: string
@@ -2202,6 +2268,8 @@ components:
             type: string
             enum:
               [valuation, gains, income, expenses, moneyWeighted, timeWeighted, risk]
+        fxWarnings:
+          $ref: "#/components/schemas/FxWarnings"
 
     InstrumentPerformance:
       type: object
