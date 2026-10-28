@@ -29,10 +29,10 @@ import name.abuchen.portfolio.rest.internal.VersionHandler;
  * <b>No session model.</b> No {@code Mcp-Session-Id} is issued, responses are
  * plain {@code application/json} whatever {@code Accept} asks for, and
  * {@code GET} and {@code DELETE} fall through to the router's 405 - an SSE
- * stream is a parked request and this server runs a two-thread pool, which is
- * why ADR 0002 already refused long-polling. Everything a session could hold
- * travels per request instead. If a client ever demands a session id, emit a
- * constant one and ignore it coming back.
+ * stream is a parked request, which is why ADR 0002 already refused
+ * long-polling. Everything a session could hold travels per request instead. If
+ * a client ever demands a session id, emit a constant one and ignore it coming
+ * back.
  * <p/>
  * <b>Authorisation is per JSON-RPC method</b> (ADR 0005): {@code initialize},
  * {@code tools/list} and {@code ping} answer without a token, because all they
