@@ -64,7 +64,7 @@ public class InstrumentsTest
         var item = render(security);
 
         assertThat(item.keySet().toString(), is(
-                        "[uuid, name, currencyCode, isin, tickerSymbol, wkn, note, retired, attributes, updatedAt]"));
+                        "[uuid, name, currencyCode, isin, wkn, tickerSymbol, note, retired, attributes, updatedAt]"));
         assertThat(item.get("uuid"), is(security.getUUID()));
         assertThat(item.get("name"), is("ACME Corp"));
         assertThat(item.get("currencyCode"), is("USD"));

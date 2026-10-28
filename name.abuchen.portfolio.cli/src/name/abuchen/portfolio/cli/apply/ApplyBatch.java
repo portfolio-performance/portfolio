@@ -48,8 +48,8 @@ final class ApplyBatch
      * @throws CliException
      *             <code>validation-failed</code> listing every failure
      */
-    static List<Map<String, Object>> run(Client client, JsonArray operations, List<OperationSpec<OperationContext>> specs)
-                    throws CliException
+    static List<Map<String, Object>> run(Client client, JsonArray operations,
+                    List<? extends OperationSpec<? super OperationContext>> specs) throws CliException
     {
         var batch = new ApplyBatch(client);
         var results = new ArrayList<Map<String, Object>>();
@@ -65,7 +65,8 @@ final class ApplyBatch
         return results;
     }
 
-    private Map<String, Object> apply(int index, JsonElement element, List<OperationSpec<OperationContext>> specs)
+    private Map<String, Object> apply(int index, JsonElement element,
+                    List<? extends OperationSpec<? super OperationContext>> specs)
     {
         if (!element.isJsonObject())
         {
