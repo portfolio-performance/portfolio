@@ -2015,16 +2015,16 @@ components:
             `required`); only its value may be null.
         isin:
           type: string
-          description: Omitted when not set.
+          description: Omitted when not set or blank.
         wkn:
           type: string
-          description: Omitted when not set.
+          description: Omitted when not set or blank.
         tickerSymbol:
           type: string
-          description: Omitted when not set.
+          description: Omitted when not set or blank.
         note:
           type: string
-          description: Omitted when not set.
+          description: Omitted when not set or blank.
         attributes:
           type: object
           description: |
@@ -2147,7 +2147,7 @@ components:
           description: ISO 4217 currency code.
         note:
           type: string
-          description: Omitted when not set.
+          description: Omitted when not set or blank.
 
     InvestmentAccount:
       type: object
@@ -2167,7 +2167,7 @@ components:
             when not set.
         note:
           type: string
-          description: Omitted when not set.
+          description: Omitted when not set or blank.
 
     MonetaryValue:
       type: object

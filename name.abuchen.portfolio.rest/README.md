@@ -130,7 +130,8 @@ identity and enablement.
  "isin": "US0378331005", "wkn": "865985", "tickerSymbol": "AAPL", "note": "…"}
 ```
 
-`isin`, `wkn`, `tickerSymbol` and `note` are omitted when not set.
+`isin`, `wkn`, `tickerSymbol` and `note` are omitted when not set, and a blank value counts as not
+set — for `note` on cash and investment accounts too. A value that is set is returned as stored.
 
 `?query=` narrows the list to the instruments it finds: a name that contains it, or an ISIN, WKN or
 ticker symbol equal to it — ignoring case and surrounding whitespace. A large file holds more

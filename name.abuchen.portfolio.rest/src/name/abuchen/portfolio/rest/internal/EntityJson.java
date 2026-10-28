@@ -75,14 +75,13 @@ public final class EntityJson
         json.addProperty("uuid", security.getUUID()); //$NON-NLS-1$
         json.addProperty("name", security.getName()); //$NON-NLS-1$
         json.addProperty("currencyCode", security.getCurrencyCode()); //$NON-NLS-1$
-        if (security.getIsin() != null)
-            json.addProperty("isin", security.getIsin()); //$NON-NLS-1$
-        if (security.getWkn() != null)
-            json.addProperty("wkn", security.getWkn()); //$NON-NLS-1$
-        if (security.getTickerSymbol() != null)
-            json.addProperty("tickerSymbol", security.getTickerSymbol()); //$NON-NLS-1$
-        if (security.getNote() != null)
-            json.addProperty("note", security.getNote()); //$NON-NLS-1$
+        // a blank value is no value: omitted as an unset one is, so that "not
+        // set" has one shape and not two. A value that is set goes out as
+        // stored, surrounding spaces included - they are the user's data
+        addUnlessBlank(json, "isin", security.getIsin()); //$NON-NLS-1$
+        addUnlessBlank(json, "wkn", security.getWkn()); //$NON-NLS-1$
+        addUnlessBlank(json, "tickerSymbol", security.getTickerSymbol()); //$NON-NLS-1$
+        addUnlessBlank(json, "note", security.getNote()); //$NON-NLS-1$
 
         var attributes = attributesJson(client, security);
         if (attributes.size() > 0)
@@ -136,7 +135,7 @@ public final class EntityJson
         json.addProperty("uuid", account.getUUID()); //$NON-NLS-1$
         json.addProperty("name", account.getName()); //$NON-NLS-1$
         json.addProperty("currencyCode", account.getCurrencyCode()); //$NON-NLS-1$
-        if (account.getNote() != null)
+        if (account.getNote() != null && !account.getNote().isBlank())
             json.addProperty("note", account.getNote()); //$NON-NLS-1$
         return json;
     }
@@ -546,6 +545,13 @@ public final class EntityJson
         return json;
     }
 
+    /** the field when it holds something other than whitespace, otherwise nothing */
+    private static void addUnlessBlank(JsonObject json, String field, String value)
+    {
+        if (value != null && !value.isBlank())
+            json.addProperty(field, value);
+    }
+
     /**
      * One currency pair that was converted at 1:1 because there is nothing to
      * convert with. See {@link FxWarnings} for what the two reasons mean.
@@ -701,7 +707,7 @@ public final class EntityJson
         var json = new JsonObject();
         json.addProperty("uuid", portfolio.getUUID()); //$NON-NLS-1$
         json.addProperty("name", portfolio.getName()); //$NON-NLS-1$
-        if (portfolio.getNote() != null)
+        if (portfolio.getNote() != null && !portfolio.getNote().isBlank())
             json.addProperty("note", portfolio.getNote()); //$NON-NLS-1$
         if (portfolio.getReferenceAccount() != null)
             json.addProperty("referenceCashAccount", portfolio.getReferenceAccount().getUUID()); //$NON-NLS-1$
