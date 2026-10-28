@@ -72,6 +72,7 @@ public class FakeHost implements HostApplication
     private final List<Object> uiThreadResults = Collections.synchronizedList(new ArrayList<>());
     private volatile CountDownLatch uiThreadGate;
     private final AtomicInteger callablesRun = new AtomicInteger();
+    private final AtomicInteger callablesQueued = new AtomicInteger();
     private volatile Throwable callableFailure;
 
     public FakeHost(List<OpenFile> openFiles)
@@ -91,6 +92,15 @@ public class FakeHost implements HostApplication
     public void blockUiThreadUntil(CountDownLatch gate)
     {
         this.uiThreadGate = gate;
+    }
+
+    /**
+     * How many callables were handed to the UI thread, run or not - what a
+     * test waits for to know that a request has reached the UI thread
+     */
+    public int callablesQueued()
+    {
+        return callablesQueued.get();
     }
 
     /** how many callables actually ran on the UI thread */
@@ -156,6 +166,7 @@ public class FakeHost implements HostApplication
         }
 
         var future = new CompletableFuture<T>();
+        callablesQueued.incrementAndGet();
         uiThread.execute(() -> {
             onUiThread.set(Boolean.TRUE);
             try

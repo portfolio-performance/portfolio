@@ -89,7 +89,9 @@ final class McpSessions
 
     public synchronized boolean exists(String id)
     {
-        return id != null && sessions.containsKey(id);
+        // get, not containsKey: in an access-ordered map only get counts as a
+        // use, and a client that never streams is checked here and nowhere else
+        return id != null && sessions.get(id) != null;
     }
 
     /** ends the session, cancelling what still runs in it; false when there was none */
