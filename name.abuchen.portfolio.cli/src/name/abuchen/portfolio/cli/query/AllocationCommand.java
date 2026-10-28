@@ -104,6 +104,11 @@ public final class AllocationCommand
     {
     }
 
+    /** What core values the rows at: the total, each classification in pre-order and the unassigned row. */
+    private record Valuation(long total, List<Long> values, long unassigned)
+    {
+    }
+
     private AllocationCommand()
     {
     }
@@ -116,7 +121,9 @@ public final class AllocationCommand
         var taxonomy = context.reference(TAXONOMY, client).orElseThrow();
 
         var reporting = requested.orBase(context, client);
-        var snapshot = ClientSnapshot.create(client, reporting.coreConverter(), date);
+        var core = reporting.coreFigures();
+        // only the holdings in their own currencies are read from this one
+        var snapshot = ClientSnapshot.create(client, core.unreported(), date);
 
         var holdings = new ArrayList<Holding>();
         var stalePrices = new StalePrices(date);
@@ -132,20 +139,24 @@ public final class AllocationCommand
                 holdings.add(new Holding(account.getAccount(), account.getUnconvertedFunds()));
         }
 
-        var ratesFound = reporting.allRated(date, holdings.stream().map(Holding::value).toList());
-
         var nodes = TaxonomyTree.preOrder(taxonomy);
-        var items = new ArrayList<Map<String, Object>>();
+        var valuation = core.trusted(date, holdings.stream().map(Holding::value).toList(), () -> {
+            var converted = ClientSnapshot.create(client, core.converter(), date);
+            return new Valuation(converted.getMonetaryAssets().getAmount(),
+                            nodes.stream().map(node -> subtreeValue(converted, node.classification())).toList(),
+                            unassignedValue(converted, taxonomy));
+        });
 
         // without every rate no value can be trusted, so rows keep only their identity
-        var total = ratesFound ? OptionalLong.of(snapshot.getMonetaryAssets().getAmount()) : OptionalLong.empty();
-        for (var node : nodes)
+        var items = new ArrayList<Map<String, Object>>();
+        var total = valuation.map(v -> OptionalLong.of(v.total())).orElse(OptionalLong.empty());
+        for (var index = 0; index < nodes.size(); index++)
         {
-            var value = ratesFound ? OptionalLong.of(subtreeValue(snapshot, node.classification()))
-                            : OptionalLong.empty();
-            items.add(row(node, value, total));
+            var at = index;
+            var value = valuation.map(v -> OptionalLong.of(v.values().get(at))).orElse(OptionalLong.empty());
+            items.add(row(nodes.get(index), value, total));
         }
-        items.add(unassignedRow(ratesFound ? OptionalLong.of(unassignedValue(snapshot, taxonomy)) : OptionalLong.empty(),
+        items.add(unassignedRow(valuation.map(v -> OptionalLong.of(v.unassigned())).orElse(OptionalLong.empty()),
                         total));
 
         var data = new LinkedHashMap<String, Object>();

@@ -2,9 +2,11 @@ package name.abuchen.portfolio.cli.currency;
 
 import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.ExchangeRate;
@@ -13,55 +15,71 @@ import name.abuchen.portfolio.money.ExchangeRate;
  * Core's converter, made to say when it found no rate. Core's own converter
  * falls back to a rate of 1.0 without a word, so the figures core calculates
  * with it look plausible but are wrong. This one passes on core's rates, and
- * checks each rate core asks for against the CLI's own rate source, which notes
- * a missing or a stale one for the warnings of {@link ExchangeRates}. After
- * the calculation, {@link #isComplete()} says whether every rate was found; if
- * not, the figures must not be reported. A day after today is checked as
+ * checks each rate core asks for against the CLI's own rate source. A
+ * {@link #trusted} call judges the figures one supplier calculates: if a rate
+ * was missing, they must not be reported. A day after today is checked as
  * today, as no rate is dated later.
+ * <p>
+ * Outside a silent call, the rate source notes a missing or a stale rate for
+ * the warnings of {@link ExchangeRates}, once per day and pair.
  */
-public final class StrictConverter implements CurrencyConverter
+final class StrictConverter implements CurrencyConverter
 {
-    private record Need(LocalDate day, String fromCurrency, String toCurrency)
+    /** A rate core asked for: from a currency into another on a day. */
+    record Need(LocalDate day, String fromCurrency, String toCurrency)
     {
+    }
+
+    /** What the converters derived by with() share, so that one answer covers them all. */
+    private static final class State
+    {
+        private final Map<Need, Boolean> found = new HashMap<>();
+        private final Set<Need> unrated = new LinkedHashSet<>();
+        private boolean silent;
     }
 
     private final ExchangeRates rates;
     private final CurrencyConverter core;
     private final LocalDate today;
-
-    // shared with the converters derived by with(), so that one answer covers them all
-    private final Map<Need, Boolean> found;
-    private final Set<Need> unrated;
+    private final State state;
 
     StrictConverter(ExchangeRates rates, CurrencyConverter core, LocalDate today)
     {
-        this(rates, core, today, new HashMap<>(), new HashSet<>());
+        this(rates, core, today, new State());
     }
 
-    private StrictConverter(ExchangeRates rates, CurrencyConverter core, LocalDate today, Map<Need, Boolean> found,
-                    Set<Need> unrated)
+    private StrictConverter(ExchangeRates rates, CurrencyConverter core, LocalDate today, State state)
     {
         this.rates = rates;
         this.core = core;
         this.today = today;
-        this.found = found;
-        this.unrated = unrated;
-    }
-
-    /** Whether core found a rate for everything it converted since the start or the last {@link #reset()}. */
-    public boolean isComplete()
-    {
-        return unrated.isEmpty();
+        this.state = state;
     }
 
     /**
-     * Starts judging a new calculation on its own: the figures of one record
-     * do not depend on the rates another record lacked. A rate already looked
-     * up is not looked up, and so not warned about, again.
+     * The figures of the supplier, judged on their own: only the rates asked
+     * for while it runs count. Empty if one of them was missing.
+     *
+     * @param silent
+     *            whether the rates asked for stay out of the warnings
+     * @param unrated
+     *            receives the rates that were missing
      */
-    public void reset()
+    <T> Optional<T> trusted(boolean silent, Supplier<T> figures, Set<Need> unrated)
     {
-        unrated.clear();
+        state.unrated.clear();
+        state.silent = silent;
+        try
+        {
+            var result = figures.get();
+            unrated.addAll(state.unrated);
+            return state.unrated.isEmpty() ? Optional.of(result) : Optional.empty();
+        }
+        finally
+        {
+            state.silent = false;
+            state.unrated.clear();
+        }
     }
 
     @Override
@@ -70,7 +88,7 @@ public final class StrictConverter implements CurrencyConverter
         return core.getTermCurrency();
     }
 
-    /** Core's rate; where there is none, core's 1.0, which the caller must not report (see {@link #isComplete()}). */
+    /** Core's rate; where there is none, core's 1.0, which a trusted call does not report. */
     @Override
     public ExchangeRate getRate(LocalDate date, String currencyCode)
     {
@@ -78,10 +96,16 @@ public final class StrictConverter implements CurrencyConverter
         if (!term.equals(currencyCode))
         {
             var need = new Need(date.isAfter(today) ? today : date, currencyCode, term);
-            if (!found.computeIfAbsent(need, n -> rates.series(n.day(), currencyCode, term).isPresent()))
-                unrated.add(need);
+            if (!state.found.computeIfAbsent(need, this::look))
+                state.unrated.add(need);
         }
         return core.getRate(date, currencyCode);
+    }
+
+    private boolean look(Need need)
+    {
+        return (state.silent ? rates.find(need.day(), need.fromCurrency(), need.toCurrency())
+                        : rates.series(need.day(), need.fromCurrency(), need.toCurrency())).isPresent();
     }
 
     @Override
@@ -89,6 +113,6 @@ public final class StrictConverter implements CurrencyConverter
     {
         if (currencyCode.equals(getTermCurrency()))
             return this;
-        return new StrictConverter(rates, core.with(currencyCode), today, found, unrated);
+        return new StrictConverter(rates, core.with(currencyCode), today, state);
     }
 }

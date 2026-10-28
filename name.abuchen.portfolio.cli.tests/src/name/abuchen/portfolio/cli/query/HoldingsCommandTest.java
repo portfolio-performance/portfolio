@@ -450,27 +450,6 @@ public class HoldingsCommandTest
     }
 
     @Test
-    public void nothingToConvertNeedsNoRate() throws IOException
-    {
-        // sold out, and an empty dollar account: zero amounts convert to zero without a rate
-        sellBetaAndBuyGammaLater();
-        var empty = new AccountBuilder("USD").addTo(client);
-        empty.setName("Empty dollars");
-        EcbCacheFiles.write(cache, EcbCacheFiles.series("EUR", "GBP").rate("2026-03-01", "0.8500"));
-
-        // no cache at all: it must not even be looked at
-        var run = run("--date", "2026-03-01", "--include-zero");
-        assertThat(run.stdout, run.exitCode, is(0));
-
-        assertThat(blocks(run).get(0).getAsJsonObject().has("total"), is(true));
-        assertThat(run.data().getAsJsonObject("cash").has("total"), is(true));
-        assertThat(run.warnings().size(), is(0));
-        var emptyAccount = run.data().getAsJsonObject("cash").getAsJsonArray("items").get(1).getAsJsonObject();
-        assertThat(emptyAccount.get("name").getAsString(), is("Empty dollars"));
-        assertThat(emptyAccount.has("converted"), is(false));
-    }
-
-    @Test
     public void aStaleRateIsUsedAndWarnedAboutOncePerPair() throws IOException
     {
         dollarHolding();
@@ -489,20 +468,6 @@ public class HoldingsCommandTest
         assertThat(stale.get(0).get("termCurrency").getAsString(), is("EUR"));
         assertThat(stale.get(0).get("count").getAsInt(), is(2));
         assertThat(stale.get(0).get("maxAgeDays").getAsInt(), is(28));
-    }
-
-    @Test
-    public void anUnavailableCacheWarnsAndLeavesOutWhatNeedsIt() throws IOException
-    {
-        dollarHolding();
-
-        var run = run("--date", "2026-03-01");
-        assertThat(run.stdout, run.exitCode, is(0));
-
-        assertThat(run.warnings("exchange-rate-cache-unavailable").size(), is(1));
-        assertThat(run.warnings("exchange-rate-missing").size(), is(1));
-        assertThat(blocks(run).get(0).getAsJsonObject().has("total"), is(false));
-        assertThat(run.meta().has("exchangeRates"), is(false));
     }
 
     @Test

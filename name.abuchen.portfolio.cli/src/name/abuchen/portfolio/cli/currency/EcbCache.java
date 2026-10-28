@@ -38,10 +38,10 @@ import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
  * Anything unexpected makes the whole cache unavailable rather than producing
  * wrong figures.
  */
-public final class EcbCache
+final class EcbCache
 {
     /** Names the cache file and wins outright over the default location. */
-    public static final String VARIABLE = "PP_ECB_RATES";
+    static final String VARIABLE = "PP_ECB_RATES";
 
     private static final String FILE_NAME = "ecb_exchange_rates.pb";
 

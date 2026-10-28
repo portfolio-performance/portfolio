@@ -2,10 +2,13 @@ package name.abuchen.portfolio.cli.currency;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import name.abuchen.portfolio.cli.command.CliException;
 import name.abuchen.portfolio.cli.command.CommandContext;
@@ -50,13 +53,85 @@ public final class ReportingCurrency
         /** The currency given, otherwise the base currency of the client. */
         public ReportingCurrency orBase(CommandContext context, Client client)
         {
-            return new ReportingCurrency(code.orElse(client.getBaseCurrency()), context, client);
+            return of(code.orElse(client.getBaseCurrency()), context, client);
         }
 
         /** The currency given, if any; for a command without a default. */
         public Optional<ReportingCurrency> ifGiven(CommandContext context, Client client)
         {
-            return code.map(c -> new ReportingCurrency(c, context, client));
+            return code.map(c -> of(c, context, client));
+        }
+
+        private static ReportingCurrency of(String code, CommandContext context, Client client)
+        {
+            return new ReportingCurrency(code, client, RateCache.desktop(context::env, context.osName()),
+                            LocalDate.now(context.clock()));
+        }
+    }
+
+    /**
+     * The figures core calculates with its own converter. Core falls back to a
+     * rate of 1.0 where it finds none (ADR 0002), so a figure is reported only
+     * through a trust call, which checks every rate core asked for while
+     * calculating it. The supplier of a trust call must return finished data:
+     * core calculates lazily, so a figure read later would escape the check.
+     */
+    public final class CoreFigures
+    {
+        private final StrictConverter strict = new StrictConverter(rates, rates.converter(code), today);
+
+        private CoreFigures()
+        {
+        }
+
+        /** The converter to hand core for the figures of a trust call. */
+        public CurrencyConverter converter()
+        {
+            return strict;
+        }
+
+        /**
+         * The figures, unless core missed a rate while the supplier ran. The
+         * missing and stale rates are warned about, counting days.
+         */
+        public <T> Optional<T> trusted(Supplier<T> figures)
+        {
+            return strict.trusted(false, figures, new HashSet<>());
+        }
+
+        /**
+         * The figures, if every item has its rate on the day and core found
+         * every rate it asked for while the supplier ran. Every item is looked
+         * up, so the warnings count items; the rates core asks for stay out of
+         * them, except a pair only core missed, which is warned about once.
+         */
+        public <T> Optional<T> trusted(LocalDate day, List<Money> items, Supplier<T> figures)
+        {
+            var itemMissing = new HashSet<List<String>>();
+            for (var item : items)
+            {
+                if (figure(day, item).spoilsTotal())
+                    itemMissing.add(List.of(item.getCurrencyCode(), code));
+            }
+
+            var unrated = new HashSet<StrictConverter.Need>();
+            var result = strict.trusted(true, figures, unrated);
+
+            unrated.stream().map(need -> List.of(need.fromCurrency(), need.toCurrency())).distinct()
+                            .filter(pair -> !itemMissing.contains(pair)).sorted(BY_PAIR)
+                            .forEach(pair -> rates.noteMissing(pair.get(0), pair.get(1)));
+
+            return itemMissing.isEmpty() ? result : Optional.empty();
+        }
+
+        /**
+         * Core's own converter for core runs whose figures are never reported.
+         * It tolerates core's fallback rate of 1.0 and warns about nothing:
+         * this is the one place that does.
+         */
+        public CurrencyConverter unreported()
+        {
+            return rates.converter(code);
         }
     }
 
@@ -86,15 +161,26 @@ public final class ReportingCurrency
         }
     }
 
+    private static final Comparator<List<String>> BY_PAIR = Comparator.comparing((List<String> pair) -> pair.get(0))
+                    .thenComparing(pair -> pair.get(1));
+
     private final String code;
     private final ExchangeRates rates;
     private final LocalDate today;
 
-    private ReportingCurrency(String code, CommandContext context, Client client)
+    /**
+     * @param code
+     *            the ISO code of the reporting currency
+     * @param cache
+     *            the ECB rates, read on the first lookup that needs them
+     * @param today
+     *            no rate is dated later, so a later day is checked as today
+     */
+    public ReportingCurrency(String code, Client client, RateCache cache, LocalDate today)
     {
         this.code = code;
-        this.rates = new ExchangeRates(context, client);
-        this.today = LocalDate.now(context.clock());
+        this.rates = new ExchangeRates(client, cache);
+        this.today = today;
     }
 
     /** The <code>--currency</code> option, described as the command uses it. */
@@ -181,16 +267,6 @@ public final class ReportingCurrency
         return new Figure(amount, true, rate);
     }
 
-    /**
-     * Whether every value has its rate, or needs none. Every value is looked
-     * up, so that every missing rate is reported.
-     */
-    public boolean allRated(LocalDate day, List<Money> values)
-    {
-        var figures = values.stream().map(value -> figure(day, value)).toList();
-        return figures.stream().noneMatch(Figure::spoilsTotal);
-    }
-
     /** The total of the figures, unless one of them lacks its rate. */
     public Optional<Map<String, Object>> total(List<Figure> figures)
     {
@@ -218,20 +294,10 @@ public final class ReportingCurrency
         });
     }
 
-    /**
-     * Core's own converter into the reporting currency. It falls back to a
-     * rate of 1.0 where it finds none, so it serves only figures whose rates
-     * are checked another way, or none are needed.
-     */
-    public CurrencyConverter coreConverter()
+    /** The converters for the figures core calculates itself; see {@link CoreFigures}. */
+    public CoreFigures coreFigures()
     {
-        return rates.converter(code);
-    }
-
-    /** Core's converter, checked rate by rate; see {@link StrictConverter}. Days after today are checked as today. */
-    public StrictConverter strictConverter()
-    {
-        return new StrictConverter(rates, coreConverter(), today);
+        return new CoreFigures();
     }
 
     /** Adds the meta member <code>exchangeRates</code>, if the cache was read. */
