@@ -169,11 +169,22 @@ public class RestApiServer
     }
 
     /**
-     * Refused before anything is read: the point of the bound is that a request
-     * over it costs nothing but this answer.
+     * Refused without keeping the body: the point of the bound is that a request
+     * over it costs nothing but this answer. The body is still read past - see
+     * {@link #discardBody(HttpExchange)} - because one left unread would hold this
+     * thread after the answer, where the watchdog can no longer end it.
      */
     private void refuseBusy(HttpExchange exchange)
     {
+        var receiving = watchdog.schedule(exchange::close, ioDeadlineMillis, TimeUnit.MILLISECONDS);
+        var drained = discardBody(exchange);
+        receiving.cancel(false);
+        if (!drained)
+        {
+            exchange.close();
+            return;
+        }
+
         var sending = watchdog.schedule(exchange::close, ioDeadlineMillis, TimeUnit.MILLISECONDS);
         try
         {
@@ -194,6 +205,7 @@ public class RestApiServer
     {
         var receiving = watchdog.schedule(exchange::close, ioDeadlineMillis, TimeUnit.MILLISECONDS);
         ScheduledFuture<?> sending = null;
+        var bodyRead = false;
 
         try
         {
@@ -224,6 +236,7 @@ public class RestApiServer
 
                 // received in full; from here on the answer is the handler's to
                 // bound, not the watchdog's
+                bodyRead = true;
                 receiving.cancel(false);
 
                 var request = new Request(exchange.getRequestMethod(), path, match.pathParams(),
@@ -240,6 +253,14 @@ public class RestApiServer
                 PortfolioLog.error(e);
                 response = problem(new ApiException(500, "internal-error", "Internal error")); //$NON-NLS-1$ //$NON-NLS-2$
             }
+
+            // a refusal decided before the body was read - a wrong host, no
+            // token, an unknown route, a body too large - reads past it first,
+            // still under the watchdog: left unread, the JDK drains it only after
+            // the headers are out, and a client that stalls there holds this
+            // thread and its permit for as long as it likes
+            if (!bodyRead && !discardBody(exchange))
+                return;
 
             receiving.cancel(false);
             sending = watchdog.schedule(exchange::close, ioDeadlineMillis, TimeUnit.MILLISECONDS);
@@ -268,9 +289,53 @@ public class RestApiServer
      */
     private static String normalizePath(String path)
     {
-        var leading = path.replaceAll("^/+", "/"); //$NON-NLS-1$ //$NON-NLS-2$
-        var stripped = leading.replaceAll("/+$", ""); //$NON-NLS-1$ //$NON-NLS-2$
+        // two scans, not regular expressions: "/+$" tries every run of slashes
+        // again from each of its characters, which is quadratic in a path that
+        // arrives before any authorization and may be hundreds of kilobytes long
+        var start = 0;
+        while (start + 1 < path.length() && path.charAt(start) == '/' && path.charAt(start + 1) == '/')
+            start++;
+
+        var end = path.length();
+        while (end > start && path.charAt(end - 1) == '/')
+            end--;
+
+        var stripped = path.substring(start, end);
         return stripped.isEmpty() ? "/" : stripped; //$NON-NLS-1$
+    }
+
+    /**
+     * Reads what is left of a request body and throws it away. The JDK drains an
+     * unread body when the exchange closes, which happens after the response
+     * headers are sent - and from then on closing the exchange no longer closes
+     * the connection, so a client that announced a body and stalls would keep
+     * the thread, and its permit, indefinitely. Read here instead, before the
+     * headers, the watchdog still ends a stall.
+     *
+     * @return false when the body does not end within another
+     *         {@link #MAX_REQUEST_BODY} bytes, or could not be read; the
+     *         connection is then closed rather than answered
+     */
+    private static boolean discardBody(HttpExchange exchange)
+    {
+        try
+        {
+            var in = exchange.getRequestBody();
+            var buffer = new byte[8192];
+            var left = MAX_REQUEST_BODY;
+            while (left > 0)
+            {
+                var read = in.read(buffer, 0, Math.min(buffer.length, left));
+                if (read < 0)
+                    return true;
+                left -= read;
+            }
+            return in.read() < 0;
+        }
+        catch (IOException e)
+        {
+            return false;
+        }
     }
 
     /**
