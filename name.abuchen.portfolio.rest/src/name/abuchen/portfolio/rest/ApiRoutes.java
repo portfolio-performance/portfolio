@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -37,6 +38,7 @@ import name.abuchen.portfolio.rest.internal.OpenApiHandler;
 import name.abuchen.portfolio.rest.internal.PairingHandler;
 import name.abuchen.portfolio.rest.internal.PerformanceHandler;
 import name.abuchen.portfolio.rest.internal.PortfoliosHandler;
+import name.abuchen.portfolio.rest.internal.Progress;
 import name.abuchen.portfolio.rest.internal.Request;
 import name.abuchen.portfolio.rest.internal.Response;
 import name.abuchen.portfolio.rest.internal.Router;
@@ -144,6 +146,9 @@ public final class ApiRoutes
 
     /* package */ static final class CalculationSlots
     {
+        /** how often a waiting calculation looks whether its caller gave up */
+        private static final long POLL_NANOS = TimeUnit.MILLISECONDS.toNanos(250);
+
         private final int slots;
         private final int queueLimit;
         private final Duration queueWait;
@@ -161,15 +166,22 @@ public final class ApiRoutes
             this.queueWait = queueWait;
         }
 
+        /* package */ void acquire() throws InterruptedException
+        {
+            acquire(Progress.NONE);
+        }
+
         /**
          * Takes a slot, waiting for one within the bounds, or refuses as
          * {@code server-busy}.
          * <p/>
-         * The queue is kept here rather than in a fair semaphore, so that only
-         * the head of the queue may take a slot that comes free: first come,
-         * first served.
+         * The queue is kept here rather than in a fair semaphore, because the
+         * wait has to look up now and then: to tell the caller how many are
+         * still ahead, and to leave the queue when the caller gave up. A
+         * semaphore waited on in short turns would send the waiter to the back
+         * every time.
          */
-        /* package */ void acquire() throws InterruptedException
+        /* package */ void acquire(Progress progress) throws InterruptedException
         {
             var me = new Object();
 
@@ -194,12 +206,16 @@ public final class ApiRoutes
             }
 
             var deadline = System.nanoTime() + queueWait.toNanos();
+            var reported = -1;
             try
             {
-                lock.lock();
-                try
+                while (true)
                 {
-                    while (true)
+                    progress.checkCancelled();
+
+                    int ahead;
+                    lock.lock();
+                    try
                     {
                         if (queue.peekFirst() == me && running < slots)
                         {
@@ -211,12 +227,23 @@ public final class ApiRoutes
                         if (left <= 0)
                             throw ApiException.serverBusy();
 
-                        changed.awaitNanos(left);
+                        ahead = indexOf(me);
+                        if (ahead == reported)
+                        {
+                            changed.awaitNanos(Math.min(left, POLL_NANOS));
+                            continue;
+                        }
                     }
-                }
-                finally
-                {
-                    lock.unlock();
+                    finally
+                    {
+                        lock.unlock();
+                    }
+
+                    // reported outside the lock: sending it may take as long as
+                    // the client takes to read it
+                    reported = ahead;
+                    progress.phase(ahead == 0 ? "waiting for a calculation slot to come free" //$NON-NLS-1$
+                                    : "waiting for a calculation slot, " + ahead + " ahead"); //$NON-NLS-1$ //$NON-NLS-2$
                 }
             }
             finally
@@ -272,6 +299,18 @@ public final class ApiRoutes
             {
                 lock.unlock();
             }
+        }
+
+        private int indexOf(Object waiter)
+        {
+            var index = 0;
+            for (var entry : queue)
+            {
+                if (entry == waiter)
+                    return index;
+                index++;
+            }
+            return index;
         }
     }
 
@@ -424,13 +463,20 @@ public final class ApiRoutes
      */
     private static Router.Handler onUiThread(UiThread ui, boolean idempotent, Router.Handler handler)
     {
-        return request -> uiExecBounded(ui.host(), () -> handler.handle(request), ui.deadline(), idempotent);
+        return request -> uiExecBounded(ui.host(), () -> handler.handle(request), ui.deadline(), idempotent,
+                        request.progress());
     }
 
     /** the deadline of a calculation and the slots that bound how many run at once */
     private record Calculation(Duration deadline, CalculationSlots slots)
     {
     }
+
+    /** how long the UI thread may take before the caller is told that it waits */
+    private static final long UI_QUICK_MILLIS = 500;
+
+    /** how often a running calculation looks whether its caller gave up */
+    private static final long CALCULATION_POLL_MILLIS = 250;
 
     private static final int NOT_STARTED = 0;
     private static final int STARTED = 1;
@@ -484,6 +530,12 @@ public final class ApiRoutes
     /* package */ static <T> T uiExecBounded(HostApplication host, Callable<T> callable, Duration deadline,
                     boolean idempotent) throws Exception
     {
+        return uiExecBounded(host, callable, deadline, idempotent, Progress.NONE);
+    }
+
+    /* package */ static <T> T uiExecBounded(HostApplication host, Callable<T> callable, Duration deadline,
+                    boolean idempotent, Progress progress) throws Exception
+    {
         // a UI thread that takes nothing on would collect one task per request
         // that gave up on it: beyond the bound, the answer is ui-busy at once
         if (QUEUED_UI_TASKS.incrementAndGet() > MAX_QUEUED_UI_TASKS)
@@ -519,7 +571,19 @@ public final class ApiRoutes
 
         try
         {
-            return future.get(deadline.toMillis(), TimeUnit.MILLISECONDS);
+            // most requests are taken on at once; only one that is not says so
+            var quick = Math.min(UI_QUICK_MILLIS, deadline.toMillis());
+            try
+            {
+                return future.get(quick, TimeUnit.MILLISECONDS);
+            }
+            catch (TimeoutException e)
+            {
+                if (quick >= deadline.toMillis())
+                    throw e;
+                progress.phase("waiting for Portfolio Performance to take the request on"); //$NON-NLS-1$
+                return future.get(deadline.toMillis() - quick, TimeUnit.MILLISECONDS);
+            }
         }
         catch (TimeoutException e)
         {
@@ -584,7 +648,20 @@ public final class ApiRoutes
     /* package */ static Response computeBounded(Callable<Response> calculation, Duration deadline,
                     CalculationSlots slots) throws Exception
     {
-        return computeBounded(calculation, deadline, slots, CALCULATIONS);
+        return computeBounded(calculation, deadline, slots, Progress.NONE);
+    }
+
+    /**
+     * As above, reporting to the progress, and stopping when its caller gave
+     * up: a calculation still waiting for a slot leaves the queue, and a
+     * running one stops at the next point where this API's own loops check -
+     * the engines underneath do not, so one inside them runs to its end and
+     * keeps its slot until then.
+     */
+    /* package */ static Response computeBounded(Callable<Response> calculation, Duration deadline,
+                    CalculationSlots slots, Progress progress) throws Exception
+    {
+        return computeBounded(calculation, deadline, slots, progress, CALCULATIONS);
     }
 
     /**
@@ -593,9 +670,9 @@ public final class ApiRoutes
      * before it ever starts.
      */
     /* package */ static Response computeBounded(Callable<Response> calculation, Duration deadline,
-                    CalculationSlots slots, ExecutorService executor) throws Exception
+                    CalculationSlots slots, Progress progress, ExecutorService executor) throws Exception
     {
-        slots.acquire();
+        slots.acquire(progress);
 
         // the slot goes back exactly once: from the task when it started, or
         // from here when it never will - a task cancelled before a thread took
@@ -605,13 +682,15 @@ public final class ApiRoutes
         Future<Response> future;
         try
         {
+            progress.phase("calculating"); //$NON-NLS-1$
+
             future = executor.submit(() -> {
                 if (!claimed.compareAndSet(false, true))
                     // given up on before it started; the slot is already back
                     return null;
                 try
                 {
-                    return calculation.call();
+                    return Progress.runWith(progress, calculation);
                 }
                 finally
                 {
@@ -626,26 +705,40 @@ public final class ApiRoutes
             throw e;
         }
 
-        try
+        var end = System.nanoTime() + deadline.toNanos();
+        while (true)
         {
-            return future.get(deadline.toMillis(), TimeUnit.MILLISECONDS);
-        }
-        catch (TimeoutException e)
-        {
-            abandon(future, claimed, slots);
-            throw ApiException.calculationTimeout(deadline.toSeconds());
-        }
-        catch (InterruptedException e)
-        {
-            // the server is stopping: a calculation that has not started never
-            // will, and one that runs is interrupted like one past its deadline
-            abandon(future, claimed, slots);
-            Thread.currentThread().interrupt();
-            throw e;
-        }
-        catch (ExecutionException e)
-        {
-            throw unwrap(e);
+            var left = TimeUnit.NANOSECONDS.toMillis(end - System.nanoTime());
+            if (left <= 0)
+            {
+                abandon(future, claimed, slots);
+                throw ApiException.calculationTimeout(deadline.toSeconds());
+            }
+
+            try
+            {
+                return future.get(Math.min(left, CALCULATION_POLL_MILLIS), TimeUnit.MILLISECONDS);
+            }
+            catch (TimeoutException e)
+            {
+                if (progress.isCancelled())
+                {
+                    abandon(future, claimed, slots);
+                    throw new CancellationException("the client cancelled the request"); //$NON-NLS-1$
+                }
+            }
+            catch (InterruptedException e)
+            {
+                // the server is stopping: a calculation that has not started never
+                // will, and one that runs is interrupted like one past its deadline
+                abandon(future, claimed, slots);
+                Thread.currentThread().interrupt();
+                throw e;
+            }
+            catch (ExecutionException e)
+            {
+                throw unwrap(e);
+            }
         }
     }
 
@@ -690,7 +783,7 @@ public final class ApiRoutes
         return request -> Response.json(200, uiExecBounded(ui.host(), () -> {
             var resolved = resolver.resolve(request.pathParam("file")); //$NON-NLS-1$
             return body.apply(resolved, request);
-        }, ui.deadline(), true));
+        }, ui.deadline(), true, request.progress()));
     }
 
     /**
@@ -720,8 +813,9 @@ public final class ApiRoutes
                 var file = resolved.file();
                 return new CalcContext(file.getClient(), file.getExchangeRateProviderFactory(),
                                 resolved.access().uuid());
-            }, ui.deadline(), true);
-            return computeBounded(() -> body.apply(context, request), calculation.deadline(), calculation.slots());
+            }, ui.deadline(), true, request.progress());
+            return computeBounded(() -> body.apply(context, request), calculation.deadline(), calculation.slots(),
+                            request.progress());
         };
     }
 
