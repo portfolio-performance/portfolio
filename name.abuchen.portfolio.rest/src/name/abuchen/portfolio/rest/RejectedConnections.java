@@ -2,6 +2,7 @@ package name.abuchen.portfolio.rest;
 
 import java.time.Instant;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 /**
  * The last connection the server turned away for want of a valid token, for the
@@ -20,14 +21,33 @@ import java.util.Optional;
  */
 public final class RejectedConnections
 {
+    /** why the caller was refused, which the preference page words differently */
+    public enum Reason
+    {
+        /** no {@code Authorization} header at all */
+        NO_HEADER,
+        /** a header was sent, but under another scheme than {@code Bearer} - {@code Token …}, say */
+        NO_BEARER_SCHEME,
+        /** a bearer token was offered and it was not one of the accepted ones */
+        INVALID_TOKEN
+    }
+
+    /** how much of a caller-supplied string is kept for display */
+    private static final int MAX_DISPLAY_CHARS = 200;
+
+    /** C0 and C1 control characters, plus the Unicode line and paragraph separators */
+    private static final Pattern CONTROL_CHARACTERS = Pattern.compile("[\\p{Cc}\\u2028\\u2029]"); //$NON-NLS-1$
+
     /**
      * @param userAgent
      *            what the caller called itself, or null - the one field that
      *            says which connector this was
      * @param tokenPresented
      *            false when no bearer token was offered at all
+     * @param reason
+     *            which of the three refusals this was
      */
-    public record Rejection(Instant when, String path, String userAgent, boolean tokenPresented)
+    public record Rejection(Instant when, String path, String userAgent, boolean tokenPresented, Reason reason)
     {
     }
 
@@ -37,9 +57,9 @@ public final class RejectedConnections
     {
     }
 
-    public static void record(String path, String userAgent, boolean tokenPresented)
+    public static void record(String path, String userAgent, boolean tokenPresented, Reason reason)
     {
-        last = new Rejection(Instant.now(), path, userAgent, tokenPresented);
+        last = new Rejection(Instant.now(), display(path), display(userAgent), tokenPresented, reason);
     }
 
     public static Optional<Rejection> last()
@@ -51,5 +71,20 @@ public final class RejectedConnections
     public static void clear()
     {
         last = null;
+    }
+
+    /**
+     * The path and the {@code User-Agent} are attacker-controlled text shown on
+     * the preference page: bounded in length and with control characters - line
+     * breaks, tabs, escape sequences - replaced by spaces, so a request cannot
+     * break or garble a label.
+     */
+    private static String display(String value)
+    {
+        if (value == null)
+            return null;
+
+        var cleaned = CONTROL_CHARACTERS.matcher(value).replaceAll(" "); //$NON-NLS-1$
+        return cleaned.length() <= MAX_DISPLAY_CHARS ? cleaned : cleaned.substring(0, MAX_DISPLAY_CHARS) + "\u2026"; //$NON-NLS-1$
     }
 }
