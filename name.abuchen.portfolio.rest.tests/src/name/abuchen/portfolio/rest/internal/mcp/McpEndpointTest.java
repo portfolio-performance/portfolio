@@ -148,23 +148,68 @@ public class McpEndpointTest
 
     // ── the transport ───────────────────────────────────────────────────────
 
-    /** an SSE stream would park one of two worker threads; a client issued no session asks for neither */
+    /** there is nothing the server says unasked, so there is no stream to open */
     @Test
-    public void testGetAndDeleteAreNotAllowed() throws Exception
+    public void testGetIsNotAllowed() throws Exception
     {
         assertThat(send(HttpRequest.newBuilder(uri()).header("Authorization", "Bearer " + TOKEN).GET()).statusCode(),
                         is(405));
-        assertThat(send(HttpRequest.newBuilder(uri()).header("Authorization", "Bearer " + TOKEN).DELETE()).statusCode(),
-                        is(405));
     }
 
+    // ── sessions ────────────────────────────────────────────────────────────
+
     @Test
-    public void testNoSessionIdIsEverIssued() throws Exception
+    public void testInitializeIssuesASession() throws Exception
     {
         var response = rpc(null, "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{}}");
 
-        assertThat(response.headers().firstValue("Mcp-Session-Id").isPresent(), is(false));
+        assertThat(response.statusCode(), is(200));
+        assertThat(response.headers().firstValue("Mcp-Session-Id").orElse("").length() > 30, is(true));
         assertThat(response.headers().firstValue("Content-Type").orElseThrow(), containsString("application/json"));
+
+        // and a request in it is served as any other
+        var ping = send(session(HttpRequest.newBuilder(uri()), initialize())
+                        .POST(HttpRequest.BodyPublishers.ofString("{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"ping\"}")));
+        assertThat(ping.statusCode(), is(200));
+    }
+
+    /** a session from before a restart: 404 is how the client learns to initialize again */
+    @Test
+    public void testAnUnknownSessionIsNotFound() throws Exception
+    {
+        var response = send(session(HttpRequest.newBuilder(uri()), "no-such-session")
+                        .POST(HttpRequest.BodyPublishers.ofString("{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"ping\"}")));
+
+        assertThat(response.statusCode(), is(404));
+        assertThat(body(response).getAsJsonObject().getAsJsonObject("error").get("code").getAsInt(), is(-32001));
+    }
+
+    /** the handshake itself starts over: the stale id it may still carry is no obstacle */
+    @Test
+    public void testInitializeWithAStaleSessionStartsANewOne() throws Exception
+    {
+        var response = send(session(HttpRequest.newBuilder(uri()), "no-such-session").POST(HttpRequest.BodyPublishers
+                        .ofString("{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{}}")));
+
+        assertThat(response.statusCode(), is(200));
+        assertThat(response.headers().firstValue("Mcp-Session-Id").orElseThrow(), is(not("no-such-session")));
+    }
+
+    /** a request without a session is served as before - it only cannot be cancelled */
+    @Test
+    public void testARequestWithoutASessionIsServed() throws Exception
+    {
+        assertThat(rpc(null, "{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"ping\"}").statusCode(), is(200));
+    }
+
+    @Test
+    public void testDeleteEndsTheSession() throws Exception
+    {
+        var id = initialize();
+
+        assertThat(send(session(HttpRequest.newBuilder(uri()), id).DELETE()).statusCode(), is(204));
+        assertThat(send(session(HttpRequest.newBuilder(uri()), id).DELETE()).statusCode(), is(404));
+        assertThat(send(HttpRequest.newBuilder(uri()).DELETE()).statusCode(), is(400));
     }
 
     // ── streamed tool calls ─────────────────────────────────────────────────
@@ -256,6 +301,32 @@ public class McpEndpointTest
         var body = pending.get(10, TimeUnit.SECONDS).body();
         assertThat(body, containsString(": keepalive"));
         assertThat(events(body).get(events(body).size() - 1).get("id").getAsInt(), is(9));
+    }
+
+    /**
+     * A cancellation is a request of its own, and the session is how it finds
+     * the call it names. The call is held on the UI thread until it arrives; the
+     * stream then ends without an answer, as the protocol asks.
+     */
+    @Test
+    public void testACancelledCallEndsWithoutAnAnswer() throws Exception
+    {
+        var id = initialize();
+        var gate = new CountDownLatch(1);
+        host.blockUiThreadUntil(gate);
+
+        var pending = http.sendAsync(
+                        streamRequest(callWithToken("pp_list_holdings", "{\"file\":\"sample\"}", "\"c-1\""), id).build(),
+                        HttpResponse.BodyHandlers.ofString());
+        Thread.sleep(300);
+
+        var cancel = send(session(HttpRequest.newBuilder(uri()), id).POST(HttpRequest.BodyPublishers.ofString(
+                        "{\"jsonrpc\":\"2.0\",\"method\":\"notifications/cancelled\",\"params\":{\"requestId\":9}}")));
+        assertThat(cancel.statusCode(), is(202));
+        gate.countDown();
+
+        var body = pending.get(10, TimeUnit.SECONDS).body();
+        assertThat(events(body).stream().anyMatch(event -> event.has("id")), is(false));
     }
 
     @Test

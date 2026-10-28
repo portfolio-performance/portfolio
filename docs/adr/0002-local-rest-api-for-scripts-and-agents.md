@@ -72,8 +72,14 @@ becomes a later thin adapter over the same service layer. The individual decisio
   nothing, so even one that had started is refused as retryable.
 - **Calculations and the connection have deadlines of their own.** A calculation that does not
   finish within 120 s is answered with 503 `calculation-timeout` instead of a dropped connection.
+  Over MCP a tool call is answered as a stream (SSE) when the client accepts one: progress while it
+  waits and calculates, heartbeats, the result last, and a `notifications/cancelled` - matched to
+  its call through the optional `Mcp-Session-Id` - stops a call waiting for a slot and the
+  per-instrument loops. An earlier version of this ADR refused the stream because a parked request
+  held one of two pooled worker threads; with a virtual thread per request a waiting stream costs no
+  worker, and the calculation it waits for holds its slot either way. REST stays request/response.
   Receiving a request and sending its response are each bounded by a 30 s watchdog against clients
-  that stall. At most three requests per calculation slot plus six are served at
+  that stall; a stream is bounded per piece it sends, since it may rightly be quiet between them. At most three requests per calculation slot plus six are served at
   once (12 by default), and one over the bound is refused (503 `server-busy`) before its body is
   read, so no local process can make the application buffer an arbitrary number of request bodies.
   The engines never check for an interrupt, so a calculation past its deadline runs on; it keeps its

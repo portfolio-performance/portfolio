@@ -36,8 +36,9 @@ import name.abuchen.portfolio.rest.internal.Router;
 import name.abuchen.portfolio.rest.internal.VersionHandler;
 
 /**
- * The Model Context Protocol front door: one route, {@code POST /mcp}, serving
- * the sixteen tools of {@code mcp-tools.json} over Streamable HTTP.
+ * The Model Context Protocol front door: {@code POST /mcp}, serving the
+ * sixteen tools of {@code mcp-tools.json} over Streamable HTTP, and
+ * {@code DELETE /mcp} to end a session.
  * <p/>
  * <b>A tool call is answered as a stream</b> when the client accepts
  * {@code text/event-stream}: progress notifications while it waits for the UI
@@ -47,9 +48,12 @@ import name.abuchen.portfolio.rest.internal.VersionHandler;
  * {@code application/json} as before. {@code GET} stays the router's 405: there
  * is nothing the server would say without being asked.
  * <p/>
- * <b>No session model yet.</b> No {@code Mcp-Session-Id} is issued, and
- * {@code DELETE} falls through to the router's 405. Everything a session could
- * hold travels per request instead.
+ * <b>A session is optional and holds little.</b> {@code initialize} issues an
+ * {@code Mcp-Session-Id}; with it, a {@code notifications/cancelled} finds the
+ * call it names. A request without one is served as before and only cannot be
+ * cancelled; one with an id this endpoint does not know - the application was
+ * restarted - is answered 404, which tells the client to initialize again.
+ * Everything else still travels per request.
  * <p/>
  * <b>Authorisation is per JSON-RPC method</b> (ADR 0005): {@code initialize},
  * {@code tools/list} and {@code ping} answer without a token, because all they
@@ -108,7 +112,9 @@ public final class McpEndpoint
      */
     public static void register(Router router)
     {
-        router.add("POST", RestApiConstants.MCP_ENDPOINT, request -> handle(router, request));
+        var sessions = new McpSessions();
+        router.add("POST", RestApiConstants.MCP_ENDPOINT, request -> handle(router, sessions, request));
+        router.add("DELETE", RestApiConstants.MCP_ENDPOINT, request -> terminate(sessions, request));
     }
 
     /**
@@ -122,7 +128,15 @@ public final class McpEndpoint
     private static final ScheduledExecutorService HEARTBEATS = Executors.newSingleThreadScheduledExecutor(
                     Thread.ofPlatform().name("Portfolio Performance MCP heartbeat").daemon(true).factory()); //$NON-NLS-1$
 
+    /** the JSON-RPC error a request with an unknown session id gets, alongside HTTP 404 */
+    private static final int SESSION_NOT_FOUND = -32001;
+
     static Response handle(Router router, Request request)
+    {
+        return handle(router, new McpSessions(), request);
+    }
+
+    static Response handle(Router router, McpSessions sessions, Request request)
     {
         JsonElement message;
         try
@@ -141,8 +155,17 @@ public final class McpEndpoint
             return Response.json(400, error(JsonNull.INSTANCE, PARSE_ERROR, describeParseFailure(e)));
         }
 
+        var sessionId = request.header("mcp-session-id");
+
+        // an id this endpoint does not know - issued before a restart, or
+        // displaced - is a 404, which is the protocol's way of saying
+        // "initialize again". An initialize itself starts over and is let through.
+        if (sessionId != null && !isInitialize(message) && !sessions.exists(sessionId))
+            return Response.json(404, error(JsonNull.INSTANCE, SESSION_NOT_FOUND,
+                            "unknown session - initialize again to get a new one"));
+
         if (isToolCall(message) && acceptsStream(request))
-            return stream(router, message.getAsJsonObject(), request);
+            return stream(router, sessions, sessionId, message.getAsJsonObject(), request);
 
         if (message.isJsonArray())
         {
@@ -156,7 +179,7 @@ public final class McpEndpoint
             var replies = new JsonArray();
             for (JsonElement element : batch)
             {
-                var reply = handleMessage(router, element, request);
+                var reply = handleMessage(router, sessions, sessionId, element, request);
                 if (reply != null)
                     replies.add(reply);
             }
@@ -164,8 +187,33 @@ public final class McpEndpoint
             return replies.isEmpty() ? accepted() : Response.json(200, replies);
         }
 
-        var reply = handleMessage(router, message, request);
-        return reply == null ? accepted() : Response.json(200, reply);
+        var reply = handleMessage(router, sessions, sessionId, message, request);
+        if (reply == null)
+            return accepted();
+
+        var response = Response.json(200, reply);
+        // a session for every successful handshake; the id comes back on every
+        // request after it
+        if (isInitialize(message) && reply.has("result"))
+            response = response.withHeader("Mcp-Session-Id", sessions.open());
+        return response;
+    }
+
+    /** {@code DELETE /mcp}: the client is done with its session */
+    private static Response terminate(McpSessions sessions, Request request)
+    {
+        var sessionId = request.header("mcp-session-id");
+        if (sessionId == null)
+            return Response.json(400, error(JsonNull.INSTANCE, INVALID_REQUEST,
+                            "DELETE ends a session and needs its Mcp-Session-Id header"));
+
+        return sessions.close(sessionId) ? Response.noContent()
+                        : Response.json(404, error(JsonNull.INSTANCE, SESSION_NOT_FOUND, "unknown session"));
+    }
+
+    private static boolean isInitialize(JsonElement message)
+    {
+        return isCall(message, "initialize");
     }
 
     /** a tools/call request - a request, with an id, not a notification */
@@ -199,7 +247,8 @@ public final class McpEndpoint
      * cancelled - or hung up on - ends the stream without a result, as the
      * protocol asks.
      */
-    private static Response stream(Router router, JsonObject message, Request request)
+    private static Response stream(Router router, McpSessions sessions, String sessionId, JsonObject message,
+                    Request request)
     {
         var id = message.get("id");
         var params = message.has("params") && message.get("params").isJsonObject()
@@ -207,9 +256,12 @@ public final class McpEndpoint
                         : new JsonObject();
 
         var call = new McpCall(progressTokenOf(params));
+        var session = sessions.get(sessionId);
 
         return Response.streamed(200, "text/event-stream", sink -> { //$NON-NLS-1$
             call.attach(sink);
+            if (session != null)
+                session.register(id, call);
             var heartbeat = HEARTBEATS.scheduleAtFixedRate(call::heartbeat, heartbeatMillis, heartbeatMillis,
                             TimeUnit.MILLISECONDS);
             try
@@ -225,6 +277,8 @@ public final class McpEndpoint
             finally
             {
                 heartbeat.cancel(false);
+                if (session != null)
+                    session.unregister(id, call);
             }
         });
     }
@@ -347,7 +401,8 @@ public final class McpEndpoint
      *
      * @return the reply, or null where the specification says not to answer
      */
-    private static JsonObject handleMessage(Router router, JsonElement element, Request request)
+    private static JsonObject handleMessage(Router router, McpSessions sessions, String sessionId,
+                    JsonElement element, Request request)
     {
         if (!element.isJsonObject())
             return error(JsonNull.INSTANCE, INVALID_REQUEST, "a JSON-RPC message must be an object");
@@ -368,7 +423,14 @@ public final class McpEndpoint
         // that is not a string - is malformed, and 202 would tell a client that
         // waits for an answer that all was well.
         if (id == null && methodIsString)
+        {
+            // the one notification that does something: it finds the call by
+            // its request id within the session, and is ignored without one
+            if ("notifications/cancelled".equals(declared.getAsString()) && message.has("params")
+                            && message.get("params").isJsonObject())
+                sessions.cancel(sessionId, message.getAsJsonObject("params").get("requestId"));
             return null;
+        }
 
         // An id is a string or a number, never null, an object, an array or a
         // boolean. JSON-RPC 2.0 says so; an id that is not a scalar cannot be

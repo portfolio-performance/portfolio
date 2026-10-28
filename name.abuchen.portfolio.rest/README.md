@@ -71,9 +71,20 @@ operations above as named tools. Point a client at `http://127.0.0.1:5712/mcp` a
 `Authorization: Bearer …` header — **Add client** assembles both, at the one moment the token
 exists. Same switch, same port, same tokens; there is nothing extra to install.
 
-- **No session.** No `Mcp-Session-Id` is issued, responses are plain `application/json`, and `GET`
-  and `DELETE` answer `405` — an SSE stream would park one of the server's two worker threads, which
-  is the reason ADR 0002 already rejected long-polling.
+- **A tool call is streamed when the client takes a stream.** With `Accept: text/event-stream` a
+  `tools/call` is answered as an event stream: `notifications/progress` while it waits for the UI
+  thread, for a calculation slot or for the calculation — if the call carries a
+  `_meta.progressToken` — a `: keepalive` comment every 15 seconds in any case, and the result as
+  the last event. Everything else, and a client that accepts only JSON, gets `application/json`.
+  `GET` answers `405`: the server has nothing to say unasked.
+- **A session is optional.** `initialize` returns an `Mcp-Session-Id`. With it, a
+  `notifications/cancelled` stops the call it names: a call still waiting for a slot leaves the
+  queue, and the per-instrument calculations stop before the next instrument — the engines below
+  cannot be interrupted, so a single long calculation inside them still runs to its end. A client
+  that hangs up on a stream counts as having cancelled. `DELETE /mcp` ends the session. A request
+  without a session id is served as before and only cannot be cancelled; one with an id the server
+  does not know — the application was restarted — is answered `404`, the protocol's signal to
+  initialize again.
 - **Authorisation is per JSON-RPC method.** `initialize`, `tools/list` and `ping` answer without a
   token; `tools/call` requires one and, lacking it, returns HTTP 200 with `isError: true`. A `401`
   is invisible in a chat client's UI, so the refusal has to reach the chat. `/.well-known/*` answers
