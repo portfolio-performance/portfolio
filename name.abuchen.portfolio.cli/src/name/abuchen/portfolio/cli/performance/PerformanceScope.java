@@ -18,6 +18,9 @@ import name.abuchen.portfolio.cli.command.ReferenceOption;
 import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.cli.command.Warning;
 import name.abuchen.portfolio.cli.command.WarningSpec;
+import name.abuchen.portfolio.cli.masterdata.CashAccounts;
+import name.abuchen.portfolio.cli.masterdata.Instruments;
+import name.abuchen.portfolio.cli.masterdata.InvestmentAccounts;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
@@ -36,13 +39,14 @@ import name.abuchen.portfolio.util.Interval;
  */
 final class PerformanceScope
 {
-    private static final ReferenceOption<Portfolio> INVESTMENT_ACCOUNT = ReferenceOption.investmentAccount(
+    private static final ReferenceOption<Portfolio> INVESTMENT_ACCOUNT = InvestmentAccounts.INVESTMENT_ACCOUNTS
+                    .option(
                     "investment-account", "Report this investment account only. One scope option at most.");
 
-    private static final ReferenceOption<Account> CASH_ACCOUNT = ReferenceOption.cashAccount("cash-account",
+    private static final ReferenceOption<Account> CASH_ACCOUNT = CashAccounts.CASH_ACCOUNTS.option("cash-account",
                     "Report this cash account only. One scope option at most.");
 
-    private static final ReferenceOption<Security> INSTRUMENT = ReferenceOption.instrument("instrument",
+    private static final ReferenceOption<Security> INSTRUMENT = Instruments.INSTRUMENTS.option("instrument",
                     "Report this instrument only. One scope option at most.");
 
     private static final OptionSpec WITH_REFERENCE_CASH_ACCOUNT = OptionSpec.flag("with-reference-cash-account",

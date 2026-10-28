@@ -9,8 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import name.abuchen.portfolio.cli.command.EntityKind;
 import name.abuchen.portfolio.cli.command.OperationInput;
+import name.abuchen.portfolio.cli.masterdata.CashAccounts;
+import name.abuchen.portfolio.cli.masterdata.Instruments;
+import name.abuchen.portfolio.cli.masterdata.InvestmentAccounts;
 import name.abuchen.portfolio.cli.transaction.TransactionShape;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Portfolio;
@@ -72,7 +74,8 @@ final class TransactionInput
 
     Account cashAccount(String member)
     {
-        return input.existing(member, EntityKind.CASH_ACCOUNT, "A transaction needs " + member + ".");
+        return input.existing(member, CashAccounts.CASH_ACCOUNTS.entityKind(),
+                        "A transaction needs " + member + ".");
     }
 
     Portfolio investmentAccount()
@@ -82,7 +85,8 @@ final class TransactionInput
 
     Portfolio investmentAccount(String member)
     {
-        return input.existing(member, EntityKind.INVESTMENT_ACCOUNT, "A transaction needs " + member + ".");
+        return input.existing(member, InvestmentAccounts.INVESTMENT_ACCOUNTS.entityKind(),
+                        "A transaction needs " + member + ".");
     }
 
     LocalDateTime dateTime()
@@ -160,7 +164,7 @@ final class TransactionInput
             return null;
         }
 
-        return input.find("instrument", uuid, EntityKind.INSTRUMENT);
+        return input.find("instrument", uuid, Instruments.INSTRUMENTS.entityKind());
     }
 
     /** A positive amount, read at the given precision; a missing one is required. */

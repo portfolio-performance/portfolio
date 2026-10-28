@@ -48,8 +48,10 @@ import name.abuchen.portfolio.snapshot.ClientSnapshot;
  */
 public final class AllocationCommand
 {
-    private static final ReferenceOption<Taxonomy> TAXONOMY_OPTION = ReferenceOption.taxonomy("taxonomy",
-                    "Taxonomy to allocate by. List the taxonomies with the taxonomies command.").asRequired();
+    private static final ReferenceOption<Taxonomy> TAXONOMY_OPTION = ReferenceOption.of("taxonomy",
+                    "Taxonomy to allocate by. List the taxonomies with the taxonomies command.",
+                    TaxonomiesCommand.REFERENCE)
+                    .asRequired();
 
     /** The taxonomy to allocate by; <code>meta</code> gets its identity. */
     private static final Facet<Taxonomy> TAXONOMY = Facet.of(Declaration.empty().options(TAXONOMY_OPTION.spec())

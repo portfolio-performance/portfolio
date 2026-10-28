@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.cli.masterdata.Instruments;
 import name.abuchen.portfolio.cli.performance.PerformanceCommand;
 
 /**
@@ -33,7 +34,7 @@ public class ErrorCodeTest
     @Test
     public void aCommandWithAReferenceOptionCanFailToResolveIt()
     {
-        var withReference = probe(ReferenceOption.instrument("instrument", "An instrument."));
+        var withReference = probe(Instruments.INSTRUMENTS.option("instrument", "An instrument."));
 
         assertThat(codes(withReference), hasItems("reference-not-found", "reference-ambiguous"));
         assertThat(codes(probe(TEXT)), not(hasItem("reference-not-found")));

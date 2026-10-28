@@ -16,6 +16,7 @@ import java.util.Optional;
 import org.junit.Test;
 
 import name.abuchen.portfolio.cli.CliRun;
+import name.abuchen.portfolio.cli.masterdata.Instruments;
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
@@ -36,7 +37,7 @@ public class CommandContextTest
 
     private static final OptionSpec NAME = new OptionSpec("name", "text", "A text.");
 
-    private static final ReferenceOption<Security> INSTRUMENT = ReferenceOption.instrument("instrument",
+    private static final ReferenceOption<Security> INSTRUMENT = Instruments.INSTRUMENTS.option("instrument",
                     "An instrument.");
 
     @Test
@@ -127,7 +128,8 @@ public class CommandContextTest
         assertThrows(IllegalArgumentException.class, () -> context.text(INSTRUMENT.spec()));
         assertThrows(IllegalArgumentException.class, () -> context.flag(DATE));
         assertThrows(IllegalArgumentException.class,
-                        () -> context.reference(new ReferenceOption<>(NAME, References.INSTRUMENT), new Client()));
+                        () -> context.reference(new ReferenceOption<>(NAME, Instruments.INSTRUMENTS.reference()),
+                                        new Client()));
     }
 
     private static Security instrument(Client client, String name)

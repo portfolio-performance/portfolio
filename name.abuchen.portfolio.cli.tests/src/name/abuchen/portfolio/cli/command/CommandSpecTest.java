@@ -19,6 +19,7 @@ import org.junit.Test;
 import name.abuchen.portfolio.cli.CliRun;
 import name.abuchen.portfolio.cli.file.FileFormat;
 import name.abuchen.portfolio.cli.file.LoadedClient;
+import name.abuchen.portfolio.cli.masterdata.Instruments;
 import name.abuchen.portfolio.model.Client;
 
 /**
@@ -100,7 +101,7 @@ public class CommandSpecTest
         assertThat(codes, not(hasItem(ErrorCode.REFERENCE_NOT_FOUND)));
 
         var withReference = CommandSpec.of("probe", "A probe.", DATA, run -> null, ClientFile.READ,
-                        Facet.option(ReferenceOption.instrument("instrument", "An instrument.").asRequired()));
+                        Facet.option(Instruments.INSTRUMENTS.option("instrument", "An instrument.").asRequired()));
         assertThat(withReference.errorCodes(), hasItems(ErrorCode.FILE_REQUIRED, ErrorCode.REFERENCE_NOT_FOUND,
                         ErrorCode.REFERENCE_AMBIGUOUS, ErrorCode.OPTION_REQUIRED));
         assertThat(withReference.errorCodes(), not(hasItem(ErrorCode.INVALID_DATE_RANGE)));

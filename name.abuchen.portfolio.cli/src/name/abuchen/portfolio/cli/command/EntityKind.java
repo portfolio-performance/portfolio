@@ -6,11 +6,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Taxonomy;
 
 /**
  * A kind of entity that a write operation names by UUID. Only an existing
@@ -25,11 +21,11 @@ import name.abuchen.portfolio.model.Taxonomy;
 public record EntityKind<T>(String noun, Function<Client, ? extends Collection<T>> all, BiPredicate<T, String> hasUuid,
                 Function<T, Object> stored)
 {
-    public static final EntityKind<Account> CASH_ACCOUNT = of("cash account", Client::getAccounts, Account::getUUID);
-    public static final EntityKind<Portfolio> INVESTMENT_ACCOUNT = of("investment account", Client::getPortfolios,
-                    Portfolio::getUUID);
-    public static final EntityKind<Security> INSTRUMENT = of("instrument", Client::getSecurities, Security::getUUID);
-    public static final EntityKind<Taxonomy> TAXONOMY = of("taxonomy", Client::getTaxonomies, Taxonomy::getId);
+    /** The existing entities of the kind a reference reads. */
+    public static <T> EntityKind<T> of(Reference<T> reference)
+    {
+        return of(reference.noun(), reference::entities, reference::uuid);
+    }
 
     public static <T> EntityKind<T> of(String noun, Function<Client, ? extends Collection<T>> all,
                     Function<T, String> uuidOf)

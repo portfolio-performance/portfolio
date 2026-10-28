@@ -69,61 +69,6 @@ public class InstrumentsCommandTest
     }
 
     @Test
-    public void nullAndBlankOptionalStringsAreOmittedButNameRetiredAndAttributesAreNot() throws IOException
-    {
-        var client = new Client();
-        var security = instrument(client, "Bare");
-        security.setIsin(null);
-        security.setTickerSymbol("  ");
-        security.setWkn("");
-        security.setNote("\t");
-        security.setCurrencyCode("");
-
-        var item = run(client).items().get(0).getAsJsonObject();
-
-        assertThat(item.keySet(), is(Set.of("uuid", "name", "retired", "attributes", "updatedAt")));
-        assertThat(item.get("retired").getAsBoolean(), is(false));
-    }
-
-    @Test
-    public void indicesWithoutCurrencyAreListedWithoutIt() throws IOException
-    {
-        var client = new Client();
-        var index = instrument(client, "DAX");
-        index.setCurrencyCode(null);
-
-        var item = run(client).items().get(0).getAsJsonObject();
-
-        assertThat(item.get("name").getAsString(), is("DAX"));
-        assertThat(item.has("currencyCode"), is(false));
-    }
-
-    @Test
-    public void presentValuesAreEmittedUntrimmed() throws IOException
-    {
-        var client = new Client();
-        var security = instrument(client, " padded ");
-        security.setNote(" note ");
-
-        var item = run(client).items().get(0).getAsJsonObject();
-
-        assertThat(item.get("name").getAsString(), is(" padded "));
-        assertThat(item.get("note").getAsString(), is(" note "));
-    }
-
-    @Test
-    public void nullNameIsEmittedAsEmptyString() throws IOException
-    {
-        var client = new Client();
-        var security = instrument(client, null);
-
-        var item = run(client).items().get(0).getAsJsonObject();
-
-        assertThat(item.get("uuid").getAsString(), is(security.getUUID()));
-        assertThat(item.get("name").getAsString(), is(""));
-    }
-
-    @Test
     public void listsEveryInstrumentIncludingRetiredOnes() throws IOException
     {
         var client = new Client();

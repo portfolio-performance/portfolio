@@ -14,6 +14,8 @@ import name.abuchen.portfolio.cli.command.OperationInput;
 import name.abuchen.portfolio.cli.command.OperationSpec;
 import name.abuchen.portfolio.cli.command.Outcome;
 import name.abuchen.portfolio.cli.command.Schema;
+import name.abuchen.portfolio.cli.masterdata.Instruments;
+import name.abuchen.portfolio.cli.query.TaxonomiesCommand;
 import name.abuchen.portfolio.cli.query.TaxonomyTree;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Security;
@@ -95,12 +97,14 @@ public final class TaxonomyOperations
 
     private static Taxonomy parseTaxonomy(OperationContext context)
     {
-        return context.input().existing("taxonomy", EntityKind.TAXONOMY, "This operation needs the taxonomy.");
+        return context.input().existing("taxonomy", EntityKind.of(TaxonomiesCommand.REFERENCE),
+                        "This operation needs the taxonomy.");
     }
 
     private static Security parseInstrument(OperationContext context)
     {
-        return context.input().existing("instrument", EntityKind.INSTRUMENT, "This operation needs the instrument.");
+        return context.input().existing("instrument", Instruments.INSTRUMENTS.entityKind(),
+                        "This operation needs the instrument.");
     }
 
     /** The placements, or null if the list itself is unusable; problems of single entries are reported. */

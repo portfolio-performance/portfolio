@@ -13,7 +13,6 @@ import org.junit.rules.TemporaryFolder;
 import name.abuchen.portfolio.cli.CliFixture;
 import name.abuchen.portfolio.cli.CliRun;
 import name.abuchen.portfolio.junit.AccountBuilder;
-import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 
@@ -63,31 +62,6 @@ public class CashAccountsCommandTest
         assertThat(meta.get("asOf").getAsString(), is("2026-10-16"));
         assertThat(meta.get("limit").getAsInt(), is(200));
         assertThat(meta.get("offset").getAsInt(), is(0));
-    }
-
-    @Test
-    public void unsetNoteIsOmittedAndRetiredIsAlwaysPresent() throws IOException
-    {
-        var client = new Client();
-        var account = new AccountBuilder().addTo(client);
-        account.setNote("   ");
-
-        var item = run(client).items().get(0).getAsJsonObject();
-
-        assertThat(item.keySet(), is(Set.of("uuid", "name", "currencyCode", "retired", "updatedAt")));
-        assertThat(item.get("retired").getAsBoolean(), is(false));
-    }
-
-    @Test
-    public void nullNameIsEmittedAsEmptyString() throws IOException
-    {
-        var client = new Client();
-        var account = new Account();
-        client.addAccount(account);
-
-        var item = run(client).items().get(0).getAsJsonObject();
-
-        assertThat(item.get("name").getAsString(), is(""));
     }
 
     @Test

@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import name.abuchen.portfolio.cli.command.CliException;
 import name.abuchen.portfolio.cli.command.ClientFile;
@@ -12,8 +13,8 @@ import name.abuchen.portfolio.cli.command.CommandContext;
 import name.abuchen.portfolio.cli.command.CommandSpec;
 import name.abuchen.portfolio.cli.command.Decimals;
 import name.abuchen.portfolio.cli.command.MasterData;
-import name.abuchen.portfolio.cli.command.MasterDataList;
 import name.abuchen.portfolio.cli.command.Paging;
+import name.abuchen.portfolio.cli.command.Reference;
 import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.cli.command.Sorting;
 import name.abuchen.portfolio.model.Classification;
@@ -56,9 +57,10 @@ public final class TaxonomiesCommand
                                     "All classifications at every depth, flattened in tree pre-order: siblings by the rank the app shows, then name, then UUID. Not paged.",
                                     CLASSIFICATION));
 
-    /** What a reference to a taxonomy matches; taxonomies are listed in file order, not through {@link MasterDataList}. */
-    public static final MasterDataList.Source<Taxonomy> SOURCE = new MasterDataList.Source<Taxonomy>(
-                    Client::getTaxonomies, Taxonomy::getId, Taxonomy::getName, client -> TaxonomiesCommand::render);
+    /** What a reference to a taxonomy matches: UUID, then name. Taxonomies are never retired. */
+    public static final Reference<Taxonomy> REFERENCE = Reference.of("taxonomy", Client::getTaxonomies,
+                    Taxonomy::getId, Taxonomy::getName, List.of(new Reference.Key<>("name", Taxonomy::getName)),
+                    Optional.empty(), List.of());
 
     /** The natural order is the position the app shows; <code>name</code> is an alphabetical alternative. */
     private static final Sorting.Spec<Taxonomy> SORT = Sorting.Spec.of(Taxonomy::getId, "position",
