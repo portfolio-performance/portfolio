@@ -12,6 +12,7 @@ import com.google.gson.JsonObject;
 
 import name.abuchen.portfolio.cli.command.Claims;
 import name.abuchen.portfolio.cli.command.EntityKind;
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.FieldFailure;
 import name.abuchen.portfolio.cli.command.OperationInput;
 import name.abuchen.portfolio.cli.command.Outcome;
@@ -58,7 +59,7 @@ public final class Writes<T>
             return writes.client;
         }
 
-        public void fail(String field, String code, String message)
+        public void fail(String field, ErrorCode code, String message)
         {
             input.fail(field, code, message);
         }
@@ -153,12 +154,12 @@ public final class Writes<T>
         var member = input.json().get(UUID_MEMBER);
         if (member == null || member.isJsonNull())
         {
-            input.fail(UUID_MEMBER, "required", "An update needs the UUID of the " + kind.noun() + ".");
+            input.fail(UUID_MEMBER, ErrorCode.REQUIRED, "An update needs the UUID of the " + kind.noun() + ".");
             return null;
         }
         if (!OperationInput.isText(member))
         {
-            input.fail(UUID_MEMBER, "invalid-type", "The UUID must be a string.");
+            input.fail(UUID_MEMBER, ErrorCode.INVALID_TYPE, "The UUID must be a string.");
             return null;
         }
 
@@ -170,7 +171,7 @@ public final class Writes<T>
         var earlier = claims.claim(uuid);
         if (earlier.isPresent())
         {
-            input.fail(UUID_MEMBER, "duplicate-target", "Operation " + earlier.getAsInt() + " already changes "
+            input.fail(UUID_MEMBER, ErrorCode.DUPLICATE_TARGET, "Operation " + earlier.getAsInt() + " already changes "
                             + uuid + "; one batch may change an entity only once.");
             return null;
         }
@@ -196,7 +197,7 @@ public final class Writes<T>
             if (element == null)
             {
                 if (writer.requiredIn(update))
-                    input.fail(name, "required", needs(writer));
+                    input.fail(name, ErrorCode.REQUIRED, needs(writer));
                 continue;
             }
 
@@ -205,20 +206,20 @@ public final class Writes<T>
                 if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isBoolean())
                     values.put(name, element.getAsBoolean());
                 else
-                    input.fail(name, "invalid-type", "Must be true or false.");
+                    input.fail(name, ErrorCode.INVALID_TYPE, "Must be true or false.");
                 continue;
             }
 
             if (!element.isJsonNull() && !OperationInput.isText(element))
             {
-                input.fail(name, "invalid-type", "Must be a string or null.");
+                input.fail(name, ErrorCode.INVALID_TYPE, "Must be a string or null.");
                 continue;
             }
 
             var text = element.isJsonNull() || element.getAsString().isBlank() ? null : element.getAsString();
             if (text == null && writer.mode() == Writer.Mode.REQUIRED)
             {
-                input.fail(name, "required", needs(writer));
+                input.fail(name, ErrorCode.REQUIRED, needs(writer));
                 continue;
             }
 

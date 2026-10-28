@@ -7,6 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.TreeMap;
 
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.FieldFailure;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -97,7 +98,7 @@ final class OversellGuard
 
             if (holdingAfter < 0 && holdingAfter < holdingBefore)
             {
-                failures.add(new FieldFailure(field, "negative-holding",
+                failures.add(new FieldFailure(field, ErrorCode.NEGATIVE_HOLDING,
                                 pair.portfolio().getName() + " would hold " + plain(holdingAfter) + " of "
                                                 + pair.security().getName() + " at the end of " + day
                                                 + ", a shortfall of " + plain(-holdingAfter) + " shares.",

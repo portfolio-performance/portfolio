@@ -3,12 +3,17 @@ package name.abuchen.portfolio.cli.transaction;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 import com.google.gson.JsonObject;
 
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.FieldFailure;
 import name.abuchen.portfolio.cli.command.OperationInput;
 import name.abuchen.portfolio.cli.command.OperationSpec;
@@ -46,6 +51,13 @@ final class TransactionAdd
     static final Schema SCHEMA = TransactionShape.declareInput(Schema
                     .object("A transaction, in the shape the transactions output uses.")
                     .property(OperationSpec.OPERATION_MEMBER, Schema.enumOf("Operation name.", List.of(OPERATION))));
+
+    /**
+     * The failure codes an add raises beyond those its schema implies: the
+     * rule table's refusals, the rules across members, core's import checks
+     * and the oversell check.
+     */
+    static final Set<ErrorCode> FAILURE_CODES = failureCodes();
 
     private static final int RATE_SCALE = 10;
 
@@ -99,6 +111,19 @@ final class TransactionAdd
         return new Result(refused ? null : built, add.failures);
     }
 
+    private static Set<ErrorCode> failureCodes()
+    {
+        var codes = EnumSet.of(ErrorCode.UNSUPPORTED_TYPE, ErrorCode.UNSUPPORTED_KIND, ErrorCode.INVALID_DATE,
+                        ErrorCode.INVALID_TIME, ErrorCode.INVALID_CURRENCY, ErrorCode.CURRENCY_MISMATCH,
+                        ErrorCode.GROSS_AMOUNT_MISMATCH, ErrorCode.EXDATE_AFTER_PAYMENT,
+                        ErrorCode.UNSUPPORTED_UNIT_TYPE, ErrorCode.FOREX_REQUIRED, ErrorCode.FOREX_INCOMPLETE,
+                        ErrorCode.FOREX_CURRENCY_MISMATCH, ErrorCode.FOREX_MISMATCH,
+                        ErrorCode.FOREX_GROSS_VALUE_REQUIRED, ErrorCode.SAME_ACCOUNT, ErrorCode.IMPORT_CHECK_FAILED,
+                        ErrorCode.NEGATIVE_HOLDING);
+        Arrays.stream(RuleTable.Ruled.values()).map(RuleTable.Ruled::refusalCode).forEach(codes::add);
+        return Collections.unmodifiableSet(codes);
+    }
+
     private boolean failed()
     {
         return !failures.isEmpty();
@@ -139,19 +164,19 @@ final class TransactionAdd
         var element = input.json().get(member);
         if (element == null || element.isJsonNull())
         {
-            input.fail(member, "required", "A transaction needs a type.");
+            input.fail(member, ErrorCode.REQUIRED, "A transaction needs a type.");
             return null;
         }
         if (!OperationInput.isText(element))
         {
-            input.fail(member, "invalid-type", "The type must be a string.");
+            input.fail(member, ErrorCode.INVALID_TYPE, "The type must be a string.");
             return null;
         }
 
         var name = element.getAsString();
         if (!TransactionShape.TYPES.contains(name))
         {
-            input.fail(member, "unsupported-type", "'" + name
+            input.fail(member, ErrorCode.UNSUPPORTED_TYPE, "'" + name
                             + "' is not a transaction type this operation adds. Supported: "
                             + String.join(", ", TransactionShape.TYPES) + ".");
             return null;
@@ -173,7 +198,7 @@ final class TransactionAdd
                 return candidate;
         }
 
-        input.fail(member, "unsupported-kind", "'" + kind + "' is not a kind of transfer: " + kinds + ".");
+        input.fail(member, ErrorCode.UNSUPPORTED_KIND, "'" + kind + "' is not a kind of transfer: " + kinds + ".");
         return null;
     }
 
@@ -279,7 +304,7 @@ final class TransactionAdd
         var dateTime = reader.dateTime();
         var currencyCode = reader.currency(null);
         if (currencyCode != null && security != null && !currencyCode.equals(security.getCurrencyCode()))
-            input.fail(TransactionShape.CURRENCY_CODE.name(), "currency-mismatch",
+            input.fail(TransactionShape.CURRENCY_CODE.name(), ErrorCode.CURRENCY_MISMATCH,
                             "The amount must be in the instrument's currency " + security.getCurrencyCode()
                                             + ", not " + currencyCode + ".");
         var amount = reader.amount(TransactionShape.AMOUNT.name(), Values.Amount);
@@ -370,12 +395,12 @@ final class TransactionAdd
         var supplied = input.rawNumber(member);
         if (input.has(member) && supplied == null)
         {
-            input.fail(member, "invalid-type", "The exchangeRate must be a number.");
+            input.fail(member, ErrorCode.INVALID_TYPE, "The exchangeRate must be a number.");
             return null;
         }
         if (supplied != null && supplied.signum() <= 0)
         {
-            input.fail(member, "not-positive", "The exchange rate must be positive.");
+            input.fail(member, ErrorCode.NOT_POSITIVE, "The exchange rate must be positive.");
             return null;
         }
 
@@ -389,7 +414,7 @@ final class TransactionAdd
         if (supplied != null && !Transaction.Unit.isWithinRoundingTolerance(Money.of(fromCurrency, amount),
                         Money.of(toCurrency, targetAmount), supplied))
         {
-            input.fail(member, "forex-mismatch",
+            input.fail(member, ErrorCode.FOREX_MISMATCH,
                             "targetAmount times exchangeRate is not amount within core's rounding tolerance.");
             return null;
         }
@@ -399,7 +424,7 @@ final class TransactionAdd
     private <T> void rejectSameAccount(T from, T to)
     {
         if (from != null && from == to)
-            input.fail(RuleTable.Ruled.TO.id(), "same-account", "A transfer needs two different accounts.");
+            input.fail(RuleTable.Ruled.TO.id(), ErrorCode.SAME_ACCOUNT, "A transfer needs two different accounts.");
     }
 
     /** Runs core's non-mutating import checks, reporting every error they find. */
@@ -411,7 +436,7 @@ final class TransactionAdd
             if (status.getCode() == ImportAction.Status.Code.ERROR)
                 failures.add(new FieldFailure(
                                 check instanceof CheckForexGrossValueAction ? RuleTable.Ruled.UNITS.id() : "",
-                                "import-check-failed", status.getMessage(), check.getClass().getSimpleName()));
+                                ErrorCode.IMPORT_CHECK_FAILED, status.getMessage(), check.getClass().getSimpleName()));
         }
     }
 }

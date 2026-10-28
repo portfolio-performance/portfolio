@@ -65,13 +65,13 @@ public final class OperationInput
         for (var member : json.keySet())
         {
             if (!schema.declares(member))
-                fail(member, "unknown-field", (prefix.isEmpty() ? "The operation" : "The object")
+                fail(member, ErrorCode.UNKNOWN_FIELD, (prefix.isEmpty() ? "The operation" : "The object")
                                 + " has no field '" + member + "'.");
         }
     }
 
     /** Reports a failure of the member, or of this object itself if the member is empty. */
-    public void fail(String member, String code, String message)
+    public void fail(String member, ErrorCode code, String message)
     {
         sink.accept(new FieldFailure(field(member), code, message, null));
     }
@@ -90,7 +90,7 @@ public final class OperationInput
     {
         if (has(member) && !isText(json.get(member)))
         {
-            fail(member, "invalid-type", "The " + member + " must be a string.");
+            fail(member, ErrorCode.INVALID_TYPE, "The " + member + " must be a string.");
             return null;
         }
         return rawText(member);
@@ -101,7 +101,7 @@ public final class OperationInput
     {
         var text = text(member);
         if (text == null && (!has(member) || isText(json.get(member))))
-            fail(member, "required", requiredMessage);
+            fail(member, ErrorCode.REQUIRED, requiredMessage);
         return text;
     }
 
@@ -126,15 +126,15 @@ public final class OperationInput
         if (value == null)
         {
             if (has(member))
-                fail(member, "invalid-type", "The " + member + " must be a number.");
+                fail(member, ErrorCode.INVALID_TYPE, "The " + member + " must be a number.");
             else if (requiredMessage != null)
-                fail(member, "required", requiredMessage);
+                fail(member, ErrorCode.REQUIRED, requiredMessage);
             return null;
         }
 
         if (positive && value.signum() <= 0)
         {
-            fail(member, "not-positive", "The " + member + " must be positive.");
+            fail(member, ErrorCode.NOT_POSITIVE, "The " + member + " must be positive.");
             return null;
         }
         return value;
@@ -154,7 +154,7 @@ public final class OperationInput
         var stored = Decimals.toStored(value, values);
         if (stored.isEmpty())
         {
-            fail(member, "invalid-amount", "The " + member + " has more decimal places than are stored.");
+            fail(member, ErrorCode.INVALID_AMOUNT, "The " + member + " has more decimal places than are stored.");
             return null;
         }
         return stored.get();
@@ -184,7 +184,7 @@ public final class OperationInput
     {
         var found = kind.find(client, existedBeforeBatch, uuid);
         if (found.isEmpty())
-            fail(member, "reference-not-found", "No " + kind.noun() + " with UUID " + uuid + " in the file.");
+            fail(member, ErrorCode.REFERENCE_NOT_FOUND, "No " + kind.noun() + " with UUID " + uuid + " in the file.");
         return found.orElse(null);
     }
 
@@ -201,7 +201,7 @@ public final class OperationInput
             return false;
         if (!json.get(member).isJsonArray())
         {
-            fail(member, "invalid-type", "The " + member + " must be an array.");
+            fail(member, ErrorCode.INVALID_TYPE, "The " + member + " must be an array.");
             return false;
         }
 
@@ -213,7 +213,7 @@ public final class OperationInput
                 each.accept(new OperationInput(array.get(index).getAsJsonObject(), client, existedBeforeBatch, sink,
                                 path));
             else
-                sink.accept(new FieldFailure(path, "invalid-type", notObjectMessage, null));
+                sink.accept(new FieldFailure(path, ErrorCode.INVALID_TYPE, notObjectMessage, null));
         }
         return true;
     }

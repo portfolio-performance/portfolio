@@ -32,7 +32,6 @@ public final class Operations
 
     static OperationSpec<OperationContext> adapt(OperationSpec<OperationSpec.Context> operation)
     {
-        return new OperationSpec<>(operation.name(), operation.summary(), operation.input(),
-                        operation.handler()::apply);
+        return operation.handledBy(operation.handler()::apply);
     }
 }

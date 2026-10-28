@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import name.abuchen.portfolio.cli.command.ErrorCode;
+
 /**
  * Which members each type of record takes: a table of {@link Row} (type and,
  * for a transfer, its kind) by {@link Ruled} member. Each cell is
@@ -32,23 +34,23 @@ final class RuleTable
     /** The members whose presence depends on the type, in the order failures are reported. */
     enum Ruled
     {
-        KIND(TransactionShape.KIND, "kind-not-allowed"), //
-        TARGET_AMOUNT(TransactionShape.TARGET_AMOUNT, "target-amount-not-allowed"), //
-        EXCHANGE_RATE(TransactionShape.EXCHANGE_RATE, "exchange-rate-not-allowed"), //
-        INSTRUMENT(TransactionShape.INSTRUMENT.uuid(), "instrument-not-allowed"), //
-        SHARES(TransactionShape.SHARES, "shares-not-allowed"), //
-        INVESTMENT_ACCOUNT(TransactionShape.INVESTMENT_ACCOUNT.uuid(), "investment-account-not-allowed"), //
-        CASH_ACCOUNT(TransactionShape.CASH_ACCOUNT.uuid(), "cash-account-not-allowed"), //
-        FROM(TransactionShape.FROM.uuid(), "from-not-allowed"), //
-        TO(TransactionShape.TO.uuid(), "to-not-allowed"), //
-        EX_DATE(TransactionShape.EX_DATE, "exdate-not-allowed"), //
-        GROSS_AMOUNT(TransactionShape.GROSS_AMOUNT, "gross-amount-not-allowed"), //
-        UNITS(TransactionShape.UNITS, "units-not-allowed");
+        KIND(TransactionShape.KIND, ErrorCode.KIND_NOT_ALLOWED), //
+        TARGET_AMOUNT(TransactionShape.TARGET_AMOUNT, ErrorCode.TARGET_AMOUNT_NOT_ALLOWED), //
+        EXCHANGE_RATE(TransactionShape.EXCHANGE_RATE, ErrorCode.EXCHANGE_RATE_NOT_ALLOWED), //
+        INSTRUMENT(TransactionShape.INSTRUMENT.uuid(), ErrorCode.INSTRUMENT_NOT_ALLOWED), //
+        SHARES(TransactionShape.SHARES, ErrorCode.SHARES_NOT_ALLOWED), //
+        INVESTMENT_ACCOUNT(TransactionShape.INVESTMENT_ACCOUNT.uuid(), ErrorCode.INVESTMENT_ACCOUNT_NOT_ALLOWED), //
+        CASH_ACCOUNT(TransactionShape.CASH_ACCOUNT.uuid(), ErrorCode.CASH_ACCOUNT_NOT_ALLOWED), //
+        FROM(TransactionShape.FROM.uuid(), ErrorCode.FROM_NOT_ALLOWED), //
+        TO(TransactionShape.TO.uuid(), ErrorCode.TO_NOT_ALLOWED), //
+        EX_DATE(TransactionShape.EX_DATE, ErrorCode.EXDATE_NOT_ALLOWED), //
+        GROSS_AMOUNT(TransactionShape.GROSS_AMOUNT, ErrorCode.GROSS_AMOUNT_NOT_ALLOWED), //
+        UNITS(TransactionShape.UNITS, ErrorCode.UNITS_NOT_ALLOWED);
 
         private final TransactionShape.Member member;
-        private final String refusalCode;
+        private final ErrorCode refusalCode;
 
-        Ruled(TransactionShape.Member member, String refusalCode)
+        Ruled(TransactionShape.Member member, ErrorCode refusalCode)
         {
             this.member = member;
             this.refusalCode = refusalCode;
@@ -64,7 +66,7 @@ final class RuleTable
             return member;
         }
 
-        String refusalCode()
+        ErrorCode refusalCode()
         {
             return refusalCode;
         }

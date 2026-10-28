@@ -2,6 +2,7 @@ package name.abuchen.portfolio.cli.masterdata;
 
 import java.util.List;
 
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.cli.command.TableColumn;
 import name.abuchen.portfolio.model.Client;
@@ -31,7 +32,7 @@ public final class InvestmentAccounts
                     .updatedAt(Portfolio::getUpdatedAt)
                     .lookupKeys("name")
                     .creates(Portfolio::new, Client::addPortfolio, null)
-                    .validator(InvestmentAccounts::validate)
+                    .validator(InvestmentAccounts::validate, ErrorCode.REFERENCE_NOT_FOUND)
                     .operations("Adds an investment account. The name and a reference cash account that is already in the file are required.",
                                     "Updates an investment account by UUID. Only the fields present change; null or an empty string clears the note. A new reference cash account must already be in the file.")
                     .list("Investment accounts: UUID, name, reference cash account, note and retired flag",

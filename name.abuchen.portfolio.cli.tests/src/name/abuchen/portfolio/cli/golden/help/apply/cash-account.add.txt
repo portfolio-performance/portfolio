@@ -6,3 +6,10 @@ Input: one element of "operations" in the batch given with --input. Fields of th
   currencyCode (string) ISO currency code of the account.
   note (string or null, optional) Note.
   retired (boolean, optional) Whether the cash account is retired; defaults to false.
+
+Failure codes (failures[].code of validation-failed):
+  unknown-field  The object has no such field.
+  required  A required field is missing or empty.
+  invalid-type  A field has the wrong JSON type.
+  invalid-currency  Not a known ISO currency code.
+  currency-immutable  The currency can't change: there are transactions.

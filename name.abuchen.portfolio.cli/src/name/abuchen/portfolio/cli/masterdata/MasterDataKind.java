@@ -3,10 +3,12 @@ package name.abuchen.portfolio.cli.masterdata;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -18,6 +20,7 @@ import name.abuchen.portfolio.cli.command.ClientFile;
 import name.abuchen.portfolio.cli.command.CommandContext;
 import name.abuchen.portfolio.cli.command.CommandSpec;
 import name.abuchen.portfolio.cli.command.EntityKind;
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.MasterData;
 import name.abuchen.portfolio.cli.command.OperationSpec;
 import name.abuchen.portfolio.cli.command.Outcome;
@@ -111,6 +114,7 @@ public final class MasterDataKind<T>
         private Consumer<T> initialize;
         private Validator<T> validator = validation -> {
         };
+        private Set<ErrorCode> validatorCodes = Set.of();
         private String addSummary;
         private String updateSummary;
 
@@ -180,10 +184,16 @@ public final class MasterDataKind<T>
             return this;
         }
 
-        /** The checks of a write that look beyond one member. */
-        public Builder<T> validator(Validator<T> validator)
+        /**
+         * The checks of a write that look beyond one member.
+         *
+         * @param codes
+         *            the failure codes the validator raises
+         */
+        public Builder<T> validator(Validator<T> validator, ErrorCode... codes)
         {
             this.validator = validator;
+            this.validatorCodes = Set.of(codes);
             return this;
         }
 
@@ -293,13 +303,20 @@ public final class MasterDataKind<T>
                         Paging.pageSchema("A page of the list.", item), run -> list(run, sort), ClientFile.READ,
                         Paging.FACET, sort).withTable(columns);
 
-        this.addOperation = new OperationSpec<>(id + ".add", builder.addSummary, input(false),
+        // the member checks and the validator run on both writes
+        var codes = EnumSet.noneOf(ErrorCode.class);
+        writable().forEach(member -> member.writer().checks().forEach(check -> codes.add(check.code())));
+        codes.addAll(builder.validatorCodes);
+
+        this.addOperation = OperationSpec.<OperationSpec.Context> of(id + ".add", builder.addSummary, input(false),
                         context -> context.record(writes(context.client(), context::existedBeforeBatch)
-                                        .add(context.json())));
-        this.updateOperation = new OperationSpec<>(id + ".update", builder.updateSummary,
-                        input(true).property(UUID_MEMBER, Schema.string("UUID of the " + noun + ".")),
+                                        .add(context.json())))
+                        .declaring(codes);
+        this.updateOperation = OperationSpec.<OperationSpec.Context> of(id + ".update", builder.updateSummary,
+                        input(true).property(UUID_MEMBER, Schema.reference("UUID of the " + noun + ".")),
                         context -> context.record(writes(context.client(), context::existedBeforeBatch)
-                                        .update(context.json(), context.claims())));
+                                        .update(context.json(), context.claims())))
+                        .declaring(codes).claiming();
     }
 
     /**

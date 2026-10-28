@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import name.abuchen.portfolio.cli.command.EntityKind;
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.OperationInput;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Security;
@@ -122,7 +123,7 @@ final class TransactionInput
         }
         catch (DateTimeParseException e)
         {
-            input.fail("date", "invalid-date", "'" + date + "' is not an ISO date (yyyy-MM-dd).");
+            input.fail("date", ErrorCode.INVALID_DATE, "'" + date + "' is not an ISO date (yyyy-MM-dd).");
             return null;
         }
 
@@ -136,7 +137,7 @@ final class TransactionInput
         }
         catch (DateTimeParseException e)
         {
-            input.fail("time", "invalid-time", "'" + timeText + "' is not a time of day (HH:mm).");
+            input.fail("time", ErrorCode.INVALID_TIME, "'" + timeText + "' is not a time of day (HH:mm).");
             return null;
         }
     }
@@ -154,13 +155,13 @@ final class TransactionInput
 
         if (!CurrencyUnit.containsCurrencyCode(code))
         {
-            input.fail("currencyCode", "invalid-currency", "'" + code + "' is not a known ISO currency code.");
+            input.fail("currencyCode", ErrorCode.INVALID_CURRENCY, "'" + code + "' is not a known ISO currency code.");
             return null;
         }
 
         if (account != null && !code.equals(account.getCurrencyCode()))
         {
-            input.fail("currencyCode", "currency-mismatch", "The amount must be in the cash account's currency "
+            input.fail("currencyCode", ErrorCode.CURRENCY_MISMATCH, "The amount must be in the cash account's currency "
                             + account.getCurrencyCode() + ", not " + code + ".");
             return null;
         }
@@ -190,7 +191,7 @@ final class TransactionInput
         var expected = amount + (credit ? taxAndFees : -taxAndFees);
 
         if (gross != expected)
-            input.fail(member, "gross-amount-mismatch",
+            input.fail(member, ErrorCode.GROSS_AMOUNT_MISMATCH,
                             "The gross amount does not reconcile with the amount, fees and taxes.");
     }
 
@@ -207,7 +208,7 @@ final class TransactionInput
         var text = input.json().get(member);
         if (!OperationInput.isText(text))
         {
-            input.fail(member, "invalid-type", "The ex-date must be a string.");
+            input.fail(member, ErrorCode.INVALID_TYPE, "The ex-date must be a string.");
             return null;
         }
 
@@ -218,13 +219,13 @@ final class TransactionInput
         }
         catch (DateTimeParseException e)
         {
-            input.fail(member, "invalid-date", "'" + text.getAsString() + "' is not an ISO date (yyyy-MM-dd).");
+            input.fail(member, ErrorCode.INVALID_DATE, "'" + text.getAsString() + "' is not an ISO date (yyyy-MM-dd).");
             return null;
         }
 
         if (dateTime != null && ex.isAfter(dateTime.toLocalDate()))
         {
-            input.fail(member, "exdate-after-payment", "The ex-date must not be after the payment date.");
+            input.fail(member, ErrorCode.EXDATE_AFTER_PAYMENT, "The ex-date must not be after the payment date.");
             return null;
         }
         return ex;
@@ -254,7 +255,7 @@ final class TransactionInput
         var typeName = unit.rawText("type");
         if (typeName == null || !TransactionShape.UNIT_TYPES.contains(typeName))
         {
-            unit.fail("type", "unsupported-unit-type",
+            unit.fail("type", ErrorCode.UNSUPPORTED_UNIT_TYPE,
                             "A unit type must be one of " + String.join(", ", TransactionShape.UNIT_TYPES) + ".");
             return null;
         }
@@ -263,9 +264,9 @@ final class TransactionInput
         var amount = unit.amount("amount", Values.Amount, true, null);
         var unitCurrency = unit.rawText("currencyCode");
         if (unitCurrency == null)
-            unit.fail("currencyCode", "required", "A unit needs a currency.");
+            unit.fail("currencyCode", ErrorCode.REQUIRED, "A unit needs a currency.");
         else if (currencyCode != null && !unitCurrency.equals(currencyCode))
-            unit.fail("currencyCode", "currency-mismatch",
+            unit.fail("currencyCode", ErrorCode.CURRENCY_MISMATCH,
                             "A unit must be in the transaction's currency " + currencyCode + ".");
 
         var json = unit.json();
@@ -276,7 +277,7 @@ final class TransactionInput
 
         if (unitType == Transaction.Unit.Type.GROSS_VALUE && !hasForex)
         {
-            unit.fail("", "forex-required", "A GROSS_VALUE unit needs forexAmount, forexCurrencyCode and exchangeRate.");
+            unit.fail("", ErrorCode.FOREX_REQUIRED, "A GROSS_VALUE unit needs forexAmount, forexCurrencyCode and exchangeRate.");
             return null;
         }
 
@@ -284,25 +285,25 @@ final class TransactionInput
         {
             if (forexAmount == null || forexCurrency == null || rate == null)
             {
-                unit.fail("", "forex-incomplete",
+                unit.fail("", ErrorCode.FOREX_INCOMPLETE,
                                 "forexAmount, forexCurrencyCode and exchangeRate are given together or not at all.");
                 return null;
             }
             if (rate.signum() <= 0)
             {
-                unit.fail("exchangeRate", "not-positive", "The exchange rate must be positive.");
+                unit.fail("exchangeRate", ErrorCode.NOT_POSITIVE, "The exchange rate must be positive.");
                 return null;
             }
             if (!forexCurrency.equals(currencyCode) && !CurrencyUnit.containsCurrencyCode(forexCurrency))
             {
-                unit.fail("forexCurrencyCode", "invalid-currency",
+                unit.fail("forexCurrencyCode", ErrorCode.INVALID_CURRENCY,
                                 "'" + forexCurrency + "' is not a known ISO currency code.");
                 return null;
             }
             if (unitType != Transaction.Unit.Type.GROSS_VALUE && security != null
                             && !forexCurrency.equals(security.getCurrencyCode()))
             {
-                unit.fail("forexCurrencyCode", "forex-currency-mismatch",
+                unit.fail("forexCurrencyCode", ErrorCode.FOREX_CURRENCY_MISMATCH,
                                 "A fee or tax may carry forex only in the instrument's currency "
                                                 + security.getCurrencyCode() + ".");
                 return null;
@@ -323,7 +324,7 @@ final class TransactionInput
         var forexMoney = Money.of(forexCurrency, forexAmount);
         if (!Transaction.Unit.isWithinRoundingTolerance(amountMoney, forexMoney, rate))
         {
-            unit.fail("", "forex-mismatch",
+            unit.fail("", ErrorCode.FOREX_MISMATCH,
                             "forexAmount times exchangeRate is not amount within core's rounding tolerance.");
             return null;
         }
@@ -341,7 +342,7 @@ final class TransactionInput
                         .anyMatch(u -> u.getForex() != null
                                         && security.getCurrencyCode().equals(u.getForex().getCurrencyCode()));
         if (!hasMatch)
-            input.fail(RuleTable.Ruled.UNITS.id(), "forex-gross-value-required",
+            input.fail(RuleTable.Ruled.UNITS.id(), ErrorCode.FOREX_GROSS_VALUE_REQUIRED,
                             "The instrument is in " + security.getCurrencyCode() + " but the transaction is in "
                                             + currencyCode
                                             + "; add a GROSS_VALUE unit with its forex amount and exchange rate.");

@@ -4,7 +4,7 @@ Built from upstream tag 0.89.0; reads client files up to version 70 (pp-cli info
 Usage:
   pp-cli <command> [options]
   pp-cli <command> --help           Options, response fields and error codes of one command.
-  pp-cli apply --help <operation>   Input schema of one write operation.
+  pp-cli apply --help <operation>   Input schema and failure codes of one write operation.
 References (the <ref> option values): a UUID. Reads also accept an exact name, and for instruments an ISIN or ticker; writes take UUIDs only.
 
 Commands:

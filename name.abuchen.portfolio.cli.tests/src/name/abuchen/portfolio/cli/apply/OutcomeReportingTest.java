@@ -14,6 +14,7 @@ import org.junit.Test;
 import com.google.gson.JsonParser;
 
 import name.abuchen.portfolio.cli.command.CliException;
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.FieldFailure;
 import name.abuchen.portfolio.cli.command.OperationSpec;
 import name.abuchen.portfolio.cli.command.Outcome;
@@ -29,8 +30,7 @@ public class OutcomeReportingTest
 
     private static List<Map<String, Object>> run(Outcome outcome) throws CliException
     {
-        var spec = new OperationSpec<OperationContext>("probe", "A probe.", PROBE,
-                        context -> context.record(outcome));
+        var spec = OperationSpec.<OperationContext> of("probe", "A probe.", PROBE, context -> context.record(outcome));
         return ApplyBatch.run(new Client(), JsonParser.parseString("[{\"operation\":\"probe\"}]").getAsJsonArray(),
                         List.of(spec));
     }
@@ -88,8 +88,8 @@ public class OutcomeReportingTest
     public void aRefusedOutcomeFailsTheBatchWithItsFailuresUnderTheOperationIndex()
     {
         var e = assertThrows(CliException.class, () -> run(new Outcome.Refused(
-                        List.of(new FieldFailure("name", "required", "A name.", null),
-                                        new FieldFailure("isin", "invalid-isin", "Bad.", "Isin.isValid")))));
+                        List.of(new FieldFailure("name", ErrorCode.REQUIRED, "A name.", null),
+                                        new FieldFailure("isin", ErrorCode.INVALID_ISIN, "Bad.", "Isin.isValid")))));
 
         assertThat(e.getCode(), is("validation-failed"));
         assertThat(e.toProblem().get("failures"), is(List.of(

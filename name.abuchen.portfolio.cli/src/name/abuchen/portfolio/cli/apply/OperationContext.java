@@ -8,6 +8,7 @@ import java.util.Map;
 import com.google.gson.JsonObject;
 
 import name.abuchen.portfolio.cli.command.Claims;
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.FieldFailure;
 import name.abuchen.portfolio.cli.command.OperationInput;
 import name.abuchen.portfolio.cli.command.OperationSpec;
@@ -28,7 +29,7 @@ public final class OperationContext implements OperationSpec.Context
             var json = new LinkedHashMap<String, Object>();
             json.put("operationIndex", operationIndex);
             json.put("field", failure.field());
-            json.put("code", failure.code());
+            json.put("code", failure.code().code());
             json.put("message", failure.message());
             if (failure.check() != null)
                 json.put("check", failure.check());
@@ -89,7 +90,7 @@ public final class OperationContext implements OperationSpec.Context
         return input.json();
     }
 
-    void fail(String field, String code, String message)
+    void fail(String field, ErrorCode code, String message)
     {
         fail(field, code, message, null);
     }
@@ -98,7 +99,7 @@ public final class OperationContext implements OperationSpec.Context
      * @param check
      *            the core check that raised the failure, or null
      */
-    void fail(String field, String code, String message, String check)
+    void fail(String field, ErrorCode code, String message, String check)
     {
         fail(new FieldFailure(field, code, message, check));
     }
@@ -127,7 +128,7 @@ public final class OperationContext implements OperationSpec.Context
         if (earlier.isEmpty())
             return true;
 
-        fail(field, "duplicate-target", "Operation " + earlier.getAsInt() + " already changes " + uuid
+        fail(field, ErrorCode.DUPLICATE_TARGET, "Operation " + earlier.getAsInt() + " already changes " + uuid
                         + "; one batch may change an entity only once.");
         return false;
     }

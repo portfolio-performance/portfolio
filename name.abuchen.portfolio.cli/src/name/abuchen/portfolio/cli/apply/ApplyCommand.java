@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
+import java.util.Set;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParseException;
@@ -35,6 +38,14 @@ public final class ApplyCommand
     static final Facet<JsonArray> BATCH = Facet.of(Declaration.empty().options(INPUT).codes(
                     ErrorCode.INPUT_UNREADABLE, ErrorCode.INVALID_INPUT, ErrorCode.VALIDATION_FAILED),
                     ApplyCommand::readOperations);
+
+    /**
+     * The failure codes the batch itself declares: an entry of
+     * <code>failures</code> carries one when no operation is known yet.
+     * Every other failure code is one of the operation's own.
+     */
+    public static final Set<ErrorCode> BATCH_FAILURE_CODES = Collections
+                    .unmodifiableSet(EnumSet.of(ErrorCode.INVALID_OPERATION, ErrorCode.UNKNOWN_OPERATION));
 
     private static final Facet<ClientFile.Writer> WRITE = ClientFile.write(
                     "Validate the batch and report the changes and the would-be backup path without writing any file, backup or lock.");

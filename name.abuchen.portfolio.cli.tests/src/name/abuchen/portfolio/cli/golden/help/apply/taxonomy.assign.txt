@@ -7,3 +7,15 @@ Input: one element of "operations" in the batch given with --input. The complete
   assignments (array of object) The classifications to place the instrument in; empty to remove it from the taxonomy.
     classification (string) UUID of a leaf classification of the taxonomy.
     weight (number) Positive fraction of one, e.g. 0.6 for 60%, with at most four decimal places.
+
+Failure codes (failures[].code of validation-failed):
+  reference-not-found  No entity of the expected kind matches the reference.
+  unknown-field  The object has no such field.
+  required  A required field is missing or empty.
+  invalid-type  A field has the wrong JSON type.
+  not-positive  A number that must be positive is not.
+  invalid-amount  More decimal places than are stored.
+  duplicate-target  An earlier operation changes the entity.
+  not-a-leaf  The classification has children.
+  duplicate-classification  The classification is listed twice.
+  weight-total-exceeded  The weights add up to more than 100%.

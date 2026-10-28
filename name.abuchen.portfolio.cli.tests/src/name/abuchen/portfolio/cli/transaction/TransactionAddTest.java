@@ -20,6 +20,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import name.abuchen.portfolio.cli.TransactionFixtures;
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.Outcome;
 import name.abuchen.portfolio.junit.AccountBuilder;
 import name.abuchen.portfolio.junit.PortfolioBuilder;
@@ -195,7 +196,7 @@ public class TransactionAddTest
     private static Set<String> failures(Outcome outcome)
     {
         assertThat(String.valueOf(outcome), outcome, instanceOf(Outcome.Refused.class));
-        return ((Outcome.Refused) outcome).failures().stream().map(f -> f.field() + "/" + f.code())
+        return ((Outcome.Refused) outcome).failures().stream().map(f -> f.field() + "/" + f.code().code())
                         .collect(Collectors.toSet());
     }
 
@@ -462,7 +463,7 @@ public class TransactionAddTest
         var refused = (Outcome.Refused) fixture.add(charge);
 
         assertThat(refused.failures().size(), is(1));
-        assertThat(refused.failures().get(0).code(), is("import-check-failed"));
+        assertThat(refused.failures().get(0).code(), is(ErrorCode.IMPORT_CHECK_FAILED));
         assertThat(refused.failures().get(0).field(), is(""));
         assertThat(refused.failures().get(0).check(), is("CheckValidTypesAction"));
         assertThat(fixture.snapshot(), is(before));

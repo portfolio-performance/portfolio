@@ -117,7 +117,7 @@ public class TransactionUpdateTest
     private static Set<String> failures(Outcome outcome)
     {
         assertThat(String.valueOf(outcome), outcome, instanceOf(Outcome.Refused.class));
-        return ((Outcome.Refused) outcome).failures().stream().map(f -> f.field() + "/" + f.code())
+        return ((Outcome.Refused) outcome).failures().stream().map(f -> f.field() + "/" + f.code().code())
                         .collect(Collectors.toSet());
     }
 

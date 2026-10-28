@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.cli.transaction;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -12,6 +14,7 @@ import java.util.function.Predicate;
 import com.google.gson.JsonObject;
 
 import name.abuchen.portfolio.cli.command.Claims;
+import name.abuchen.portfolio.cli.command.ErrorCode;
 import name.abuchen.portfolio.cli.command.FieldFailure;
 import name.abuchen.portfolio.cli.command.OperationInput;
 import name.abuchen.portfolio.cli.command.OperationSpec;
@@ -43,11 +46,20 @@ final class TransactionUpdate
     static final Schema PATCH_SCHEMA = TransactionShape.declarePatch(Schema.object(
                     "The fields of a transaction to change, in the shape the transactions output uses. Only the fields present change; null clears an optional field.")
                     .property(OperationSpec.OPERATION_MEMBER, Schema.enumOf("Operation name.", List.of(UPDATE)))
-                    .property(UUID_MEMBER, Schema.string("UUID of either side of the record to change.")));
+                    .property(UUID_MEMBER, Schema.reference("UUID of either side of the record to change.")));
 
     static final Schema DELETE_SCHEMA = Schema.object("The record to delete.")
                     .property(OperationSpec.OPERATION_MEMBER, Schema.enumOf("Operation name.", List.of(DELETE)))
-                    .property(UUID_MEMBER, Schema.string("UUID of either side of the record."));
+                    .property(UUID_MEMBER, Schema.reference("UUID of either side of the record."));
+
+    /**
+     * The failure codes of an update beyond those its schema implies: those
+     * of an add that a patch can reach, and what an update refuses.
+     */
+    static final Set<ErrorCode> UPDATE_CODES = updateCodes();
+
+    /** The failure codes of a delete beyond those its schema implies. */
+    static final Set<ErrorCode> DELETE_CODES = Set.of(ErrorCode.NEGATIVE_HOLDING);
 
     /** Members of the patch that address the record rather than change it. */
     private static final Set<String> ADDRESSING = Set.of(OperationSpec.OPERATION_MEMBER, UUID_MEMBER);
@@ -95,6 +107,15 @@ final class TransactionUpdate
         this.existedBeforeBatch = existedBeforeBatch;
     }
 
+    private static Set<ErrorCode> updateCodes()
+    {
+        var codes = EnumSet.of(ErrorCode.TYPE_IMMUTABLE, ErrorCode.KIND_IMMUTABLE, ErrorCode.RECORD_INCOMPLETE);
+        codes.addAll(TransactionAdd.FAILURE_CODES);
+        // the draft keeps the stored type and kind, which a patch can't change
+        codes.removeAll(Set.of(ErrorCode.UNSUPPORTED_TYPE, ErrorCode.UNSUPPORTED_KIND));
+        return Collections.unmodifiableSet(codes);
+    }
+
     Outcome update(JsonObject patch, Claims claims, boolean reportUnknown)
     {
         var input = new OperationInput(patch, client, existedBeforeBatch, failures::add);
@@ -107,7 +128,7 @@ final class TransactionUpdate
 
         if (isIncomplete(existing.record()))
         {
-            input.fail(UUID_MEMBER, "record-incomplete",
+            input.fail(UUID_MEMBER, ErrorCode.RECORD_INCOMPLETE,
                             "The record is missing a side, so it can't be updated; delete it and add it again.");
             return refused();
         }
@@ -126,7 +147,7 @@ final class TransactionUpdate
 
         if (built.sides().size() != existing.sides().size())
         {
-            input.fail(UUID_MEMBER, "record-incomplete",
+            input.fail(UUID_MEMBER, ErrorCode.RECORD_INCOMPLETE,
                             "The record is missing a side, so it can't be updated; delete it and add it again.");
             return refused();
         }
@@ -180,12 +201,12 @@ final class TransactionUpdate
         var member = input.json().get(UUID_MEMBER);
         if (member == null || member.isJsonNull())
         {
-            input.fail(UUID_MEMBER, "required", "This operation needs the UUID of a side of the transaction.");
+            input.fail(UUID_MEMBER, ErrorCode.REQUIRED, "This operation needs the UUID of a side of the transaction.");
             return null;
         }
         if (!OperationInput.isText(member))
         {
-            input.fail(UUID_MEMBER, "invalid-type", "The UUID must be a string.");
+            input.fail(UUID_MEMBER, ErrorCode.INVALID_TYPE, "The UUID must be a string.");
             return null;
         }
 
@@ -193,7 +214,7 @@ final class TransactionUpdate
         var record = records.find(uuid).orElse(null);
         if (record == null)
         {
-            input.fail(UUID_MEMBER, "reference-not-found", "No transaction with UUID " + uuid + " in the file.");
+            input.fail(UUID_MEMBER, ErrorCode.REFERENCE_NOT_FOUND, "No transaction with UUID " + uuid + " in the file.");
             return null;
         }
 
@@ -202,7 +223,7 @@ final class TransactionUpdate
             var earlier = claims.claim(side);
             if (earlier.isPresent())
             {
-                input.fail(UUID_MEMBER, "duplicate-target", "Operation " + earlier.getAsInt() + " already changes "
+                input.fail(UUID_MEMBER, ErrorCode.DUPLICATE_TARGET, "Operation " + earlier.getAsInt() + " already changes "
                                 + side + "; one batch may change an entity only once.");
                 return null;
             }

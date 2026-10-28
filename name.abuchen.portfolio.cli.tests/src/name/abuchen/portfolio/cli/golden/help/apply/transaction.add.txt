@@ -27,3 +27,40 @@ Input: one element of "operations" in the batch given with --input. A transactio
     forexAmount (number, optional) Original amount in the instrument's currency.
     forexCurrencyCode (string, optional) ISO currency code of forexAmount.
     exchangeRate (number, optional) Positive, unrounded: forexAmount times exchangeRate is approximately amount.
+
+Failure codes (failures[].code of validation-failed):
+  reference-not-found  No entity of the expected kind matches the reference.
+  unknown-field  The object has no such field.
+  required  A required field is missing or empty.
+  invalid-type  A field has the wrong JSON type.
+  not-positive  A number that must be positive is not.
+  invalid-amount  More decimal places than are stored.
+  invalid-currency  Not a known ISO currency code.
+  unsupported-type  Not a transaction type an add takes.
+  unsupported-kind  Not a kind of transfer.
+  kind-not-allowed  kind is refused.
+  target-amount-not-allowed  targetAmount is refused.
+  exchange-rate-not-allowed  exchangeRate is refused.
+  instrument-not-allowed  instrument is refused.
+  shares-not-allowed  shares is refused.
+  investment-account-not-allowed  investmentAccount is refused.
+  cash-account-not-allowed  cashAccount is refused.
+  from-not-allowed  from is refused.
+  to-not-allowed  to is refused.
+  exdate-not-allowed  exDate is refused.
+  gross-amount-not-allowed  grossAmount is refused.
+  units-not-allowed  units is refused.
+  invalid-date  Not an ISO date (yyyy-MM-dd).
+  invalid-time  Not a time of day (HH:mm).
+  currency-mismatch  Not the currency the record needs.
+  gross-amount-mismatch  grossAmount does not reconcile.
+  exdate-after-payment  The ex-date is after the date.
+  unsupported-unit-type  Not a unit type.
+  forex-required  A GROSS_VALUE unit needs forex.
+  forex-incomplete  Forex fields given only in part.
+  forex-currency-mismatch  The forex is not in the instrument's currency.
+  forex-mismatch  The exchange rate does not fit the amounts.
+  forex-gross-value-required  The instrument's currency needs a GROSS_VALUE unit.
+  same-account  A transfer names the same account twice.
+  import-check-failed  Core's import check refused the record; check names it.
+  negative-holding  A holding would go negative.

@@ -5,7 +5,7 @@ description: Read and edit a Portfolio Performance client file with the pp-cli t
 
 # pp-cli
 
-`pp-cli` reads and writes a Portfolio Performance client file. It is the single source of truth for two things: the figures, and its own interface. `pp-cli --help` lists the commands, global options, error codes and known limits; `pp-cli <command> --help` gives one command's options, response fields, warning codes and error codes; `pp-cli apply --help <operation>` gives one write operation's input schema. Look things up there; this skill holds only the workflow and the safety rules.
+`pp-cli` reads and writes a Portfolio Performance client file. It is the single source of truth for two things: the figures, and its own interface. `pp-cli --help` lists the commands, global options, error codes and known limits; `pp-cli <command> --help` gives one command's options, response fields, warning codes and error codes; `pp-cli apply --help <operation>` gives one write operation's input schema and failure codes. Look things up there; this skill holds only the workflow and the safety rules.
 
 ## Session start
 
@@ -58,7 +58,7 @@ A failure is a problem+json document on stdout with a `code` and a non-zero exit
 | `unknown-command`, `unknown-option`, `invalid-option-value`, `option-required`, `conflicting-options` | Correct the call from `pp-cli <command> --help`. |
 | `reference-ambiguous` | Show the user the candidates and ask which one is meant. |
 | `reference-not-found` | List the entities of that kind (such as `pp-cli instruments --file "<path>"`) and confirm the right one with the user. |
-| `validation-failed` | Explain each entry of `failures`, fix the batch with the user, and restart the write protocol. |
+| `validation-failed` | Explain each entry of `failures`; `pp-cli apply --help <operation>` describes its code. Fix the batch with the user, and restart the write protocol. |
 | `consistency-check-failed` | Report the inconsistencies; nothing was written. |
 | `file-open-in-app` | Ask the user to close the file in Portfolio Performance, then retry. `--force` is the user's call alone. |
 | `file-locked` | Report the lock file from `detail`; the user decides whether another `pp-cli` is still running. |

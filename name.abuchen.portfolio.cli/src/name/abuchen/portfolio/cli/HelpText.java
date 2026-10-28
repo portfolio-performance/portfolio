@@ -1,10 +1,12 @@
 package name.abuchen.portfolio.cli;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.cli.apply.ApplyCommand;
 import name.abuchen.portfolio.cli.apply.Operations;
@@ -32,6 +34,8 @@ final class HelpText
     static final String OPTION = "--" + HELP.name();
 
     private static final int ONE_LINE_LIMIT = 100;
+
+    private static final String FAILURE_CODES = "Failure codes (failures[].code of validation-failed)";
 
     /** What the tool can't do. Agents must not promise these to users. */
     static final List<String> KNOWN_LIMITS = List.of(
@@ -101,7 +105,7 @@ final class HelpText
         out.line("Usage:");
         out.line("  pp-cli <command> [options]");
         out.line("  pp-cli <command> --help           Options, response fields and error codes of one command.");
-        out.line("  pp-cli apply --help <operation>   Input schema of one write operation.");
+        out.line("  pp-cli apply --help <operation>   Input schema and failure codes of one write operation.");
         out.line("References (the <ref> option values): a UUID. Reads also accept an exact name, and for instruments an ISIN or ticker; writes take UUIDs only.");
         out.blank();
 
@@ -125,7 +129,7 @@ final class HelpText
 
         out.line("Exit codes: 0 success; 2 usage error; 1 any other failure. A failure is a problem+json document"
                         + " on stdout whose code is one of:");
-        errors(out, List.of(ErrorCode.values()));
+        errors(out, problemCodes());
         out.blank();
 
         out.line("Limits (do not promise these):");
@@ -150,7 +154,7 @@ final class HelpText
         if (command.name().equals(ApplyCommand.SPEC.name()))
         {
             out.blank();
-            out.line("Operations (pp-cli apply --help <operation> shows the input schema of one):");
+            out.line("Operations (pp-cli apply --help <operation> shows the input schema and failure codes of one):");
             var width = Operations.ALL.stream().mapToInt(o -> o.name().length()).max().orElse(0);
             for (var operation : Operations.ALL)
                 out.line("  " + pad(operation.name(), width) + "  " + oneLine(operation.summary()));
@@ -177,6 +181,14 @@ final class HelpText
         out.blank();
         out.line("Error codes (meanings: pp-cli --help): " + String.join(", ",
                         command.errorCodes().stream().map(ErrorCode::code).toList()));
+
+        if (command.name().equals(ApplyCommand.SPEC.name()))
+        {
+            out.blank();
+            out.line(FAILURE_CODES + " of the batch:");
+            errors(out, List.copyOf(ApplyCommand.BATCH_FAILURE_CODES));
+            out.line("  Those of each operation: pp-cli apply --help <operation>.");
+        }
         return out.toString();
     }
 
@@ -192,7 +204,22 @@ final class HelpText
         out.line("Input: one element of \"operations\" in the batch given with --input. "
                         + orEmpty(operation.input().description()));
         operation.input().helpLines(2).forEach(out::line);
+        out.blank();
+        out.line(FAILURE_CODES + ":");
+        errors(out, List.copyOf(operation.failureCodes()));
         return out.toString();
+    }
+
+    /**
+     * The codes a problem document can carry: those of every command's help.
+     * A code that only a write operation or the batch declares is listed by
+     * the help of apply.
+     */
+    private static List<ErrorCode> problemCodes()
+    {
+        var declared = Commands.ALL.stream().flatMap(c -> c.errorCodes().stream()).collect(Collectors.toSet());
+        return Arrays.stream(ErrorCode.values())
+                        .filter(code -> code.scope() != ErrorCode.Scope.BY_USE || declared.contains(code)).toList();
     }
 
     private static void errors(Text out, List<ErrorCode> errors)
