@@ -14,6 +14,7 @@ import org.junit.rules.TemporaryFolder;
 
 import name.abuchen.portfolio.cli.ClientFiles;
 import name.abuchen.portfolio.cli.file.FileFormat;
+import name.abuchen.portfolio.cli.masterdata.Instruments;
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
@@ -32,7 +33,7 @@ public class FacetsTest
     private static final Sorting.Spec<Security> SORT = Sorting.Spec.of(Security::getUUID, "name",
                     Sorting.Field.of("name", MasterData.byName(Security::getName)));
 
-    private static final ReferenceOption<Security> INSTRUMENT = ReferenceOption.instrument("instrument",
+    private static final ReferenceOption<Security> INSTRUMENT = Instruments.INSTRUMENTS.option("instrument",
                     "An instrument.");
 
     private static final Facet<Filters.Reference<Security, Security>> BY_INSTRUMENT = Filters.reference(INSTRUMENT,

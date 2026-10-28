@@ -22,6 +22,7 @@ import name.abuchen.portfolio.cli.command.ReferenceOption;
 import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.cli.currency.ReportingCurrency;
 import name.abuchen.portfolio.cli.currency.StalePrices;
+import name.abuchen.portfolio.cli.masterdata.InvestmentAccounts;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
@@ -48,7 +49,7 @@ public final class HoldingsCommand
                     "The day the holdings are valued at: as given, otherwise today.");
 
     private static final Facet<Filters.Reference<Portfolio, PortfolioSnapshot>> INVESTMENT_ACCOUNT = Filters.reference(
-                    ReferenceOption.investmentAccount("investment-account",
+                    InvestmentAccounts.INVESTMENT_ACCOUNTS.option("investment-account",
                                     "Only the holdings of this investment account. The cash section is not affected."),
                     "investmentAccount", "UUID the investment-account filter resolved to.",
                     (account, snapshot) -> snapshot.unwrapPortfolio() == account);

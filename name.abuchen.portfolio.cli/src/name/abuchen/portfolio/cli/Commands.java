@@ -8,13 +8,13 @@ import name.abuchen.portfolio.cli.apply.RestoreCommand;
 import name.abuchen.portfolio.cli.command.CliException;
 import name.abuchen.portfolio.cli.command.CommandSpec;
 import name.abuchen.portfolio.cli.command.ErrorCode;
+import name.abuchen.portfolio.cli.masterdata.CashAccounts;
+import name.abuchen.portfolio.cli.masterdata.Instruments;
+import name.abuchen.portfolio.cli.masterdata.InvestmentAccounts;
 import name.abuchen.portfolio.cli.performance.PerformanceCommand;
 import name.abuchen.portfolio.cli.query.AllocationCommand;
-import name.abuchen.portfolio.cli.query.CashAccountsCommand;
 import name.abuchen.portfolio.cli.query.HoldingsCommand;
 import name.abuchen.portfolio.cli.query.InfoCommand;
-import name.abuchen.portfolio.cli.query.InstrumentsCommand;
-import name.abuchen.portfolio.cli.query.InvestmentAccountsCommand;
 import name.abuchen.portfolio.cli.query.PricesCommand;
 import name.abuchen.portfolio.cli.query.TaxonomiesCommand;
 import name.abuchen.portfolio.cli.query.TransactionsCommand;
@@ -22,10 +22,10 @@ import name.abuchen.portfolio.cli.query.TransactionsCommand;
 /** The single list of declared commands. */
 public final class Commands
 {
-    public static final List<CommandSpec> ALL = List.of(InfoCommand.SPEC, InstrumentsCommand.SPEC,
-                    InvestmentAccountsCommand.SPEC, CashAccountsCommand.SPEC, PricesCommand.SPEC,
-                    TransactionsCommand.SPEC, HoldingsCommand.SPEC, PerformanceCommand.SPEC, TaxonomiesCommand.SPEC,
-                    AllocationCommand.SPEC, ApplyCommand.SPEC, RestoreCommand.SPEC);
+    public static final List<CommandSpec> ALL = List.of(InfoCommand.SPEC, Instruments.INSTRUMENTS.command(),
+                    InvestmentAccounts.INVESTMENT_ACCOUNTS.command(), CashAccounts.CASH_ACCOUNTS.command(),
+                    PricesCommand.SPEC, TransactionsCommand.SPEC, HoldingsCommand.SPEC, PerformanceCommand.SPEC,
+                    TaxonomiesCommand.SPEC, AllocationCommand.SPEC, ApplyCommand.SPEC, RestoreCommand.SPEC);
 
     private Commands()
     {

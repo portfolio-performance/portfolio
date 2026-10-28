@@ -55,21 +55,6 @@ public class InvestmentAccountsCommandTest
     }
 
     @Test
-    public void unsetFieldsAreOmitted() throws IOException
-    {
-        var client = new Client();
-        var portfolio = new PortfolioBuilder().addTo(client);
-        portfolio.setName("Depot");
-        portfolio.setNote("");
-        portfolio.setReferenceAccount(null);
-
-        var item = run(client).items().get(0).getAsJsonObject();
-
-        assertThat(item.keySet(), is(Set.of("uuid", "name", "retired", "updatedAt")));
-        assertThat(item.get("retired").getAsBoolean(), is(false));
-    }
-
-    @Test
     public void ordersByNameThenUuidAndPages() throws IOException
     {
         var client = new Client();

@@ -27,6 +27,9 @@ import name.abuchen.portfolio.cli.command.ReferenceOption;
 import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.cli.command.Sorting;
 import name.abuchen.portfolio.cli.currency.ReportingCurrency;
+import name.abuchen.portfolio.cli.masterdata.CashAccounts;
+import name.abuchen.portfolio.cli.masterdata.Instruments;
+import name.abuchen.portfolio.cli.masterdata.InvestmentAccounts;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -47,18 +50,18 @@ public final class TransactionsCommand
     private static final DateTimeFormatter TIME = DateTimeFormatter.ofPattern("HH:mm");
 
     private static final Facet<Filters.Reference<Portfolio, TransactionRecord>> INVESTMENT_ACCOUNT = Filters
-                    .reference(ReferenceOption.investmentAccount("investment-account",
+                    .reference(InvestmentAccounts.INVESTMENT_ACCOUNTS.option("investment-account",
                                     "Only records with a side in this investment account."), "investmentAccount",
                                     "UUID the investment-account filter resolved to.",
                                     (account, record) -> record.touchesInvestmentAccount(account.getUUID()));
 
     private static final Facet<Filters.Reference<Account, TransactionRecord>> CASH_ACCOUNT = Filters.reference(
-                    ReferenceOption.cashAccount("cash-account", "Only records with a side in this cash account."),
+                    CashAccounts.CASH_ACCOUNTS.option("cash-account", "Only records with a side in this cash account."),
                     "cashAccount", "UUID the cash-account filter resolved to.",
                     (account, record) -> record.touchesCashAccount(account.getUUID()));
 
     private static final Facet<Filters.Reference<Security, TransactionRecord>> INSTRUMENT = Filters.reference(
-                    ReferenceOption.instrument("instrument",
+                    Instruments.INSTRUMENTS.option("instrument",
                                     "Only records of this instrument, including its dividends, fees and taxes."),
                     "instrument", "UUID the instrument filter resolved to.",
                     (security, record) -> record.primary().getSecurity() == security);

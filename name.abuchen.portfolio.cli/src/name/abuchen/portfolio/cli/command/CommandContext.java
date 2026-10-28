@@ -136,7 +136,7 @@ public final class CommandContext
         var value = raw(option.spec(), OptionSpec.Reference.class);
         if (value.isEmpty())
             return Optional.empty();
-        return Optional.of(References.resolve(option.kind(), client, option.name(), value.get()));
+        return Optional.of(option.kind().resolve(client, option.name(), value.get()));
     }
 
     /** The raw value of an option declared as <code>type</code>. */

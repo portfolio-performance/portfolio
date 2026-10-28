@@ -16,6 +16,7 @@ import org.junit.Test;
 
 import com.google.gson.JsonParser;
 
+import name.abuchen.portfolio.cli.masterdata.Instruments;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
@@ -152,7 +153,7 @@ public class OperationInputTest
         existing.add(security);
 
         var found = input("{\"instrument\":\"" + security.getUUID() + "\"}").existing("instrument",
-                        EntityKind.INSTRUMENT, "A probe needs an instrument.");
+                        Instruments.INSTRUMENTS.entityKind(), "A probe needs an instrument.");
 
         assertThat(found, is(security));
         assertThat(failures, is(empty()));
@@ -165,7 +166,7 @@ public class OperationInputTest
         client.addSecurity(added);
 
         var found = input("{\"instrument\":\"" + added.getUUID() + "\"}").existing("instrument",
-                        EntityKind.INSTRUMENT, "A probe needs an instrument.");
+                        Instruments.INSTRUMENTS.entityKind(), "A probe needs an instrument.");
 
         assertThat(found, is(nullValue()));
         assertThat(failures(), contains("instrument/reference-not-found/No instrument with UUID " + added.getUUID()
@@ -175,7 +176,7 @@ public class OperationInputTest
     @Test
     public void aMissingExistingEntityIsRequired()
     {
-        input("{}").existing("instrument", EntityKind.INSTRUMENT, "A probe needs an instrument.");
+        input("{}").existing("instrument", Instruments.INSTRUMENTS.entityKind(), "A probe needs an instrument.");
 
         assertThat(failures(), contains("instrument/required/A probe needs an instrument."));
     }

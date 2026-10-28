@@ -20,6 +20,7 @@ import name.abuchen.portfolio.cli.command.ReferenceOption;
 import name.abuchen.portfolio.cli.command.Schema;
 import name.abuchen.portfolio.cli.command.Sorting;
 import name.abuchen.portfolio.cli.currency.Prices;
+import name.abuchen.portfolio.cli.masterdata.Instruments;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
@@ -27,7 +28,7 @@ import name.abuchen.portfolio.money.Values;
 public final class PricesCommand
 {
     private static final Facet<Optional<Security>> INSTRUMENT = Facet
-                    .option(ReferenceOption.instrument("instrument", "Instrument to read.").asRequired());
+                    .option(Instruments.INSTRUMENTS.option("instrument", "Instrument to read.").asRequired());
 
     private static final Facet<DateRange> RANGE = DateRange.facet(
                     "First day of the history, inclusive. Without it the history has no lower bound.",

@@ -3,9 +3,9 @@ package name.abuchen.portfolio.cli.apply;
 import java.util.List;
 import java.util.Map;
 
-import name.abuchen.portfolio.cli.command.EntityKind;
 import name.abuchen.portfolio.cli.command.OperationSpec;
 import name.abuchen.portfolio.cli.command.Outcome;
+import name.abuchen.portfolio.cli.masterdata.CashAccounts;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
@@ -78,7 +78,7 @@ public final class AccountOperations
     private static void validateInvestment(OperationContext context, Map<String, Object> values, Portfolio existing)
     {
         if (values.get(REFERENCE) instanceof String uuid)
-            context.input().find(REFERENCE, uuid, EntityKind.CASH_ACCOUNT);
+            context.input().find(REFERENCE, uuid, CashAccounts.CASH_ACCOUNTS.entityKind());
     }
 
     private static Object referenceUuid(Portfolio portfolio)
@@ -89,7 +89,7 @@ public final class AccountOperations
     /** The validator has already made sure that the cash account exists. */
     private static void setReference(OperationContext context, Portfolio portfolio, Object uuid)
     {
-        portfolio.setReferenceAccount(EntityKind.CASH_ACCOUNT
+        portfolio.setReferenceAccount(CashAccounts.CASH_ACCOUNTS.entityKind()
                         .find(context.client(), context::existedBeforeBatch, (String) uuid).orElseThrow());
     }
 }
