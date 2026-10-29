@@ -547,12 +547,19 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
 
         // @formatter:off
         // Formatting:
-        // DateTime | Value date | Description | Currency Change
+        // DateTime | Value date | Description | Currency Balance | Currency
+        //           Currency Change
         // -------------------------------------
         // 23-10-2026 16:41 23-10-2026 Virement depuis votre Compte Espèces à la flatexDEGIRO EUR 884,61
         // Bank: 1004,39 EUR
         // 22-10-2026 15:21 22-10-2026 Virement vers votre Compte Espèces à la flatexDEGIRO EUR 1 889,00
         // Bank: 906,9 EUR
+        //
+        // The number of the description line is the balance of the account
+        // before the transfer, the amount of the transfer is printed in the
+        // "Bank:" line below it. Both numbers can be verified with the
+        // "Degiro Cash Sweep Transfer" booking of the same date: its movement
+        // and its balance match the "Bank:" amount and the balance above.
         //
         // These transfers between the account and the "Compte Espèces" of the
         // flatexDEGIRO Bank are internal transfers of the same bank group. The
@@ -578,8 +585,18 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date"), v.get("time")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(0L);
                             t.setNote(trim(v.get("note")));
+                        })
+
+                        // @formatter:off
+                        // 23-10-2026 16:41 23-10-2026 Virement depuis votre Compte Espèces à la flatexDEGIRO EUR 884,61
+                        // Bank: 1004,39 EUR
+                        // @formatter:on
+                        .section("amount", "currency").optional()
+                        .match("^Bank: (?<amount>[\\.,'’\\d\\s]+) (?<currency>[\\w]{3})$")
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
                         })
 
                         .wrap(t -> new SkippedItem(new TransactionItem(t),
