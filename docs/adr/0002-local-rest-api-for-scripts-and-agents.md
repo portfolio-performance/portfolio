@@ -19,6 +19,9 @@ becomes a later thin adapter over the same service layer. The individual decisio
   portfolio file. Move or rename ⇒ identity lost ⇒ fails closed. Files may additionally carry a
   user-assigned alias (`[a-z0-9-]{1,32}`, may not parse as a UUID, unique case-insensitively across
   all records) so an alias can never shadow a file UUID in the shared `/files/{id}` segment.
+  The file listing names the address to send as `use`, and that is always the UUID: an alias can be
+  renamed between listing the files and the next call, and a stable address is worth more than a
+  readable one. Aliases stay accepted for hand-written scripts.
 - **Explicit targeting only.** Every data route is scoped `/v1/files/{id}/…`. There is no "active
   file": the user switching tabs must never retarget a running script.
 - **Per-file opt-in is the authorization grant.** Server off by default; a global preference enables
@@ -46,10 +49,12 @@ becomes a later thin adapter over the same service layer. The individual decisio
   edits: mutate the `Client`, mark it dirty, let the UI refresh live. Only the user saves. An agent's
   changes can be reviewed and discarded by closing without saving.
 - **Reads and writes that directly inspect or mutate model entities are marshalled to the UI thread**
-  (`Display.syncExec`): one mutator thread, the same guarantee UI code relies on, rather than
-  retrofitting locking onto the model. Calculation endpoints are the deliberate exception: they
-  resolve the open file and capture the per-file calculation context on the UI thread, then run the
-  expensive snapshot calculation on the HTTP worker thread. The calculation is read-only, and the
+  (`Display.asyncExec`, the caller waits on a future): one mutator thread, the same guarantee UI code
+  relies on, rather than retrofitting locking onto the model. Not `syncExec`: SWT waits there in
+  `synchronized`/`Object.wait()`, which on Java 21 pins a virtual thread and costs an OS thread for as
+  long as the wait lasts, also after the API gave up on it. Calculation endpoints are the deliberate
+  exception: they resolve the open file and capture the per-file calculation context on the UI
+  thread, then run the expensive snapshot calculation on a pool of platform threads of its own. The calculation is read-only, and the
   accepted tradeoff is that a concurrent UI edit can rarely produce a transiently inconsistent
   response or internal error; clients can retry, while the UI must not freeze behind a long-running
   valuation.
@@ -57,6 +62,34 @@ becomes a later thin adapter over the same service layer. The individual decisio
   dialogs such as `EditSecurityDialog` hold a stale copy of the entity that is written back wholesale
   on OK, and `syncExec` runnables *do* execute during a modal event loop — so an API write landing
   mid-dialog would be silently clobbered. Reads stay allowed.
+- **The wait for the UI thread is bounded, and the two outcomes are told apart** (503 `ui-busy` vs.
+  503 `ui-request-underway`). Parking the worker on a busy UI thread makes the API look dead, so the
+  wait has a deadline (10 s). Whether the request ran is decided on the UI thread itself by one
+  compare-and-set against the waiting caller: a request the UI thread had *not started* when the
+  deadline passed is refused, will never run, and is safe to retry (`Retry-After`); a request that
+  was *already running* will complete, so that one carries no `Retry-After` and must not be resent,
+  because a second write would apply the same change twice. A read is the exception: it changes
+  nothing, so even one that had started is refused as retryable.
+- **Calculations and the connection have deadlines of their own.** A calculation that does not
+  finish within 120 s is answered with 503 `calculation-timeout` instead of a dropped connection.
+  Over MCP a tool call is answered as a stream (SSE) when the client accepts one: progress while it
+  waits and calculates, heartbeats, the result last, and a `notifications/cancelled` - matched to
+  its call through the optional `Mcp-Session-Id` - stops a call waiting for a slot and the
+  per-instrument loops. An earlier version of this ADR refused the stream because a parked request
+  held one of two pooled worker threads; with a virtual thread per request a waiting stream costs no
+  worker, and the calculation it waits for holds its slot either way. REST stays request/response.
+  Receiving a request and sending its response are each bounded by a 30 s watchdog against clients
+  that stall; a stream is bounded per piece it sends, since it may rightly be quiet between them. At most three requests per calculation slot plus six are served at
+  once (12 by default), and one over the bound is refused (503 `server-busy`) before its body is
+  read, so no local process can make the application buffer an arbitrary number of request bodies.
+  The engines never check for an interrupt, so a calculation past its deadline runs on; it keeps its
+  calculation slot until it really ends. A calculation that finds every slot taken waits for one,
+  first come first served, rather than being refused at once — a model sends several tool calls in
+  one turn, and refusing one of them only makes it ask again — but the wait is bounded in time (30 s)
+  and in size (two per slot), so it cannot pile up; past either bound it is refused (503
+  `server-busy`). Two slots by default; the system property
+  `name.abuchen.portfolio.rest.calculationSlots` allows 1 to 8, at most the processors less one.
+  Deliberately no preference: every slot is a whole file's daily valuation in memory.
 - **The API vocabulary is deliberately more general than the model** (`Security` → *instrument*,
   `Portfolio` → *investment account*), because the contract cannot be renamed once clients exist.
   Java class names keep the model's vocabulary; the mapping and its rationale are in the README.

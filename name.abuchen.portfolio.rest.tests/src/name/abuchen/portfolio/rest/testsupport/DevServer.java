@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -60,10 +61,18 @@ public class DevServer
             return files;
         }
 
+        /** headless: there is no UI thread, so the callable runs on the caller's */
         @Override
-        public <T> T syncExec(Callable<T> callable) throws Exception
+        public <T> CompletableFuture<T> asyncExec(Callable<T> callable)
         {
-            return callable.call();
+            try
+            {
+                return CompletableFuture.completedFuture(callable.call());
+            }
+            catch (Exception e)
+            {
+                return CompletableFuture.failedFuture(e);
+            }
         }
 
         @Override
