@@ -17,8 +17,10 @@ description: Read and edit a Portfolio Performance client file with the pp-cli t
 
 An encrypted client file gets its password from the `PP_PASSWORD` environment variable, which the user sets in the environment your shell inherits:
 
-- PowerShell: `$env:PP_PASSWORD = '<password>'`
-- bash or zsh: `export PP_PASSWORD='<password>'`
+- PowerShell: `$env:PP_PASSWORD = [System.Net.NetworkCredential]::new('', (Read-Host -AsSecureString 'PP password')).Password`
+- bash or zsh: `read -rs PP_PASSWORD && export PP_PASSWORD`
+
+Both prompt without echo, so the password reaches neither the shell history nor a process listing.
 
 On `password-required`, show the user both forms and wait. On `incorrect-password`, report it and wait for the user to correct the variable. The password stays out of the conversation and out of every command line: never ask for it in chat, type it into a command, or pipe it to `pp-cli`.
 
