@@ -1,0 +1,46 @@
+PDFBox Version: 3.0.8
+Portfolio Performance Version: 0.89.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Abrechnung Handel
+Schoellerbank AG 23891490-26.11.2025
+Private Banking Wien Depot-Nr.: 47295238606
+Renngasse 3 Mag. vuatx QeSombG XfO STBlh       
+2723 jGgQ
+Herrn
+Mag. hPyRM rDTzoIE kYl NYYNX
+YZCZDyDyeX 40
+1247 WWXs                                                                                                                                                                                              
+Wir haben für Sie am 26.11.2025 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Verkauf
+Auftrags-Nr.: 23999720-25.11.2025
+Auftragseingang: 25.11.2025-14:19:13
+Abgang: 900 Stk
+Titel: US02079K3059  A l p h a b e t  I n c.                      
+Reg. Shs Cap.Stk Cl. A DL-,001     
+Kurs: 326,24 USD 
+Handelsplatz: XNMS     Nasdaq Stock Market
+Handelszeit: 25.11.2025 um 15:30:01 Uhr
+Verwahrart: WR
+Positionsdaten: Loco: New York                           
+Kurswert: 293.616,-- USD 
+KESt-Neu: -63.118,48 USD 
+Fremde Spesen: -120,95 USD 
+Eigene Spesen: -1.174,46 USD 
+SWIFT-Gebühr: -5,81 USD 
+Zu Gunsten IBAN AT44 0216 6167 9981 5409 229.196,30 USD 
+Valuta 26.11.2025
+Schlusstag: 25.11.2025
+Kassatag: 26.11.2025
+Die KESt wird mit dem Finanzamt für Großbetriebe, Postfach 251, 1000 Wien 
+verrechnet.
+Devisenkurs: 1,1623 (26.11.2025)
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden 
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 900 Stk
+steuerlicher Anschaffungswert: 55.144,33 EUR
+steuerlicher Veräußerungswert: 252.616,36 EUR
+steuerpflichtiger Kursgewinn: 197.472,03 EUR
+26.11.2025 Seite 1
+\___________________________________________________________________________________\_
+Diese Mitteilung wird nicht unterschrieben. Irrtum vorbehalten! DVR: 0041556
+Doknr.: BSKD-023-0000000281

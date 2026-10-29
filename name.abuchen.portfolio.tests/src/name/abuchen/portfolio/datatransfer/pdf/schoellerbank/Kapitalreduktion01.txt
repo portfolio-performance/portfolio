@@ -1,0 +1,58 @@
+Portfolio Performance Version: 0.89.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Abrechnung Ereignis
+Schoellerbank AG 23521072-23.4.2026
+Private Banking Wien Depot-Nr.: 90256581374
+Renngasse 3 Mag. QTTYU xqDAVvw PSQ cIdlH       
+1010 Wien
+Herrn
+Mag. mXVxf tqFopgJ Twe gJRfn
+fOINNmTIlZ 94
+5696 jkeb                                                                                                                                                                                              
+Wir haben für Sie am 23.4.2026 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Kapitalmaßnahme
+wegen Kapitalreduktion
+10.883 Stk
+Titel: CH0244767585  U B S  G r o u p  A G                       
+Namens-Aktien SF -,10              
+Verwahrart: WR
+Positionsdaten: Loco: Zürich                             
+Record-Tag: 22.4.2026
+Geschäftsart: Einbuchung
+wegen Kapitalreduktion
+Titel: CH0244767585  U B S  G r o u p  A G                       
+Namens-Aktien SF -,10              
+Barausgleich: 0,428285 CHF je 1 Stk
+Barausgleich: 4.661,03 CHF 
+4.661,03 CHF 
+Devisenkurs: 0,9245 (22.4.2026) 5.041,67 EUR 
+Devisenprovision: -13,86 EUR 
+Zu Gunsten IBAN aH14 0978 5226 7552 4008 5.027,81 EUR 
+Valuta 23.4.2026
+Extag: 21.4.2026
+Devisenkurs: ,9245 (22.4.2026)
+Ausgangssituation:
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden 
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 1.170 Stk
+23.4.2026 Seite 1 --- Seite 2 folgt
+\___________________________________________________________________________________\_
+Diese Mitteilung wird nicht unterschrieben. Irrtum vorbehalten! DVR: 0041556
+ Doknr.: BSKD-023-0000000345
+Abrechnung Ereignis
+Schoellerbank AG 23521072-23.4.2026
+Private Banking Wien Depot-Nr.: 89406863779
+Renngasse 3 Mag. DeBNV wIJjygH XDc dpHIa       
+6831 NBcw
+Anschaffungskurswert: 31.574,72 EUR
+KESt-Altbestand: 9.713 Stk
+Anschaffungsdaten der berechtigten Titel nach dem Geschäft:
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden 
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 1.170 Stk
+steuerlicher Anschaffungswert: 31.032,70 EUR
+Anschaffungskurswert: 31.032,70 EUR
+Nebenkosten: 113,92 EUR
+23.4.2026 Seite 2
+\___________________________________________________________________________________\_
+Diese Mitteilung wird nicht unterschrieben. Irrtum vorbehalten! DVR: 0041556
+ Doknr.: BSKD-023-0000000345
