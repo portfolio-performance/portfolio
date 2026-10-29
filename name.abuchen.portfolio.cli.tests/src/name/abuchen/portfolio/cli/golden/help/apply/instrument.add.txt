@@ -3,7 +3,7 @@ pp-cli apply operation instrument.add: Adds an instrument. Only the name is requ
 Input: one element of "operations" in the batch given with --input. Fields of the instrument; they match the instruments output.
   operation (string, one of instrument.add) Operation name.
   name (string) Instrument name; never empty.
-  currencyCode (string or null, optional) ISO currency code; omit for an index.
+  currencyCode (string or null, optional) ISO currency code; null for an index. An add that omits it gets EUR.
   isin (string or null, optional) ISIN: valid and not used by another instrument.
   tickerSymbol (string or null, optional) Ticker symbol.
   wkn (string or null, optional) WKN.

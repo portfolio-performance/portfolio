@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.io.File;
 import java.io.IOException;
@@ -86,6 +87,16 @@ public class ApplyCommandTest
         assertThat(security.getWkn(), is("A12345"));
         assertThat(security.getNote(), is("new"));
         assertThat(security.isRetired(), is(false));
+    }
+
+    @Test
+    public void addsAnIndexWhenTheCurrencyIsNull() throws IOException
+    {
+        var run = cli.apply(add("\"name\":\"Some Index\",\"currencyCode\":null"));
+
+        assertThat(run.stdout, run.exitCode, is(0));
+        assertThat(run.created().getAsJsonObject("after").has("currencyCode"), is(false));
+        assertThat(instrument(cli.reload(), "Some Index").getCurrencyCode(), is(nullValue()));
     }
 
     @Test

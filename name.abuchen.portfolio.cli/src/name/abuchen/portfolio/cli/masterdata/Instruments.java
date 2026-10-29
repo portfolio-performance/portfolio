@@ -40,7 +40,7 @@ public final class Instruments
                                     Schema.string("ISO currency code; absent for indices."
                                                     + MinorUnits.CONVERTED_BY_HOLDINGS),
                                     Security::getCurrencyCode)
-                    .write(Writer.optional("ISO currency code; omit for an index.", Security::setCurrencyCode)
+                    .write(Writer.optional("ISO currency code; null for an index. An add that omits it gets EUR.", Security::setCurrencyCode)
                                     .check(Checks::isCurrency, ErrorCode.INVALID_CURRENCY, Checks::notACurrency))
                     .ifSet(ISIN, Schema.string("ISIN, if set."), Security::getIsin)
                     .write(Writer.optional("ISIN: valid and not used by another instrument.", Security::setIsin)
