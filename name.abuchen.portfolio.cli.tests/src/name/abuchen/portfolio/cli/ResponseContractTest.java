@@ -16,7 +16,7 @@ public class ResponseContractTest
     private static final String INFO_DATA = """
                     {"fileVersion":68,"maxSupportedVersion":68,"format":"xml","baseCurrency":"EUR",
                      "counts":{"instruments":0,"investmentAccounts":0,"cashAccounts":0,"transactions":0,"taxonomies":0},
-                     "pinnedUpstreamTag":"0.89.1"}""";
+                     "pinnedUpstreamTag":"%s"}""".formatted(CoreVersion.PINNED_UPSTREAM_TAG);
 
     private static final String META = "{\"fileVersion\":68,\"asOf\":\"2026-10-16\"}";
 
