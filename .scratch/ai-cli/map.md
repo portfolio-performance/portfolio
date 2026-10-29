@@ -39,11 +39,10 @@ A hand-off-ready spec for a CLI that lets AI agents (GitHub Copilot, Claude Code
 
 ## Not yet specified
 
-<!-- empty: every ticket (01-11) is resolved; the spec is hand-off-ready -->
+<!-- empty: every ticket (01-36) is resolved; the spec is hand-off-ready -->
 
 ## Out of scope
 
 - An MCP server over the CLI (ticket 11): ruled out of v1; a possible later effort, re-grilled from scratch.
-
-- AI skills that teach agents to use the CLI: to be written later, possibly in an external repository.
+- Agent skills beyond the single `pp-cli` skill (tickets 35 and 36): separate read, write or setup skills, or skills published outside this repo.
 - Live sync with a running desktop app (e.g. an MCP server inside PP): a possible later effort.
