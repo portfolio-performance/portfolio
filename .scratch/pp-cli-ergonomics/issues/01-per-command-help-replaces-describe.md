@@ -12,8 +12,7 @@ Plain-text help generated from the existing `CommandSpec`, `OptionSpec` and `Sch
 - `pp-cli --help` and bare `pp-cli`: usage, the commands with one-line summaries, the global options (`--file`, `--format`, `--verbose` once issue 02 lands, …), the error codes catalogue and the `limits`.
 - `pp-cli <command> --help`: usage line, options (value placeholder, type, allowed values, default, required), response `data` fields with their descriptions (nested fields indented), and the warning and error codes this command can return.
 - `pp-cli apply --help`: the operations with one-line summaries. `pp-cli apply --help <operation>`: that operation's input schema.
-- `--help` wins over every other argument. It needs no `--file` and never loads a client file.
-- An unknown operation after `apply --help` gives the usual usage error.
+- `--help` wins over every other argument. It needs no `--file` and never loads a client file. One exception: an unknown operation after `apply --help` is still the usual usage error.
 
 Remove `DescribeCommand` and its registration. Keep the in-code schemas, since they now feed help and tests.
 
@@ -27,6 +26,7 @@ Remove `DescribeCommand` and its registration. Keep the in-code schemas, since t
 ## Acceptance criteria
 
 - [x] `pp-cli --help`, bare `pp-cli`, `pp-cli <command> --help` and `pp-cli apply --help [<operation>]` work as described, with exit code 0
+- [x] `pp-cli apply --help <unknown-operation>` gives the usage error; every other `--help` use ignores the remaining arguments
 - [x] `describe` is gone and gives `unknown-command`
 - [x] Schema conformance of real responses is still tested for every command and operation
 - [x] The skill drift test checks against the declared specs
