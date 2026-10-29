@@ -26,7 +26,7 @@ Add `--sort <field>` and `--order asc|desc` to the paged list commands. Each com
 - Items with no `updatedAt` sort first in `asc`.
 - An unknown sort field or order value gives `invalid-option-value`, with the allowed values listed.
 - `meta` echoes the resolved `sort` and `order`.
-- The defaults reproduce today's output exactly.
+- The defaults keep today's ordering and fields; the only difference is the additive `updatedAt`.
 - Build this once as a shared mechanism next to `Paging`/`MasterDataList`, not separately in each command.
 
 ## Acceptance criteria
@@ -34,7 +34,7 @@ Add `--sort <field>` and `--order asc|desc` to the paged list commands. Each com
 - [x] `transactions --order desc --limit 10` returns the 10 latest records by transaction date
 - [x] `transactions --sort updatedAt --order desc` returns the most recently modified records first; a buy's `updatedAt` is the later of its two sides
 - [x] Master data lists sort by `name` and `updatedAt` in both orders
-- [x] Default calls produce byte-identical `data` to before (existing tests unchanged)
+- [x] Default calls produce the same `data` as before apart from the additive `updatedAt` (existing tests unchanged except for that field)
 - [x] Paging across pages is stable under every sort and order
 - [x] Response schemas and help document `updatedAt`, `--sort`, `--order` and each command's natural order
 
