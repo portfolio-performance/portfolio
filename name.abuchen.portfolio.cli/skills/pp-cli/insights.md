@@ -12,7 +12,7 @@ Run them in this order. Done when every call has returned and each `warnings` en
 4. `pp-cli performance` three times: `--period L1Y0` (1Y), `--period YTD`, and all-time with `--from` set to the date of the oldest record from `pp-cli transactions --sort date --order asc --limit 1`.
 5. `pp-cli performance --by instrument` for the same periods you quote, to see what drove the figures. Keep per item `name`, `irr`, `ttwror`, `finalValue`, `absoluteGain`.
 6. `pp-cli transactions --order desc --limit 10` for the latest records. Each record carries the names next to the UUIDs; `--limit` takes more.
-7. Derive what no command returns, from the `holdings` response: the split by `currencyCode`, and the share of the total held by the largest three positions. Total is the sum of `converted.amount` over instruments and cash.
+7. Derive what no command returns, from the `holdings` response: the split by `currencyCode`, and the share of the total held by the largest three positions. Total is the sum of `converted.amount` over instruments and cash. A zero total (an empty client, or positions netting to zero) leaves the split and shares undefined: report them as unavailable.
 
 ## Traps
 
