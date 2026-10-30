@@ -551,6 +551,11 @@ public class Messages extends NLS
     public static String JobMsgRunningConsistencyChecks;
     public static String JobMsgSamplingHistoricalQuotes;
     public static String JobMsgUpdatingQuotesFor;
+    public static String KeyBindingHint;
+    public static String KeyModifierAlt;
+    public static String KeyModifierCommand;
+    public static String KeyModifierControl;
+    public static String KeyModifierShift;
     public static String LabelAbout;
     public static String LabelAbsoluteChange;
     public static String LabelAbsoluteDelta;
