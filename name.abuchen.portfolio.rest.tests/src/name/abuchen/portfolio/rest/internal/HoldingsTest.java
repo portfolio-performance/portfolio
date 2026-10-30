@@ -19,8 +19,12 @@ import name.abuchen.portfolio.junit.AccountBuilder;
 import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.online.QuoteFeed;
 
 @SuppressWarnings("nls")
 public class HoldingsTest
@@ -78,6 +82,16 @@ public class HoldingsTest
         assertThat(price.get("currency").getAsString(), is("EUR"));
         assertThat(price.get("date").getAsString(), is("2026-07-01"));
 
+        // only a manually priced holding says so
+        assertThat(instrument.has("priceManual"), is(false));
+
+        // the same staleness, decided instead of left to the caller to compare
+        // the two dates: 2026-07-01 is 19 days before the valuation date, and
+        // twelve trading days passed in between without a quote
+        assertThat(instrument.get("priceStale").getAsBoolean(), is(true));
+        assertThat(instrument.get("priceAgeDays").getAsLong(), is(19L));
+        assertThat(instrument.get("priceMissedTradingDays").getAsLong(), is(12L));
+
         var valuation = instrument.get("valuation").getAsJsonObject();
         assertThat(valuation.get("value").getAsDouble(), is(1100d));
         assertThat(valuation.get("currency").getAsString(), is("EUR"));
@@ -88,8 +102,117 @@ public class HoldingsTest
         assertThat(cash.get("name").getAsString(), is("Cash"));
         assertThat(cash.has("shares"), is(false));
         assertThat(cash.has("price"), is(false));
+        assertThat(cash.has("priceStale"), is(false));
+        assertThat(cash.has("priceAgeDays"), is(false));
+        assertThat(cash.has("priceMissedTradingDays"), is(false));
         assertThat(cash.get("valuation").getAsJsonObject().get("value").getAsDouble(), is(500d));
         assertThat(cash.get("weight").getAsDouble(), closeTo(0.3125, 1e-10));
+    }
+
+    /** a quote dated exactly the valuation date is younger than it, not stale */
+    @Test
+    public void testQuoteOnTheValuationDateIsNotStale()
+    {
+        var client = new Client();
+
+        var security = new SecurityBuilder() //
+                        .addPrice("2026-07-20", Values.Quote.factorize(110)) //
+                        .addTo(client);
+
+        new PortfolioBuilder() //
+                        .inbound_delivery(security, "2026-01-15", Values.Share.factorize(10),
+                                        Values.Amount.factorize(1000)) //
+                        .addTo(client);
+
+        var holdings = list(client, "2026-07-20", null).getAsJsonObject();
+        var instrument = holdings.get("items").getAsJsonArray().get(0).getAsJsonObject();
+
+        assertThat(instrument.get("priceStale").getAsBoolean(), is(false));
+        assertThat(instrument.get("priceAgeDays").getAsLong(), is(0L));
+    }
+
+    /**
+     * A weekend is not a missed quote: valued on a Sunday, Friday's close is two
+     * days old and as fresh as a quote can be.
+     */
+    @Test
+    public void testFridaysQuoteOnASundayIsNotStale()
+    {
+        var client = new Client();
+
+        var security = new SecurityBuilder() //
+                        .addPrice("2026-10-23", Values.Quote.factorize(110)) //
+                        .addTo(client);
+
+        new PortfolioBuilder() //
+                        .inbound_delivery(security, "2026-01-15", Values.Share.factorize(10),
+                                        Values.Amount.factorize(1000)) //
+                        .addTo(client);
+
+        var holdings = list(client, "2026-10-25", null).getAsJsonObject();
+        var instrument = holdings.get("items").getAsJsonArray().get(0).getAsJsonObject();
+
+        assertThat(instrument.get("priceStale").getAsBoolean(), is(false));
+        assertThat(instrument.get("priceAgeDays").getAsLong(), is(2L));
+        assertThat(instrument.get("priceMissedTradingDays").getAsLong(), is(0L));
+    }
+
+    /**
+     * Reported in review: a price kept by hand changes when the user decides,
+     * not every trading day, and the data quality view ends a manual
+     * instrument's interval at its last quote. It is never flagged; its age is
+     * still reported.
+     */
+    @Test
+    public void testAManualPriceIsNeverStale()
+    {
+        var client = new Client();
+
+        var security = new SecurityBuilder() //
+                        .addPrice("2026-07-01", Values.Quote.factorize(110)) //
+                        .addTo(client);
+        security.setFeed(QuoteFeed.MANUAL);
+
+        new PortfolioBuilder() //
+                        .inbound_delivery(security, "2026-01-15", Values.Share.factorize(10),
+                                        Values.Amount.factorize(1000)) //
+                        .addTo(client);
+
+        var holdings = list(client, "2026-07-20", null).getAsJsonObject();
+        var instrument = holdings.get("items").getAsJsonArray().get(0).getAsJsonObject();
+
+        assertThat(instrument.get("priceStale").getAsBoolean(), is(false));
+        assertThat(instrument.get("priceAgeDays").getAsLong(), is(19L));
+        assertThat(instrument.get("priceMissedTradingDays").getAsLong(), is(12L));
+        // and it says why the old price is not flagged
+        assertThat(instrument.get("priceManual").getAsBoolean(), is(true));
+    }
+
+    /**
+     * Valued at a future date, today's quote is as fresh as a quote can be -
+     * the age is measured to today, not to the future date.
+     */
+    @Test
+    public void testTodaysQuoteIsNotStaleAtAFutureDate()
+    {
+        var client = new Client();
+        var today = LocalDate.now();
+
+        var security = new SecurityBuilder() //
+                        .addPrice(today.toString(), Values.Quote.factorize(110)) //
+                        .addTo(client);
+
+        new PortfolioBuilder() //
+                        .inbound_delivery(security, "2026-01-15", Values.Share.factorize(10),
+                                        Values.Amount.factorize(1000)) //
+                        .addTo(client);
+
+        var holdings = list(client, today.plusDays(66).toString(), null).getAsJsonObject();
+        var instrument = holdings.get("items").getAsJsonArray().get(0).getAsJsonObject();
+
+        assertThat(instrument.get("priceStale").getAsBoolean(), is(false));
+        assertThat(instrument.get("priceAgeDays").getAsLong(), is(0L));
+        assertThat(instrument.get("priceMissedTradingDays").getAsLong(), is(0L));
     }
 
     /**
@@ -282,6 +405,130 @@ public class HoldingsTest
         var item = findByUuid(holdings, account.getUUID());
         assertThat(item.get("valuation").getAsJsonObject().get("currency").getAsString(), is("USD"));
         assertThat(item.get("localValuation").getAsJsonObject().get("currency").getAsString(), is("EUR"));
+    }
+
+    /**
+     * A report whose currency pairs all have rates converts normally, and says
+     * so by carrying an empty array - the array is always present, so a client
+     * can tell "nothing fell back" apart from "this report did not look".
+     */
+    @Test
+    public void testFxWarningsAlwaysPresentAndEmptyWhenNothingFallsBack()
+    {
+        var client = new Client();
+        new AccountBuilder("EUR").deposit_("2026-01-01", Values.Amount.factorize(200)).addTo(client);
+
+        var holdings = list(client, "2026-07-20", null).getAsJsonObject();
+        assertThat(holdings.get("fxWarnings").getAsJsonArray().size(), is(0));
+    }
+
+    /**
+     * A USD amount reported in EUR with no rates configured is shown at face
+     * value - the 1:1 fallback the UI applies - and the report names that pair
+     * rather than letting the number pass as converted. ARS is the example
+     * because no shipped provider has a series for it; USD does, through the
+     * built-in ECB defaults, so it would not exercise the fallback.
+     */
+    @Test
+    public void testFxWarningsNameThePairWithoutRates()
+    {
+        var client = new Client();
+        new AccountBuilder("EUR").deposit_("2026-01-01", Values.Amount.factorize(200)).addTo(client);
+        new AccountBuilder("ARS").deposit_("2026-01-01", Values.Amount.factorize(100)).addTo(client);
+
+        var holdings = list(client, "2026-07-20", null).getAsJsonObject();
+
+        var warnings = holdings.get("fxWarnings").getAsJsonArray();
+        assertThat(warnings.size(), is(1));
+
+        var warning = warnings.get(0).getAsJsonObject();
+        assertThat(warning.get("currency").getAsString(), is("ARS"));
+        assertThat(warning.get("reportingCurrency").getAsString(), is("EUR"));
+        assertThat(warning.get("reason").getAsString(), is("no-series"));
+    }
+
+    /** a pair with rates converts normally, so it is not reported */
+    @Test
+    public void testFxWarningsEmptyWhenRatesExist()
+    {
+        var client = new Client();
+        new AccountBuilder("ARS").deposit_("2026-01-01", Values.Amount.factorize(100)).addTo(client);
+
+        var rates = new Security("ARS/EUR", "ARS");
+        rates.setTargetCurrencyCode(CurrencyUnit.EUR);
+        rates.addPrice(new SecurityPrice(LocalDate.of(2026, 1, 2), Values.Quote.factorize(965)));
+        client.addSecurity(rates);
+
+        var holdings = list(client, "2026-07-20", null).getAsJsonObject();
+        assertThat(holdings.get("fxWarnings").getAsJsonArray().size(), is(0));
+    }
+
+    /**
+     * The other fallback shape: a series exists for the pair, but holds no
+     * rates at all, so it answers no date. Named apart from the missing series
+     * because the user's fix differs - a series with nothing in it is edited,
+     * a missing one is created.
+     */
+    @Test
+    public void testFxWarningsNameThePairWhoseSeriesHoldsNoRates()
+    {
+        var client = new Client();
+        new AccountBuilder("ARS").deposit_("2026-01-01", Values.Amount.factorize(100)).addTo(client);
+
+        var rates = new Security("ARS/EUR", "ARS");
+        rates.setTargetCurrencyCode(CurrencyUnit.EUR);
+        client.addSecurity(rates);
+
+        var holdings = list(client, "2026-07-20", null).getAsJsonObject();
+
+        var warnings = holdings.get("fxWarnings").getAsJsonArray();
+        assertThat(warnings.size(), is(1));
+        assertThat(warnings.get(0).getAsJsonObject().get("reason").getAsString(), is("no-rate"));
+    }
+
+    /**
+     * The valuation date decides, not today: an exchange-rate security whose
+     * quote on the valuation date is zero has no rate for that day, so the
+     * statement converts at 1:1 and has to say so - even though the series holds
+     * a valid rate today. On a day with a valid quote the same pair is silent.
+     */
+    @Test
+    public void testFxWarningsFollowTheValuationDateNotToday()
+    {
+        var client = new Client();
+        new AccountBuilder("ARS").deposit_("2026-01-01", Values.Amount.factorize(100)).addTo(client);
+
+        var rates = new Security("ARS/EUR", "ARS");
+        rates.setTargetCurrencyCode(CurrencyUnit.EUR);
+        rates.addPrice(new SecurityPrice(LocalDate.of(2026, 1, 2), Values.Quote.factorize(965)));
+        rates.addPrice(new SecurityPrice(LocalDate.of(2026, 7, 15), 0));
+        rates.addPrice(new SecurityPrice(LocalDate.of(2026, 7, 25), Values.Quote.factorize(970)));
+        client.addSecurity(rates);
+
+        var onAZeroQuote = list(client, "2026-07-20", null).getAsJsonObject().get("fxWarnings").getAsJsonArray();
+        assertThat(onAZeroQuote.size(), is(1));
+        assertThat(onAZeroQuote.get(0).getAsJsonObject().get("reason").getAsString(), is("no-rate"));
+
+        var onAValidQuote = list(client, "2026-07-30", null).getAsJsonObject().get("fxWarnings").getAsJsonArray();
+        assertThat(onAValidQuote.size(), is(0));
+    }
+
+    /**
+     * Only money the statement of assets converted is named. An empty account and
+     * a security that is no longer held contribute nothing to it, whatever their
+     * currency, so a warning about them would send the reader looking for
+     * amounts that are not in the response.
+     */
+    @Test
+    public void testFxWarningsDoNotNameCurrenciesTheStatementNeverConverted()
+    {
+        var client = new Client();
+        new AccountBuilder("EUR").deposit_("2026-01-01", Values.Amount.factorize(200)).addTo(client);
+        new AccountBuilder("ARS").addTo(client);
+        new SecurityBuilder("BBD").addPrice("2026-01-01", Values.Quote.factorize(10)).addTo(client);
+
+        var holdings = list(client, "2026-07-20", null).getAsJsonObject();
+        assertThat(holdings.get("fxWarnings").getAsJsonArray().size(), is(0));
     }
 
     @Test
