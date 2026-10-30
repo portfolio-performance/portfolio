@@ -2,6 +2,7 @@ package name.abuchen.portfolio.rest.internal;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -79,7 +80,81 @@ public final class SecuritiesHandler
 
     public static JsonElement list(Client client)
     {
-        return EntityJson.envelope(client.getSecurities(), s -> EntityJson.toJson(client, s));
+        return list(client, null);
+    }
+
+    /**
+     * The instruments, or with {@code query} only those it finds: a name that
+     * contains it, or an ISIN, WKN or ticker symbol equal to it - all ignoring
+     * case and surrounding whitespace. A file can hold more instruments than
+     * one answer carries, and this is how a client gets from what the user
+     * said to a uuid without paging through all of them.
+     */
+    public static JsonElement list(Client client, String query)
+    {
+        return list(client, query, null, null);
+    }
+
+    /**
+     * As above, one page of them with {@code offset} and {@code limit}: the
+     * instruments in the order of the file, the found ones in the same order.
+     */
+    public static JsonElement list(Client client, String query, String offsetParam, String limitParam)
+    {
+        var errors = new ArrayList<ApiException.FieldError>();
+
+        var wanted = query == null ? null : query.strip();
+        if (wanted != null && wanted.isEmpty())
+            errors.add(new ApiException.FieldError("query", "invalid-value", //$NON-NLS-1$ //$NON-NLS-2$
+                            "query must not be blank; omit it to list every instrument")); //$NON-NLS-1$
+
+        var paging = Paging.parse(offsetParam, limitParam, errors);
+
+        if (!errors.isEmpty())
+            throw ApiException.badRequest(errors);
+
+        var securities = client.getSecurities();
+        if (wanted != null)
+        {
+            var lower = wanted.toLowerCase(Locale.ROOT);
+            securities = securities.stream() //
+                            .filter(security -> matches(security, wanted, lower)) //
+                            .toList();
+        }
+
+        var items = new JsonArray();
+        var from = paging.given() ? Math.min(paging.offset(), securities.size()) : 0;
+        // only the page is rendered; the rest of the list is counted, not built
+        var response = new JsonObject();
+        if (!paging.given())
+        {
+            securities.forEach(security -> items.add(EntityJson.toJson(client, security)));
+            response.add("items", items); //$NON-NLS-1$
+            return response;
+        }
+
+        var to = paging.limit() == null ? securities.size()
+                        : (int) Math.min((long) from + paging.limit(), securities.size());
+        for (var ii = from; ii < to; ii++)
+            items.add(EntityJson.toJson(client, securities.get(ii)));
+
+        response.add("page", Paging.describe(paging.offset(), paging.limit(), securities.size(), //$NON-NLS-1$
+                        to < securities.size() ? Integer.valueOf(to) : null));
+        response.add("items", items); //$NON-NLS-1$
+        return response;
+    }
+
+    private static boolean matches(Security security, String wanted, String lower)
+    {
+        var name = security.getName();
+        if (name != null && name.toLowerCase(Locale.ROOT).contains(lower))
+            return true;
+
+        for (var code : new String[] { security.getIsin(), security.getWkn(), security.getTickerSymbol() })
+            if (code != null && code.strip().equalsIgnoreCase(wanted))
+                return true;
+
+        return false;
     }
 
     public static JsonElement get(Client client, String uuid)

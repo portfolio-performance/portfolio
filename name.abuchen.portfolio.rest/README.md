@@ -36,11 +36,13 @@ curl -s -X POST -d '{"clientName": "My Script"}' http://127.0.0.1:5712/v1/auth/r
 
 # 2. the user approves or declines inside Portfolio Performance; poll every 1–2s
 curl -s http://127.0.0.1:5712/v1/auth/requests/<id>
-# → {"status": "pending"} … then {"status": "approved", "token": "…"}
+# → {"status": "pending"} … then {"status": "approved", "token": "…", "persistent": true}
 ```
 
 The approval prompt offers **Allow for this session** (the token dies when the application quits),
 **Always allow** (persistent), and **Decline**. The token is delivered **exactly once** — store it.
+`persistent` says whether it survives a restart: `false` for a session grant, and also for an
+always-allow grant the application could not record — pair again after the next start.
 A request expires after 2 minutes; only one may be pending at a time, and a decline imposes a
 cool-down (both reported `429` with `Retry-After`). Every `401` names the pairing endpoint in its
 `pairingEndpoint` field, so the flow is discoverable at runtime.
@@ -102,8 +104,11 @@ named by the `referenceCashAccount` field.
 ## Endpoints
 
 All list responses are an envelope — `{"items": [...]}`, never a bare array — so that fields beside
-`items` can be added later without breaking clients. A list response is always complete: v1 has no
-pagination and will not start truncating results. Any later paging must be opt-in by the caller.
+`items` can be added later without breaking clients. A list response is complete unless the caller
+asks for a page: `offset` and `limit` on the instruments and the trades are opt-in, and only a
+response to them carries `page` — `offset`, `limit` (or `null`), `total` and `nextOffset` (`null`
+on the last page). The list is recomputed for every request, so pages fit together only while the
+file is not changed in between. REST never truncates.
 
 ### `GET /v1/files` — the files you may address
 
@@ -126,6 +131,14 @@ identity and enablement.
 ```
 
 `isin`, `wkn`, `tickerSymbol` and `note` are omitted when not set.
+
+`?query=` narrows the list to the instruments it finds: a name that contains it, or an ISIN, WKN or
+ticker symbol equal to it — ignoring case and surrounding whitespace. A large file holds more
+instruments than one MCP answer carries, so this is how a client gets from a name to a `uuid`. A
+blank `query` is a `400`. `?offset=` and `?limit=` return one page of the list, in the file's order.
+
+The trades (`GET .../trades`, `GET .../instruments/{uuid}/trades`) take the same `offset` and
+`limit`; their `fxWarnings` and `warnings` describe the whole list, whichever page is asked for.
 
 ### `PATCH /v1/files/{file}/instruments/{uuid}`
 
@@ -205,8 +218,12 @@ save.
 | 423 | `user-interaction` | a dialog is open in the app — **retry**, see `Retry-After` |
 | 429 | `pairing-pending` | another pairing request awaits the user — retry after `Retry-After` |
 | 429 | `pairing-cooldown` | a pairing request was declined — retry after `Retry-After` |
+| 503 | `ui-busy` | the app's UI thread did not take the request on in time; it was not executed (or it was a read) — **retry**, see `Retry-After` |
+| 503 | `ui-request-underway` | a write was already running on the UI thread and will finish — **do not retry**, read the state back |
+| 503 | `calculation-timeout` | a calculation did not finish in time — ask a smaller question (shorter interval, one instrument) |
+| 503 | `server-busy` | more requests in flight than the server serves at once, or no calculation slot came free in time — retry after `Retry-After` |
 
-Two of these regularly surprise clients:
+Three of these regularly surprise clients:
 
 **404 does not mean "does not exist."** A file that exists but is not enabled answers exactly like a
 file that does not exist. That is deliberate: the token must not let a client enumerate files the
@@ -216,6 +233,40 @@ user did not share.
 than silently clobbered by whatever the dialog writes back on OK. Reads still work. Respect
 `Retry-After` and try again.
 
+**503 says different things.** The API hands every request that touches the model to the UI
+thread and waits for it with a deadline (10 seconds). Whether the request ran is decided on the UI
+thread itself, so the answer is exact: `ui-busy` means the UI thread had not started the request
+when the wait expired — it is refused, will never run, nothing changed, and `Retry-After` is safe to
+honour. `ui-request-underway` means a write was already running — it will complete, so there is
+no `Retry-After` and sending it again would apply the same change twice. Read the state back
+with the tool that lists or describes what the call changes, and report what is actually there.
+A read that was already running is answered `ui-busy` as well: it changes nothing, and sending it
+again is the only way to get the answer that was thrown away.
+
+Calculations (holdings, performance, trades) run off the UI thread with their own deadline (120
+seconds). `calculation-timeout` means the answer did not come in time; the same question would take
+just as long again, so narrow it. The engines cannot be interrupted, so a calculation past its
+deadline still runs to its end — and keeps its calculation slot until it does.
+
+Two calculations run at once. One that finds both slots taken waits for a free one, first come first
+served, for up to 30 seconds; at most two per slot may wait. `server-busy` means more requests are in
+flight than the server serves at once, the queue is full, or no slot came free in time; no work was
+started, so retrying after `Retry-After` is cheap.
+
+The number of slots can be raised from 1 to 8 with a system property in `PortfolioPerformance.ini`,
+after `-vmargs`; it is read when the server starts:
+
+```
+-Dname.abuchen.portfolio.rest.calculationSlots=4
+```
+
+At most the number of processors less one is used, so that one stays free for the user interface;
+an invalid value is logged and replaced by the default. The server then serves three requests per
+slot plus six more at once (12 with the default), so that every running and waiting calculation has
+room and the cheap calls still get through. Each calculation holds a whole file's daily valuation in
+memory, so raise the number only when several questions are really asked at the same time — one
+calculation does not get faster.
+
 ## Computed collections
 
 Some collections are not stored in the file but computed per request — `trades` is the first. Two
@@ -223,7 +274,8 @@ rules apply to all of them.
 
 **They have no ids.** A computed item gets no `uuid`, and there is no `…/trades/{id}`: an id minted
 per request would not survive the next one. Address such an item by the filter that produced it
-(`GET .../instruments/{uuid}/trades?status=closed`). Ordering carries the weight identity otherwise
+(`GET .../instruments/{uuid}/trades?status=closed`, or `?from=2025-01-01&to=2025-12-31` for the
+trades held at some point of a period). Ordering carries the weight identity otherwise
 would, so these collections sort stably — repeated identical requests return identical lists.
 
 **They can half succeed.** Where the computation runs over independent units and can fail on some of
@@ -233,6 +285,19 @@ hundred, and `problem+json` stays reserved for a *total* failure — a response 
 a result, never both. `warnings` is always present, empty when nothing failed, so that "nothing went
 wrong" is distinguishable from "this endpoint cannot report problems". **A client that ignores
 `warnings` reads a partial list as a complete one.**
+
+**A trade can count transactions booked ahead.** Trades are matched over every transaction, as in
+the application's trades view, while an open trade is valued at the price of `valuationDate`. A trade
+with transactions dated after it — a savings plan booked ahead — carries
+`transactionsAfterValuationDate`: its shares and values are those after the last of them, not the
+position held today, which `GET .../holdings` gives.
+
+**An old exchange rate is named.** Every computed report carries `fxStaleRates` beside `fxWarnings`:
+the pairs it converted at a rate more than seven days older than the conversion date (or than today,
+for a later date), with the oldest `rateDate` and `daysOld` — for a pair reached through a third
+currency (USD to CHF through EUR), the oldest of its steps. A series that stopped being published
+goes on answering with its last rate, and the currency effect is then frozen rather than measured.
+It is a real rate, not a 1:1 fallback, so it is not an `fxWarnings` entry.
 
 ## Query parameters are strict
 
@@ -326,6 +391,21 @@ endpoint takes none, so a new endpoint is strict without doing anything. Documen
 `openapi.yaml` in the same change, and give the operation a `400` response — every endpoint can
 now return one. `OpenApiSpecDriftTest` fails if any of that drifts apart, and `McpToolsDriftTest`
 fails until the new route either has a tool or is listed as one that deliberately has none.
+
+`Router.match` answers with the **most specific** route of the ones that match, not the first
+registered: a route with fewer placeholders wins. A literal segment therefore reserves a name for
+free — `GET /v1/files/{file}/instruments/attribute-types` is never answered by
+`GET /v1/files/{file}/instruments/{uuid}` with `attribute-types` taken as a uuid, whichever is
+added first. Registration order only breaks a tie between routes of equal specificity, so adding an
+endpoint does not silently re-route an existing one.
+
+Paths are normalized before routing and before the bearer check, and both see the same result:
+repeated leading slashes collapse into one and trailing slashes are dropped, so `/v1/files/` is the
+same route as `/v1/files`, and `/mcp/` is exempt from the bearer check exactly like `/mcp`. An empty
+segment in the middle (`/v1//files`) stays unmatched. `Authorization` is read case-insensitively
+(`bearer …` is accepted); a header that carries a token under a different scheme is refused as a
+wrong scheme rather than as a missing token, and the preference page says which of the two
+happened.
 
 The drift tests compare the specification with the code; the `openapi-compat` Maven profile
 compares it with the published contract. It runs [oasdiff](https://github.com/oasdiff/oasdiff)
