@@ -23,9 +23,9 @@ import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
@@ -228,7 +228,7 @@ import name.abuchen.portfolio.money.Money;
     }
 
     protected void createGrossValueIfNecessary(String[] rawValues, Map<String, Column> field2column,
-                    PortfolioTransaction transaction) throws ParseException
+                    Transaction transaction) throws ParseException
     {
         if (transaction.getSecurity().getCurrencyCode().equals(transaction.getCurrencyCode()))
             return;
