@@ -230,7 +230,8 @@ import name.abuchen.portfolio.money.Money;
     protected void createGrossValueIfNecessary(String[] rawValues, Map<String, Column> field2column,
                     Transaction transaction) throws ParseException
     {
-        if (transaction.getSecurity().getCurrencyCode().equals(transaction.getCurrencyCode()))
+        var securityCurrency = transaction.getSecurity().getCurrencyCode();
+        if (securityCurrency == null || securityCurrency.equals(transaction.getCurrencyCode()))
             return;
 
         var exchangeRate = getBigDecimal(FieldCode.EXCHANGE_RATE, rawValues, field2column);
