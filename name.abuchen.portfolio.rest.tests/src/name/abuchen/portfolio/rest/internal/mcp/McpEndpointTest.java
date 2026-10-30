@@ -348,6 +348,27 @@ public class McpEndpointTest
 
         var rejection = RejectedConnections.last().orElseThrow();
         assertThat(rejection.tokenPresented(), is(false));
+        assertThat(rejection.reason(), is(RejectedConnections.Reason.NO_HEADER));
+    }
+
+    /**
+     * A header that carries some other scheme is a different fault from no header,
+     * and the preference page has to say which - "you forgot the header" is a
+     * misdiagnosis of a connector that sent one.
+     */
+    @Test
+    public void testAToolCallWithTheWrongSchemeIsRecordedAsSuch() throws Exception
+    {
+        var response = send(HttpRequest.newBuilder(uri()).header("Authorization", "Token abc")
+                        .POST(HttpRequest.BodyPublishers.ofString(call("pp_list_files", "{}"))));
+
+        var rejection = RejectedConnections.last().orElseThrow();
+        assertThat(rejection.path(), is("/mcp"));
+        assertThat(rejection.tokenPresented(), is(false));
+        assertThat(rejection.reason(), is(RejectedConnections.Reason.NO_BEARER_SCHEME));
+
+        assertThat(text(body(response).getAsJsonObject().getAsJsonObject("result")),
+                        containsString("does not carry a bearer token"));
     }
 
     /**
