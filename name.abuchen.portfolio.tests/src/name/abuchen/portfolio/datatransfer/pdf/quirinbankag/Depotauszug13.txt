@@ -1,0 +1,105 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.84.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Kontoauszug
+Konto 4027501603 EUR
+IBAN CN76573902863177663129
+QwvVCzZRn, oOXRIC oder
+QwvVCzZRn, CLCaCo
+Vermögensverwaltungskonto in EUR
+ScHUZL QwvVCzZRnU oder Datum 30.04.2025
+Njfted QwvVCzZRn Auszug-Nr 4
+Straße. xx Seite 1 von 2
+12345 Stadt
+Betreuer quirion online
+Telefon +49 (0) 30 89 021 400
+E-Mail info@quirion.de
+Buchungshinweise Buchungsdatum Valuta Umsatz
+Wertpapier Verkauf, Ref.: 595326918 15.04.2025 17.04.2025 62,37 EUR
+MUL Amundi EUR GovBond 1-3Y UCITS ETF Inh.Anteile Acc
+LU1650487413, ST -0,4979
+KEST: EUR -0,51, SOLI: EUR -0,02
+Wertpapier Verkauf, Ref.: 595326928 15.04.2025 17.04.2025 57,12 EUR
+Vanguard EUR Euroz.Gov.B.U.ETF Registered Shares EUR Dis.oN
+IE00BZ163H91, ST -2,5449
+KEST: EUR -0,20, SOLI: EUR -0,01
+Wertpapier Verkauf, Ref.: 595326932 15.04.2025 17.04.2025 43,19 EUR
+SPDR Bl.1-3Y.Eu.Go.Bd U.ETF Registered Shares o.N.
+IE00B6YX5F63, ST -0,8201
+KEST: EUR -0,07
+Wertpapier Verkauf, Ref.: 595326938 15.04.2025 17.04.2025 41,64 EUR
+AIS-Amundi Ind.JPM Gl.GBI Gov. Act.Nom.UCITS ETF DR EUR Hd
+oN
+LU1708330235, ST -0,8967
+KEST: EUR -0,04
+Wertpapier Verkauf, Ref.: 595326944 15.04.2025 17.04.2025 36,99 EUR
+InvescoMI2 EUR Gov B 1-3Y ETF Reg. Shs EUR Dis. oN
+IE00BGJWWY63, ST -0,9745
+KEST: EUR -0,07
+Wertpapier Verkauf, Ref.: 595326952 15.04.2025 17.04.2025 21,29 EUR
+iShs II-iSh E.Flt.Ra.Bd ESG UE Reg. Shares EUR Dis. o.N.
+IE00BF5GB717, ST -4,1955
+Wertpapier Verkauf, Ref.: 595326959 15.04.2025 17.04.2025 21,18 EUR
+iShsIV-EO Ultrashort Bd U.ETF Registered Shares o.N.
+IE00BCRY6557, ST -0,2079
+KEST: EUR -0,01
+Wertpapier Kauf, Ref.: 595326968 15.04.2025 17.04.2025 -75,82 EUR
+Xtr.(IE)MSCI World Value Registered Shares 1C USD o.N.
+IE00BL25JM42, ST 1,8838
+Wertpapier Kauf, Ref.: 595326975 15.04.2025 17.04.2025 -65,49 EUR
+Amu.ETF ICAV-PRIME Glbl ETF Bear.Shs USD Dis. oN
+IE000QIF5N15, ST 2,089
+Quirin Privatbank AG
+Postfach 311105 | 10641 Berlin T +49 (0)30 890 21-300 Handelsregister: Vorstand: Karl Matthäus Schmidt
+Kurfürstendamm 119 | 10711 Berlin F +49 (0)30 890 21-301 Berlin Charlottenburg, HRB 87859 Johannes Eismann
+www.quirinprivatbank.de info@quirinprivatbank.de USt-IdNr.: DE195661729 Aufsichtsratsvorsitzender: Holger Timm
+KTO_AUSZ / 92991675 / 20250501 17:01:37
+Kontoauszug
+Konto 4027501603 EUR
+IBAN CN76573902863177663129
+QwvVCzZRn, oOXRIC oder
+QwvVCzZRn, CLCaCo
+Vermögensverwaltungskonto in EUR
+ScHUZL QwvVCzZRnU oder Datum 30.04.2025
+Njfted QwvVCzZRn Auszug-Nr 4
+Straße. xx Seite 1 von 2
+12345 Stadt
+Betreuer quirion online
+Telefon +49 (0) 30 89 021 400
+E-Mail info@quirion.de
+Buchungshinweise Buchungsdatum Valuta Umsatz
+Wertpapier Kauf, Ref.: 595326980 15.04.2025 17.04.2025 -64,44 EUR
+iShsIII-MSCI Wld Sm.Ca.UCI.ETF Registered Shares USD(Acc)o.N.
+IE00BF4RFH31, ST 10,362
+Wertpapier Kauf, Ref.: 595326985 15.04.2025 17.04.2025 -60,69 EUR
+SPDR MSCI World UCITS ETF Reg.Shares USD Unhgd Acc. o.N.
+IE00BFY0GT14, ST 1,8241
+Wertpapier Kauf, Ref.: 595326990 15.04.2025 17.04.2025 -20,08 EUR
+iShs Core MSCI EM IMI U.ETF Registered Shares o.N.
+IE00BKM4GZ66, ST 0,6691
+Wertpapier Kauf, Ref.: 595326996 15.04.2025 17.04.2025 -17,20 EUR
+iShsIV-Edge MSCI EM Value F. Registered Shares USD (Acc.)oN
+IE00BG0SKF03, ST 0,3901
+Wertpapier Kauf, Ref.: 595327001 15.04.2025 17.04.2025 -9,74 EUR
+SPDR MSCI Emer.Mkts Sm.Cap ETF Registered Shares o.N.
+IE00B48X4842, ST 0,101
+Vermögensverwaltungshonorar 8346551820, 01.04.2025 - 30.04.2025 30.04.2025 30.04.2025 -4,34 EUR
+Bemessungsgrundlage 10.995,40 EUR
+Betrag inkl. USt: -4,34 EUR (Netto: -3,65 EUR, USt: -0,69 EUR)
+Ref.: 599612351
+letzter Auszug 31.03.2025 alter Saldo 68,81 EUR
+Umsatz -34,02 EUR
+Limit (in Währung) 0,00 neuer Saldo 34,79 EUR
+Sollzins in % p.a. 0,00
+Überziehungszins in % p.a. 0,00
+Dieser Kontoauszug gilt gleichzeitig als Saldenmitteilung. Etwaige Einwendungen gegen den Kontoauszug sind unverzüglich zu erheben;
+ist der Kontoauszug zusätzlich als Rechnungsabschluss bezeichnet, gilt der Abschlusssaldo als genehmigt, wenn ihm nicht innerhalb von
+sechs Wochen nach Zugang schriftlich widersprochen wird. Zur Fristwahrung genügt die rechtzeitige Absendung.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können dem
+"Informationsbogen für den Einleger" entnommen werden.
+Quirin Privatbank AG
+Postfach 311105 | 10641 Berlin T +49 (0)30 890 21-300 Handelsregister: Vorstand: Karl Matthäus Schmidt
+Kurfürstendamm 119 | 10711 Berlin F +49 (0)30 890 21-301 Berlin Charlottenburg, HRB 87859 Johannes Eismann
+www.quirinprivatbank.de info@quirinprivatbank.de USt-IdNr.: DE195661729 Aufsichtsratsvorsitzender: Holger Timm
+KTO_AUSZ / 92991675 / 20250501 17:01:37
