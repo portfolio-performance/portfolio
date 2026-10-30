@@ -9,7 +9,6 @@ public class ClientProperties
     {
         String RISK_FREE_RATE_OF_RETURN = "risk-free-rate-of-return"; //$NON-NLS-1$
         String SECURITY_NAME_CONFIG = "security-name-config"; //$NON-NLS-1$
-        String DISCREET_MODE = "discreet-mode"; //$NON-NLS-1$
     }
 
     private final Client client;
@@ -64,34 +63,5 @@ public class ClientProperties
     public void setSecurityNameConfig(SecurityNameConfig config)
     {
         client.setProperty(Keys.SECURITY_NAME_CONFIG, config.name());
-    }
-
-    /**
-     * Returns true if the file was last saved with the discreet mode (the
-     * hidden amounts) activated. Used to reopen the file in the discreet mode.
-     */
-    public boolean isDiscreetMode()
-    {
-        return Boolean.parseBoolean(client.getProperty(Keys.DISCREET_MODE));
-    }
-
-    /**
-     * Returns true if the file explicitly stores a value for the discreet mode,
-     * that is if the user has toggled the discreet mode for this file. Older
-     * files have no such property: the discreet mode of the running
-     * application is kept when opening them.
-     */
-    public boolean hasDiscreetMode()
-    {
-        return client.hasProperty(Keys.DISCREET_MODE);
-    }
-
-    /**
-     * Stores whether the discreet mode is active so that the file is reopened
-     * in the very same mode.
-     */
-    public void setDiscreetMode(boolean discreetMode)
-    {
-        client.setProperty(Keys.DISCREET_MODE, Boolean.toString(discreetMode));
     }
 }

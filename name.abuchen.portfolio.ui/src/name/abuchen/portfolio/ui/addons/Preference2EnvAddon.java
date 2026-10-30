@@ -8,6 +8,7 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
 
+import name.abuchen.portfolio.money.DiscreetMode;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
 import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
@@ -57,6 +58,22 @@ public class Preference2EnvAddon
 
         if (broker != null && currentWidth != ChartLineWidth.get())
             broker.post(UIConstants.Event.Global.CHART_LINE_WIDTH_CHANGED, ChartLineWidth.get());
+    }
+
+    @Inject
+    @Optional
+    public void setDiscreetMode(@Preference(value = UIConstants.Preferences.DISCREET_MODE) boolean active)
+    {
+        // the discreet mode is a setting of the installation and not of a single
+        // file: all open and all later opened files hide the amounts in the very
+        // same way. Pass the mode to the statically used DiscreetMode class and
+        // let the views recalculate and re-render.
+
+        boolean current = DiscreetMode.isActive();
+        DiscreetMode.setActive(active);
+
+        if (broker != null && current != DiscreetMode.isActive())
+            broker.post(UIConstants.Event.Global.DISCREET_MODE, DiscreetMode.isActive());
     }
 
     @Inject

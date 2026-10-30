@@ -9,9 +9,8 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuItem;
 import org.eclipse.e4.ui.services.IServiceConstants;
 
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.ClientProperties;
 import name.abuchen.portfolio.money.DiscreetMode;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 
 public class ActivateDiscreetModeHandler
@@ -25,22 +24,35 @@ public class ActivateDiscreetModeHandler
     }
 
     @Execute
-    public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part, IEventBroker broker)
+    public void execute(IEventBroker broker)
     {
-        toggle(MenuHelper.getActiveClient(part, false).orElse(null), broker);
+        toggle(broker);
     }
 
     /**
-     * Flips the discreet mode of the application and, if a file is open, stores
-     * the setting in that file so that the file is reopened with the same mode.
+     * Flips the discreet mode and stores the value in the preferences of the
+     * installation, just like the value color scheme or the width of the chart
+     * lines. The discreet mode is not a property of a single file: it hides the
+     * amounts of all open files and of all files that are opened later, and it
+     * survives a restart of the program. The preference is read at startup and
+     * whenever it changes (see Preference2EnvAddon).
      */
-    public static void toggle(Client client, IEventBroker broker)
+    public static void toggle(IEventBroker broker)
     {
-        DiscreetMode.setActive(!DiscreetMode.isActive());
+        boolean active = !DiscreetMode.isActive();
 
-        if (client != null)
-            new ClientProperties(client).setDiscreetMode(DiscreetMode.isActive());
+        PortfolioPlugin.getDefault().getPreferenceStore()
+                        .setValue(UIConstants.Preferences.DISCREET_MODE, active);
 
-        broker.post(UIConstants.Event.Global.DISCREET_MODE, DiscreetMode.isActive());
+        // writing the preference notifies the parts that listen to it, and those
+        // apply the mode and send out the event; only do it here if that has not
+        // happened yet
+        if (DiscreetMode.isActive() == active)
+            return;
+
+        DiscreetMode.setActive(active);
+
+        if (broker != null)
+            broker.post(UIConstants.Event.Global.DISCREET_MODE, active);
     }
 }

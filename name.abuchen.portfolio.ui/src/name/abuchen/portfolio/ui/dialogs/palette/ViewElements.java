@@ -5,10 +5,8 @@ import java.util.List;
 
 import jakarta.inject.Inject;
 
-import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.events.IEventBroker;
 
-import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.DiscreetMode;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.palette.CommandPalettePopup.Element;
@@ -19,12 +17,10 @@ import name.abuchen.portfolio.ui.handlers.ActivateDiscreetModeHandler;
 {
     private static class DiscreetModeElement implements Element
     {
-        private Client client;
         private IEventBroker broker;
 
-        public DiscreetModeElement(Client client, IEventBroker broker)
+        public DiscreetModeElement(IEventBroker broker)
         {
-            this.client = client;
             this.broker = broker;
         }
 
@@ -38,22 +34,21 @@ import name.abuchen.portfolio.ui.handlers.ActivateDiscreetModeHandler;
         @Override
         public void execute()
         {
-            ActivateDiscreetModeHandler.toggle(client, broker);
+            // not a setting of the file but of the installation: the handler
+            // stores the mode in the preferences and applies it everywhere
+            ActivateDiscreetModeHandler.toggle(broker);
         }
     }
 
     @Inject
     private IEventBroker broker;
 
-    @Inject
-    private IEclipseContext context;
-
     @Override
     public List<Element> getElements()
     {
         List<Element> answer = new ArrayList<>();
 
-        answer.add(new DiscreetModeElement(context.get(Client.class), broker));
+        answer.add(new DiscreetModeElement(broker));
 
         return answer;
     }
