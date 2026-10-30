@@ -43,8 +43,10 @@ import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.model.ClientProperties;
 import name.abuchen.portfolio.model.SaveFlag;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
+import name.abuchen.portfolio.money.DiscreetMode;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -702,6 +704,8 @@ public class ClientInput
 
         this.client = client;
 
+        applyStoredDiscreetMode(client);
+
         IEclipseContext c2 = EclipseContextFactory.create();
         c2.set(Client.class, client);
         this.exchangeRateProviderFacory = ContextInjectionFactory //
@@ -737,6 +741,29 @@ public class ClientInput
                 dialog.open();
             });
         }
+    }
+
+    /**
+     * Reopens the file in the discreet mode it was saved in. Files without a
+     * stored value, that is older files and newly created ones, keep the
+     * discreet mode of the running application.
+     */
+    private void applyStoredDiscreetMode(Client client)
+    {
+        var properties = new ClientProperties(client);
+        if (!properties.hasDiscreetMode())
+            return;
+
+        boolean active = properties.isDiscreetMode();
+        if (DiscreetMode.isActive() == active)
+            return;
+
+        DiscreetMode.setActive(active);
+
+        // the views of another file might already be displayed: let them show
+        // the amounts according to the mode of the newly opened file
+        if (broker != null)
+            broker.post(UIConstants.Event.Global.DISCREET_MODE, active);
     }
 
     private static void upgradePreferences(PreferenceStore preferenceStore, Client client)
