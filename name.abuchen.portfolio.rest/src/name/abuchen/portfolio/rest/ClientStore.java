@@ -1,10 +1,11 @@
 package name.abuchen.portfolio.rest;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -50,7 +51,8 @@ public class ClientStore
         private final String tokenHash;
         private final String name;
         private final Instant created;
-        private final boolean session;
+        /** mutable: an entry that could not be written is a session client after all */
+        private boolean session;
         private Instant lastUsed;
         private Instant lastUsedPersisted;
 
@@ -93,6 +95,14 @@ public class ClientStore
      */
     private final List<JsonObject> restricted = new ArrayList<>();
 
+    /**
+     * Whether the file exists but this version cannot read it: not readable at
+     * all, not valid JSON, or a shape it does not recognise. Such a file is never
+     * saved over - an unreadable file is not an empty one, and a save would
+     * discard clients the user still has.
+     */
+    private boolean unreadable;
+
     public ClientStore(Path directory)
     {
         this(directory, Instant::now);
@@ -127,9 +137,19 @@ public class ClientStore
         random.nextBytes(bytes);
         var token = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
 
-        entries.add(new Entry(UUID.randomUUID().toString(), hash(token), name, clock.get(), null, session));
-        if (!session)
-            save();
+        var entry = new Entry(UUID.randomUUID().toString(), hash(token), name, clock.get(), null, session);
+        entries.add(entry);
+
+        // persisted before the token is handed out: it exists exactly once. A write
+        // that failed cannot outlive this run, so the entry is recorded as a session
+        // client - the UI says session-only rather than implying a token that
+        // survives a restart, which is the one claim it cannot make here.
+        if (!session && !save())
+        {
+            entry.session = true;
+            PortfolioLog.warning("Client \"" + name + "\" was added but not persisted; its token dies with " //$NON-NLS-1$ //$NON-NLS-2$
+                            + "this application run"); //$NON-NLS-1$
+        }
         return token;
     }
 
@@ -162,7 +182,25 @@ public class ClientStore
         return entries.stream().map(Entry::toApiClient).toList();
     }
 
-    public synchronized void revoke(String id)
+    /**
+     * Whether the client holding this token survives a restart: false for a
+     * session client, and for a persistent one whose entry could not be written
+     * to the file. Changes nothing - unlike {@link #authenticate}, it does not
+     * count as a use of the token.
+     */
+    public synchronized boolean survivesRestart(String token)
+    {
+        var tokenHash = hash(token);
+        return entries.stream().anyMatch(entry -> entry.tokenHash.equals(tokenHash) && !entry.session);
+    }
+
+    /**
+     * Removes a client, answering whether the removal reached the file. False
+     * means the entry is gone from memory while the file still holds its token
+     * hash, so the token authenticates again after a restart - the caller has to
+     * say that rather than presenting the client as revoked.
+     */
+    public synchronized boolean revoke(String id)
     {
         var removedPersistent = false;
         for (var iterator = entries.iterator(); iterator.hasNext();)
@@ -174,19 +212,43 @@ public class ClientStore
                 iterator.remove();
             }
         }
-        if (removedPersistent)
-            save();
+
+        if (!removedPersistent)
+            return true;
+
+        if (!save())
+        {
+            PortfolioLog.warning("A revoked client is gone for this run only; its token still authenticates after a " //$NON-NLS-1$
+                            + "restart because the client file could not be written"); //$NON-NLS-1$
+            return false;
+        }
+        return true;
     }
 
-    /** strips control characters and surrounding whitespace; null becomes empty */
+    /**
+     * Strips control characters, invisible format characters and surrounding
+     * whitespace; null becomes empty. The name is chosen by whoever asks for
+     * access and shown to the user in the approval dialog, so a right-to-left
+     * override or a zero-width character must not be able to make it read as
+     * another client's name.
+     */
     public static String sanitizeName(String name)
     {
         if (name == null)
             return ""; //$NON-NLS-1$
         return name.codePoints() //
                         .filter(cp -> !Character.isISOControl(cp)) //
+                        .filter(cp -> !isInvisible(cp)) //
                         .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append) //
                         .toString().strip();
+    }
+
+    /** bidi controls, zero-width characters and line or paragraph separators */
+    private static boolean isInvisible(int codePoint)
+    {
+        var type = Character.getType(codePoint);
+        return type == Character.FORMAT || type == Character.LINE_SEPARATOR
+                        || type == Character.PARAGRAPH_SEPARATOR;
     }
 
     private static String hash(String token)
@@ -208,28 +270,49 @@ public class ClientStore
         if (!Files.exists(file))
             return;
 
-        JsonElement root;
+        String raw;
         try
         {
-            root = JsonParser.parseString(Files.readString(file, StandardCharsets.UTF_8));
+            raw = Files.readString(file, StandardCharsets.UTF_8);
         }
         catch (IOException e)
         {
-            throw new UncheckedIOException(e);
-        }
-        catch (JsonSyntaxException e)
-        {
-            // not valid JSON at all: log and start empty rather than leaving the
-            // API dead, but do not swallow it silently
+            // Cannot read it at all - which is not the same as it being empty.
+            // Nothing here may overwrite what we could not see.
             PortfolioLog.error(e);
+            unreadable = true;
             return;
         }
 
-        if (!root.isJsonObject())
+        // an empty file holds no tokens, so there is nothing a save could
+        // destroy - an interrupted write of an older version can leave one
+        if (raw.isBlank())
             return;
-        var clients = root.getAsJsonObject().get("clients"); //$NON-NLS-1$
+
+        JsonElement root;
+        try
+        {
+            root = JsonParser.parseString(raw);
+        }
+        catch (JsonSyntaxException e)
+        {
+            // not valid JSON at all: log, start empty, and keep the content so
+            // that a save does not write over something the user still needs
+            PortfolioLog.error(e);
+            unreadable = true;
+            return;
+        }
+
+        var clients = root.isJsonObject() ? root.getAsJsonObject().get("clients") : null; //$NON-NLS-1$
         if (clients == null || !clients.isJsonArray())
+        {
+            // a file this version does not recognise: not an empty one. Reading
+            // it as empty and then saving would destroy tokens we never saw.
+            PortfolioLog.warning("The API client file is not a client list this version understands; its content " //$NON-NLS-1$
+                            + "is kept and will not be overwritten"); //$NON-NLS-1$
+            unreadable = true;
             return;
+        }
 
         // parse each entry defensively: a single malformed entry is skipped, not
         // fatal, so one bad record cannot revoke every other client
@@ -288,8 +371,23 @@ public class ClientStore
         }
     }
 
-    private void save()
+    /**
+     * Writes the persistent clients. Returns whether the file was written.
+     * <p/>
+     * A failure is logged and not thrown: {@link #authenticate} runs on an HTTP
+     * worker after the token has already been accepted, and an unwritable file
+     * must not turn a working request into a 500. Content this version could not
+     * read is never written over.
+     */
+    private boolean save()
     {
+        if (unreadable)
+        {
+            PortfolioLog.warning("Not writing " + FILE_NAME + ": its content is not a client list this version " //$NON-NLS-1$ //$NON-NLS-2$
+                            + "understands, so saving would discard what is in it"); //$NON-NLS-1$
+            return false;
+        }
+
         var clients = new JsonArray();
         for (var entry : entries)
         {
@@ -311,20 +409,48 @@ public class ClientStore
         try
         {
             Files.createDirectories(file.getParent());
-            Files.writeString(file, root.toString(), StandardCharsets.UTF_8);
-            restrictToOwner();
+
+            // written next to the file and moved over it: a crash halfway
+            // through leaves the previous file intact rather than a truncated
+            // one, and the permissions are tightened before the content is
+            // visible under the real name
+            // a move replaces an empty directory where the file belongs, which
+            // writing in place never did - that is not a file we may overwrite
+            if (Files.isDirectory(file))
+                throw new IOException(file + " is a directory"); //$NON-NLS-1$
+
+            var temp = file.resolveSibling(file.getFileName() + ".tmp"); //$NON-NLS-1$
+            try
+            {
+                Files.writeString(temp, root.toString(), StandardCharsets.UTF_8);
+                restrictToOwner(temp);
+                try
+                {
+                    Files.move(temp, file, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+                }
+                catch (AtomicMoveNotSupportedException e)
+                {
+                    Files.move(temp, file, StandardCopyOption.REPLACE_EXISTING);
+                }
+            }
+            finally
+            {
+                Files.deleteIfExists(temp);
+            }
+            return true;
         }
         catch (IOException e)
         {
-            throw new UncheckedIOException(e);
+            PortfolioLog.error(e);
+            return false;
         }
     }
 
-    private void restrictToOwner() throws IOException
+    private static void restrictToOwner(Path target) throws IOException
     {
         try
         {
-            Files.setPosixFilePermissions(file, PosixFilePermissions.fromString("rw-------")); //$NON-NLS-1$
+            Files.setPosixFilePermissions(target, PosixFilePermissions.fromString("rw-------")); //$NON-NLS-1$
         }
         catch (UnsupportedOperationException e)
         {

@@ -7,6 +7,9 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -196,22 +199,17 @@ public class McpToolsDriftTest
         }
     }
 
-    /** repetition has no representation in the dispatcher, so nothing may declare it */
+    /**
+     * Repetition has no representation in the dispatcher: an array argument
+     * becomes one comma-joined value, which is how this API spells a multi-valued
+     * parameter throughout. {@code explode} was once declared on the array
+     * bindings and never honoured, so it is gone - this is the guard that keeps
+     * the removed concept from coming back as a promise nothing fulfils.
+     */
     @Test
-    public void testArrayQueryBindingsAreNotExploded()
+    public void testNothingDeclaresExplodedQueryParameters()
     {
-        for (McpTool tool : McpTools.all())
-        {
-            var properties = tool.inputSchema().getAsJsonObject("properties");
-            for (McpTool.Binding binding : tool.bindings())
-            {
-                if (binding.where() != McpTool.Where.QUERY)
-                    continue;
-                var type = properties.getAsJsonObject(binding.arg()).get("type");
-                if (type != null && "array".equals(type.getAsString()))
-                    assertThat(tool.name() + "." + binding.arg() + " explode", binding.explode(), is(false));
-            }
-        }
+        assertThat("the authored tool document", toolDocument().contains("\"explode\""), is(false));
     }
 
     @Test
@@ -328,5 +326,19 @@ public class McpToolsDriftTest
         var host = new FakeHost(List.of());
         return ApiRoutes.create(new FileAccessRegistry(node), host,
                         new PairingService(new ClientStore(Path.of("target", "unused-client-store")), host));
+    }
+
+    /** the authored document itself, for a guard that only the file can answer */
+    private static String toolDocument()
+    {
+        try (var in = McpToolsDriftTest.class.getResourceAsStream("/mcp-tools.json")) //$NON-NLS-1$
+        {
+            assertThat("mcp-tools.json must be on the bundle classpath", in, is(notNullValue()));
+            return new String(in.readAllBytes(), StandardCharsets.UTF_8); //$NON-NLS-1$
+        }
+        catch (IOException e)
+        {
+            throw new UncheckedIOException(e); //$NON-NLS-1$
+        }
     }
 }

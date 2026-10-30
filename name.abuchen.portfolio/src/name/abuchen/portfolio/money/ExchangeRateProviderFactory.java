@@ -229,6 +229,16 @@ public class ExchangeRateProviderFactory
                         pair -> computeTimeSeries(baseCurrency, termCurrency));
     }
 
+    /**
+     * Whether an exchange rate time series connects the two currencies, directly,
+     * inverted or chained. If not, {@link #getTimeSeries} answers with a
+     * placeholder that converts at 1:1.
+     */
+    public boolean hasTimeSeries(String baseCurrency, String termCurrency)
+    {
+        return !(getTimeSeries(baseCurrency, termCurrency) instanceof EmptyExchangeRateTimeSeries);
+    }
+
     private ExchangeRateTimeSeries computeTimeSeries(String baseCurrency, String termCurrency)
     {
         Dijkstra dijkstra = new Dijkstra(getAvailableTimeSeries(), baseCurrency);
