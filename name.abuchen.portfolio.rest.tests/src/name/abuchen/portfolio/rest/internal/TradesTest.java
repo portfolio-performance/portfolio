@@ -2,10 +2,16 @@ package name.abuchen.portfolio.rest.internal;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -17,7 +23,9 @@ import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
@@ -66,6 +74,139 @@ public class TradesTest
         portfolio.setName("Depot");
 
         return client;
+    }
+
+    /**
+     * The trades response carries `fxWarnings` like every computed report: empty
+     * when nothing fell back, and naming the pair whose amounts were converted at
+     * 1:1 because the file has no rates for it. An open trade's exit side is a
+     * valuation at the market price, which is in the security's currency - ARS,
+     * which no shipped provider quotes; USD would resolve through the built-in
+     * ECB series and never fall back.
+     */
+    @Test
+    public void testFxWarningsNameTheCurrencyAnOpenTradeIsValuedIn()
+    {
+        var client = new Client();
+
+        var security = new SecurityBuilder("ARS") //
+                        .addPrice("2026-07-01", Values.Quote.factorize(130)) //
+                        .addTo(client);
+        security.setName("ACME ARS");
+
+        var account = new AccountBuilder() //
+                        .deposit_("2026-01-01", Values.Amount.factorize(5000)) //
+                        .addTo(client);
+
+        new PortfolioBuilder(account) //
+                        .buy(security, "2026-01-15", Values.Share.factorize(10), Values.Amount.factorize(1000)) //
+                        .addTo(client);
+
+        var warnings = trades(client).get("fxWarnings").getAsJsonArray();
+        assertThat(warnings.size(), is(1));
+        assertThat(warnings.get(0).getAsJsonObject().get("currency").getAsString(), is("ARS"));
+        assertThat(warnings.get(0).getAsJsonObject().get("reason").getAsString(), is("no-series"));
+    }
+
+    /**
+     * A closed trade is bought and sold in the account's currency: its exit side
+     * is the sale, not a market price, so the security's own currency was never
+     * converted and must not be named.
+     */
+    @Test
+    public void testFxWarningsDoNotNameTheCurrencyOfAClosedTradesSecurity()
+    {
+        var client = new Client();
+
+        var security = new SecurityBuilder("ARS") //
+                        .addPrice("2026-07-01", Values.Quote.factorize(130)) //
+                        .addTo(client);
+        security.setName("ACME ARS");
+
+        var account = new AccountBuilder() //
+                        .deposit_("2026-01-01", Values.Amount.factorize(5000)) //
+                        .addTo(client);
+
+        new PortfolioBuilder(account) //
+                        .buy(security, "2026-01-15", Values.Share.factorize(10), Values.Amount.factorize(1000)) //
+                        .sell(security, "2026-03-16", Values.Share.factorize(10), Values.Amount.factorize(1300)) //
+                        .addTo(client);
+
+        var response = trades(client);
+        assertThat(response.get("items").getAsJsonArray().size(), is(1));
+        assertThat(response.get("fxWarnings").getAsJsonArray().size(), is(0));
+    }
+
+    /**
+     * A trade's fees are converted with the transaction, so a trade recorded in a
+     * currency the report is not in has to name that currency - including for the
+     * fee it charged. A fee that carries its own forex value brings its own rate
+     * with it, so the fee's other currency needs no rate series and must not be
+     * claimed as a fallback.
+     */
+    @Test
+    public void testFxWarningsNameTheCurrencyATradeWasConvertedFrom()
+    {
+        var client = new Client();
+
+        var security = new SecurityBuilder() //
+                        .addPrice("2026-07-01", Values.Quote.factorize(130)) //
+                        .addTo(client);
+        security.setName("ACME");
+
+        var account = new AccountBuilder() //
+                        .deposit_("2026-01-01", Values.Amount.factorize(5000)) //
+                        .addTo(client);
+
+        var portfolio = new PortfolioBuilder(account).addTo(client);
+
+        // a trade recorded in ARS, with the fee spelled in BBD at a stored rate;
+        // only ARS is ever looked up in a rate series
+        var buy = new PortfolioTransaction(LocalDateTime.of(2026, 1, 15, 0, 0), "ARS",
+                        Values.Amount.factorize(1000), security, Values.Share.factorize(10),
+                        PortfolioTransaction.Type.BUY, 0, 0);
+        buy.addUnit(new Transaction.Unit(Transaction.Unit.Type.FEE, //
+                        Money.of("ARS", Values.Amount.factorize(30)), //
+                        Money.of("BBD", Values.Amount.factorize(25)), java.math.BigDecimal.valueOf(1.2)));
+        portfolio.addTransaction(buy);
+
+        var sell = new PortfolioTransaction(LocalDateTime.of(2026, 3, 16, 0, 0), "ARS",
+                        Values.Amount.factorize(1300), security, Values.Share.factorize(10),
+                        PortfolioTransaction.Type.SELL, 0, 0);
+        sell.addUnit(new Transaction.Unit(Transaction.Unit.Type.FEE, //
+                        Money.of("ARS", Values.Amount.factorize(24)), //
+                        Money.of("BBD", Values.Amount.factorize(20)), java.math.BigDecimal.valueOf(1.2)));
+        portfolio.addTransaction(sell);
+
+        var warnings = currenciesOfWarnings(trades(client));
+        assertThat(warnings, contains("ARS"));
+        assertThat(warnings, not(hasItem("BBD")));
+        assertThat(currenciesOfWarnings(forInstrument(client, security.getUUID())), contains("ARS"));
+    }
+
+    /** the currencies a report's {@code fxWarnings} named */
+    private static List<String> currenciesOfWarnings(JsonObject report)
+    {
+        var currencies = new ArrayList<String>();
+        for (var warning : report.get("fxWarnings").getAsJsonArray())
+            currencies.add(warning.getAsJsonObject().get("currency").getAsString());
+        return currencies;
+    }
+
+    /**
+     * A cash account in some other currency is not money this report converted.
+     * Naming it would tell the reader about unconverted amounts that are nowhere
+     * in the response - which is what the whole file's currency list did.
+     */
+    @Test
+    public void testFxWarningsDoNotNameACurrencyTheTradesNeverTouched()
+    {
+        var client = closedTrade();
+        new AccountBuilder("ARS").deposit_("2026-01-01", Values.Amount.factorize(100)).addTo(client);
+
+        assertThat(trades(client).get("fxWarnings").getAsJsonArray().size(), is(0));
+        assertThat(forInstrument(client, client.getSecurities().get(0).getUUID()).get("fxWarnings").getAsJsonArray()
+                        .size(), is(0));
     }
 
     @Test
@@ -342,6 +483,188 @@ public class TradesTest
         var reversed = trades(client, "closed,open", null, null, null, null).get("status").getAsJsonArray();
         assertThat(reversed.get(0).getAsString(), is("open"));
         assertThat(reversed.get(1).getAsString(), is("closed"));
+    }
+
+    /**
+     * `from` and `to` keep the trades held at some point of the period: one
+     * closed before it starts is out, one opened after it ends is out, and an
+     * open one stays in for as long as it is held. Echoed only when given.
+     */
+    @Test
+    public void testPeriodFilter()
+    {
+        var client = closedTrade(); // ACME: 2026-01-15 to 2026-03-16
+
+        var other = new SecurityBuilder() //
+                        .addPrice("2026-07-01", Values.Quote.factorize(50)) //
+                        .addTo(client);
+        other.setName("BETA");
+        new PortfolioBuilder(client.getAccounts().get(0)) //
+                        .buy(other, "2026-02-01", Values.Share.factorize(10), Values.Amount.factorize(400)) //
+                        .addTo(client);
+
+        var afterAcmeClosed = period(client, null, "2026-04-01", null);
+        assertThat(names(afterAcmeClosed), is(List.of("BETA")));
+        assertThat(afterAcmeClosed.get("from").getAsString(), is("2026-04-01"));
+        assertThat(afterAcmeClosed.has("to"), is(false));
+
+        var beforeBetaOpened = period(client, null, null, "2026-01-31");
+        assertThat(names(beforeBetaOpened), is(List.of("ACME")));
+
+        // the day ACME closed is inside a period that ends on it
+        assertThat(names(period(client, null, "2026-03-16", "2026-03-16")), is(List.of("ACME", "BETA")));
+
+        // the per-instrument route filters the same way
+        var acme = client.getSecurities().get(0);
+        var forAcme = TradesHandler.forInstrument(client, new ExchangeRateProviderFactory(client), acme.getUUID(),
+                        null, null, null, null, null, "2026-04-01", null).getAsJsonObject();
+        assertThat(forAcme.get("items").getAsJsonArray().size(), is(0));
+
+        // without either bound nothing is filtered, and nothing is echoed
+        var all = trades(client);
+        assertThat(all.get("items").getAsJsonArray().size(), is(2));
+        assertThat(all.has("from"), is(false));
+        assertThat(all.has("to"), is(false));
+    }
+
+    @Test
+    public void testPeriodFilterRejectsAReversedOrMalformedPeriod()
+    {
+        var client = closedTrade();
+
+        try
+        {
+            period(client, null, "2026-05-01", "2026-04-01");
+            Assert.fail("expected ApiException");
+        }
+        catch (ApiException e)
+        {
+            assertThat(e.getStatus(), is(400));
+            assertThat(e.getErrors().get(0).field(), is("to"));
+            assertThat(e.getErrors().get(0).code(), is("invalid-range"));
+        }
+
+        try
+        {
+            period(client, null, "01.05.2026", null);
+            Assert.fail("expected ApiException");
+        }
+        catch (ApiException e)
+        {
+            assertThat(e.getErrors().get(0).field(), is("from"));
+            assertThat(e.getErrors().get(0).code(), is("invalid-value"));
+        }
+    }
+
+    /**
+     * One page of the trades: cut from the whole sorted list, with a page
+     * that says where it lies - and the warnings of the whole list, whichever
+     * page is asked for.
+     */
+    @Test
+    public void testOnePageOfTheTrades()
+    {
+        var client = closedTrade(); // ACME
+        var other = new SecurityBuilder() //
+                        .addPrice("2026-07-01", Values.Quote.factorize(50)) //
+                        .addTo(client);
+        other.setName("BETA");
+        new PortfolioBuilder(client.getAccounts().get(0)) //
+                        .buy(other, "2026-02-01", Values.Share.factorize(10), Values.Amount.factorize(400)) //
+                        .addTo(client);
+
+        var first = page(client, null, "1");
+        assertThat(names(first), is(List.of("ACME")));
+        var page = first.getAsJsonObject("page");
+        assertThat(page.get("offset").getAsInt(), is(0));
+        assertThat(page.get("limit").getAsInt(), is(1));
+        assertThat(page.get("total").getAsInt(), is(2));
+        assertThat(page.get("nextOffset").getAsInt(), is(1));
+        assertThat(first.has("warnings"), is(true));
+        assertThat(first.has("fxWarnings"), is(true));
+
+        var second = page(client, "1", null);
+        assertThat(names(second), is(List.of("BETA")));
+        assertThat(second.getAsJsonObject("page").get("nextOffset").isJsonNull(), is(true));
+        assertThat(second.getAsJsonObject("page").get("limit").isJsonNull(), is(true));
+
+        // past the end, an empty page
+        var beyond = page(client, "5", "2");
+        assertThat(beyond.get("items").getAsJsonArray().size(), is(0));
+        assertThat(beyond.getAsJsonObject("page").get("total").getAsInt(), is(2));
+
+        // without either parameter, the whole list and no page - as before
+        assertThat(trades(client).has("page"), is(false));
+    }
+
+    @Test
+    public void testPagingRejectsAMalformedOffsetOrLimit()
+    {
+        var client = closedTrade();
+
+        for (var bad : List.of(new String[] { "-1", null }, new String[] { "x", null }, new String[] { null, "0" },
+                        new String[] { null, "1.5" }))
+        {
+            try
+            {
+                page(client, bad[0], bad[1]);
+                Assert.fail("expected ApiException for offset " + bad[0] + ", limit " + bad[1]);
+            }
+            catch (ApiException e)
+            {
+                assertThat(e.getStatus(), is(400));
+                assertThat(e.getErrors().get(0).field(), is(bad[0] != null ? "offset" : "limit"));
+                assertThat(e.getErrors().get(0).code(), is("invalid-value"));
+            }
+        }
+    }
+
+    /**
+     * A trade counting a transaction dated after the valuation date says so;
+     * one that does not carries no such field.
+     */
+    @Test
+    public void testATradeWithATransactionAfterTheValuationDateSaysSo()
+    {
+        var client = closedTrade(); // ACME, all in the past
+        var planned = new SecurityBuilder() //
+                        .addPrice("2026-01-02", Values.Quote.factorize(50)) //
+                        .addTo(client);
+        planned.setName("PLAN");
+        var later = LocalDate.now().plusMonths(2).toString();
+        new PortfolioBuilder(client.getAccounts().get(0)) //
+                        .buy(planned, "2026-01-02", Values.Share.factorize(10), Values.Amount.factorize(500)) //
+                        .buy(planned, later, Values.Share.factorize(2), Values.Amount.factorize(100)) //
+                        .addTo(client);
+
+        var items = trades(client).get("items").getAsJsonArray();
+        var acme = items.get(0).getAsJsonObject();
+        var plan = items.get(1).getAsJsonObject();
+
+        assertThat(acme.has("transactionsAfterValuationDate"), is(false));
+        assertThat(plan.get("transactionsAfterValuationDate").getAsInt(), is(1));
+        // the shares are those after the planned purchase, as in the application
+        assertThat(plan.get("shares").getAsDouble(), is(12.0));
+    }
+
+    private static JsonObject page(Client client, String offset, String limit)
+    {
+        return TradesHandler.list(client, new ExchangeRateProviderFactory(client), null, null, null, null, null, null,
+                        null, offset, limit).getAsJsonObject();
+    }
+
+    private static JsonObject period(Client client, String status, String from, String to)
+    {
+        return TradesHandler.list(client, new ExchangeRateProviderFactory(client), status, null, null, null, null,
+                        from, to).getAsJsonObject();
+    }
+
+    private static List<String> names(JsonObject trades)
+    {
+        var names = new ArrayList<String>();
+        for (var item : trades.get("items").getAsJsonArray())
+            names.add(item.getAsJsonObject().get("instrument").getAsJsonObject().get("name").getAsString());
+        return names;
     }
 
     @Test

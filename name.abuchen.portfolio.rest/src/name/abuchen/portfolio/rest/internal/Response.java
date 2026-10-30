@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.rest.internal;
 
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.google.gson.JsonElement;
@@ -21,5 +22,13 @@ public record Response(int status, String contentType, byte[] body, Map<String, 
     public static Response noContent()
     {
         return new Response(204, null, new byte[0], Map.of());
+    }
+
+    /** the same response with one more header */
+    public Response withHeader(String name, String value)
+    {
+        var merged = new LinkedHashMap<String, String>(headers);
+        merged.put(name, value);
+        return new Response(status, contentType, body, Map.copyOf(merged));
     }
 }

@@ -83,7 +83,7 @@ public final class McpDispatch
             var item = element.getAsJsonObject();
             var alias = item.get("alias"); //$NON-NLS-1$
             files.add(new McpExplain.FileSummary(item.get("id").getAsString(), item.get("label").getAsString(), //$NON-NLS-1$ //$NON-NLS-2$
-                            alias == null ? null : alias.getAsString()));
+                            alias == null ? null : alias.getAsString(), item.get("use").getAsString())); //$NON-NLS-1$
         }
         return files;
     }
