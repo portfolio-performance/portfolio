@@ -13,6 +13,7 @@ import java.util.Map;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -230,12 +231,24 @@ public class RestApiPreferencePage extends PreferencePage
                         : Messages.PrefRestApiLabelUnidentifiedClient;
 
         var label = new Label(container, SWT.WRAP);
-        label.setText(MessageFormat.format(
-                        rejection.tokenPresented() ? Messages.PrefMsgRestApiRejectedInvalidToken
-                                        : Messages.PrefMsgRestApiRejectedNoToken,
-                        format(rejection.when()), client));
+        label.setText(MessageFormat.format(messageFor(rejection), format(rejection.when()), client));
         label.setForeground(Colors.theme().warningForeground());
         GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(label);
+    }
+
+    /**
+     * Which of the three refusals this was. A header in the wrong shape reads as
+     * "no token offered" otherwise, and that is a misdiagnosis the user cannot
+     * act on: nothing is missing, only the scheme is spelled wrong.
+     */
+    private static String messageFor(RejectedConnections.Rejection rejection)
+    {
+        if (rejection.tokenPresented())
+            return Messages.PrefMsgRestApiRejectedInvalidToken;
+
+        return rejection.reason() == RejectedConnections.Reason.NO_BEARER_SCHEME
+                        ? Messages.PrefMsgRestApiRejectedNoBearerScheme
+                        : Messages.PrefMsgRestApiRejectedNoToken;
     }
 
     private int currentPort()
@@ -424,7 +437,13 @@ public class RestApiPreferencePage extends PreferencePage
             if (selected != null)
             {
                 // takes effect immediately; a misclick is recoverable (re-pair)
-                clientStore.revoke(selected.id());
+                if (!clientStore.revoke(selected.id()))
+                    // gone from this run, but the file still holds the hash: the
+                    // token comes back with the next start, and the table alone
+                    // would say it did not
+                    MessageDialog.openWarning(getShell(), Messages.PrefTitleRestApi,
+                            Messages.PrefMsgRestApiRevokeNotPersisted);
+
                 clientsViewer.setInput(clientStore.listClients());
                 revokeButton.setEnabled(false);
             }
@@ -451,6 +470,13 @@ public class RestApiPreferencePage extends PreferencePage
             return;
 
         var token = clientStore.addPersistentClient(dialog.getValue());
+
+        // the token works, but only until the application quits: the user has
+        // to know before copying it into a connector that expects it to last
+        if (!clientStore.survivesRestart(token))
+            MessageDialog.openWarning(getShell(), Messages.PrefTitleRestApi,
+                            Messages.PrefMsgRestApiClientNotPersisted);
+
         new ShowTokenDialog(getShell(), token, currentPort()).open();
         clientsViewer.setInput(clientStore.listClients());
     }

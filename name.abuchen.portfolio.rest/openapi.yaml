@@ -120,9 +120,9 @@ info:
     `-0.000000000002438937940496544`.
 
     A rate the model cannot define for the interval is `null`, never `0` — handle
-    it rather than assuming a number. A **weight** is not a rate and is not
-    rounded: a dust holding is a legitimately tiny fraction of a portfolio, where
-    a rate that small is only ever noise.
+    it rather than assuming a number. A **weight** is not a rate, but it is
+    served at the same 8 decimal places: 1e-8 is a millionth of a percent, and a
+    holding below that still carries its exact `valuation`.
 
     ## Methods
 
@@ -168,6 +168,24 @@ info:
     rejected with `423 user-interaction` rather than silently clobbered. This is
     **normal and temporary**: respect the `Retry-After` header and try again. Reads
     are unaffected.
+
+    ## Busy, slow or overloaded
+
+    Any request may be answered with a `503`, whose `type` says what to do:
+
+    - `ui-busy`: the application did not take the request on within 10 seconds.
+      It was not executed and never will be — retry after `Retry-After`. A read
+      gets this answer even when it had started: it changes nothing, so sending
+      it again is safe.
+    - `ui-request-underway`: a write was already running when the wait expired
+      and will complete. There is no `Retry-After`: do not send it again, read
+      the state back instead.
+    - `calculation-timeout`: a calculation did not finish within 120 seconds.
+      The same question takes just as long again — ask a smaller one.
+    - `server-busy`: more requests are in flight than the server serves at once,
+      or no calculation slot came free while the request waited for one (up to
+      30 seconds, a few requests at most) — a calculation keeps its slot until it
+      really ends, even past its deadline. Retry after `Retry-After`.
 
 servers:
   - url: http://127.0.0.1:{port}
@@ -366,6 +384,7 @@ paths:
                   value:
                     status: approved
                     token: wZ4mJc9Y3K…
+                    persistent: true
         "400":
           $ref: "#/components/responses/BadRequest"
         "403":
@@ -420,6 +439,18 @@ paths:
       operationId: listInstruments
       tags: [Instruments]
       summary: List the instruments in a file
+      description: |
+        Every instrument in the file, or with `query` only the ones it finds.
+        A large file can hold hundreds of instruments; `query` is how a client
+        gets from a name, ISIN, WKN or ticker symbol to the `uuid` without
+        reading them all.
+
+        With `offset` or `limit` the response is one page of that list, in
+        the file's order, and says in `page` where it lies in the whole.
+      parameters:
+        - $ref: "#/components/parameters/InstrumentQuery"
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Limit"
       responses:
         "200":
           description: The instruments in the file
@@ -429,6 +460,8 @@ paths:
                 type: object
                 required: [items]
                 properties:
+                  page:
+                    $ref: "#/components/schemas/Page"
                   items:
                     type: array
                     items:
@@ -495,6 +528,10 @@ paths:
         Any field that is unknown or not writable is rejected `422`, never a silent
         no-op — a typo must not look like success. All violations are reported at
         once so they can be fixed in one round-trip.
+
+        A patch that only restates values the instrument already has changes
+        nothing and does not mark the file dirty; the `X-Portfolio-Changed`
+        response header says which of the two happened.
       requestBody:
         required: true
         content:
@@ -510,6 +547,15 @@ paths:
       responses:
         "200":
           description: The updated instrument
+          headers:
+            X-Portfolio-Changed:
+              description: |
+                `true` when a stored value changed and the file now has unsaved
+                changes; `false` when the patch named only values the instrument
+                already had, so nothing changed and nothing needs saving.
+              schema:
+                type: string
+                enum: ["true", "false"]
           content:
             application/json:
               schema:
@@ -767,7 +813,7 @@ paths:
             application/json:
               schema:
                 type: object
-                required: [date, reportingCurrency, totalAssets, items]
+                required: [date, reportingCurrency, totalAssets, fxWarnings, fxStaleRates, items]
                 properties:
                   date:
                     type: string
@@ -783,6 +829,10 @@ paths:
                       `currencyCode` (its own declared currency).
                   totalAssets:
                     $ref: "#/components/schemas/MonetaryValue"
+                  fxWarnings:
+                    $ref: "#/components/schemas/FxWarnings"
+                  fxStaleRates:
+                    $ref: "#/components/schemas/FxStaleRates"
                   items:
                     type: array
                     items:
@@ -793,12 +843,16 @@ paths:
                     date: "2026-07-20"
                     reportingCurrency: EUR
                     totalAssets: { value: 1600, currency: EUR }
+                    fxWarnings: []
                     items:
                       - type: instrument
                         uuid: 8a1e0c4b-2f5d-4e6a-b1c3-7d9f0a2e4c68
                         name: Apple Inc.
                         shares: 10
                         price: { value: 110.5, currency: USD, date: "2026-07-17" }
+                        priceStale: false
+                        priceAgeDays: 3
+                        priceMissedTradingDays: 0
                         valuation: { value: 1100, currency: EUR }
                         localValuation: { value: 1105, currency: USD }
                         weight: 0.6875
@@ -837,12 +891,24 @@ paths:
         closing value:
         `openingValue + unrealizedCapitalGains + realizedCapitalGains + income +
         fees + taxes + currencyGains + netDeposits = closingValue`. `fees` and
-        `taxes` are therefore negative. `netDeposits` is the external capital
+        `taxes` are therefore negative when they cost money, and positive for a
+        refund. The identity usually holds to the cent; first-in-first-out
+        rounding can leave a few cents, and with foreign currencies the terms
+        are converted at the dates they happened and the opening and closing
+        values at the interval's ends, which can leave a larger residual — the
+        application's own calculation shows the same figures.
+
+        Capital gains are stated before fees and taxes, which stand as terms of
+        their own — the same as the per-instrument report with
+        `taxesAndFees=excluded`, and the only way the sum can add up. `taxes` is
+        what was booked in the period (withholding, advance lump sums, taxes on
+        sales), not a tax computed from the period's gains, so it can exceed them. `netDeposits` is the external capital
         flow (deposits less removals) over the period; it is *not* part of the
         performance-driven change, but is required for the value reconciliation.
 
         `costMethod` chooses how a security's gains split into realized and
-        unrealized; it does not affect their sum, nor the returns.
+        unrealized; it does not affect their sum beyond rounding, nor the
+        returns.
 
         `openingDate` and `closingDate` are **valuation snapshot dates, not a
         record range**. The opening balance is measured as of the end of
@@ -871,7 +937,9 @@ paths:
             The closing valuation date (default: today). `closingValue` equals
             `GET .../holdings?date={closingDate}`'s `totalAssets`. Must be
             strictly after `openingDate`; an empty or inverted range is rejected
-            `400 invalid-range`.
+            `400 invalid-range`. Future dates are accepted and value at the last
+            known prices; `ttwror` stops at today, which the response states as
+            `timeWeightedUntil`.
           schema:
             type: string
             format: date
@@ -898,6 +966,7 @@ paths:
                   value:
                     openingDate: "2024-01-01"
                     closingDate: "2024-12-31"
+                    timeWeightedUntil: "2024-12-31"
                     reportingCurrency: EUR
                     costMethod: fifo
                     ttwror: 0.0723
@@ -912,6 +981,7 @@ paths:
                       currencyGains: { value: 210, currency: EUR }
                       netDeposits: { value: 5000, currency: EUR }
                       closingValue: { value: 111390, currency: EUR }
+                    fxWarnings: []
         "400":
           $ref: "#/components/responses/BadRequest"
         "401":
@@ -935,7 +1005,8 @@ paths:
       description: |
         Per-instrument return, valuation, gains, income, expenses and risk over
         the same interval the aggregate `GET .../performance` covers, in the
-        reporting currency. Items are sorted by name.
+        reporting currency. Items are sorted by name, then by `uuid` for
+        instruments of the same name.
 
         **Which instruments appear.** Every instrument the interval touched:
         any transaction inside it, or a non-zero position at either end. A
@@ -950,6 +1021,11 @@ paths:
         `risk` together costs no more than asking for either, as they share one
         series. A request for all groups over every instrument of a large file
         with a long interval is slow; there is no pagination.
+
+        **Matching the aggregate report.** Capital gains match the aggregate
+        endpoint with `taxesAndFees=excluded`, its fees and taxes being separate
+        terms there. The rows still do not add up to it: cash accounts, account
+        fees and fees on transfers belong to no instrument.
 
         **Signs.** Every money field here is a magnitude: `fees` is the sum of
         the fees charged and is positive. Only fields that are terms of a
@@ -986,11 +1062,13 @@ paths:
                   value:
                     openingDate: "2025-01-01"
                     closingDate: "2025-12-31"
+                    timeWeightedUntil: "2025-12-31"
                     reportingCurrency: EUR
                     costMethod: fifo
                     taxesAndFees: included
                     metrics:
                       [valuation, gains, income, expenses, moneyWeighted, timeWeighted, risk]
+                    fxWarnings: []
                     items:
                       - uuid: 5c1a0b7e-3d4f-4a2b-9c8e-1f0a2b3c4d5e
                         name: iShares Core MSCI World
@@ -1075,10 +1153,19 @@ paths:
                   value:
                     openingDate: "2025-01-01"
                     closingDate: "2025-12-31"
+                    timeWeightedUntil: "2025-12-31"
                     reportingCurrency: EUR
                     costMethod: fifo
                     taxesAndFees: included
                     metrics: [valuation]
+                    # one pair with nothing to convert with: its ARS amounts are
+                    # shown at face value, not exchanged into EUR. USD would be
+                    # the more familiar example, but the built-in ECB series
+                    # covers it, so it would not be a fallback.
+                    fxWarnings:
+                      - currency: ARS
+                        reportingCurrency: EUR
+                        reason: no-series
                     uuid: 5c1a0b7e-3d4f-4a2b-9c8e-1f0a2b3c4d5e
                     name: iShares Core MSCI World
                     currencyCode: USD
@@ -1151,6 +1238,10 @@ paths:
         - $ref: "#/components/parameters/TradeCostMethod"
         - $ref: "#/components/parameters/TradeTaxesAndFees"
         - $ref: "#/components/parameters/ReportingCurrency"
+        - $ref: "#/components/parameters/TradeFrom"
+        - $ref: "#/components/parameters/TradeTo"
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Limit"
       responses:
         "200":
           description: The file's trades
@@ -1167,6 +1258,7 @@ paths:
                     grouping: combined
                     valuationDate: "2026-08-27"
                     status: [open, closed]
+                    fxWarnings: []
                     warnings: []
                     items:
                       - status: closed
@@ -1252,6 +1344,10 @@ paths:
         - $ref: "#/components/parameters/TradeCostMethod"
         - $ref: "#/components/parameters/TradeTaxesAndFees"
         - $ref: "#/components/parameters/ReportingCurrency"
+        - $ref: "#/components/parameters/TradeFrom"
+        - $ref: "#/components/parameters/TradeTo"
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Limit"
       responses:
         "200":
           description: The instrument's trades
@@ -1268,6 +1364,7 @@ paths:
                     grouping: combined
                     valuationDate: "2026-08-27"
                     status: [open, closed]
+                    fxWarnings: []
                     warnings: []
                     items:
                       - status: closed
@@ -1349,7 +1446,8 @@ components:
         The closing valuation date (default: today). Must be strictly after
         `openingDate`; an empty or inverted range is rejected `400
         invalid-range`. Future dates are accepted and value at the last known
-        prices.
+        prices; the time-weighted figures stop at today, which the response
+        states as `timeWeightedUntil`.
       schema:
         type: string
         format: date
@@ -1436,6 +1534,66 @@ components:
         default: [open, closed]
       style: form
       explode: false
+    InstrumentQuery:
+      name: query
+      in: query
+      required: false
+      description: |
+        Only the instruments this finds: one whose name contains it, or whose
+        ISIN, WKN or ticker symbol equals it — all ignoring case and
+        surrounding whitespace. Omit it to list every instrument; a blank
+        value is rejected `400 invalid-request`.
+      schema:
+        type: string
+        minLength: 1
+    TradeFrom:
+      name: from
+      in: query
+      required: false
+      description: |
+        The first day of the period, as `YYYY-MM-DD`. Only trades still held
+        on or after it are returned: a trade that closed before it is left
+        out, an open one is kept. Omit it for no lower bound. Echoed in the
+        response when given.
+      schema:
+        type: string
+        format: date
+    TradeTo:
+      name: to
+      in: query
+      required: false
+      description: |
+        The last day of the period, as `YYYY-MM-DD`, not before `from`
+        (`invalid-range` otherwise). Only trades that started on or before it
+        are returned. With `from`, this keeps every trade held at some point
+        of the period — closed within it, or open through it. Omit it for no
+        upper bound. Echoed in the response when given.
+      schema:
+        type: string
+        format: date
+    Offset:
+      name: offset
+      in: query
+      required: false
+      description: |
+        How many items of the list to skip: where a page starts, usually the
+        `page.nextOffset` of the page before. Defaults to 0. A whole number of
+        at least 0 (`invalid-value` otherwise); past the end, the page is
+        empty. With `offset` or `limit` the response carries `page`.
+      schema:
+        type: integer
+        minimum: 0
+    Limit:
+      name: limit
+      in: query
+      required: false
+      description: |
+        At most this many items. Omit it for every item from `offset` on. A
+        whole number of at least 1 (`invalid-value` otherwise). With `offset`
+        or `limit` the response carries `page`.
+      schema:
+        type: integer
+        minimum: 1
     TradeGrouping:
       name: grouping
       in: query
@@ -1462,8 +1620,11 @@ components:
         average cost of the shares rather than the matched lots.
 
         It does **not** change `irr`, which is derived from the actual cash
-        flows and has no moving-average counterpart — so a request with
-        `moving-average` returns a deliberately mixed-basis item. Nor does it
+        flows of the lots matched first in, first out — as in the
+        application's trades view — and has no moving-average counterpart. A
+        request with `moving-average` therefore returns a deliberately
+        mixed-basis item, whose `irr` can even differ in sign from its
+        `profitLoss`. Nor does it
         change `exitValue`, which is what the shares realized or are worth.
 
         `entryValue`, `profitLoss` and `return` are `null` — always all three
@@ -1509,6 +1670,8 @@ components:
           grouping,
           valuationDate,
           status,
+          fxWarnings,
+          fxStaleRates,
           warnings,
           items,
         ]
@@ -1536,12 +1699,26 @@ components:
           description: |
             The date the open trades were valued at, and the date their holding
             period runs to. Closed trades do not depend on it.
+        from:
+          type: string
+          format: date
+          description: The `from` query parameter, when one was given.
+        to:
+          type: string
+          format: date
+          description: The `to` query parameter, when one was given.
         status:
           type: array
           description: The selected statuses, in declaration order.
           items:
             type: string
             enum: [open, closed]
+        fxWarnings:
+          $ref: "#/components/schemas/FxWarnings"
+        fxStaleRates:
+          $ref: "#/components/schemas/FxStaleRates"
+        page:
+          $ref: "#/components/schemas/Page"
         warnings:
           type: array
           description: |
@@ -1555,6 +1732,31 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Trade"
+
+    Page:
+      type: object
+      description: |
+        Where a page lies in the whole list - present only when the request
+        named `offset` or `limit`. The list is recomputed for every request,
+        so pages fit together only while the file is not changed in between.
+        For trades, `fxWarnings` and `warnings` describe the whole list, not
+        only the page.
+      required: [offset, limit, total, nextOffset]
+      properties:
+        offset:
+          type: integer
+          description: How many items were skipped.
+        limit:
+          type: [integer, "null"]
+          description: The `limit` asked for, or `null` for none.
+        total:
+          type: integer
+          description: How many items the whole list holds.
+        nextOffset:
+          type: [integer, "null"]
+          description: |
+            The `offset` of the next page, or `null` when this is the last
+            one.
 
     TradeWarning:
       type: object
@@ -1710,13 +1912,26 @@ components:
           description: |
             The share-weighted average number of days the shares were held,
             counted to `end` or, for an open trade, to `valuationDate`.
+        transactionsAfterValuationDate:
+          type: integer
+          description: |
+            How many of the trade's transactions are dated after
+            `valuationDate` — a savings plan booked ahead, say. Omitted when
+            none is. Trades are matched over every transaction, as in the
+            application's trades view, while an open trade is valued at the
+            price of `valuationDate`: with such transactions, `shares`,
+            `entryValue`, `exitValue` and `profitLoss` are those after the last
+            of them, not the position held on `valuationDate`. That position is
+            in `GET .../holdings`.
         irr:
           type: [number, "null"]
           description: |
             The internal rate of return as a fraction (0.0523 is 5.23 %),
-            annualized, from the trade's actual cash flows. Does **not** follow
-            `costMethod` or `taxesAndFees` — there is no variant of it. `null`
-            when the model cannot define it.
+            annualized, from the actual cash flows of the lots matched first
+            in, first out. Does **not** follow `costMethod` or `taxesAndFees` —
+            there is no variant of it — so under `moving-average` it can differ
+            in sign from `profitLoss`. Annualizing makes it extreme for a short
+            holding period. `null` when the model cannot define it.
         return:
           type: [number, "null"]
           description: |
@@ -1774,6 +1989,14 @@ components:
           description: |
             The bearer token; present only while `status` is `approved`, and
             delivered exactly once.
+        persistent:
+          type: boolean
+          description: |
+            Present with `token`. Whether the token survives a restart of the
+            application: `false` when the user allowed access for this session
+            only, and when access was allowed permanently but the application
+            could not record it — the token then works until the application
+            quits, and pairing has to be repeated after that.
 
     Instrument:
       type: object
@@ -1792,16 +2015,16 @@ components:
             `required`); only its value may be null.
         isin:
           type: string
-          description: Omitted when not set.
+          description: Omitted when not set or blank.
         wkn:
           type: string
-          description: Omitted when not set.
+          description: Omitted when not set or blank.
         tickerSymbol:
           type: string
-          description: Omitted when not set.
+          description: Omitted when not set or blank.
         note:
           type: string
-          description: Omitted when not set.
+          description: Omitted when not set or blank.
         attributes:
           type: object
           description: |
@@ -1841,6 +2064,11 @@ components:
             (`locked-by-transactions`), matching the UI's rule.
         isin:
           type: [string, "null"]
+          description: |
+            Checked as the application's ISIN column checks it: surrounding
+            whitespace is ignored, and what is left must be twelve characters
+            with a matching check digit, or the patch is rejected with
+            `invalid-isin`. A blank value clears the ISIN, like `null`.
         wkn:
           type: [string, "null"]
         tickerSymbol:
@@ -1919,7 +2147,7 @@ components:
           description: ISO 4217 currency code.
         note:
           type: string
-          description: Omitted when not set.
+          description: Omitted when not set or blank.
 
     InvestmentAccount:
       type: object
@@ -1939,7 +2167,7 @@ components:
             when not set.
         note:
           type: string
-          description: Omitted when not set.
+          description: Omitted when not set or blank.
 
     MonetaryValue:
       type: object
@@ -1979,6 +2207,86 @@ components:
           format: date
           description: The date the price is from.
 
+    FxWarning:
+      type: object
+      description: |
+        One currency pair a report converted at a rate of 1 because the file has
+        nothing to convert with — amounts of `currency` are shown at face value in
+        `reportingCurrency`, not exchanged. Only pairs the report's calculation
+        actually converted are named: an empty account or an instrument not held
+        never is.
+      required: [currency, reportingCurrency, reason]
+      properties:
+        currency:
+          type: string
+          description: The currency the amounts are natively in, shown unconverted.
+        reportingCurrency:
+          type: string
+          description: |
+            The currency the amounts were converted into: the report's reporting
+            currency, or an instrument's own currency for the figures stated in
+            it (such as `localValuation`).
+        reason:
+          type: string
+          description: |
+            **Open set:** further reasons may be added within v1; treat an unknown
+            one as "this pair was converted at 1:1, for a reason not described
+            here". `no-series` — no exchange rate series exists for the pair at
+            all. `no-rate` — a series exists but answered no rate for at least one
+            date the report converted at (it holds no rates, or — for a series
+            built from an exchange-rate instrument — its quote for that day is
+            zero). Neither is the case where a series holds rates and answers a
+            date before its first quote with that first quote, which is a
+            different inaccuracy and not reported here.
+          x-extensible-enum: [no-series, no-rate]
+
+    FxWarnings:
+      type: array
+      description: |
+        Every currency pair this report converted at 1:1 because nothing to
+        convert with was configured. Always present, empty when every pair has
+        rates — the same rule as `warnings` on a computed collection, so a client
+        can tell "nothing fell back" apart from "this report did not look".
+      items:
+        $ref: "#/components/schemas/FxWarning"
+
+    FxStaleRates:
+      type: array
+      description: |
+        Every currency pair this report converted at a rate more than seven
+        days older than the date it converted at (or than today, for a later
+        date) — a series that stopped being published goes on answering with
+        its last rate, and the currency effect of those amounts is then frozen
+        at it rather than measured. Not a 1:1 conversion, so not in
+        `fxWarnings`. Always present, empty when every rate used was recent.
+      items:
+        $ref: "#/components/schemas/FxStaleRate"
+
+    FxStaleRate:
+      type: object
+      required: [currency, reportingCurrency, rateDate, daysOld]
+      properties:
+        currency:
+          type: string
+          description: The currency the amounts were natively in.
+        reportingCurrency:
+          type: string
+          description: |
+            The currency they were converted into: the report's reporting
+            currency, or an instrument's own currency for its local figures.
+        rateDate:
+          type: string
+          format: date
+          description: |
+            The date of the oldest rate a conversion of this pair used. For a
+            pair reached through a third currency (USD to CHF through EUR),
+            the oldest of its steps.
+        daysOld:
+          type: integer
+          description: |
+            How many days that rate was older than the date it converted at —
+            the largest gap the calculation met for this pair.
+
     Holding:
       type: object
       description: |
@@ -2007,13 +2315,57 @@ components:
           allOf:
             - $ref: "#/components/schemas/Price"
           description: Instruments only.
+        priceStale:
+          type: boolean
+          description: |
+            Instruments only, when `price.date` is known. Whether the quote behind
+            this valuation is out of date: `true` when more than one trading day
+            passed without a quote (`priceMissedTradingDays` > 1) — a quote feed
+            that stopped, or a valuation that fell back to the price of the last
+            transaction. A weekend or a holiday does not make a quote stale, and
+            one missed trading day is tolerated because funds publish their price
+            a day late. Never `true` for an instrument priced by hand (quote feed
+            `MANUAL`): its price changes when the user decides, as in the
+            application's data quality view — its age fields still say how old
+            the price is.
+        priceAgeDays:
+          type: integer
+          description: |
+            Instruments only, when `price.date` is known. Calendar days between
+            `price.date` and the response's `date` — or today, when `date` lies
+            in the future, since no quote can be younger than today's. Never
+            negative, so a quote dated after `date` reads 0 rather than implying
+            the valuation happened before it.
+        priceMissedTradingDays:
+          type: integer
+          description: |
+            Instruments only, when `price.date` is known. The trading days strictly
+            between `price.date` and the response's `date` — or today, when
+            `date` lies in the future — counted in the instrument's own trade
+            calendar. That end day itself does not count: its close cannot be
+            known before the day is over. On a Sunday, Friday's quote has missed
+            none, and valued at a future date today's quote has missed none
+            either.
+        priceManual:
+          type: boolean
+          description: |
+            Instruments only, present and `true` when the instrument is priced
+            by hand (quote feed `MANUAL`). Such a price changes when the user
+            decides, so `priceStale` is never `true` for it however old it is —
+            this field says why; the age fields still say how old it is.
         valuation:
           allOf:
             - $ref: "#/components/schemas/MonetaryValue"
           description: The holding's value in the reporting currency.
         weight:
           type: number
-          description: The holding's fraction (0–1) of total assets — not a percentage.
+          description: |
+            The holding's fraction of total assets — not a percentage. A cash
+            account can hold a negative balance (a loan, a credit card); its
+            weight is then negative and the others are divided by the smaller
+            net total, so a weight can exceed 1. Rounded to 8 decimal places, so
+            the weights add up to 1 within that rounding, unless total assets are
+            zero - then every weight is 0.
         localValuation:
           allOf:
             - $ref: "#/components/schemas/MonetaryValue"
@@ -2028,11 +2380,14 @@ components:
       required:
         - openingDate
         - closingDate
+        - timeWeightedUntil
         - reportingCurrency
         - costMethod
         - ttwror
         - irr
         - breakdown
+        - fxWarnings
+        - fxStaleRates
       properties:
         openingDate:
           type: string
@@ -2042,6 +2397,18 @@ components:
           type: string
           format: date
           description: The effective closing valuation date.
+        timeWeightedUntil:
+          type: string
+          format: date
+          description: |
+            The last day `ttwror` is measured to: `closingDate`, or today when
+            `closingDate` lies in the future, because the time-weighted engine
+            never runs past today. The breakdown and `irr` run to `closingDate`
+            and include the transactions dated after today, valued at the
+            latest known prices — a planned transaction shows its effect there.
+            When the two dates differ the report mixes two periods, and neither
+            return is a forecast. When `openingDate` is today or later nothing
+            could be measured, and `ttwror` and `irr` are `null`.
         reportingCurrency:
           type: string
           description: |
@@ -2061,15 +2428,24 @@ components:
           description: |
             The true time-weighted rate of return over the interval, as a
             fraction (0.0723 is 7.23 %) — not a percentage. `null` when the
-            model cannot define it for the interval.
+            model cannot define it for the interval, when `openingDate` is
+            today or later - such a period has no price movement to measure -
+            and when the file held nothing and moved no money at any time in
+            the interval, which leaves no capital to measure a return on.
         irr:
           type: [number, "null"]
           description: |
             The internal (money-weighted) rate of return over the interval, as a
-            fraction — not a percentage. `null` when the model cannot define it
-            for the interval.
+            fraction — not a percentage, and annualized, so over a period of a
+            few days it can be extreme. `null` when `openingDate` is today or
+            later, when the file held nothing in the interval (see `ttwror`),
+            and when the model cannot define it for the interval.
         breakdown:
           $ref: "#/components/schemas/PerformanceBreakdown"
+        fxWarnings:
+          $ref: "#/components/schemas/FxWarnings"
+        fxStaleRates:
+          $ref: "#/components/schemas/FxStaleRates"
 
     PerformanceBreakdown:
       type: object
@@ -2133,15 +2509,19 @@ components:
       type: object
       description: |
         The interval and the parameters a per-instrument report was computed
-        with. All six are echoed, so that a stored or forwarded response stays
-        interpretable — three of them move the numbers.
+        with, plus the currency pairs it converted at 1:1. All six parameters are
+        echoed, so that a stored or forwarded response stays interpretable —
+        three of them move the numbers.
       required:
         - openingDate
         - closingDate
+        - timeWeightedUntil
         - reportingCurrency
         - costMethod
         - taxesAndFees
         - metrics
+        - fxWarnings
+        - fxStaleRates
       properties:
         openingDate:
           type: string
@@ -2151,6 +2531,20 @@ components:
           type: string
           format: date
           description: The effective closing valuation date.
+        timeWeightedUntil:
+          type: string
+          format: date
+          description: |
+            The last day the `timeWeighted` and `risk` figures are measured to:
+            `closingDate`, or today when `closingDate` lies in the future,
+            because the time-weighted engine never runs past today. Valuation,
+            gains, income, expenses and `moneyWeighted` run to `closingDate`
+            and include the transactions dated after today, valued at the latest
+            known prices. When the two dates differ the report mixes two
+            periods, and neither return is a forecast. When `openingDate` is
+            today or later nothing could be measured: every return and every
+            risk ratio is `null`; `longestDrawdownDays`, which the 1.0 contract
+            keeps non-null, is `0`.
         reportingCurrency:
           type: string
           description: |
@@ -2175,6 +2569,10 @@ components:
             type: string
             enum:
               [valuation, gains, income, expenses, moneyWeighted, timeWeighted, risk]
+        fxWarnings:
+          $ref: "#/components/schemas/FxWarnings"
+        fxStaleRates:
+          $ref: "#/components/schemas/FxStaleRates"
 
     InstrumentPerformance:
       type: object
@@ -2335,20 +2733,25 @@ components:
       description: |
         What the instrument cost during the interval: the charges embedded in
         its trades and dividends, plus the standalone fee and tax bookings
-        attributed to it, net of refunds.
+        attributed to it, net of refunds. Both are positive magnitudes as a
+        rule, but negative when refunds outweigh the charges in the interval —
+        a tax refund booked against the instrument, for example.
       required: [fees, taxes]
       properties:
         fees:
           allOf:
             - $ref: "#/components/schemas/MonetaryValue"
           description: |
-            The fees charged, as a positive magnitude — unlike the aggregate
-            endpoint's `breakdown.fees`, which is negated so that its
-            decomposition adds up.
+            The fees charged net of fee refunds, as a positive magnitude unless
+            refunds outweigh them — unlike the aggregate endpoint's
+            `breakdown.fees`, which is negated so that its decomposition adds
+            up.
         taxes:
           allOf:
             - $ref: "#/components/schemas/MonetaryValue"
-          description: The taxes charged, as a positive magnitude.
+          description: |
+            The taxes charged net of tax refunds, as a positive magnitude
+            unless refunds outweigh them.
 
     InstrumentRisk:
       type: object
@@ -2359,10 +2762,16 @@ components:
       properties:
         volatility:
           type: [number, "null"]
-          description: The standard deviation of the return series.
+          description: |
+            The standard deviation of the return series. `null` when the
+            interval has fewer than two daily returns (counted over weekdays up
+            to `timeWeightedUntil`): one return has no spread, and 0 would read
+            as a measured absence of risk.
         semiVolatility:
           type: [number, "null"]
-          description: The standard deviation of the negative returns only.
+          description: |
+            The standard deviation of the negative returns only. `null` under
+            the same condition as `volatility`.
         maxDrawdown:
           type: [number, "null"]
           description: |
@@ -2378,7 +2787,9 @@ components:
             between data points, it is never shorter than the sampling interval
             — a period with no drawdown at all still reports 1. This is **not**
             the duration of the deepest drawdown, which is a different and
-            shorter interval — hence the name.
+            shorter interval — hence the name. `0` when `openingDate` is today
+            or later: nothing could be measured, and the 1.0 contract keeps this
+            field non-null — the `null` ratios next to it say so.
 
     FieldError:
       type: object
@@ -2407,6 +2818,7 @@ components:
             - unknown-currency
             - locked-by-transactions
             - exchange-rate-requires-currency
+            - invalid-isin
             - referenced
             - unknown-attribute
             - attribute-not-applicable
@@ -2457,6 +2869,10 @@ components:
             - https://portfolio-performance.info/rest/problems/pairing-pending
             - https://portfolio-performance.info/rest/problems/pairing-cooldown
             - https://portfolio-performance.info/rest/problems/internal-error
+            - https://portfolio-performance.info/rest/problems/ui-busy
+            - https://portfolio-performance.info/rest/problems/ui-request-underway
+            - https://portfolio-performance.info/rest/problems/calculation-timeout
+            - https://portfolio-performance.info/rest/problems/server-busy
         title:
           type: string
           description: Short, human-readable summary of the problem kind.
