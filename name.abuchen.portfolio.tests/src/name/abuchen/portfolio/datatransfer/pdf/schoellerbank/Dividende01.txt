@@ -1,0 +1,39 @@
+Portfolio Performance Version: 0.89.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Abrechnung Ereignis
+Schoellerbank AG 23033843-16.10.2026
+Private Banking Wien Depot-Nr.: 20834763586
+Renngasse 3 Mag. hmyPL eybUJqV aPY ATokP       
+1010 Wien
+Herrn
+Mag. rzokI uFeUHee oIj IJheR
+ilvRDKQVvI 83
+1106 gPIo                                                                                                                                                                                              
+Wir haben für Sie am 16.10.2026 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Ertrag
+3.000 Stk
+Titel: DE0002635299  i S h . S T . E u r . Sel.Div.30 U.ETF DE     
+Inhaber-Anteile                    
+Fondsgesellschaft: BlackRock Asset Management Deutschl
+and AG
+Ertrag: 0,418646 EUR 
+Verwahrart: WR
+Positionsdaten: Loco: München                            
+Bruttoertrag: 1.255,94 EUR 
+KESt Ausländische Dividende: -278,70 EUR 
+Transaktionsgebühr: -3,14 EUR 
+Umsatzsteuer: -0,63 EUR 
+Zu Gunsten IBAN ST25 3050 6552 3668 4008 973,47 EUR 
+Valuta 15.10.2026
+Es wurde Umsatzsteuer in der Höhe von 20% berücksichtigt.
+Extag: 15.10.2026
+Bemessungsgrundlage USt: -3,14 EUR
+Auslands-KESt pro Fondsanteil 0,0929 EUR
+Die KESt wird mit dem Finanzamt für Großbetriebe, Postfach 251, 1000 Wien 
+verrechnet.
+KESt-Altbestand: 3.000 Stk
+16.10.2026 Seite 1
+\___________________________________________________________________________________\_
+Diese Mitteilung wird nicht unterschrieben. Irrtum vorbehalten! DVR: 0041556
+00737 Doknr.: ON00-023-0000000001
