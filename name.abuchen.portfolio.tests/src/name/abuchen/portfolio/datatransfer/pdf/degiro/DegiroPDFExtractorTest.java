@@ -28,6 +28,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.skippedItem;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
@@ -4485,8 +4486,8 @@ public class DegiroPDFExtractorTest
         assertThat(countAccountTransactions(results), is(7L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(10));
+        assertThat(countSkippedItems(results), is(2L));
+        assertThat(results.size(), is(12));
         new AssertImportActions().check(results, "EUR");
 
         // check security
@@ -4556,6 +4557,19 @@ public class DegiroPDFExtractorTest
                         hasNote("Remboursement offre promotionnelle"), //
                         hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // the transfers to and from the "Compte Espèces" of the flatexDEGIRO
+        // Bank are internal transfers of the same bank group and are not
+        // imported, therefore they are reported as skipped items
+        assertThat(results, hasItem(skippedItem(Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        deposit(hasDate("2026-05-08T07:33"), hasAmount("EUR", 22.59), //
+                                        hasSource("AccountStatement_french01.txt"), //
+                                        hasNote("Virement vers votre Compte Espèces à la flatexDEGIRO")))));
+
+        assertThat(results, hasItem(skippedItem(Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        deposit(hasDate("2025-10-10T11:30"), hasAmount("EUR", 320.50), //
+                                        hasSource("AccountStatement_french01.txt"), //
+                                        hasNote("Virement depuis votre Compte Espèces à la flatexDEGIRO")))));
     }
 
     @Test
@@ -4595,6 +4609,62 @@ public class DegiroPDFExtractorTest
                         hasIsin("FI0009003727"), hasWkn(null), hasTicker(null), //
                         hasName("WARTSILA OYJ ABP"), //
                         hasCurrencyCode("EUR"))));
+    }
+
+    @Test
+    public void testAccountStatement_french03()
+    {
+        // @formatter:off
+        // The account statement of the French documents is named "Relevé de
+        // compte". It shows the cash movements of the account only:
+        //
+        // - the transfers to and from the "Compte Espèces" of the flatexDEGIRO
+        //   Bank together with their "Degiro Cash Sweep Transfer" mirror
+        //   booking are internal transfers of the same bank group,
+        // - the fees, the taxes and the "Achat" and "Vente" bookings of the
+        //   securities are settled through the "Compte Espèces" and are
+        //   imported from the transaction report of the same period.
+        //
+        // Therefore the transfers are reported as skipped and nothing else is
+        // imported from this statement. Both interest bookings have an amount
+        // of 0,00 and are not imported either.
+        // @formatter:on
+        var extractor = new DegiroPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement_french03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(4L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, "EUR");
+
+        // check skipped transaction
+        assertThat(results, hasItem(skippedItem(Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        deposit(hasDate("2026-10-23T16:41"), hasAmount("EUR", 1004.39), //
+                                        hasSource("AccountStatement_french03.txt"), //
+                                        hasNote("Virement depuis votre Compte Espèces à la flatexDEGIRO")))));
+
+        assertThat(results, hasItem(skippedItem(Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        deposit(hasDate("2026-10-22T15:21"), hasAmount("EUR", 906.90), //
+                                        hasSource("AccountStatement_french03.txt"), //
+                                        hasNote("Virement vers votre Compte Espèces à la flatexDEGIRO")))));
+
+        assertThat(results, hasItem(skippedItem(Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        deposit(hasDate("2026-10-19T15:21"), hasAmount("EUR", 869.56), //
+                                        hasSource("AccountStatement_french03.txt"), //
+                                        hasNote("Virement vers votre Compte Espèces à la flatexDEGIRO")))));
+
+        assertThat(results, hasItem(skippedItem(Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        deposit(hasDate("2026-10-13T19:20"), hasAmount("EUR", 1304.92), //
+                                        hasSource("AccountStatement_french03.txt"), //
+                                        hasNote("Virement depuis votre Compte Espèces à la flatexDEGIRO")))));
     }
 
     @Test
@@ -8384,6 +8454,41 @@ public class DegiroPDFExtractorTest
                         hasAmount("EUR", 549.34), hasGrossValue("EUR", 546.67), //
                         hasForexGrossValue("CAD", 820.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 2.67))));
+    }
+
+    @Test
+    public void testTransacciones05()
+    {
+        var extractor = new DegiroPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Transacciones05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B4L5Y983"), hasWkn(null), hasTicker(null), //
+                        hasName("ISHARES CORE MSCI WORLD UCITS ETF USD (ACC)"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-10-05T13:35"), hasShares(5.00), //
+                        hasSource("Transacciones05.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 654.95), hasGrossValue("EUR", 653.95), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.00), //
+                        hasSecurity(hasIsin("IE00B4L5Y983")))));
     }
 
     @Test

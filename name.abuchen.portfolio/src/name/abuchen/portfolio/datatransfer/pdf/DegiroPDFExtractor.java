@@ -128,12 +128,18 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransactions()
     {
+        // @formatter:off
+        // The French account statement is named "Relevé de compte" and prints
+        // the column header "Date Heure Date de Produit Code ISIN Description
+        // FX Mouvements Solde".
+        // @formatter:on
         final DocumentType type = new DocumentType("(Kontoauszug"
                         + "|Account statement"
                         + "|Rekeningoverzicht"
                         + "|Estratto conto"
                         + "|Estado de cuenta"
-                        + "|Přehled účtu)", (context, lines) -> {
+                        + "|Přehled účtu"
+                        + "|Relev. de compte)", (context, lines) -> {
 
             // @formatter:off
             // Formatting:
@@ -538,6 +544,63 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                 return new TransactionItem(t);
                             return null;
                         }));
+
+        // @formatter:off
+        // Formatting:
+        // DateTime | Value date | Description | Currency Balance | Currency
+        //           Currency Change
+        // -------------------------------------
+        // 23-10-2026 16:41 23-10-2026 Virement depuis votre Compte Espèces à la flatexDEGIRO EUR 884,61
+        // Bank: 1004,39 EUR
+        // 22-10-2026 15:21 22-10-2026 Virement vers votre Compte Espèces à la flatexDEGIRO EUR 1 889,00
+        // Bank: 906,9 EUR
+        //
+        // The number of the description line is the balance of the account
+        // before the transfer, the amount of the transfer is printed in the
+        // "Bank:" line below it. Both numbers can be verified with the
+        // "Degiro Cash Sweep Transfer" booking of the same date: its movement
+        // and its balance match the "Bank:" amount and the balance above.
+        //
+        // These transfers between the account and the "Compte Espèces" of the
+        // flatexDEGIRO Bank are internal transfers of the same bank group. The
+        // "Degiro Cash Sweep Transfer" booking with the same amount is the
+        // mirror booking of this transfer inside the account. Nothing is
+        // imported, because the "Compte Espèces" is a second view on the money
+        // of the account and would duplicate the cash of the portfolio.
+        // @formatter:on
+        Block blockTransferMoneyAccount = new Block("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}:[\\d]{2} "
+                        + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
+                        + "Virement (depuis|vers) votre Compte .* la flatexDEGIRO [\\w]{3} [\\.,'’\\d\\s]+$");
+        type.addBlock(blockTransferMoneyAccount);
+        blockTransferMoneyAccount.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
+
+                        .section("date", "time", "note", "currency")
+                        .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
+                                        + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
+                                        + "(?<note>Virement (depuis|vers) votre Compte .* la flatexDEGIRO) "
+                                        + "(?<currency>[\\w]{3}) "
+                                        + "[\\.,'’\\d\\s]+$")
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date"), v.get("time")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setNote(trim(v.get("note")));
+                        })
+
+                        // @formatter:off
+                        // 23-10-2026 16:41 23-10-2026 Virement depuis votre Compte Espèces à la flatexDEGIRO EUR 884,61
+                        // Bank: 1004,39 EUR
+                        // @formatter:on
+                        .section("amount", "currency").optional()
+                        .match("^Bank: (?<amount>[\\.,'’\\d\\s]+) (?<currency>[\\w]{3})$")
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .wrap(t -> new SkippedItem(new TransactionItem(t),
+                                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired)));
 
         // @formatter:off
         // Formatting:
@@ -1583,10 +1646,17 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
      */
     private void addDepotStatementTransactions()
     {
+        // @formatter:off
+        // The account statement of the French documents is named "Relevé de
+        // compte" and contains the French financial transaction tax "Taxe sur
+        // les Transactions Financières". The word "Transactions" inside that
+        // tax line must not let the transaction report match, therefore the
+        // tax line is excluded from the "Transactions" alternative.
+        // @formatter:on
         final var type = new DocumentType("(Transaktions.bersicht"
                         + "|Transacciones"
                         + "|Transacties"
-                        + "|Transactions"
+                        + "|Transactions(?! Financ.)"
                         + "|Transakcje"
                         + "|Operazioni"
                         + "|Transakce"
@@ -1599,11 +1669,12 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // exchange Venue Quantity Price Local value Value EUR Exchange AutoFX and/or third
                             // d'exécution locale CHF change conversion
                             // Lokalwährung Wert EUR Wec
+                            // referencia Número Precio Valor local Valor EUR Tipo de Comisión transacción
                             // @formatter:on
                             Pattern pCurrencyAccount = Pattern.compile("^(?![\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )"
-                                            + ".*(Local value Value|locale|Lokalw.hrung Wert) "
+                                            + ".*(Local value Value|locale|Lokalw.hrung Wert|Valor local Valor) "
                                             + "(?<currency>[A-Z]{3}) "
-                                            + "(Exchange|change|Wec).*$");
+                                            + "(Exchange|change|Wec|Tipo).*$");
 
                             // @formatter:off
                             // The name of the security can be spread over several lines.
@@ -3115,4 +3186,4 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
     {
         return value == null ? null : value.replace('\u2019', '\'');
     }
-}
+}
