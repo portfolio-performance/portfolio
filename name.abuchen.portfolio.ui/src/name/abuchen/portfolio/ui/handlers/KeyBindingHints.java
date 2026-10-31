@@ -1,11 +1,11 @@
 package name.abuchen.portfolio.ui.handlers;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.commands.MBindingTable;
 import org.eclipse.e4.ui.model.application.commands.MCommand;
@@ -13,7 +13,6 @@ import org.eclipse.e4.ui.model.application.commands.MKeyBinding;
 import org.eclipse.e4.ui.model.application.commands.MParameter;
 import org.eclipse.e4.ui.model.application.ui.menu.MHandledItem;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuItem;
-import org.eclipse.swt.SWT;
 
 import name.abuchen.portfolio.ui.Messages;
 
@@ -119,8 +118,10 @@ public class KeyBindingHints
             return;
 
         String base = current == null ? "" : current; //$NON-NLS-1$
-        String tooltip = MessageFormat.format(Messages.KeyBindingHint, shortcut, base).trim();
-        item.setTooltip(tooltip);
+        // not MessageFormat: the existing tooltip is free text and may contain
+        // apostrophes that MessageFormat would silently swallow
+        String tooltip = Messages.KeyBindingHint.replace("{0}", shortcut).replace("{1}", base); //$NON-NLS-1$ //$NON-NLS-2$
+        item.setTooltip(tooltip.trim());
     }
 
     private static String findKeySequence(List<MBindingTable> tables, String commandId, List<MParameter> itemParameters)
@@ -147,9 +148,13 @@ public class KeyBindingHints
     }
 
     /**
-     * The parameters of a binding refer to the parameter definitions of the
-     * command (by their id); the parameters of a menu item carry the same id
-     * together with the value that the menu item passes to the command.
+     * A parameter of a binding and the parameter of a menu item address the
+     * same parameter definition of the command through their <em>name</em>,
+     * together with the value that is passed to the command. The element id
+     * cannot be used: the application model gives every parameter its own
+     * instance id, so the ids of a binding and of a menu item differ even when
+     * both address the same parameter (see Application.e4xmi, for example the
+     * "holdings" menu item and the binding of Ctrl+U H).
      */
     private static boolean hasSameParameters(List<MParameter> bindingParameters, List<MParameter> itemParameters)
     {
@@ -160,7 +165,7 @@ public class KeyBindingHints
             return true;
 
         return bindingParameters.stream().allMatch(bp -> itemParameters.stream() //
-                        .anyMatch(ip -> Objects.equals(ip.getElementId(), bp.getElementId())
+                        .anyMatch(ip -> Objects.equals(ip.getName(), bp.getName())
                                         && Objects.equals(ip.getValue(), bp.getValue())));
     }
 
@@ -193,6 +198,8 @@ public class KeyBindingHints
 
     private static boolean isMac()
     {
-        return "carbon".equals(SWT.getPlatform()); //$NON-NLS-1$
+        // SWT.getPlatform() names the window toolkit ("gtk", "win32", "cocoa")
+        // and not the operating system, so ask the runtime for the OS
+        return Platform.OS_MACOSX.equals(Platform.getOS());
     }
 }

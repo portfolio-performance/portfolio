@@ -32,6 +32,20 @@ public class KeyBindingHintsTest
 {
     private static final String COMMAND_ID = "name.abuchen.portfolio.ui.command.updatequotes";
 
+    /** id of the parameter definition of the command (see Application.e4xmi) */
+    private static final String PARAMETER_ID = "name.abuchen.portfolio.ui.param.filter";
+    /**
+     * the bindings and the menu items each carry their own parameter ids: the
+     * application model numbers the parameter instances instead of repeating
+     * the id of the parameter definition (the "1" of the menu item and the "1"
+     * of the binding happen to be the same, "2" and "0" are not)
+     */
+    private static final String BINDING_PARAMETER_ID_ACTIVE = "name.abuchen.portfolio.ui.parameter.1";
+    private static final String BINDING_PARAMETER_ID_HOLDINGS = "name.abuchen.portfolio.ui.parameter.2";
+    private static final String ITEM_PARAMETER_ID_ACTIVE = "name.abuchen.portfolio.ui.parameter.1";
+    private static final String ITEM_PARAMETER_ID_HOLDINGS = "name.abuchen.portfolio.ui.parameter.holdings";
+    private static final String ITEM_PARAMETER_ID_SELECTED = "name.abuchen.portfolio.ui.parameter.2";
+
     private MApplication application;
     private MCommand command;
     private MCommandParameter filterParameter;
@@ -46,29 +60,29 @@ public class KeyBindingHintsTest
         command.setElementId(COMMAND_ID);
 
         filterParameter = MCommandsFactory.INSTANCE.createCommandParameter();
-        filterParameter.setElementId("param.id.filter");
-        filterParameter.setName("name.abuchen.portfolio.ui.param.filter");
+        filterParameter.setElementId(PARAMETER_ID);
+        filterParameter.setName(PARAMETER_ID);
         command.getParameters().add(filterParameter);
 
         bindingTable = MCommandsFactory.INSTANCE.createBindingTable();
         application.getBindingTables().add(bindingTable);
 
         addBinding("M1+U K", null, null);
-        addBinding("M1+U A", filterParameter, "ACTIVE");
-        addBinding("M1+U H", filterParameter, "HOLDINGS");
+        addBinding("M1+U A", BINDING_PARAMETER_ID_ACTIVE, "ACTIVE");
+        addBinding("M1+U H", BINDING_PARAMETER_ID_HOLDINGS, "HOLDINGS");
     }
 
-    private MKeyBinding addBinding(String keySequence, MCommandParameter parameter, String value)
+    private MKeyBinding addBinding(String keySequence, String bindingParameterId, String value)
     {
         MKeyBinding binding = MCommandsFactory.INSTANCE.createKeyBinding();
         binding.setKeySequence(keySequence);
         binding.setCommand(command);
 
-        if (parameter != null)
+        if (bindingParameterId != null)
         {
             MParameter bindingParameter = MCommandsFactory.INSTANCE.createParameter();
-            bindingParameter.setElementId(parameter.getElementId());
-            bindingParameter.setName(parameter.getName());
+            bindingParameter.setElementId(bindingParameterId);
+            bindingParameter.setName(filterParameter.getName());
             bindingParameter.setValue(value);
             binding.getParameters().add(bindingParameter);
         }
@@ -104,15 +118,31 @@ public class KeyBindingHintsTest
     public void testParameterizedBindingIsFound()
     {
         assertThat(KeyBindingHints.getKeySequence(application,
-                        createMenuItem(filterParameter.getElementId(), "ACTIVE")), is("M1+U A"));
+                        createMenuItem(ITEM_PARAMETER_ID_ACTIVE, "ACTIVE")), is("M1+U A"));
         assertThat(KeyBindingHints.getKeySequence(application,
-                        createMenuItem(filterParameter.getElementId(), "HOLDINGS")), is("M1+U H"));
+                        createMenuItem(ITEM_PARAMETER_ID_HOLDINGS, "HOLDINGS")), is("M1+U H"));
+    }
+
+    @Test
+    public void testBindingIsMatchedByParameterNameAndNotById()
+    {
+        // the model gives the parameter of a binding and the parameter of a
+        // menu item different ids, so only name and value may be compared
+        assertThat(KeyBindingHints.getKeySequence(application,
+                        createMenuItem("any.other.id", "ACTIVE")), is("M1+U A"));
+    }
+
+    @Test
+    public void testBindingWithOtherParameterValueIsNotUsed()
+    {
+        assertThat(KeyBindingHints.getKeySequence(application,
+                        createMenuItem(ITEM_PARAMETER_ID_SELECTED, "SECURITY")), is(nullValue()));
     }
 
     @Test
     public void testBindingWithOtherParametersIsNotUsed()
     {
-        MHandledMenuItem item = createMenuItem(filterParameter.getElementId(), "WATCHLIST");
+        MHandledMenuItem item = createMenuItem(ITEM_PARAMETER_ID_ACTIVE, "WATCHLIST");
 
         assertThat(KeyBindingHints.getKeySequence(application, item), is(nullValue()));
     }
@@ -122,10 +152,10 @@ public class KeyBindingHintsTest
     {
         // two bindings for the same command and the same parameter value: the
         // shortcut cannot be determined, so nothing is shown
-        addBinding("M1+U X", filterParameter, "ACTIVE");
+        addBinding("M1+U X", BINDING_PARAMETER_ID_HOLDINGS, "ACTIVE");
 
         assertThat(KeyBindingHints.getKeySequence(application,
-                        createMenuItem(filterParameter.getElementId(), "ACTIVE")), is(nullValue()));
+                        createMenuItem(ITEM_PARAMETER_ID_ACTIVE, "ACTIVE")), is(nullValue()));
     }
 
     @Test
@@ -175,7 +205,7 @@ public class KeyBindingHintsTest
     @Test
     public void testTooltipGetsTheShortcutAppended()
     {
-        MHandledMenuItem item = createMenuItem(filterParameter.getElementId(), "ACTIVE");
+        MHandledMenuItem item = createMenuItem(ITEM_PARAMETER_ID_ACTIVE, "ACTIVE");
         item.setTooltip("only active securities");
 
         KeyBindingHints.appendToTooltip(application, item);
@@ -188,7 +218,7 @@ public class KeyBindingHintsTest
     @Test
     public void testTooltipIsNotAppendedTwice()
     {
-        MHandledMenuItem item = createMenuItem(filterParameter.getElementId(), "ACTIVE");
+        MHandledMenuItem item = createMenuItem(ITEM_PARAMETER_ID_ACTIVE, "ACTIVE");
         item.setTooltip("only active securities");
 
         KeyBindingHints.appendToTooltip(application, item);
@@ -207,6 +237,18 @@ public class KeyBindingHintsTest
         KeyBindingHints.appendToTooltip(application, item);
 
         assertThat(item.getTooltip(), containsString(KeyBindingHints.formatKeySequence("M1+U K")));
+    }
+
+    @Test
+    public void testApostrophesOfTheExistingTooltipSurvive()
+    {
+        // the tooltip is free text: a MessageFormat would drop the apostrophes
+        MHandledMenuItem item = createMenuItem(ITEM_PARAMETER_ID_ACTIVE, "ACTIVE");
+        item.setTooltip("don't update the quotes of inactive securities");
+
+        KeyBindingHints.appendToTooltip(application, item);
+
+        assertThat(item.getTooltip(), containsString("don't"));
     }
 
     @Test
