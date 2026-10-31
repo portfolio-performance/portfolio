@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.util.chart;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.swt.graphics.GC;
@@ -55,19 +56,29 @@ public final class ChartUtil
 
         Point chartSize = chart.getSize();
 
-        // GC.copyArea() fills the image handle at the GC's zoom, but getImageData()
-        // reads zoom 100, which above 100 % scaling is a fresh black buffer.
-        // Remember the zoom the provider is asked for and read back from that one.
-        AtomicInteger usedZoom = new AtomicInteger(100);
+        // GC.copyArea() fills the image of the GC's zoom only, while getImageData()
+        // reads the zoom it is asked for - above 100 % an untouched, black buffer.
+        // Windows asks the provider while copying, cocoa and GTK while the image is
+        // set up. As SWT keeps asking other zooms once it gets null, only the first
+        // request of a phase is the zoom whose buffer copyArea fills.
+        AtomicBoolean copying = new AtomicBoolean(false);
+        AtomicInteger setupZoom = new AtomicInteger(0);
+        AtomicInteger copyZoom = new AtomicInteger(0);
 
         ImageDataProvider chartImageDataProvider = zoom -> {
-            usedZoom.set(zoom);
+            if (copying.get())
+                copyZoom.compareAndSet(0, zoom);
+            else
+                setupZoom.compareAndSet(0, zoom);
 
-            // round like SWT does, or the buffer misses the last row/column
-            int width = Math.max(1, Math.round(chartSize.x * zoom / 100f));
-            int height = Math.max(1, Math.round(chartSize.y * zoom / 100f));
+            // supply the 100 % image and let SWT scale it, using its own rounding.
+            // A buffer of its own would stay alive as an image representation and
+            // cocoa would hand that out instead of the copied pixels.
+            if (zoom != 100)
+                return null;
+
             PaletteData palette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
-            return new ImageData(width, height, 32, palette);
+            return new ImageData(Math.max(1, chartSize.x), Math.max(1, chartSize.y), 32, palette);
         };
 
         Image image = null;
@@ -76,8 +87,20 @@ public final class ChartUtil
         {
             image = new Image(chart.getDisplay(), chartImageDataProvider);
             gc = new GC(chart);
-            gc.copyArea(image, 0, 0);
-            return image.getImageData(usedZoom.get());
+
+            copying.set(true);
+            try
+            {
+                gc.copyArea(image, 0, 0);
+            }
+            finally
+            {
+                copying.set(false);
+            }
+
+            // Windows knows the GC's zoom by now, cocoa and GTK stay at their setup zoom
+            int zoom = copyZoom.get() > 0 ? copyZoom.get() : setupZoom.get();
+            return image.getImageData(zoom > 0 ? zoom : 100);
         }
         finally
         {
