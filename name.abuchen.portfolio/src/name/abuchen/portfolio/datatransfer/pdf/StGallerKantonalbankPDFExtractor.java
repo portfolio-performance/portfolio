@@ -64,29 +64,91 @@ public class StGallerKantonalbankPDFExtractor extends AbstractPDFExtractor
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
-                        // @formatter:off
-                        // 10'000 N-Akt TUI AG Aus Konversion Valoren-Nr. 125205291
-                        // ISIN DE000TUAG505
-                        // Währung Betrag
-                        // Kurs EUR 6.822613 EUR 68'226.13
-                        // @formatter:on
-                        .section("name", "wkn", "isin", "currency") //
-                        .match("^[\\.'\\d]+ (?<name>.*) Valoren\\-Nr\\. (?<wkn>[A-Z0-9]{5,9})$") //
-                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                        .match("^Kurs (?<currency>[A-Z]{3}) [\\.'\\d]+ [A-Z]{3} [\\.'\\d]+$") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-
-                        // @formatter:off
-                        // 10'000 N-Akt TUI AG Aus Konversion Valoren-Nr. 125205291
-                        // @formatter:on
-                        .section("shares") //
-                        .match("^(?<shares>[\\.'\\d]+) .* Valoren\\-Nr\\. [A-Z0-9]{5,9}$") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Wir haben für Sie am 2. Juni 2026 gekauft (Details siehe Folgeseite):
+                                        // 30 N-Akt Partners Group Holding AG CHF Valoren-Nr. 2460882
+                                        // 0.01 nom ISIN CH0024608827
+                                        // Währung Betrag
+                                        // Kurs CHF 820.40 CHF 24'612.00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares", "name", "wkn", "nameContinued", "isin", "currency") //
+                                                        .find("Wir haben f.r Sie am .* (gekauft|verkauft).*") //
+                                                        .match("^(?<shares>[\\.'\\d]+) (?<name>.*?) Valoren\\-Nr\\. (?<wkn>[A-Z0-9]{5,9})$") //
+                                                        .match("^(?<nameContinued>.+) ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^W.hrung Betrag$") //
+                                                        .match("^Kurs (?<currency>[A-Z]{3}) [\\.'\\d]+( [A-Z]{3} [\\.'\\d]+)?$") //
+                                                        .assign((t, v) -> {
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                            t.setShares(asShares(v.get("shares")));
+                                                        }),
+                                        // @formatter:off
+                                        // Wir haben für Sie am 24. Februar 2025 gekauft (Details siehe Folgeseite):
+                                        // 10'000 N-Akt TUI AG Aus Konversion Valoren-Nr. 125205291
+                                        // ISIN DE000TUAG505
+                                        // Währung Betrag
+                                        // Kurs EUR 6.822613 EUR 68'226.13
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares", "name", "wkn", "isin", "currency") //
+                                                        .find("Wir haben f.r Sie am .* (gekauft|verkauft).*") //
+                                                        .match("^(?<shares>[\\.'\\d]+) (?<name>.*?) Valoren\\-Nr\\. (?<wkn>[A-Z0-9]{5,9})$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^W.hrung Betrag$") //
+                                                        .match("^Kurs (?<currency>[A-Z]{3}) [\\.'\\d]+( [A-Z]{3} [\\.'\\d]+)?$") //
+                                                        .assign((t, v) -> {
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                            t.setShares(asShares(v.get("shares")));
+                                                        }),
+                                        // @formatter:off
+                                        // Wir haben für Sie am 28. Mai 2026 verkauft (Details siehe Folgeseite):
+                                        // 5'500 Ant UBS (Irl) ETF plc - UBS MSCI World
+                                        // Valoren-Nr. 110951056
+                                        // Small Cap SR UCITS ETF Accum Shs USD
+                                        // ISIN IE00BKSCBX74
+                                        // Währung Betrag
+                                        // Kurs EUR 10.81905
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares", "name", "wkn", "nameContinued", "isin", "currency") //
+                                                        .find("Wir haben f.r Sie am .* (gekauft|verkauft).*") //
+                                                        .match("^(?<shares>[\\.'\\d]+) (?<name>.*)$") //
+                                                        .match("^Valoren\\-Nr\\. (?<wkn>[A-Z0-9]{5,9})$") //
+                                                        .match("^(?<nameContinued>.*)$") //
+                                                        .match("^.*ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^W.hrung Betrag$") //
+                                                        .match("^Kurs (?<currency>[A-Z]{3}) [\\.'\\d]+( [A-Z]{3} [\\.'\\d]+)?$") //
+                                                        .assign((t, v) -> {
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                            t.setShares(asShares(v.get("shares")));
+                                                        }),
+                                        // @formatter:off
+                                        // Wir haben für Sie am 28. Mai 2026 gekauft (Details siehe Folgeseite):
+                                        // 500 N-Akt Nestle AG CHF 0.1 nom
+                                        // Valoren-Nr. 3886335
+                                        // ISIN CH0038863350
+                                        // Währung Betrag
+                                        // Kurs CHF 79.39
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares", "name", "wkn", "isin", "currency") //
+                                                        .find("Wir haben f.r Sie am .* (gekauft|verkauft).*") //
+                                                        .match("^(?<shares>[\\.'\\d]+) (?<name>.*)$") //
+                                                        .match("^Valoren\\-Nr\\. (?<wkn>[A-Z0-9]{5,9})$") //
+                                                        .match("^.*ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^W.hrung Betrag$") //
+                                                        .match("^Kurs (?<currency>[A-Z]{3}) [\\.'\\d]+( [A-Z]{3} [\\.'\\d]+)?$") //
+                                                        .assign((t, v) -> {
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                            t.setShares(asShares(v.get("shares")));
+                                                        }))
 
                         .oneOf( //
                                         // @formatter:off
                                         // Menge Ausführungszeitpunkt Börsenplatz Währung Kurs
                                         // 10'000 20.02.2025 09:00:13 Xetra EUR 6.702
+                                        // 500 28.05.2026 14:04:36 SIX Swiss Exchange - EBBO Book CHF 79.39
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time") //
@@ -105,9 +167,15 @@ public class StGallerKantonalbankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Zu Ihren Lasten Valuta 26.02.2025 EUR 69'297.29
                         // Zu Ihren Gunsten Valuta 24.02.2025 EUR 65'967.79
+                        //
+                        // Total CHF 39'728.85 Zu Ihren Lasten
+                        // Valuta 01.06.2026 CHF 39'728.85
+                        //
+                        // Total EUR 59'403.62 Zu Ihren Gunsten
+                        // Valuta 01.06.2026 EUR 59'403.62
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Zu Ihren (Lasten|Gunsten) Valuta [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d]+)$") //
+                        .match("^(Zu Ihren (Lasten|Gunsten) )?Valuta [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -154,7 +222,7 @@ public class StGallerKantonalbankPDFExtractor extends AbstractPDFExtractor
                                                         .find("Ihr Depotbestand per Ex\\-Datum .*") //
                                                         .match("^[\\.'\\d]+ (?<name>.*)$") //
                                                         .match("^(?<nameContinued>.*)$") //
-                                                        .match("^.* Valoren\\-Nr\\.: (?<wkn>[A-Z0-9]{5,9}), ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^(.*\\s)?Valoren\\-Nr\\.: (?<wkn>[A-Z0-9]{5,9}), ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .match("^Aussch.ttung: (?<currency>[A-Z]{3}) [\\.'\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))) //
                                         , //
@@ -162,12 +230,16 @@ public class StGallerKantonalbankPDFExtractor extends AbstractPDFExtractor
                                         // 10'000 N-Akt TUI AG Aus Konversion
                                         // Namenaktien Valoren-Nr.: 125205291, ISIN: DE000TUAG505
                                         // Ausschüttung: EUR 0.10
+                                        //
+                                        // 750 N-Akt Nike Inc -B- Namenaktien
+                                        // Valoren-Nr.: 957150, ISIN: US6541061031
+                                        // Ausschüttung: USD 0.41
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "wkn", "isin", "currency") //
                                                         .find("Ihr Depotbestand per Ex\\-Datum .*") //
                                                         .match("^[\\.'\\d]+ (?<name>.*)$") //
-                                                        .match("^.* Valoren\\-Nr\\.: (?<wkn>[A-Z0-9]{5,9}), ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^(.*\\s)?Valoren\\-Nr\\.: (?<wkn>[A-Z0-9]{5,9}), ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .match("^Aussch.ttung: (?<currency>[A-Z]{3}) [\\.'\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))) //
                         )
@@ -189,16 +261,22 @@ public class StGallerKantonalbankPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Zu Ihren Gunsten Valuta 13.02.2026 EUR 736.25
+                        //
+                        // Total USD 215.24 Zu Ihren Gunsten
+                        // Valuta 01.07.2026 USD 215.24
                         // @formatter:on
                         .section("date") //
-                        .match("^Zu Ihren Gunsten Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [A-Z]{3} [\\.'\\d]+$") //
+                        .match("^(Zu Ihren Gunsten )?Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [A-Z]{3} [\\.'\\d]+$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Zu Ihren Gunsten Valuta 13.02.2026 EUR 736.25
+                        //
+                        // Total USD 215.24 Zu Ihren Gunsten
+                        // Valuta 01.07.2026 USD 215.24
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Zu Ihren Gunsten Valuta [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d]+)$") //
+                        .match("^(Zu Ihren Gunsten )?Valuta [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -244,6 +322,13 @@ public class StGallerKantonalbankPDFExtractor extends AbstractPDFExtractor
                         .match("^Eidg\\. Stempelsteuer ?(\\(.*\\))? (?<currency>[A-Z]{3}) (\\-)?(?<tax>[\\.'\\d]+)$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
+                        // @formatter:off
+                        // Zusätzlicher Steuerrückbehalt(CHF -36.03) USD 46.13
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Zus.tzlicher Steuerr.ckbehalt ?(\\(.*\\))? (?<currency>[A-Z]{3}) (\\-)?(?<tax>[\\.'\\d]+)$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
                         .optionalOneOf( //
                                         // @formatter:off
                                         // Quellensteuer 20% USD 1'243.77
@@ -262,6 +347,7 @@ public class StGallerKantonalbankPDFExtractor extends AbstractPDFExtractor
                                         ,
                                         // @formatter:off
                                         // Quellensteuer 26.375% EUR 263.75
+                                        // Quellensteuer 15% USD 46.13
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("withHoldingTax", "currency") //
@@ -275,6 +361,13 @@ public class StGallerKantonalbankPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction //
+
+                        // @formatter:off
+                        // Ausführungsgebühr SSX CHF 4.08
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("^Ausf.hrungsgeb.hr( [A-Za-z0-9]+)? (?<currency>[A-Z]{3}) (\\-)?(?<fee>[\\.'\\d]+)$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Courtage EUR 955.17

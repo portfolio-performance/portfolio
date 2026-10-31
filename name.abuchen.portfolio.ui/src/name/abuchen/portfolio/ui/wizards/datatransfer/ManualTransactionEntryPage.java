@@ -4,8 +4,10 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -134,7 +136,12 @@ public class ManualTransactionEntryPage extends AbstractWizardPage
         var sash = new SashForm(parent, SWT.HORIZONTAL);
         setControl(sash);
 
-        pdfViewer = new PDFViewer(sash, SWT.NONE, inputFile);
+        // text files (extracted from a PDF document earlier) have no document
+        // to render, hence show the text instead
+        if (inputFile.isTextFile())
+            createTextPane(sash);
+        else
+            pdfViewer = new PDFViewer(sash, SWT.NONE, inputFile);
         createRightPane(sash);
 
         sash.setWeights(sashWeights);
@@ -206,6 +213,13 @@ public class ManualTransactionEntryPage extends AbstractWizardPage
         pdfViewer = null;
         itemsTable = null;
         buttonRow = null;
+    }
+
+    private void createTextPane(Composite parent)
+    {
+        var text = new StyledText(parent, SWT.READ_ONLY | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+        text.setFont(JFaceResources.getFont(JFaceResources.TEXT_FONT));
+        text.setText(inputFile.getText());
     }
 
     private void createRightPane(Composite parent)

@@ -581,7 +581,7 @@ public final class Navigation
                 String newName = askTaxonomyName(taxonomy.getName());
                 if (newName != null)
                 {
-                    taxonomy.setName(newName);
+                    taxonomy.rename(newName);
                     item.label = newName;
 
                     this.listeners.forEach(l -> l.changed(item));
@@ -596,7 +596,7 @@ public final class Navigation
                 if (newName != null)
                 {
                     Taxonomy copy = taxonomy.copy();
-                    copy.setName(newName);
+                    copy.rename(newName);
                     client.addTaxonomy(copy);
 
                     part.activateView(TaxonomyView.class, copy);

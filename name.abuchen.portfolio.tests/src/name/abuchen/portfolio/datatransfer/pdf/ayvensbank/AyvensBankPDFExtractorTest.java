@@ -3,8 +3,11 @@ package name.abuchen.portfolio.datatransfer.pdf.ayvensbank;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
@@ -58,9 +61,11 @@ public class AyvensBankPDFExtractorTest
 
         // check interest
         assertThat(results, hasItem(interest( //
-                        hasDate("2026-04-01"), hasAmount("EUR", 123.26), //
+                        hasDate("2026-04-01"), //
                         hasSource("Kontoauszug01.txt"), //
-                        hasNote(null))));
+                        hasNote(null), //
+                        hasAmount("EUR", 123.26), hasGrossValue("EUR", 123.26), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check deposit
         assertThat(results, hasItem(deposit( //
@@ -82,15 +87,19 @@ public class AyvensBankPDFExtractorTest
 
         // check interest
         assertThat(results, hasItem(interest( //
-                        hasDate("2026-03-01"), hasAmount("EUR", 122.98), //
+                        hasDate("2026-03-01"), //
                         hasSource("Kontoauszug01.txt"), //
-                        hasNote(null))));
+                        hasNote(null), //
+                        hasAmount("EUR", 122.98), hasGrossValue("EUR", 122.98), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check interest
         assertThat(results, hasItem(interest( //
-                        hasDate("2026-02-01"), hasAmount("EUR", 122.74), //
+                        hasDate("2026-02-01"), //
                         hasSource("Kontoauszug01.txt"), //
-                        hasNote(null))));
+                        hasNote(null), //
+                        hasAmount("EUR", 122.74), hasGrossValue("EUR", 122.74), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -114,21 +123,27 @@ public class AyvensBankPDFExtractorTest
 
         // check interest
         assertThat(results, hasItem(interest( //
-                        hasDate("2026-04-01"), hasAmount("EUR", 19.23), //
+                        hasDate("2026-04-01"), //
                         hasSource("Kontoauszug02.txt"), //
-                        hasNote(null))));
+                        hasNote(null), //
+                        hasAmount("EUR", 19.23), hasGrossValue("EUR", 19.23), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check interest
         assertThat(results, hasItem(interest( //
-                        hasDate("2026-03-01"), hasAmount("EUR", 19.20), //
+                        hasDate("2026-03-01"), //
                         hasSource("Kontoauszug02.txt"), //
-                        hasNote(null))));
+                        hasNote(null), //
+                        hasAmount("EUR", 19.20), hasGrossValue("EUR", 19.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check interest
         assertThat(results, hasItem(interest( //
-                        hasDate("2026-02-01"), hasAmount("EUR", 16.08), //
+                        hasDate("2026-02-01"), //
                         hasSource("Kontoauszug02.txt"), //
-                        hasNote(null))));
+                        hasNote(null), //
+                        hasAmount("EUR", 16.08), hasGrossValue("EUR", 16.08), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check deposit
         assertThat(results, hasItem(deposit( //

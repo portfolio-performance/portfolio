@@ -1,0 +1,12 @@
+<FlexQueryResponse queryName="DividendReversal" type="AF">
+  <FlexStatements count="1">
+    <FlexStatement accountId="U1234567" fromDate="20260616" toDate="20260616" period="LastMonth" whenGenerated="20260617;120000">
+      <AccountInformation accountId="U1234567" currency="USD" />
+      <CashTransactions>
+        <CashTransaction accountId="U1234567" currency="USD" fxRateToBase="1" assetCategory="STK" symbol="TEST" description="TEST(US0000000001) CASH DIVIDEND USD 0.0875 PER SHARE (Reversal)" conid="1" securityID="US0000000001" securityIDType="ISIN" isin="US0000000001" listingExchange="NYSE" multiplier="1" dateTime="20260616;120000" settleDate="20260616" amount="-0.70" type="Dividends" transactionID="reversal" reportDate="20260616" levelOfDetail="DETAIL" />
+        <CashTransaction accountId="U1234567" currency="USD" fxRateToBase="1" assetCategory="STK" symbol="TEST" description="TEST(US0000000001) CASH DIVIDEND USD 0.0844444444 PER SHARE (Ordinary Dividend)" conid="1" securityID="US0000000001" securityIDType="ISIN" isin="US0000000001" listingExchange="NYSE" multiplier="1" dateTime="20260616;120100" settleDate="20260616" amount="0.76" type="Dividends" transactionID="replacement" reportDate="20260616" levelOfDetail="DETAIL" />
+        <CashTransaction accountId="U1234567" currency="USD" fxRateToBase="1" assetCategory="CASH" symbol="" description="Dividend cash adjustment" dateTime="20260616;120200" amount="-0.06" type="Deposits/Withdrawals" transactionID="adjustment" reportDate="20260616" levelOfDetail="DETAIL" />
+      </CashTransactions>
+    </FlexStatement>
+  </FlexStatements>
+</FlexQueryResponse>

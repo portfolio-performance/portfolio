@@ -48,7 +48,7 @@ public class FordMoneyPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
-                        .section("date","note", "type", "amount") //
+                        .section("date", "note", "type", "amount") //
                         .documentContext("currency") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>(Gutschrift|.berweisung))(?<type>[\\s|\\-]{1,})(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
@@ -120,7 +120,7 @@ public class FordMoneyPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // @formatter:off
-                        // Summe 148,34 Kirchensteuer 0,0
+                        // Summe 148,34 Kirchensteuer 0,00
                         // @formatter:on
                         .section("tax").optional() //
                         .documentContext("currency") //

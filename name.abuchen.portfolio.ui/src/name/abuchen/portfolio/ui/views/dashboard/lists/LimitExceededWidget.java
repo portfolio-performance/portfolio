@@ -14,6 +14,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
+import name.abuchen.portfolio.model.AttributeFieldType;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.model.LimitPrice;
@@ -31,7 +32,7 @@ import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.dashboard.AttributesConfig;
 import name.abuchen.portfolio.ui.views.dashboard.ChartHeightConfig;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardData;
-import name.abuchen.portfolio.ui.views.settings.AttributeFieldType;
+import name.abuchen.portfolio.ui.views.settings.AttributeFieldTypeLabels;
 import name.abuchen.portfolio.ui.views.settings.SettingsView;
 
 public class LimitExceededWidget extends AbstractSecurityListWidget<LimitExceededWidget.LimitItem>
@@ -136,7 +137,7 @@ public class LimitExceededWidget extends AbstractSecurityListWidget<LimitExceede
 
         var label = new StyledLabel(parent, SWT.WRAP);
         label.setText(MessageFormat.format(Messages.MsgHintNoAttributesConfigured,
-                        AttributeFieldType.LIMIT_PRICE.toString()));
+                        AttributeFieldTypeLabels.label(AttributeFieldType.LIMIT_PRICE)));
         label.setOpenLinkHandler(d -> view.getPart().activateView(SettingsView.class, 1));
     }
 }

@@ -6,6 +6,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -316,7 +317,8 @@ public class MerkurPrivatBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-04-15T00:00"), hasShares(55), //
+                        hasDate("2024-04-15T00:00"), hasExDate("2024-04-11T00:00"), //
+                        hasShares(55), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Abrechnungsnr. 60338188850"), //
                         hasAmount("EUR", 42.35), hasGrossValue("EUR", 42.35), //
@@ -350,7 +352,8 @@ public class MerkurPrivatBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-09-11T00:00"), hasShares(2950), //
+                        hasDate("2024-09-11T00:00"), hasExDate("2024-09-04T00:00"), //
+                        hasShares(2950), //
                         hasSource("Dividende02.txt"), //
                         hasNote("Abrechnungsnr. 13354957156"), //
                         hasAmount("EUR", 753.20), hasGrossValue("EUR", 914.50), //
@@ -384,7 +387,8 @@ public class MerkurPrivatBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-10-01T00:00"), hasShares(3.8506), //
+                        hasDate("2025-10-01T00:00"), hasExDate("2025-09-18T00:00"), //
+                        hasShares(3.8506), //
                         hasSource("Dividende03.txt"), //
                         hasNote("Abrechnungsnr. 77550511480"), //
                         hasAmount("EUR", 1.13), hasGrossValue("EUR", 1.38), //
@@ -420,7 +424,8 @@ public class MerkurPrivatBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-10-01T00:00"), hasShares(3.8506), //
+                        hasDate("2025-10-01T00:00"), hasExDate("2025-09-18T00:00"), //
+                        hasShares(3.8506), //
                         hasSource("Dividende03.txt"), //
                         hasNote("Abrechnungsnr. 77550511480"), //
                         hasAmount("EUR", 1.13), hasGrossValue("EUR", 1.38), //
@@ -462,7 +467,8 @@ public class MerkurPrivatBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-09-29T00:00"), hasShares(0.9854), //
+                        hasDate("2025-09-29T00:00"), hasExDate("2025-09-08T00:00"), //
+                        hasShares(0.9854), //
                         hasSource("Dividende04.txt"), //
                         hasNote("Abrechnungsnr. 77350300260"), //
                         hasAmount("EUR", 0.34), hasGrossValue("EUR", 0.53), //
@@ -498,7 +504,8 @@ public class MerkurPrivatBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-09-29T00:00"), hasShares(0.9854), //
+                        hasDate("2025-09-29T00:00"), hasExDate("2025-09-08T00:00"), //
+                        hasShares(0.9854), //
                         hasSource("Dividende04.txt"), //
                         hasNote("Abrechnungsnr. 77350300260"), //
                         hasAmount("EUR", 0.34), hasGrossValue("EUR", 0.53), //

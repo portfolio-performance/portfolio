@@ -195,6 +195,7 @@ public class Messages extends NLS
     public static String LabelSearchAll;
     public static String LabelSearchBond;
     public static String LabelSearchCloseEndFund;
+    public static String LabelSearchCommodity;
     public static String LabelSearchCryptoCurrency;
     public static String LabelSearchCurrency;
     public static String LabelSearchETC;
@@ -260,7 +261,9 @@ public class Messages extends NLS
     public static String MsgCheckTransactionCurrencyDoesNotMatchAccount;
     public static String MsgCheckTransactionMustNotHaveGrossAmount;
     public static String MsgCheckTransactionTypeCannotHaveASecurity;
+    public static String MsgCheckTransactionTypeCannotHaveFees;
     public static String MsgCheckTransactionTypeCannotHaveShares;
+    public static String MsgCheckTransactionTypeCannotHaveTaxes;
     public static String MsgCheckUnitForexMismatch;
     public static String MsgCheckUnitForexNotValid;
     public static String MsgCheckUnsupportedCurrency;
@@ -305,10 +308,13 @@ public class Messages extends NLS
     public static String MsgErrorTradeCollector_NoHoldingsForSell;
     public static String MsgErrorTradeCollector_NoHoldingsForTransfer;
     public static String MsgErrorTransactionAlternativeDocumentRequired;
+    public static String MsgErrorTransactionInboundDeliveryWithoutValue;
+    public static String MsgErrorTransactionIncludedInOtherTransaction;
     public static String MsgErrorTransactionMissingExchangeRateIfInForex;
     public static String MsgErrorTransactionOrderCancellationUnsupported;
     public static String MsgErrorTransactionSkipIfDetailsMissing;
     public static String MsgErrorTransactionSplitUnsupported;
+    public static String MsgErrorTransactionTaxCorrectionUnsupported;
     public static String MsgErrorTransactionTypeNotSupportedOrRequired;
     public static String MsgErrorTwelveDataAPIKeyMissing;
     public static String MsgErrorUnitCurrencyMismatch;

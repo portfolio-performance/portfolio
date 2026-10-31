@@ -33,7 +33,7 @@ public class OrangeBankPDFExtractor extends AbstractPDFExtractor
                                         // 04248 YeJSlmR Währung: EUR
                                         // @formatter:on
                                         .section("currency") //
-                                        .match("^.* W.hrung: (?<currency>[\\w]{3})$") //
+                                        .match("^.* W.hrung: (?<currency>[A-Z]{3})$") //
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
 
         this.addDocumentTyp(type);

@@ -1,0 +1,40 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.87.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Liechtensteinische
+Landesbank AG
+Städtle 44 · Postfach 384
+9490 Vaduz · Liechtenstein
+Telefon +188 474 64 38
+Fax +027 393 73 33
+Sitz Vaduz
+Registerbehörde: AJU
+HR FL-0001.000.289-1
+Herr oder Frau 
+HcgB oder aWirSUq WLEIztwp hgAi VMnXh
+PgiMZqKSNkGp 39 Referenz PBD / KUJ
+Direktwahl +494 078 85 05
+1301 aJC 
+Direktfax +962 524 95 70
+Vaduz, 9. November 2022
+Portfolionummer 5658.1111.1002
+LLB Consult ESG
+Börsenabrechnung - Ihr Kauf
+Auftragsnummer 468729311
+N Akt BASF SE
+Anzahl / Nominal 25
+Kurs EUR 47.665
+ISIN DE000BASF111
+Valorennummer 11450563
+Handelsplatz CITADEL CONNECT EUROPE - EU -
+SYSTEMATIC INTERNALISER
+Abschlussdatum 09.11.2022 / 10:15:38 CET
+Bruttobetrag EUR 1'191.63
+Lieferspesen EUR 25.22
+Eidgenössische Stempelsteuer EUR 1.79
+Fremde Brokergebühren EUR 0.84
+Zu Ihren Lasten Valuta 11. November 2022 EUR 1'219.48
+Den Betrag haben wir belastet: Konto 1111.2222.3333 Mandatskonto EUR.
+Elektronisch zugestellt
+STEX 139092 59631483 14144-986243213-315309144 EBANKING

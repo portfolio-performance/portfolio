@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views.columns;
 import java.text.MessageFormat;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -19,7 +20,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
 import name.abuchen.portfolio.util.TextUtil;
 
-public class TaxonomyColumn extends Column
+public class TaxonomyColumn extends Column implements Column.CacheInvalidationListener
 {
     private static final class TaxonomyOptions implements Options<Integer>
     {
@@ -101,9 +102,30 @@ public class TaxonomyColumn extends Column
     {
         private final Taxonomy taxonomy;
 
+        /**
+         * Classifications per investment vehicle. Built lazily with a single
+         * pass over the taxonomy instead of traversing the full taxonomy for
+         * every cell (and twice per comparison when sorting). Cleared via
+         * {@link TaxonomyColumn#invalidateCache()}.
+         */
+        private Map<InvestmentVehicle, List<Classification>> classificationsByVehicle;
+
         public TaxonomyLabelProvider(Taxonomy taxonomy)
         {
             this.taxonomy = taxonomy;
+        }
+
+        private List<Classification> getClassifications(InvestmentVehicle vehicle)
+        {
+            if (classificationsByVehicle == null)
+                classificationsByVehicle = taxonomy.getClassificationsByInvestmentVehicle();
+
+            return classificationsByVehicle.getOrDefault(vehicle, List.of());
+        }
+
+        private void invalidate()
+        {
+            classificationsByVehicle = null;
         }
 
         @Override
@@ -113,7 +135,7 @@ public class TaxonomyColumn extends Column
             if (vehicle == null)
                 return null;
 
-            List<Classification> classifications = taxonomy.getClassifications(vehicle);
+            List<Classification> classifications = getClassifications(vehicle);
             if (classifications.isEmpty())
                 return null;
 
@@ -142,16 +164,24 @@ public class TaxonomyColumn extends Column
 
     private static final int SHOW_FULL_CLASSIFICATION = 100;
 
+    private final TaxonomyLabelProvider labelProvider;
+
     public TaxonomyColumn(final Taxonomy taxonomy)
     {
         super(taxonomy.getId(), taxonomy.getName(), SWT.LEFT, 120);
 
-        TaxonomyLabelProvider labelProvider = new TaxonomyLabelProvider(taxonomy);
+        labelProvider = new TaxonomyLabelProvider(taxonomy);
 
         setGroupLabel(Messages.ColumnTaxonomy);
         setOptions(new TaxonomyOptions(taxonomy));
         setLabelProvider(labelProvider);
         setComparator(new TaxonomyComparator(labelProvider));
+    }
+
+    @Override
+    public void invalidateCache()
+    {
+        labelProvider.invalidate();
     }
 
     private class TaxonomyComparator implements Comparator<Object>

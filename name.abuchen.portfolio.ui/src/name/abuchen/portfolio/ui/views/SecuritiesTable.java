@@ -1114,6 +1114,9 @@ public final class SecuritiesTable implements ModificationListener
             markDirty();
             if (!securities.getControl().isDisposed())
             {
+                // the dialog might have changed the taxonomy assignments
+                support.invalidateCache();
+
                 // the check if the security gets filtered after the change.
                 // Since it is unknown which property of the security has
                 // been changed, filter.isFilterProperty(...) can't be used.

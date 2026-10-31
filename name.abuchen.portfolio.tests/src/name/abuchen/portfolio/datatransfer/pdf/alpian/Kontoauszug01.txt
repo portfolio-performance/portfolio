@@ -1,0 +1,36 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.87.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Alpian SA
+Chemin des Crêts 17
+Petit-Saconnex - 1209 Geneva
+Switzerland
+www.alpian.com
+Geneva, 01 June 2023
+ili
+pCcMP
+iksywSthDVdZ 06
+eWbtqSpv
+8418
+Ca
+Account statement - May 2023 09.05.2023 - 31.05.2023
+Dear aDX pCcMP,
+Please find your account statement for the four currencies you have access to - as of 31 May 2023.
+Overview
+CHF Account EUR Account USD Account GBP Account
+Start period balance 0.00 0.00 0.00 0.00
+Total credit 30,000.00 0.00 0.00 0.00
+Total debit -30,000.00 0.00 0.00 0.00
+End period balance 0.00 0.00 0.00 0.00
+Detail of your transactions
+Booking date Value date Debit Credit
+Domestic Clearing (DD) 15 May 15 May CHF 1.00
+RHQaz ANy
+Domestic Clearing (DD) 23 May 23 May CHF 29,999.00
+dYyvP lQg
+Debit Internal Transfer 23 May 23 May CHF 30,000.00
+Current Account;Cash Account Discretion
+Advice without signature
+Disclaimer: This statement shall be considered to be approved if no complaint is received by Alpian SA within 30 days.
+01.06.2023 09:26:15.970 cc306826-80bd-4bd5-a09b-06cdc47e009e Page 1 of 1

@@ -43,7 +43,7 @@ public class AvivaPLCPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        var type = new DocumentType("You have (PURCHASED|SOLD)");
+        final var type = new DocumentType("You have (PURCHASED|SOLD)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();

@@ -88,8 +88,8 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         // Depotnummer 0195923225 Ausführung 17.10.2023 18:11:56
                         // @formatter:on
                         .section("time").optional() //
-                        .match("^.* Ausf.hrung .* (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})$") //
-                        .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
+                        .match("^.* Ausf.hrung .* (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2})$") //
+                        .assign((t, v) -> v.getTransactionContext().putString("time", v.get("time")))
 
                         // @formatter:off
                         // Depotnummer 50000000 Ausführung 17.05.2023
@@ -97,8 +97,10 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         .section("date") //
                         .match("^.* Ausf.hrung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> {
-                            if (type.getCurrentContext().get("time") != null)
-                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                            var time = v.getTransactionContext().getString("time");
+
+                            if (time != null)
+                                t.setDate(asDate(v.get("date"), time));
                             else
                                 t.setDate(asDate(v.get("date")));
                         })
@@ -198,6 +200,13 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         .section("date") //
                         .match("^Zahlbarkeitstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Ex-Tag 15.05.2023
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Ex\\-Tag (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
 
                         // @formatter:off
                         // Ausmachender Betrag + 7,44 EUR

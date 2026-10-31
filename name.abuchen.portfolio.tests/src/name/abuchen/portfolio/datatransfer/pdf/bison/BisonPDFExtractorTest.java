@@ -419,6 +419,67 @@ public class BisonPDFExtractorTest
     }
 
     @Test
+    public void testInfoReport06()
+    {
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "InfoReport06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(2L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(6));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("BTC"), //
+                        hasName("Bitcoin"), //
+                        hasCurrencyCode("EUR"), //
+                        hasFeed(CoinGeckoQuoteFeed.ID), //
+                        hasFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID, "bitcoin"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("ETH"), //
+                        hasName("Ethereum"), //
+                        hasCurrencyCode("EUR"), //
+                        hasFeed(CoinGeckoQuoteFeed.ID), //
+                        hasFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID, "ethereum"))));
+
+        // check deposit transactions
+        assertThat(results, hasItem(deposit(hasDate("2026-01-16T07:48"), hasAmount("EUR", 1000.00), //
+                        hasSource("InfoReport06.txt"), hasNote(null))));
+
+        // check inbound delivery transactions
+        assertThat(results, hasItem(inboundDelivery( //
+                        hasDate("2026-01-12T08:00"), hasShares(0.00087820), //
+                        hasSource("InfoReport06.txt"), //
+                        hasNote("Staking-Belohnung"), //
+                        hasAmount("EUR", 2.38), hasGrossValue("EUR", 2.38), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check inbound delivery transactions
+        assertThat(results, hasItem(inboundDelivery( //
+                        hasDate("2026-01-05T08:00"), hasShares(0.00086188), //
+                        hasSource("InfoReport06.txt"), //
+                        hasNote("Staking-Belohnung"), //
+                        hasAmount("EUR", 2.23), hasGrossValue("EUR", 2.23), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-01-01T09:06"), hasShares(0.01316467), //
+                        hasSource("InfoReport06.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1000.00), hasGrossValue("EUR", 1000.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testVorabpauschale01()
     {
         var extractor = new BisonPDFExtractor(new Client());

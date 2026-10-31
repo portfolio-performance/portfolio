@@ -1,0 +1,60 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.78.1
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+EMPLOYEE STOCK PLAN RELEASE CONFIRMATION
+Provided by mrVpz RggmgzX, INC. - NEW
+zeJHCR RAzumI Employee ID: 68316
+IcCqNfhKz 62
+27108
+OdHFLfZIpMni,  Qs
+ Release Summary
+Account Number 305637505 Release Date 08-10-2025
+Tax Payment Method Withhold Shares Shares Released 34.0000
+Company Name (Symbol) noaQU ppixWWH, INC. - NEW Market Value Per Share $70.215000
+(XCWE) Award Price Per Share $0.000000
+Award Number 4414241
+Award Date 11-09-2022
+Award Type RSU
+Plan 05
+ Release Details
+Calculation of Gain Calculation of Taxes
+Market Value $2,387.31 Taxable Gain $ Rate % Amount $
+Award Price ($0.00) Germany 2,387.31 51.52500 1,230.10
+Total Gain $2,387.31 Total Tax $1,230.10
+Stock Distribution
+Award Shares 34.0000 Cash Distribution
+Shares Traded (17.5190) Trade Value $1,230.10
+Shares Issued 16.4810 Total Tax ($1,230.10)
+Total Due Participant $0.00
+Registration: MSSB
+This information was provided by your company to E*TRADE from Morgan Stanley, a registered trademark of Morgan Stanley Smith Barney LLC, Member SIPC.
+Morgan Stanley and its affiliates do not guarantee the accuracy or completeness of the information provided by your company. If a sale is associated with these shares,
+the trade confirmation provided by Morgan Stanley Smith Barney LLC is the accurate record of the sales transaction.
+The data shown on this statement is based on your company's records. The company reserves the right to make corrections to this data. The release shown on this
+statement is subject to the terms of the plan under which the release was made.
+08/11/2025 04:54:38 PM ET Page 1 of 2
+EMPLOYEE STOCK PLAN RELEASE CONFIRMATION
+Provided by CRlRh eosJblp, INC. - NEW
+XrXfCx jvYEjj Employee ID: 93052
+TNwLWNBXa 34
+06944
+KekcztcIHwxE,  DE
+ Release Summary
+Account Number 858054711 Release Date 08-10-2025
+Tax Payment Method Withhold Shares Shares Released 34.0000
+Company Name (Symbol) fDUJz nQETFAH, INC. - NEW Market Value Per Share $70.215000
+(XCWE) Award Price Per Share $0.000000
+Award Number 4339434
+Award Date 11-09-2022
+Award Type RSU
+Plan 05
+ Tax Details in Local Currency
+Custom FMV Currency Code Exchange Rate Gain Amount Withholding Amount
+Germany EUR 0.858516 2,049.54 1,056.06
+This information was provided by your company to E*TRADE from Morgan Stanley, a registered trademark of Morgan Stanley Smith Barney LLC, Member SIPC.
+Morgan Stanley and its affiliates do not guarantee the accuracy or completeness of the information provided by your company. If a sale is associated with these shares,
+the trade confirmation provided by Morgan Stanley Smith Barney LLC is the accurate record of the sales transaction.
+The data shown on this statement is based on your company's records. The company reserves the right to make corrections to this data. The release shown on this
+statement is subject to the terms of the plan under which the release was made.
+08/11/2025 04:54:38 PM ET Page 2 of 2

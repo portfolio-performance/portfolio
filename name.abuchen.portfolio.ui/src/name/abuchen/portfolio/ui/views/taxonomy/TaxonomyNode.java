@@ -477,7 +477,7 @@ public abstract class TaxonomyNode implements Adaptable
         if (type == Security.class)
             return type.cast(getBackingSecurity());
         else if (type == Attributable.class)
-            return type.cast(getBackingSecurity());
+            return getBackingInvestmentVehicle() instanceof Attributable attributable ? type.cast(attributable) : null;
         else
             return null;
     }

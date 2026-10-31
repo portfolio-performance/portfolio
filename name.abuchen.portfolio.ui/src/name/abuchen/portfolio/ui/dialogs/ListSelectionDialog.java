@@ -1,6 +1,9 @@
 package name.abuchen.portfolio.ui.dialogs;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.eclipse.jface.dialogs.Dialog;
@@ -8,9 +11,11 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
@@ -18,6 +23,8 @@ import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -26,6 +33,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 
 public class ListSelectionDialog extends Dialog
@@ -67,6 +75,8 @@ public class ListSelectionDialog extends Dialog
 
     private Object[] elements;
     private Object[] selected;
+    private Object initialSelection;
+    private Set<Object> disabledElements = Set.of();
 
     private TableViewer tableViewer;
     private ElementFilter elementFilter;
@@ -103,6 +113,26 @@ public class ListSelectionDialog extends Dialog
         this.elements = elements.toArray();
     }
 
+    /**
+     * Pre-selects the given element in the virtual table when the dialog is
+     * opened. Without a selection the result stays empty, which callers treat
+     * as "no change".
+     */
+    public void setInitialSelection(Object initialSelection)
+    {
+        this.initialSelection = initialSelection;
+    }
+
+    /**
+     * Shows the given elements grayed out. They remain visible but are never
+     * part of the result, and OK is enabled only while the selection contains
+     * at least one other element.
+     */
+    public void setDisabledElements(Collection<?> disabledElements)
+    {
+        this.disabledElements = new HashSet<>(disabledElements);
+    }
+
     public Object[] getResult()
     {
         return selected != null ? selected : new Object[0];
@@ -129,6 +159,7 @@ public class ListSelectionDialog extends Dialog
     {
         Control contents = super.createContents(parent);
         getShell().setText(title);
+        updateOkButton();
         return contents;
     }
 
@@ -190,26 +221,52 @@ public class ListSelectionDialog extends Dialog
         TableViewerColumn column = new TableViewerColumn(tableViewer, SWT.None);
         layout.setColumnData(column.getColumn(), new ColumnWeightData(100));
 
-        tableViewer.setLabelProvider(labelProvider);
+        tableViewer.setLabelProvider(disabledElements.isEmpty() ? labelProvider : new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return labelProvider.getText(element);
+            }
+
+            @Override
+            public Image getImage(Object element)
+            {
+                return labelProvider.getImage(element);
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return disabledElements.contains(element) ? Colors.theme().grayForeground() : null;
+            }
+        });
         tableViewer.setContentProvider(ArrayContentProvider.getInstance());
         tableViewer.addFilter(elementFilter);
+        tableViewer.setComparator(viewerComparator != null ? viewerComparator : new ViewerComparator());
         tableViewer.setInput(elements);
 
-        tableViewer.setComparator(viewerComparator != null ? viewerComparator : new ViewerComparator());
-
+        // must be hooked up before the initial selection is applied, otherwise
+        // the pre-selected element never becomes part of the result
         hookListener();
+
+        if (initialSelection != null)
+            tableViewer.setSelection(new StructuredSelection(initialSelection));
 
         return composite;
     }
 
     private void hookListener()
     {
-        tableViewer.addSelectionChangedListener(
-                        event -> selected = ((IStructuredSelection) event.getSelection()).toArray());
+        tableViewer.addSelectionChangedListener(event -> {
+            selected = enabledElements((IStructuredSelection) event.getSelection());
+            updateOkButton();
+        });
 
         tableViewer.addDoubleClickListener(event -> {
-            selected = ((IStructuredSelection) event.getSelection()).toArray();
-            okPressed();
+            selected = enabledElements((IStructuredSelection) event.getSelection());
+            if (disabledElements.isEmpty() || selected.length > 0)
+                okPressed();
         });
 
         searchText.addModifyListener(e -> {
@@ -225,5 +282,20 @@ public class ListSelectionDialog extends Dialog
                 tableViewer.refresh();
             }
         });
+    }
+
+    private Object[] enabledElements(IStructuredSelection selection)
+    {
+        return selection.toList().stream().filter(e -> !disabledElements.contains(e)).toArray();
+    }
+
+    private void updateOkButton()
+    {
+        if (disabledElements.isEmpty())
+            return;
+
+        var button = getButton(OK);
+        if (button != null && !button.isDisposed())
+            button.setEnabled(enabledElements(tableViewer.getStructuredSelection()).length > 0);
     }
 }

@@ -1,0 +1,24 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.83.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital Bank GmbH • Seitzstraße 8e • 80538 Munich • Allemagne 
+Vhfpy WFghQ sEYcfal
+uyD CH gvDKTQ 15 
+93832 uJHZuPv Date 22.04.2026
+France Page 1 / 1
+Note de contrat 
+Plan d'investissement / Réinvestissement automatique 
+Type LIMIT Numéro d'ordre QwDZ2j74jraGJHW
+Exécution 22.04.2026 11:25:50 ID d'échange 4656365001
+Lieu de négociation EIX Pays de détention Luxembourg
+Compte-titres 9480948702 Type de garde Garde non collective 
+Type Titre Quantité Prix Montant
+Acheter iShares Physical Gold ETC 1.002416 pc. 78.61 EUR 78.80 EUR
+IE00B4ND3602
+Débit 78.80 EUR
+Le montant sera réglé via le compte-espèces NS73664383545864232598 (Valeur : 24.04.2026). 
+Veuillez vérifier l’exactitude des informations et signalez-nous immédiatement toute déviance. Pour ce faire, utilisez l'élément de menu Support dans l'espace client. 
+Scalable Capital Bank GmbH • Seitzstraße 8e, 80538 Munich, Allemagne • HRB 217778 • Amtsgericht München • N° de TVA : DE300434774 Page 
+Équipe de direction : Florian Prucker, Martin Krebs, Dirk Franzmeyer, Dr. Andreas Schranzhofer 1 / 1
+Conseil de surveillance: Patrick Olson (Président)

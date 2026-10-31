@@ -4,6 +4,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -68,7 +69,8 @@ public class NorddeutscheLandesbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-17T00:00"), hasShares(140.00), //
+                        hasDate("2025-03-17T00:00"), hasExDate("2025-03-11T00:00"), //
+                        hasShares(140.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Abrechnungsnr. 39001696226"), //
                         hasAmount("EUR", 330.80), hasGrossValue("EUR", 508.93), //
@@ -104,7 +106,8 @@ public class NorddeutscheLandesbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-17T00:00"), hasShares(140.00), //
+                        hasDate("2025-03-17T00:00"), hasExDate("2025-03-11T00:00"), //
+                        hasShares(140.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Abrechnungsnr. 39001696226"), //
                         hasAmount("EUR", 330.80), hasGrossValue("EUR", 508.93), //
@@ -138,7 +141,8 @@ public class NorddeutscheLandesbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-05-20T00:00"), hasShares(232.00), //
+                        hasDate("2025-05-20T00:00"), hasExDate("2025-05-16T00:00"), //
+                        hasShares(232.00), //
                         hasSource("Dividende02.txt"), //
                         hasNote("Abrechnungsnr. 96563694585"), //
                         hasAmount("EUR", 127.60), hasGrossValue("EUR", 127.60), //

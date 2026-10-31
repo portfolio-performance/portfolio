@@ -4,6 +4,7 @@ import static name.abuchen.portfolio.junit.PortfolioBuilder.amountOf;
 import static name.abuchen.portfolio.junit.PortfolioBuilder.quoteOf;
 import static name.abuchen.portfolio.junit.PortfolioBuilder.sharesOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
@@ -133,7 +134,7 @@ public class TradeTest
     }
 
     @Test
-    public void testShortMovingAverageCostDoesNotDivideByZero() throws TradeCollectorException
+    public void testShortMovingAverageCostIsUndefinedAndDoesNotDivideByZero() throws TradeCollectorException
     {
         Client client = new Client();
         TradeCollector collector = new TradeCollector(client, new TestCurrencyConverter());
@@ -147,9 +148,12 @@ public class TradeTest
         List<Trade> trades = collector.collect(securityShort);
         Trade trade = trades.get(0);
 
-        Money movingAverageEntryValue = trade.getEntryValueMovingAverage();
+        // there is no acquisition to average: the cost is undefined, not zero,
+        // and the return derived from it is NaN rather than a division by it
 
-        assertThat(movingAverageEntryValue, is(Money.of(CurrencyUnit.EUR, 0L)));
+        assertThat(trade.getEntryValueMovingAverage(), is(nullValue()));
+        assertThat(trade.getProfitLossMovingAverage(), is(nullValue()));
+        assertThat(Double.isNaN(trade.getReturnMovingAverage()), is(true));
     }
 
     @Test

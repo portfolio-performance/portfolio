@@ -143,7 +143,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
         this.convertedGrossValue = calculateConvertedGrossValue();
 
-        if (exchangeRate.equals(BigDecimal.ONE))
+        if (exchangeRate.compareTo(BigDecimal.ONE) == 0)
         {
             // units contained no information about forex
             this.grossValue = convertedGrossValue;

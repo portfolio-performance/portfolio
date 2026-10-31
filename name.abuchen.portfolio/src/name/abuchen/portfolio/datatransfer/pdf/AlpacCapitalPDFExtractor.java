@@ -42,7 +42,7 @@ public class AlpacCapitalPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        var securityRange = new Block("^SYMBOL: [A-Z]{3,4}$") //
+        var securityRange = new Block("^SYMBOL: [A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?$") //
                         .asRange(section -> section //
                                         // @formatter:off
                                         // SYMBOL: SGOV
@@ -50,7 +50,7 @@ public class AlpacCapitalPDFExtractor extends AbstractPDFExtractor
                                         .attributes("tickerSymbol") //
                                         .match("^SYMBOL: (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)$"));
 
-        final DocumentType type = new DocumentType("BUY\\/SELL", securityRange);
+        final var type = new DocumentType("BUY\\/SELL", securityRange);
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();

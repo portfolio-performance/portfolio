@@ -48,7 +48,6 @@ public class DebitumInvestmentsPDFExtractor extends AbstractPDFExtractor
                                         .assign((ctx, v) -> ctx.put("date", v.get("date"))));
         this.addDocumentTyp(type);
 
-
         // @formatter:off
         // DEPOSITS during reporting period: 4170.0
         // WITHDRAWALS during reporting period: 0.0
@@ -125,7 +124,12 @@ public class DebitumInvestmentsPDFExtractor extends AbstractPDFExtractor
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
                         })
 
-                        .wrap(TransactionItem::new));
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                            return new TransactionItem(t);
+                        }));
     }
 
     @Override

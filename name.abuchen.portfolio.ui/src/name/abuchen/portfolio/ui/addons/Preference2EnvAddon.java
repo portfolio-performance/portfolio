@@ -20,14 +20,17 @@ import name.abuchen.portfolio.online.impl.FinnhubSearchProvider;
 import name.abuchen.portfolio.online.impl.LeewayQuoteFeed;
 import name.abuchen.portfolio.online.impl.LeewaySearchProvider;
 import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
+import name.abuchen.portfolio.online.impl.SiftingQuoteFeed;
 import name.abuchen.portfolio.online.impl.TwelveDataQuoteFeed;
 import name.abuchen.portfolio.online.impl.TwelveDataSearchProvider;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.PresetValues;
+import name.abuchen.portfolio.ui.preferences.Experiments;
 import name.abuchen.portfolio.ui.util.ValueColorScheme;
 import name.abuchen.portfolio.ui.util.chart.ChartLineWidth;
 import name.abuchen.portfolio.util.FormatHelper;
 import name.abuchen.portfolio.util.TradeCalendarManager;
+import name.abuchen.portfolio.util.WebAccess;
 
 public class Preference2EnvAddon
 {
@@ -93,6 +96,13 @@ public class Preference2EnvAddon
     {
         Factory.getQuoteFeed(LeewayQuoteFeed.class).setApiKey(leewayApiKey);
         Factory.getSearchProvider(LeewaySearchProvider.class).setApiKey(leewayApiKey);
+    }
+
+    @Inject
+    @Optional
+    public void setSiftingApiKey(@Preference(value = UIConstants.Preferences.SIFTING_API_KEY) String siftingApiKey)
+    {
+        Factory.getQuoteFeed(SiftingQuoteFeed.class).setApiKey(siftingApiKey);
     }
 
     @Inject
@@ -173,5 +183,14 @@ public class Preference2EnvAddon
     public void setTimePreset(@Preference(value = UIConstants.Preferences.PRESET_VALUE_TIME) String timePresetValue)
     {
         PresetValues.setTimePreset(timePresetValue);
+    }
+
+    @Inject
+    @Optional
+    public void setExperiments(@Preference(value = UIConstants.Preferences.EXPERIMENTS) String experiments)
+    {
+        // the parameter only triggers the injection whenever the experiments
+        // change; the Experiments class reads the same preference
+        WebAccess.setReuseConnections(new Experiments().isEnabled(Experiments.Feature.OCT26_REUSE_HTTP_CONNECTIONS));
     }
 }

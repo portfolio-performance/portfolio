@@ -418,6 +418,108 @@ public class PostbankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf07()
+    {
+        var extractor = new PostbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0328475792"), hasWkn("DBX1A7"), hasTicker(null), //
+                        hasName("XTRACKERS STOXX EUROPE 600 INH.ANT.1C O.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-04-07T08:00:50"), hasShares(0.6526), //
+                        hasSource("Kauf07.txt"), //
+                        hasNote("Belegnummer 9867409933 / 344685043"), //
+                        hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierKauf08()
+    {
+        var extractor = new PostbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf08.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US7427181091"), hasWkn("852062"), hasTicker(null), //
+                        hasName("PROCTER & GAMBLE CO., THE RG.SH. O.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-06-01T15:34:02"), hasShares(14), //
+                        hasSource("Kauf08.txt"), //
+                        hasNote("Belegnummer 1603718970 / 128935901"), //
+                        hasAmount("EUR", 1720.95), hasGrossValue("EUR", 1699.88), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 17.95 + 3.12))));
+    }
+
+    @Test
+    public void testWertpapierKauf09()
+    {
+        var extractor = new PostbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000DB9WSZ7"), hasWkn("DB9WSZ"), hasTicker(null), //
+                        hasName("3,1% DT.BANK FESTZINSANL.V.26 9.10. 28"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-10-06T00:00:00"), hasShares(30), //
+                        hasSource("Kauf09.txt"), //
+                        hasNote("Belegnummer 7654421234 / 8989898"), //
+                        hasAmount("EUR", 3015), hasGrossValue("EUR", 3015), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         var extractor = new PostbankPDFExtractor(new Client());

@@ -1,2 +1,3 @@
 name.abuchen.portfolio.ui.update.NewVersionTest
 name.abuchen.portfolio.ui.wizards.pdfdebug.PDFDebugTextTest
+name.abuchen.portfolio.ui.preferences.RestApiPreferencePageTest

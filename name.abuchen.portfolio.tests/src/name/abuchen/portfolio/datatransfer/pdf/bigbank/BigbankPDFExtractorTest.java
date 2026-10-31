@@ -4,6 +4,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
@@ -121,8 +122,11 @@ public class BigbankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-12-31"), hasAmount("EUR", 99.01), //
-                        hasSource("Kontoauszug03.txt"), hasNote(null), //
+        assertThat(results, hasItem(interest( //
+                        hasDate("2024-12-31"), //
+                        hasSource("Kontoauszug03.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 99.01), hasGrossValue("EUR", 99.01), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 }

@@ -1,0 +1,146 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.87.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+flatexDEGIRO Bank SE
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 9221 7035898
+E-Mail: info@flatex.de
+flatexDEGIRO Bank SE - Hammfelddamm 4 - 41460 Neuss, Deutschland
+0303502000006308402610
+Vorname Nachname
+Straße 8
+64625 Bensheim
+          Frankfurt, 30.09.2026
+Sammelabrechnung (Wertpapierkauf/-verkauf)
+Ihre Depotnummer: 1040969999
+Depotinhaber: Vorname Nachname
+Nr.338514665/1 Verkauf ALEXANDRIA REAL EST. EQU. (US0152711091/907179)
+Ordervolumen : 40,00 St. Handelsplatz : gettex
+davon ausgef. : 40,00 St. Schlusstag : 29.09.2026, 15:53 Uhr
+Kurs : 42,8750 EUR Kurswert : 1.715,00 EUR
+Devisenkurs : Provision : 5,90 EUR
+Bew-Faktor : 1,0000 Eigene Spesen :
+Verwahrart : GS-Verwahrung * Fremde Spesen : 2,00 EUR
+Lagerstelle : Clearstream Nat.
+Lagerland : USA Bemessungs-
+Gewinn/Verlust : -857,00 EUR grundlage : -872,80 EUR
+Valuta : 01.10.2026 ** Einbeh. Steuer : -230,20 EUR
+Endbetrag : 1.937,30 EUR
+Courtage : 0,00 EUR
+Tradinggebühr : 0,00 EUR
+Regulierung : 2,00 EUR
+Schlussnoten : 0,00 EUR
+Finanztransaktionssteuer : 0,00 EUR
+Sonstige : 0,00 EUR
+Kapitalertragsteuer : -218,20 EUR
+Solidaritätszuschlag : -12,00 EUR
+Kirchensteuer : 0,00 EUR
+Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.: 5244678367.
+* Enthalten sind folgende Gebühren
+** Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+BLZ 101 308 00 / BIC: BIWBDE33XXX - Societas Europaea, Sitz Frankfurt - Amtsgericht Frankfurt am Main (HRB 141330)
+Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter - Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+Evgeni Kaplun, Jens Möbitz, Christiane Strubel
+Seite 1 von 4
+2000006308402610 011330350000
+Nr.338514871/1 Verkauf ARBOR REALTY TRUST INC. (US0389231087/A0CAPU)
+Ordervolumen : 300,00 St. Handelsplatz : NYSE
+davon ausgef. : 272,00 St. Schlusstag : 29.09.2026, 15:58 Uhr
+Kurs : 3,9600 USD Kurswert : 945,87 EUR
+Devisenkurs : 1,138763 Provision : 5,90 EUR
+Bew-Faktor : 1,0000 Eigene Spesen :
+Verwahrart : Wertpapierrechnung * Fremde Spesen : 0,02 EUR
+Lagerstelle : International
+Lagerland : USA Bemessungs-
+Gewinn/Verlust : -2.276,88 EUR grundlage : -2.294,60 EUR
+Valuta : 30.09.2026 ** Einbeh. Steuer : -605,20 EUR
+Endbetrag : 1.545,15 EUR
+Courtage : 0,00 EUR
+Tradinggebühr : 0,00 EUR
+Regulierung : 0,00 EUR
+Schlussnoten : 0,00 EUR
+Finanztransaktionssteuer : 0,00 EUR
+Sonstige : 0,02 EUR
+Kapitalertragsteuer : -573,65 EUR
+Solidaritätszuschlag : -31,55 EUR
+Kirchensteuer : 0,00 EUR
+Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.: 5244689219.
+* Enthalten sind folgende Gebühren
+** Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+Nr.338514871/2 Verkauf ARBOR REALTY TRUST INC. (US0389231087/A0CAPU)
+Ordervolumen : 300,00 St. Handelsplatz : NYSE
+davon ausgef. : 28,00 St. Schlusstag : 29.09.2026, 15:58 Uhr
+Kurs : 3,9600 USD Kurswert : 97,37 EUR
+Devisenkurs : 1,138743 Provision :
+Bew-Faktor : 1,0000 Eigene Spesen :
+Verwahrart : Wertpapierrechnung * Fremde Spesen :
+Lagerstelle : International
+Lagerland : USA Bemessungs-
+Gewinn/Verlust : -243,52 EUR grundlage : -243,52 EUR
+Valuta : 30.09.2026 ** Einbeh. Steuer : -64,22 EUR
+Endbetrag : 161,59 EUR
+Courtage : 0,00 EUR
+Tradinggebühr : 0,00 EUR
+Regulierung : 0,00 EUR
+Schlussnoten : 0,00 EUR
+Finanztransaktionssteuer : 0,00 EUR
+Sonstige : 0,00 EUR
+BLZ 101 308 00 / BIC: BIWBDE33XXX - Societas Europaea, Sitz Frankfurt - Amtsgericht Frankfurt am Main (HRB 141330)
+Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter - Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+Evgeni Kaplun, Jens Möbitz, Christiane Strubel
+Seite 2 von 4
+2000006308402610 011330350000
+Kapitalertragsteuer : -60,88 EUR
+Solidaritätszuschlag : -3,34 EUR
+Kirchensteuer : 0,00 EUR
+Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.: 5244689238.
+* Enthalten sind folgende Gebühren
+** Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+Nr.338519244/1 Kauf W.P. CAREY INC. (US92936U1097/A1J5SB)
+Ordervolumen : 20,00 St. Handelsplatz : Tradegate
+davon ausgef. : 20,00 St. Schlusstag : 29.09.2026, 18:42 Uhr
+Kurs : 58,0000 EUR Kurswert : 1.160,00 EUR
+Devisenkurs : Provision : 5,90 EUR
+Bew-Faktor : 1,0000 Eigene Spesen :
+Verwahrart : GS-Verwahrung * Fremde Spesen : 2,00 EUR
+Lagerstelle : Clearstream Nat.
+Lagerland : USA Bemessungs-
+Gewinn/Verlust : 0,00 EUR grundlage : 0,00 EUR
+Valuta : 01.10.2026 ** Einbeh. Steuer : 0,00 EUR
+Endbetrag : -1.167,90 EUR
+Courtage : 0,00 EUR
+Tradinggebühr : 0,00 EUR
+Regulierung : 2,00 EUR
+Schlussnoten : 0,00 EUR
+Finanztransaktionssteuer : 0,00 EUR
+Sonstige : 0,00 EUR
+Kapitalertragsteuer : 0,00 EUR
+Solidaritätszuschlag : 0,00 EUR
+Kirchensteuer : 0,00 EUR
+Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.: 5244967808.
+* Enthalten sind folgende Gebühren
+** Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+Die Verrechnung der Endbeträge erfolgt über Ihr Konto Nr.: 1040969999
+BLZ 101 308 00 / BIC: BIWBDE33XXX - Societas Europaea, Sitz Frankfurt - Amtsgericht Frankfurt am Main (HRB 141330)
+Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter - Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+Evgeni Kaplun, Jens Möbitz, Christiane Strubel
+Seite 3 von 4
+2000006308402610 011330350000
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit dem angegebenen Valutatag 
+buchen. Bitte prüfen Sie diese Abrechnung auf Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese 
+Abrechnung müssen unverzüglich nach Zugang bei der Bank erhoben werden. Die Unterlassung rechtzeitiger 
+Einwendung gilt als Genehmigung. Bitte beachten Sie mögliche Hinweise des Emittenten hinsichtlich vorzeitiger 
+Fälligstellung, beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und informieren Sie sich 
+rechtzeitig, welche spezielle Fälligkeitsregelung auf die von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge 
+sind ESt-pflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben. Für weitergehende Fragen wenden Sie sich bitte 
+an Ihr flatex-Service-Team.
+BLZ 101 308 00 / BIC: BIWBDE33XXX - Societas Europaea, Sitz Frankfurt - Amtsgericht Frankfurt am Main (HRB 141330)
+Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter - Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+Evgeni Kaplun, Jens Möbitz, Christiane Strubel
+Seite 4 von 4
+2000006308402610 011330350000

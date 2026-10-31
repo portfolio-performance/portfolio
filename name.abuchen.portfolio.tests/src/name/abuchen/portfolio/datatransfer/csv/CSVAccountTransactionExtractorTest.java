@@ -20,6 +20,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundCash
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.csv.CSVExtractorTestUtil.buildField2Column;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
@@ -711,6 +712,63 @@ public class CSVAccountTransactionExtractorTest
                         hasGrossValue("EUR", 55.86), //
                         hasForexGrossValue("USD", 62.53), // 1.1194 * 55.86
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.14))));
+    }
+
+    @Test
+    public void testGrossValueIsCreatedForDividendsAndTaxes()
+    {
+        Client client = new Client();
+        Security security = new Security();
+        security.setIsin("LU0419741177");
+        security.setCurrencyCode(CurrencyUnit.USD);
+        client.addSecurity(security);
+
+        CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+        List<Item> results = extractor.extract(0, Arrays.<String[]>asList(new String[] { //
+                        "2015-09-15", "", // Date + Time
+                        "LU0419741177", "", "", // ISIN + TickerSymbol + WKN
+                        "88", "EUR", // Amount + Currency
+                        "DIVIDENDS", // Type
+                        "", "", // Security name + Shares
+                        "Notiz", // Note
+                        "12", "", // Taxes + Fee
+                        "", "", "", // account + account2nd + portfolio
+                        "", "", // Gross + Gross currency
+                        "1.1" }, // Exchange rate
+                        new String[] { //
+                                        "2015-09-16", "", // Date + Time
+                                        "LU0419741177", "", "", // ISIN + TickerSymbol + WKN
+                                        "-5", "EUR", // Amount + Currency
+                                        "TAXES", // Type
+                                        "", "", // Security name + Shares
+                                        "Notiz", // Note
+                                        "", "", // Taxes + Fee
+                                        "", "", "", // account + account2nd + portfolio
+                                        "", "", // Gross + Gross currency
+                                        "1.1" }), // Exchange rate
+                        buildField2Column(extractor), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check that gross value is created with given exchange rate
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2015-09-15"), //
+                        hasSecurity(hasIsin("LU0419741177")), //
+                        hasAmount("EUR", 88.00), //
+                        hasGrossValue("EUR", 100.00), //
+                        hasForexGrossValue("USD", 110.00), // 1.1 * 100.00
+                        hasTaxes("EUR", 12.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2015-09-16"), //
+                        hasSecurity(hasIsin("LU0419741177")), //
+                        hasAmount("EUR", 5.00), //
+                        hasGrossValue("EUR", 5.00), //
+                        hasForexGrossValue("USD", 5.50)))); // 1.1 * 5.00
     }
 
     @Test

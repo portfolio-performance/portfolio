@@ -1,0 +1,103 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.86.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Steiermärkische Bank und Sparkassenplatz 4 T 05 0100 Firmensitz: Graz
+Sparkassen Aktiengesellschaft 8010 Graz F 05 0100-936000
+www.sparkasse.at/steiermaerkische  UID: ATU28735900, FN 34274 d
+Seite 1/2   BIC: STSPAT2GXXX
+ERTRAGS- UND TILGUNGSBELEG WERTPAPIERDEPOT
+00086-040417
+ 
+lautend auf xBCyF LvlBCug
+Bs EUFoLJke 6, 2857 St. gxBcSn
+Herr 450/0491/4OMD/A
+prVbp gcJhnzq
+sN koTWWDyK 6
+9778 St. ZgOcpR
+Quartalsdividende
+ 
+ISIN: US02079K3059 ALPHABET INC.
+REG. SHS CL. A DL-,001
+Verwahrungsart: Wertpapierrechnung
+Loco: NEW YORK
+Menge/Währung: 700 STK
+Extag: 10.06.2024
+Ertrag je Stück: 0,2 USD
+ Beträge in Fremdwährung Beträge in EUR
+Brutto USD 140,00 130,69
+QESt 15 % -21,00 -19,60
+KESt I pro Stück 12,5 % -17,50 -16,34 
+ 
+Netto USD 101,50 94,75
+Einmalige Kosten -6,63 
+ 
+Gutschrift 88,12
+Devisenkurs Kunde USD / EUR vom 17.06.2024 1,0766
+Mitte   1,0712
+Wir haben oben genannten Betrag auf SqTMS hFsKg 53897-392912 mit Valuta 18.06.2024 gutgeschrieben.
+Vorbehaltlich Eingang bzw. nachträgliche Storni/Umbuchungen seitens Lagerstelle/Partner.
+Die ausgewiesene Kapitalertragsteuer wird an das Finanzamt Graz-Stadt, C.v. Hötzendorf-Straße 14-18, 8010
+Graz abgeführt.
+Kosten im Detail
+Die angegebenen Kosten und Gebühren wurden anhand des Abrechnungskurses berechnet.
+Die %-Werte beziehen sich auf den errechneten Kurswert von 130,69 Euro.
+ 
+Aufgrund der Rundungsregeln sind geringfügige Abweichungen zwischen absoluten Beträgen und
+Prozentwerten möglich.
+ 
+Steiermärkische Bank und Sparkassenplatz 4 T 05 0100 Firmensitz: Graz
+Sparkassen Aktiengesellschaft 8010 Graz F 05 0100-936000
+www.sparkasse.at/steiermaerkische  UID: ATU28735900, FN 34274 d
+Seite 2/2   BIC: STSPAT2GXXX
+ERTRAGS- UND TILGUNGSBELEG WERTPAPIERDEPOT
+00086-040417
+ 
+lautend auf BPSoI DzihmeI
+BJ UjEwUrWF 6, 2882 St. jrgxkf
+(1) Dienstleistungskosten dieser Transaktion
+ 
+Einmalig
+   
+Eigene Kosten
+Devisenprovision EUR 4,35  
+Devisenspesen EUR 1,81  
+Devisenspanne EUR 0,47  
+ 
+Summe der Dienstleistungskosten EUR 6,63 5,07 %
+ 
+Zuwendungen
+ 
+Unser Institut erhielt für diese Transaktion keine einmaligen Zuwendungen für dieses Wertpapier.
+ 
+(2) Produktkosten dieser Transaktion
+ 
+Für diese Transaktion fielen keine produktbezogenen Kosten der EmittentIn an.
+ 
+(3) Summe der Kosten dieser Transaktion EUR 6,63 5,07 %
+ 
+Begriffserklärung
+ 
+(1) Dienstleistungskosten können beispielsweise bei Kauf, Verkauf oder Lagerung eines Wertpapiers anfallen.
+Der Begriff eigene Kosten umfasst alle Kosten, die bei Ihrer Bank anfallen, z. B. für die Ausführung der Order
+oder die Umrechnung von einer Fremdwährung in Euro.
+Mit fremden Kosten sind alle Kosten gemeint, die außerhalb Ihrer Bank anfallen, also z. B. Handelsgebühren an
+der Börse.
+Zuwendungen sind Zahlungen Dritter an Ihre Bank (wie z. B. Bestandsprovisionen). Die Sparkassen Gruppe
+verwendet diese für qualitätsverbessernde Maßnahmen im Wertpapierbereich.
+ 
+(2) Produktkosten sind die Kosten einer EmittentIn, die z. B. für die Entwicklung oder Vermarktung eines
+Wertpapieres bereits in den Kaufpreis eingerechnet wurden. Diese Kosten fallen beim Kauf oder Verkauf eines
+Wertpapieres nicht extra an, sind aber zur Transparenz am Kostenausweis angeführt.
+ 
+ 
+Für Rückfragen steht Ihnen Herr Karl-Heinz Midl, Premiumbetreuung Nordweststeiermark, unter der
+Telefonnummer +43 5 0100-34509 gerne zur Verfügung.
+ 
+Freundliche Grüße
+ 
+Steiermärkische Bank und Sparkassen Aktiengesellschaft
+ 
+Graz, am 17.06.2024
+ 
+Dieses Dokument wurde automatisch erstellt und von der Bank nicht unterzeichnet.

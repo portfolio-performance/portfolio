@@ -1,0 +1,50 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.84.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+Herr Jeh
+DATUM 01.07.2026
+Straße 1
+VERRECHNUNGSKONTO 0123456789
+01234 Ort
+ABRECHNUNG ZINSEN
+Steuerkorrektur für Rechnung am 02.07.2026 angewendet
+zum 30.06.2026
+ÜBERSICHT
+RATE DATUM
+2,00% 01.06.2026 - 16.06.2026
+2,25% 17.06.2026 - 30.06.2026
+VERMÖGENSWERT EINKOMMENSART GESAMT
+Cash Zinsen 15,72 EUR
+Geldmarkt Dividende 7,08 EUR
+Gesamt 22,80 EUR
+ABRECHNUNG - ZINSEN
+POSITION BETRAG
+Besteuerungsgrundlage 15,72 EUR
+Kapitalertragsteuer -3,93 EUR
+Solidaritätszuschlag -0,21 EUR
+Gesamt 11,58 EUR
+ABRECHNUNG - DIVIDENDE (ÜBERARBEITET)
+POSITION VORHER KORREKTUR NACHHER
+Besteuerungsgrundlage 7,08 EUR 0,00 EUR 7,08 EUR
+Kapitalertragsteuer 0,00 EUR -1,77 EUR -1,77 EUR
+Solidaritätszuschlag 0,00 EUR -0,09 EUR -0,09 EUR
+Gesamt 5,22 EUR
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+Erstellt am 2026-07-06 08:34:33 Europe/Berlin (UTC+02:00) Seite 1 von 2
+TRADE REPUBLIC BANK GMBH BRUNNENSTRASSE 19-21 10119 BERLIN
+BUCHUNG
+IBAN BUCHUNGSDATUM GUTSCHRIFT NACH STEUERN
+DE1210012345070123456789 01.07.2026 16,80 EUR
+KORREKTURDETAILS: Dein Konto wurde mit 1,86 EUR belastet. Das entspricht der obigen Steuerkorrektur.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+Erstellt am 2026-07-06 08:34:33 Europe/Berlin (UTC+02:00) Seite 2 von 2

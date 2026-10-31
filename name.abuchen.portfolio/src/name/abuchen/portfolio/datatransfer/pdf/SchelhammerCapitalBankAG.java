@@ -157,6 +157,13 @@ public class SchelhammerCapitalBankAG extends AbstractPDFExtractor
                                                         .match("^Valuta (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4})[\\s]*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
+                        // @formatter:off
+                        // Extag: 12.12.2024
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Extag: (?<exDate>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4})[\\s]*$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
                         .oneOf( //
                                         // @formatter:off
                                         // Zu Gunsten IBAN AT18 8415 8694 0263 7385 38,59 EUR

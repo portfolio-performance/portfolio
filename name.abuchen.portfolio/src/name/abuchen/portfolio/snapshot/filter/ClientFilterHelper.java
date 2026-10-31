@@ -159,7 +159,7 @@ import name.abuchen.portfolio.money.Values;
 
     /* package */ static Unit value(Unit unit, BigDecimal weight)
     {
-        if (weight.equals(Classification.ONE_HUNDRED_PERCENT_BD))
+        if (weight.compareTo(Classification.ONE_HUNDRED_PERCENT_BD) == 0)
             return unit;
         else
             return unit.split(weight.divide(Classification.ONE_HUNDRED_PERCENT_BD, Values.MC).doubleValue());
@@ -167,7 +167,7 @@ import name.abuchen.portfolio.money.Values;
 
     /* package */ static long value(long value, BigDecimal weight)
     {
-        if (weight.equals(Classification.ONE_HUNDRED_PERCENT_BD))
+        if (weight.compareTo(Classification.ONE_HUNDRED_PERCENT_BD) == 0)
             return value;
         else
             return BigDecimal.valueOf(value) //
