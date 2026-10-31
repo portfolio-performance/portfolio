@@ -366,6 +366,7 @@ paths:
                   value:
                     status: approved
                     token: wZ4mJc9Y3K…
+                    persistent: true
         "400":
           $ref: "#/components/responses/BadRequest"
         "403":
@@ -1774,6 +1775,14 @@ components:
           description: |
             The bearer token; present only while `status` is `approved`, and
             delivered exactly once.
+        persistent:
+          type: boolean
+          description: |
+            Present with `token`. Whether the token survives a restart of the
+            application: `false` when the user allowed access for this session
+            only, and when access was allowed permanently but the application
+            could not record it — the token then works until the application
+            quits, and pairing has to be repeated after that.
 
     Instrument:
       type: object

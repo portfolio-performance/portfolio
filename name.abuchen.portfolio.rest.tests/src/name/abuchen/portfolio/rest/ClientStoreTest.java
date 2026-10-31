@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.Rule;
@@ -111,7 +112,8 @@ public class ClientStoreTest
         var store = newStore();
         var token = store.addSessionClient("Claude Code");
 
-        store.revoke(store.listClients().get(0).id());
+        // nothing persistent to remove, so this is a complete revocation
+        assertThat(store.revoke(store.listClients().get(0).id()), is(true));
 
         assertThat(store.authenticate(token).isPresent(), is(false));
     }
@@ -151,6 +153,39 @@ public class ClientStoreTest
     }
 
     /**
+     * The name is shown in the approval dialog, and whoever asks for access
+     * chooses it: a right-to-left override, a zero-width character or a line
+     * separator must not be able to make it read as another client's name.
+     */
+    @Test
+    public void testInvisibleCharactersAreStrippedFromTheName()
+    {
+        assertThat(ClientStore.sanitizeName("Claude\u202E edoC"), is("Claude edoC"));
+        assertThat(ClientStore.sanitizeName("Cla\u200Bude\u2066 Code\u2069"), is("Claude Code"));
+        assertThat(ClientStore.sanitizeName("Claude\u2028Code\u2029"), is("ClaudeCode"));
+        assertThat(ClientStore.sanitizeName("Büro-PC ✓"), is("Büro-PC ✓"));
+    }
+
+    /**
+     * The file is replaced in one step, so a crash while writing leaves the
+     * previous one intact, and no temporary file is left behind.
+     */
+    @Test
+    public void testSavingLeavesNoTemporaryFile() throws Exception
+    {
+        var store = newStore();
+        var first = store.addPersistentClient("First");
+        store.addPersistentClient("Second");
+
+        try (var files = Files.list(dir()))
+        {
+            assertThat(files.map(p -> p.getFileName().toString()).toList(), is(List.of("api-clients.json")));
+        }
+        assertThat(newStore().authenticate(first).isPresent(), is(true));
+        assertThat(newStore().listClients().size(), is(2));
+    }
+
+    /**
      * The revoke handle exposed to the UI must be an opaque identity of its
      * own, not the token's hash — otherwise the UI is coupled to the hashing
      * scheme. It must also be stable across a reload.
@@ -181,6 +216,62 @@ public class ClientStoreTest
         {
             // expected: nothing left after sanitization
         }
+        assertThat(store.listClients(), hasSize(0));
+    }
+
+    /**
+     * A client file that cannot be written makes this token one that outlives
+     * nothing: it works now and disappears at the next restart, exactly like a
+     * session client. Saying so is what lets the UI call it session-only instead
+     * of presenting it as a permanent client that is silently not on disk.
+     */
+    @Test
+    public void testUnwritableClientFileMarksTheTokenAsSessionOnly() throws Exception
+    {
+        Files.createDirectories(dir().resolve("api-clients.json")); // a directory where a file belongs
+
+        var store = newStore();
+        var token = store.addPersistentClient("Claude Code");
+
+        assertThat(store.authenticate(token).isPresent(), is(true));
+        assertThat(store.listClients().get(0).session(), is(true));
+        assertThat(store.survivesRestart(token), is(false));
+
+        // revoking it is complete, because nothing was ever written
+        assertThat(store.revoke(store.listClients().get(0).id()), is(true));
+        assertThat(store.authenticate(token).isPresent(), is(false));
+    }
+
+    /**
+     * A revocation whose write failed is not a completed one. The client is gone
+     * for this session, but the file still holds the token, so it authenticates
+     * again after a restart - and the UI has to be able to tell the user that.
+     */
+    @Test
+    public void testOnlyAWrittenPersistentClientSurvivesARestart()
+    {
+        var store = newStore();
+        var persistent = store.addPersistentClient("Claude Code");
+        var session = store.addSessionClient("Script");
+
+        assertThat(store.survivesRestart(persistent), is(true));
+        assertThat(store.survivesRestart(session), is(false));
+        assertThat(store.survivesRestart("not-a-token"), is(false));
+    }
+
+    @Test
+    public void testRevokeThatCouldNotBeWrittenReportsTheFailure() throws Exception
+    {
+        var store = newStore();
+        var token = store.addPersistentClient("Claude Code");
+        var id = store.listClients().get(0).id();
+        assertThat(store.listClients().get(0).session(), is(false));
+
+        Files.delete(dir().resolve("api-clients.json"));
+        Files.createDirectories(dir().resolve("api-clients.json"));
+
+        assertThat(store.revoke(id), is(false));
+        assertThat(store.authenticate(token).isPresent(), is(false));
         assertThat(store.listClients(), hasSize(0));
     }
 
@@ -241,6 +332,66 @@ public class ClientStoreTest
         var clients = newStore().listClients();
         assertThat(clients, hasSize(1));
         assertThat(clients.get(0).name(), is("Good"));
+    }
+
+    /**
+     * A file whose shape this version does not recognise is not an empty file.
+     * Reading it as one, and then saving what this version holds, would delete
+     * tokens that still exist - so the content stays exactly as it is.
+     */
+    @Test
+    public void testUnrecognisedContentIsNeverOverwritten() throws Exception
+    {
+        var foreign = "{\"tokens\":[{\"value\":\"a-token-a-later-version-understands\"}]}";
+        writeStore(foreign);
+
+        var store = newStore();
+        store.addPersistentClient("Claude Code");
+
+        assertThat(Files.readString(dir().resolve("api-clients.json")), is(foreign));
+        assertThat(store.listClients(), hasSize(1)); // usable in this run
+        assertThat(newStore().listClients(), hasSize(0)); // nothing was written over the old content
+    }
+
+    /** an empty file holds nothing to protect: it reads as no clients and is written as usual */
+    @Test
+    public void testAnEmptyFileIsAnEmptyClientList() throws Exception
+    {
+        writeStore("  \n");
+
+        var store = newStore();
+        assertThat(store.listClients(), hasSize(0));
+        store.addPersistentClient("Claude Code");
+
+        assertThat(newStore().listClients(), hasSize(1));
+    }
+
+    /** the same holds for content that is not parseable at all */
+    @Test
+    public void testUnparseableContentIsNeverOverwritten() throws Exception
+    {
+        writeStore("{ clients: [");
+
+        newStore().addPersistentClient("Claude Code");
+
+        assertThat(Files.readString(dir().resolve("api-clients.json")), is("{ clients: ["));
+    }
+
+    /**
+     * A client file this version cannot read or write must not turn a token that
+     * works into a failed request: authentication runs on an HTTP worker, after
+     * the token has already been accepted.
+     */
+    @Test
+    public void testAnUnwritableClientFileDoesNotBreakAuthentication() throws Exception
+    {
+        Files.createDirectories(dir().resolve("api-clients.json")); // a directory where a file belongs
+
+        var store = newStore();
+        var token = store.addPersistentClient("Claude Code");
+
+        assertThat(store.authenticate(token).isPresent(), is(true));
+        assertThat(store.authenticate(token).get().name(), is("Claude Code"));
     }
 
     @Test
