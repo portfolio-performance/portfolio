@@ -1,0 +1,24 @@
+#!/bin/sh
+# Launcher for the bundled pp-cli. Resolves symlinks, so it works from a link in /opt/homebrew/bin.
+self=$0
+while [ -h "$self" ]; do
+    dir=$(cd "$(dirname "$self")" && pwd -P)
+    target=$(readlink "$self")
+    case $target in
+        /*) self=$target ;;
+        *) self=$dir/$target ;;
+    esac
+done
+home=$(cd "$(dirname "$self")" && pwd -P)
+jsa=$home/pp-cli.jsa
+
+# install.sh sets PP_CLI_BUILD_ARCHIVE to record the AppCDS archive from one training run
+cds=-Xshare:auto
+if [ -n "${PP_CLI_BUILD_ARCHIVE:-}" ]; then
+    cds=-XX:ArchiveClassesAtExit=$jsa
+elif [ -f "$jsa" ]; then
+    cds=-XX:SharedArchiveFile=$jsa
+fi
+
+# -Xlog:disable keeps JVM warnings (for example a stale archive) off stdout, which carries the JSON
+exec "$home/runtime/bin/java" "$cds" -Xlog:disable -XX:TieredStopAtLevel=1 -cp "$home/lib/*" name.abuchen.portfolio.cli.PpCli "$@"

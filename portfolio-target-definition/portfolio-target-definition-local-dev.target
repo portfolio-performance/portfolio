@@ -208,6 +208,16 @@
 			</dependency>
 		</dependencies>
 	</location>
+	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="ASCII Table" missingManifest="generate" type="Maven">
+		<dependencies>
+			<dependency>
+				<groupId>com.github.freva</groupId>
+				<artifactId>ascii-table</artifactId>
+				<version>1.10.0</version>
+				<type>jar</type>
+			</dependency>
+		</dependencies>
+	</location>
 	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="JSONPath" missingManifest="generate" type="Maven">
 		<dependencies>
 			<dependency>

@@ -1,0 +1,130 @@
+package name.abuchen.portfolio.cli.apply;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.OptionalInt;
+import java.util.Set;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
+import name.abuchen.portfolio.cli.command.CliException;
+import name.abuchen.portfolio.cli.command.ErrorCode;
+import name.abuchen.portfolio.cli.command.OperationInput;
+import name.abuchen.portfolio.cli.command.OperationSpec;
+import name.abuchen.portfolio.model.Client;
+
+/**
+ * Applies the operations of one <code>apply</code> batch in order to the
+ * in-memory model. A failing operation changes nothing, later operations still
+ * run so that every failure is reported at once, and the caller discards the
+ * model if there was any failure. That makes the batch atomic.
+ */
+final class ApplyBatch
+{
+    private final Client client;
+    private final Set<Object> existedBeforeBatch = Collections.newSetFromMap(new IdentityHashMap<>());
+    private final Map<String, Integer> claims = new HashMap<>();
+    private final List<OperationContext.Failure> failures = new ArrayList<>();
+
+    private ApplyBatch(Client client)
+    {
+        this.client = client;
+        existedBeforeBatch.addAll(client.getSecurities());
+        existedBeforeBatch.addAll(client.getAccounts());
+        existedBeforeBatch.addAll(client.getPortfolios());
+        existedBeforeBatch.addAll(client.getTaxonomies());
+        client.getAccounts().forEach(account -> existedBeforeBatch.addAll(account.getTransactions()));
+        client.getPortfolios().forEach(portfolio -> existedBeforeBatch.addAll(portfolio.getTransactions()));
+    }
+
+    /**
+     * @return one result per operation, in order
+     * @throws CliException
+     *             <code>validation-failed</code> listing every failure
+     */
+    static List<Map<String, Object>> run(Client client, JsonArray operations,
+                    List<? extends OperationSpec<? super OperationContext>> specs) throws CliException
+    {
+        var batch = new ApplyBatch(client);
+        var results = new ArrayList<Map<String, Object>>();
+
+        for (int index = 0; index < operations.size(); index++)
+            results.add(batch.apply(index, operations.get(index), specs));
+
+        if (!batch.failures.isEmpty())
+            throw CliException.failure(ErrorCode.VALIDATION_FAILED, "Validation failed",
+                            batch.failures.size() + " check(s) failed. Nothing was written.", 422).with("failures",
+                                            batch.failures.stream().map(OperationContext.Failure::toJson).toList());
+
+        return results;
+    }
+
+    private Map<String, Object> apply(int index, JsonElement element,
+                    List<? extends OperationSpec<? super OperationContext>> specs)
+    {
+        if (!element.isJsonObject())
+        {
+            var context = new OperationContext(this, index, new JsonObject());
+            context.fail("", ErrorCode.INVALID_OPERATION, "An operation must be a JSON object.");
+            return context.result(null);
+        }
+
+        var input = element.getAsJsonObject();
+        var context = new OperationContext(this, index, input);
+
+        var name = operationName(input);
+        var spec = specs.stream().filter(s -> s.name().equals(name)).findFirst();
+        if (spec.isEmpty())
+        {
+            context.fail(OperationSpec.OPERATION_MEMBER, ErrorCode.UNKNOWN_OPERATION, name == null
+                            ? "The operation needs an '" + OperationSpec.OPERATION_MEMBER + "' member naming it."
+                            : "Unknown operation '" + name + "'. Known operations: "
+                                            + String.join(", ", specs.stream().map(OperationSpec::name).toList()));
+            return context.result(String.valueOf(name));
+        }
+
+        context.input().rejectUnknownFields(spec.get().input());
+        spec.get().handler().apply(context);
+        return context.result(name);
+    }
+
+    private static String operationName(JsonObject input)
+    {
+        var member = input.get(OperationSpec.OPERATION_MEMBER);
+        return member != null && OperationInput.isText(member) ? member.getAsString() : null;
+    }
+
+    Client client()
+    {
+        return client;
+    }
+
+    void report(OperationContext.Failure failure)
+    {
+        failures.add(failure);
+    }
+
+    /** Whether an operation has reported a failure. */
+    boolean failed(int index)
+    {
+        return failures.stream().anyMatch(failure -> failure.operationIndex() == index);
+    }
+
+    /** @return the index of the operation that claimed the entity first, or empty if it is this one */
+    OptionalInt claim(String uuid, int index)
+    {
+        var earlier = claims.putIfAbsent(uuid, index);
+        return earlier == null ? OptionalInt.empty() : OptionalInt.of(earlier);
+    }
+
+    boolean existedBeforeBatch(Object entity)
+    {
+        return existedBeforeBatch.contains(entity);
+    }
+}

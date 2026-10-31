@@ -1,0 +1,20 @@
+pp-cli apply operation instrument.add: Adds an instrument. Only the name is required.
+
+Input: one element of "operations" in the batch given with --input. Fields of the instrument; they match the instruments output.
+  operation (string, one of instrument.add) Operation name.
+  name (string) Instrument name; never empty.
+  currencyCode (string or null, optional) ISO currency code; null for an index. An add that omits it gets EUR.
+  isin (string or null, optional) ISIN: valid and not used by another instrument.
+  tickerSymbol (string or null, optional) Ticker symbol.
+  wkn (string or null, optional) WKN.
+  note (string or null, optional) Note.
+  retired (boolean, optional) Whether the instrument is retired; defaults to false.
+
+Failure codes (failures[].code of validation-failed):
+  unknown-field  The object has no such field.
+  required  A required field is missing or empty.
+  invalid-type  A field has the wrong JSON type.
+  invalid-currency  Not a known ISO currency code.
+  invalid-isin  Not a valid ISIN.
+  duplicate-isin  Another instrument has the ISIN.
+  currency-immutable  The currency can't change: there are transactions.

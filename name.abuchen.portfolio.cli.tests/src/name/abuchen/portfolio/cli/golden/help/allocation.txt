@@ -1,0 +1,32 @@
+pp-cli allocation: How the value of the client splits across the classifications of one taxonomy at a date: one flat row per classification at every depth plus an unassigned row, with value and share in the base currency or --currency.
+
+Usage: pp-cli allocation --taxonomy <ref> [options]
+
+Options:
+  --taxonomy <ref>  Taxonomy to allocate by. List the taxonomies with the taxonomies command. (required)
+  --date <yyyy-MM-dd>  Day to value the allocation at. Defaults to today. Valuation uses the prices on or before this day, and conversions the rates on or before it.
+  --currency <code>  ISO currency of the values and the total. Defaults to the base currency of the file.
+  Global options (pp-cli --help): --file <path>, --format <format> (json), --verbose
+
+Response data: The allocation at the date.
+  items (array of object) One row per classification at every depth in tree pre-order, then the unassigned row. The top-level rows and the unassigned row add up to the total.
+    uuid (string, optional) Canonical UUID. Absent on the unassigned row.
+    name (string) Classification name; "Unassigned" on the unassigned row.
+    parent (string, optional) UUID of the parent classification. Absent at the top level.
+    path (array of string) Names of the ancestors, top level first, excluding this classification.
+    targetWeight (number, optional) The rebalancing target as an unrounded fraction of the parent. 0 if not set. Absent on the unassigned row.
+    unassigned (boolean, optional) True on the unassigned row, the last one. Absent on others.
+    value (number, optional) Value of the whole subtree in the reporting currency at the date. Absent if an exchange rate is missing.
+    share (number, optional) The value as an unrounded fraction of total. Absent if an exchange rate is missing or the total is zero.
+  total (number, optional) Total assets (cash and instruments) of the client in the reporting currency. Absent if an exchange rate is missing.
+
+Response meta: fileVersion, asOf, taxonomy, date, currency; optional: exchangeRates
+
+Warnings:
+  stale-price  The latest price is more than 7 days old. Not emitted for retired instruments, instruments with a manual quote feed or instruments without a price.
+  over-assigned  An instrument or cash account is assigned more than 100% in the taxonomy. It is counted as core counts it. Carries the instrument or cashAccount UUID and the totalWeight as a fraction.
+  exchange-rate-missing  No usable exchange rate for a currency pair; its figures are left out. Carries baseCurrency, termCurrency and the count of affected items.
+  stale-exchange-rate  An exchange rate over 7 days older than the day needed was used. Carries baseCurrency, termCurrency, the count of records and maxAgeDays.
+  exchange-rate-cache-unavailable  The desktop app's ECB rate cache is missing, unreadable or invalid, so it is not used. Carries the path if known and a reason: not-configured, not-found, unreadable or unparsable.
+
+Error codes (meanings: pp-cli --help): unexpected-argument, unknown-option, option-value-required, option-required, invalid-option-value, file-required, file-not-found, file-unreadable, file-version-unsupported, password-required, incorrect-password, reference-not-found, reference-ambiguous, internal-error

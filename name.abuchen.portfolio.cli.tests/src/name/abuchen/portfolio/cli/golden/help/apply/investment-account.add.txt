@@ -1,0 +1,14 @@
+pp-cli apply operation investment-account.add: Adds an investment account. The name and a reference cash account that is already in the file are required.
+
+Input: one element of "operations" in the batch given with --input. Fields of the investment account; they match the investment-accounts output.
+  operation (string, one of investment-account.add) Operation name.
+  name (string) Account name; never empty.
+  referenceCashAccount (string) UUID of the cash account that settles this account; it must already be in the file.
+  note (string or null, optional) Note.
+  retired (boolean, optional) Whether the investment account is retired; defaults to false.
+
+Failure codes (failures[].code of validation-failed):
+  reference-not-found  No entity of the expected kind matches the reference.
+  unknown-field  The object has no such field.
+  required  A required field is missing or empty.
+  invalid-type  A field has the wrong JSON type.
