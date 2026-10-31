@@ -163,28 +163,29 @@ public class HoldingsPieChartSWT implements IPieChart
         {
             circularSeries = createSeries(values, labels);
         }
-        else
+        else if (hasSameDataSet(labels))
         {
-            if (hasDataSetChanged(labels))
+            // refresh values only for smoother update
+            ListIterator<String> iter = labels.listIterator();
+            while (iter.hasNext())
             {
-                // refresh values only for smoother update
-                ListIterator<String> iter = labels.listIterator();
-                while (iter.hasNext())
+                int idx = iter.nextIndex();
+                String label = iter.next();
+                Node node = circularSeries.getNodeById(label);
+                if (node != null)
                 {
-                    int idx = iter.nextIndex();
-                    String label = iter.next();
-                    Node node = circularSeries.getNodeById(label);
-                    if (node != null)
-                    {
-                        node.setValue(values.get(idx));
-                    }
+                    node.setValue(values.get(idx));
                 }
             }
-            else
-            {
-                circularSeries = createSeries(values, labels);
-            }
-
+        }
+        else
+        {
+            // the slices of the existing series cannot be reused for a different set
+            // of positions. Delete the series before creating a new one, otherwise the
+            // old one remains part of the chart and is painted and recalculated with
+            // every further update
+            chart.getSeriesSet().deleteSeries(circularSeries.getId());
+            circularSeries = createSeries(values, labels);
         }
         setColors(circularSeries, values.size());
         chart.updateAngleBounds();
@@ -192,9 +193,11 @@ public class HoldingsPieChartSWT implements IPieChart
     }
 
     /**
-     * Check whether or not the same labels in dataset
+     * Checks whether the passed labels identify the same positions as the dataset
+     * of the previous update. Labels and last labels are compared case
+     * insensitive and without regard to their order.
      */
-    private boolean hasDataSetChanged(List<String> labels)
+    private boolean hasSameDataSet(List<String> labels)
     {
         List<String> newLabels = new ArrayList<>(labels);
         Collections.sort(newLabels, String.CASE_INSENSITIVE_ORDER);

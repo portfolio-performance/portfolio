@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swtchart.ICircularSeries;
+import org.eclipse.swtchart.ISeries;
 import org.eclipse.swtchart.ISeries.SeriesType;
 import org.eclipse.swtchart.model.Node;
 
@@ -122,21 +123,37 @@ public class TaxonomyPieChartSWT implements IPieChart
     {
         TaxonomyNode taxRoot = getModel().getVirtualRootNode();
 
-        ICircularSeries<?> circularSeries = (ICircularSeries<?>) chart.getSeriesSet().createSeries(SeriesType.PIE,
-                        taxRoot.getName());
+        try
+        {
+            chart.suspendUpdate(true);
 
-        circularSeries.setSliceColor(chart.getPlotArea().getBackground());
+            // the tree of nodes is rebuilt from the taxonomy model with every change.
+            // Without deleting the existing series first it remains part of the chart,
+            // so each refresh adds another pie which keeps being painted and
+            // recalculated (see issue #6054)
+            for (ISeries<?> s : chart.getSeriesSet().getSeries())
+                chart.getSeriesSet().deleteSeries(s.getId());
 
-        Node rootNode = circularSeries.getRootNode();
-        rootNode.setData(taxRoot);
+            ICircularSeries<?> circularSeries = (ICircularSeries<?>) chart.getSeriesSet()
+                            .createSeries(SeriesType.PIE, taxRoot.getName());
 
-        Map<String, Color> id2color = new HashMap<>();
-        addNodes(id2color, rootNode, taxRoot, taxRoot.getChildren(), taxRoot.getActual(),
-                        getModel().isSecuritiesInPieChartExcluded());
+            circularSeries.setSliceColor(chart.getPlotArea().getBackground());
 
-        id2color.entrySet().forEach(e -> circularSeries.setColor(e.getKey(), e.getValue()));
+            Node rootNode = circularSeries.getRootNode();
+            rootNode.setData(taxRoot);
 
-        chart.updateAngleBounds();
+            Map<String, Color> id2color = new HashMap<>();
+            addNodes(id2color, rootNode, taxRoot, taxRoot.getChildren(), taxRoot.getActual(),
+                            getModel().isSecuritiesInPieChartExcluded());
+
+            id2color.entrySet().forEach(e -> circularSeries.setColor(e.getKey(), e.getValue()));
+
+            chart.updateAngleBounds();
+        }
+        finally
+        {
+            chart.suspendUpdate(false);
+        }
 
         chart.redraw();
     }
