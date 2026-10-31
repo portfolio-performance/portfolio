@@ -6,6 +6,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.MApplicationFactory;
 import org.eclipse.e4.ui.model.application.commands.MBindingTable;
@@ -158,16 +159,39 @@ public class KeyBindingHintsTest
                         createMenuItem(ITEM_PARAMETER_ID_ACTIVE, "ACTIVE")), is(nullValue()));
     }
 
+    /**
+     * The primary modifier of a key sequence (the "M1" of "M1+U") is the
+     * command key on the Mac and the control key everywhere else. The expected
+     * name is worked out here and not taken from the production code, so that a
+     * wrong platform check in {@code KeyBindingHints} is noticed.
+     */
+    private static String expectedPrimaryModifier()
+    {
+        return isMacOnThisPlatform() ? Messages.KeyModifierCommand : Messages.KeyModifierControl;
+    }
+
+    private static String unexpectedPrimaryModifier()
+    {
+        return isMacOnThisPlatform() ? Messages.KeyModifierControl : Messages.KeyModifierCommand;
+    }
+
+    private static boolean isMacOnThisPlatform()
+    {
+        return Platform.OS_MACOSX.equals(Platform.getOS());
+    }
+
     @Test
     public void testModifierNamesAreTranslated()
     {
         // if a message is missing, NLS hands out the key itself
         assertThat(Messages.KeyModifierControl, not(is("KeyModifierControl")));
+        assertThat(Messages.KeyModifierCommand, not(is("KeyModifierCommand")));
         assertThat(Messages.KeyBindingHint, not(is("KeyBindingHint")));
 
         String formatted = KeyBindingHints.formatKeySequence("M1+U A");
 
-        assertThat(formatted, containsString(Messages.KeyModifierControl));
+        assertThat(formatted, containsString(expectedPrimaryModifier()));
+        assertThat(formatted, not(containsString(unexpectedPrimaryModifier())));
         assertThat(formatted, containsString("U"));
         assertThat(formatted, containsString("A"));
         assertThat(formatted, not(containsString("M1")));
@@ -189,7 +213,8 @@ public class KeyBindingHintsTest
     {
         String formatted = KeyBindingHints.formatKeySequence("M1+M2+S");
 
-        assertThat(formatted, containsString(Messages.KeyModifierControl));
+        assertThat(formatted, containsString(expectedPrimaryModifier()));
+        assertThat(formatted, not(containsString(unexpectedPrimaryModifier())));
         assertThat(formatted, containsString(Messages.KeyModifierShift));
         assertThat(formatted, containsString("S"));
     }
