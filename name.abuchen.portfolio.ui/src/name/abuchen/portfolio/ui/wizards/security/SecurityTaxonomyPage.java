@@ -31,12 +31,13 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.RowLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.ui.forms.events.IHyperlinkListener;
+import org.eclipse.ui.forms.widgets.ImageHyperlink;
 
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Taxonomy;
@@ -185,7 +186,7 @@ public class SecurityTaxonomyPage extends AbstractPage
         boolean isFirst = designation.equals(model.getDesignations().get(0));
         GridDataFactory.fillDefaults().indent(0, isFirst ? 0 : 20).applyTo(heading);
 
-        GridLayoutFactory.fillDefaults().numColumns(2).applyTo(heading);
+        GridLayoutFactory.fillDefaults().numColumns(2).extendedMargins(0, 0, 0, 5).applyTo(heading);
 
         Label label = new Label(heading, SWT.NONE);
         label.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING1);
@@ -237,7 +238,12 @@ public class SecurityTaxonomyPage extends AbstractPage
             @Override
             public void widgetSelected(SelectionEvent e)
             {
+                Classification selected = selectClassification(taxonomyPicker.getShell(), designation, null);
+                if (selected == null)
+                    return;
+
                 ClassificationLink link = new ClassificationLink();
+                link.setClassification(selected);
                 link.setWeight(designation.getLinks().isEmpty() ? Classification.ONE_HUNDRED_PERCENT : 0);
                 designation.getLinks().add(link);
 
@@ -342,13 +348,15 @@ public class SecurityTaxonomyPage extends AbstractPage
     private void recreateTaxonomyPicker(final Composite taxonomyPicker)
     {
         // bindings must be removed explicitly otherwise the model keeps 'old'
-        // invalid bindings and error messages
+        // invalid bindings and error messages. They must also be disposed as
+        // their targets are not widget observables that go with the widgets.
         for (ValidationStatusProvider validator : validators)
         {
             if (validator instanceof Binding binding)
                 bindings.getBindingContext().removeBinding(binding);
             else
                 bindings.getBindingContext().removeValidationStatusProvider(validator);
+            validator.dispose();
         }
         validators.clear();
 
@@ -408,22 +416,26 @@ public class SecurityTaxonomyPage extends AbstractPage
     {
         Composite picker = new Composite(block, SWT.NONE);
         picker.setBackground(block.getBackground());
-        GridDataFactory.fillDefaults().applyTo(picker);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).applyTo(picker);
         GridLayoutFactory.fillDefaults().numColumns(2).equalWidth(false).applyTo(picker);
 
         Label selectedClassification = new Label(picker, SWT.NONE);
         selectedClassification.setBackground(picker.getBackground());
-        GridDataFactory.fillDefaults().hint(350, SWT.DEFAULT).applyTo(selectedClassification);
+        GridDataFactory.fillDefaults().hint(350, SWT.DEFAULT).align(SWT.FILL, SWT.CENTER)
+                        .applyTo(selectedClassification);
 
-        Link select = new Link(picker, SWT.UNDERLINE_LINK);
-        select.setText(Messages.EditWizardMasterDataSelectClassification);
+        ImageHyperlink select = new ImageHyperlink(picker, SWT.NONE);
+        select.setImage(Images.EDIT.image());
+        select.setToolTipText(Messages.EditWizardMasterDataSelectClassification);
+        select.setBackground(picker.getBackground());
         GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).applyTo(select);
 
         var observable = new WritableValue<>(link.getClassification(), Classification.class);
+        picker.addDisposeListener(e -> observable.dispose());
         updateLabel(selectedClassification, observable.getValue(), designation);
         observable.addValueChangeListener(e -> updateLabel(selectedClassification, e.diff.getNewValue(), designation));
 
-        select.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+        select.addHyperlinkListener(IHyperlinkListener.linkActivatedAdapter(e -> {
             Classification selected = selectClassification(block.getShell(), designation, observable.getValue());
             if (selected != null)
                 observable.setValue(selected);
@@ -483,17 +495,15 @@ public class SecurityTaxonomyPage extends AbstractPage
     private void addDeleteButton(final Composite block, final TaxonomyDesignation designation,
                     final ClassificationLink link)
     {
-        final Button deleteButton = new Button(block, SWT.PUSH);
-        deleteButton.setImage(Images.REMOVE.image());
-        deleteButton.addSelectionListener(new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected(SelectionEvent e)
-            {
-                designation.getLinks().remove(link);
-                recreateTaxonomyPicker(block.getParent());
-            }
-        });
+        final ImageHyperlink deleteButton = new ImageHyperlink(block, SWT.NONE);
+        deleteButton.setImage(Images.TRASH.image());
+        deleteButton.setToolTipText(Messages.MenuTaxonomyAssignmentRemove);
+        deleteButton.setBackground(block.getBackground());
+        GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(deleteButton);
+        deleteButton.addHyperlinkListener(IHyperlinkListener.linkActivatedAdapter(e -> {
+            designation.getLinks().remove(link);
+            recreateTaxonomyPicker(block.getParent());
+        }));
     }
 
     private void addSpinner(Composite block, ClassificationLink link, List<IObservableValue<Integer>> observables)
