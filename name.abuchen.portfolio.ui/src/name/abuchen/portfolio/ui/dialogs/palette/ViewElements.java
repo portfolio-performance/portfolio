@@ -9,9 +9,9 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 
 import name.abuchen.portfolio.money.DiscreetMode;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.palette.CommandPalettePopup.Element;
 import name.abuchen.portfolio.ui.dialogs.palette.CommandPalettePopup.ElementProvider;
+import name.abuchen.portfolio.ui.handlers.ActivateDiscreetModeHandler;
 
 /* package */ class ViewElements implements ElementProvider
 {
@@ -34,11 +34,12 @@ import name.abuchen.portfolio.ui.dialogs.palette.CommandPalettePopup.ElementProv
         @Override
         public void execute()
         {
-            DiscreetMode.setActive(!DiscreetMode.isActive());
-            broker.post(UIConstants.Event.Global.DISCREET_MODE, DiscreetMode.isActive());
+            // not a setting of the file but of the installation: the handler
+            // stores the mode in the preferences and applies it everywhere
+            ActivateDiscreetModeHandler.toggle(broker);
         }
     }
-    
+
     @Inject
     private IEventBroker broker;
 

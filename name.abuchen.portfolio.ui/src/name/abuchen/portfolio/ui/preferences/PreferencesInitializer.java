@@ -47,6 +47,10 @@ public class PreferencesInitializer extends AbstractPreferenceInitializer
 
         // Value color scheme
         store.setDefault(UIConstants.Preferences.VALUE_COLOR_SCHEME, ValueColorScheme.STANDARD_SCHEME);
+
+        // the amounts are shown by default, the discreet mode has to be
+        // activated by the user
+        store.setDefault(UIConstants.Preferences.DISCREET_MODE, false);
     }
 
     public static int compareOSVersion(String version)

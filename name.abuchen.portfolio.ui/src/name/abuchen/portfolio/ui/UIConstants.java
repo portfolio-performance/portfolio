@@ -322,6 +322,13 @@ public interface UIConstants
          */
         String VALUE_COLOR_SCHEME = "VALUE_COLOR_SCHEME"; //$NON-NLS-1$
 
+        /**
+         * Preference key for the discreet mode, i.e. whether all views hide the
+         * absolute amounts. Like the color scheme this is a setting of the
+         * installation and not of a single file.
+         */
+        String DISCREET_MODE = "DISCREET_MODE"; //$NON-NLS-1$
+
     }
 
     interface Theme // NOSONAR
