@@ -180,13 +180,25 @@ public class KeyBindingHintsTest
         return Platform.OS_MACOSX.equals(Platform.getOS());
     }
 
+    /**
+     * A missing message is not handed out as the key: NLS fills the field with
+     * "NLS missing message:&lt;key&gt; in:&lt;bundle&gt;" (see the method
+     * computeMissingMessages of org.eclipse.osgi.util.NLS), so a test has to
+     * reject that marker instead of the name of the key.
+     */
+    private static void assertTranslated(String key, String value)
+    {
+        assertThat("no value for " + key, value, not(nullValue()));
+        assertThat("empty value for " + key, value, not(is("")));
+        assertThat("missing message for " + key, value, not(containsString("NLS missing message")));
+    }
+
     @Test
     public void testModifierNamesAreTranslated()
     {
-        // if a message is missing, NLS hands out the key itself
-        assertThat(Messages.KeyModifierControl, not(is("KeyModifierControl")));
-        assertThat(Messages.KeyModifierCommand, not(is("KeyModifierCommand")));
-        assertThat(Messages.KeyBindingHint, not(is("KeyBindingHint")));
+        assertTranslated("KeyModifierControl", Messages.KeyModifierControl);
+        assertTranslated("KeyModifierCommand", Messages.KeyModifierCommand);
+        assertTranslated("KeyBindingHint", Messages.KeyBindingHint);
 
         String formatted = KeyBindingHints.formatKeySequence("M1+U A");
 
