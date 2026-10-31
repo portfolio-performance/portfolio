@@ -135,6 +135,15 @@ public class GroupEarningsByAccount
                                 PortfolioTransaction pt = entry.getPortfolioTransaction();
                                 taxes.add(pt.getUnitSum(Unit.Type.TAX));
                                 fees.add(pt.getUnitSum(Unit.Type.FEE));
+
+                                // accrued interest paid (purchase) or received
+                                // (sale) is offset against the coupons, which
+                                // are booked as dividends
+                                Money accruedInterest = pt.getAccruedInterest();
+                                if (pt.getType().isPurchase())
+                                    accruedInterest = accruedInterest.multiply(-1);
+                                dividends.add(accruedInterest);
+                                sum.add(accruedInterest);
                             }
                             else
                             {
