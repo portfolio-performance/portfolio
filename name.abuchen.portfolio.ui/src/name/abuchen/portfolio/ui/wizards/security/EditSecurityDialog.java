@@ -125,8 +125,9 @@ public class EditSecurityDialog extends Dialog
         // Make sure that it has the correct initial enablement state as the
         // data loaded might not validate.
         IStatus status = model.validateAssignments();
-        errorMessage.setText(status.isOK() ? "" : status.getMessage()); //$NON-NLS-1$
-        getButton(OK).setEnabled(status.isOK());
+        if (!status.isOK() && "".equals(errorMessage.getText())) //$NON-NLS-1$
+            errorMessage.setText(status.getMessage());
+        getButton(OK).setEnabled("".equals(errorMessage.getText())); //$NON-NLS-1$
 
         return contents;
     }
@@ -236,8 +237,8 @@ public class EditSecurityDialog extends Dialog
 
     /*
      * The controls of a page are created when its tab is opened. Creating all
-     * pages up-front realizes the widgets of all hidden tabs, including the
-     * native combo boxes that carry hundreds of items.
+     * pages up-front realizes the widgets of all hidden tabs, for example one
+     * row per assigned classification in every taxonomy.
      */
     private AbstractPage showPage(CTabItem item)
     {
