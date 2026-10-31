@@ -459,6 +459,10 @@ public class SecurityTaxonomyPage extends AbstractPage
         dialog.setMultiSelection(false);
         dialog.setElements(designation.getElements());
         dialog.setInitialSelection(current);
+        dialog.setDisabledElements(designation.getLinks().stream() //
+                        .map(ClassificationLink::getClassification) //
+                        .filter(c -> c != null && c != current) //
+                        .toList());
         dialog.setViewerComparator(new ViewerComparator()
         {
             @Override
