@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.util.chart;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
@@ -53,11 +55,19 @@ public final class ChartUtil
 
         Point chartSize = chart.getSize();
 
+        // GC.copyArea() fills the image handle at the GC's zoom, but getImageData()
+        // reads zoom 100, which above 100 % scaling is a fresh black buffer.
+        // Remember the zoom the provider is asked for and read back from that one.
+        AtomicInteger usedZoom = new AtomicInteger(100);
+
         ImageDataProvider chartImageDataProvider = zoom -> {
-            if (zoom != 100)
-                return null;
+            usedZoom.set(zoom);
+
+            // round like SWT does, or the buffer misses the last row/column
+            int width = Math.max(1, Math.round(chartSize.x * zoom / 100f));
+            int height = Math.max(1, Math.round(chartSize.y * zoom / 100f));
             PaletteData palette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
-            return new ImageData(chartSize.x, chartSize.y, 32, palette);
+            return new ImageData(width, height, 32, palette);
         };
 
         Image image = null;
@@ -67,7 +77,7 @@ public final class ChartUtil
             image = new Image(chart.getDisplay(), chartImageDataProvider);
             gc = new GC(chart);
             gc.copyArea(image, 0, 0);
-            return image.getImageData();
+            return image.getImageData(usedZoom.get());
         }
         finally
         {
