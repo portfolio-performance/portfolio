@@ -167,14 +167,21 @@ public class UpdatePricesJob extends AbstractClientJob
             long now = currentMillis();
             if (throttle.isDue(now) && request.getAndResetDirty())
             {
-                request.getClient().markDirty();
-                throttle.recalculationStarted(now);
+                throttle.recalculationScheduled();
 
-                // the recalculation runs synchronously on the UI thread
-                // (ClientInput.scheduleDirty -> applyPendingDirty): an asyncExec
-                // posted right after markDirty() runs once the recalculation
-                // has finished and provides its duration to the throttle
-                Display.getDefault().asyncExec(() -> throttle.recalculationFinished(currentMillis()));
+                // on the UI thread, markDirty() recalculates the views
+                // synchronously, so we can measure the duration
+                Display.getDefault().asyncExec(() -> {
+                    long started = currentMillis();
+                    try
+                    {
+                        request.getClient().markDirty();
+                    }
+                    finally
+                    {
+                        throttle.recalculationFinished(started, currentMillis());
+                    }
+                });
             }
         }, 0, UI_PROGRESS_UPDATE_INTERVAL, TimeUnit.MILLISECONDS);
 

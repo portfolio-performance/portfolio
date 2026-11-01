@@ -32,7 +32,6 @@ package name.abuchen.portfolio.ui.jobs.priceupdate;
 
     private long nextDue;
     private boolean inFlight;
-    private long startedAt;
 
     /**
      * @param start
@@ -54,10 +53,13 @@ package name.abuchen.portfolio.ui.jobs.priceupdate;
         return !inFlight && now >= nextDue;
     }
 
-    /* package */ synchronized void recalculationStarted(long now)
+    /**
+     * Called when a recalculation has been handed over to the UI thread. From
+     * now on, no further recalculation is due until it has finished.
+     */
+    /* package */ synchronized void recalculationScheduled()
     {
         this.inFlight = true;
-        this.startedAt = now;
     }
 
     /**
@@ -65,15 +67,15 @@ package name.abuchen.portfolio.ui.jobs.priceupdate;
      * longer the next recalculation is delayed.
      * <p/>
      * This method is called on the UI thread, while {@link #isDue(long)} and
-     * {@link #recalculationStarted(long)} are called on the scheduler thread
-     * of the price update job. The methods are synchronized so that the state
+     * {@link #recalculationScheduled()} are called on the scheduler thread of
+     * the price update job. The methods are synchronized so that the state
      * changes as one unit and the scheduler always sees the updated deadline.
      */
-    /* package */ synchronized void recalculationFinished(long now)
+    /* package */ synchronized void recalculationFinished(long started, long finished)
     {
         this.inFlight = false;
 
-        long duration = now - this.startedAt;
-        this.nextDue = now + Math.max(MINIMUM_INTERVAL, (long) (duration * FACTOR));
+        long duration = finished - started;
+        this.nextDue = finished + Math.max(MINIMUM_INTERVAL, (long) (duration * FACTOR));
     }
 }

@@ -23,8 +23,8 @@ public class RecalculationThrottleTest
         {
             if (throttle.isDue(now))
             {
-                throttle.recalculationStarted(now);
-                throttle.recalculationFinished(now + duration);
+                throttle.recalculationScheduled();
+                throttle.recalculationFinished(now, now + duration);
                 count++;
             }
         }
@@ -45,7 +45,7 @@ public class RecalculationThrottleTest
     {
         RecalculationThrottle throttle = new RecalculationThrottle(0);
 
-        throttle.recalculationStarted(1000);
+        throttle.recalculationScheduled();
 
         // even after the minimum interval, no second recalculation while the
         // first one is still running
@@ -53,7 +53,7 @@ public class RecalculationThrottleTest
         assertThat(throttle.isDue(10_000), is(false));
 
         // duration of 1 second: the minimum interval of 3 seconds applies
-        throttle.recalculationFinished(2_000);
+        throttle.recalculationFinished(1_000, 2_000);
         assertThat(throttle.isDue(4_999), is(false));
         assertThat(throttle.isDue(5_000), is(true));
     }
@@ -63,8 +63,8 @@ public class RecalculationThrottleTest
     {
         RecalculationThrottle throttle = new RecalculationThrottle(0);
 
-        throttle.recalculationStarted(0);
-        throttle.recalculationFinished(200);
+        throttle.recalculationScheduled();
+        throttle.recalculationFinished(0, 200);
 
         assertThat(throttle.isDue(3199), is(false));
         assertThat(throttle.isDue(3200), is(true));
@@ -78,11 +78,28 @@ public class RecalculationThrottleTest
         // of its time recalculating
         RecalculationThrottle throttle = new RecalculationThrottle(0);
 
-        throttle.recalculationStarted(0);
-        throttle.recalculationFinished(4000);
+        throttle.recalculationScheduled();
+        throttle.recalculationFinished(0, 4000);
 
         assertThat(throttle.isDue(11_999), is(false));
         assertThat(throttle.isDue(12_000), is(true));
+    }
+
+    @Test
+    public void testWaitingInTheUIQueueDoesNotExtendTheInterval()
+    {
+        // the UI thread is busy for 20 seconds before it starts the
+        // recalculation of 100 ms: only the recalculation counts, so the
+        // minimum interval applies after it has finished
+        RecalculationThrottle throttle = new RecalculationThrottle(0);
+
+        throttle.recalculationScheduled();
+        assertThat(throttle.isDue(20_000), is(false));
+
+        throttle.recalculationFinished(20_000, 20_100);
+
+        assertThat(throttle.isDue(23_099), is(false));
+        assertThat(throttle.isDue(23_100), is(true));
     }
 
     @Test
