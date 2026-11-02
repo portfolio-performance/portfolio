@@ -236,10 +236,18 @@ public class UpdateIndicatorAddon
             mBar.getPersistedState().put(IWorkbench.PERSIST_STATE, Boolean.FALSE.toString());
             mPart.setToolbar(mBar);
         }
-        else if (mBar.getChildren().stream().anyMatch(item -> ITEM_ID.equals(item.getElementId())))
+        else
         {
-            // the widget event can be sent more than once for the same part
-            return;
+            // the widget event can be sent more than once for the same part,
+            // and older versions restored a stale item after an update
+            var existing = mBar.getChildren().stream().filter(item -> ITEM_ID.equals(item.getElementId()))
+                            .findFirst();
+
+            if (existing.isPresent())
+            {
+                existing.get().setVisible(hasAvailableUpdate());
+                return;
+            }
         }
 
         var mItem = modelService.createModelElement(MDirectToolItem.class);
