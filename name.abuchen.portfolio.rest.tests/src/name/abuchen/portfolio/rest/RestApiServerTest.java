@@ -670,6 +670,50 @@ public class RestApiServerTest
         assertThat(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - started) < 3_000, is(true));
     }
 
+    /**
+     * A stream whose client stops reading blocks its writer. Closing it then
+     * blocks as well - it writes the last chunk - and done on the one watchdog
+     * thread, that stopped every other deadline: a stalled body elsewhere was
+     * never closed again.
+     */
+    @Test
+    public void testAStreamNobodyReadsDoesNotStopTheWatchdog() throws Exception
+    {
+        var router = new Router();
+        router.add("GET", "/v1/ping", request -> Response.json(200, JsonParser.parseString("{\"pong\":true}")));
+        router.add("GET", "/v1/flood", request -> Response.streamed(200, "text/event-stream", sink -> {
+            var chunk = "x".repeat(64 * 1024);
+            for (int ii = 0; ii < 100_000; ii++)
+                sink.send(chunk);
+        }));
+
+        var guarded = new RestApiServer(0, TOKEN::equals, router, 4, 500);
+        guarded.start();
+        try (var reader = new Socket(InetAddress.getLoopbackAddress(), guarded.getPort()))
+        {
+            reader.setReceiveBufferSize(4096);
+            reader.getOutputStream().write(("GET /v1/flood HTTP/1.1\r\nHost: 127.0.0.1:" + guarded.getPort()
+                            + "\r\nAuthorization: Bearer " + TOKEN + "\r\n\r\n").getBytes(StandardCharsets.US_ASCII));
+            reader.getOutputStream().flush();
+            // long enough for the socket buffers to fill and a piece to miss its deadline
+            Thread.sleep(1_500);
+
+            try (var stalled = stalledBody(guarded, "GET", "/v1/ping"))
+            {
+                stalled.setSoTimeout(5_000);
+                assertThat(stalled.getInputStream().read(), is(-1));
+            }
+
+            var ping = HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + guarded.getPort() + "/v1/ping"))
+                            .header("Authorization", "Bearer " + TOKEN).GET().build();
+            assertThat(statusEventually(ping), is(200));
+        }
+        finally
+        {
+            guarded.stop();
+        }
+    }
+
     /** a socket that announces a body of 100 bytes, sends one, and then waits */
     private static Socket stalledBody(RestApiServer target, String method, String path) throws Exception
     {
