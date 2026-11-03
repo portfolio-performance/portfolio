@@ -30,6 +30,7 @@ import com.google.gson.JsonParser;
 
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.rest.ApiRoutes;
 import name.abuchen.portfolio.rest.ClientStore;
 import name.abuchen.portfolio.rest.FileAccessRegistry;
@@ -53,12 +54,14 @@ public class McpEndpointTest
     private RestApiServer server;
     private HttpClient http;
     private FakeHost host;
+    private Security security;
 
     @Before
     public void setUp() throws Exception
     {
         var client = new Client();
-        new SecurityBuilder().addTo(client);
+        security = new SecurityBuilder().addTo(client);
+        security.setName("ACME");
 
         node = InstanceScope.INSTANCE.getNode("rest-test-" + UUID.randomUUID());
         var registry = new FileAccessRegistry(node);
@@ -181,7 +184,8 @@ public class McpEndpointTest
         assertThat(response.headers().firstValue("Content-Type").orElseThrow(), containsString("application/json"));
 
         // and a request in it is served as any other
-        var ping = send(session(HttpRequest.newBuilder(uri()), initialize())
+        var id = response.headers().firstValue("Mcp-Session-Id").orElseThrow();
+        var ping = send(session(HttpRequest.newBuilder(uri()), id)
                         .POST(HttpRequest.BodyPublishers.ofString("{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"ping\"}")));
         assertThat(ping.statusCode(), is(200));
     }
@@ -344,6 +348,98 @@ public class McpEndpointTest
 
         var body = pending.get(10, TimeUnit.SECONDS).body();
         assertThat(events(body).stream().anyMatch(event -> event.has("id")), is(false));
+    }
+
+    /** a write cancelled while it waits for the UI thread is not applied */
+    @Test
+    public void testACancelledWriteIsNotApplied() throws Exception
+    {
+        var id = initialize();
+        var gate = new CountDownLatch(1);
+        host.blockUiThreadUntil(gate);
+        var before = security.getName();
+
+        var pending = http.sendAsync(streamRequest(call("pp_update_instrument",
+                        "{\"file\":\"sample\",\"uuid\":\"" + security.getUUID() + "\",\"name\":\"Renamed\"}"), id)
+                                        .build(),
+                        HttpResponse.BodyHandlers.ofString());
+        waitUntil(() -> host.callablesQueued() >= 1);
+
+        send(session(HttpRequest.newBuilder(uri()), id).POST(HttpRequest.BodyPublishers.ofString(
+                        "{\"jsonrpc\":\"2.0\",\"method\":\"notifications/cancelled\",\"params\":{\"requestId\":9}}")));
+        // the stream ends without waiting for the UI thread
+        var body = pending.get(5, TimeUnit.SECONDS).body();
+        gate.countDown();
+
+        assertThat(events(body).stream().anyMatch(event -> event.has("id")), is(false));
+        waitUntil(() -> host.callablesRun() >= host.callablesQueued());
+        assertThat(security.getName(), is(before));
+    }
+
+    /** two running calls in one session cannot share an id */
+    @Test
+    public void testASecondCallWithARunningIdIsRefused() throws Exception
+    {
+        var id = initialize();
+        var gate = new CountDownLatch(1);
+        host.blockUiThreadUntil(gate);
+        try
+        {
+            var first = http.sendAsync(streamRequest(call("pp_list_files", "{}"), id).build(),
+                            HttpResponse.BodyHandlers.ofString());
+            waitUntil(() -> host.callablesQueued() >= 1);
+
+            var second = send(streamRequest(call("pp_list_files", "{}"), id));
+            var error = events(second.body()).get(0).getAsJsonObject("error");
+            assertThat(error.get("code").getAsInt(), is(-32600));
+            assertThat(error.get("message").getAsString(), containsString("still running"));
+
+            gate.countDown();
+            assertThat(first.get(10, TimeUnit.SECONDS).statusCode(), is(200));
+        }
+        finally
+        {
+            gate.countDown();
+        }
+    }
+
+    /** a client that says q=0 for the stream gets JSON */
+    @Test
+    public void testAStreamRefusedWithQZeroIsAnsweredAsJson() throws Exception
+    {
+        var response = send(HttpRequest.newBuilder(uri()) //
+                        .header("Authorization", "Bearer " + TOKEN) //
+                        .header("Accept", "application/json, text/event-stream;q=0") //
+                        .POST(HttpRequest.BodyPublishers.ofString(call("pp_list_files", "{}"))));
+
+        assertThat(response.headers().firstValue("Content-Type").orElseThrow(), containsString("application/json"));
+    }
+
+    /** an Accept header sent on two lines counts as one list */
+    @Test
+    public void testAnAcceptHeaderOnTwoLinesIsOneList() throws Exception
+    {
+        var response = send(HttpRequest.newBuilder(uri()) //
+                        .header("Authorization", "Bearer " + TOKEN) //
+                        .header("Accept", "application/json") //
+                        .header("Accept", "text/event-stream") //
+                        .POST(HttpRequest.BodyPublishers.ofString(call("pp_list_files", "{}"))));
+
+        assertThat(response.headers().firstValue("Content-Type").orElseThrow(), containsString("text/event-stream"));
+    }
+
+    /** the handshake must stand alone: its session id travels in a header a batch has one of */
+    @Test
+    public void testInitializeInABatchIsRefused() throws Exception
+    {
+        var response = rpc(null, "[{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{}},"
+                        + "{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"ping\"}]");
+
+        var replies = body(response).getAsJsonArray();
+        assertThat(replies.size(), is(2));
+        assertThat(replies.get(0).getAsJsonObject().getAsJsonObject("error").get("code").getAsInt(), is(-32600));
+        assertThat(replies.get(1).getAsJsonObject().has("result"), is(true));
+        assertThat(response.headers().firstValue("Mcp-Session-Id").isPresent(), is(false));
     }
 
     @Test
