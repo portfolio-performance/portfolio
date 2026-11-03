@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -79,24 +80,23 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
                         .match("^N. de valores (?<shares>[\\.,\\d]+)$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        // @formatter:off
-                        // Hora ejecución 16.50.47
-                        // @formatter:on
-                        .section("time").optional() //
-                        .match("^Hora ejecuci.n (?<time>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2})$") //
-                        .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
-
-                        // @formatter:off
-                        // Fecha ejecución 20/06/2025
-                        // @formatter:on
-                        .section("date") //
-                        .match("^Fecha ejecuci.n (?<date>[\\d]{1,2}\\/[\\d]{1,2}\\/[\\d]{4})$") //
-                        .assign((t, v) -> {
-                            if (type.getCurrentContext().get("time") != null)
-                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
-                            else
-                                t.setDate(asDate(v.get("date")));
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Fecha ejecución 20/06/2025
+                                        // Hora ejecución 16.50.47
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "time") //
+                                                        .match("^Fecha ejecuci.n (?<date>[\\d]{1,2}\\/[\\d]{1,2}\\/[\\d]{4})$") //
+                                                        .match("^Hora ejecuci.n (?<time>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2})$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
+                                        // @formatter:off
+                                        // Fecha ejecución 20/06/2025
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Fecha ejecuci.n (?<date>[\\d]{1,2}\\/[\\d]{1,2}\\/[\\d]{4})$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))))
 
                         // @formatter:off
                         // CONCEPTO DIVISA BASE PRECIO IMPORTE
@@ -269,7 +269,14 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
 
-                        .wrap(TransactionItem::new);
+                        // The dividend can be fully consumed by withholding tax
+                        // and fees, e.g. IMPORTE TOTAL EUR 0,00
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                            return new TransactionItem(t);
+                        });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -304,7 +311,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^.*[T|N] [\\.,\\d]+ [A-Z]{3}.*$");
+        var firstRelevantLine = new Block("^.*[TN] [\\.,\\d]+ [A-Z]{3}.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -317,7 +324,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
                         // @formatter:on
                         .section("name", "currency") //
                         .documentContext("date") //
-                        .match("^(?<name>.*) [T|N] [\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
+                        .match("^(?<name>.*) [TN] [\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> {
                             t.setShares(0L);
                             t.setDateTime(asDate(v.get("date")));
@@ -335,7 +342,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
                         // @formatter:on
                         .section("exchangeRate", "termCurrency", "grossFee") //
                         .documentContext("percentageTaxes", "baseCurrency") //
-                        .match("^.*[T|N] [\\.,\\d]+.*(?<termCurrency>[A-Z]{3}) (?<exchangeRate>[\\.,\\d]+).* M.nimo (?<grossFee>[\\.,\\d]+).*$") //
+                        .match("^.*[TN] [\\.,\\d]+.*(?<termCurrency>[A-Z]{3}) (?<exchangeRate>[\\.,\\d]+).* M.nimo (?<grossFee>[\\.,\\d]+).*$") //
                         .assign((t, v) -> {
                             var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
