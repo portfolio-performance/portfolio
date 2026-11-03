@@ -757,6 +757,7 @@ public class Messages extends NLS
     public static String LabelHeldSecurities;
     public static String LabelHide;
     public static String LabelHideMarkings;
+    public static String LabelHighlightText;
     public static String LabelHistoricalReturnsAndVolatiltity;
     public static String LabelImportNotesFromSource;
     public static String LabelIncludeSecuritiesInPieChart;
@@ -877,6 +878,7 @@ public class Messages extends NLS
     public static String LabelRebalancingAmountToInvest;
     public static String LabelRefresh;
     public static String LabelRemoveDividends;
+    public static String LabelRemoveHighlighting;
     public static String LabelRemoveLogo;
     public static String LabelReportingAddPeriod;
     public static String LabelReportingDialogDay;
