@@ -77,6 +77,62 @@ public class PatchSecurityTest
         assertThat(dirty.get(), is(true));
     }
 
+    /**
+     * The application's ISIN column refuses what fails the check digit; the API
+     * used to store it anyway. The whole patch fails, as for any other field.
+     */
+    @Test
+    public void testAnInvalidIsinIsRejectedAndNothingIsApplied()
+    {
+        var client = new Client();
+        var security = new SecurityBuilder().addTo(client);
+        security.setName("Old");
+        security.setIsin("DE0005557508");
+
+        try
+        {
+            SecuritiesHandler.patch(client, security.getUUID(), json("{\"name\":\"New\",\"isin\":\"KEINE-ISIN\"}"));
+            Assert.fail("expected ApiException");
+        }
+        catch (ApiException e)
+        {
+            assertThat(e.getStatus(), is(422));
+            assertThat(e.getErrors().size(), is(1));
+            assertThat(e.getErrors().get(0).field(), is("isin"));
+            assertThat(e.getErrors().get(0).code(), is("invalid-isin"));
+            assertThat(security.getName(), is("Old"));
+            assertThat(security.getIsin(), is("DE0005557508"));
+        }
+
+        // a wrong check digit fails the same way
+        try
+        {
+            SecuritiesHandler.patch(client, security.getUUID(), json("{\"isin\":\"DE0005557509\"}"));
+            Assert.fail("expected ApiException");
+        }
+        catch (ApiException e)
+        {
+            assertThat(e.getErrors().get(0).code(), is("invalid-isin"));
+        }
+    }
+
+    /** surrounding whitespace is ignored and a blank ISIN clears it, as in the ISIN column */
+    @Test
+    public void testIsinIsTrimmedAndBlankClearsIt()
+    {
+        var client = new Client();
+        var security = new SecurityBuilder().addTo(client);
+
+        SecuritiesHandler.patch(client, security.getUUID(), json("{\"isin\":\"  IE00BK1PV551 \"}"));
+        assertThat(security.getIsin(), is("IE00BK1PV551"));
+
+        var restated = SecuritiesHandler.patch(client, security.getUUID(), json("{\"isin\":\"IE00BK1PV551 \"}"));
+        assertThat(restated.changes().isEmpty(), is(true));
+
+        SecuritiesHandler.patch(client, security.getUUID(), json("{\"isin\":\"   \"}"));
+        assertThat(security.getIsin(), nullValue());
+    }
+
     @Test
     public void testAllViolationsReportedAtOnceAndModelUnchanged()
     {
@@ -166,6 +222,58 @@ public class PatchSecurityTest
         {
             assertThat(e.getStatus(), is(422));
             assertThat(e.getErrors().get(0).code(), is("locked-by-transactions"));
+        }
+    }
+
+    /**
+     * Reported from a live test: setting a value to what it already was marked
+     * the file dirty, and the user was asked to save a file nothing had changed.
+     */
+    @Test
+    public void testAPatchThatRestatesValuesDoesNotMarkFileDirty()
+    {
+        var client = new Client();
+        var security = new SecurityBuilder().addTo(client);
+        security.setName("Same");
+
+        var dirty = new AtomicBoolean();
+        client.addPropertyChangeListener("dirty", event -> dirty.set(true));
+
+        var result = SecuritiesHandler.patch(client, security.getUUID(), json("{\"name\":\"Same\"}"));
+        assertThat(result.changes().isEmpty(), is(true));
+        assertThat(dirty.get(), is(false));
+    }
+
+    /** the response says whether anything changed, which its body cannot */
+    @Test
+    public void testThePatchResponseSaysWhetherAValueChanged() throws Exception
+    {
+        var client = new Client();
+        var security = new SecurityBuilder().addTo(client);
+        security.setName("Same");
+
+        var node = InstanceScope.INSTANCE.getNode("rest-test-" + UUID.randomUUID());
+        try
+        {
+            var registry = new FileAccessRegistry(node);
+            registry.setEnabled("/tmp/x.portfolio", true);
+            var host = new FakeHost(List.of(new FakeHost.FakeOpenFile("/tmp/x.portfolio", "x", client)));
+            var router = ApiRoutes.create(registry, host,
+                            new PairingService(new ClientStore(Path.of("target", "unused-client-store")), host));
+            var uuid = registry.byPath("/tmp/x.portfolio").orElseThrow().uuid();
+            var match = router.match("PATCH", "/v1/files/" + uuid + "/instruments/" + security.getUUID());
+
+            var restated = match.handler().handle(new Request("PATCH", "irrelevant", match.pathParams(),
+                            "{\"name\":\"Same\"}".getBytes(StandardCharsets.UTF_8)));
+            assertThat(restated.headers().get(ApiRoutes.CHANGED_HEADER), is("false"));
+
+            var changed = match.handler().handle(new Request("PATCH", "irrelevant", match.pathParams(),
+                            "{\"name\":\"Other\"}".getBytes(StandardCharsets.UTF_8)));
+            assertThat(changed.headers().get(ApiRoutes.CHANGED_HEADER), is("true"));
+        }
+        finally
+        {
+            node.removeNode();
         }
     }
 

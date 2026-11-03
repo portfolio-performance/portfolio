@@ -11,6 +11,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 
 import name.abuchen.portfolio.model.AttributeFieldType;
+import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.money.Values;
 
 /**
@@ -40,6 +41,26 @@ public final class AttributeCodec
 
     private AttributeCodec()
     {
+    }
+
+    /**
+     * The field type of an attribute, or null if it has none the API knows.
+     * {@link AttributeFieldType#of} instantiates the attribute's converter by
+     * class name and throws when the class cannot be loaded - a converter the
+     * running version does not have. Such an attribute is skipped like any
+     * other the API does not support, instead of failing every response that
+     * lists the instruments or the attribute types.
+     */
+    public static AttributeFieldType fieldType(AttributeType type)
+    {
+        try
+        {
+            return AttributeFieldType.of(type);
+        }
+        catch (RuntimeException e)
+        {
+            return null;
+        }
     }
 
     public static boolean isSupported(AttributeFieldType type)
