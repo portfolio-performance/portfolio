@@ -29,9 +29,12 @@ import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
  * whose quote is zero - so the question cannot be asked once, afterwards, for
  * another date.
  * <p/>
- * What is recorded is therefore exactly the money that reached the report at
- * face value - cash accounts, dividends, fees and taxes included - and nothing
- * else. A zero amount is never looked up and is never recorded.
+ * What is recorded is therefore the money that reached the report at face
+ * value - cash accounts, dividends, fees and taxes included. A zero amount
+ * converted through {@code convert} is never looked up and never recorded; a
+ * calculation that asks for the rate itself - the core does for an end value
+ * or a cost trail, before it knows whether the amount is zero - is recorded as
+ * it asks, so a pair can be named whose only amount came out as zero.
  * {@link CurrencyConverter#with} is followed: an instrument's local figures are
  * computed by a converter into the instrument's currency, and a pair that falls
  * back there distorts those figures just the same.
