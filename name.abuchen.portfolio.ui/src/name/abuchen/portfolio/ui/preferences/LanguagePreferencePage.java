@@ -227,20 +227,17 @@ public class LanguagePreferencePage extends PreferencePage
             return null;
 
         // the launcher applies every -nl argument in turn, so the last one wins
+        // - also if it is empty. The limit keeps trailing empty values.
         String nlArgument = null;
 
-        String[] arguments = commands.split("\\R"); //$NON-NLS-1$
+        String[] arguments = commands.split("\\R", -1); //$NON-NLS-1$
         for (int ii = 0; ii < arguments.length - 1; ii++)
         {
             if (NL_ARGUMENT.equalsIgnoreCase(arguments[ii].trim()))
-            {
-                String value = arguments[ii + 1].trim();
-                if (!value.isEmpty())
-                    nlArgument = value;
-            }
+                nlArgument = arguments[ii + 1].trim();
         }
 
-        return nlArgument;
+        return nlArgument == null || nlArgument.isEmpty() ? null : nlArgument;
     }
 
     private static boolean isSameLocale(String value, String other)
@@ -415,8 +412,19 @@ public class LanguagePreferencePage extends PreferencePage
             userProperties.setProperty(OSGI_NL, nlValue);
         }
 
+        if (!storeUserPreferences())
+        {
+            // keep the stored value, so that a retry compares against it
+            if (previousValue == null)
+                userProperties.remove(OSGI_NL);
+            else
+                userProperties.setProperty(OSGI_NL, previousValue);
+
+            return true;
+        }
+
         // only a changed language explains a difference to the active one
-        if (storeUserPreferences() && !Objects.equals(previousValue, nlValue))
+        if (!Objects.equals(previousValue, nlValue))
             isChangedInSession = true;
 
         return true;
