@@ -455,6 +455,9 @@ public final class ApiRoutes
     /** how long the UI thread may take before the caller is told that it waits */
     private static final long UI_QUICK_MILLIS = 500;
 
+    /** how often a request waiting for the UI thread looks whether it was cancelled */
+    private static final long CANCEL_POLL_MILLIS = 50;
+
     /** how often a running calculation looks whether its caller gave up */
     private static final long CALCULATION_POLL_MILLIS = 250;
 
@@ -503,6 +506,10 @@ public final class ApiRoutes
         var state = new AtomicInteger(NOT_STARTED);
 
         var future = host.asyncExec(() -> {
+            // cancelled while it waited for the UI thread: a write the client
+            // no longer wants is not applied
+            if (progress.isCancelled() && state.compareAndSet(NOT_STARTED, ABANDONED))
+                throw new CancellationException("cancelled before it started"); //$NON-NLS-1$
             if (!state.compareAndSet(NOT_STARTED, STARTED))
                 // the caller gave up before the UI thread got here; the model
                 // is not touched
@@ -512,18 +519,32 @@ public final class ApiRoutes
 
         try
         {
+            var start = System.nanoTime();
+            var until = start + deadline.toNanos();
             // most requests are taken on at once; only one that is not says so
             var quick = Math.min(UI_QUICK_MILLIS, deadline.toMillis());
-            try
+            var announced = quick >= deadline.toMillis();
+            while (true)
             {
-                return future.get(quick, TimeUnit.MILLISECONDS);
-            }
-            catch (TimeoutException e)
-            {
-                if (quick >= deadline.toMillis())
-                    throw e;
-                progress.phase("waiting for Portfolio Performance to take the request on"); //$NON-NLS-1$
-                return future.get(deadline.toMillis() - quick, TimeUnit.MILLISECONDS);
+                var left = until - System.nanoTime();
+                if (left <= 0)
+                    throw new TimeoutException();
+                try
+                {
+                    // in slices, so that a cancel is seen while the request waits
+                    return future.get(Math.min(left, TimeUnit.MILLISECONDS.toNanos(CANCEL_POLL_MILLIS)),
+                                    TimeUnit.NANOSECONDS);
+                }
+                catch (TimeoutException e)
+                {
+                    if (progress.isCancelled() && state.compareAndSet(NOT_STARTED, ABANDONED))
+                        throw new CancellationException("cancelled before it started"); //$NON-NLS-1$
+                    if (!announced && System.nanoTime() - start >= TimeUnit.MILLISECONDS.toNanos(quick))
+                    {
+                        progress.phase("waiting for Portfolio Performance to take the request on"); //$NON-NLS-1$
+                        announced = true;
+                    }
+                }
             }
         }
         catch (TimeoutException e)

@@ -136,4 +136,43 @@ public class McpCallTest
     {
         return notification(index).getAsJsonObject("params").get("progress").getAsLong();
     }
+
+    /**
+     * A heartbeat to a client that stopped reading blocks - on a thread of its
+     * own, not on the scheduler that times every stream's heartbeats, and only
+     * one at a time per call.
+     */
+    @Test
+    public void testABlockedHeartbeatHoldsNeitherTheCallerNorASecondThread() throws Exception
+    {
+        var release = new java.util.concurrent.CountDownLatch(1);
+        var writes = new java.util.concurrent.atomic.AtomicInteger();
+        var call = new McpCall(null);
+        call.attach(text -> {
+            writes.incrementAndGet();
+            try
+            {
+                release.await(10, java.util.concurrent.TimeUnit.SECONDS);
+            }
+            catch (InterruptedException e)
+            {
+                Thread.currentThread().interrupt();
+            }
+        });
+
+        var started = System.nanoTime();
+        call.heartbeatOffThread();
+        call.heartbeatOffThread();
+        call.heartbeatOffThread();
+        assertThat(java.util.concurrent.TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - started) < 1_000, is(true));
+
+        Thread.sleep(200);
+        assertThat(writes.get(), is(1));
+
+        release.countDown();
+        Thread.sleep(200);
+        call.heartbeatOffThread();
+        Thread.sleep(200);
+        assertThat(writes.get(), is(2));
+    }
 }
