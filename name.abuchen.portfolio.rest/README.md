@@ -242,7 +242,7 @@ than silently clobbered by whatever the dialog writes back on OK. Reads still wo
 
 **503 says different things.** The API hands every request that touches the model to the UI
 thread and waits for it with a deadline (10 seconds). Whether the request ran is decided on the UI
-thread itself, so the answer is exact: `ui-busy` means the UI thread had not started the request
+thread itself, so the answer is exact: for a write, `ui-busy` means the UI thread had not started it
 when the wait expired — it is refused, will never run, nothing changed, and `Retry-After` is safe to
 honour. `ui-request-underway` means a write was already running — it will complete, so there is
 no `Retry-After` and sending it again would apply the same change twice. Read the state back
@@ -255,13 +255,15 @@ seconds). `calculation-timeout` means the answer did not come in time; the same 
 just as long again, so narrow it. The engines cannot be interrupted, so a calculation past its
 deadline still runs to its end — and keeps its calculation slot until it does.
 
-Two calculations run at once. One that finds both slots taken waits for a free one, first come first
-served, for up to 30 seconds; at most two per slot may wait. `server-busy` means more requests are in
+Two calculations run at once — on a machine with at least three processors; with one or two, one
+does. One that finds every slot taken waits for a free one, first come first served, for up to 30
+seconds; at most two per slot may wait. `server-busy` means more requests are in
 flight than the server serves at once, the queue is full, or no slot came free in time; no work was
 started, so retrying after `Retry-After` is cheap.
 
 The number of slots can be raised from 1 to 8 with a system property in `PortfolioPerformance.ini`,
-after `-vmargs`; it is read when the server starts:
+after `-vmargs`; it is read when the server first starts, and a restart of the server keeps the
+slots, as calculations still running hold them:
 
 ```
 -Dname.abuchen.portfolio.rest.calculationSlots=4
