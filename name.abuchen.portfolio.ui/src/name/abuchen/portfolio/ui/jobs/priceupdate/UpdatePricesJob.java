@@ -28,6 +28,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.oauth.AccessToken;
 import name.abuchen.portfolio.oauth.AuthenticationException;
+import name.abuchen.portfolio.oauth.AuthenticationNetworkException;
 import name.abuchen.portfolio.oauth.OAuthClient;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
@@ -95,6 +96,7 @@ public class UpdatePricesJob extends AbstractClientJob
         List<Security> securities = getClient().getSecurities().stream().filter(filter).collect(toMutableList());
 
         Optional<AccessToken> accessToken = Optional.empty();
+        var tokenFailedDueToNetworkError = false;
 
         // try to get the access token
         try
@@ -102,13 +104,21 @@ public class UpdatePricesJob extends AbstractClientJob
             if (OAuthClient.INSTANCE.isAuthenticated())
                 accessToken = OAuthClient.INSTANCE.getAPIAccessToken();
         }
+        catch (AuthenticationNetworkException e)
+        {
+            // Network/IO error – the user does NOT need to re-authenticate.
+            // Just log and proceed; individual tasks will surface the network
+            // error through their own exception handling.
+            PortfolioPlugin.log(e);
+            tokenFailedDueToNetworkError = true;
+        }
         catch (AuthenticationException e)
         {
             PortfolioPlugin.log(e);
             // unable to refresh access token --> user needs to re-authenticate
         }
 
-        if (accessToken.isEmpty())
+        if (accessToken.isEmpty() && !tokenFailedDueToNetworkError)
         {
             // check if any of the jobs need an authenticated user
 
