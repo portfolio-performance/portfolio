@@ -201,6 +201,25 @@ public class ConversionRecorderTest
                         contains(new FxWarnings.StaleRate("ARS", "EUR", "2026-01-02", 209)));
     }
 
+    /** a pair that fell back on one date and converted at a stale rate on another is listed in both */
+    @Test
+    public void testAPairThatFellBackCanStillBeStale()
+    {
+        var client = new Client();
+        var rates = rates();
+        rates.addPrice(new SecurityPrice(LocalDate.of(2026, 1, 2), Values.Quote.factorize(965)));
+        rates.addPrice(new SecurityPrice(LocalDate.of(2026, 7, 15), 0));
+        client.addSecurity(rates);
+        var conversions = new ConversionRecorder(new ExchangeRateProviderFactory(client), LocalDate.of(2026, 10, 28));
+
+        var converter = converter(conversions, client, CurrencyUnit.EUR);
+        converter.convert(LocalDate.of(2026, 7, 20), Money.of("ARS", Values.Amount.factorize(10)));
+        converter.convert(LocalDate.of(2026, 3, 1), Money.of("ARS", Values.Amount.factorize(10)));
+
+        assertThat(conversions.fallbacks(), contains(new FxWarnings.Warning("ARS", "EUR", "no-rate")));
+        assertThat(conversions.staleRates(), contains(new FxWarnings.StaleRate("ARS", "EUR", "2026-01-02", 58)));
+    }
+
     /** a week-old rate is a weekend with holidays, not a stale one */
     @Test
     public void testARecentRateIsNotStale()
