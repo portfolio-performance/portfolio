@@ -183,7 +183,11 @@ public final class McpEndpoint
             var replies = new JsonArray();
             for (JsonElement element : batch)
             {
-                var reply = handleMessage(router, sessions, sessionId, element, request);
+                // the handshake must stand alone (MCP 2025-03-26): its answer
+                // carries the session id in a header, which a batch has one of
+                var reply = isInitialize(element)
+                                ? error(idOf(element), INVALID_REQUEST, "initialize must not be part of a batch")
+                                : handleMessage(router, sessions, sessionId, element, request);
                 if (reply != null)
                     replies.add(reply);
             }
@@ -215,6 +219,13 @@ public final class McpEndpoint
                         : Response.json(404, error(JsonNull.INSTANCE, SESSION_NOT_FOUND, "unknown session"));
     }
 
+    /** the id of a message, or null when it has none */
+    private static JsonElement idOf(JsonElement message)
+    {
+        var id = message.isJsonObject() ? message.getAsJsonObject().get("id") : null; //$NON-NLS-1$
+        return id != null ? id : JsonNull.INSTANCE;
+    }
+
     private static boolean isInitialize(JsonElement message)
     {
         return isCall(message, "initialize");
@@ -238,10 +249,43 @@ public final class McpEndpoint
                         && method.equals(declared.getAsString());
     }
 
-    private static boolean acceptsStream(Request request)
+    /**
+     * Whether the client takes an event stream: {@code text/event-stream} as a
+     * media range of its own - not a word inside another - with a quality above
+     * zero. {@code q=0} means "not this", and the answer is then JSON.
+     */
+    /* package */ static boolean acceptsStream(Request request)
     {
         var accept = request.header("accept");
-        return accept != null && accept.toLowerCase(Locale.ROOT).contains("text/event-stream");
+        if (accept == null)
+            return false;
+
+        for (var range : accept.split(",")) //$NON-NLS-1$
+        {
+            var parts = range.split(";"); //$NON-NLS-1$
+            if (!"text/event-stream".equals(parts[0].strip().toLowerCase(Locale.ROOT))) //$NON-NLS-1$
+                continue;
+
+            var quality = 1.0;
+            for (var ii = 1; ii < parts.length; ii++)
+            {
+                var parameter = parts[ii].strip().toLowerCase(Locale.ROOT);
+                if (parameter.startsWith("q=")) //$NON-NLS-1$
+                {
+                    try
+                    {
+                        quality = Double.parseDouble(parameter.substring(2).strip());
+                    }
+                    catch (NumberFormatException e)
+                    {
+                        quality = 0;
+                    }
+                }
+            }
+            if (quality > 0)
+                return true;
+        }
+        return false;
     }
 
     /**
@@ -264,10 +308,14 @@ public final class McpEndpoint
 
         return Response.streamed(200, "text/event-stream", sink -> { //$NON-NLS-1$
             call.attach(sink);
-            if (session != null)
-                session.register(id, call);
-            var heartbeat = HEARTBEATS.scheduleAtFixedRate(call::heartbeat, heartbeatMillis, heartbeatMillis,
-                            TimeUnit.MILLISECONDS);
+            if (session != null && !session.register(id, call))
+            {
+                // the running one keeps the id: a cancel names one call only
+                call.send(error(id, INVALID_REQUEST, "a call with this id is still running in this session")); //$NON-NLS-1$
+                return;
+            }
+            var heartbeat = HEARTBEATS.scheduleAtFixedRate(call::heartbeatOffThread, heartbeatMillis,
+                            heartbeatMillis, TimeUnit.MILLISECONDS);
             try
             {
                 var result = callTool(router, params, request.withProgress(call));

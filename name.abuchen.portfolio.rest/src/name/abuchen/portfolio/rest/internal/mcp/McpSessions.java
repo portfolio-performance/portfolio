@@ -29,9 +29,26 @@ final class McpSessions
     {
         private final Map<String, McpCall> running = new ConcurrentHashMap<>();
 
-        /* package */ void register(JsonElement requestId, McpCall call)
+        /** set when the session ends; guarded by this session */
+        private boolean closed;
+
+        /**
+         * Registers a call so that it can be cancelled. A call that arrives
+         * after its session ended is cancelled at once - closing and
+         * registering are ordered by this session's lock, so none slips
+         * between them.
+         *
+         * @return false when a call with the same id is still running: two
+         *         calls cannot be told apart by one id, nor cancelled
+         */
+        /* package */ synchronized boolean register(JsonElement requestId, McpCall call)
         {
-            running.put(key(requestId), call);
+            if (closed)
+            {
+                call.cancel();
+                return true;
+            }
+            return running.putIfAbsent(key(requestId), call) == null;
         }
 
         /* package */ void unregister(JsonElement requestId, McpCall call)
@@ -49,8 +66,9 @@ final class McpSessions
             return true;
         }
 
-        private void cancelAll()
+        private synchronized void cancelAll()
         {
+            closed = true;
             running.values().forEach(McpCall::cancel);
         }
 

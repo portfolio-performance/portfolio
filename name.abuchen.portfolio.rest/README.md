@@ -96,13 +96,16 @@ exists. Same switch, same port, same tokens; there is nothing extra to install.
   the last event. Everything else, and a client that accepts only JSON, gets `application/json`.
   `GET` answers `405`: the server has nothing to say unasked.
 - **A session is optional.** `initialize` returns an `Mcp-Session-Id`. With it, a
-  `notifications/cancelled` stops the call it names: a call still waiting for a slot leaves the
-  queue, and the per-instrument calculations stop before the next instrument — the engines below
-  cannot be interrupted, so a single long calculation inside them still runs to its end. A client
-  that hangs up on a stream counts as having cancelled. `DELETE /mcp` ends the session. A request
-  without a session id is served as before and only cannot be cancelled; one with an id the server
-  does not know — the application was restarted — is answered `404`, the protocol's signal to
-  initialize again.
+  `notifications/cancelled` stops the streamed call it names: a call still waiting for the UI
+  thread or for a slot never runs — a write the client no longer wants is not applied — and the
+  per-instrument calculations stop before the next instrument; the engines below cannot be
+  interrupted, so a single long calculation inside them still runs to its end. Only a streamed call
+  can be cancelled: one answered as JSON runs to its end, its answer being all the client gets. Two
+  calls running in one session cannot share an id. A client that hangs up on a stream counts as
+  having cancelled. `DELETE /mcp` ends the session. `initialize` must not be part of a batch. A
+  request without a session id is served as before and only cannot be cancelled; one with an id the
+  server does not know — the application was restarted — is answered `404`, the protocol's signal
+  to initialize again.
 - **Authorisation is per JSON-RPC method.** `initialize`, `tools/list` and `ping` answer without a
   token; `tools/call` requires one and, lacking it, returns HTTP 200 with `isError: true`. A `401`
   is invisible in a chat client's UI, so the refusal has to reach the chat. `/.well-known/*` answers
