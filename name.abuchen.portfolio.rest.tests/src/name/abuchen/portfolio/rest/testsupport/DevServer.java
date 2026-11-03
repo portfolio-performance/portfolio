@@ -80,9 +80,10 @@ public class DevServer
                 {
                     future.complete(callable.call());
                 }
-                catch (Exception e)
+                catch (Throwable t)
                 {
-                    future.completeExceptionally(e);
+                    // an Error too, or the caller waits out its deadline
+                    future.completeExceptionally(t);
                 }
             });
             return future;

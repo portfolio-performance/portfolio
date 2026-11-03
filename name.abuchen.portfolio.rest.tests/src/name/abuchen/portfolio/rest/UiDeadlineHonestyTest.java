@@ -149,13 +149,17 @@ public class UiDeadlineHonestyTest
         var started = new CountDownLatch(1);
         var release = new CountDownLatch(1);
 
+        // the UI thread of the fake host is created by its first task; start it
+        // now, so that the deadline below is not spent waiting for it
+        host.asyncExec(() -> null).get(10, TimeUnit.SECONDS);
+
         try
         {
             ApiRoutes.uiExecBounded(host, () -> {
                 started.countDown();
                 release.await(10, TimeUnit.SECONDS);
                 return "done";
-            }, Duration.ofMillis(300));
+            }, Duration.ofSeconds(1));
             fail("expected the bounded wait on the UI thread to expire");
         }
         catch (ApiException e)
@@ -252,33 +256,40 @@ public class UiDeadlineHonestyTest
 
         try
         {
-            ApiRoutes.computeBounded(() -> {
-                // ignores the interrupt, as the engines do
-                while (!finish.get())
-                    Thread.onSpinWait();
-                return null;
-            }, Duration.ofMillis(200), slots);
-            fail("expected the calculation deadline to expire");
+            try
+            {
+                ApiRoutes.computeBounded(() -> {
+                    // ignores the interrupt, as the engines do
+                    while (!finish.get())
+                        Thread.onSpinWait();
+                    return null;
+                }, Duration.ofMillis(200), slots);
+                fail("expected the calculation deadline to expire");
+            }
+            catch (ApiException e)
+            {
+                assertThat(e.getType(), is("calculation-timeout"));
+            }
+
+            // still running, still counted
+            assertThat(slots.available(), is(0));
+            try
+            {
+                ApiRoutes.computeBounded(() -> null, Duration.ofSeconds(5), slots);
+                fail("expected the second calculation to be refused while the first still runs");
+            }
+            catch (ApiException e)
+            {
+                assertThat(e.getType(), is("server-busy"));
+                assertThat(e.getHeaders().get("Retry-After"), is("1"));
+            }
         }
-        catch (ApiException e)
+        finally
         {
-            assertThat(e.getType(), is("calculation-timeout"));
+            // ends the calculation even when an assertion above failed
+            finish.set(true);
         }
 
-        // still running, still counted
-        assertThat(slots.available(), is(0));
-        try
-        {
-            ApiRoutes.computeBounded(() -> null, Duration.ofSeconds(5), slots);
-            fail("expected the second calculation to be refused while the first still runs");
-        }
-        catch (ApiException e)
-        {
-            assertThat(e.getType(), is("server-busy"));
-            assertThat(e.getHeaders().get("Retry-After"), is("1"));
-        }
-
-        finish.set(true);
         waitUntil(() -> slots.available() == 1);
         assertThat(ApiRoutes.computeBounded(() -> null, Duration.ofSeconds(5), slots), is(nullValue()));
     }
