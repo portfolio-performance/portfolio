@@ -16,6 +16,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
@@ -253,17 +255,20 @@ public class UiDeadlineHonestyTest
     {
         var slots = slots(1, 0, Duration.ofSeconds(5));
         var finish = new AtomicBoolean(false);
+        var running = new CountDownLatch(1);
+        var executor = new StartedBeforeReturning(running);
 
         try
         {
             try
             {
                 ApiRoutes.computeBounded(() -> {
+                    running.countDown();
                     // ignores the interrupt, as the engines do
                     while (!finish.get())
                         Thread.onSpinWait();
                     return null;
-                }, Duration.ofMillis(200), slots);
+                }, Duration.ofMillis(200), slots, executor);
                 fail("expected the calculation deadline to expire");
             }
             catch (ApiException e)
@@ -288,6 +293,7 @@ public class UiDeadlineHonestyTest
         {
             // ends the calculation even when an assertion above failed
             finish.set(true);
+            executor.shutdown();
         }
 
         waitUntil(() -> slots.available() == 1);
@@ -666,5 +672,37 @@ public class UiDeadlineHonestyTest
         while (!condition.getAsBoolean() && System.currentTimeMillis() < until)
             Thread.sleep(10);
         assertThat(condition.getAsBoolean(), is(true));
+    }
+
+    /**
+     * Hands a task to its one thread and returns only once the calculation
+     * runs - by then it has claimed its slot - so that a deadline counted from
+     * the submission cannot pass before the calculation started.
+     */
+    private static final class StartedBeforeReturning extends ThreadPoolExecutor
+    {
+        private final CountDownLatch running;
+
+        StartedBeforeReturning(CountDownLatch running)
+        {
+            super(1, 1, 0, TimeUnit.SECONDS, new LinkedBlockingQueue<>(),
+                            Thread.ofPlatform().name("calculation under test").daemon(true).factory());
+            this.running = running;
+        }
+
+        @Override
+        public void execute(Runnable task)
+        {
+            super.execute(task);
+            try
+            {
+                if (!running.await(10, TimeUnit.SECONDS))
+                    throw new IllegalStateException("the calculation did not start");
+            }
+            catch (InterruptedException e)
+            {
+                Thread.currentThread().interrupt();
+            }
+        }
     }
 }
