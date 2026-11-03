@@ -92,6 +92,14 @@ public final class RejectedConnections
 
         var visible = FORMAT_CHARACTERS.matcher(value).replaceAll(""); //$NON-NLS-1$
         var cleaned = CONTROL_CHARACTERS.matcher(visible).replaceAll(" "); //$NON-NLS-1$
-        return cleaned.length() <= MAX_DISPLAY_CHARS ? cleaned : cleaned.substring(0, MAX_DISPLAY_CHARS) + "\u2026"; //$NON-NLS-1$
+        if (cleaned.length() <= MAX_DISPLAY_CHARS)
+            return cleaned;
+
+        // never between the two halves of a character outside the BMP: a lone
+        // high surrogate renders as a replacement glyph
+        var end = MAX_DISPLAY_CHARS;
+        if (Character.isHighSurrogate(cleaned.charAt(end - 1)))
+            end--;
+        return cleaned.substring(0, end) + "\u2026"; //$NON-NLS-1$
     }
 }
