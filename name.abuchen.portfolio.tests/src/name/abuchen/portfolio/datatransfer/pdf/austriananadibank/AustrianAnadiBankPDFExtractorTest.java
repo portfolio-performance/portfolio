@@ -6,7 +6,6 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
@@ -100,7 +99,7 @@ public class AustrianAnadiBankPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2025-12-31"), hasShares(0), //
+                        hasDate("2025-12-31"), //
                         hasSource("Kontoauszug02.txt"), //
                         hasNote("Abschluss 31.12.2025"), //
                         hasAmount("EUR", 123.91), hasGrossValue("EUR", 165.21), //
@@ -144,11 +143,15 @@ public class AustrianAnadiBankPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2025-11-17"), hasShares(0), //
+                        hasDate("2025-11-17"), //
                         hasSource("Kontoauszug03.txt"), //
                         hasNote("Abrechnung zu Konto: 00123456678"), //
                         hasAmount("EUR", 22.75), hasGrossValue("EUR", 30.33), //
                         hasTaxes("EUR", 7.58), hasFees("EUR", 0.00))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-11-24"), hasAmount("EUR", 1000.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote("IBAN: AT11 1234 1234 1234 1234"))));
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2025-11-24"), hasAmount("EUR", 2784.00), //
