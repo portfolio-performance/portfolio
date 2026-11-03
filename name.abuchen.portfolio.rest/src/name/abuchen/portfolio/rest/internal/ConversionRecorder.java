@@ -103,7 +103,11 @@ public final class ConversionRecorder
         return fallbacks.values().stream().sorted(ORDER).toList();
     }
 
-    /** the pairs converted at a stale rate at least once, each with its oldest, in a stable order */
+    /**
+     * the pairs converted at a stale rate at least once, each with the oldest
+     * rate it used and the largest gap it met - not necessarily of the same
+     * conversion - in a stable order
+     */
     public List<FxWarnings.StaleRate> staleRates()
     {
         return stale.values().stream().sorted(STALE_ORDER).toList();
@@ -138,7 +142,19 @@ public final class ConversionRecorder
         var days = ChronoUnit.DAYS.between(rateDate, asOf);
         if (days > STALE_AFTER_DAYS)
             stale.merge(pair, new FxWarnings.StaleRate(base, term, rateDate.toString(), days),
-                            (kept, other) -> kept.daysOld() >= other.daysOld() ? kept : other);
+                            ConversionRecorder::oldestAndLargest);
+    }
+
+    /**
+     * The oldest rate date and the largest gap of two findings for one pair,
+     * each on its own: the rate with the largest gap need not be the oldest.
+     * ISO dates order as text.
+     */
+    private static FxWarnings.StaleRate oldestAndLargest(FxWarnings.StaleRate kept, FxWarnings.StaleRate other)
+    {
+        var rateDate = kept.rateDate().compareTo(other.rateDate()) <= 0 ? kept.rateDate() : other.rateDate();
+        return new FxWarnings.StaleRate(kept.currency(), kept.reportingCurrency(), rateDate,
+                        Math.max(kept.daysOld(), other.daysOld()));
     }
 
     /**
