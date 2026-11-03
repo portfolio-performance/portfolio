@@ -1144,10 +1144,13 @@ paths:
         Note that `reportingCurrency` and `currencyCode` sit next to each other
         here and mean different things — see `MonetaryValue.currency`.
 
-        `fxWarnings` and `fxStaleRates` cover the whole calculation the item is
-        taken from, as for the collection: they can name a pair that only
-        another instrument of the file was converted with. An empty list means
-        nothing in the calculation fell back or used a stale rate.
+        `fxWarnings` and `fxStaleRates` cover the conversions behind this
+        instrument's figures and those made while the file's shared calculation
+        is built, so they can name a pair that only another instrument was
+        converted with. Figures of other instruments are not computed for this
+        response, and conversions only they need are not covered: an empty list
+        says nothing fell back or used a stale rate for this instrument, not
+        for the file - the collection covers the file.
       parameters:
         - $ref: "#/components/parameters/OpeningDate"
         - $ref: "#/components/parameters/ClosingDate"

@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.rest.internal;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.greaterThan;
@@ -19,6 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+import org.hamcrest.Matcher;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -290,18 +292,21 @@ public class InstrumentPerformanceTest
     @Test
     public void testAFutureClosingDateSaysWhereTheTimeWeightedFiguresStopped()
     {
-        var today = LocalDate.now().toString();
-        var future = LocalDate.now().plusDays(30).toString();
+        // the handler reads today itself; a call across midnight may answer
+        // either day, so the date is read before and after each call
+        var before = LocalDate.now();
+        var future = before.plusDays(30).toString();
         var client = heldPosition();
 
         var result = list(client, OPENING, future, null, null, null, null);
         assertThat(result.get("closingDate").getAsString(), is(future));
-        assertThat(result.get("timeWeightedUntil").getAsString(), is(today));
+        assertThat(result.get("timeWeightedUntil").getAsString(), isTodayBetween(before, LocalDate.now()));
 
         var uuid = client.getSecurities().get(0).getUUID();
+        var beforeItem = LocalDate.now();
         var item = InstrumentPerformanceHandler.get(client, new ExchangeRateProviderFactory(client), uuid, OPENING,
                         future, null, null, null, null).getAsJsonObject();
-        assertThat(item.get("timeWeightedUntil").getAsString(), is(today));
+        assertThat(item.get("timeWeightedUntil").getAsString(), isTodayBetween(beforeItem, LocalDate.now()));
     }
 
     /**
@@ -1075,5 +1080,11 @@ public class InstrumentPerformanceTest
     {
         return errors.stream().filter(error -> field.equals(error.field())).map(ApiException.FieldError::code)
                         .findFirst().orElseThrow(() -> new AssertionError("no error on field " + field));
+    }
+
+    /** the date read before a call or the one read after it, if it crossed midnight */
+    private static Matcher<String> isTodayBetween(LocalDate before, LocalDate after)
+    {
+        return anyOf(is(before.toString()), is(after.toString()));
     }
 }
