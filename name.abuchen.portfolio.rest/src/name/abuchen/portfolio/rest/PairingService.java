@@ -216,6 +216,9 @@ public class PairingService
             cooldownUntil = now.plus(DECLINE_COOLDOWN);
         }
         pending = null;
+
+        // the outcome just stored counts against the bound too
+        prune(now);
     }
 
     private void expireIfDue(Instant now)
