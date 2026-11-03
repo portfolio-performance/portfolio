@@ -36,6 +36,9 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.AccountSnapshot;
+import name.abuchen.portfolio.snapshot.AccruedInterestScenario;
+import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
+import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 
 @SuppressWarnings("nls")
 public class PortfolioClientFilterTest
@@ -523,5 +526,29 @@ public class PortfolioClientFilterTest
                         .filter(t -> t.getType() == type) //
                         .filter(t -> t.getDateTime().equals(LocalDateTime.parse("2016-04-01T00:00"))) //
                         .anyMatch(t -> t.getShares() == shares);
+    }
+
+    @Test
+    public void testAccruedInterestIsKept()
+    {
+        var scenario = new AccruedInterestScenario();
+
+        Client filtered = new PortfolioClientFilter(scenario.portfolio, scenario.account).filter(scenario.client);
+
+        // the accrued interest is kept when copying
+        var buy = AccruedInterestScenario.transaction(filtered, PortfolioTransaction.Type.BUY);
+        assertThat(buy.getAccruedInterest(), is(AccruedInterestScenario.eur(10)));
+        var sell = AccruedInterestScenario.transaction(filtered, PortfolioTransaction.Type.SELL);
+        assertThat(sell.getAccruedInterest(), is(AccruedInterestScenario.eur(5)));
+
+        var snapshot = new ClientPerformanceSnapshot(filtered, new TestCurrencyConverter(),
+                        LocalDate.parse("2023-12-31"), LocalDate.parse("2024-12-31"));
+        assertThat(snapshot.getValue(CategoryType.EARNINGS), is(AccruedInterestScenario.eur(25)));
+
+        // the categories add up to the final value
+        assertThat(snapshot.getValue(CategoryType.INITIAL_VALUE, CategoryType.TRANSFERS, CategoryType.CAPITAL_GAINS,
+                        CategoryType.REALIZED_CAPITAL_GAINS, CategoryType.EARNINGS, CategoryType.CURRENCY_GAINS)
+                        .subtract(snapshot.getValue(CategoryType.FEES, CategoryType.TAXES)),
+                        is(snapshot.getValue(CategoryType.FINAL_VALUE)));
     }
 }

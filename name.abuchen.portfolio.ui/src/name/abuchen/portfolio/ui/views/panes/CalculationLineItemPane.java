@@ -230,7 +230,8 @@ public class CalculationLineItemPane implements InformationPanePage
 
                 if (tx.isPresent() && tx.get() instanceof PortfolioTransaction ptx)
                 {
-                    return Values.CalculatedQuote.format(ptx.getGrossPricePerShare(), client.getBaseCurrency());
+                    return Values.CalculatedQuote.formatFor(ptx.getSecurity(), ptx.getQuotedGrossPricePerShare(),
+                                    client.getBaseCurrency());
                 }
                 else
                 {

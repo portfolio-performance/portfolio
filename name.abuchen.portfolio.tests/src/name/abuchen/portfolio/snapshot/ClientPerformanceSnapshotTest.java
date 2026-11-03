@@ -751,4 +751,36 @@ public class ClientPerformanceSnapshotTest
 
         assertThat(valueAtEndOfPeriod.toMoney(), is(snapshot.getValue(CategoryType.FINAL_VALUE)));
     }
+
+    @Test
+    public void testAccruedInterestIsPartOfEarnings()
+    {
+        var scenario = new AccruedInterestScenario();
+
+        var snapshot = new ClientPerformanceSnapshot(scenario.client, new TestCurrencyConverter(),
+                        LocalDate.parse("2023-12-31"), LocalDate.parse("2024-12-31"));
+
+        assertThat(snapshot.getValue(CategoryType.INITIAL_VALUE), is(AccruedInterestScenario.eur(0)));
+        assertThat(snapshot.getValue(CategoryType.TRANSFERS), is(AccruedInterestScenario.eur(2000)));
+        assertThat(snapshot.getValue(CategoryType.CAPITAL_GAINS), is(AccruedInterestScenario.eur(0)));
+        assertThat(snapshot.getValue(CategoryType.REALIZED_CAPITAL_GAINS), is(AccruedInterestScenario.eur(10)));
+        assertThat(snapshot.getValue(CategoryType.EARNINGS), is(AccruedInterestScenario.eur(25)));
+        assertThat(snapshot.getValue(CategoryType.FEES), is(AccruedInterestScenario.eur(10)));
+        assertThat(snapshot.getValue(CategoryType.TAXES), is(AccruedInterestScenario.eur(0)));
+        assertThat(snapshot.getValue(CategoryType.FINAL_VALUE), is(AccruedInterestScenario.eur(2025)));
+
+        // the categories add up to the final value
+        assertThat(snapshot.getValue(CategoryType.INITIAL_VALUE, CategoryType.TRANSFERS, CategoryType.CAPITAL_GAINS,
+                        CategoryType.REALIZED_CAPITAL_GAINS, CategoryType.EARNINGS, CategoryType.CURRENCY_GAINS)
+                        .subtract(snapshot.getValue(CategoryType.FEES, CategoryType.TAXES)),
+                        is(snapshot.getValue(CategoryType.FINAL_VALUE)));
+
+        var byAccount = new GroupEarningsByAccount(snapshot).getItems();
+        assertThat(byAccount.size(), is(1));
+        // the accrued interest is offset against the coupon (booked as
+        // dividend): 30.00 - 10.00 + 5.00
+        assertThat(byAccount.get(0).getDividends(), is(AccruedInterestScenario.eur(25)));
+        assertThat(byAccount.get(0).getInterest(), is(AccruedInterestScenario.eur(0)));
+        assertThat(byAccount.get(0).getSum(), is(AccruedInterestScenario.eur(25)));
+    }
 }

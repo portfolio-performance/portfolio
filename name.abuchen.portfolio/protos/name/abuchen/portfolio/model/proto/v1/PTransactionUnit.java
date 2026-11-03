@@ -58,6 +58,10 @@ private static final long serialVersionUID = 0L;
      * <code>FEE = 2;</code>
      */
     FEE(2),
+    /**
+     * <code>ACCRUED_INTEREST = 3;</code>
+     */
+    ACCRUED_INTEREST(3),
     UNRECOGNIZED(-1),
     ;
 
@@ -73,6 +77,10 @@ private static final long serialVersionUID = 0L;
      * <code>FEE = 2;</code>
      */
     public static final int FEE_VALUE = 2;
+    /**
+     * <code>ACCRUED_INTEREST = 3;</code>
+     */
+    public static final int ACCRUED_INTEREST_VALUE = 3;
 
 
     public final int getNumber() {
@@ -102,6 +110,7 @@ private static final long serialVersionUID = 0L;
         case 0: return GROSS_VALUE;
         case 1: return TAX;
         case 2: return FEE;
+        case 3: return ACCRUED_INTEREST;
         default: return null;
       }
     }

@@ -55,7 +55,8 @@ public class DistanceFromAllTimeHighColumn extends Column implements Column.Cach
                 return null;
 
             return String.format("ATH: %s (%s)", //$NON-NLS-1$
-                            Values.Quote.format(ath.getValue()), Values.Date.format(ath.getDate()));
+                            Values.Quote.formatFor(Adaptor.adapt(Security.class, e), ath.getValue()),
+                            Values.Date.format(ath.getDate()));
         }
     }
 

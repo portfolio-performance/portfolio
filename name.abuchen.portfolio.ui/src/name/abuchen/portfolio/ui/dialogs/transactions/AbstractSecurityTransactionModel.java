@@ -33,9 +33,11 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     public enum Properties
     {
         portfolio, security, account, date, time, shares, quote, grossValue, exchangeRate, inverseExchangeRate, //
-        convertedGrossValue, forexFees, fees, forexTaxes, taxes, total, note, exchangeRateCurrencies, //
+        convertedGrossValue, forexAccruedInterest, accruedInterest, forexFees, fees, forexTaxes, taxes, total, //
+        note, //
+        exchangeRateCurrencies, //
         inverseExchangeRateCurrencies, transactionCurrency, transactionCurrencyCode, securityCurrencyCode, //
-        calculationStatus;
+        securityQuotation, calculationStatus;
     }
 
     protected final Client client;
@@ -50,6 +52,8 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     protected long grossValue;
     protected BigDecimal exchangeRate = BigDecimal.ONE;
     protected long convertedGrossValue;
+    protected long forexAccruedInterest;
+    protected long accruedInterest;
     protected long forexFees;
     protected long fees;
     protected long forexTaxes;
@@ -92,6 +96,8 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         setGrossValue(0);
         setConvertedGrossValue(0);
         setTotal(0);
+        setAccruedInterest(0);
+        setForexAccruedInterest(0);
         setFees(0);
         setTaxes(0);
         setForexFees(0);
@@ -121,8 +127,8 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
                 case GROSS_VALUE:
                     this.exchangeRate = unit.getExchangeRate();
                     this.grossValue = unit.getForex().getAmount();
-                    this.quote = BigDecimal.valueOf(
-                                    this.grossValue * Values.Share.factor() / (this.shares * Values.Amount.divider()));
+                    this.quote = BigDecimal.valueOf(this.grossValue * Values.Share.factor()
+                                    / (this.shares * Values.Amount.divider() * getQuoteMultiplier()));
                     break;
                 case FEE:
                     if (unit.getForex() != null)
@@ -135,6 +141,12 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
                         this.forexTaxes += unit.getForex().getAmount();
                     else
                         this.taxes += unit.getAmount().getAmount();
+                    break;
+                case ACCRUED_INTEREST:
+                    if (unit.getForex() != null)
+                        this.forexAccruedInterest += unit.getForex().getAmount();
+                    else
+                        this.accruedInterest += unit.getAmount().getAmount();
                     break;
                 default:
                     throw new UnsupportedOperationException();
@@ -166,6 +178,10 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
             transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.TAX, //
                             Money.of(getTransactionCurrencyCode(), taxes)));
 
+        if (accruedInterest != 0)
+            transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.ACCRUED_INTEREST, //
+                            Money.of(getTransactionCurrencyCode(), accruedInterest)));
+
         boolean hasForex = !getTransactionCurrencyCode().equals(getSecurityCurrencyCode());
         if (hasForex)
         {
@@ -181,6 +197,15 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
                                 Money.of(getTransactionCurrencyCode(),
                                                 Math.round(forexTaxes * exchangeRate.doubleValue())), //
                                 Money.of(getSecurityCurrencyCode(), forexTaxes), //
+                                exchangeRate));
+
+            // store the exchange rate of the transaction so that the accrued
+            // interest is converted consistently with the gross value
+            if (forexAccruedInterest != 0)
+                transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.ACCRUED_INTEREST, //
+                                Money.of(getTransactionCurrencyCode(),
+                                                Math.round(forexAccruedInterest * exchangeRate.doubleValue())), //
+                                Money.of(getSecurityCurrencyCode(), forexAccruedInterest), //
                                 exchangeRate));
 
             transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.GROSS_VALUE, //
@@ -200,25 +225,27 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     /**
      * Check whether calculation works out. The separate validation is needed
      * because the model does prevent negative values in methods
-     * {@link #calcGrossValue(long, long, long)} and
-     * {@link #calcTotal(long, long, long)}. Due to the limited precision of the
-     * quote (2 digits currently) and the exchange rate (4 digits), the gross
-     * value and converted gross value are checked against a range.
+     * {@link #calcGrossValue(long, long, long)} and {@link #calculateTotal()}.
+     * Due to the limited precision of the quote (2 digits currently) and the
+     * exchange rate (4 digits), the gross value and converted gross value are
+     * checked against a range.
      */
     private IStatus calculateStatus()
     {
         if (shares == 0L)
-            return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnShares));
+            return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired,
+                            security != null && security.isPercentageQuoted() ? Messages.ColumnNominal
+                                            : Messages.ColumnShares));
 
         if ((grossValue == 0L || convertedGrossValue == 0L) && type != PortfolioTransaction.Type.DELIVERY_OUTBOUND)
             return ValidationStatus
                             .error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnSubTotal));
 
         // check whether gross value is in range
-        long lower = Math.round(shares * quote.add(BigDecimal.valueOf(-0.01)).doubleValue() * Values.Amount.factor()
-                        / Values.Share.divider());
-        long upper = Math.round(shares * quote.add(BigDecimal.valueOf(0.01)).doubleValue() * Values.Amount.factor()
-                        / Values.Share.divider());
+        long lower = Math.round(shares * quote.add(BigDecimal.valueOf(-0.01)).doubleValue() * getQuoteMultiplier()
+                        * Values.Amount.factor() / Values.Share.divider());
+        long upper = Math.round(shares * quote.add(BigDecimal.valueOf(0.01)).doubleValue() * getQuoteMultiplier()
+                        * Values.Amount.factor() / Values.Share.divider());
         if (grossValue < lower || grossValue > upper)
             return ValidationStatus.error(Messages.MsgIncorrectSubTotal);
 
@@ -267,6 +294,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         String oldCurrencyCode = getSecurityCurrencyCode();
         String oldExchangeRateCurrencies = getExchangeRateCurrencies();
         String oldInverseExchangeRateCurrencies = getInverseExchangeRateCurrencies();
+        String oldQuotation = getSecurityQuotation();
 
         firePropertyChange(Properties.security.name(), this.security, this.security = security);
 
@@ -275,6 +303,8 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
                         getExchangeRateCurrencies());
         firePropertyChange(Properties.inverseExchangeRateCurrencies.name(), oldInverseExchangeRateCurrencies,
                         getInverseExchangeRateCurrencies());
+        firePropertyChange(Properties.securityQuotation.name(), oldQuotation,
+                        getSecurityQuotation());
 
         updateExchangeRate();
         updateSharesAndQuote();
@@ -388,11 +418,13 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         if (quote.doubleValue() != 0)
         {
             triggerGrossValue(
-                            Math.round(shares * quote.doubleValue() * Values.Amount.factor() / Values.Share.divider()));
+                            Math.round(shares * quote.doubleValue() * getQuoteMultiplier()
+                                            * Values.Amount.factor() / Values.Share.divider()));
         }
         else if (grossValue != 0 && shares != 0)
         {
-            setQuote(BigDecimal.valueOf(grossValue * Values.Share.factor() / (shares * Values.Amount.divider())));
+            setQuote(BigDecimal.valueOf(grossValue * Values.Share.factor()
+                            / (shares * Values.Amount.divider() * getQuoteMultiplier())));
         }
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
@@ -411,7 +443,8 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         firePropertyChange(Properties.quote.name(), this.quote, this.quote = newValue); // NOSONAR
 
         triggerGrossValue(
-                        Math.round(shares * newValue.doubleValue() * Values.Amount.factor() / Values.Share.divider()));
+                        Math.round(shares * newValue.doubleValue() * getQuoteMultiplier()
+                                        * Values.Amount.factor() / Values.Share.divider()));
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus()); // NOSONAR
@@ -428,8 +461,8 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
         if (shares != 0)
         {
-            BigDecimal newQuote = BigDecimal
-                            .valueOf(grossValue * Values.Share.factor() / (shares * Values.Amount.divider()));
+            BigDecimal newQuote = BigDecimal.valueOf(grossValue * Values.Share.factor()
+                            / (shares * Values.Amount.divider() * getQuoteMultiplier()));
             firePropertyChange(Properties.quote.name(), this.quote, this.quote = newQuote);
         }
 
@@ -509,6 +542,46 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         triggerTotal(calculateTotal());
     }
 
+    public long getAccruedInterest()
+    {
+        return accruedInterest;
+    }
+
+    /**
+     * Sets the accrued interest (in transaction currency) which is paid in
+     * addition to the price with a purchase and received in addition to the
+     * proceeds with a sale.
+     */
+    public void setAccruedInterest(long accruedInterest)
+    {
+        firePropertyChange(Properties.accruedInterest.name(), this.accruedInterest,
+                        this.accruedInterest = accruedInterest);
+        triggerTotal(calculateTotal());
+
+        firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
+                        this.calculationStatus = calculateStatus());
+    }
+
+    public long getForexAccruedInterest()
+    {
+        return forexAccruedInterest;
+    }
+
+    /**
+     * Sets the accrued interest in the currency of the security (if it differs
+     * from the transaction currency). It is converted with the exchange rate
+     * of the transaction.
+     */
+    public void setForexAccruedInterest(long forexAccruedInterest)
+    {
+        firePropertyChange(Properties.forexAccruedInterest.name(), this.forexAccruedInterest,
+                        this.forexAccruedInterest = forexAccruedInterest);
+        triggerTotal(calculateTotal());
+
+        firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
+                        this.calculationStatus = calculateStatus());
+    }
+
     public long getFees()
     {
         return fees;
@@ -581,8 +654,8 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
                         this.grossValue = Math.round(convertedGrossValue / exchangeRate.doubleValue()));
 
         if (shares != 0)
-            firePropertyChange(Properties.quote.name(), this.quote, this.quote = BigDecimal
-                            .valueOf(grossValue * Values.Share.factor() / (shares * Values.Amount.divider())));
+            firePropertyChange(Properties.quote.name(), this.quote, this.quote = BigDecimal.valueOf(grossValue
+                            * Values.Share.factor() / (shares * Values.Amount.divider() * getQuoteMultiplier())));
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus());
@@ -631,18 +704,41 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         return type;
     }
 
+    /**
+     * Returns either the currency code (for securities quoted with absolute
+     * values) or a percent sign (%).
+     */
+    public String getSecurityQuotation()
+    {
+        return (security != null && security.isPercentageQuoted()) ? "%" : getSecurityCurrencyCode(); //$NON-NLS-1$
+    }
+
+    /**
+     * Returns the quote multiplier of the security (see
+     * {@link Security#getQuoteMultiplier()}), 1 if no security is selected
+     * yet.
+     */
+    private double getQuoteMultiplier()
+    {
+        return security != null ? security.getQuoteMultiplier().doubleValue() : 1;
+    }
+
     protected long calculateConvertedGrossValue()
     {
         long feesAndTaxes = fees + taxes + Math.round(exchangeRate.doubleValue() * (forexFees + forexTaxes));
+
+        // accrued interest is paid (purchase) or received (sale) in addition:
+        // it is never part of the gross value
+        long accrued = calculateAccruedInterest();
 
         switch (type)
         {
             case BUY:
             case DELIVERY_INBOUND:
-                return Math.max(0, total - feesAndTaxes);
+                return Math.max(0, total - feesAndTaxes - accrued);
             case SELL:
             case DELIVERY_OUTBOUND:
-                return total + feesAndTaxes;
+                return total + feesAndTaxes - accrued;
             default:
                 throw new UnsupportedOperationException();
         }
@@ -651,17 +747,27 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     private long calculateTotal()
     {
         long feesAndTaxes = fees + taxes + Math.round(exchangeRate.doubleValue() * (forexFees + forexTaxes));
+        long accrued = calculateAccruedInterest();
 
         switch (type)
         {
             case BUY:
             case DELIVERY_INBOUND:
-                return convertedGrossValue + feesAndTaxes;
+                return convertedGrossValue + accrued + feesAndTaxes;
             case SELL:
             case DELIVERY_OUTBOUND:
-                return Math.max(0, convertedGrossValue - feesAndTaxes);
+                return Math.max(0, convertedGrossValue + accrued - feesAndTaxes);
             default:
                 throw new UnsupportedOperationException();
         }
+    }
+
+    /**
+     * Returns the accrued interest in transaction currency (incl. the
+     * converted accrued interest given in the currency of the security).
+     */
+    private long calculateAccruedInterest()
+    {
+        return accruedInterest + Math.round(exchangeRate.doubleValue() * forexAccruedInterest);
     }
 }

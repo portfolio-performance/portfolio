@@ -531,6 +531,13 @@ public class ExtractorMatchers
                         tx -> tx.getUnitSum(Type.FEE));
     }
 
+    public static Matcher<Transaction> hasAccruedInterest(String currencyCode, double value)
+    {
+        return new PropertyMatcher<>("accruedInterest", //$NON-NLS-1$
+                        Money.of(currencyCode, Values.Amount.factorize(value)), //
+                        tx -> tx.getUnitSum(Type.ACCRUED_INTEREST));
+    }
+
     /**
      * Run a custom check within a transaction to do custom assertThat for the
      * given transaction
@@ -595,4 +602,9 @@ public class ExtractorMatchers
                         s -> s.getPropertyValue(SecurityProperty.Type.FEED, name).orElse(null));
     }
 
+    public static Matcher<Security> isPercentageQuoted(boolean percentageQuoted)
+    {
+        return new PropertyMatcher<Security, Boolean>("percentageQuoted", percentageQuoted, //$NON-NLS-1$
+                        s -> s.isPercentageQuoted());
+    }
 }
