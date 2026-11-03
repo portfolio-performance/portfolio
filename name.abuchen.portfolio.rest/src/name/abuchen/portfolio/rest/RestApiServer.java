@@ -9,9 +9,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -19,6 +21,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
 import name.abuchen.portfolio.PortfolioLog;
+import name.abuchen.portfolio.util.HttpServerDefaults;
 import name.abuchen.portfolio.rest.internal.ApiException;
 import name.abuchen.portfolio.rest.internal.ProblemJson;
 import name.abuchen.portfolio.rest.internal.Request;
@@ -69,10 +72,26 @@ public class RestApiServer
      */
     private static final int MAX_REQUEST_BODY = 1024 * 1024;
 
+    /**
+     * How many requests may be refused as busy at the same time. A refusal
+     * holds no permit, but it reads past the body under the watchdog - a thread
+     * and a socket for up to the I/O deadline. Beyond this many, a connection is
+     * closed without an answer, and without its body being read.
+     */
+    private static final int MAX_CONCURRENT_REFUSALS = 16;
+
+    static
+    {
+        // the JDK reads its time limits once, when the first HttpServer of the
+        // process is created - which need not be this one
+        HttpServerDefaults.apply();
+    }
+
     private final int port;
     private final Predicate<String> tokenValidator;
     private final Router router;
     private final Semaphore permits;
+    private final Semaphore refusals;
     private final long ioDeadlineMillis;
 
     private HttpServer server;
@@ -111,10 +130,17 @@ public class RestApiServer
     /* package */ RestApiServer(int port, Predicate<String> tokenValidator, Router router, int maxConcurrentRequests,
                     long ioDeadlineMillis)
     {
+        this(port, tokenValidator, router, maxConcurrentRequests, ioDeadlineMillis, MAX_CONCURRENT_REFUSALS);
+    }
+
+    /* package */ RestApiServer(int port, Predicate<String> tokenValidator, Router router, int maxConcurrentRequests,
+                    long ioDeadlineMillis, int maxConcurrentRefusals)
+    {
         this.port = port;
         this.tokenValidator = tokenValidator;
         this.router = router;
         this.permits = new Semaphore(maxConcurrentRequests);
+        this.refusals = new Semaphore(maxConcurrentRefusals);
         this.ioDeadlineMillis = ioDeadlineMillis;
     }
 
@@ -127,7 +153,11 @@ public class RestApiServer
         // with it, and the bound keeps the number of buffered bodies small
         executor = Executors.newThreadPerTaskExecutor(
                         Thread.ofVirtual().name("Portfolio Performance REST API").factory()); //$NON-NLS-1$
-        watchdog = Executors.newSingleThreadScheduledExecutor(DAEMON);
+        // a cancelled deadline leaves the queue at once, not when it would
+        // have fired: every request schedules two
+        var scheduler = new ScheduledThreadPoolExecutor(1, DAEMON);
+        scheduler.setRemoveOnCancelPolicy(true);
+        watchdog = scheduler;
         server.setExecutor(executor);
         server.start();
     }
@@ -154,7 +184,21 @@ public class RestApiServer
     {
         if (!permits.tryAcquire())
         {
-            refuseBusy(exchange);
+            if (!refusals.tryAcquire())
+            {
+                // too many refusals running already: this one costs nothing
+                exchange.close();
+                return;
+            }
+
+            try
+            {
+                refuseBusy(exchange);
+            }
+            finally
+            {
+                refusals.release();
+            }
             return;
         }
 
@@ -176,10 +220,8 @@ public class RestApiServer
      */
     private void refuseBusy(HttpExchange exchange)
     {
-        var receiving = watchdog.schedule(exchange::close, ioDeadlineMillis, TimeUnit.MILLISECONDS);
-        var drained = discardBody(exchange);
-        receiving.cancel(false);
-        if (!drained)
+        var receiving = new Receiving(exchange);
+        if (!discardBody(exchange) || !receiving.done())
         {
             exchange.close();
             return;
@@ -188,7 +230,7 @@ public class RestApiServer
         var sending = watchdog.schedule(exchange::close, ioDeadlineMillis, TimeUnit.MILLISECONDS);
         try
         {
-            write(exchange, problem(ApiException.serverBusy()));
+            write(exchange, problem(refusal(exchange)));
         }
         catch (IOException e)
         {
@@ -201,9 +243,57 @@ public class RestApiServer
         }
     }
 
+    /**
+     * The answer to a request over the bound: a request a full server would
+     * have refused for its Host or Origin anyway gets that refusal, not a 503 -
+     * the headers are all it takes to tell.
+     */
+    private ApiException refusal(HttpExchange exchange)
+    {
+        try
+        {
+            checkHost(exchange);
+            checkOrigin(exchange);
+            return ApiException.serverBusy();
+        }
+        catch (ApiException e)
+        {
+            return e;
+        }
+    }
+
+    /**
+     * The receive deadline. The watchdog may close the exchange only while the
+     * request is still being received, and the request may go on only while
+     * the watchdog has not closed it: whichever claims the state first wins.
+     * Cancelling the deadline alone cannot stop a close that already started,
+     * and a handler run on a closed exchange - a write among them - would
+     * answer nobody.
+     */
+    private final class Receiving
+    {
+        private final AtomicBoolean receiving = new AtomicBoolean(true);
+        private final ScheduledFuture<?> deadline;
+
+        private Receiving(HttpExchange exchange)
+        {
+            deadline = watchdog.schedule(() -> {
+                if (receiving.compareAndSet(true, false))
+                    exchange.close();
+            }, ioDeadlineMillis, TimeUnit.MILLISECONDS);
+        }
+
+        /** @return false when the watchdog closed the exchange first */
+        private boolean done()
+        {
+            deadline.cancel(false);
+            return receiving.compareAndSet(true, false);
+        }
+    }
+
     private void serve(HttpExchange exchange)
     {
-        var receiving = watchdog.schedule(exchange::close, ioDeadlineMillis, TimeUnit.MILLISECONDS);
+        var receiving = new Receiving(exchange);
         ScheduledFuture<?> sending = null;
         var bodyRead = false;
 
@@ -235,9 +325,10 @@ public class RestApiServer
                 }
 
                 // received in full; from here on the answer is the handler's to
-                // bound, not the watchdog's
+                // bound, not the watchdog's - unless the watchdog was faster
                 bodyRead = true;
-                receiving.cancel(false);
+                if (!receiving.done())
+                    return;
 
                 var request = new Request(exchange.getRequestMethod(), path, match.pathParams(),
                                 Request.parseQuery(exchange.getRequestURI().getRawQuery()), body, authorization,
@@ -259,10 +350,9 @@ public class RestApiServer
             // still under the watchdog: left unread, the JDK drains it only after
             // the headers are out, and a client that stalls there holds this
             // thread and its permit for as long as it likes
-            if (!bodyRead && !discardBody(exchange))
+            if (!bodyRead && (!discardBody(exchange) || !receiving.done()))
                 return;
 
-            receiving.cancel(false);
             sending = watchdog.schedule(exchange::close, ioDeadlineMillis, TimeUnit.MILLISECONDS);
             write(exchange, response);
         }
@@ -273,7 +363,7 @@ public class RestApiServer
         }
         finally
         {
-            receiving.cancel(false);
+            receiving.done();
             if (sending != null)
                 sending.cancel(false);
             exchange.close();
