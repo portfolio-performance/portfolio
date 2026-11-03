@@ -65,28 +65,6 @@ public class RestApiServer
      */
     private static final int IO_DEADLINE_SECONDS = 30;
 
-    /**
-     * How long, in seconds, the JDK lets a response run before it closes the
-     * connection itself. Once a streamed response has started, closing the
-     * exchange no longer closes the connection - it writes the last chunk, which
-     * blocks like any other write to a client that stopped reading - so this is
-     * the one thing that frees that writer, its permit and its calculation slot.
-     * Far above what any request may legitimately take: 10 s for the UI thread,
-     * 30 s in the queue, 120 s for the calculation.
-     * <p/>
-     * The JDK reads it once, when the first {@code HttpServer} of the process is
-     * created, so it is set here, before {@link #start()} can create one, and
-     * only when nobody set it already - an explicit
-     * {@code -Dsun.net.httpserver.maxRspTime} on the command line wins.
-     */
-    private static final String MAX_RESPONSE_SECONDS = "600"; //$NON-NLS-1$
-
-    static
-    {
-        if (System.getProperty("sun.net.httpserver.maxRspTime") == null) //$NON-NLS-1$
-            System.setProperty("sun.net.httpserver.maxRspTime", MAX_RESPONSE_SECONDS); //$NON-NLS-1$
-    }
-
     /** the request headers carried to the handler, see {@link #forwardedHeaders} */
     private static final List<String> FORWARDED_HEADERS = List.of("accept", "mcp-session-id", //$NON-NLS-1$ //$NON-NLS-2$
                     "mcp-protocol-version"); //$NON-NLS-1$
@@ -634,9 +612,12 @@ public class RestApiServer
         var headers = new HashMap<String, String>();
         for (var name : FORWARDED_HEADERS)
         {
-            var value = exchange.getRequestHeaders().getFirst(name);
-            if (value != null)
-                headers.put(name, value);
+            var values = exchange.getRequestHeaders().get(name);
+            if (values == null || values.isEmpty())
+                continue;
+            // Accept is a list, and a client may send it on several lines;
+            // the other headers name one thing, and only the first counts
+            headers.put(name, "accept".equals(name) ? String.join(", ", values) : values.get(0)); //$NON-NLS-1$ //$NON-NLS-2$
         }
         return Map.copyOf(headers);
     }

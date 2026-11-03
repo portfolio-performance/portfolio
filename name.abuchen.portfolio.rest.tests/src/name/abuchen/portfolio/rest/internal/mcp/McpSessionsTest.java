@@ -5,6 +5,8 @@ import static org.hamcrest.Matchers.is;
 
 import org.junit.Test;
 
+import com.google.gson.JsonPrimitive;
+
 /**
  * The session store is bounded and displaces the session used least recently.
  * A client that only ever sends JSON is checked with {@code exists} and nothing
@@ -27,5 +29,33 @@ public class McpSessionsTest
 
         assertThat(sessions.exists(active), is(true));
         assertThat(sessions.exists(idle), is(false));
+    }
+
+    /** a call that registers after its session ended is cancelled at once, not left running uncancellable */
+    @Test
+    public void testACallRegisteredAfterTheSessionEndedIsCancelled()
+    {
+        var sessions = new McpSessions();
+        var id = sessions.open();
+        var session = sessions.get(id);
+
+        sessions.close(id);
+
+        var call = new McpCall(null);
+        session.register(new JsonPrimitive(1), call);
+        assertThat(call.isCancelled(), is(true));
+    }
+
+    /** two running calls cannot share an id: a cancel would name either */
+    @Test
+    public void testASecondRunningCallWithTheSameIdIsRefused()
+    {
+        var sessions = new McpSessions();
+        var session = sessions.get(sessions.open());
+
+        assertThat(session.register(new JsonPrimitive(1), new McpCall(null)), is(true));
+        assertThat(session.register(new JsonPrimitive(1), new McpCall(null)), is(false));
+        // 1 and "1" are two ids
+        assertThat(session.register(new JsonPrimitive("1"), new McpCall(null)), is(true));
     }
 }

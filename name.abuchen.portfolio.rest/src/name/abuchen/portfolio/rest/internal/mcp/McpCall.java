@@ -2,6 +2,7 @@ package name.abuchen.portfolio.rest.internal.mcp;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
 import com.google.gson.JsonElement;
@@ -127,6 +128,34 @@ import name.abuchen.portfolio.rest.internal.Response;
     /* package */ void heartbeat()
     {
         write(": keepalive\n\n"); //$NON-NLS-1$
+    }
+
+    /** whether a heartbeat of this call is being written right now */
+    private final AtomicBoolean heartbeatUnderway = new AtomicBoolean();
+
+    /**
+     * A heartbeat written on a thread of its own. The heartbeats of every
+     * stream are timed by one scheduler, and a write to a client that stopped
+     * reading blocks: written there, one such client would silence the
+     * heartbeats of all others. At most one is underway per call - while it
+     * blocks, the next ones are skipped - and the JDK's response time limit
+     * ends the block.
+     */
+    /* package */ void heartbeatOffThread()
+    {
+        if (!heartbeatUnderway.compareAndSet(false, true))
+            return;
+
+        Thread.ofPlatform().daemon(true).name("Portfolio Performance MCP heartbeat").start(() -> { //$NON-NLS-1$
+            try
+            {
+                heartbeat();
+            }
+            finally
+            {
+                heartbeatUnderway.set(false);
+            }
+        });
     }
 
     /** one JSON-RPC message as one SSE event */
