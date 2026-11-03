@@ -288,10 +288,10 @@ public final class McpEnvelope
         var page = compacted.payload() != null && compacted.payload().isJsonObject()
                         ? compacted.payload().getAsJsonObject().get("page")
                         : null;
-        var next = page != null && page.isJsonObject() ? page.getAsJsonObject().get("nextOffset") : null;
+        var next = page != null && page.isJsonObject() ? page.getAsJsonObject().get("nextCursor") : null;
         if (next != null && !next.isJsonNull() && (advice == null || advice.isEmpty()))
         {
-            notes.add("This is one page of `page.total` items: call again with `offset` set to `page.nextOffset` "
+            notes.add("This is one page of `page.total` items: call again with `cursor` set to `page.nextCursor` "
                             + "for the next one.");
         }
 
@@ -766,20 +766,20 @@ public final class McpEnvelope
 
     /**
      * A list too large for one result, sent as its first page instead of cut:
-     * as many whole items as fit, a {@code page} that says where they lie in
-     * the whole, and guidance - before the items - naming the {@code offset}
-     * the next page starts at. Nothing is lost, and nothing has to be guessed:
-     * a cut marks the end of what arrived, a page says how to get the rest.
+     * as many whole items as fit, a {@code page} that says how to go on, and
+     * guidance - before the items - naming the {@code cursor} the next page
+     * continues from: the cursor of the last item sent. Nothing is lost, and
+     * nothing has to be guessed: a cut marks the end of what arrived, a page
+     * says how to get the rest.
      * <p/>
-     * Only for a tool that takes {@code offset}. A list that already is a
-     * page - the call named {@code offset} or {@code limit} - is paged further
-     * from where it starts. Null when not even one item fits, which leaves the
-     * cut to say so.
+     * Only for a tool that takes {@code cursor}; McpDispatch asks such a list
+     * in the order paging uses, so that every item carries its cursor. Null
+     * when not even one item fits, which leaves the cut to say so.
      */
     public static String fitPage(McpTool tool, JsonObject arguments, JsonElement payload, int maxChars,
                     Boolean changed)
     {
-        if (tool.binding("offset") == null || payload == null || !payload.isJsonObject()) //$NON-NLS-1$
+        if (tool.binding("cursor") == null || payload == null || !payload.isJsonObject()) //$NON-NLS-1$
             return null;
 
         var report = payload.getAsJsonObject();
@@ -788,9 +788,10 @@ public final class McpEnvelope
             return null;
 
         var all = items.getAsJsonArray();
-        var page = report.get("page");
-        var offset = intOf(page, "offset", 0);
-        var total = intOf(page, "total", offset + all.size());
+        if (cursorOf(all.get(0)) == null)
+            return null;
+
+        var total = intOf(report.get("page"), "total", all.size());
 
         // the most whole items that fit: rendering is cheap next to the
         // calculation behind it, and a page that fits is a single answer
@@ -800,7 +801,7 @@ public final class McpEnvelope
         while (low <= high)
         {
             var count = (low + high) >>> 1;
-            var rendered = renderPage(tool, arguments, report, all, offset, count, total, changed);
+            var rendered = renderPage(tool, arguments, report, all, count, total, changed);
             if (rendered.length() <= maxChars)
             {
                 best = rendered;
@@ -814,12 +815,13 @@ public final class McpEnvelope
         return best;
     }
 
-    private static String renderPage(McpTool tool, JsonObject arguments, JsonObject report, JsonArray all, int offset,
-                    int count, int total, Boolean changed)
+    private static String renderPage(McpTool tool, JsonObject arguments, JsonObject report, JsonArray all, int count,
+                    int total, Boolean changed)
     {
         var slice = new JsonArray();
         for (var ii = 0; ii < count; ii++)
             slice.add(all.get(ii));
+        var next = cursorOf(all.get(count - 1));
 
         // the page first, then the items: what the reader needs to ask for
         // the rest must not sit behind them
@@ -829,21 +831,20 @@ public final class McpEnvelope
             if (!"items".equals(entry.getKey()) && !"page".equals(entry.getKey()))
                 paged.add(entry.getKey(), entry.getValue());
         }
-        paged.add("page", Paging.describe(offset, count, total,
-                        offset + count < total ? Integer.valueOf(offset + count) : null));
-        paged.add("items", slice);
+        paged.add("page", Paging.describe(count, total, next));
+        paged.add("items", withoutCursors(slice));
 
-        return render(tool, arguments, paged, List.of(), pageAdvice(tool, offset, count, total), Integer.MAX_VALUE,
+        return render(tool, arguments, paged, List.of(), pageAdvice(tool, count, total, next), Integer.MAX_VALUE,
                         changed);
     }
 
     /** what the reader of a page is told, before the items it holds */
-    private static String pageAdvice(McpTool tool, int offset, int count, int total)
+    private static String pageAdvice(McpTool tool, int count, int total, String next)
     {
-        var advice = new StringBuilder("**One page of " + total + ".** This answer holds items " + (offset + 1)
-                        + " to " + (offset + count) + "; the others are not in it. Call " + tool.name()
-                        + " again with the same arguments and `offset: " + (offset + count)
-                        + "` for the next page - `page.nextOffset` says the same - and do not present this page as "
+        var advice = new StringBuilder("**One page of a list of " + total + ".** This answer holds " + count
+                        + " of them; the others are not in it. Call " + tool.name()
+                        + " again with the same arguments and `cursor: \"" + next
+                        + "\"` for the next page - `page.nextCursor` says the same - and do not present this page as "
                         + "the whole list.");
 
         switch (tool.name())
@@ -856,6 +857,52 @@ public final class McpEnvelope
             }
         }
         return advice.toString();
+    }
+
+    /** the cursor a paged list's item carries, or null */
+    private static String cursorOf(JsonElement item)
+    {
+        if (!item.isJsonObject())
+            return null;
+        var cursor = item.getAsJsonObject().get("cursor"); //$NON-NLS-1$
+        return cursor != null && cursor.isJsonPrimitive() ? cursor.getAsString() : null;
+    }
+
+    /**
+     * The items without their cursors: a reader continues with
+     * {@code page.nextCursor}, and a cursor per row would only fill the result.
+     */
+    /* package */ static JsonArray withoutCursors(JsonArray items)
+    {
+        var stripped = new JsonArray();
+        for (var item : items)
+        {
+            if (item.isJsonObject() && item.getAsJsonObject().has("cursor")) //$NON-NLS-1$
+            {
+                var copy = item.getAsJsonObject().deepCopy();
+                copy.remove("cursor"); //$NON-NLS-1$
+                stripped.add(copy);
+            }
+            else
+            {
+                stripped.add(item);
+            }
+        }
+        return stripped;
+    }
+
+    /** the payload with its items' cursors removed, as it is shown */
+    public static JsonElement withoutItemCursors(JsonElement payload)
+    {
+        if (payload == null || !payload.isJsonObject() || !payload.getAsJsonObject().has("items") //$NON-NLS-1$
+                        || !payload.getAsJsonObject().get("items").isJsonArray()) //$NON-NLS-1$
+            return payload;
+        var copy = new JsonObject();
+        for (var entry : payload.getAsJsonObject().entrySet())
+            copy.add(entry.getKey(), "items".equals(entry.getKey()) //$NON-NLS-1$
+                            ? withoutCursors(entry.getValue().getAsJsonArray())
+                            : entry.getValue());
+        return copy;
     }
 
     private static int intOf(JsonElement object, String key, int fallback)

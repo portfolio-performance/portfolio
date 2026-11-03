@@ -1011,9 +1011,12 @@ public final class McpEndpoint
      *            for a write, whether a stored value changed; null when the
      *            response does not say
      */
-    /* package */ static String fit(McpTool tool, JsonObject arguments, JsonElement payload, int maxChars,
+    /* package */ static String fit(McpTool tool, JsonObject arguments, JsonElement paged, int maxChars,
                     Boolean changed)
     {
+        // the items' cursors serve the page cut below; the reader goes on with
+        // page.nextCursor, and a cursor per row would only fill the result
+        var payload = McpEnvelope.withoutItemCursors(paged);
         var rendered = McpEnvelope.render(tool, arguments, payload, List.of(), null, Integer.MAX_VALUE, changed);
         if (rendered.length() <= maxChars)
             return rendered;
@@ -1040,7 +1043,7 @@ public final class McpEndpoint
 
         // a list that can be paged is sent as its first page, not cut: the
         // reader is told where the next one starts instead of what was lost
-        var page = McpEnvelope.fitPage(tool, arguments, payload, maxChars, changed);
+        var page = McpEnvelope.fitPage(tool, arguments, paged, maxChars, changed);
         if (page != null)
             return page;
 

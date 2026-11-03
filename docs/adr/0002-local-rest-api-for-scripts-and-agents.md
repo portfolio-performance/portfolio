@@ -102,10 +102,11 @@ becomes a later thin adapter over the same service layer. The individual decisio
   `name.abuchen.portfolio.rest.calculationSlots` allows 1 to 8, at most the processors less one,
   and never below 1.
   Deliberately no preference: every slot is a whole file's daily valuation in memory.
-- **Lists can be paged, and an MCP result too large for one answer is sent as a page.** `offset` and
+- **Lists can be paged, and an MCP result too large for one answer is sent as a page.** `cursor` and
   `limit` on the instruments and the trades are opt-in: without them REST answers the whole list, as
-  before. Over MCP, a list larger than one result is sent as many whole items as fit, with `page`
-  and a line naming the next `offset`, instead of being cut - a client that cuts a result itself
+  before. A page continues after the key of its cursor, not at a count, so an edit between two pages
+  neither skips nor repeats an item. Over MCP, a list larger than one result is sent as many whole
+  items as fit, with `page` and a line naming the next `cursor`, instead of being cut - a client that cuts a result itself
   loses what it cut, and a cut answer cannot say where the rest is. The result size is 100,000
   characters by default (Claude Desktop cuts at 150,000) and can be lowered with the system property
   `name.abuchen.portfolio.rest.mcpMaxResultChars` for a client that keeps less; like the slots, it is
