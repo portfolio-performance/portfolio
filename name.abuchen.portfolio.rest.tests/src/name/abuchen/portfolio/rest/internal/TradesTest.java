@@ -11,6 +11,7 @@ import static org.hamcrest.Matchers.not;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.junit.Assert;
@@ -24,6 +25,7 @@ import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Money;
@@ -591,9 +593,10 @@ public class TradesTest
     }
 
     /**
-     * One page of the trades: cut from the whole sorted list, with a page
-     * that says where it lies - and the warnings of the whole list, whichever
-     * page is asked for.
+     * One page of the trades: cut from the whole list in the order of their
+     * keys, each item with its cursor, a page that says where the next one
+     * continues - and the warnings of the whole list, whichever page is asked
+     * for.
      */
     @Test
     public void testOnePageOfTheTrades()
@@ -607,23 +610,29 @@ public class TradesTest
                         .buy(other, "2026-02-01", Values.Share.factorize(10), Values.Amount.factorize(400)) //
                         .addTo(client);
 
-        var first = page(client, null, "1");
-        assertThat(names(first), is(List.of("ACME")));
+        // paged, the instrument uuid comes first
+        var expected = client.getSecurities().stream().sorted(Comparator.comparing(Security::getUUID))
+                        .map(Security::getName).toList();
+
+        var first = page(client, "", "1");
+        assertThat(names(first), is(expected.subList(0, 1)));
         var page = first.getAsJsonObject("page");
-        assertThat(page.get("offset").getAsInt(), is(0));
         assertThat(page.get("limit").getAsInt(), is(1));
         assertThat(page.get("total").getAsInt(), is(2));
-        assertThat(page.get("nextOffset").getAsInt(), is(1));
+        var cursor = page.get("nextCursor").getAsString();
+        assertThat(first.get("items").getAsJsonArray().get(0).getAsJsonObject().get("cursor").getAsString(),
+                        is(cursor));
         assertThat(first.has("warnings"), is(true));
         assertThat(first.has("fxWarnings"), is(true));
 
-        var second = page(client, "1", null);
-        assertThat(names(second), is(List.of("BETA")));
-        assertThat(second.getAsJsonObject("page").get("nextOffset").isJsonNull(), is(true));
+        var second = page(client, cursor, null);
+        assertThat(names(second), is(expected.subList(1, 2)));
+        assertThat(second.getAsJsonObject("page").get("nextCursor").isJsonNull(), is(true));
         assertThat(second.getAsJsonObject("page").get("limit").isJsonNull(), is(true));
 
-        // past the end, an empty page
-        var beyond = page(client, "5", "2");
+        // past the last item, an empty page
+        var beyond = page(client, second.get("items").getAsJsonArray().get(0).getAsJsonObject().get("cursor")
+                        .getAsString(), "2");
         assertThat(beyond.get("items").getAsJsonArray().size(), is(0));
         assertThat(beyond.getAsJsonObject("page").get("total").getAsInt(), is(2));
 
@@ -631,23 +640,56 @@ public class TradesTest
         assertThat(trades(client).has("page"), is(false));
     }
 
+    /** a lot sold in two parts makes three trades of one purchase; each has a key of its own */
     @Test
-    public void testPagingRejectsAMalformedOffsetOrLimit()
+    public void testThePartsOfOneLotHaveKeysOfTheirOwn()
+    {
+        var client = new Client();
+        var security = new SecurityBuilder().addPrice("2026-01-02", Values.Quote.factorize(100)).addTo(client);
+        security.setName("ACME");
+        var account = new AccountBuilder().deposit_("2026-01-01", Values.Amount.factorize(10000)).addTo(client);
+        new PortfolioBuilder(account) //
+                        .buy(security, "2026-01-02", Values.Share.factorize(10), Values.Amount.factorize(1000)) //
+                        .sell(security, "2026-02-02", Values.Share.factorize(3), Values.Amount.factorize(330)) //
+                        .sell(security, "2026-03-02", Values.Share.factorize(3), Values.Amount.factorize(360)) //
+                        .addTo(client);
+
+        var cursors = new java.util.HashSet<String>();
+        String cursor = "";
+        var count = 0;
+        while (cursor != null)
+        {
+            var response = page(client, cursor, "1");
+            for (var item : response.get("items").getAsJsonArray())
+            {
+                cursors.add(item.getAsJsonObject().get("cursor").getAsString());
+                count++;
+            }
+            var next = response.getAsJsonObject("page").get("nextCursor");
+            cursor = next.isJsonNull() ? null : next.getAsString();
+        }
+
+        assertThat(count, is(3));
+        assertThat(cursors.size(), is(3));
+    }
+
+    @Test
+    public void testPagingRejectsAMalformedCursorOrLimit()
     {
         var client = closedTrade();
 
-        for (var bad : List.of(new String[] { "-1", null }, new String[] { "x", null }, new String[] { null, "0" },
-                        new String[] { null, "1.5" }))
+        for (var bad : List.of(new String[] { "x", null }, new String[] { Paging.encode(Paging.Kind.INSTRUMENTS, "u"),
+                        null }, new String[] { null, "0" }, new String[] { null, "1.5" }))
         {
             try
             {
                 page(client, bad[0], bad[1]);
-                Assert.fail("expected ApiException for offset " + bad[0] + ", limit " + bad[1]);
+                Assert.fail("expected ApiException for cursor " + bad[0] + ", limit " + bad[1]);
             }
             catch (ApiException e)
             {
                 assertThat(e.getStatus(), is(400));
-                assertThat(e.getErrors().get(0).field(), is(bad[0] != null ? "offset" : "limit"));
+                assertThat(e.getErrors().get(0).field(), is(bad[0] != null ? "cursor" : "limit"));
                 assertThat(e.getErrors().get(0).code(), is("invalid-value"));
             }
         }
@@ -681,10 +723,10 @@ public class TradesTest
         assertThat(plan.get("shares").getAsDouble(), is(12.0));
     }
 
-    private static JsonObject page(Client client, String offset, String limit)
+    private static JsonObject page(Client client, String cursor, String limit)
     {
         return TradesHandler.list(client, new ExchangeRateProviderFactory(client), null, null, null, null, null, null,
-                        null, offset, limit).getAsJsonObject();
+                        null, cursor, limit).getAsJsonObject();
     }
 
     private static JsonObject period(Client client, String status, String from, String to)
