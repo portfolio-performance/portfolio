@@ -247,8 +247,8 @@ seconds). `calculation-timeout` means the answer did not come in time; the same 
 just as long again, so narrow it. The engines cannot be interrupted, so a calculation past its
 deadline still runs to its end — and keeps its calculation slot until it does.
 
-Two calculations run at once — on a machine with at least three processors; with one or two, one
-does. One that finds every slot taken waits for a free one, first come first served, for up to 30
+By default, two calculations run at once — on a machine with at least three processors; with one
+or two, one does. One that finds every slot taken waits for a free one, first come first served, for up to 30
 seconds; at most two per slot may wait. `server-busy` means more requests are in
 flight than the server serves at once, the queue is full, or no slot came free in time; no work was
 started, so retrying after `Retry-After` is cheap.
@@ -261,9 +261,11 @@ slots, as calculations still running hold them:
 -Dname.abuchen.portfolio.rest.calculationSlots=4
 ```
 
-At most the number of processors less one is used, so that one stays free for the user interface;
-a number outside 1 to 8 is logged and replaced by the nearer bound, anything else by the default. The server then serves three requests per
-slot plus six more at once (12 with the default), so that every running and waiting calculation has
+At most the number of processors less one is used, so that one stays free for the user interface,
+but always at least one — on a single processor none stays free. A number outside 1 to 8 is logged
+and replaced by the nearer bound, anything else by the default. The server then serves three
+requests per slot plus six more at once (12 with the default on three or more processors, 9 with
+one or two), so that every running and waiting calculation has
 room and the cheap calls still get through. Each calculation holds a whole file's daily valuation in
 memory, so raise the number only when several questions are really asked at the same time — one
 calculation does not get faster.
