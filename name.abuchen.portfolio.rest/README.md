@@ -232,8 +232,9 @@ user did not share.
 than silently clobbered by whatever the dialog writes back on OK. Reads still work. Respect
 `Retry-After` and try again.
 
-**503 says different things.** The API hands every request that touches the model to the UI
-thread and waits for it with a deadline (10 seconds). Whether the request ran is decided on the UI
+**503 says different things.** The API hands every read and write of the model to the UI thread
+and waits for it with a deadline (10 seconds); a calculation resolves its file there the same way,
+then computes off it (see below). Whether the request ran is decided on the UI
 thread itself, so the answer is exact: for a write, `ui-busy` means the UI thread had not started it
 when the wait expired — it is refused, will never run, nothing changed, and `Retry-After` is safe to
 honour. `ui-request-underway` means a write was already running — it will complete, so there is

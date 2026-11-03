@@ -221,7 +221,11 @@ public class RestApiServer
     private void refuseBusy(HttpExchange exchange)
     {
         var receiving = new Receiving(exchange);
-        if (!discardBody(exchange) || !receiving.done())
+        // both run, so that the receive deadline is cancelled on every path
+        // and does not hold the exchange until it would have fired
+        var bodyRead = discardBody(exchange);
+        var inTime = receiving.done();
+        if (!bodyRead || !inTime)
         {
             exchange.close();
             return;
