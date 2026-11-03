@@ -5,6 +5,7 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -52,7 +53,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("ACCOUNT STATEMENT", //
+        final var type = new DocumentType("ACCOUNT STATEMENT", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // AAAAA aAAAA STATEMENT PERIOD: March 1 - 31, 2022
@@ -76,7 +77,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
         // Sep 02 Netflix Inc 64110L106 Sell 2 566.20 1,132.39
         // Com
         // @formatter:on
-        Block blockBuySell = new Block("^[\\w]{3} [\\d]{2} .* [\\w]{9} (Buy|Sell) [\\.,\\d]+ [\\.,\\d]+ (\\()?[\\.,\\d]+(\\)?)$");
+        var blockBuySell = new Block("^[\\w]{3} [\\d]{2} .* [\\w]{9} (Buy|Sell) [\\.,\\d]+ [\\.,\\d]+ (\\()?[\\.,\\d]+(\\)?)$");
         type.addBlock(blockBuySell);
         blockBuySell.set(new Transaction<BuySellEntry>()
 
@@ -85,7 +86,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                         .section("month", "day", "name", "wkn", "type", "shares", "amount", "nameContinued") //
                         .documentContext("year") //
                         .match("^(?<month>[\\w]{3}) (?<day>[\\d]{1,2}) (?<name>.*) (?<wkn>[\\w]{9}) (?<type>(Buy|Sell)) (?<shares>[\\.,\\d]+) [\\.,\\d]+ (\\()?(?<amount>[\\.,\\d]+)(\\))?$") //
-                        .match("(?<nameContinued>.*)") //
+                        .match("^(?<nameContinued>.*)$") //
                         .assign((t, v) -> {
                             // Is type --> "Sell" change from BUY to SELL
                             if ("Sell".equals(v.get("type")))
@@ -123,7 +124,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
         // Aug 21 Nra Withhold: Dividend 29273V100 NRA Withhold (22.94)
         // Energy Transfer Operating L P
         // @formatter:on
-        Block blockDividende = new Block("^[\\w]{3} [\\d]{2} .* (?!Qualified).{9} ((Qualified|Lmtd) )?(Dividend|Partner) [\\.,\\d]+$");
+        var blockDividende = new Block("^[\\w]{3} [\\d]{2} .* (?!Qualified).{9} ((Qualified|Lmtd) )?(Dividend|Partner) [\\.,\\d]+$");
         type.addBlock(blockDividende);
         blockDividende.set(new Transaction<AccountTransaction>()
 
@@ -131,7 +132,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
 
                         .oneOf( //
                                         section -> section //
-                                                        .attributes("month", "day", "name", "shares", "wkn", "amount","tax") //
+                                                        .attributes("month", "day", "name", "shares", "wkn", "amount", "tax") //
                                                         .documentContext("year") //
                                                         .match("^(?<month>[\\w]{3}) (?<day>[\\d]{1,2}) (?<name>.*) (?<shares>[\\.,\\d]+) (?<wkn>(?!Qualified).{9}) (Qualified )?Dividend (?<amount>[\\.,\\d]+)$") //
                                                         .match("^[\\w]{3} [\\d]{2} .* [\\w]{9} (NRA Withhold|Foreign Withholding) \\((?<tax>[\\.,\\d]+)\\)$") //
@@ -145,8 +146,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setSecurity(getOrCreateSecurity(v));
 
-                                                            Money tax = Money.of(USD,
-                                                                            asAmount(v.get("tax")));
+                                                            var tax = Money.of(USD, asAmount(v.get("tax")));
                                                             checkAndSetTax(tax, t, type.getCurrentContext());
                                                         }),
                                         section -> section //
@@ -164,8 +164,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setSecurity(getOrCreateSecurity(v));
 
-                                                            Money tax = Money.of(USD,
-                                                                            asAmount(v.get("tax")));
+                                                            var tax = Money.of(USD, asAmount(v.get("tax")));
 
                                                             checkAndSetTax(tax, t, type.getCurrentContext());
                                                         }),
@@ -186,32 +185,34 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block blockWithholdTaxForDividende = new Block("^[\\w]{3} [\\w]{3} Withholding Adjustment .{9} Journal [\\.,\\d]+$");
+        var blockWithholdTaxForDividende = new Block("^[\\w]{3} [\\w]{3} Withholding Adjustment .{9} Journal [\\.,\\d]+$");
         type.addBlock(blockWithholdTaxForDividende);
         blockWithholdTaxForDividende.setMaxSize(2);
         blockWithholdTaxForDividende.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
-                        .oneOf( //
-                                        section -> section //
-                                                        .attributes("note", "wkn", "amount", "name") //
-                                                        .documentContext("day", "month", "year") //
-                                                        .match("^[\\w]{3} [\\w]{3} (?<note>Withholding Adjustment) (?<wkn>.{9}) Journal (?<amount>[\\.,\\d]+)$") //
-                                                        .match("^(?<name>.*)$") //
-                                                        .assign((t, v) -> {
-                                                            v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
-                                                            v.put("currency", asCurrencyCode(USD));
+                        // @formatter:off
+                        // Any Nra Withholding Adjustment 12485U102 Journal 23.43
+                        // Cboe Oil Index-reduced Value
+                        // @formatter:on
+                        .section("note", "wkn", "amount", "name") //
+                        .documentContext("day", "month", "year") //
+                        .match("^[\\w]{3} [\\w]{3} (?<note>Withholding Adjustment) (?<wkn>.{9}) Journal (?<amount>[\\.,\\d]+)$") //
+                        .match("^(?<name>.*)$") //
+                        .assign((t, v) -> {
+                            v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
+                            v.put("currency", asCurrencyCode(USD));
 
-                                                            t.setDateTime(asDate(v.get("date")));
-                                                            t.setShares(0L);
-                                                            t.setAmount(asAmount(v.get("amount")));
-                                                            t.setNote(v.get("note"));
-                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                                            t.setSecurity(getOrCreateSecurity(v));
-                                                        })
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setShares(0L);
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(v.get("note"));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
 
-                        .wrap(TransactionItem::new)));
+                        .wrap(TransactionItem::new));
 
         // @formatter:off
         // Formatting:
@@ -222,7 +223,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
         // Nov 15 Orion Office Reit Inc 68629Y103 Security Journal 2
         // Com
         // @formatter:on
-        Block blockDeliveryInBound = new Block("^[\\w]{3} [\\d]{2} .* [\\w]{9} Security Journal [\\.,\\d]+$");
+        var blockDeliveryInBound = new Block("^[\\w]{3} [\\d]{2} .* [\\w]{9} Security Journal [\\.,\\d]+$");
         type.addBlock(blockDeliveryInBound);
         blockDeliveryInBound.set(new Transaction<PortfolioTransaction>()
 
@@ -231,7 +232,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                         .section("month", "day", "name", "wkn", "shares", "nameContinued") //
                         .documentContext("year") //
                         .match("^(?<month>[\\w]{3}) (?<day>[\\d]{1,2}) (?<name>.*) (?<wkn>[\\w]{9}) Security Journal (?<shares>[\\.,\\d]+)$") //
-                        .match("(?<nameContinued>.*)") //
+                        .match("^(?<nameContinued>.*)$") //
                         .assign((t, v) -> {
                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                             v.put("currency", asCurrencyCode(USD));
@@ -243,7 +244,13 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
-                        .wrap(TransactionItem::new));
+                        // An inbound delivery requires a value. The document does not
+                        // carry one, therefore the user has to enter the value manually.
+                        .wrap(t -> {
+                            var item = new TransactionItem(t);
+                            item.setFailureMessage(Messages.MsgErrorTransactionInboundDeliveryWithoutValue);
+                            return item;
+                        }));
 
         // @formatter:off
         // Formatting:
@@ -252,7 +259,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
         // Nov 05 Ca Fee_spinoff_blue Tsvt 09609 Journal (30.00) <-- CUSIP is incorrect (length = 9)
         // Nov 15 Ca Fee_spinoff_o Onl 756109104 Journal (30.00)
         // @formatter:on
-        Block blockFees = new Block("^[\\w]{3} [\\d]{2} Ca Fee_spinoff.* Journal \\([\\.,\\d]+\\)$");
+        var blockFees = new Block("^[\\w]{3} [\\d]{2} Ca Fee_spinoff.* Journal \\([\\.,\\d]+\\)$");
         type.addBlock(blockFees);
         blockFees.set(new Transaction<AccountTransaction>()
 
@@ -285,7 +292,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
         // Jun 23 Cil Allocation 58933Y105 Journal 29.98
         // Merck & Co Inc New
         // @formatter:on
-        Block blockCashAllocation = new Block("^[\\w]{3} [\\d]{2} .* Allocation [\\w]{9} Journal [\\.,\\d]+$");
+        var blockCashAllocation = new Block("^[\\w]{3} [\\d]{2} .* Allocation [\\w]{9} Journal [\\.,\\d]+$");
         type.addBlock(blockCashAllocation);
         blockCashAllocation.set(new Transaction<AccountTransaction>()
 
@@ -314,7 +321,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
         // -------------------------------------
         // Mar 01 Wire In Ref #: Mm-00003314 Journal 9,000.00
         // @formatter:on
-        Block blockDeposit = new Block("^[\\w]{3} [\\d]{2} Wire .* [\\.,\\d]+$");
+        var blockDeposit = new Block("^[\\w]{3} [\\d]{2} Wire .* [\\.,\\d]+$");
         type.addBlock(blockDeposit);
         blockDeposit.set(new Transaction<AccountTransaction>()
 
@@ -340,7 +347,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
         // -------------------------------------
         // Dec 31 .05000% 3 Days,Bal=   $71000 Credit Interest 0.30
         // @formatter:on
-        Block blockInterest = new Block("^[\\w]{3} [\\d]{2} .* Credit Interest [\\.,\\d]+$");
+        var blockInterest = new Block("^[\\w]{3} [\\d]{2} .* Credit Interest [\\.,\\d]+$");
         type.addBlock(blockInterest);
         blockInterest.set(new Transaction<AccountTransaction>()
 
