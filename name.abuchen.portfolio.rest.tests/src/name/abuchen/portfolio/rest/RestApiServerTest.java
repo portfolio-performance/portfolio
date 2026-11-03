@@ -527,6 +527,136 @@ public class RestApiServerTest
     }
 
     /**
+     * Refusals of a full server are bounded too: beyond their own bound a
+     * connection is closed at once, without waiting for a body that may never
+     * come.
+     */
+    @Test
+    public void testRefusalsBeyondTheirBoundAreClosedAtOnce() throws Exception
+    {
+        var entered = new CountDownLatch(1);
+        var release = new CountDownLatch(1);
+
+        var router = new Router();
+        router.add("GET", "/v1/slow", request -> {
+            entered.countDown();
+            release.await(10, TimeUnit.SECONDS);
+            return Response.json(200, JsonParser.parseString("{}"));
+        });
+
+        var bounded = new RestApiServer(0, TOKEN::equals, router, 1, 10_000, 1);
+        bounded.start();
+        try
+        {
+            var pending = http.sendAsync(slow(bounded), HttpResponse.BodyHandlers.ofString());
+            assertThat(entered.await(5, TimeUnit.SECONDS), is(true));
+
+            // the one refusal slot: a stalled body the watchdog would end in 10 s
+            try (var first = stalledBody(bounded, "GET", "/v1/slow"))
+            {
+                // the first must hold the slot, waiting for its body, before the
+                // second arrives: the server takes them in any order it likes
+                Thread.sleep(500);
+
+                try (var second = stalledBody(bounded, "GET", "/v1/slow"))
+                {
+                second.setSoTimeout(5_000);
+                var started = System.nanoTime();
+                assertThat(second.getInputStream().read(), is(-1));
+                assertThat(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - started) < 3_000, is(true));
+                }
+            }
+
+            release.countDown();
+            assertThat(pending.get(5, TimeUnit.SECONDS).statusCode(), is(200));
+        }
+        finally
+        {
+            release.countDown();
+            bounded.stop();
+        }
+    }
+
+    /** a full server still answers a wrong Host or a browser Origin with that refusal */
+    @Test
+    public void testAFullServerStillRefusesABrowserOriginAs403() throws Exception
+    {
+        var entered = new CountDownLatch(1);
+        var release = new CountDownLatch(1);
+
+        var router = new Router();
+        router.add("GET", "/v1/slow", request -> {
+            entered.countDown();
+            release.await(10, TimeUnit.SECONDS);
+            return Response.json(200, JsonParser.parseString("{}"));
+        });
+
+        var bounded = new RestApiServer(0, TOKEN::equals, router, 1, 30_000);
+        bounded.start();
+        try
+        {
+            var pending = http.sendAsync(slow(bounded), HttpResponse.BodyHandlers.ofString());
+            assertThat(entered.await(5, TimeUnit.SECONDS), is(true));
+
+            var browser = http.send(HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + bounded.getPort() + "/v1/slow"))
+                            .header("Authorization", "Bearer " + TOKEN).header("Origin", "https://evil.example")
+                            .GET().build(), HttpResponse.BodyHandlers.ofString());
+            assertThat(browser.statusCode(), is(403));
+            assertThat(browser.body(), containsString("browser-origin-forbidden"));
+
+            release.countDown();
+            assertThat(pending.get(5, TimeUnit.SECONDS).statusCode(), is(200));
+        }
+        finally
+        {
+            release.countDown();
+            bounded.stop();
+        }
+    }
+
+    /**
+     * A client that stops reading a large response must not keep the only
+     * permit: the send watchdog closes the exchange. The stalled socket is not
+     * read before the check - reading would let the write finish.
+     */
+    @Test
+    public void testAStalledResponseWriteIsClosedByTheWatchdog() throws Exception
+    {
+        var handled = new CountDownLatch(1);
+
+        var router = new Router();
+        router.add("GET", "/v1/big", request -> {
+            handled.countDown();
+            return Response.json(200, JsonParser.parseString("\"" + "x".repeat(8 * 1024 * 1024) + "\""));
+        });
+        router.add("GET", "/v1/ping", request -> Response.json(200, JsonParser.parseString("{\"pong\":true}")));
+
+        var guarded = new RestApiServer(0, TOKEN::equals, router, 1, 500);
+        guarded.start();
+        try (var socket = new Socket())
+        {
+            socket.setReceiveBufferSize(4096);
+            socket.connect(new java.net.InetSocketAddress(InetAddress.getLoopbackAddress(), guarded.getPort()), 5_000);
+
+            var request = "GET /v1/big HTTP/1.1\r\n" //
+                            + "Host: 127.0.0.1:" + guarded.getPort() + "\r\n" //
+                            + "Authorization: Bearer " + TOKEN + "\r\n\r\n";
+            socket.getOutputStream().write(request.getBytes(StandardCharsets.US_ASCII));
+            socket.getOutputStream().flush();
+
+            assertThat(handled.await(5, TimeUnit.SECONDS), is(true));
+
+            var ping = HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + guarded.getPort() + "/v1/ping"))
+                            .header("Authorization", "Bearer " + TOKEN).GET().build();
+            assertThat(statusEventually(ping), is(200));
+        }
+        finally
+        {
+            guarded.stop();
+        }
+    }
+
+    /**
      * The path is normalized before authorization, so its cost is anyone's to
      * choose. A long run of slashes in the middle used to take quadratic time.
      */
