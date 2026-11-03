@@ -77,9 +77,10 @@ public final class RestApiLimits
 
     /**
      * The slot count for a property value on a machine with that many
-     * processors: the value if it is a number from 1 to 8, the default
-     * otherwise - and never more than the processors less one, which stays
-     * free for the user interface. Not private: a test drives it with values
+     * processors: the value if it is a number from 1 to 8, the nearer bound if
+     * it is a number outside, the default if it is none - and never more than
+     * the processors less one, which stays free for the user interface, but
+     * never less than 1. Not private: a test drives it with values
      * no real machine is configured with.
      */
     /* package */ static int resolve(String value, int processors, boolean log)

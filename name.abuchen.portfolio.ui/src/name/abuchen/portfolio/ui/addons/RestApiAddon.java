@@ -145,6 +145,12 @@ public class RestApiAddon
             {
                 return CompletableFuture.failedFuture(e);
             }
+            catch (Error e)
+            {
+                // as on the queue: the caller learns of it, and so does the log
+                PortfolioLog.error(e);
+                return CompletableFuture.failedFuture(e);
+            }
         }
 
         @Override
