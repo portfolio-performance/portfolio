@@ -191,6 +191,27 @@ public class PairingServiceTest
         assertThat(store.listClients(), hasSize(1));
     }
 
+    /**
+     * The count bound, apart from the TTL: decisions in a burst keep only the
+     * newest MAX_OUTCOMES outcomes, and the oldest one polls 404.
+     */
+    @Test
+    public void testTheOldestOutcomeGoesBeyondTheBound()
+    {
+        var first = service.create("Client 0");
+        host.lastAccessRequest().allowAlways();
+
+        String last = first;
+        for (int ii = 1; ii <= PairingService.MAX_OUTCOMES; ii++)
+        {
+            last = service.create("Client " + ii);
+            host.lastAccessRequest().allowAlways();
+        }
+
+        assertStatusIs(first, 404);
+        assertThat(service.poll(last).token(), is(notNullValue()));
+    }
+
     /** a decision that arrives after the request is gone grants nothing, and says so */
     @Test
     public void testDecisionAfterExpiryIsIgnored()
