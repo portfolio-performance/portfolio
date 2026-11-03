@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -54,16 +55,36 @@ public class DevServer
      */
     private record DevHost(List<OpenFile> files) implements HostApplication
     {
+        /** stands in for the UI thread: one callable, or one read, at a time */
+        private static final Object UI = new Object();
+
         @Override
         public List<OpenFile> listOpenFiles()
         {
-            return files;
+            synchronized (UI)
+            {
+                return files;
+            }
         }
 
+        /**
+         * headless: there is no UI thread, so the callable runs on the caller's -
+         * but one at a time, as the UI thread would run them
+         */
         @Override
-        public <T> T syncExec(Callable<T> callable) throws Exception
+        public <T> CompletableFuture<T> asyncExec(Callable<T> callable)
         {
-            return callable.call();
+            try
+            {
+                synchronized (UI)
+                {
+                    return CompletableFuture.completedFuture(callable.call());
+                }
+            }
+            catch (Exception e)
+            {
+                return CompletableFuture.failedFuture(e);
+            }
         }
 
         @Override
