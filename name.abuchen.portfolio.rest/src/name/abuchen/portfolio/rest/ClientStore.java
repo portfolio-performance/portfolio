@@ -96,6 +96,13 @@ public class ClientStore
     private final List<JsonObject> restricted = new ArrayList<>();
 
     /**
+     * Entries this version cannot parse - written by a later version, or
+     * damaged. Never authenticated, but written back as they were, so that a
+     * save does not delete what a later version may still read.
+     */
+    private final List<JsonElement> unparsed = new ArrayList<>();
+
+    /**
      * Whether the file exists but this version cannot read it: not readable at
      * all, not valid JSON, or a shape it does not recognise. Such a file is never
      * saved over - an unreadable file is not an empty one, and a save would
@@ -110,7 +117,8 @@ public class ClientStore
 
     public ClientStore(Path directory, Supplier<Instant> clock)
     {
-        this.file = directory.resolve(FILE_NAME);
+        // absolute, so that the file always has a parent to create
+        this.file = directory.toAbsolutePath().resolve(FILE_NAME);
         this.clock = clock;
         load();
     }
@@ -267,7 +275,9 @@ public class ClientStore
 
     private void load()
     {
-        if (!Files.exists(file))
+        // notExists, not !exists: a file whose existence cannot be determined
+        // is read, fails, and is then protected as unreadable
+        if (Files.notExists(file))
             return;
 
         String raw;
@@ -327,6 +337,8 @@ public class ClientStore
             var entry = parseEntry(element);
             if (entry != null)
                 entries.add(entry);
+            else
+                unparsed.add(element);
         }
     }
 
@@ -403,6 +415,7 @@ public class ClientStore
             clients.add(json);
         }
         restricted.forEach(clients::add);
+        unparsed.forEach(clients::add);
         var root = new JsonObject();
         root.add("clients", clients); //$NON-NLS-1$
 
@@ -419,7 +432,9 @@ public class ClientStore
             if (Files.isDirectory(file))
                 throw new IOException(file + " is a directory"); //$NON-NLS-1$
 
-            var temp = file.resolveSibling(file.getFileName() + ".tmp"); //$NON-NLS-1$
+            // a fresh name, created exclusively - on POSIX already owner-only -
+            // in the same directory, so that the move stays on one file system
+            var temp = Files.createTempFile(file.getParent(), FILE_NAME, ".tmp"); //$NON-NLS-1$
             try
             {
                 Files.writeString(temp, root.toString(), StandardCharsets.UTF_8);
@@ -435,7 +450,7 @@ public class ClientStore
             }
             finally
             {
-                Files.deleteIfExists(temp);
+                deleteQuietly(temp);
             }
             return true;
         }
@@ -443,6 +458,23 @@ public class ClientStore
         {
             PortfolioLog.error(e);
             return false;
+        }
+    }
+
+    /**
+     * Removes a temporary file that is left over only when the move failed.
+     * Failing to remove it is logged, not reported: whether the save worked is
+     * decided by the move alone.
+     */
+    private static void deleteQuietly(Path temp)
+    {
+        try
+        {
+            Files.deleteIfExists(temp);
+        }
+        catch (IOException e)
+        {
+            PortfolioLog.error(e);
         }
     }
 

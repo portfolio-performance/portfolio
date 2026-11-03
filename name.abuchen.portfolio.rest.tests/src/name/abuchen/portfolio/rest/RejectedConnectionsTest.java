@@ -39,6 +39,27 @@ public class RejectedConnectionsTest
     }
 
     @Test
+    public void testThePathIsCleanedLikeTheUserAgent()
+    {
+        RejectedConnections.record("/v1/\u202Efiles\n\u001b[31m", "agent", false,
+                        RejectedConnections.Reason.NO_HEADER);
+
+        assertThat(RejectedConnections.last().orElseThrow().path(), is("/v1/files  [31m"));
+    }
+
+    /** a cut that would fall inside a surrogate pair keeps the pair whole or drops it */
+    @Test
+    public void testACutNeverSplitsASurrogatePair()
+    {
+        RejectedConnections.record("/v1/ping", "a".repeat(199) + "\uD83D\uDE00" + "b", false,
+                        RejectedConnections.Reason.NO_HEADER);
+
+        var agent = RejectedConnections.last().orElseThrow().userAgent();
+        assertThat(agent, is("a".repeat(199) + "\u2026"));
+        assertThat(Character.isHighSurrogate(agent.charAt(agent.length() - 2)), is(false));
+    }
+
+    @Test
     public void testALongValueIsCut()
     {
         RejectedConnections.record("/v1/ping", "a".repeat(500), false, RejectedConnections.Reason.NO_HEADER);

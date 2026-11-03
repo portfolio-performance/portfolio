@@ -107,6 +107,7 @@ public class PairingServiceTest
         assertThat(result.status(), is(PairingStatus.APPROVED));
         assertThat(result.token(), is(notNullValue()));
         assertThat(result.persistent(), is(false));
+        assertThat(unwritable.authenticate(result.token()).isPresent(), is(true));
     }
 
     @Test

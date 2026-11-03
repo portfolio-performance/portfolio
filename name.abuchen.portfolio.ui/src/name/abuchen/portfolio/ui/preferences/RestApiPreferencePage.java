@@ -227,7 +227,8 @@ public class RestApiPreferencePage extends PreferencePage
         if (rejection == null)
             return;
 
-        var client = rejection.userAgent() != null ? rejection.userAgent()
+        // a blank User-Agent names nobody either
+        var client = rejection.userAgent() != null && !rejection.userAgent().isBlank() ? rejection.userAgent()
                         : Messages.PrefRestApiLabelUnidentifiedClient;
 
         var label = new Label(container, SWT.WRAP);
