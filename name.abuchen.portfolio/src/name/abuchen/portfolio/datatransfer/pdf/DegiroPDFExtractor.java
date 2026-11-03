@@ -128,12 +128,18 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransactions()
     {
+        // @formatter:off
+        // The French account statement is named "Relevé de compte" and prints
+        // the column header "Date Heure Date de Produit Code ISIN Description
+        // FX Mouvements Solde".
+        // @formatter:on
         final DocumentType type = new DocumentType("(Kontoauszug"
                         + "|Account statement"
                         + "|Rekeningoverzicht"
                         + "|Estratto conto"
                         + "|Estado de cuenta"
-                        + "|Přehled účtu)", (context, lines) -> {
+                        + "|Přehled účtu"
+                        + "|Relev. de compte)", (context, lines) -> {
 
             // @formatter:off
             // Formatting:
@@ -1583,10 +1589,17 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
      */
     private void addDepotStatementTransactions()
     {
+        // @formatter:off
+        // The account statement of the French documents is named "Relevé de
+        // compte" and contains the French financial transaction tax "Taxe sur
+        // les Transactions Financières". The word "Transactions" inside that
+        // tax line must not let the transaction report match, therefore the
+        // tax line is excluded from the "Transactions" alternative.
+        // @formatter:on
         final var type = new DocumentType("(Transaktions.bersicht"
                         + "|Transacciones"
                         + "|Transacties"
-                        + "|Transactions"
+                        + "|Transactions(?! Financ.)"
                         + "|Transakcje"
                         + "|Operazioni"
                         + "|Transakce"
@@ -1599,11 +1612,12 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // exchange Venue Quantity Price Local value Value EUR Exchange AutoFX and/or third
                             // d'exécution locale CHF change conversion
                             // Lokalwährung Wert EUR Wec
+                            // referencia Número Precio Valor local Valor EUR Tipo de Comisión transacción
                             // @formatter:on
                             Pattern pCurrencyAccount = Pattern.compile("^(?![\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )"
-                                            + ".*(Local value Value|locale|Lokalw.hrung Wert) "
+                                            + ".*(Local value Value|locale|Lokalw.hrung Wert|Valor local Valor) "
                                             + "(?<currency>[A-Z]{3}) "
-                                            + "(Exchange|change|Wec).*$");
+                                            + "(Exchange|change|Wec|Tipo).*$");
 
                             // @formatter:off
                             // The name of the security can be spread over several lines.
