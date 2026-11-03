@@ -130,6 +130,18 @@ public class McpEndpointTest
         assertThat(text(result), containsString("Preferences"));
     }
 
+    /** a token that is presented but not accepted is told apart from a missing one */
+    @Test
+    public void testToolCallWithAWrongTokenNamesTheToken() throws Exception
+    {
+        var response = rpc("not-the-token", call("pp_list_files", "{}"));
+
+        var result = body(response).getAsJsonObject().getAsJsonObject("result");
+        assertThat(result.get("isError").getAsBoolean(), is(true));
+        assertThat(text(result), containsString("is not accepted"));
+        assertThat(text(result), containsString("reasonCode: invalid-token"));
+    }
+
     @Test
     public void testToolCallWithATokenReachesTheRoute() throws Exception
     {
@@ -368,6 +380,21 @@ public class McpEndpointTest
         var error = body(response).getAsJsonObject().getAsJsonObject("error");
         assertThat(error.get("code").getAsInt(), is(-32700));
         assertThat(error.get("message").getAsString(), containsString("nested more than 64 levels"));
+    }
+
+    /** the limit counts containers: 64 levels hold a value, 65 empty ones do not */
+    @Test
+    public void testTheNestingLimitCountsContainers() throws Exception
+    {
+        // the message object is the first level, "params" the second
+        var inside = "[".repeat(62) + "1" + "]".repeat(62);
+        var fits = rpc(null, "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"ping\",\"params\":{\"a\":" + inside + "}}");
+        assertThat(fits.statusCode(), is(200));
+
+        var deeper = "[".repeat(63) + "]".repeat(63);
+        var refused = rpc(null, "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"ping\",\"params\":{\"a\":" + deeper + "}}");
+        assertThat(refused.statusCode(), is(400));
+        assertThat(body(refused).getAsJsonObject().getAsJsonObject("error").get("code").getAsInt(), is(-32700));
     }
 
     /**

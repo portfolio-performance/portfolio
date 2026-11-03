@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.rest;
 
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayDeque;
@@ -283,6 +284,12 @@ public final class ApiRoutes
      */
     public static final String CHANGED_HEADER = "X-Portfolio-Changed"; //$NON-NLS-1$
 
+    /**
+     * The name of the instrument a delete removed, percent-encoded UTF-8: read
+     * in the same UI task as the delete, so it is the name of what is gone.
+     */
+    public static final String DELETED_NAME_HEADER = "X-Portfolio-Deleted-Name"; //$NON-NLS-1$
+
     private ApiRoutes()
     {
     }
@@ -349,7 +356,9 @@ public final class ApiRoutes
                         (file, req) -> {
                             var name = SecuritiesHandler.delete(file.getClient(), req.pathParam("uuid")); //$NON-NLS-1$
                             InstrumentChangeLog.recordDeletion(file.getLabel(), name);
-                            return Response.noContent();
+                            return Response.noContent().withHeader(DELETED_NAME_HEADER,
+                                            URLEncoder.encode(name == null ? "" : name, StandardCharsets.UTF_8) //$NON-NLS-1$
+                                                            .replace("+", "%20")); //$NON-NLS-1$ //$NON-NLS-2$
                         }));
 
         router.add("GET", "/v1/files/{file}/cash-accounts", read(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$

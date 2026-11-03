@@ -2,6 +2,7 @@ package name.abuchen.portfolio.rest.internal.mcp;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -187,12 +188,13 @@ public final class McpEndpoint
 
     private static JsonElement readValue(JsonReader reader, int depth) throws IOException
     {
-        // the walk recurses per object or array, and the body limit bounds the
-        // size, not the nesting: a megabyte of brackets would overflow the stack
-        if (depth > MAX_NESTING)
-            throw new JsonSyntaxException("the message is nested more than " + MAX_NESTING + " levels deep");
-
         var token = reader.peek();
+
+        // the walk recurses per object or array, and the body limit bounds the
+        // size, not the nesting: a megabyte of brackets would overflow the stack.
+        // Counted in containers, so that 64 levels hold whatever is innermost.
+        if ((token == JsonToken.BEGIN_OBJECT || token == JsonToken.BEGIN_ARRAY) && depth >= MAX_NESTING)
+            throw new JsonSyntaxException("the message is nested more than " + MAX_NESTING + " levels deep");
 
         return switch (token)
         {
@@ -360,15 +362,20 @@ public final class McpEndpoint
                             request.authorization() == Request.Authorization.INVALID,
                             reasonOf(request.authorization()));
 
-            var fault = request.authorization() == Request.Authorization.WRONG_SCHEME
-                    ? "The `Authorization` header this connector sent does not carry a bearer token."
-                    : "Portfolio Performance will not answer this connector until it presents an access token.";
+            var fault = switch (request.authorization())
+            {
+                case WRONG_SCHEME -> "The `Authorization` header this connector sent does not carry a bearer token.";
+                case INVALID -> "The access token this connector presented is not accepted - it was revoked, "
+                                + "or it belongs to another installation.";
+                default -> "Portfolio Performance will not answer this connector until it presents an access token.";
+            };
+            var reasonCode = request.authorization() == Request.Authorization.INVALID ? "invalid-token" : "no-token";
 
             // ADR 0005: a 401 reaches nobody. The chat does.
             return toolError(fault + "\n\nAsk the user to open Preferences → MCP Server & REST API in Portfolio "
                             + "Performance, add a client there, and copy the token it shows once into this connector's "
                             + "`Authorization` header as `Bearer <token>`. Nothing can be read or changed until they "
-                            + "have." + hint("no-token", true));
+                            + "have." + hint(reasonCode, true));
         }
 
         var name = params.has("name") && params.get("name").isJsonPrimitive() ? params.get("name").getAsString() : null;
@@ -399,9 +406,11 @@ public final class McpEndpoint
 
         try
         {
-            // A delete answers 204 and nothing else, which leaves a model unable
-            // to say what it removed. The record is read first - through the
-            // same routing table - so the result can name it.
+            // A delete answers 204, which leaves a model unable to say what it
+            // removed. The record is read first - through the same routing
+            // table - so the result can describe it, and its name is the one
+            // the delete reports: a rename in between must not be what the
+            // model announces as gone.
             var doomed = "DELETE".equals(tool.method()) ? McpDispatch.readBeforeDelete(router, tool, arguments)
                             : null;
 
@@ -413,6 +422,10 @@ public final class McpEndpoint
             var payload = payloadOf(response);
             if (doomed != null && payload.isJsonNull())
             {
+                var removed = response.headers().get(ApiRoutes.DELETED_NAME_HEADER);
+                if (removed != null && doomed.isJsonObject())
+                    doomed.getAsJsonObject().addProperty("name", URLDecoder.decode(removed, StandardCharsets.UTF_8));
+
                 var deleted = new JsonObject();
                 deleted.addProperty("deleted", true);
                 deleted.add("instrument", doomed);
