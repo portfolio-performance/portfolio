@@ -456,11 +456,12 @@ paths:
         gets from a name, ISIN, WKN or ticker symbol to the `uuid` without
         reading them all.
 
-        With `offset` or `limit` the response is one page of that list, in
-        the file's order, and says in `page` where it lies in the whole.
+        With `cursor` or `limit` the response is one page of that list, in
+        the order of the instruments' `uuid`, and says in `page` how to go on.
+        Without either, the whole list in the file's order.
       parameters:
         - $ref: "#/components/parameters/InstrumentQuery"
-        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Cursor"
         - $ref: "#/components/parameters/Limit"
       responses:
         "200":
@@ -1276,7 +1277,7 @@ paths:
         - $ref: "#/components/parameters/ReportingCurrency"
         - $ref: "#/components/parameters/TradeFrom"
         - $ref: "#/components/parameters/TradeTo"
-        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Cursor"
         - $ref: "#/components/parameters/Limit"
       responses:
         "200":
@@ -1385,7 +1386,7 @@ paths:
         - $ref: "#/components/parameters/ReportingCurrency"
         - $ref: "#/components/parameters/TradeFrom"
         - $ref: "#/components/parameters/TradeTo"
-        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Cursor"
         - $ref: "#/components/parameters/Limit"
       responses:
         "200":
@@ -1613,25 +1614,25 @@ components:
       schema:
         type: string
         format: date
-    Offset:
-      name: offset
+    Cursor:
+      name: cursor
       in: query
       required: false
       description: |
-        How many items of the list to skip: where a page starts, usually the
-        `page.nextOffset` of the page before. Defaults to 0. A whole number of
-        at least 0 (`invalid-value` otherwise); past the end, the page is
-        empty. With `offset` or `limit` the response carries `page`.
+        Where a page continues: the `page.nextCursor` of the page before, or
+        the `cursor` of any item of a page - the page then starts after that
+        item. Empty for the first page. Opaque, and only good for the list it
+        came from (`invalid-value` otherwise). With `cursor` or `limit` the
+        response carries `page`, and every item its `cursor`.
       schema:
-        type: integer
-        minimum: 0
+        type: string
     Limit:
       name: limit
       in: query
       required: false
       description: |
-        At most this many items. Omit it for every item from `offset` on. A
-        whole number of at least 1 (`invalid-value` otherwise). With `offset`
+        At most this many items. Omit it for every item after `cursor`. A
+        whole number of at least 1 (`invalid-value` otherwise). With `cursor`
         or `limit` the response carries `page`.
       schema:
         type: integer
@@ -1786,27 +1787,27 @@ components:
     Page:
       type: object
       description: |
-        Where a page lies in the whole list - present only when the request
-        named `offset` or `limit`. The list is recomputed for every request,
-        so pages fit together only while the file is not changed in between.
+        How a paged list goes on - present only when the request named
+        `cursor` or `limit`. A paged list is in an order of keys that an edit
+        elsewhere in the file does not change: instruments by `uuid`; trades by
+        instrument, start, investment account and closing transaction. A page
+        continues after the key of its cursor, so an item added or removed
+        between two pages shifts nothing: no item is skipped or sent twice.
         For trades, `fxWarnings` and `warnings` describe the whole list, not
         only the page.
-      required: [offset, limit, total, nextOffset]
+      required: [limit, total, nextCursor]
       properties:
-        offset:
-          type: integer
-          description: How many items were skipped.
         limit:
           type: [integer, "null"]
           description: The `limit` asked for, or `null` for none.
         total:
           type: integer
           description: How many items the whole list holds.
-        nextOffset:
-          type: [integer, "null"]
+        nextCursor:
+          type: [string, "null"]
           description: |
-            The `offset` of the next page, or `null` when this is the last
-            one.
+            The `cursor` for the next page - the cursor of this page's last
+            item - or `null` when this is the last one.
 
     TradeWarning:
       type: object
@@ -1890,6 +1891,11 @@ components:
           return,
         ]
       properties:
+        cursor:
+          type: string
+          description: |
+            Only in a paged list: the `cursor` for the page that continues
+            after this trade.
         status:
           type: string
           enum: [open, closed]
@@ -2055,6 +2061,11 @@ components:
       properties:
         uuid:
           type: string
+        cursor:
+          type: string
+          description: |
+            Only in a paged list: the `cursor` for the page that continues
+            after this item.
         name:
           type: string
         currencyCode:
