@@ -1,9 +1,13 @@
 package name.abuchen.portfolio.rest.internal;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.google.gson.JsonArray;
@@ -11,6 +15,7 @@ import com.google.gson.JsonElement;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.CostMethod;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
@@ -30,9 +35,35 @@ import name.abuchen.portfolio.util.TextUtil;
  */
 public final class TradesHandler
 {
+    /**
+     * @param from
+     *            the first day of the period a trade must touch, or null for no
+     *            lower bound
+     * @param to
+     *            the last day of that period, or null for no upper bound
+     */
     /* package */ record Params(Set<TradeStatus> status, TradeGrouping grouping, CostMethod costMethod,
-                    TaxesAndFees taxesAndFees, String currency, LocalDate valuationDate)
+                    TaxesAndFees taxesAndFees, String currency, LocalDate valuationDate, LocalDate from,
+                    LocalDate to, Paging paging)
     {
+        /**
+         * Whether the trade was held at some point of the period: it started on
+         * or before its last day and was still open, or closed, on or after its
+         * first. A trade closed within the period is in it, and so is one still
+         * held through it.
+         */
+        boolean touches(Trade trade)
+        {
+            if (to != null && trade.getStart().toLocalDate().isAfter(to))
+                return false;
+            if (from != null)
+            {
+                var end = trade.getEnd();
+                if (end.isPresent() && end.get().toLocalDate().isBefore(from))
+                    return false;
+            }
+            return true;
+        }
     }
 
     /**
@@ -52,7 +83,24 @@ public final class TradesHandler
     public static JsonElement list(Client client, ExchangeRateProviderFactory factory, String statusParam,
                     String groupingParam, String costMethodParam, String taxesAndFeesParam, String currencyParam)
     {
-        var params = parse(client, statusParam, groupingParam, costMethodParam, taxesAndFeesParam, currencyParam);
+        return list(client, factory, statusParam, groupingParam, costMethodParam, taxesAndFeesParam, currencyParam,
+                        null, null);
+    }
+
+    public static JsonElement list(Client client, ExchangeRateProviderFactory factory, String statusParam,
+                    String groupingParam, String costMethodParam, String taxesAndFeesParam, String currencyParam,
+                    String fromParam, String toParam)
+    {
+        return list(client, factory, statusParam, groupingParam, costMethodParam, taxesAndFeesParam, currencyParam,
+                        fromParam, toParam, null, null);
+    }
+
+    public static JsonElement list(Client client, ExchangeRateProviderFactory factory, String statusParam,
+                    String groupingParam, String costMethodParam, String taxesAndFeesParam, String currencyParam,
+                    String fromParam, String toParam, String cursorParam, String limitParam)
+    {
+        var params = parse(client, statusParam, groupingParam, costMethodParam, taxesAndFeesParam, currencyParam,
+                        fromParam, toParam, cursorParam, limitParam);
         return respond(collect(client, factory, client.getSecurities(), params), params);
     }
 
@@ -60,17 +108,35 @@ public final class TradesHandler
                     String statusParam, String groupingParam, String costMethodParam, String taxesAndFeesParam,
                     String currencyParam)
     {
+        return forInstrument(client, factory, uuid, statusParam, groupingParam, costMethodParam, taxesAndFeesParam,
+                        currencyParam, null, null);
+    }
+
+    public static JsonElement forInstrument(Client client, ExchangeRateProviderFactory factory, String uuid,
+                    String statusParam, String groupingParam, String costMethodParam, String taxesAndFeesParam,
+                    String currencyParam, String fromParam, String toParam)
+    {
+        return forInstrument(client, factory, uuid, statusParam, groupingParam, costMethodParam, taxesAndFeesParam,
+                        currencyParam, fromParam, toParam, null, null);
+    }
+
+    public static JsonElement forInstrument(Client client, ExchangeRateProviderFactory factory, String uuid,
+                    String statusParam, String groupingParam, String costMethodParam, String taxesAndFeesParam,
+                    String currencyParam, String fromParam, String toParam, String cursorParam, String limitParam)
+    {
         // resolve the resource before validating query parameters
         var security = SecuritiesHandler.find(client, uuid);
 
-        var params = parse(client, statusParam, groupingParam, costMethodParam, taxesAndFeesParam, currencyParam);
+        var params = parse(client, statusParam, groupingParam, costMethodParam, taxesAndFeesParam, currencyParam,
+                        fromParam, toParam, cursorParam, limitParam);
 
         // sub-collection: an untraded instrument has an empty list, not a 404
         return respond(collect(client, factory, List.of(security), params), params);
     }
 
     private static Params parse(Client client, String statusParam, String groupingParam, String costMethodParam,
-                    String taxesAndFeesParam, String currencyParam)
+                    String taxesAndFeesParam, String currencyParam, String fromParam, String toParam,
+                    String cursorParam, String limitParam)
     {
         var errors = new ArrayList<ApiException.FieldError>();
 
@@ -79,22 +145,33 @@ public final class TradesHandler
         var costMethod = CalcParams.costMethod(costMethodParam, errors);
         var taxesAndFees = CalcParams.taxesAndFees(taxesAndFeesParam, errors);
         var currency = CalcParams.reportingCurrency(client, currencyParam, errors);
+        var from = fromParam == null ? null : CalcParams.date("from", fromParam, errors); //$NON-NLS-1$
+        var to = toParam == null ? null : CalcParams.date("to", toParam, errors); //$NON-NLS-1$
+
+        if (from != null && to != null && to.isBefore(from))
+            errors.add(new ApiException.FieldError("to", "invalid-range", "to must not be before from")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+        var paging = Paging.parse(Paging.Kind.TRADES, cursorParam, limitParam, errors);
 
         if (!errors.isEmpty())
             throw ApiException.badRequest(errors);
 
         // one valuation date for every open trade in the response
-        return new Params(status, grouping, costMethod, taxesAndFees, currency, LocalDate.now());
+        return new Params(status, grouping, costMethod, taxesAndFees, currency, LocalDate.now(), from, to, paging);
     }
 
-    /* package */ record Collected(List<Trade> trades, List<Warning> warnings)
+    /* package */ record Collected(List<Trade> trades, List<Warning> warnings, ConversionRecorder conversions)
     {
     }
 
     private static Collected collect(Client client, ExchangeRateProviderFactory factory, List<Security> securities,
                     Params params)
     {
-        var converter = new CurrencyConverterImpl(factory, params.currency());
+        // records what computing the trades converted at 1:1 - for every trade of these
+        // instruments, including those a status filter leaves out of the answer,
+        // because the collector has to match all of them
+        var conversions = new ConversionRecorder(factory);
+        var converter = conversions.wrap(new CurrencyConverterImpl(factory, params.currency()));
 
         // moving-average costs share one snapshot cache per request
         var snapshotCache = new SnapshotCache();
@@ -111,7 +188,7 @@ public final class TradesHandler
             {
                 for (var trade : collector.collect(security))
                 {
-                    if (params.status().contains(TradeStatus.of(trade)))
+                    if (params.status().contains(TradeStatus.of(trade)) && params.touches(trade))
                         trades.add(trade);
                 }
             }
@@ -124,7 +201,7 @@ public final class TradesHandler
         // stable sort keeps the collector's order within one security
         trades.sort(Comparator.comparing(t -> t.getSecurity().getName(), TextUtil::compare));
 
-        return new Collected(trades, warnings);
+        return new Collected(trades, warnings, conversions);
     }
 
     private static Warning warning(Security security, TradeCollectorException e)
@@ -144,18 +221,50 @@ public final class TradesHandler
 
     private static JsonElement respond(Collected collected, Params params)
     {
-        var items = new JsonArray();
+        // every trade is rendered, the page only cut from them: fxWarnings and
+        // warnings describe the whole list, whichever page is asked for
+        var rendered = new IdentityHashMap<Trade, JsonElement>();
         for (var trade : collected.trades())
-            items.add(EntityJson.toJson(trade, params));
+            rendered.put(trade, EntityJson.toJson(trade, params));
 
         var warnings = new JsonArray();
         for (var warning : collected.warnings())
             warnings.add(EntityJson.toJson(warning));
 
         var json = EntityJson.tradesContext(params);
+        // after the items: a trade's figures may be computed as it is rendered,
+        // and every fallback on the way has to be seen first
+        FxWarnings.attach(json, collected.conversions());
         // always present so clients can detect partial success
         json.add("warnings", warnings); //$NON-NLS-1$
-        json.add("items", items); //$NON-NLS-1$
+        var keys = keys(collected.trades());
+        params.paging().apply(Paging.Kind.TRADES, json, collected.trades(), keys::get, rendered::get);
         return json;
+    }
+
+    /** a date-time that sorts as text in the order of time */
+    private static final DateTimeFormatter SORTABLE = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss"); //$NON-NLS-1$
+
+    /**
+     * What the trades are paged by: instrument, start, investment account and
+     * the real transaction that closes it - none of which an edit elsewhere in
+     * the file changes. The collector splits a lot sold in parts into copies
+     * with fresh ids, so the opening transaction cannot be part of the key;
+     * trades that agree on all of it are numbered in the collector's order,
+     * which is the same for the same file.
+     */
+    /* package */ static Map<Trade, String> keys(List<Trade> trades)
+    {
+        var keys = new IdentityHashMap<Trade, String>();
+        var seen = new HashMap<String, Integer>();
+        for (var trade : trades)
+        {
+            var closing = trade.getRealClosingTransaction().map(PortfolioTransaction::getUUID).orElse(""); //$NON-NLS-1$
+            var base = trade.getSecurity().getUUID() + '|' + SORTABLE.format(trade.getStart()) + '|'
+                            + trade.getPortfolio().getUUID() + '|' + closing;
+            var ordinal = seen.merge(base, 1, Integer::sum);
+            keys.put(trade, base + '|' + String.format("%04d", ordinal)); //$NON-NLS-1$
+        }
+        return keys;
     }
 }

@@ -2,6 +2,7 @@ package name.abuchen.portfolio.rest.internal;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -9,11 +10,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import name.abuchen.portfolio.model.AttributeFieldType;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.util.Isin;
 
 public final class SecuritiesHandler
 {
@@ -60,8 +61,8 @@ public final class SecuritiesHandler
     private static final Map<String, WritableField> WRITABLE_FIELDS = Map.of( //
                     "name", new WritableField(SecuritiesHandler::requireText, //$NON-NLS-1$
                                     (security, value) -> security.setName(value.getAsString()), Security::getName), //
-                    "isin", new WritableField(SecuritiesHandler::allowTextOrNull, //$NON-NLS-1$
-                                    (security, value) -> security.setIsin(stringOrNull(value)), Security::getIsin), //
+                    "isin", new WritableField(SecuritiesHandler::allowIsinOrNull, //$NON-NLS-1$
+                                    (security, value) -> security.setIsin(isinOrNull(value)), Security::getIsin), //
                     "wkn", new WritableField(SecuritiesHandler::allowTextOrNull, //$NON-NLS-1$
                                     (security, value) -> security.setWkn(stringOrNull(value)), Security::getWkn), //
                     "tickerSymbol", new WritableField(SecuritiesHandler::allowTextOrNull, //$NON-NLS-1$
@@ -79,7 +80,67 @@ public final class SecuritiesHandler
 
     public static JsonElement list(Client client)
     {
-        return EntityJson.envelope(client.getSecurities(), s -> EntityJson.toJson(client, s));
+        return list(client, null);
+    }
+
+    /**
+     * The instruments, or with {@code query} only those it finds: a name that
+     * contains it, or an ISIN, WKN or ticker symbol equal to it - all ignoring
+     * case and surrounding whitespace. A file can hold more instruments than
+     * one answer carries, and this is how a client gets from what the user
+     * said to a uuid without paging through all of them.
+     */
+    public static JsonElement list(Client client, String query)
+    {
+        return list(client, query, null, null);
+    }
+
+    /**
+     * As above, one page of them with {@code cursor} and {@code limit}: paged,
+     * the instruments are in the order of their uuid, which nothing changes;
+     * the whole list stays in the order of the file.
+     */
+    public static JsonElement list(Client client, String query, String cursorParam, String limitParam)
+    {
+        var errors = new ArrayList<ApiException.FieldError>();
+
+        var wanted = query == null ? null : query.strip();
+        if (wanted != null && wanted.isEmpty())
+            errors.add(new ApiException.FieldError("query", "invalid-value", //$NON-NLS-1$ //$NON-NLS-2$
+                            "query must not be blank; omit it to list every instrument")); //$NON-NLS-1$
+
+        var paging = Paging.parse(Paging.Kind.INSTRUMENTS, cursorParam, limitParam, errors);
+
+        if (!errors.isEmpty())
+            throw ApiException.badRequest(errors);
+
+        var securities = client.getSecurities();
+        if (wanted != null)
+        {
+            var lower = wanted.toLowerCase(Locale.ROOT);
+            securities = securities.stream() //
+                            .filter(security -> matches(security, wanted, lower)) //
+                            .toList();
+        }
+
+        // only the page is rendered; the rest of the list is counted, not built
+        var response = new JsonObject();
+        paging.apply(Paging.Kind.INSTRUMENTS, response, securities, Security::getUUID,
+                        security -> EntityJson.toJson(client, security));
+        return response;
+    }
+
+    private static boolean matches(Security security, String wanted, String lower)
+    {
+        var name = security.getName();
+        if (name != null && name.toLowerCase(Locale.ROOT).contains(lower))
+            return true;
+
+        for (var code : new String[] { security.getIsin(), security.getWkn(), security.getTickerSymbol() })
+            if (code != null && code.strip().equalsIgnoreCase(wanted))
+                return true;
+
+        return false;
     }
 
     public static JsonElement get(Client client, String uuid)
@@ -100,7 +161,7 @@ public final class SecuritiesHandler
         client.getSettings().getAttributeTypes() //
                         .filter(type -> type.supports(Security.class)) //
                         .forEach(type -> {
-                            var fieldType = AttributeFieldType.of(type);
+                            var fieldType = AttributeCodec.fieldType(type);
                             if (fieldType == null)
                                 return;
 
@@ -196,7 +257,10 @@ public final class SecuritiesHandler
             }
         }
 
-        client.markDirty();
+        // a patch that only restates stored values changes nothing, so the user
+        // is not asked to save a file the API did not change
+        if (!changes.isEmpty())
+            client.markDirty();
         return new PatchResult(EntityJson.toJson(client, security), security.getName(), changes);
     }
 
@@ -234,7 +298,7 @@ public final class SecuritiesHandler
                 continue;
             }
 
-            var fieldType = AttributeFieldType.of(type);
+            var fieldType = AttributeCodec.fieldType(type);
             if (fieldType == null || !AttributeCodec.isSupported(fieldType))
             {
                 errors.add(new ApiException.FieldError(field, "unsupported-attribute-type", //$NON-NLS-1$
@@ -275,6 +339,39 @@ public final class SecuritiesHandler
         if (!value.isJsonNull() && !isString(value))
             return new ApiException.FieldError(field, "invalid-type", field + " must be a string or null"); //$NON-NLS-1$ //$NON-NLS-2$
         return null;
+    }
+
+    /**
+     * Validates an ISIN the way the application's ISIN column does: surrounding
+     * whitespace is ignored, and a value that is left must pass
+     * {@link Isin#isValid} - twelve characters and a matching check digit, with
+     * the exemption for internal country codes that check implements. Blank
+     * clears the ISIN like null. Without this the API stored values the user
+     * could not have typed.
+     */
+    private static ApiException.FieldError allowIsinOrNull(Client client, Security security, String field,
+                    JsonElement value)
+    {
+        var typeError = allowTextOrNull(client, security, field, value);
+        if (typeError != null)
+            return typeError;
+
+        var isin = isinOrNull(value);
+        if (isin != null && !Isin.isValid(isin))
+            return new ApiException.FieldError(field, "invalid-isin", //$NON-NLS-1$
+                            isin + " is not a valid ISIN: it needs twelve characters and a matching check digit"); //$NON-NLS-1$
+
+        return null;
+    }
+
+    /** trimmed, and null when nothing is left - as the ISIN column stores it */
+    private static String isinOrNull(JsonElement value)
+    {
+        var text = stringOrNull(value);
+        if (text == null)
+            return null;
+        var trimmed = text.trim();
+        return trimmed.isEmpty() ? null : trimmed;
     }
 
     /**

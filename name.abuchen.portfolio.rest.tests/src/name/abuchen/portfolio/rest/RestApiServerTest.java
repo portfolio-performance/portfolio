@@ -3,6 +3,7 @@ package name.abuchen.portfolio.rest;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -13,6 +14,11 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Before;
@@ -44,6 +50,8 @@ public class RestApiServerTest
                         request -> Response.json(201, JsonParser.parseString("{\"status\":\"pending\"}")));
         router.add("GET", "/v1/auth/requests/{id}",
                         request -> Response.json(200, JsonParser.parseString("{\"status\":\"pending\"}")));
+        router.add("DELETE", "/v1/nocontent", request -> Response.noContent());
+        router.add("POST", "/v1/accepted", request -> new Response(202, null, new byte[0], Map.of()));
 
         server = new RestApiServer(0, TOKEN::equals, router);
         server.start();
@@ -291,5 +299,434 @@ public class RestApiServerTest
                         HttpResponse.BodyHandlers.ofString());
         assertThat(response.statusCode(), is(404));
         assertThat(response.body(), containsString("problems/not-found"));
+    }
+
+    /**
+     * A trailing slash is the same path, not a second one: routing and the
+     * token-free exemption are both decided on the normalized path, so a client
+     * that writes `/v1/auth/requests/` is not told it needs a token.
+     */
+    @Test
+    public void testATrailingSlashIsTheSameRoute() throws Exception
+    {
+        assertThat(http.send(request("/v1/ping/").header("Authorization", "Bearer " + TOKEN).GET().build(),
+                        HttpResponse.BodyHandlers.ofString()).statusCode(), is(200));
+
+        var pairing = http.send(request("/v1/auth/requests/")
+                        .POST(HttpRequest.BodyPublishers.ofString("{\"clientName\":\"x\"}")).build(),
+                        HttpResponse.BodyHandlers.ofString());
+        assertThat(pairing.statusCode(), is(201));
+
+        assertThat(http.send(request("/v1/ping///").GET().build(), HttpResponse.BodyHandlers.ofString()).statusCode(),
+                        is(401));
+        assertThat(http.send(request("/v1//ping").header("Authorization", "Bearer " + TOKEN).GET().build(),
+                        HttpResponse.BodyHandlers.ofString()).statusCode(), is(404));
+    }
+
+    /** the scheme name is case-insensitive; the token itself is not */
+    @Test
+    public void testTheBearerSchemeIsReadCaseInsensitively() throws Exception
+    {
+        assertThat(http.send(request("/v1/ping").header("Authorization", "bearer " + TOKEN).GET().build(),
+                        HttpResponse.BodyHandlers.ofString()).statusCode(), is(200));
+        assertThat(http.send(request("/v1/ping").header("Authorization", "Bearer " + TOKEN.toUpperCase()).GET().build(),
+                        HttpResponse.BodyHandlers.ofString()).statusCode(), is(401));
+    }
+
+    /** a token under another scheme is a wrong scheme, not an absent token */
+    @Test
+    public void testAHeaderThatIsNotBearerIsRecordedAsAWrongScheme() throws Exception
+    {
+        RejectedConnections.clear();
+
+        var response = http.send(request("/v1/ping").header("Authorization", "Token " + TOKEN).GET().build(),
+                        HttpResponse.BodyHandlers.ofString());
+
+        assertThat(response.statusCode(), is(401));
+        var rejection = RejectedConnections.last().orElseThrow();
+        assertThat(rejection.reason(), is(RejectedConnections.Reason.NO_BEARER_SCHEME));
+        assertThat(rejection.tokenPresented(), is(false));
+    }
+
+    /**
+     * A 204 carries no body and must not announce one - neither a chunked
+     * stream nor a length.
+     */
+    @Test
+    public void testANoContentResponseAnnouncesNoBody() throws Exception
+    {
+        var head = rawHead("DELETE", "/v1/nocontent", "Bearer " + TOKEN).toLowerCase();
+
+        assertThat(head, containsString(" 204 "));
+        assertThat(head, not(containsString("transfer-encoding")));
+        assertThat(head, not(containsString("content-length")));
+    }
+
+    /**
+     * An empty 202 - the answer to an MCP notification - must not announce a
+     * chunked stream either. {@code com.sun.net.httpserver} reads a length of 0
+     * as "chunked", which is why an empty body is sent with -1.
+     */
+    @Test
+    public void testAnEmptyAcceptedResponseIsNotChunked() throws Exception
+    {
+        var head = rawHead("POST", "/v1/accepted", "Bearer " + TOKEN).toLowerCase();
+
+        assertThat(head, containsString(" 202 "));
+        assertThat(head, not(containsString("transfer-encoding")));
+    }
+
+    /**
+     * Requests beyond the bound are refused at once, with a Retry-After, rather
+     * than each holding a thread and a buffered body.
+     */
+    @Test
+    public void testRequestsBeyondTheConcurrencyBoundAreRefused() throws Exception
+    {
+        var entered = new CountDownLatch(2);
+        var release = new CountDownLatch(1);
+
+        var router = new Router();
+        router.add("GET", "/v1/slow", request -> {
+            entered.countDown();
+            release.await(10, TimeUnit.SECONDS);
+            return Response.json(200, JsonParser.parseString("{}"));
+        });
+
+        var bounded = new RestApiServer(0, TOKEN::equals, router, 2, 30_000);
+        bounded.start();
+        try
+        {
+            var pending = new ArrayList<CompletableFuture<HttpResponse<String>>>();
+            for (int ii = 0; ii < 2; ii++)
+                pending.add(http.sendAsync(slow(bounded), HttpResponse.BodyHandlers.ofString()));
+
+            assertThat(entered.await(5, TimeUnit.SECONDS), is(true));
+
+            var refused = http.send(slow(bounded), HttpResponse.BodyHandlers.ofString());
+            assertThat(refused.statusCode(), is(503));
+            assertThat(refused.body(), containsString("server-busy"));
+            assertThat(refused.headers().firstValue("Retry-After").orElse(""), is("1"));
+
+            release.countDown();
+            for (var response : pending)
+                assertThat(response.get(5, TimeUnit.SECONDS).statusCode(), is(200));
+
+            // and the permits come back - released just after the responses were
+            // written, so the client may be a moment ahead of them
+            assertThat(statusEventually(slow(bounded)), is(200));
+        }
+        finally
+        {
+            release.countDown();
+            bounded.stop();
+        }
+    }
+
+    /**
+     * A client that announces a body and never sends it is cut off by the
+     * watchdog, and does not keep the server from answering anyone else.
+     */
+    @Test
+    public void testAStalledRequestIsClosedByTheWatchdog() throws Exception
+    {
+        var router = new Router();
+        router.add("POST", "/v1/auth/requests",
+                        request -> Response.json(201, JsonParser.parseString("{\"status\":\"pending\"}")));
+        router.add("GET", "/v1/ping", request -> Response.json(200, JsonParser.parseString("{\"pong\":true}")));
+
+        var guarded = new RestApiServer(0, TOKEN::equals, router, 1, 500);
+        guarded.start();
+        try (var socket = new Socket(InetAddress.getLoopbackAddress(), guarded.getPort()))
+        {
+            var request = "POST /v1/auth/requests HTTP/1.1\r\n" //
+                            + "Host: 127.0.0.1:" + guarded.getPort() + "\r\n" //
+                            + "Content-Length: 100\r\n\r\n{";
+            socket.getOutputStream().write(request.getBytes(StandardCharsets.US_ASCII));
+            socket.getOutputStream().flush();
+            socket.setSoTimeout(5_000);
+
+            // closed without an answer: end of stream, not a timeout
+            assertThat(socket.getInputStream().read(), is(-1));
+
+            // the one permit is free again - released just after the socket closed
+            var ping = HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + guarded.getPort() + "/v1/ping"))
+                            .header("Authorization", "Bearer " + TOKEN).GET().build();
+            assertThat(statusEventually(ping), is(200));
+        }
+        finally
+        {
+            guarded.stop();
+        }
+    }
+
+    /**
+     * A refusal decided before the body is read - here: no token - must not
+     * leave the body for the JDK to drain after the answer. A client that
+     * announced one and stalls used to keep its permit until it hung up.
+     */
+    @Test
+    public void testAStalledBodyOnARefusalIsClosedByTheWatchdog() throws Exception
+    {
+        var router = new Router();
+        router.add("GET", "/v1/ping", request -> Response.json(200, JsonParser.parseString("{\"pong\":true}")));
+
+        var guarded = new RestApiServer(0, TOKEN::equals, router, 1, 500);
+        guarded.start();
+        try (var socket = stalledBody(guarded, "GET", "/v1/ping"))
+        {
+            socket.setSoTimeout(5_000);
+            assertThat(socket.getInputStream().read(), is(-1));
+
+            // the one permit is free again, while that client still holds its socket
+            var ping = HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + guarded.getPort() + "/v1/ping"))
+                            .header("Authorization", "Bearer " + TOKEN).GET().build();
+            assertThat(statusEventually(ping), is(200));
+        }
+        finally
+        {
+            guarded.stop();
+        }
+    }
+
+    /** the same for a request refused as busy: it holds no permit, but it must not hold a thread */
+    @Test
+    public void testAStalledBodyOnABusyRefusalIsClosedByTheWatchdog() throws Exception
+    {
+        var entered = new CountDownLatch(1);
+        var release = new CountDownLatch(1);
+
+        var router = new Router();
+        router.add("GET", "/v1/slow", request -> {
+            entered.countDown();
+            release.await(10, TimeUnit.SECONDS);
+            return Response.json(200, JsonParser.parseString("{}"));
+        });
+
+        var bounded = new RestApiServer(0, TOKEN::equals, router, 1, 500);
+        bounded.start();
+        try
+        {
+            var pending = http.sendAsync(slow(bounded), HttpResponse.BodyHandlers.ofString());
+            assertThat(entered.await(5, TimeUnit.SECONDS), is(true));
+
+            try (var socket = stalledBody(bounded, "GET", "/v1/slow"))
+            {
+                socket.setSoTimeout(5_000);
+                assertThat(socket.getInputStream().read(), is(-1));
+            }
+
+            release.countDown();
+            assertThat(pending.get(5, TimeUnit.SECONDS).statusCode(), is(200));
+        }
+        finally
+        {
+            release.countDown();
+            bounded.stop();
+        }
+    }
+
+    /**
+     * Refusals of a full server are bounded too: beyond their own bound a
+     * connection is closed at once, without waiting for a body that may never
+     * come.
+     */
+    @Test
+    public void testRefusalsBeyondTheirBoundAreClosedAtOnce() throws Exception
+    {
+        var entered = new CountDownLatch(1);
+        var release = new CountDownLatch(1);
+
+        var router = new Router();
+        router.add("GET", "/v1/slow", request -> {
+            entered.countDown();
+            release.await(10, TimeUnit.SECONDS);
+            return Response.json(200, JsonParser.parseString("{}"));
+        });
+
+        var bounded = new RestApiServer(0, TOKEN::equals, router, 1, 10_000, 1);
+        bounded.start();
+        try
+        {
+            var pending = http.sendAsync(slow(bounded), HttpResponse.BodyHandlers.ofString());
+            assertThat(entered.await(5, TimeUnit.SECONDS), is(true));
+
+            // the one refusal slot: a stalled body the watchdog would end in 10 s
+            try (var first = stalledBody(bounded, "GET", "/v1/slow"))
+            {
+                // the first must hold the slot, waiting for its body, before the
+                // second arrives: the server takes them in any order it likes
+                Thread.sleep(500);
+
+                try (var second = stalledBody(bounded, "GET", "/v1/slow"))
+                {
+                second.setSoTimeout(5_000);
+                var started = System.nanoTime();
+                assertThat(second.getInputStream().read(), is(-1));
+                assertThat(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - started) < 3_000, is(true));
+                }
+            }
+
+            release.countDown();
+            assertThat(pending.get(5, TimeUnit.SECONDS).statusCode(), is(200));
+        }
+        finally
+        {
+            release.countDown();
+            bounded.stop();
+        }
+    }
+
+    /** a full server still answers a wrong Host or a browser Origin with that refusal */
+    @Test
+    public void testAFullServerStillRefusesABrowserOriginAs403() throws Exception
+    {
+        var entered = new CountDownLatch(1);
+        var release = new CountDownLatch(1);
+
+        var router = new Router();
+        router.add("GET", "/v1/slow", request -> {
+            entered.countDown();
+            release.await(10, TimeUnit.SECONDS);
+            return Response.json(200, JsonParser.parseString("{}"));
+        });
+
+        var bounded = new RestApiServer(0, TOKEN::equals, router, 1, 30_000);
+        bounded.start();
+        try
+        {
+            var pending = http.sendAsync(slow(bounded), HttpResponse.BodyHandlers.ofString());
+            assertThat(entered.await(5, TimeUnit.SECONDS), is(true));
+
+            var browser = http.send(HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + bounded.getPort() + "/v1/slow"))
+                            .header("Authorization", "Bearer " + TOKEN).header("Origin", "https://evil.example")
+                            .GET().build(), HttpResponse.BodyHandlers.ofString());
+            assertThat(browser.statusCode(), is(403));
+            assertThat(browser.body(), containsString("browser-origin-forbidden"));
+
+            release.countDown();
+            assertThat(pending.get(5, TimeUnit.SECONDS).statusCode(), is(200));
+        }
+        finally
+        {
+            release.countDown();
+            bounded.stop();
+        }
+    }
+
+    /**
+     * A client that stops reading a large response must not keep the only
+     * permit: the send watchdog closes the exchange. The stalled socket is not
+     * read before the check - reading would let the write finish.
+     */
+    @Test
+    public void testAStalledResponseWriteIsClosedByTheWatchdog() throws Exception
+    {
+        var handled = new CountDownLatch(1);
+
+        var router = new Router();
+        router.add("GET", "/v1/big", request -> {
+            handled.countDown();
+            return Response.json(200, JsonParser.parseString("\"" + "x".repeat(8 * 1024 * 1024) + "\""));
+        });
+        router.add("GET", "/v1/ping", request -> Response.json(200, JsonParser.parseString("{\"pong\":true}")));
+
+        var guarded = new RestApiServer(0, TOKEN::equals, router, 1, 500);
+        guarded.start();
+        try (var socket = new Socket())
+        {
+            socket.setReceiveBufferSize(4096);
+            socket.connect(new java.net.InetSocketAddress(InetAddress.getLoopbackAddress(), guarded.getPort()), 5_000);
+
+            var request = "GET /v1/big HTTP/1.1\r\n" //
+                            + "Host: 127.0.0.1:" + guarded.getPort() + "\r\n" //
+                            + "Authorization: Bearer " + TOKEN + "\r\n\r\n";
+            socket.getOutputStream().write(request.getBytes(StandardCharsets.US_ASCII));
+            socket.getOutputStream().flush();
+
+            assertThat(handled.await(5, TimeUnit.SECONDS), is(true));
+
+            var ping = HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + guarded.getPort() + "/v1/ping"))
+                            .header("Authorization", "Bearer " + TOKEN).GET().build();
+            assertThat(statusEventually(ping), is(200));
+        }
+        finally
+        {
+            guarded.stop();
+        }
+    }
+
+    /**
+     * The path is normalized before authorization, so its cost is anyone's to
+     * choose. A long run of slashes in the middle used to take quadratic time.
+     */
+    @Test
+    public void testALongRunOfSlashesIsNormalizedInLinearTime() throws Exception
+    {
+        var started = System.nanoTime();
+        var head = rawHead("GET", "/v1" + "/".repeat(150_000) + "x", "Bearer " + TOKEN);
+
+        assertThat(head, containsString(" 404 "));
+        assertThat(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - started) < 3_000, is(true));
+    }
+
+    /** a socket that announces a body of 100 bytes, sends one, and then waits */
+    private static Socket stalledBody(RestApiServer target, String method, String path) throws Exception
+    {
+        var socket = new Socket(InetAddress.getLoopbackAddress(), target.getPort());
+        var request = method + " " + path + " HTTP/1.1\r\n" //
+                        + "Host: 127.0.0.1:" + target.getPort() + "\r\n" //
+                        + "Content-Length: 100\r\n\r\n{";
+        socket.getOutputStream().write(request.getBytes(StandardCharsets.US_ASCII));
+        socket.getOutputStream().flush();
+        return socket;
+    }
+
+    private HttpRequest slow(RestApiServer target)
+    {
+        return HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + target.getPort() + "/v1/slow"))
+                        .header("Authorization", "Bearer " + TOKEN).GET().build();
+    }
+
+    /** the raw response head, exactly as the wire sent it */
+    private String rawHead(String method, String path, String authorization) throws Exception
+    {
+        try (var socket = new Socket(InetAddress.getLoopbackAddress(), server.getPort()))
+        {
+            var request = method + " " + path + " HTTP/1.1\r\n" //
+                            + "Host: 127.0.0.1:" + server.getPort() + "\r\n" //
+                            + "Authorization: " + authorization + "\r\n" //
+                            + "Content-Length: 0\r\n" //
+                            + "Connection: close\r\n\r\n";
+            socket.getOutputStream().write(request.getBytes(StandardCharsets.US_ASCII));
+            socket.getOutputStream().flush();
+
+            var reader = new BufferedReader(
+                            new InputStreamReader(socket.getInputStream(), StandardCharsets.US_ASCII));
+            var head = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null && !line.isEmpty())
+                head.append(line).append('\n');
+
+            return head.toString();
+        }
+    }
+
+    /**
+     * The status of a request sent until it is no longer refused as busy, for
+     * at most five seconds. The server releases a permit after it closed the
+     * exchange, so a client can see the end of a response before the permit
+     * is back.
+     */
+    private int statusEventually(HttpRequest request) throws Exception
+    {
+        var until = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+        while (true)
+        {
+            var status = http.send(request, HttpResponse.BodyHandlers.ofString()).statusCode();
+            if (status != 503 || System.nanoTime() > until)
+                return status;
+            Thread.sleep(20);
+        }
     }
 }
