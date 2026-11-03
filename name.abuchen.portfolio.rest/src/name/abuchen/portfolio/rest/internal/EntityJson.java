@@ -14,13 +14,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.AttributeFieldType;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.rest.FileAccessRegistry.FileAccess;
 import name.abuchen.portfolio.rest.spi.OpenFile;
 import name.abuchen.portfolio.snapshot.AssetPosition;
@@ -29,6 +29,7 @@ import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.trades.Trade;
+import name.abuchen.portfolio.util.TradeCalendarManager;
 
 /**
  * Maps the model entities to the wire format. The API vocabulary is
@@ -73,14 +74,13 @@ public final class EntityJson
         json.addProperty("uuid", security.getUUID()); //$NON-NLS-1$
         json.addProperty("name", security.getName()); //$NON-NLS-1$
         json.addProperty("currencyCode", security.getCurrencyCode()); //$NON-NLS-1$
-        if (security.getIsin() != null)
-            json.addProperty("isin", security.getIsin()); //$NON-NLS-1$
-        if (security.getWkn() != null)
-            json.addProperty("wkn", security.getWkn()); //$NON-NLS-1$
-        if (security.getTickerSymbol() != null)
-            json.addProperty("tickerSymbol", security.getTickerSymbol()); //$NON-NLS-1$
-        if (security.getNote() != null)
-            json.addProperty("note", security.getNote()); //$NON-NLS-1$
+        // a blank value is no value: omitted as an unset one is, so that "not
+        // set" has one shape and not two. A value that is set goes out as
+        // stored, surrounding spaces included - they are the user's data
+        addUnlessBlank(json, "isin", security.getIsin()); //$NON-NLS-1$
+        addUnlessBlank(json, "wkn", security.getWkn()); //$NON-NLS-1$
+        addUnlessBlank(json, "tickerSymbol", security.getTickerSymbol()); //$NON-NLS-1$
+        addUnlessBlank(json, "note", security.getNote()); //$NON-NLS-1$
 
         var attributes = attributesJson(client, security);
         if (attributes.size() > 0)
@@ -107,7 +107,7 @@ public final class EntityJson
                             if (value == null)
                                 return;
 
-                            var fieldType = AttributeFieldType.of(type);
+                            var fieldType = AttributeCodec.fieldType(type);
                             if (fieldType == null || !AttributeCodec.isSupported(fieldType))
                                 return;
 
@@ -134,7 +134,7 @@ public final class EntityJson
         json.addProperty("uuid", account.getUUID()); //$NON-NLS-1$
         json.addProperty("name", account.getName()); //$NON-NLS-1$
         json.addProperty("currencyCode", account.getCurrencyCode()); //$NON-NLS-1$
-        if (account.getNote() != null)
+        if (account.getNote() != null && !account.getNote().isBlank())
             json.addProperty("note", account.getNote()); //$NON-NLS-1$
         return json;
     }
@@ -145,6 +145,11 @@ public final class EntityJson
         json.addProperty("id", access.uuid()); //$NON-NLS-1$
         if (access.alias() != null)
             json.addProperty("alias", access.alias()); //$NON-NLS-1$
+        // the one value a caller must send as {file}: always the uuid. An alias is
+        // accepted as an address, but the user can rename it between listing and
+        // the next call, and a stable address is worth more than a readable one -
+        // the label and the alias are there for display
+        json.addProperty("use", access.uuid()); //$NON-NLS-1$
         json.addProperty("label", file.getLabel()); //$NON-NLS-1$
         json.addProperty("path", file.getPath()); //$NON-NLS-1$
         return json;
@@ -166,12 +171,12 @@ public final class EntityJson
         var items = new JsonArray();
         snapshot.getAssetPositions() //
                         .sorted(new AssetPosition.ByDescription()) //
-                        .forEach(position -> items.add(toJson(position, total)));
+                        .forEach(position -> items.add(toJson(position, total, snapshot.getTime())));
         json.add("items", items); //$NON-NLS-1$
         return json;
     }
 
-    private static JsonObject toJson(AssetPosition position, Money totalAssets)
+    private static JsonObject toJson(AssetPosition position, Money totalAssets, LocalDate valuationDate)
     {
         var security = position.getSecurity();
         var vehicle = position.getInvestmentVehicle();
@@ -197,10 +202,31 @@ public final class EntityJson
             if (securityPrice.getDate() != null)
                 price.addProperty("date", securityPrice.getDate().toString()); //$NON-NLS-1$
             json.add("price", price); //$NON-NLS-1$
+
+            // the same staleness as `price.date`, but decided rather than left to
+            // the caller: measured in the trading days of the instrument's own
+            // calendar, so a weekend or a holiday does not make a quote stale
+            var priceDate = securityPrice.getDate();
+            if (priceDate != null)
+            {
+                var age = QuoteAge.asOf(priceDate, valuationDate, LocalDate.now(),
+                                TradeCalendarManager.getInstance(security));
+                // a manual price is updated when the user decides to, not every
+                // trading day - the data quality view ends a manual instrument's
+                // interval at its last quote - so it is never flagged; its age
+                // is still reported
+                var manual = QuoteFeed.MANUAL.equals(security.getFeed());
+                json.addProperty("priceStale", !manual && age.isStale()); //$NON-NLS-1$
+                json.addProperty("priceAgeDays", age.calendarDays()); //$NON-NLS-1$
+                json.addProperty("priceMissedTradingDays", age.missedTradingDays()); //$NON-NLS-1$
+                // present only when true: says why an old price is not flagged
+                if (manual)
+                    json.addProperty("priceManual", true); //$NON-NLS-1$
+            }
         }
 
         json.add("valuation", toJson(position.getValuation())); //$NON-NLS-1$
-        json.add("weight", decimal(totalAssets.isZero() ? 0d : position.getShare())); //$NON-NLS-1$
+        json.add("weight", weight(totalAssets.isZero() ? 0d : position.getShare())); //$NON-NLS-1$
 
         // the value before conversion into the reporting currency; only worth
         // stating when the two differ
@@ -243,6 +269,7 @@ public final class EntityJson
         var json = new JsonObject();
         json.addProperty("openingDate", openingDate.toString()); //$NON-NLS-1$
         json.addProperty("closingDate", closingDate.toString()); //$NON-NLS-1$
+        json.addProperty("timeWeightedUntil", CalcParams.timeWeightedUntil(closingDate).toString()); //$NON-NLS-1$
         json.addProperty("reportingCurrency", reportingCurrency); //$NON-NLS-1$
         json.addProperty("costMethod", CalcParams.wireName(costMethod)); //$NON-NLS-1$
         json.add("ttwror", ratio(ttwror)); //$NON-NLS-1$
@@ -273,6 +300,8 @@ public final class EntityJson
         var json = new JsonObject();
         json.addProperty("openingDate", params.openingDate().toString()); //$NON-NLS-1$
         json.addProperty("closingDate", params.closingDate().toString()); //$NON-NLS-1$
+        json.addProperty("timeWeightedUntil", //$NON-NLS-1$
+                        CalcParams.timeWeightedUntil(params.closingDate()).toString());
         json.addProperty("reportingCurrency", params.currency()); //$NON-NLS-1$
         json.addProperty("costMethod", CalcParams.wireName(params.costMethod())); //$NON-NLS-1$
         json.addProperty("taxesAndFees", CalcParams.wireName(params.taxesAndFees())); //$NON-NLS-1$
@@ -356,10 +385,14 @@ public final class EntityJson
             json.add("expenses", expenses); //$NON-NLS-1$
         }
 
+        // a period entirely after today has no price movement to measure: the
+        // engines would answer 0, which reads as a measured flat return
+        var measurable = CalcParams.hasAPast(params.openingDate());
+
         if (metrics.contains(MetricGroup.MONEY_WEIGHTED))
         {
             var moneyWeighted = new JsonObject();
-            moneyWeighted.add("irr", ratio(record.getIrr())); //$NON-NLS-1$
+            moneyWeighted.add("irr", ratio(measurable ? record.getIrr() : Double.NaN)); //$NON-NLS-1$
             json.add("moneyWeighted", moneyWeighted); //$NON-NLS-1$
         }
 
@@ -369,19 +402,36 @@ public final class EntityJson
         if (metrics.contains(MetricGroup.TIME_WEIGHTED))
         {
             var timeWeighted = new JsonObject();
-            timeWeighted.add("ttwror", ratio(record.getTrueTimeWeightedRateOfReturn())); //$NON-NLS-1$
-            timeWeighted.add("ttwrorAnnualized", ratio(record.getTrueTimeWeightedRateOfReturnAnnualized())); //$NON-NLS-1$
+            timeWeighted.add("ttwror", //$NON-NLS-1$
+                            ratio(measurable ? record.getTrueTimeWeightedRateOfReturn() : Double.NaN));
+            timeWeighted.add("ttwrorAnnualized", //$NON-NLS-1$
+                            ratio(measurable ? record.getTrueTimeWeightedRateOfReturnAnnualized() : Double.NaN));
             json.add("timeWeighted", timeWeighted); //$NON-NLS-1$
         }
 
-        if (metrics.contains(MetricGroup.RISK))
+        if (metrics.contains(MetricGroup.RISK) && !measurable)
+        {
+            var risk = new JsonObject();
+            risk.add("volatility", JsonNull.INSTANCE); //$NON-NLS-1$
+            risk.add("semiVolatility", JsonNull.INSTANCE); //$NON-NLS-1$
+            risk.add("maxDrawdown", JsonNull.INSTANCE); //$NON-NLS-1$
+            // an integer the 1.0 contract declares non-null - nullable would break
+            // it - so the length of a stretch that was never measured is 0
+            risk.addProperty("longestDrawdownDays", 0); //$NON-NLS-1$
+            json.add("risk", risk); //$NON-NLS-1$
+        }
+        else if (metrics.contains(MetricGroup.RISK))
         {
             var drawdown = record.getDrawdown();
             var volatility = record.getVolatility();
 
+            // a spread needs two returns; one would come back as 0, which reads
+            // as a measured absence of risk
+            var spread = CalcParams.hasTwoReturns(params.openingDate(), params.closingDate());
+
             var risk = new JsonObject();
-            risk.add("volatility", ratio(volatility.getStandardDeviation())); //$NON-NLS-1$
-            risk.add("semiVolatility", ratio(volatility.getSemiDeviation())); //$NON-NLS-1$
+            risk.add("volatility", ratio(spread ? volatility.getStandardDeviation() : Double.NaN)); //$NON-NLS-1$
+            risk.add("semiVolatility", ratio(spread ? volatility.getSemiDeviation() : Double.NaN)); //$NON-NLS-1$
             // a positive fraction, as the model reports it - the charts' sign
             // convention is a presentation choice, not the datum
             risk.add("maxDrawdown", ratio(drawdown.getMaxDrawdown())); //$NON-NLS-1$
@@ -419,11 +469,18 @@ public final class EntityJson
     }
 
     /**
-     * Decimal places kept for a rate. Not applied to a weight: a weight can be
-     * legitimately tiny (a dust holding is a real fraction of a portfolio),
-     * where a rate that small is only ever noise.
+     * Decimal places kept for a rate - and for a weight. A weight is not noisy
+     * the way a rate is, but its seventeen digits are bytes that say nothing:
+     * 1e-8 is a millionth of a percent, and a holding below it still carries
+     * its exact {@code valuation}.
      */
     private static final int RATE_SCALE = 8;
+
+    /** a holding's fraction of total assets, at the same scale as a rate */
+    static JsonElement weight(double value)
+    {
+        return decimal(BigDecimal.valueOf(value).setScale(RATE_SCALE, RoundingMode.HALF_UP));
+    }
 
     private static Money negate(Money money)
     {
@@ -474,6 +531,12 @@ public final class EntityJson
                 status.add(value.getWireName());
         json.add("status", status); //$NON-NLS-1$
 
+        // only when asked for: a response without them covers every trade
+        if (params.from() != null)
+            json.addProperty("from", params.from().toString()); //$NON-NLS-1$
+        if (params.to() != null)
+            json.addProperty("to", params.to().toString()); //$NON-NLS-1$
+
         return json;
     }
 
@@ -483,6 +546,26 @@ public final class EntityJson
         json.add("instrument", reference(warning.instrument())); //$NON-NLS-1$
         json.addProperty("code", warning.code()); //$NON-NLS-1$
         json.addProperty("message", warning.message()); //$NON-NLS-1$
+        return json;
+    }
+
+    /** the field when it holds something other than whitespace, otherwise nothing */
+    private static void addUnlessBlank(JsonObject json, String field, String value)
+    {
+        if (value != null && !value.isBlank())
+            json.addProperty(field, value);
+    }
+
+    /**
+     * One currency pair that was converted at 1:1 because there is nothing to
+     * convert with. See {@link FxWarnings} for what the two reasons mean.
+     */
+    public static JsonObject toJson(FxWarnings.Warning warning)
+    {
+        var json = new JsonObject();
+        json.addProperty("currency", warning.currency()); //$NON-NLS-1$
+        json.addProperty("reportingCurrency", warning.reportingCurrency()); //$NON-NLS-1$
+        json.addProperty("reason", warning.reason()); //$NON-NLS-1$
         return json;
     }
 
@@ -534,6 +617,19 @@ public final class EntityJson
         var note = trade.getLastTransaction().getTransaction().getNote();
         if (note != null && !note.isBlank())
             json.addProperty("note", note); //$NON-NLS-1$
+
+        // the collector matches every transaction, also those dated after the
+        // valuation date - a savings plan books ahead - while an open trade is
+        // valued at today's price: its shares and values are then those after
+        // the last of them, not the position held on valuationDate. The
+        // application's trades view does the same; this says so, per trade,
+        // and only where it applies
+        var later = trade.getTransactions().stream()
+                        .filter(pair -> pair.getTransaction().getDateTime().toLocalDate()
+                                        .isAfter(params.valuationDate()))
+                        .count();
+        if (later > 0)
+            json.addProperty("transactionsAfterValuationDate", later); //$NON-NLS-1$
 
         return json;
     }
@@ -615,7 +711,7 @@ public final class EntityJson
         var json = new JsonObject();
         json.addProperty("uuid", portfolio.getUUID()); //$NON-NLS-1$
         json.addProperty("name", portfolio.getName()); //$NON-NLS-1$
-        if (portfolio.getNote() != null)
+        if (portfolio.getNote() != null && !portfolio.getNote().isBlank())
             json.addProperty("note", portfolio.getNote()); //$NON-NLS-1$
         if (portfolio.getReferenceAccount() != null)
             json.addProperty("referenceCashAccount", portfolio.getReferenceAccount().getUUID()); //$NON-NLS-1$
