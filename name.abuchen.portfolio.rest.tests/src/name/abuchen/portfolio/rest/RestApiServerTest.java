@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -551,20 +552,22 @@ public class RestApiServerTest
             var pending = http.sendAsync(slow(bounded), HttpResponse.BodyHandlers.ofString());
             assertThat(entered.await(5, TimeUnit.SECONDS), is(true));
 
-            // the one refusal slot: a stalled body the watchdog would end in 10 s
-            try (var first = stalledBody(bounded, "GET", "/v1/slow"))
+            // the one refusal slot: two stalled bodies the watchdog would end in
+            // 10 s. Which one the server takes up first is its business; the
+            // other must be closed at once
+            try (var first = stalledBody(bounded, "GET", "/v1/slow");
+                            var second = stalledBody(bounded, "GET", "/v1/slow"))
             {
-                // the first must hold the slot, waiting for its body, before the
-                // second arrives: the server takes them in any order it likes
-                Thread.sleep(500);
-
-                try (var second = stalledBody(bounded, "GET", "/v1/slow"))
-                {
-                second.setSoTimeout(5_000);
+                first.setSoTimeout(100);
+                second.setSoTimeout(100);
                 var started = System.nanoTime();
-                assertThat(second.getInputStream().read(), is(-1));
-                assertThat(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - started) < 3_000, is(true));
+                var closed = 0;
+                while (closed == 0 && TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - started) < 5_000)
+                {
+                    closed = (isClosed(first) ? 1 : 0) + (isClosed(second) ? 1 : 0);
                 }
+                assertThat("one of the two is closed without waiting for its body", closed, is(1));
+                assertThat(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - started) < 3_000, is(true));
             }
 
             release.countDown();
@@ -668,6 +671,19 @@ public class RestApiServerTest
 
         assertThat(head, containsString(" 404 "));
         assertThat(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - started) < 3_000, is(true));
+    }
+
+    /** whether the server closed the socket: end of stream within its read timeout */
+    private static boolean isClosed(Socket socket) throws IOException
+    {
+        try
+        {
+            return socket.getInputStream().read() < 0;
+        }
+        catch (java.net.SocketTimeoutException e)
+        {
+            return false;
+        }
     }
 
     /** a socket that announces a body of 100 bytes, sends one, and then waits */

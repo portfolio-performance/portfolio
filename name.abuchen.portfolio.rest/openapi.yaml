@@ -2682,10 +2682,12 @@ components:
       description: |
         Not answered now; see the overview of 503 answers above. `server-busy`
         (more requests in flight than the server serves at once, or no
-        calculation slot came free in time) can reach every operation; `ui-busy`,
-        `ui-request-underway` and `calculation-timeout` only operations that work
-        on a file. Every one but `ui-request-underway` and `calculation-timeout`
-        carries a `Retry-After` and is safe to send again.
+        calculation slot came free in time) can reach every operation. `ui-busy`
+        and `ui-request-underway` can reach every operation that runs on the
+        application's UI thread - the file list and everything under a file -
+        but not the version or this document; `calculation-timeout` only the
+        calculations. Every one but `ui-request-underway` and
+        `calculation-timeout` carries a `Retry-After` and is safe to send again.
       headers:
         Retry-After:
           description: Seconds to wait before sending the same request again.
