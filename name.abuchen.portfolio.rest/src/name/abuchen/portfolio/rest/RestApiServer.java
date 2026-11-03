@@ -65,6 +65,28 @@ public class RestApiServer
      */
     private static final int IO_DEADLINE_SECONDS = 30;
 
+    /**
+     * How long, in seconds, the JDK lets a response run before it closes the
+     * connection itself. Once a streamed response has started, closing the
+     * exchange no longer closes the connection - it writes the last chunk, which
+     * blocks like any other write to a client that stopped reading - so this is
+     * the one thing that frees that writer, its permit and its calculation slot.
+     * Far above what any request may legitimately take: 10 s for the UI thread,
+     * 30 s in the queue, 120 s for the calculation.
+     * <p/>
+     * The JDK reads it once, when the first {@code HttpServer} of the process is
+     * created, so it is set here, before {@link #start()} can create one, and
+     * only when nobody set it already - an explicit
+     * {@code -Dsun.net.httpserver.maxRspTime} on the command line wins.
+     */
+    private static final String MAX_RESPONSE_SECONDS = "600"; //$NON-NLS-1$
+
+    static
+    {
+        if (System.getProperty("sun.net.httpserver.maxRspTime") == null) //$NON-NLS-1$
+            System.setProperty("sun.net.httpserver.maxRspTime", MAX_RESPONSE_SECONDS); //$NON-NLS-1$
+    }
+
     /** the request headers carried to the handler, see {@link #forwardedHeaders} */
     private static final List<String> FORWARDED_HEADERS = List.of("accept", "mcp-session-id", //$NON-NLS-1$ //$NON-NLS-2$
                     "mcp-protocol-version"); //$NON-NLS-1$
@@ -429,6 +451,18 @@ public class RestApiServer
      *         {@link #MAX_REQUEST_BODY} bytes, or could not be read; the
      *         connection is then closed rather than answered
      */
+    /**
+     * Closes an exchange on a platform thread of its own. Closing a streamed
+     * response can block - it writes the terminating chunk to a client that may
+     * have stopped reading - and the shared watchdog must stay free to fire the
+     * other deadlines; a virtual thread will not do, because closing needs a
+     * carrier a pinned write has often already taken.
+     */
+    private static void closeOffThread(HttpExchange exchange)
+    {
+        Thread.ofPlatform().name("Portfolio Performance REST API close").daemon(true).start(exchange::close); //$NON-NLS-1$
+    }
+
     private static boolean discardBody(HttpExchange exchange)
     {
         try
@@ -631,7 +665,13 @@ public class RestApiServer
             response.stream().writeTo(text -> {
                 var bytes = text.getBytes(StandardCharsets.UTF_8);
                 writing.lock();
-                var sending = watchdog.schedule(exchange::close, ioDeadlineMillis, TimeUnit.MILLISECONDS);
+                // closed on a platform thread of its own: closing a chunked
+                // response writes its last chunk and blocks exactly as this write
+                // does, so on the one watchdog thread it would stop every other
+                // deadline, and on a virtual thread it would need a carrier that a
+                // pinned write may already have taken - a dead end when every
+                // carrier is pinned. maxRspTime is the backstop that ends it.
+                var sending = watchdog.schedule(() -> closeOffThread(exchange), ioDeadlineMillis, TimeUnit.MILLISECONDS);
                 try
                 {
                     out.write(bytes);
