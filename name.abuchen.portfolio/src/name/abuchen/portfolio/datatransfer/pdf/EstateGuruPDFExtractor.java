@@ -60,12 +60,12 @@ public class EstateGuruPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
-                        .section("date", "currency", "amount") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}), [\\d]{2}:[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}, [\\d]{2}:[\\d]{2} .*" //
+                        .section("date", "time", "currency", "amount") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}), (?<time>[\\d]{2}:[\\d]{2}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}, [\\d]{2}:[\\d]{2} .*" //
                                         + "(?<currency>\\p{Sc}) (?<amount>[\\.,\\d]+) " //
                                         + "\\p{Sc} [\\.,\\d]+$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTime(asDate(v.get("date"), v.get("time")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
@@ -94,13 +94,12 @@ public class EstateGuruPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.REMOVAL))
 
-
-                        .section("date", "currency", "amount") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}), [\\d]{2}:[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}, [\\d]{2}:[\\d]{2} .*" //
+                        .section("date", "time", "currency", "amount") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}), (?<time>[\\d]{2}:[\\d]{2}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}, [\\d]{2}:[\\d]{2} .*" //
                                         + "\\((?<currency>\\p{Sc}) \\-(?<amount>[\\.,\\d]+)\\) " //
                                         + "\\p{Sc} [\\.,\\d]+$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTime(asDate(v.get("date"), v.get("time")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
@@ -126,29 +125,27 @@ public class EstateGuruPDFExtractor extends AbstractPDFExtractor
                         + "|Indemnity Approved" //
                         + "|Secondary Market Profit Approved" //
                         + "|Gewinn auf dem Zweitmarkt Genehmigt" //
-                        + "|Penalty Approved" //
-                        + "|Entsch.digung Genehmigt).*$");
+                        + "|Penalty Approved).*$");
         type.addBlock(interestBlock);
         interestBlock.setMaxSize(1);
         interestBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
-                        .section("date", "note", "currency", "amount") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}), [\\d]{2}:[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}, [\\d]{2}:[\\d]{2} " //
+                        .section("date", "time", "note", "currency", "amount") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}), (?<time>[\\d]{2}:[\\d]{2}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}, [\\d]{2}:[\\d]{2} " //
                                         + "(?<note>(Zins" //
                                         + "|Strafe" //
                                         + "|Entsch.digung" //
                                         + "|Interest" //
                                         + "|Indemnity" //
-                                        + "|Secondary Market Profit"
+                                        + "|Secondary Market Profit" //
                                         + "|Gewinn auf dem Zweitmarkt" //
-                                        + "|Penalty" //
-                                        + "|Entsch.digung)).*" //
+                                        + "|Penalty)).*" //
                                         + "(?<currency>\\p{Sc}) (?<amount>[\\.,\\d]+) " //
                                         + "\\p{Sc} [\\.,\\d]+$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTime(asDate(v.get("date"), v.get("time")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(trim(v.get("note")));
@@ -177,8 +174,8 @@ public class EstateGuruPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
-                        .section("date", "note", "currency", "amount") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}), [\\d]{2}:[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}, [\\d]{2}:[\\d]{2} " //
+                        .section("date", "time", "note", "currency", "amount") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}), (?<time>[\\d]{2}:[\\d]{2}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}, [\\d]{2}:[\\d]{2} " //
                                         + "(?<note>(Verm.gensverwaltungsgeb.hr" //
                                         + "|AUM" //
                                         + "|Withdraw fee" //
@@ -188,7 +185,7 @@ public class EstateGuruPDFExtractor extends AbstractPDFExtractor
                                         + "\\((?<currency>\\p{Sc}) \\-(?<amount>[\\.,\\d]+)\\) " //
                                         + "\\p{Sc} [\\.,\\d]+$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTime(asDate(v.get("date"), v.get("time")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(trim(v.get("note")));
