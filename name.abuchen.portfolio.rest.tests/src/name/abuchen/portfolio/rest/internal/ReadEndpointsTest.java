@@ -3,6 +3,8 @@ package name.abuchen.portfolio.rest.internal;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.junit.Assert;
@@ -14,6 +16,7 @@ import name.abuchen.portfolio.junit.AccountBuilder;
 import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
 
 @SuppressWarnings("nls")
 public class ReadEndpointsTest
@@ -84,34 +87,89 @@ public class ReadEndpointsTest
     }
 
     /**
-     * One page of the instruments, in the file's order - of all of them, or of
-     * the ones a query found - and no page when none was asked for.
+     * The instruments page by uuid: the pages walked with nextCursor are
+     * disjoint and hold every instrument once, each item carries its cursor,
+     * and no page is given when none was asked for.
      */
     @Test
-    public void testOnePageOfTheInstruments()
+    public void testThePagesOfTheInstrumentsHoldEveryInstrumentOnce()
+    {
+        var client = new Client();
+        for (var name : List.of("ACME 1", "Other", "ACME 2", "ACME 3", "Fifth"))
+            new SecurityBuilder().addTo(client).setName(name);
+
+        var seen = new ArrayList<String>();
+        String cursor = "";
+        while (cursor != null)
+        {
+            var response = SecuritiesHandler.list(client, null, cursor, "2").getAsJsonObject();
+            var items = response.get("items").getAsJsonArray();
+            assertThat(items.size() <= 2, is(true));
+            items.forEach(item -> {
+                assertThat(item.getAsJsonObject().has("cursor"), is(true));
+                seen.add(item.getAsJsonObject().get("uuid").getAsString());
+            });
+            assertThat(response.getAsJsonObject("page").get("total").getAsInt(), is(5));
+            var next = response.getAsJsonObject("page").get("nextCursor");
+            cursor = next.isJsonNull() ? null : next.getAsString();
+        }
+
+        var expected = client.getSecurities().stream().map(Security::getUUID).sorted().toList();
+        assertThat(seen, is(expected));
+
+        assertThat(SecuritiesHandler.list(client, null).getAsJsonObject().has("page"), is(false));
+        assertThat(SecuritiesHandler.list(client, null).getAsJsonObject().get("items").getAsJsonArray().get(0)
+                        .getAsJsonObject().has("cursor"), is(false));
+    }
+
+    /**
+     * An instrument removed between two pages shifts nothing: the next page
+     * continues after the last item seen, where an offset would skip one.
+     */
+    @Test
+    public void testAnInstrumentRemovedBetweenPagesSkipsNothing()
+    {
+        var client = new Client();
+        for (var name : List.of("A", "B", "C", "D"))
+            new SecurityBuilder().addTo(client).setName(name);
+        var ordered = client.getSecurities().stream().sorted(Comparator.comparing(Security::getUUID)).toList();
+
+        var first = SecuritiesHandler.list(client, null, "", "2").getAsJsonObject();
+        var cursor = first.getAsJsonObject("page").get("nextCursor").getAsString();
+
+        client.removeSecurity(ordered.get(0));
+
+        var second = SecuritiesHandler.list(client, null, cursor, "2").getAsJsonObject();
+        var uuids = new ArrayList<String>();
+        second.get("items").getAsJsonArray()
+                        .forEach(item -> uuids.add(item.getAsJsonObject().get("uuid").getAsString()));
+        assertThat(uuids, is(List.of(ordered.get(2).getUUID(), ordered.get(3).getUUID())));
+        assertThat(second.getAsJsonObject("page").get("nextCursor").isJsonNull(), is(true));
+    }
+
+    /** a query is paged among what it found */
+    @Test
+    public void testAQueryIsPagedAmongWhatItFound()
     {
         var client = new Client();
         for (var name : List.of("ACME 1", "Other", "ACME 2", "ACME 3"))
             new SecurityBuilder().addTo(client).setName(name);
 
-        var first = SecuritiesHandler.list(client, null, "1", "2").getAsJsonObject();
-        assertThat(first.get("items").getAsJsonArray().size(), is(2));
-        assertThat(first.get("items").getAsJsonArray().get(0).getAsJsonObject().get("name").getAsString(),
-                        is("Other"));
-        var page = first.getAsJsonObject("page");
-        assertThat(page.get("offset").getAsInt(), is(1));
-        assertThat(page.get("total").getAsInt(), is(4));
-        assertThat(page.get("nextOffset").getAsInt(), is(3));
-
-        // a query is paged among what it found
-        var found = SecuritiesHandler.list(client, "acme", "2", null).getAsJsonObject();
-        assertThat(found.get("items").getAsJsonArray().size(), is(1));
-        assertThat(found.get("items").getAsJsonArray().get(0).getAsJsonObject().get("name").getAsString(),
-                        is("ACME 3"));
+        var found = SecuritiesHandler.list(client, "acme", null, "2").getAsJsonObject();
+        assertThat(found.get("items").getAsJsonArray().size(), is(2));
         assertThat(found.getAsJsonObject("page").get("total").getAsInt(), is(3));
-        assertThat(found.getAsJsonObject("page").get("nextOffset").isJsonNull(), is(true));
 
-        assertThat(SecuritiesHandler.list(client, null).getAsJsonObject().has("page"), is(false));
+        var rest = SecuritiesHandler.list(client, "acme",
+                        found.getAsJsonObject("page").get("nextCursor").getAsString(), "2").getAsJsonObject();
+        assertThat(rest.get("items").getAsJsonArray().size(), is(1));
+        assertThat(rest.getAsJsonObject("page").get("nextCursor").isJsonNull(), is(true));
+    }
+
+    @Test
+    public void testAMalformedCursorIsRefusedWithTheOtherProblems()
+    {
+        var client = new Client();
+        new SecurityBuilder().addTo(client).setName("A");
 
         try
         {
@@ -122,6 +180,18 @@ public class ReadEndpointsTest
         {
             // every problem in one answer
             assertThat(e.getErrors().size(), is(2));
+            assertThat(e.getErrors().get(1).field(), is("cursor"));
+        }
+
+        // a trade cursor is no instrument cursor
+        try
+        {
+            SecuritiesHandler.list(client, null, Paging.encode(Paging.Kind.TRADES, "x"), null);
+            Assert.fail("expected ApiException");
+        }
+        catch (ApiException e)
+        {
+            assertThat(e.getErrors().get(0).field(), is("cursor"));
         }
     }
 

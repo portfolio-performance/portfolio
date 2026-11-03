@@ -62,7 +62,7 @@ public final class ApiRoutes
 
     /** Query parameters shared by both trade routes. */
     private static final String[] TRADE_PARAMS = { "status", "grouping", "costMethod", "taxesAndFees", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-                    "reportingCurrency", "from", "to", "offset", "limit" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+                    "reportingCurrency", "from", "to", "cursor", "limit" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 
     /**
      * How long a request may wait for the UI thread, and how long a calculation
@@ -318,8 +318,8 @@ public final class ApiRoutes
 
         router.add("GET", "/v1/files/{file}/instruments", read(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$
                         (client, req) -> SecuritiesHandler.list(client, req.queryParam("query"), //$NON-NLS-1$
-                                        req.queryParam("offset"), req.queryParam("limit"))), //$NON-NLS-1$ //$NON-NLS-2$
-                        "query", "offset", "limit"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                                        req.queryParam("cursor"), req.queryParam("limit"))), //$NON-NLS-1$ //$NON-NLS-2$
+                        "query", "cursor", "limit"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         // literal sub-collection: the Router prefers it over the {uuid} route
         // because it has fewer placeholders, whatever the registration order
         router.add("GET", "/v1/files/{file}/instruments/attribute-types", read(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$
@@ -387,14 +387,14 @@ public final class ApiRoutes
                                         req.queryParam("status"), req.queryParam("grouping"), //$NON-NLS-1$ //$NON-NLS-2$
                                         req.queryParam("costMethod"), req.queryParam("taxesAndFees"), //$NON-NLS-1$ //$NON-NLS-2$
                                         req.queryParam("reportingCurrency"), req.queryParam("from"), //$NON-NLS-1$ //$NON-NLS-2$
-                                        req.queryParam("to"), req.queryParam("offset"), req.queryParam("limit")))), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                                        req.queryParam("to"), req.queryParam("cursor"), req.queryParam("limit")))), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                         TRADE_PARAMS);
         router.add("GET", "/v1/files/{file}/instruments/{uuid}/trades", calc(resolver, ui, calculation, //$NON-NLS-1$ //$NON-NLS-2$
                         (context, req) -> Response.json(200, TradesHandler.forInstrument(context.client(),
                                         context.factory(), req.pathParam("uuid"), req.queryParam("status"), //$NON-NLS-1$ //$NON-NLS-2$
                                         req.queryParam("grouping"), req.queryParam("costMethod"), //$NON-NLS-1$ //$NON-NLS-2$
                                         req.queryParam("taxesAndFees"), req.queryParam("reportingCurrency"), //$NON-NLS-1$ //$NON-NLS-2$
-                                        req.queryParam("from"), req.queryParam("to"), req.queryParam("offset"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                                        req.queryParam("from"), req.queryParam("to"), req.queryParam("cursor"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                                         req.queryParam("limit")))), //$NON-NLS-1$
                         TRADE_PARAMS);
 

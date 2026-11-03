@@ -96,10 +96,11 @@ public final class SecuritiesHandler
     }
 
     /**
-     * As above, one page of them with {@code offset} and {@code limit}: the
-     * instruments in the order of the file, the found ones in the same order.
+     * As above, one page of them with {@code cursor} and {@code limit}: paged,
+     * the instruments are in the order of their uuid, which nothing changes;
+     * the whole list stays in the order of the file.
      */
-    public static JsonElement list(Client client, String query, String offsetParam, String limitParam)
+    public static JsonElement list(Client client, String query, String cursorParam, String limitParam)
     {
         var errors = new ArrayList<ApiException.FieldError>();
 
@@ -108,7 +109,7 @@ public final class SecuritiesHandler
             errors.add(new ApiException.FieldError("query", "invalid-value", //$NON-NLS-1$ //$NON-NLS-2$
                             "query must not be blank; omit it to list every instrument")); //$NON-NLS-1$
 
-        var paging = Paging.parse(offsetParam, limitParam, errors);
+        var paging = Paging.parse(Paging.Kind.INSTRUMENTS, cursorParam, limitParam, errors);
 
         if (!errors.isEmpty())
             throw ApiException.badRequest(errors);
@@ -122,25 +123,10 @@ public final class SecuritiesHandler
                             .toList();
         }
 
-        var items = new JsonArray();
-        var from = paging.given() ? Math.min(paging.offset(), securities.size()) : 0;
         // only the page is rendered; the rest of the list is counted, not built
         var response = new JsonObject();
-        if (!paging.given())
-        {
-            securities.forEach(security -> items.add(EntityJson.toJson(client, security)));
-            response.add("items", items); //$NON-NLS-1$
-            return response;
-        }
-
-        var to = paging.limit() == null ? securities.size()
-                        : (int) Math.min((long) from + paging.limit(), securities.size());
-        for (var ii = from; ii < to; ii++)
-            items.add(EntityJson.toJson(client, securities.get(ii)));
-
-        response.add("page", Paging.describe(paging.offset(), paging.limit(), securities.size(), //$NON-NLS-1$
-                        to < securities.size() ? Integer.valueOf(to) : null));
-        response.add("items", items); //$NON-NLS-1$
+        paging.apply(Paging.Kind.INSTRUMENTS, response, securities, Security::getUUID,
+                        security -> EntityJson.toJson(client, security));
         return response;
     }
 
