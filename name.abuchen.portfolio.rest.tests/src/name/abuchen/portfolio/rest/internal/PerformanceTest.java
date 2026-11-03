@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.rest.internal;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.is;
 
@@ -309,8 +310,11 @@ public class PerformanceTest
         var result = perf(heldPosition(), "2024-01-01", "2024-12-31", null, null);
         assertThat(result.get("timeWeightedUntil").getAsString(), is("2024-12-31"));
 
+        // the handler reads today itself; across midnight it may answer either day
+        var before = LocalDate.now();
         var today = perf(heldPosition(), "2024-01-01", null, null, null);
-        assertThat(today.get("timeWeightedUntil").getAsString(), is(LocalDate.now().toString()));
+        assertThat(today.get("timeWeightedUntil").getAsString(),
+                        anyOf(is(before.toString()), is(LocalDate.now().toString())));
     }
 
     /**
