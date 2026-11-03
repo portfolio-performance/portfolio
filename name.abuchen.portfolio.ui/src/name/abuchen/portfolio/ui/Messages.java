@@ -1156,6 +1156,8 @@ public class Messages extends NLS
     public static String MsgErrorOpeningFile;
     public static String MsgErrorPortfolioNotExist;
     public static String MsgErrorSavingIniFile;
+    public static String MsgLanguageCommandHint;
+    public static String MsgLanguageLaunchConfigurationHint;
     public static String MsgErrorTradeCollectionWithErrors;
     public static String MsgErrorUpdating;
     public static String MsgHintNoAttributesConfigured;
@@ -1317,6 +1319,7 @@ public class Messages extends NLS
     public static String PrefMsgCalendar;
     public static String PrefMsgConfigureUpdates;
     public static String PrefMsgLanguageConfig;
+    public static String PrefMsgLanguageStoredInLauncherIni;
     public static String PrefMsgRestApiConnectorSettings;
     public static String PrefMsgRestApiEnterClientName;
     public static String PrefMsgRestApiInvalidPort;
