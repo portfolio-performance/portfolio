@@ -111,9 +111,9 @@ public final class ConversionRecorder
 
     private void check(String base, String term, LocalDate date)
     {
+        // no shortcut for a pair that fell back once already: on another date
+        // it may convert at a stale rate, and that is a finding of its own
         var pair = new Pair(base, term);
-        if (fallbacks.containsKey(pair))
-            return;
 
         // the same two cases in which CurrencyConverterImpl substitutes a rate of 1
         if (!factory.hasTimeSeries(base, term))

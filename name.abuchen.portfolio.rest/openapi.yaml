@@ -846,6 +846,7 @@ paths:
                     reportingCurrency: EUR
                     totalAssets: { value: 1600, currency: EUR }
                     fxWarnings: []
+                    fxStaleRates: []
                     items:
                       - type: instrument
                         uuid: 8a1e0c4b-2f5d-4e6a-b1c3-7d9f0a2e4c68
@@ -986,6 +987,7 @@ paths:
                       netDeposits: { value: 5000, currency: EUR }
                       closingValue: { value: 111390, currency: EUR }
                     fxWarnings: []
+                    fxStaleRates: []
         "400":
           $ref: "#/components/responses/BadRequest"
         "401":
@@ -1075,6 +1077,7 @@ paths:
                     metrics:
                       [valuation, gains, income, expenses, moneyWeighted, timeWeighted, risk]
                     fxWarnings: []
+                    fxStaleRates: []
                     items:
                       - uuid: 5c1a0b7e-3d4f-4a2b-9c8e-1f0a2b3c4d5e
                         name: iShares Core MSCI World
@@ -1140,6 +1143,11 @@ paths:
 
         Note that `reportingCurrency` and `currencyCode` sit next to each other
         here and mean different things — see `MonetaryValue.currency`.
+
+        `fxWarnings` and `fxStaleRates` cover the whole calculation the item is
+        taken from, as for the collection: they can name a pair that only
+        another instrument of the file was converted with. An empty list means
+        nothing in the calculation fell back or used a stale rate.
       parameters:
         - $ref: "#/components/parameters/OpeningDate"
         - $ref: "#/components/parameters/ClosingDate"
@@ -1174,6 +1182,7 @@ paths:
                       - currency: ARS
                         reportingCurrency: EUR
                         reason: no-series
+                    fxStaleRates: []
                     uuid: 5c1a0b7e-3d4f-4a2b-9c8e-1f0a2b3c4d5e
                     name: iShares Core MSCI World
                     currencyCode: USD
@@ -1265,6 +1274,7 @@ paths:
                     valuationDate: "2026-08-27"
                     status: [open, closed]
                     fxWarnings: []
+                    fxStaleRates: []
                     warnings: []
                     items:
                       - status: closed
@@ -1369,6 +1379,7 @@ paths:
                     valuationDate: "2026-08-27"
                     status: [open, closed]
                     fxWarnings: []
+                    fxStaleRates: []
                     warnings: []
                     items:
                       - status: closed
