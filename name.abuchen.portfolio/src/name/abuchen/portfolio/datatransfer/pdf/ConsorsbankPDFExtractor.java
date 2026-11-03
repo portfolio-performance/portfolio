@@ -220,7 +220,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                         + "|Verkauf" //
                                         + "|VERK\\. TEIL\\-\\/BEZUGSR\\." //
                                         + "|VERKAUF KAPITALMA.*) .* UM (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$") //
-                        .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
+                        .assign((t, v) -> v.getTransactionContext().putString("time", v.get("time")))
 
                         // @formatter:off
                         // Kauf AM 17.10.2005 IN SPARPLAN NR.2424880.001
@@ -234,8 +234,10 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                         + "|VERK\\. TEIL\\-\\/BEZUGSR\\." //
                                         + "|VERKAUF KAPITALMA.*).*AM (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> {
-                            if (type.getCurrentContext().get("time") != null)
-                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                            var time = v.getTransactionContext().getString("time");
+
+                            if (time != null)
+                                t.setDate(asDate(v.get("date"), time));
                             else
                                 t.setDate(asDate(v.get("date")));
                         })
@@ -381,7 +383,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         // Limitkurs  5,500000 EUR
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^(?<note>Limitkurs .*)") //
+                        .match("^(?<note>Limitkurs .*)$") //
                         .assign((t, v) -> t
                                         .setNote(concatenate(t.getNote(), replaceMultipleBlanks(v.get("note")), " | ")))
 
@@ -389,7 +391,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         // Ursprungs-WKN 549532
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^(?<note>Ursprungs\\-WKN .*)") //
+                        .match("^(?<note>Ursprungs\\-WKN .*)$") //
                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         // @formatter:off
@@ -1031,7 +1033,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         // Den Steuerausgleich buchen wir mit Wertstellung 10.07.2017
                         // @formatter:on
                         .section("date") //
-                        .match("[\\s]*Den Steuerausgleich buchen wir mit Wertstellung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*") //
+                        .match("^[\\s]*Den Steuerausgleich buchen wir mit Wertstellung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
@@ -1045,8 +1047,8 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
 
                         .section("amount", "type") //
-                        .find("^[\\s]*Erstattung\\/Belastung \\(\\-\\) von Steuern.*") //
-                        .match("[\\s]*(?<amount>[\\.,\\d]+)(?<type>(\\-)?).*") //
+                        .find("[\\s]*Erstattung\\/Belastung \\(\\-\\) von Steuern.*") //
+                        .match("^[\\s]*(?<amount>[\\.,\\d]+)(?<type>(\\-)?).*$") //
                         .assign((t, v) -> {
                             // @formatter:off
                             // Is type --> "-" change from TAX_REFUND to TAXES
@@ -1189,7 +1191,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
         // ABSCHLUSS 31.12. 8800 31.12. 1,22-
         // ABSCHLUSS 28.03. 8800 31.03. 261,56+
         // @formatter:on
-        var interestBlock_Format01 = new Block("^ABSCHLUSS [\\d]{2}\\.[\\d]{2}\\. [\\d]+ [\\d]{2}\\.[\\d]{2}\\. [\\.,\\d]+[\\-|\\+]$");
+        var interestBlock_Format01 = new Block("^ABSCHLUSS [\\d]{2}\\.[\\d]{2}\\. [\\d]+ [\\d]{2}\\.[\\d]{2}\\. [\\.,\\d]+[\\-\\+]$");
         type.addBlock(interestBlock_Format01);
         interestBlock_Format01.set(new Transaction<AccountTransaction>()
 
@@ -1198,7 +1200,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         .section("date", "amount", "type") //
                         .documentContext("year", "currency") //
                         .documentContextOptionally("taxDate", "tax") //
-                        .match("^ABSCHLUSS [\\d]{2}\\.[\\d]{2}\\. [\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.) (?<amount>[\\.,\\d]+)(?<type>[\\-|\\+])$") //
+                        .match("^ABSCHLUSS [\\d]{2}\\.[\\d]{2}\\. [\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.) (?<amount>[\\.,\\d]+)(?<type>[\\-\\+])$") //
                         .assign((t, v) -> {
                             // @formatter:off
                             // Is type --> "-" change from INTEREST to INTEREST_CHARGE
@@ -1212,7 +1214,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                             if (v.containsKey("tax") && t.getDateTime().equals(asDate(v.get("taxDate"))))
                             {
-                                var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                                var tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
                                 t.addUnit(new Unit(Unit.Type.TAX, tax));
 
                                 if (t.getType() == AccountTransaction.Type.INTEREST)
@@ -1227,7 +1229,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // SUMME DER ABSCHLUSSPOSTEN 261,56 H
         // @formatter:on
-        var interestBlock_Format02 = new Block("^SUMME DER ABSCHLUSSPOSTEN [\\.,\\d]+ [H|S]$");
+        var interestBlock_Format02 = new Block("^SUMME DER ABSCHLUSSPOSTEN [\\.,\\d]+ [HS]$");
         type.addBlock(interestBlock_Format02);
         interestBlock_Format02.set(new Transaction<AccountTransaction>()
 
@@ -1236,7 +1238,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         .section("amount", "type") //
                         .documentContext("currency", "date") //
                         .documentContextOptionally("tax") //
-                        .match("^SUMME DER ABSCHLUSSPOSTEN (?<amount>[\\.,\\d]+) (?<type>[H|S])$") //
+                        .match("^SUMME DER ABSCHLUSSPOSTEN (?<amount>[\\.,\\d]+) (?<type>[HS])$") //
                         .assign((t, v) -> {
                             // @formatter:off
                             // Is type --> "S" change from INTEREST to INTEREST_CHARGE
@@ -1250,7 +1252,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                             if (v.containsKey("tax"))
                             {
-                                var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                                var tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
                                 t.addUnit(new Unit(Unit.Type.TAX, tax));
 
                                 if (t.getType() == AccountTransaction.Type.INTEREST)
@@ -1298,7 +1300,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "name", "wkn", "shares") //
-                                                        .match("^UEBERTRAG (EINGANG|AUSGANG) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})")
+                                                        .match("^UEBERTRAG (EINGANG|AUSGANG) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
                                                         .find("Bezeichnung WKN") //
                                                         .match("^(?<name>.*) (?<wkn>[A-Z0-9]{6})$") //
                                                         .match("^ST (?<shares>[\\.,\\d]+) .*$") //
