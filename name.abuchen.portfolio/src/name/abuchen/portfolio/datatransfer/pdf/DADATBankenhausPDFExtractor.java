@@ -730,7 +730,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST_CHARGE))
 
                         .optionalOneOf( //
                                         // @formatter:off
@@ -742,7 +742,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("date", "note", "amount") //
                                                         .documentContext("year", "currency") //
                                                         .match("^(?i)(?<date>[\\d]{1,2}\\.[\\d]{1,2}) Abschluss [\\d]{1,2}\\.[\\d]{1,2} [\\.,\\d]+\\-$") //
-                                                        .find("^(?i)(?<note>Sollzinsen)$") //
+                                                        .find("(?i)(?<note>Sollzinsen)") //
                                                         .match("^(?i)AB [\\d]{4}\\-[\\d]{1,2}\\-[\\d]{1,2}[\\s]{1,}[\\.,\\d]+%[\\s]{1,}(?<amount>[\\.,\\d]+)\\-$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
