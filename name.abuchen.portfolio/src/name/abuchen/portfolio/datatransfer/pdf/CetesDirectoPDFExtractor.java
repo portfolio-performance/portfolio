@@ -13,7 +13,6 @@ import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
-import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -27,14 +26,16 @@ import name.abuchen.portfolio.util.AdditionalLocales;
  *           The currency used is MXN (Mexican Peso) represented as "$".
  *
  * @implSpec All security currencies are in MXN.
- *           The ID number corresponds to the WKN (Wertpapierkennnummer) as the ISIN is not provided.
- *           The security name is the product name followed by the series.
+ *           The ISIN is not provided. The ID number (folio) is a booking
+ *           reference which changes with every booking, therefore the
+ *           security is identified by the product name followed by the series.
  *
  * @implNote The PDF file contains the following details:
  *           - Transaction date
  *           - Settlement date
  *           - ID number
- *           - Transaction type (e.g., COMPRA for purchase, AMORTIZACION for amortization, COMPSI for dividends)
+ *           - Transaction type (e.g., COMPRA for purchase, AMORTIZACION for amortization,
+ *             COMPSI for the purchase of shares of the liquidity fund)
  *           - Product name
  *           - Series
  *           - Number of shares
@@ -65,7 +66,6 @@ public class CetesDirectoPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("contacto@cetesdirecto.com");
 
         addBuySellTransaction();
-        addDividendTransaction();
     }
 
     @Override
@@ -77,7 +77,10 @@ public class CetesDirectoPDFExtractor extends AbstractPDFExtractor
     private void addBuySellTransaction()
     {
         final var type = new DocumentType("Movimientos del per", (context, lines) -> { //
-            var pTaxAmountTransaction = Pattern.compile("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{2}) [\\d]{2}\\/[\\d]{2}\\/[\\d]{2} (?<wkn>[A-Z]{3}[0-9]{9})ISR.* (?<tax>[\\.,\\d]+)$");
+            // @formatter:off
+            // 06/01/22 06/01/22 SVD147779466ISR CETES 220106 0 3.70 0.00 6.20
+            // @formatter:on
+            var pTaxAmountTransaction = Pattern.compile("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{2}) [\\d]{2}\\/[\\d]{2}\\/[\\d]{2} (?<folio>[A-Z]{3}[0-9]{9})ISR .* (?<tax>[\\.,\\d]+) [\\.,\\d]+ (\\-)?[\\.,\\d]+$");
 
             var taxAmountTransactionHelper = new TaxAmountTransactionHelper();
             context.putType(taxAmountTransactionHelper);
@@ -90,7 +93,7 @@ public class CetesDirectoPDFExtractor extends AbstractPDFExtractor
                     var item = new TaxAmountTransactionItem();
                     item.line = i + 1;
                     item.dateTime = asDate(m.group("date"), AdditionalLocales.MEXICO);
-                    item.wkn = m.group("wkn");
+                    item.folio = m.group("folio");
                     item.tax = asAmount(m.group("tax"));
                     item.currency = asCurrencyCode(MXN);
 
@@ -103,7 +106,7 @@ public class CetesDirectoPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<BuySellEntry>();
 
-        var firstRelevantLine = new Block("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{2} [\\d]{2}\\/[\\d]{2}\\/[\\d]{2} [A-Z]{3}[0-9]{9}(COMPRA|AMORTIZACION) .*$");
+        var firstRelevantLine = new Block("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{2} [\\d]{2}\\/[\\d]{2}\\/[\\d]{2} [A-Z]{3}[0-9]{9}(COMPRA|COMPSI|AMORTIZACION) .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -126,10 +129,10 @@ public class CetesDirectoPDFExtractor extends AbstractPDFExtractor
                                         // 04/01/22 06/01/22 SVD147529623COMPRA CETES 220203 6,080 9.95730000 2 5.51 60,540.38 0.00 -60,540.10
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("date", "wkn", "name", "name1", "shares", "note1", "note2", "amount") //
+                                                        .attributes("date", "name", "name1", "shares", "note1", "note2", "amount") //
                                                         .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{2}) " //
                                                                         + "[\\d]{2}\\/[\\d]{2}\\/[\\d]{2} " //
-                                                                        + "(?<wkn>[A-Z]{3}[0-9]{9})" //
+                                                                        + "[A-Z]{3}[0-9]{9}" //
                                                                         + "COMPRA " //
                                                                         + "(?<name>.*) " //
                                                                         + "(?<name1>.*) " //
@@ -150,13 +153,39 @@ public class CetesDirectoPDFExtractor extends AbstractPDFExtractor
                                                             t.setNote("Term: " + v.get("note1") + " | Rate: " + v.get("note2"));
                                                         }),
                                         // @formatter:off
+                                        // 06/01/22 06/01/22 SVD148097667COMPSI BONDDIA PF2 3 1.57377100 0 0.00 4.72 0.00 1.48
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "name", "name1", "shares", "amount") //
+                                                        .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{2}) " //
+                                                                        + "[\\d]{2}\\/[\\d]{2}\\/[\\d]{2} " //
+                                                                        + "[A-Z]{3}[0-9]{9}" //
+                                                                        + "COMPSI " //
+                                                                        + "(?<name>.*) " //
+                                                                        + "(?<name1>.*) " //
+                                                                        + "(?<shares>[\\.,\\d]+) " //
+                                                                        + "[\\.,\\d]+ [\\d]+ [\\.,\\d]+ " //
+                                                                        + "(?<amount>[\\.,\\d]+) " //
+                                                                        + "[\\.,\\d]+ " //
+                                                                        + "(\\-)?[\\.,\\d]+$") //
+                                                        .assign((t, v) -> {
+                                                            v.put("currency", asCurrencyCode(MXN));
+                                                            v.put("name", trim(v.get("name")) + " (" + trim(v.get("name1")) + ")");
+                                                            t.setSecurity(getOrCreateSecurity(v));
+
+                                                            t.setDate(asDate(v.get("date"), AdditionalLocales.MEXICO));
+                                                            t.setShares(asShares(v.get("shares")));
+                                                            t.setCurrencyCode(asCurrencyCode(MXN));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
                                         // 06/01/22 06/01/22 SVD147779466AMORTIZACION CETES 220106 6,055 0 0.00 60,550.00 9.90
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("date", "wkn", "name", "name1", "shares", "amount") //
+                                                        .attributes("date", "folio", "name", "name1", "shares", "amount") //
                                                         .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{2}) " //
                                                                         + "[\\d]{2}\\/[\\d]{2}\\/[\\d]{2} " //
-                                                                        + "(?<wkn>[A-Z]{3}[0-9]{9})" //
+                                                                        + "(?<folio>[A-Z]{3}[0-9]{9})" //
                                                                         + "AMORTIZACION " //
                                                                         + "(?<name>.*) " + "(?<name1>.*) " //
                                                                         + "(?<shares>[\\.,\\d]+) " //
@@ -176,7 +205,7 @@ public class CetesDirectoPDFExtractor extends AbstractPDFExtractor
                                                             t.setMonetaryAmount(amount);
 
                                                             var taxAmountTransactionHelper = context.getType(TaxAmountTransactionHelper.class).orElseGet(TaxAmountTransactionHelper::new);
-                                                            var item = taxAmountTransactionHelper.findItem(v.getStartLineNumber(), t.getPortfolioTransaction().getDateTime(), t.getPortfolioTransaction().getSecurity().getWkn());
+                                                            var item = taxAmountTransactionHelper.findItem(v.getStartLineNumber(), t.getPortfolioTransaction().getDateTime(), v.get("folio"));
 
                                                             if (item.isPresent())
                                                             {
@@ -190,60 +219,18 @@ public class CetesDirectoPDFExtractor extends AbstractPDFExtractor
                         .wrap(BuySellEntryItem::new);
     }
 
-    private void addDividendTransaction()
-    {
-        final var type = new DocumentType("Movimientos del per");
-        this.addDocumentTyp(type);
-
-        var pdfTransaction = new Transaction<AccountTransaction>();
-
-        var firstRelevantLine = new Block("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{2} [\\d]{2}\\/[\\d]{2}\\/[\\d]{2} [A-Z]{3}[0-9]{9}COMPSI .*$");
-        type.addBlock(firstRelevantLine);
-        firstRelevantLine.set(pdfTransaction);
-
-        pdfTransaction //
-
-                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
-
-                        // @formatter:off
-                        // 06/01/22 06/01/22 SVD148097667COMPSI BONDDIA PF2 3 1.57377100 0 0.00 4.72 0.00 1.48
-                        // @formatter:on
-                        .section("date", "wkn", "name", "name1", "shares", "amount") //
-                        .match("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{2} " //
-                                        + "(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{2}) " //
-                                        + "(?<wkn>[A-Z]{3}[0-9]{9})" //
-                                        + "COMPSI " //
-                                        + "(?<name>.*) " //
-                                        + "(?<name1>.*) " //
-                                        + "(?<shares>[\\.,\\d]+) " //
-                                        + "[\\.,\\d]+ [\\d]+ [\\.,\\d]+ " //
-                                        + "(?<amount>[\\.,\\d]+).*$") //
-                        .assign((t, v) -> {
-                            v.put("currency", asCurrencyCode(MXN));
-                            v.put("name", trim(v.get("name")) + " (" + trim(v.get("name1")) + ")");
-                            t.setSecurity(getOrCreateSecurity(v));
-
-                            t.setDateTime(asDate(v.get("date"), AdditionalLocales.MEXICO));
-                            t.setShares(asShares(v.get("shares")));
-                            t.setCurrencyCode(asCurrencyCode(MXN));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
-
-                        .wrap(TransactionItem::new);
-    }
-
     private static class TaxAmountTransactionHelper
     {
         private List<TaxAmountTransactionItem> items = new ArrayList<>();
 
-        public Optional<TaxAmountTransactionItem> findItem(int line, LocalDateTime dateTime, String wkn)
+        public Optional<TaxAmountTransactionItem> findItem(int line, LocalDateTime dateTime, String folio)
         {
             for (TaxAmountTransactionItem item : items)
             {
                 if (item.line < line)
                     continue;
 
-                if (item.dateTime.equals(dateTime) && item.wkn.equals(wkn))
+                if (item.dateTime.equals(dateTime) && item.folio.equals(folio))
                     return Optional.of(item);
             }
             return Optional.empty();
@@ -255,14 +242,14 @@ public class CetesDirectoPDFExtractor extends AbstractPDFExtractor
         int line;
 
         LocalDateTime dateTime;
-        String wkn;
+        String folio;
         String currency;
         long tax;
 
         @Override
         public String toString()
         {
-            return "TaxAmountTransactionItem [line=" + line + ", dateTime=" + dateTime + ", wkn=" + wkn + ", currency=" + currency + ", tax=" + tax + "]";
+            return "TaxAmountTransactionItem [line=" + line + ", dateTime=" + dateTime + ", folio=" + folio + ", currency=" + currency + ", tax=" + tax + "]";
         }
     }
 
@@ -270,5 +257,11 @@ public class CetesDirectoPDFExtractor extends AbstractPDFExtractor
     protected long asAmount(String value)
     {
         return ExtractorUtils.convertToNumberLong(value, Values.Amount, "es", "MX");
+    }
+
+    @Override
+    protected long asShares(String value)
+    {
+        return ExtractorUtils.convertToNumberLong(value, Values.Share, "es", "MX");
     }
 }
