@@ -236,6 +236,43 @@ public class InstrumentPerformanceTest
         assertThat(currenciesOfWarnings(item(client, security.getUUID(), null)), contains("ARS"));
     }
 
+    /**
+     * The item route must give exactly the figures of the instrument's element
+     * in the collection - with dividends, a partial sale, fees and taxes, and a
+     * second instrument beside it. (Computing the item on a client filtered to
+     * the one instrument does not: the filter books a sale's taxes differently.)
+     */
+    @Test
+    public void testTheItemHasTheFiguresOfItsElementInTheCollection()
+    {
+        var client = heldPosition(
+                        (account, security) -> account.dividend("2024-06-03", Values.Amount.factorize(50),
+                                        Values.Amount.factorize(10), security),
+                        (portfolio, security) -> portfolio.sell(security, "2024-09-02", Values.Share.factorize(4),
+                                        Values.Amount.factorize(470), Values.Amount.factorize(5),
+                                        Values.Amount.factorize(3)));
+        heldSecurity(client, "Beta", CurrencyUnit.EUR, (account, security) -> {
+        }, (portfolio, security) -> {
+        });
+        var acme = instrumentOf(client);
+
+        for (var metrics : List.of("valuation,gains,income,expenses,moneyWeighted,timeWeighted,risk", "valuation"))
+        {
+            var collection = InstrumentPerformanceHandler.list(client, new ExchangeRateProviderFactory(client), OPENING,
+                            CLOSING, null, null, null, metrics).getAsJsonObject();
+            JsonObject element = null;
+            for (var entry : collection.getAsJsonArray("items"))
+                if (entry.getAsJsonObject().get("uuid").getAsString().equals(acme.getUUID()))
+                    element = entry.getAsJsonObject();
+
+            var item = InstrumentPerformanceHandler.get(client, new ExchangeRateProviderFactory(client),
+                            acme.getUUID(), OPENING, CLOSING, null, null, null, metrics).getAsJsonObject();
+
+            for (var field : element.entrySet())
+                assertThat(field.getKey(), item.get(field.getKey()), is(field.getValue()));
+        }
+    }
+
     /** the currencies the report's {@code fxWarnings} named */
     private static List<String> currenciesOfWarnings(JsonObject report)
     {
