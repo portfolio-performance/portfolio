@@ -505,12 +505,7 @@ public final class ApiRoutes
             if (idempotent)
                 throw ApiException.uiReadTimedOut(deadline.toMillis());
 
-            // the write runs on, and nobody waits for it any more: if it
-            // fails, the log is the only place that can say so
-            future.whenComplete((result, failure) -> {
-                if (failure != null)
-                    PortfolioLog.error(failure);
-            });
+            logFailureLater(future);
             throw ApiException.uiRequestUnderway(deadline.toMillis());
         }
         catch (InterruptedException e)
@@ -519,6 +514,8 @@ public final class ApiRoutes
             // still queued for the UI thread never runs for nobody
             if (state.compareAndSet(NOT_STARTED, ABANDONED))
                 work.set(null);
+            else if (!idempotent)
+                logFailureLater(future);
             Thread.currentThread().interrupt();
             throw e;
         }
@@ -526,6 +523,18 @@ public final class ApiRoutes
         {
             throw unwrap(e);
         }
+    }
+
+    /**
+     * A write that runs on after nobody waits for it any more: if it fails,
+     * the log is the only place that can say so.
+     */
+    private static void logFailureLater(CompletableFuture<?> future)
+    {
+        future.whenComplete((result, failure) -> {
+            if (failure != null)
+                PortfolioLog.error(failure);
+        });
     }
 
     /**

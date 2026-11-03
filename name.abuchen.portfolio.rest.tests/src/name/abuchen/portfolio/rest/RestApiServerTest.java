@@ -652,6 +652,22 @@ public class RestApiServerTest
             var ping = HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + guarded.getPort() + "/v1/ping"))
                             .header("Authorization", "Bearer " + TOKEN).GET().build();
             assertThat(statusEventually(ping), is(200));
+
+            // only now read the stalled socket: the watchdog closed it, so it
+            // ends before the whole body came - it did not finish the write
+            socket.setSoTimeout(10_000);
+            long received = 0;
+            try
+            {
+                var buffer = new byte[64 * 1024];
+                for (int n; (n = socket.getInputStream().read(buffer)) >= 0;)
+                    received += n;
+            }
+            catch (java.net.SocketException e)
+            {
+                // a reset is a close as well
+            }
+            assertThat(received < 8L * 1024 * 1024, is(true));
         }
         finally
         {
