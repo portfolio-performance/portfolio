@@ -72,8 +72,8 @@ operations above as named tools. Point a client at `http://127.0.0.1:5712/mcp` a
 exists. Same switch, same port, same tokens; there is nothing extra to install.
 
 - **No session.** No `Mcp-Session-Id` is issued, responses are plain `application/json`, and `GET`
-  and `DELETE` answer `405` — an SSE stream would park one of the server's two worker threads, which
-  is the reason ADR 0002 already rejected long-polling.
+  and `DELETE` answer `405` — an SSE stream would hold one of the few requests the server serves at
+  once for as long as it stays open, which is the reason ADR 0002 already rejected long-polling.
 - **Authorisation is per JSON-RPC method.** `initialize`, `tools/list` and `ping` answer without a
   token; `tools/call` requires one and, lacking it, returns HTTP 200 with `isError: true`. A `401`
   is invisible in a chat client's UI, so the refusal has to reach the chat. `/.well-known/*` answers
@@ -250,7 +250,7 @@ after `-vmargs`; it is read when the server starts:
 ```
 
 At most the number of processors less one is used, so that one stays free for the user interface;
-an invalid value is logged and replaced by the default. The server then serves three requests per
+a number outside 1 to 8 is logged and replaced by the nearer bound, anything else by the default. The server then serves three requests per
 slot plus six more at once (12 with the default), so that every running and waiting calculation has
 room and the cheap calls still get through. Each calculation holds a whole file's daily valuation in
 memory, so raise the number only when several questions are really asked at the same time — one

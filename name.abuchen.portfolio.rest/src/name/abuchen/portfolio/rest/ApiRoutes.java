@@ -448,6 +448,14 @@ public final class ApiRoutes
 
             throw ApiException.uiRequestUnderway(deadline.toMillis());
         }
+        catch (InterruptedException e)
+        {
+            // the server is stopping: given up on like a timeout, so that work
+            // still queued for the UI thread never runs for nobody
+            state.compareAndSet(NOT_STARTED, ABANDONED);
+            Thread.currentThread().interrupt();
+            throw e;
+        }
         catch (ExecutionException e)
         {
             throw unwrap(e);

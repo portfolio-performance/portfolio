@@ -55,19 +55,31 @@ public class DevServer
      */
     private record DevHost(List<OpenFile> files) implements HostApplication
     {
+        /** stands in for the UI thread: one callable, or one read, at a time */
+        private static final Object UI = new Object();
+
         @Override
         public List<OpenFile> listOpenFiles()
         {
-            return files;
+            synchronized (UI)
+            {
+                return files;
+            }
         }
 
-        /** headless: there is no UI thread, so the callable runs on the caller's */
+        /**
+         * headless: there is no UI thread, so the callable runs on the caller's -
+         * but one at a time, as the UI thread would run them
+         */
         @Override
         public <T> CompletableFuture<T> asyncExec(Callable<T> callable)
         {
             try
             {
-                return CompletableFuture.completedFuture(callable.call());
+                synchronized (UI)
+                {
+                    return CompletableFuture.completedFuture(callable.call());
+                }
             }
             catch (Exception e)
             {
