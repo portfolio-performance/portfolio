@@ -70,18 +70,23 @@ becomes a later thin adapter over the same service layer. The individual decisio
 - **Calculations and the connection have deadlines of their own.** A calculation that does not
   finish within 120 s is answered with 503 `calculation-timeout` instead of a dropped connection.
   Receiving a request and sending its response are each bounded by a 30 s watchdog against clients
-  that stall. At most three requests per calculation slot plus six are served at
+  that stall; the request head, which the JDK reads before any of this code runs, by its own
+  `sun.net.httpserver.maxReqTime` of 60 s, set before the first server of the process starts. At most three requests per calculation slot plus six are served at
   once (12 by default), and one over the bound is refused (503 `server-busy`) without its body being
-  kept, so no local process can make the application buffer an arbitrary number of request bodies.
+  kept, so no local process can make the application buffer an arbitrary number of request bodies;
+  at most 16 such refusals run at once, and a connection beyond them is closed unanswered.
   Every body is read - or read past - before any answer goes out: the JDK drains an unread body only
-  after the response headers, where the watchdog can no longer close a connection that stalls.
+  after the response headers, where the watchdog can no longer close a connection that stalls. A
+  body that does not end within 1 MiB past the limit is not read further: that connection is closed
+  without an answer, as a 413 written over unread bytes may be lost to a TCP reset anyway.
   The engines never check for an interrupt, so a calculation past its deadline runs on; it keeps its
   calculation slot until it really ends. A calculation that finds every slot taken waits for one,
   first come first served, rather than being refused at once — a model sends several tool calls in
   one turn, and refusing one of them only makes it ask again — but the wait is bounded in time (30 s)
   and in size (two per slot), so it cannot pile up; past either bound it is refused (503
   `server-busy`). Two slots by default; the system property
-  `name.abuchen.portfolio.rest.calculationSlots` allows 1 to 8, at most the processors less one.
+  `name.abuchen.portfolio.rest.calculationSlots` allows 1 to 8, at most the processors less one,
+  and never below 1.
   Deliberately no preference: every slot is a whole file's daily valuation in memory.
 - **The API vocabulary is deliberately more general than the model** (`Security` → *instrument*,
   `Portfolio` → *investment account*), because the contract cannot be renamed once clients exist.
@@ -115,8 +120,9 @@ becomes a later thin adapter over the same service layer. The individual decisio
   compatibility burden.
 - *OAuth device-code flow for pairing*: rejected as the wrong weight for a loopback-only,
   single-user application; a poll-based request/approve resource achieves the same UX.
-- *Long-polling the pairing status*: rejected; the server runs a deliberately tiny thread pool and
-  one parked pairing request would consume half of it. Short polling every 1–2 s is cheap locally.
+- *Long-polling the pairing status*: rejected; a parked pairing request would hold one of the few
+  requests the server serves at once (12 by default) for as long as it waits. Short polling every
+  1–2 s is cheap locally.
 - *Per-client file scoping in the pairing grant*: rejected for now. The grant is authentication
   only; which files are visible stays governed by the existing per-file opt-in, keeping one
   authorization concept instead of a client × file matrix.
