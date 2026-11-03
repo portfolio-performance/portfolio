@@ -17,6 +17,14 @@ public final class HttpServerDefaults
      */
     private static final String MAX_REQUEST_SECONDS = "60"; //$NON-NLS-1$
 
+    /**
+     * Open connections per server. A connection is handed to a thread before
+     * its request head is read, so no bound above the JDK counts one that sends
+     * half a head and waits; this one does. Far above what a local client
+     * opens - a few, kept alive - and above the requests served at once.
+     */
+    private static final String MAX_CONNECTIONS = "100"; //$NON-NLS-1$
+
     private HttpServerDefaults()
     {
     }
@@ -24,6 +32,7 @@ public final class HttpServerDefaults
     public static synchronized void apply()
     {
         setIfUnset("sun.net.httpserver.maxReqTime", MAX_REQUEST_SECONDS); //$NON-NLS-1$
+        setIfUnset("jdk.httpserver.maxConnections", MAX_CONNECTIONS); //$NON-NLS-1$
     }
 
     private static void setIfUnset(String key, String value)
