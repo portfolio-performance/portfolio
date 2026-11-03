@@ -75,6 +75,9 @@ public class ClientStore
 
     private static final String FILE_NAME = "api-clients.json"; //$NON-NLS-1$
 
+    /** how many links in a row are followed to the client file, as a file system would */
+    private static final int MAX_LINK_HOPS = 40;
+
     /** the longest a client name may be, once sanitized */
     public static final int MAX_NAME_LENGTH = 64;
 
@@ -187,8 +190,7 @@ public class ClientStore
                 continue;
 
             entry.lastUsed = now;
-            var lastUsedDue = !entry.session && (entry.lastUsedPersisted == null
-                            || !now.isBefore(entry.lastUsedPersisted.plus(LAST_USED_WRITE_THROTTLE)));
+            var lastUsedDue = !entry.session && due(entry.lastUsedPersisted, now);
             // the time is taken as written only when the write worked; a failed
             // one is tried again with a later use
             if ((lastUsedDue || unsaved) && retryDue(now) && save() && !entry.session)
@@ -206,7 +208,16 @@ public class ClientStore
 
     private boolean retryDue(Instant now)
     {
-        return lastFailedSave == null || !now.isBefore(lastFailedSave.plus(LAST_USED_WRITE_THROTTLE));
+        return due(lastFailedSave, now);
+    }
+
+    /**
+     * Whether a minute has passed since - or the clock was set back behind it,
+     * which would otherwise hold off the write until it caught up again.
+     */
+    private static boolean due(Instant since, Instant now)
+    {
+        return since == null || now.isBefore(since) || !now.isBefore(since.plus(LAST_USED_WRITE_THROTTLE));
     }
 
     public synchronized List<ApiClient> listClients()
@@ -504,17 +515,24 @@ public class ClientStore
     }
 
     /**
-     * The file a write replaces: the client file, or the file it links to. A
-     * move replaces a link rather than what it points at, which would leave
-     * the linked file with the clients it had - revoked ones included - so a
-     * link is written through, as writing in place did. A link to nothing is
-     * replaced by the file.
+     * The file a write replaces: the client file, or the file it links to - also
+     * one that does not exist yet. A move replaces a link rather than what it
+     * points at, which would leave the linked file with the clients it had -
+     * revoked ones included - so a link is written through, as writing in
+     * place did. The temporary file is created next to the target, so its
+     * directory must be writable.
      */
     private Path target() throws IOException
     {
-        if (Files.isSymbolicLink(file) && Files.exists(file))
-            return file.toRealPath();
-        return file;
+        var path = file;
+        for (var hops = 0; Files.isSymbolicLink(path); hops++)
+        {
+            if (hops == MAX_LINK_HOPS)
+                throw new IOException(file + ": too many levels of symbolic links"); //$NON-NLS-1$
+            // a relative link counts from the directory that holds it
+            path = path.resolveSibling(Files.readSymbolicLink(path));
+        }
+        return path;
     }
 
     /**

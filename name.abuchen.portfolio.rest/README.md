@@ -53,7 +53,8 @@ for headless setups where nobody watches the screen. Tokens are stored hashed; a
 be re-displayed, only replaced. When the client file cannot be written as a client is revoked, the
 page says so: the revocation holds for this run and is written with a later request once the file
 can be written again, tried at most once a minute. A client file that is a symbolic link is written
-through the link.
+through the link, also to a target that does not exist yet; the target's directory must be writable,
+as the file is replaced there in one step.
 
 ## Talking to it
 

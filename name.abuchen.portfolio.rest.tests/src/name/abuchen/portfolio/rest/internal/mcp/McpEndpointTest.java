@@ -361,6 +361,8 @@ public class McpEndpointTest
     {
         var response = send(HttpRequest.newBuilder(uri()).header("Authorization", "Token abc")
                         .POST(HttpRequest.BodyPublishers.ofString(call("pp_list_files", "{}"))));
+        // a tool call is refused inside the result, as without a token
+        assertThat(response.statusCode(), is(200));
 
         var rejection = RejectedConnections.last().orElseThrow();
         assertThat(rejection.path(), is("/mcp"));

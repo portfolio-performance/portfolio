@@ -201,14 +201,19 @@ public class PairingServiceTest
         var first = service.create("Client 0");
         host.lastAccessRequest().allowAlways();
 
+        String second = null;
         String last = first;
         for (int ii = 1; ii <= PairingService.MAX_OUTCOMES; ii++)
         {
             last = service.create("Client " + ii);
             host.lastAccessRequest().allowAlways();
+            if (ii == 1)
+                second = last;
         }
 
         assertStatusIs(first, 404);
+        // only the oldest goes: the next one, the oldest kept, still has its token
+        assertThat(service.poll(second).token(), is(notNullValue()));
         assertThat(service.poll(last).token(), is(notNullValue()));
     }
 
