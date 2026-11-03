@@ -335,6 +335,37 @@ public class ClientStoreTest
     }
 
     /**
+     * An entry this version cannot parse may be one a later version reads. It
+     * does not authenticate here, but a save writes it back as it was.
+     */
+    @Test
+    public void testAnEntryThatDoesNotParseIsKeptOnSave() throws Exception
+    {
+        var bad = "{\"id\":\"b\",\"name\":\"Later\",\"created\":\"2026-07-20T10:00:00Z\",\"tokenDigest\":\"x\"}";
+        writeStore("{\"clients\":[" + bad + "]}");
+
+        var store = newStore();
+        assertThat(store.listClients(), hasSize(0));
+        store.addPersistentClient("Other");
+
+        var content = Files.readString(dir().resolve("api-clients.json"));
+        assertThat(content.contains("\"tokenDigest\":\"x\""), is(true));
+        assertThat(newStore().listClients(), hasSize(1));
+    }
+
+    /** the temporary file a save writes through is gone once the save is done */
+    @Test
+    public void testASaveLeavesNoTemporaryFile() throws Exception
+    {
+        newStore().addPersistentClient("Claude Code");
+
+        try (var files = Files.list(dir()))
+        {
+            assertThat(files.map(f -> f.getFileName().toString()).toList(), is(List.of("api-clients.json")));
+        }
+    }
+
+    /**
      * A file whose shape this version does not recognise is not an empty file.
      * Reading it as one, and then saving what this version holds, would delete
      * tokens that still exist - so the content stays exactly as it is.
@@ -346,10 +377,13 @@ public class ClientStoreTest
         writeStore(foreign);
 
         var store = newStore();
-        store.addPersistentClient("Claude Code");
+        var token = store.addPersistentClient("Claude Code");
 
         assertThat(Files.readString(dir().resolve("api-clients.json")), is(foreign));
         assertThat(store.listClients(), hasSize(1)); // usable in this run
+        assertThat(store.authenticate(token).isPresent(), is(true));
+        assertThat(store.listClients().get(0).session(), is(true));
+        assertThat(store.survivesRestart(token), is(false));
         assertThat(newStore().listClients(), hasSize(0)); // nothing was written over the old content
     }
 

@@ -228,7 +228,14 @@ public class PairingService
         }
     }
 
-    /** outcomes are kept only while they can still be polled */
+    /**
+     * Outcomes are kept only while they can still be polled - and never more
+     * than {@link #MAX_OUTCOMES}: the count bound wins over the TTL, so with more
+     * than that many decisions within {@link #OUTCOME_TTL} the oldest outcome is
+     * dropped before its time and its client polls 404. Every outcome needs a
+     * decision by the user, so that many are not reached in practice; without
+     * the bound the map would grow with every unpolled pairing.
+     */
     private void prune(Instant now)
     {
         outcomes.entrySet().removeIf(entry -> !now.isBefore(entry.getValue().expiresAt()));
