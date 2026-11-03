@@ -47,21 +47,17 @@ public class LanguagePreferencePage extends PreferencePage
 {
     private static final String OSGI_NL = "osgi.nl"; //$NON-NLS-1$
 
-    // The language can additionally be fixed in the ini file of the launcher.
-    // The launcher turns this argument into the osgi.nl property before the
-    // OSGi framework reads the config.ini of the configuration area. Therefore
-    // the language also survives launch setups that write that file anew on
-    // every start (for example the application launches from the workspace
-    // during development) and packagings that reset the configuration area
-    // (for example Flatpak).
-    private static final String NLS_ARGUMENT = "-nl"; //$NON-NLS-1$
-    private static final String VMARGS_ARGUMENT = "-vmargs"; //$NON-NLS-1$
+    // The launcher passes all start arguments, including those of its ini
+    // file, as eclipse.commands. A -nl argument sets osgi.nl before the
+    // config.ini is read and therefore takes precedence over this page.
+    private static final String ECLIPSE_COMMANDS = "eclipse.commands"; //$NON-NLS-1$
+    private static final String NL_ARGUMENT = "-nl"; //$NON-NLS-1$
 
-    // command that is offered when the ini file of the launcher cannot be
-    // written: the single quotes of the launcher path have to be doubled
-    // because MessageFormat uses the single quote as its escape character
-    private static final String START_COMMAND_FLATPAK = "flatpak run {0} {1} {2}"; //$NON-NLS-1$
-    private static final String START_COMMAND_LAUNCHER = "''{0}'' {1} {2}"; //$NON-NLS-1$
+    /**
+     * Set once the language has been saved: until the next restart the stored
+     * language then differs from the active one by intention.
+     */
+    private static boolean isChangedInSession = false;
 
     public enum Language
     {
@@ -178,11 +174,88 @@ public class LanguagePreferencePage extends PreferencePage
             }
         });
 
+        createLanguageHint(area);
+
         createSampleArea(area);
 
         updateSelection(userProperties.getProperty(OSGI_NL));
 
         return area;
+    }
+
+    /**
+     * Explains why the language stored on this page is not or will not be
+     * applied. The page stores the language as osgi.nl in the config.ini of
+     * the configuration area. A -nl start argument takes precedence over that
+     * file, and launches from the development environment create the file anew
+     * at every start.
+     */
+    private void createLanguageHint(Composite area)
+    {
+        String hint = getLanguageHintOrNull();
+        if (hint == null)
+            return;
+
+        var label = new Label(area, SWT.WRAP);
+        label.setText(hint);
+        GridDataFactory.fillDefaults().span(2, 1).grab(true, false).hint(400, SWT.DEFAULT).applyTo(label);
+    }
+
+    private String getLanguageHintOrNull()
+    {
+        String nlArgument = getNlArgumentOrNull();
+        if (nlArgument != null)
+            return MessageFormat.format(Messages.PrefMsgLanguageOverriddenByArgument, nlArgument);
+
+        if (Platform.inDevelopmentMode())
+            return Messages.PrefMsgLanguageDevelopmentLaunch;
+
+        String storedValue = userProperties.getProperty(OSGI_NL);
+        String activeValue = Platform.getNL();
+        if (storedValue != null && !isChangedInSession && !isSameLocale(storedValue, activeValue))
+            return MessageFormat.format(Messages.PrefMsgLanguageNotApplied, storedValue, activeValue,
+                            getUserConfigFileName());
+
+        return null;
+    }
+
+    private String getNlArgumentOrNull()
+    {
+        String commands = System.getProperty(ECLIPSE_COMMANDS);
+        if (commands == null)
+            return null;
+
+        String[] arguments = commands.split("\\R"); //$NON-NLS-1$
+        for (int ii = 0; ii < arguments.length - 1; ii++)
+        {
+            if (NL_ARGUMENT.equalsIgnoreCase(arguments[ii].trim()))
+            {
+                String value = arguments[ii + 1].trim();
+                return value.isEmpty() ? null : value;
+            }
+        }
+
+        return null;
+    }
+
+    private static boolean isSameLocale(String value, String other)
+    {
+        if (other == null)
+            return false;
+
+        return value.replace('-', '_').equalsIgnoreCase(other.replace('-', '_'));
+    }
+
+    private String getUserConfigFileName()
+    {
+        try
+        {
+            return getUserConfigFile().toString();
+        }
+        catch (URISyntaxException e)
+        {
+            return "config.ini"; //$NON-NLS-1$
+        }
     }
 
     private void createSampleArea(Composite area)
@@ -336,9 +409,8 @@ public class LanguagePreferencePage extends PreferencePage
             userProperties.setProperty(OSGI_NL, nlValue);
         }
 
-        storeUserPreferences();
-
-        persistWithLauncherArgument(nlValue);
+        if (storeUserPreferences())
+            isChangedInSession = true;
 
         return true;
     }
@@ -377,7 +449,7 @@ public class LanguagePreferencePage extends PreferencePage
         }
     }
 
-    private void storeUserPreferences()
+    private boolean storeUserPreferences()
     {
         try
         {
@@ -387,140 +459,15 @@ public class LanguagePreferencePage extends PreferencePage
             {
                 userProperties.store(out, null);
             }
+
+            return true;
         }
         catch (IOException | URISyntaxException e)
         {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.LabelError,
                             MessageFormat.format(Messages.MsgErrorSavingIniFile, e.getMessage()));
-        }
-    }
-
-    /**
-     * Writes the language into the ini file of the launcher so that it is set
-     * before the framework reads the config.ini. Without this argument the
-     * language of the user is lost whenever that config.ini is written anew.
-     */
-    private void persistWithLauncherArgument(String nlValue)
-    {
-        String launcherIniFile = getLauncherIniFileOrNull();
-
-        if (launcherIniFile == null)
-        {
-            // no launcher and therefore no ini file: the argument has to be
-            // added where this application is started from
-            if (nlValue != null)
-                MessageDialog.openInformation(Display.getCurrent().getActiveShell(), Messages.LabelInfo,
-                                MessageFormat.format(Messages.MsgLanguageLaunchConfigurationHint, nlValue));
-
-            return;
-        }
-
-        boolean written = writeNlArgument(launcherIniFile, nlValue);
-
-        if (written && nlValue != null)
-            MessageDialog.openInformation(Display.getCurrent().getActiveShell(), Messages.LabelInfo,
-                            MessageFormat.format(Messages.PrefMsgLanguageStoredInLauncherIni, launcherIniFile,
-                                            nlValue));
-        else if (!written && nlValue != null)
-            showStartCommandHint(launcherIniFile, nlValue);
-    }
-
-    private String getLauncherIniFileOrNull()
-    {
-        String launcherIniFile = System.getProperty("eclipse.launcher.ini"); //$NON-NLS-1$
-
-        if (launcherIniFile == null || launcherIniFile.isEmpty())
-        {
-            String launcher = System.getProperty("eclipse.launcher"); //$NON-NLS-1$
-            if (launcher == null || launcher.isEmpty())
-                return null;
-
-            launcherIniFile = launcher + ".ini"; //$NON-NLS-1$
-        }
-
-        return Files.isReadable(Paths.get(launcherIniFile)) ? launcherIniFile : null;
-    }
-
-    /**
-     * Replaces an existing -nl argument of the launcher ini file, or removes it
-     * if the language is set back to automatic. The argument and its value
-     * occupy one line each and have to be placed in front of -vmargs.
-     */
-    private boolean writeNlArgument(String launcherIniFile, String nlValue)
-    {
-        try
-        {
-            Path launcherIni = Paths.get(launcherIniFile);
-            List<String> lines = Files.readAllLines(launcherIni);
-            List<String> updated = new ArrayList<>(lines.size());
-
-            boolean inserted = nlValue == null;
-
-            for (int i = 0; i < lines.size(); i++)
-            {
-                String line = lines.get(i);
-
-                if (line.trim().equals(NLS_ARGUMENT) && i + 1 < lines.size())
-                {
-                    // skip the argument together with the value that follows it
-                    i++;
-                    continue;
-                }
-
-                if (!inserted && line.trim().equals(VMARGS_ARGUMENT))
-                {
-                    updated.add(NLS_ARGUMENT);
-                    updated.add(nlValue);
-                    inserted = true;
-                }
-
-                updated.add(line);
-            }
-
-            if (!inserted)
-            {
-                updated.add(NLS_ARGUMENT);
-                updated.add(nlValue);
-            }
-
-            Files.write(launcherIni, updated);
-            return true;
-        }
-        catch (IOException e)
-        {
-            PortfolioPlugin.log(e);
             return false;
         }
-    }
-
-    private void showStartCommandHint(String launcherIniFile, String nlValue)
-    {
-        String startCommand = getStartCommandOrNull(nlValue);
-
-        if (startCommand == null)
-            MessageDialog.openInformation(Display.getCurrent().getActiveShell(), Messages.LabelInfo,
-                            MessageFormat.format(Messages.MsgLanguageLaunchConfigurationHint, nlValue));
-        else
-            MessageDialog.openInformation(Display.getCurrent().getActiveShell(), Messages.LabelInfo,
-                            MessageFormat.format(Messages.MsgLanguageCommandHint, launcherIniFile, startCommand));
-    }
-
-    /**
-     * Command line that starts this installation in the desired language. It is
-     * offered when the ini file of the launcher cannot be written, for example
-     * in a sandbox such as Flatpak or in an installation owned by root.
-     */
-    private String getStartCommandOrNull(String nlValue)
-    {
-        String flatpakId = System.getenv("FLATPAK_ID"); //$NON-NLS-1$
-        if (flatpakId != null && !flatpakId.isEmpty())
-            return MessageFormat.format(START_COMMAND_FLATPAK, flatpakId, NLS_ARGUMENT, nlValue);
-
-        String launcher = System.getProperty("eclipse.launcher"); //$NON-NLS-1$
-        if (launcher == null || launcher.isEmpty())
-            return null;
-
-        return MessageFormat.format(START_COMMAND_LAUNCHER, launcher, NLS_ARGUMENT, nlValue);
     }
 
 }
