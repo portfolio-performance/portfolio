@@ -78,7 +78,10 @@ public class ClientStore
     /** the longest a client name may be, once sanitized */
     public static final int MAX_NAME_LENGTH = 64;
 
-    /** successful authentications update the file at most this often */
+    /**
+     * successful authentications update the file at most this often, and after
+     * a write that failed, the next is tried no sooner than this
+     */
     private static final Duration LAST_USED_WRITE_THROTTLE = Duration.ofMinutes(1);
 
     private final Path file;
@@ -109,6 +112,17 @@ public class ClientStore
      * discard clients the user still has.
      */
     private boolean unreadable;
+
+    /**
+     * Whether the file still holds a client that was revoked in memory, because
+     * the write failed. Any later write that works removes it; until then an
+     * authentication - also one with that client's token - tries again, once a
+     * minute at most, so that a lasting failure does not log every request.
+     */
+    private boolean unsaved;
+
+    /** when the last write failed; null after one that worked */
+    private Instant lastFailedSave;
 
     public ClientStore(Path directory)
     {
@@ -165,24 +179,34 @@ public class ClientStore
     public synchronized Optional<ApiClient> authenticate(String token)
     {
         var presented = hash(token).getBytes(StandardCharsets.UTF_8);
+        var now = clock.get();
 
         for (var entry : entries)
         {
             if (!MessageDigest.isEqual(presented, entry.tokenHash.getBytes(StandardCharsets.UTF_8)))
                 continue;
 
-            var now = clock.get();
             entry.lastUsed = now;
-            if (!entry.session && (entry.lastUsedPersisted == null
-                            || !now.isBefore(entry.lastUsedPersisted.plus(LAST_USED_WRITE_THROTTLE))))
-            {
+            var lastUsedDue = !entry.session && (entry.lastUsedPersisted == null
+                            || !now.isBefore(entry.lastUsedPersisted.plus(LAST_USED_WRITE_THROTTLE)));
+            // the time is taken as written only when the write worked; a failed
+            // one is tried again with a later use
+            if ((lastUsedDue || unsaved) && retryDue(now) && save() && !entry.session)
                 entry.lastUsedPersisted = now;
-                save();
-            }
             return Optional.of(entry.toApiClient());
         }
 
+        // no client holds the token - perhaps one revoked while the file could
+        // not be written, which still lists it
+        if (unsaved && retryDue(now))
+            save();
+
         return Optional.empty();
+    }
+
+    private boolean retryDue(Instant now)
+    {
+        return lastFailedSave == null || !now.isBefore(lastFailedSave.plus(LAST_USED_WRITE_THROTTLE));
     }
 
     public synchronized List<ApiClient> listClients()
@@ -205,8 +229,9 @@ public class ClientStore
     /**
      * Removes a client, answering whether the removal reached the file. False
      * means the entry is gone from memory while the file still holds its token
-     * hash, so the token authenticates again after a restart - the caller has to
-     * say that rather than presenting the client as revoked.
+     * hash, so the token authenticates again after a restart unless a later
+     * write works - the caller has to say that rather than presenting the
+     * client as revoked. The write is tried again with later authentications.
      */
     public synchronized boolean revoke(String id)
     {
@@ -226,8 +251,9 @@ public class ClientStore
 
         if (!save())
         {
+            unsaved = true;
             PortfolioLog.warning("A revoked client is gone for this run only; its token still authenticates after a " //$NON-NLS-1$
-                            + "restart because the client file could not be written"); //$NON-NLS-1$
+                            + "restart unless a later write of the client file works"); //$NON-NLS-1$
             return false;
         }
         return true;
@@ -393,6 +419,21 @@ public class ClientStore
      */
     private boolean save()
     {
+        var saved = write();
+        if (saved)
+        {
+            unsaved = false;
+            lastFailedSave = null;
+        }
+        else
+        {
+            lastFailedSave = clock.get();
+        }
+        return saved;
+    }
+
+    private boolean write()
+    {
         if (unreadable)
         {
             PortfolioLog.warning("Not writing " + FILE_NAME + ": its content is not a client list this version " //$NON-NLS-1$ //$NON-NLS-2$
@@ -421,7 +462,8 @@ public class ClientStore
 
         try
         {
-            Files.createDirectories(file.getParent());
+            var target = target();
+            Files.createDirectories(target.getParent());
 
             // written next to the file and moved over it: a crash halfway
             // through leaves the previous file intact rather than a truncated
@@ -429,23 +471,23 @@ public class ClientStore
             // visible under the real name
             // a move replaces an empty directory where the file belongs, which
             // writing in place never did - that is not a file we may overwrite
-            if (Files.isDirectory(file))
-                throw new IOException(file + " is a directory"); //$NON-NLS-1$
+            if (Files.isDirectory(target))
+                throw new IOException(target + " is a directory"); //$NON-NLS-1$
 
             // a fresh name, created exclusively - on POSIX already owner-only -
             // in the same directory, so that the move stays on one file system
-            var temp = Files.createTempFile(file.getParent(), FILE_NAME, ".tmp"); //$NON-NLS-1$
+            var temp = Files.createTempFile(target.getParent(), FILE_NAME, ".tmp"); //$NON-NLS-1$
             try
             {
                 Files.writeString(temp, root.toString(), StandardCharsets.UTF_8);
                 restrictToOwner(temp);
                 try
                 {
-                    Files.move(temp, file, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+                    Files.move(temp, target, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
                 }
                 catch (AtomicMoveNotSupportedException e)
                 {
-                    Files.move(temp, file, StandardCopyOption.REPLACE_EXISTING);
+                    Files.move(temp, target, StandardCopyOption.REPLACE_EXISTING);
                 }
             }
             finally
@@ -459,6 +501,20 @@ public class ClientStore
             PortfolioLog.error(e);
             return false;
         }
+    }
+
+    /**
+     * The file a write replaces: the client file, or the file it links to. A
+     * move replaces a link rather than what it points at, which would leave
+     * the linked file with the clients it had - revoked ones included - so a
+     * link is written through, as writing in place did. A link to nothing is
+     * replaced by the file.
+     */
+    private Path target() throws IOException
+    {
+        if (Files.isSymbolicLink(file) && Files.exists(file))
+            return file.toRealPath();
+        return file;
     }
 
     /**
