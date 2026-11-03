@@ -19,6 +19,7 @@ import com.sun.net.httpserver.HttpServer;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
+import name.abuchen.portfolio.util.HttpServerDefaults;
 
 public class CallbackServer
 {
@@ -98,6 +99,9 @@ public class CallbackServer
         {
             stop();
         }
+
+        // the JDK takes its time limits from the first server of the process
+        HttpServerDefaults.apply();
 
         for (int port : PORTS)
         {
