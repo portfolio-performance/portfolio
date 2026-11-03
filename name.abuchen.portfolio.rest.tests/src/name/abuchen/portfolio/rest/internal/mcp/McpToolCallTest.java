@@ -226,6 +226,9 @@ public class McpToolCallTest
     @Test
     public void testADeleteNamesWhatItRemovedAndSaysItIsNotSaved()
     {
+        // the name travels back from the delete percent-encoded: spaces, + and
+        // letters outside ASCII must arrive as they were
+        security.setName("M\u00FCller + S\u00F6hne AG");
         var name = security.getName();
         var result = call("pp_delete_instrument",
                         "{\"file\":\"sample\",\"uuid\":\"" + security.getUUID() + "\"}");
