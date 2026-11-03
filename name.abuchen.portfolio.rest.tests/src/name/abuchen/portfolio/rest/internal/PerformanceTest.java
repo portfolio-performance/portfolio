@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Test;
 
 import com.google.gson.JsonObject;
@@ -239,7 +240,9 @@ public class PerformanceTest
         var result = perf(client, "2024-01-01", future.toString(), null, null);
 
         assertThat(result.get("closingDate").getAsString(), is(future.toString()));
-        assertThat(result.get("timeWeightedUntil").getAsString(), is(today.toString()));
+        // the handler reads today itself; across midnight it may answer the next day
+        assertThat(result.get("timeWeightedUntil").getAsString(),
+                        anyOf(is(today.toString()), is(LocalDate.now().toString())));
 
         // the planned deposit is in the money figures, and they still reconcile
         var breakdown = result.get("breakdown").getAsJsonObject();
@@ -267,6 +270,8 @@ public class PerformanceTest
         {
             var result = perf(client, opening.toString(), today.plusDays(90).toString(), null, null);
 
+            // past midnight a period opening on the day the test started has a past
+            Assume.assumeTrue("the date changed during the test", LocalDate.now().equals(today));
             assertThat(result.get("timeWeightedUntil").getAsString(), is(today.toString()));
             assertThat(result.get("ttwror").isJsonNull(), is(true));
             assertThat(result.get("irr").isJsonNull(), is(true));
