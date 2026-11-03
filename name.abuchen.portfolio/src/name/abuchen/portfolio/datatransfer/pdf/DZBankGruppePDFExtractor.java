@@ -123,12 +123,21 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                         .match("^St.ck (?<shares>[\\.,\\d]+) .*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        // @formatter:off
-                        // Schlusstag/-Zeit 17.02.2021 09:04:10 Auftraggeber Max Mustermann
-                        // @formatter:on
-                        .section("date", "time") //
-                        .match("^Schlusstag\\/\\-Zeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) .*$") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Schlusstag/-Zeit 17.02.2021 09:04:10 Auftraggeber Max Mustermann
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "time") //
+                                                        .match("^Schlusstag\\/\\-Zeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) .*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
+                                        // @formatter:off
+                                        // Schlusstag 10.03.2026 Auftraggeber Max Mustermann
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Schlusstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))))
 
                         // @formatter:off
                         // Ausmachender Betrag 5.109,01- EUR
@@ -1215,7 +1224,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                             t.setSecurity(getOrCreateSecurity(context));
 
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));                     
+                            t.setAmount(asAmount(v.get("amount")));
                         })
 
                         // @formatter:off
@@ -1256,7 +1265,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                         })
 
                         // @formatter:off
-                        // Kapitalerstragsteuer (Joint Account)
+                        // Kapitalertragsteuer (Joint Account)
                         // Kapitalertragsteuer 24,51 % auf 10,69 EUR 2,62- EUR
                         // Kapitalertragsteuer 24,51 % auf 10,69 EUR 2,62- EUR
                         // @formatter:on
@@ -1278,7 +1287,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                             }
                         })
 
-                        // @formatter: off
+                        // @formatter:off
                         // Solidaritätszuschlag (Account)
                         // Solidaritätszuschlag 5,5 % auf 1,89 EUR 0,11- EUR
                         // Solidaritätszuschlag 5,50% auf 35,99 EUR 1,98- EUR
@@ -1291,10 +1300,10 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                         })
 
                         // @formatter:off
-                        // Solitaritätszuschlag (Joint Account)
+                        // Solidaritätszuschlag (Joint Account)
                         // Solidaritätszuschlag 5,5 % auf 2,62 EUR 0,14- EUR
                         // Solidaritätszuschlag 5,5 % auf 2,62 EUR 0,14- EUR
-                        // @@formatter:on
+                        // @formatter:on
                         .section("tax1", "currency1", "tax2", "currency2").optional() //
                         .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% .* (?<tax1>[\\.,\\d]+)\\- (?<currency1>[\\w]{3})$") //
                         .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% .* (?<tax2>[\\.,\\d]+)\\- (?<currency2>[\\w]{3})$") //
