@@ -27,6 +27,11 @@ import name.abuchen.portfolio.util.Interval;
         this.security = security;
     }
 
+    /* package */ Security getSecurity()
+    {
+        return security;
+    }
+
     /* package */void calculate()
     {
         List<SecurityPrice> prices = security.getPrices();
