@@ -309,6 +309,57 @@ public class ClientStoreTest
     }
 
     /**
+     * Reported in review: a pending revoke is written by any authentication -
+     * also a session client's, whose own use is never written.
+     */
+    @Test
+    public void testAPendingRevokeIsWrittenByASessionClientsAuthentication() throws Exception
+    {
+        var store = newStore();
+        store.addPersistentClient("Claude Code");
+        var id = store.listClients().get(0).id();
+        var file = dir().resolve("api-clients.json");
+        var content = Files.readString(file);
+
+        Files.delete(file);
+        Files.createDirectories(file);
+        assertThat(store.revoke(id), is(false));
+
+        Files.delete(file);
+        Files.writeString(file, content);
+        var sessionToken = store.addSessionClient("Script");
+
+        now = Instant.parse("2026-07-20T10:01:00Z");
+        assertThat(store.authenticate(sessionToken).isPresent(), is(true));
+        assertThat(newStore().listClients(), hasSize(0));
+    }
+
+    /**
+     * Reported in review: a clock set back behind the failed write does not
+     * hold off the next attempt until it catches up again.
+     */
+    @Test
+    public void testAClockSetBackDoesNotDelayTheRetry() throws Exception
+    {
+        var store = newStore();
+        var token = store.addPersistentClient("Claude Code");
+        var id = store.listClients().get(0).id();
+        var file = dir().resolve("api-clients.json");
+        var content = Files.readString(file);
+
+        Files.delete(file);
+        Files.createDirectories(file);
+        assertThat(store.revoke(id), is(false));
+
+        Files.delete(file);
+        Files.writeString(file, content);
+
+        now = Instant.parse("2026-07-20T09:30:00Z");
+        assertThat(store.authenticate(token).isPresent(), is(false));
+        assertThat(newStore().listClients(), hasSize(0));
+    }
+
+    /**
      * Reported in review: the time of a use is taken as written only when the
      * write worked; a failed one is tried again a minute later, not a minute
      * after the last use that was written.
@@ -386,6 +437,33 @@ public class ClientStoreTest
         assertThat(Files.isSymbolicLink(link), is(true));
         assertThat(Files.readString(real).contains("Claude Code"), is(false));
         assertThat(newStore().authenticate(token).isPresent(), is(false));
+    }
+
+    /**
+     * Reported in review: a link whose target does not exist yet is written
+     * through as well - the target is created, the link stays.
+     */
+    @Test
+    public void testADanglingLinkIsWrittenThrough() throws Exception
+    {
+        var real = dir().resolve("elsewhere").resolve("clients.json");
+        var link = dir().resolve("api-clients.json");
+        try
+        {
+            Files.createSymbolicLink(link, real);
+        }
+        catch (UnsupportedOperationException | java.io.IOException e)
+        {
+            Assume.assumeNoException("no symbolic links here", e);
+        }
+
+        var store = newStore();
+        var token = store.addPersistentClient("Claude Code");
+
+        assertThat(store.listClients().get(0).session(), is(false));
+        assertThat(Files.isSymbolicLink(link), is(true));
+        assertThat(Files.readString(real).contains("Claude Code"), is(true));
+        assertThat(newStore().authenticate(token).isPresent(), is(true));
     }
 
     private void writeStore(String content) throws Exception

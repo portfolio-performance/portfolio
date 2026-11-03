@@ -67,6 +67,15 @@ public class RejectedConnectionsTest
         assertThat(RejectedConnections.last().orElseThrow().userAgent().length(), is(201));
     }
 
+    /** a value of exactly the limit is kept whole, without an ellipsis */
+    @Test
+    public void testAValueOfExactlyTheLimitIsKept()
+    {
+        RejectedConnections.record("/v1/ping", "a".repeat(200), false, RejectedConnections.Reason.NO_HEADER);
+
+        assertThat(RejectedConnections.last().orElseThrow().userAgent(), is("a".repeat(200)));
+    }
+
     @Test
     public void testTheReasonIsKept()
     {
