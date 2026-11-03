@@ -120,9 +120,10 @@ exists. Same switch, same port, same tokens; there is nothing extra to install.
   object per row, or `null`. Each result says in a line what applies to it, and only what applies:
   the `null` line only where a `null` is sent.
 - **A list too large for one result comes back as its first page.** The instruments and the trades
-  take `offset` and `limit`; when the whole list does not fit, the result holds as many whole items
-  as do, a `page` (`offset`, `limit`, `total`, `nextOffset`) and a line before the items naming the
-  `offset` to ask for next. Any other result cut to fit ends after a whole row, and says so.
+  take `cursor` and `limit`; when the whole list does not fit, the result holds as many whole items
+  as do, a `page` (`limit`, `total`, `nextCursor`) and a line before the items naming the `cursor`
+  to ask for next. Over MCP the lists are always in the order paging uses — instruments by `uuid` —
+  so that any page can be continued. Any other result cut to fit ends after a whole row, and says so.
 - **One result holds at most 100,000 characters** — under Claude Desktop's measured 150,000. A
   client that keeps less, such as Claude Code (25,000 tokens), cuts a larger result blindly; set the
   limit below what it keeps, and the server sends a page or a marked cut instead:
