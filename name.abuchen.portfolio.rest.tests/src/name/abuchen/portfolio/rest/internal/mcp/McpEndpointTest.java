@@ -367,8 +367,9 @@ public class McpEndpointTest
         assertThat(rejection.tokenPresented(), is(false));
         assertThat(rejection.reason(), is(RejectedConnections.Reason.NO_BEARER_SCHEME));
 
-        assertThat(text(body(response).getAsJsonObject().getAsJsonObject("result")),
-                        containsString("does not carry a bearer token"));
+        var result = body(response).getAsJsonObject().getAsJsonObject("result");
+        assertThat(result.get("isError").getAsBoolean(), is(true));
+        assertThat(text(result), containsString("does not carry a bearer token"));
     }
 
     /**
