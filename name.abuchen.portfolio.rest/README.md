@@ -50,7 +50,10 @@ cool-down (both reported `429` with `Retry-After`). Every `401` names the pairin
 The preference page lists all authorized clients with their last use, lets the user **revoke** each
 individually (effective immediately), and can mint a token manually via **Add client** — the path
 for headless setups where nobody watches the screen. Tokens are stored hashed; a lost token cannot
-be re-displayed, only replaced.
+be re-displayed, only replaced. When the client file cannot be written as a client is revoked, the
+page says so: the revocation holds for this run and is written with a later request once the file
+can be written again, tried at most once a minute. A client file that is a symbolic link is written
+through the link.
 
 ## Talking to it
 

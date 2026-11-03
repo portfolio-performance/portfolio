@@ -13,6 +13,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -273,6 +274,118 @@ public class ClientStoreTest
         assertThat(store.revoke(id), is(false));
         assertThat(store.authenticate(token).isPresent(), is(false));
         assertThat(store.listClients(), hasSize(0));
+    }
+
+    /**
+     * Reported in review: a revoke the file did not take is written by a
+     * later authentication - also one with the revoked token, which is the
+     * client most likely to keep calling - at most once a minute.
+     */
+    @Test
+    public void testARevokeThatCouldNotBeWrittenIsWrittenLater() throws Exception
+    {
+        var store = newStore();
+        var token = store.addPersistentClient("Claude Code");
+        var id = store.listClients().get(0).id();
+        var file = dir().resolve("api-clients.json");
+        var content = Files.readString(file);
+
+        Files.delete(file);
+        Files.createDirectories(file);
+        assertThat(store.revoke(id), is(false));
+
+        Files.delete(file);
+        Files.writeString(file, content);
+
+        // within the minute after the failed write: not tried yet
+        now = Instant.parse("2026-07-20T10:00:30Z");
+        assertThat(store.authenticate(token).isPresent(), is(false));
+        assertThat(newStore().listClients(), hasSize(1));
+
+        now = Instant.parse("2026-07-20T10:01:00Z");
+        assertThat(store.authenticate(token).isPresent(), is(false));
+        assertThat(newStore().listClients(), hasSize(0));
+        assertThat(newStore().authenticate(token).isPresent(), is(false));
+    }
+
+    /**
+     * Reported in review: the time of a use is taken as written only when the
+     * write worked; a failed one is tried again a minute later, not a minute
+     * after the last use that was written.
+     */
+    @Test
+    public void testAFailedWriteOfTheLastUseIsTriedAgain() throws Exception
+    {
+        var store = newStore();
+        var token = store.addPersistentClient("Claude Code");
+        var file = dir().resolve("api-clients.json");
+        var content = Files.readString(file);
+
+        Files.delete(file);
+        Files.createDirectories(file);
+        now = Instant.parse("2026-07-20T10:02:00Z");
+        assertThat(store.authenticate(token).isPresent(), is(true));
+
+        Files.delete(file);
+        Files.writeString(file, content);
+
+        now = Instant.parse("2026-07-20T10:02:30Z");
+        store.authenticate(token);
+        assertThat(newStore().listClients().get(0).lastUsed(), is(nullValue()));
+
+        now = Instant.parse("2026-07-20T10:03:00Z");
+        store.authenticate(token);
+        assertThat(newStore().listClients().get(0).lastUsed(), is(Instant.parse("2026-07-20T10:03:00Z")));
+    }
+
+    /**
+     * Reported in review: a client written while the file could be written
+     * keeps authenticating, and stays persistent, when a later write of its
+     * last use fails.
+     */
+    @Test
+    public void testAPersistedClientStillAuthenticatesWhenItsFileBecomesUnwritable() throws Exception
+    {
+        var store = newStore();
+        var token = store.addPersistentClient("Claude Code");
+
+        Files.delete(dir().resolve("api-clients.json"));
+        Files.createDirectories(dir().resolve("api-clients.json")); // a directory where a file belongs
+
+        assertThat(store.authenticate(token).isPresent(), is(true));
+        assertThat(store.listClients().get(0).session(), is(false));
+    }
+
+    /**
+     * Reported in review: a client file that is a link is written through,
+     * as writing in place did. Replacing the link would leave the linked file
+     * with the clients it had - a revoked one among them.
+     */
+    @Test
+    public void testALinkedClientFileIsWrittenThrough() throws Exception
+    {
+        var real = Files.createDirectories(dir().resolve("elsewhere")).resolve("clients.json");
+        Files.writeString(real, "{\"clients\":[]}");
+        var link = dir().resolve("api-clients.json");
+        try
+        {
+            Files.createSymbolicLink(link, real);
+        }
+        catch (UnsupportedOperationException | java.io.IOException e)
+        {
+            Assume.assumeNoException("no symbolic links here", e);
+        }
+
+        var store = newStore();
+        var token = store.addPersistentClient("Claude Code");
+        assertThat(Files.isSymbolicLink(link), is(true));
+        assertThat(Files.readString(real).contains("Claude Code"), is(true));
+        assertThat(newStore().authenticate(token).isPresent(), is(true));
+
+        assertThat(store.revoke(store.listClients().get(0).id()), is(true));
+        assertThat(Files.isSymbolicLink(link), is(true));
+        assertThat(Files.readString(real).contains("Claude Code"), is(false));
+        assertThat(newStore().authenticate(token).isPresent(), is(false));
     }
 
     private void writeStore(String content) throws Exception
