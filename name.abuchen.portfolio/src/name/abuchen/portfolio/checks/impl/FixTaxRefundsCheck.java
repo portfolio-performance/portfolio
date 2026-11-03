@@ -25,6 +25,8 @@ public class FixTaxRefundsCheck implements Check
         if (client.getFileVersionAfterRead() > 29)
             return Collections.emptyList();
 
+        boolean isDirty = false;
+
         for (Account account : client.getAccounts())
         {
             for (AccountTransaction t : account.getTransactions())
@@ -38,9 +40,15 @@ public class FixTaxRefundsCheck implements Check
                 Security security = t.getSecurity();
 
                 if (!client.getSecurities().contains(security))
+                {
                     t.setSecurity(null);
+                    isDirty = true;
+                }
             }
         }
+
+        if (isDirty)
+            client.markDirty();
 
         return Collections.emptyList();
     }

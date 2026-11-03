@@ -30,6 +30,8 @@ public class FixWrongTransfersCheck implements Check
                         .filter(t -> PortfolioTransaction.Type.TRANSFER_IN.equals(t.getType()))
                         .collect(Collectors.toList());
 
+        boolean isDirty = false;
+
         for (PortfolioTransaction t : transactions)
         {
             if (t.getCrossEntry() instanceof BuySellEntry)
@@ -45,8 +47,13 @@ public class FixWrongTransfersCheck implements Check
                 // replace transaction in portfolio
                 ((Portfolio) t.getCrossEntry().getOwner(t)).addTransaction(copy);
                 ((Portfolio) t.getCrossEntry().getOwner(t)).deleteTransaction(t, client);
+
+                isDirty = true;
             }
         }
+
+        if (isDirty)
+            client.markDirty();
 
         return Collections.emptyList();
     }

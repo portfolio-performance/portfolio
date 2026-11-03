@@ -59,6 +59,8 @@ public class CrossEntryCheck implements Check
 
         private List<Issue> issues = new ArrayList<Issue>();
 
+        private boolean isDirty = false;
+
         public CheckImpl(Client client)
         {
             this.client = client;
@@ -72,6 +74,11 @@ public class CrossEntryCheck implements Check
             matchBuySell();
             matchAccountTransfers();
             matchPortfolioTransfers();
+
+            // the matched transactions are replaced without notifying the
+            // client
+            if (isDirty)
+                client.markDirty();
 
             return issues;
         }
@@ -186,6 +193,8 @@ public class CrossEntryCheck implements Check
 
                     portfolioTransactions.remove(match);
                     iterAccount.remove();
+
+                    isDirty = true;
                 }
             }
 
@@ -268,6 +277,8 @@ public class CrossEntryCheck implements Check
 
                     matched.add(suspect);
                     matched.add(match);
+
+                    isDirty = true;
                 }
             }
 
@@ -346,6 +357,8 @@ public class CrossEntryCheck implements Check
 
                     matched.add(suspect);
                     matched.add(match);
+
+                    isDirty = true;
                 }
             }
 
