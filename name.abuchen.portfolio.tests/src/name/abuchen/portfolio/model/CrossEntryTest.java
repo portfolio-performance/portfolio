@@ -91,6 +91,38 @@ public class CrossEntryTest
     }
 
     @Test
+    public void testPortfolioSideOfBuySellEntry()
+    {
+        BuySellEntry entry = new BuySellEntry(client.getPortfolios().get(0), client.getAccounts().get(0));
+        entry.setType(PortfolioTransaction.Type.BUY);
+        entry.setSecurity(client.getSecurities().get(0));
+
+        assertThat(BuySellEntry.portfolioTransactionOrSelf(entry.getAccountTransaction()),
+                        is((Transaction) entry.getPortfolioTransaction()));
+        assertThat(BuySellEntry.portfolioTransactionOrSelf(entry.getPortfolioTransaction()),
+                        is((Transaction) entry.getPortfolioTransaction()));
+    }
+
+    @Test
+    public void testPortfolioSideOfOtherTransactions()
+    {
+        // the cross transaction of a portfolio transfer is also a portfolio
+        // transaction, but must not be redirected to
+        PortfolioTransferEntry transfer = new PortfolioTransferEntry(client.getPortfolios().get(0),
+                        client.getPortfolios().get(1));
+        assertThat(BuySellEntry.portfolioTransactionOrSelf(transfer.getSourceTransaction()),
+                        is((Transaction) transfer.getSourceTransaction()));
+
+        AccountTransferEntry accountTransfer = new AccountTransferEntry(client.getAccounts().get(0),
+                        client.getAccounts().get(1));
+        assertThat(BuySellEntry.portfolioTransactionOrSelf(accountTransfer.getSourceTransaction()),
+                        is((Transaction) accountTransfer.getSourceTransaction()));
+
+        AccountTransaction deposit = new AccountTransaction();
+        assertThat(BuySellEntry.portfolioTransactionOrSelf(deposit), is((Transaction) deposit));
+    }
+
+    @Test
     public void testAccountTransferEntry()
     {
         Account accountA = client.getAccounts().get(0);

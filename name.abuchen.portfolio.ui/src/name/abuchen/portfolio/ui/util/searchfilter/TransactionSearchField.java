@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.TransactionPair;
@@ -89,7 +90,7 @@ public class TransactionSearchField extends ControlContribution
                         ? ((AccountTransaction) tx.getTransaction()).getType()
                         : ((PortfolioTransaction) tx.getTransaction()).getType());
         searchLabels.add(tx -> tx.getTransaction().getNote());
-        searchLabels.add(tx -> tx.getTransaction().getShares());
+        searchLabels.add(tx -> BuySellEntry.portfolioTransactionOrSelf(tx.getTransaction()).getShares());
         searchLabels.add(tx -> tx.getTransaction().getMonetaryAmount());
 
         return new ViewerFilter()
