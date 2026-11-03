@@ -319,8 +319,12 @@ public class InstrumentPerformanceTest
     {
         var opening = LocalDate.now().plusDays(1).toString();
         var closing = LocalDate.now().plusDays(60).toString();
+        // a planned purchase inside the period: the money figures count it
+        var planned = LocalDate.now().plusDays(10).toString();
+        var client = tradedPosition((portfolio, security) -> portfolio.buy(security, planned,
+                        Values.Share.factorize(5), Values.Amount.factorize(600)));
 
-        var row = onlyItem(list(heldPosition(), opening, closing, null, null, null, null));
+        var row = onlyItem(list(client, opening, closing, null, null, null, null));
 
         assertThat(row.getAsJsonObject("moneyWeighted").get("irr").isJsonNull(), is(true));
         assertThat(row.getAsJsonObject("timeWeighted").get("ttwror").isJsonNull(), is(true));
@@ -330,7 +334,9 @@ public class InstrumentPerformanceTest
         assertThat(row.getAsJsonObject("risk").get("maxDrawdown").isJsonNull(), is(true));
         // non-null in the 1.0 contract, so 0 rather than null
         assertThat(row.getAsJsonObject("risk").get("longestDrawdownDays").getAsInt(), is(0));
-        assertThat(row.getAsJsonObject("valuation").get("closingValue").isJsonNull(), is(false));
+        // 15 shares at the last price, 120: the planned five included
+        assertThat(row.getAsJsonObject("valuation").get("shares").getAsDouble(), is(15d));
+        assertThat(money(row.getAsJsonObject("valuation"), "closingValue"), is(1800d));
     }
 
     /** the echo states the value that was applied, not an omitted property */

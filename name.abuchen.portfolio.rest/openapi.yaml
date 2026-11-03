@@ -2166,7 +2166,9 @@ components:
         Every currency pair this report converted at 1:1 because nothing to
         convert with was configured. Always present, empty when every pair has
         rates — the same rule as `warnings` on a computed collection, so a client
-        can tell "nothing fell back" apart from "this report did not look".
+        can tell "nothing fell back" apart from "this report did not look". A
+        pair can be named whose only amount came out as zero: some calculations
+        look up the rate before they know the amount.
       items:
         $ref: "#/components/schemas/FxWarning"
 

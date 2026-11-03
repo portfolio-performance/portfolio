@@ -174,6 +174,9 @@ public class ConversionRecorderTest
         var amount = Money.of("USD", Values.Amount.factorize(100));
 
         assertThat(wrapped.convert(DATE, amount), is(original.convert(DATE, amount)));
+        // and an amount without any series, which falls back, just the same
+        var fallback = Money.of("ARS", Values.Amount.factorize(100));
+        assertThat(wrapped.convert(DATE, fallback), is(original.convert(DATE, fallback)));
         assertThat(wrapped.getTermCurrency(), is(CurrencyUnit.EUR));
     }
 
