@@ -251,7 +251,10 @@ public class ExtractedItemsTable
                 Security security = entry.getItem().getSecurity();
                 if (security == null)
                     return null;
-                return entry.getSecurityOverride() != null ? entry.getSecurityOverride().getName(nameConfig)
+                // a security entry keeps showing its own name: the override
+                // only remembers the existing security chosen instead of it
+                return entry.getSecurityOverride() != null && !(entry.getItem() instanceof Extractor.SecurityItem)
+                                ? entry.getSecurityOverride().getName(nameConfig)
                                 : security.getName(nameConfig);
             }
         });
@@ -384,6 +387,7 @@ public class ExtractedItemsTable
 
                     if (entry.getItem() instanceof Extractor.SecurityItem)
                     {
+                        entry.setSecurityOverride(null);
                         entries.stream().filter(e -> e.getSecurityDependency() == entry)
                                         .forEach(e -> e.setSecurityOverride(null));
                     }
@@ -466,6 +470,10 @@ public class ExtractedItemsTable
             if (selected.length > 0)
             {
                 entry.setImported(false);
+
+                // remember the choice at the security entry: the manual entry
+                // pages apply it to dependent entries on other pages as well
+                entry.setSecurityOverride((Security) selected[0]);
                 entries.stream().filter(e -> e.getSecurityDependency() == entry)
                                 .forEach(e -> e.setSecurityOverride((Security) selected[0]));
                 tableViewer.refresh();
