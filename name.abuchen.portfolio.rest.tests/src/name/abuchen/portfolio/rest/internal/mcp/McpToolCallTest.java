@@ -284,9 +284,9 @@ public class McpToolCallTest
 
     /**
      * A list too large for one result is sent as its first page, not cut: as
-     * many whole instruments as fit, a page that says where they lie, and the
-     * offset of the next page named before the items - so the rest is one
-     * call away instead of lost.
+     * many whole instruments as fit, a page that says how to go on, and the
+     * cursor of the next page named before the items - so the rest is one
+     * call away instead of lost. The rows carry no cursor of their own.
      */
     @Test
     public void testAnOversizedListComesBackAsItsFirstPage()
@@ -298,21 +298,21 @@ public class McpToolCallTest
 
         assertThat(result.length(), is(lessThanOrEqualTo(McpEndpoint.MAX_RESULT_CHARS)));
         assertThat(result, not(containsString("TRUNCATED")));
-        assertThat(result, containsString("**One page of " + client.getSecurities().size() + ".**"));
+        assertThat(result, containsString("**One page of a list of " + client.getSecurities().size() + ".**"));
         assertThat(result, containsString("`query` is quicker than paging"));
 
         var body = body(result);
         var page = body.getAsJsonObject("page");
-        var rows = body.getAsJsonObject("items").getAsJsonArray("rows");
-        assertThat(page.get("offset").getAsInt(), is(0));
+        var columns = body.getAsJsonObject("items").getAsJsonArray("columns");
         assertThat(page.get("total").getAsInt(), is(client.getSecurities().size()));
-        assertThat(page.get("nextOffset").getAsInt(), is(rows.size()));
-        assertThat(result, containsString("`offset: " + rows.size() + "`"));
+        var next = page.get("nextCursor").getAsString();
+        assertThat(result, containsString("`cursor: \"" + next + "\"`"));
+        assertThat(columns.asList().contains(new JsonPrimitive("cursor")), is(false));
         // the guidance comes before the items, where a reader still sees it
         assertThat(result.indexOf("One page of"), is(lessThan(result.indexOf("\"rows\""))));
     }
 
-    /** following nextOffset walks the whole list, each instrument exactly once and in the file's order */
+    /** following nextCursor walks the whole list, each instrument exactly once and in the order of its uuid */
     @Test
     public void testThePagesOfAListFitTogether()
     {
@@ -320,27 +320,30 @@ public class McpToolCallTest
             new SecurityBuilder().addTo(client).setName("ACME " + ii + " " + "x".repeat(600));
 
         var seen = new java.util.ArrayList<String>();
-        JsonElement next = new JsonPrimitive(0);
+        String next = null;
         var calls = 0;
-        while (!next.isJsonNull())
+        do
         {
             assertThat("the pages must end", ++calls, is(lessThan(10)));
-            var body = body(text(call("pp_list_instruments",
-                            "{\"file\":\"sample\",\"offset\":" + next.getAsInt() + "}")));
+            var arguments = next == null ? "{\"file\":\"sample\"}"
+                            : "{\"file\":\"sample\",\"cursor\":\"" + next + "\"}";
+            var body = body(text(call("pp_list_instruments", arguments)));
             var columns = body.getAsJsonObject("items").getAsJsonArray("columns");
             var uuid = columns.asList().indexOf(new JsonPrimitive("uuid"));
             for (var row : body.getAsJsonObject("items").getAsJsonArray("rows"))
                 seen.add(row.getAsJsonArray().get(uuid).getAsString());
-            next = body.getAsJsonObject("page").get("nextOffset");
+            var cursor = body.getAsJsonObject("page").get("nextCursor");
+            next = cursor.isJsonNull() ? null : cursor.getAsString();
         }
+        while (next != null);
 
         assertThat(calls, is(greaterThan(1)));
-        assertThat(seen, is(client.getSecurities().stream().map(Security::getUUID).toList()));
+        assertThat(seen, is(client.getSecurities().stream().map(Security::getUUID).sorted().toList()));
     }
 
-    /** a page the caller asked for says where the next one starts, even when it fits */
+    /** a page the caller asked for says where the next one continues, even when it fits */
     @Test
-    public void testARequestedPageNamesTheNextOffset()
+    public void testARequestedPageNamesTheNextCursor()
     {
         for (int ii = 0; ii < 5; ii++)
             new SecurityBuilder().addTo(client).setName("ACME " + ii);
@@ -350,10 +353,10 @@ public class McpToolCallTest
         assertThat(result, containsString("This is one page of `page.total` items"));
         var page = body(result).getAsJsonObject("page");
         assertThat(page.get("limit").getAsInt(), is(2));
-        assertThat(page.get("nextOffset").getAsInt(), is(2));
+        assertThat(page.get("nextCursor").isJsonNull(), is(false));
     }
 
-    /** a limit or an offset of the wrong shape is refused before it reaches the route */
+    /** a limit or a cursor of the wrong shape is refused */
     @Test
     public void testAPagingArgumentOfTheWrongShapeIsRefused()
     {
@@ -361,9 +364,9 @@ public class McpToolCallTest
         assertThat(isError(fraction), is(true));
         assertThat(text(fraction), containsString("`limit` must be `integer`"));
 
-        var negative = call("pp_list_trades", "{\"file\":\"sample\",\"offset\":-1}");
-        assertThat(isError(negative), is(true));
-        assertThat(text(negative), containsString("`offset` must be at least 0"));
+        var foreign = call("pp_list_trades", "{\"file\":\"sample\",\"cursor\":\"not-a-cursor\"}");
+        assertThat(isError(foreign), is(true));
+        assertThat(text(foreign), containsString("cursor"));
     }
 
     /**

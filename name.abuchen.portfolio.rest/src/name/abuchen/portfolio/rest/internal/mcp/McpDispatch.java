@@ -83,6 +83,12 @@ public final class McpDispatch
             }
         }
 
+        // a list that can be paged is always asked for in the order paging
+        // uses, each item with its cursor: a result too large for one answer
+        // is then sent as a page that can be continued (McpEnvelope.fitPage)
+        if (tool.binding("cursor") != null && !query.containsKey("cursor") && !query.containsKey("limit")) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            query.put("cursor", ""); //$NON-NLS-1$ //$NON-NLS-2$
+
         return route(router, tool.method(), path, query,
                         takesBody ? body.toString().getBytes(StandardCharsets.UTF_8) : new byte[0], progress);
     }
