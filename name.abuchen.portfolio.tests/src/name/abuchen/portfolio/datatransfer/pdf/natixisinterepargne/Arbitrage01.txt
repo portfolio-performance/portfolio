@@ -1,0 +1,138 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.74.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Avis d'opération
+Epargne Salariale - Epargne Retraite
+8501 000019000 ARB
+ETABLISSEMENT 000019000  000000000
+M. Esdkig fVvlQkVP
+BP DU SUD
+2 oBA kb vXgIGjk
+38 BD GEORGES CLEMENCEAU
+74591 HscCL
+66966 PERPIGNAN CEDEX 77
+Le 26 novembre 2024 1/2
+0,00
+AVOIRS DISPONIBLES
+Récapitulatif de vos avoirs
+21 381,82
+AVOIRS BLOQUÉS
+au 26/11/2024
+21 381,82
+MONTANT TOTAL*
+* Avant frais et hors prélèvements sociaux sur plus values latentes
+Arbitrage de vos avoirs au 26/11/2024
+Date de Valeur de Nombre de parts Vos avoirs
+DESINVESTISSEMENT
+désinvesties désinvestis
+valorisation la part
+PERCOL - PER Collectif
+25/11/2024 26,26826 9,2267 242,37
+IMPACT ISR RENDEMENT SOLID I
+Date de Valeur de Nombre total de Vos avoirs
+INVESTISSEMENT
+parts investies réinvestis
+valorisation la part
+PERCOL - PER Collectif
+25/11/2024 33,59739 7,2140 242,37
+AVENIR RETRAITE 2060-2064 I
+VOS IDENTIFIANTS N° d'entreprise :   34528 Code serveur :   91735364 N° de compte :  3921800
+POUR COMMUNIQUER AVEC NOUS
+Application mobile et tablette
+NATIXIS INTERÉPARGNE - Service 8501 - 14029 CAEN Cedex 9
+Mon Epargne Salariale
+Flashez ce QR code pour télécharger 
+Serveur vocal 7j/7 24h/24 - Téléconseillers à votre écoute
+l'application iPhone, iPad et Android
+du lundi au vendredi de 08h30 à 18h00 au 02 31 07 74 00 
+Internet - Espace Sécurisé Épargnants
+www.interepargne.natixis.com
+La tarification des prestations à votre charge est disponible sur l'Espace Epargnants de notre site internet ou, sur simple demande auprès de votre entreprise. Document à conserver.
+Vous disposez d'un délai de 30 jours pour vérifier ce présent relevé (hors opérations éventuelles postérieures à sa date d'édition). Ces informations s'entendent sauf erreur ou omission.
+En cas de litige et si le désaccord persiste malgré les réponses successives apportées par Natixis Interépargne, vous pouvez saisir le médiateur de l'AMF, 17 Place de la Bourse, 75082 Paris Cedex 02
+                                                                     Natixis Interépargne - BP 4 - 75060 Paris Cedex 02  - Société anonyme au capital de 8 890 784 euros - B692 012 669 RCS Paris - TVA : FR 78 692 012 669
+réf : 798785660         5365549
+Situation de vos avoirs au 26 novembre 2024
+Par produit, par date de disponibilité et placement
+Date de Valeur Nombre Montant Date de
+Placement
+disponibilité de part de parts total * valorisation
+PEE - Plan d'Epargne Entreprise
+NATIXIS ES MONETAIRE (PART I) 01/06/2028 24,17106 95,5404 2 309,32 25/11/2024
+SELECTION DNCA ACTIONS EURO PME (PART
+01/06/2028 25,28849 28,2586 714,62 25/11/2024
+I)
+SELECTION MIROVA ACTIONS
+01/06/2028 37,96640 3,6429 138,31 25/11/2024
+INTERNATIONALES (PAR
+SELECTION THEMATICS WATER (PART I) 01/06/2028 30,21632 29,7038 897,54 25/11/2024
+NATIXIS ES MONETAIRE (PART I2) 01/06/2028 24,30084 73,1036 1 776,49 25/11/2024
+AVENIR ACTIONS MONDE (PART I) 01/06/2028 103,80503 2,0476 212,56 25/11/2024
+AVENIR DYNAMIQUE (PART I) 01/06/2028 86,46663 1,1581 100,14 25/11/2024
+IMPACT ISR RENDEMENT SOLIDAIRE (PART I) 01/06/2028 26,26826 8,7824 230,70 25/11/2024
+AVENIR MIXTE SOLIDAIRE (PART I) 01/06/2028 40,09424 0,9596 38,47 25/11/2024
+PARTS SOCIALES BP DU SUD 01/06/2029 1,50 54,0000 81,00 22/11/2024
+NATIXIS ES MONETAIRE (PART I) 01/06/2029 24,17106 9,4739 229,00 25/11/2024
+SELECTION DORVAL GLOBAL CONVICTIONS
+01/06/2029 14,32887 7,9798 114,34 25/11/2024
+(PART I)
+SELECTION OSTRUM ACTIONS EUROPE ISR
+01/06/2029 120,47150 1,6976 204,51 25/11/2024
+(PART I)
+SELECTION DNCA ACTIONS EURO PME (PART
+01/06/2029 25,28849 13,8004 348,99 25/11/2024
+I)
+SELECTION MIROVA ACTIONS
+01/06/2029 37,96640 18,1345 688,50 25/11/2024
+INTERNATIONALES (PAR
+SELECTION THEMATICS WATER (PART I) 01/06/2029 30,21632 28,5320 862,13 25/11/2024
+NATIXIS ES MONETAIRE (PART I2) 01/06/2029 24,30084 62,4347 1 517,22 25/11/2024
+AVENIR ACTIONS MONDE (PART I) 01/06/2029 103,80503 8,1118 842,05 25/11/2024
+AVENIR DYNAMIQUE (PART I) 01/06/2029 86,46663 4,6650 403,37 25/11/2024
+IMPACT ISR RENDEMENT SOLIDAIRE (PART I) 01/06/2029 26,26826 4,2394 111,37 25/11/2024
+AVENIR MIXTE SOLIDAIRE (PART I) 01/06/2029 40,09424 4,2586 170,75 25/11/2024
+TOTAL PEE 11 991,38
+PERCOL - PER Collectif
+AVENIR RETRAITE 2060-2064 PART I RETRAITE 33,59739 79,1478 2 659,15 25/11/2024
+IMPACT ISR MONETAIRE (PART I) RETRAITE 18,88759 106,1573 2 005,06 25/11/2024
+IMPACT ISR RENDEMENT SOLIDAIRE (PART I) RETRAITE 26,26826 57,7151 1 516,08 25/11/2024
+IMPACT ISR PERFORMANCE (PART I) RETRAITE 53,59888 30,3685 1 627,72 25/11/2024
+IMPACT ISR DYNAMIQUE (PART I) RETRAITE 47,94215 30,9217 1 482,44 25/11/2024
+IMPACT ISR EQUILIBRE (PART I) RETRAITE 41,23147 2,4250 99,99 25/11/2024
+TOTAL PERCOL 9 390,44
+TOTAL* 21 381,82 ¤
+* Avant frais et hors prélèvements sociaux sur plus values latentes
+Vos avoirs PERCOL sur le dispositif AVENIR RETRAITE I sont investis en gestion pilotée. Ces avoirs sont gérés selon la date prévisionnelle 
+de votre départ en retraite, à savoir le 15/07/2064.
+Cette gestion pilotée permet une allocation de l'épargne qui réduit progressivement les risques financiers (relatifs aux actifs détenus 
+dans les FCPE du plan), conformément aux dispositions de l'article R.3334-1-2 du code du travail.
+Vous bénéficiez à tout moment pour les données vous concernant et dans les conditions prévues par la loi, d’un droit d’accès, de rectification, d’opposition, de limitation,
+de retrait de votre consentement (si donné), d’effacement pour motifs légitimes, à la portabilité, à communiquer des instructions sur le sort de vos données personnelles en cas de décès,
+auprès du Délégué à la Protection de Données Natixis Interepargne – 59 Avenue Pierre Mendès France- 75013 PARIS – relais-cnil-interepargne@natixis.com.
+Vous pouvez également exercer une réclamation auprès de l’autorité compétente.
+Pour en savoir plus sur l’utilisation de vos données personnelles, allez sur le site www.interepargne.natixis.com rubrique mentions légales.
+2/2
+Par année de disponibilité
+2028 2029 RETRAITE
+6 418,15 ¤ 5 573,23 ¤ 9 390,44 ¤
+Par placement
+NATIXIS ES MONETAIRE SELECT DORVAL GLOBAL SELECT.OSTRUM SELECT DNCA ACT EURO
+P.S. BP DU SUD
+(PART I) CONVIC  I ACT.EUROP ISR I PME I
+81,00 ¤ 2 538,32 ¤ 114,34 ¤ 204,51 ¤ 1 063,61 ¤
+54,0000 parts 105,0143 parts 7,9798 parts 1,6976 parts 42,0590 parts
+SELECTION MIROVA ACT SEL.THEMATICS WATER AVENIR RETRAITE NATIXIS ES MONETAIRE AVENIR ACTIONS MONDE
+INTER I (PART I) 2060-2064 I (PART I2) (PART I)
+826,81 ¤ 1 759,67 ¤ 2 659,15 ¤ 3 293,71 ¤ 1 054,61 ¤
+21,7774 parts 58,2358 parts 79,1478 parts 135,5383 parts 10,1594 parts
+AVENIR DYNAMIQUE (PART IMPACT ISR MONETAIRE IMPACT ISR RENDEMENT IMPACT ISR IMPACT ISR DYNAMIQUE
+I) (PART I) SOLID I PERFORMANCE PART I (PART I)
+503,51 ¤ 2 005,06 ¤ 1 858,15 ¤ 1 627,72 ¤ 1 482,44 ¤
+5,8231 parts 106,1573 parts 70,7369 parts 30,3685 parts 30,9217 parts
+IMPACT ISR EQUILIBRE AVENIR MIXTE SOLIDAIRE
+(PART I) PART I
+99,99 ¤ 209,22 ¤
+2,4250 parts 5,2182 parts 
+www.interepargne.natixis.com 19000         9429249 gMclSC KvwineTA
+
