@@ -120,10 +120,13 @@ named by the `referenceCashAccount` field.
 
 All list responses are an envelope — `{"items": [...]}`, never a bare array — so that fields beside
 `items` can be added later without breaking clients. A list response is complete unless the caller
-asks for a page: `offset` and `limit` on the instruments and the trades are opt-in, and only a
-response to them carries `page` — `offset`, `limit` (or `null`), `total` and `nextOffset` (`null`
-on the last page). The list is recomputed for every request, so pages fit together only while the
-file is not changed in between. REST never truncates.
+asks for a page: `cursor` and `limit` on the instruments and the trades are opt-in, and only a
+response to them carries `page` — `limit` (or `null`), `total` and `nextCursor` (`null` on the last
+page) — and a `cursor` on every item. An empty `cursor` asks for the first page; a page continues
+after the key of the cursor it was given. Paged, a list is in an order of keys that an edit
+elsewhere does not change — instruments by `uuid`, trades by instrument, start, investment account
+and closing transaction — so an item added or removed between two pages shifts nothing: no item is
+skipped or sent twice. REST never truncates.
 
 ### `GET /v1/files` — the files you may address
 
@@ -150,9 +153,10 @@ identity and enablement.
 `?query=` narrows the list to the instruments it finds: a name that contains it, or an ISIN, WKN or
 ticker symbol equal to it — ignoring case and surrounding whitespace. A large file holds more
 instruments than one MCP answer carries, so this is how a client gets from a name to a `uuid`. A
-blank `query` is a `400`. `?offset=` and `?limit=` return one page of the list, in the file's order.
+blank `query` is a `400`. `?cursor=` and `?limit=` return one page of the list, in the order of the
+`uuid`; without them the list is in the file's order.
 
-The trades (`GET .../trades`, `GET .../instruments/{uuid}/trades`) take the same `offset` and
+The trades (`GET .../trades`, `GET .../instruments/{uuid}/trades`) take the same `cursor` and
 `limit`; their `fxWarnings` and `warnings` describe the whole list, whichever page is asked for.
 
 ### `PATCH /v1/files/{file}/instruments/{uuid}`

@@ -1,9 +1,13 @@
 package name.abuchen.portfolio.rest.internal;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.google.gson.JsonArray;
@@ -11,6 +15,7 @@ import com.google.gson.JsonElement;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.CostMethod;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
@@ -92,10 +97,10 @@ public final class TradesHandler
 
     public static JsonElement list(Client client, ExchangeRateProviderFactory factory, String statusParam,
                     String groupingParam, String costMethodParam, String taxesAndFeesParam, String currencyParam,
-                    String fromParam, String toParam, String offsetParam, String limitParam)
+                    String fromParam, String toParam, String cursorParam, String limitParam)
     {
         var params = parse(client, statusParam, groupingParam, costMethodParam, taxesAndFeesParam, currencyParam,
-                        fromParam, toParam, offsetParam, limitParam);
+                        fromParam, toParam, cursorParam, limitParam);
         return respond(collect(client, factory, client.getSecurities(), params), params);
     }
 
@@ -117,13 +122,13 @@ public final class TradesHandler
 
     public static JsonElement forInstrument(Client client, ExchangeRateProviderFactory factory, String uuid,
                     String statusParam, String groupingParam, String costMethodParam, String taxesAndFeesParam,
-                    String currencyParam, String fromParam, String toParam, String offsetParam, String limitParam)
+                    String currencyParam, String fromParam, String toParam, String cursorParam, String limitParam)
     {
         // resolve the resource before validating query parameters
         var security = SecuritiesHandler.find(client, uuid);
 
         var params = parse(client, statusParam, groupingParam, costMethodParam, taxesAndFeesParam, currencyParam,
-                        fromParam, toParam, offsetParam, limitParam);
+                        fromParam, toParam, cursorParam, limitParam);
 
         // sub-collection: an untraded instrument has an empty list, not a 404
         return respond(collect(client, factory, List.of(security), params), params);
@@ -131,7 +136,7 @@ public final class TradesHandler
 
     private static Params parse(Client client, String statusParam, String groupingParam, String costMethodParam,
                     String taxesAndFeesParam, String currencyParam, String fromParam, String toParam,
-                    String offsetParam, String limitParam)
+                    String cursorParam, String limitParam)
     {
         var errors = new ArrayList<ApiException.FieldError>();
 
@@ -146,7 +151,7 @@ public final class TradesHandler
         if (from != null && to != null && to.isBefore(from))
             errors.add(new ApiException.FieldError("to", "invalid-range", "to must not be before from")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
-        var paging = Paging.parse(offsetParam, limitParam, errors);
+        var paging = Paging.parse(Paging.Kind.TRADES, cursorParam, limitParam, errors);
 
         if (!errors.isEmpty())
             throw ApiException.badRequest(errors);
@@ -227,9 +232,11 @@ public final class TradesHandler
 
     private static JsonElement respond(Collected collected, Params params)
     {
-        var items = new JsonArray();
+        // every trade is rendered, the page only cut from them: fxWarnings and
+        // warnings describe the whole list, whichever page is asked for
+        var rendered = new IdentityHashMap<Trade, JsonElement>();
         for (var trade : collected.trades())
-            items.add(EntityJson.toJson(trade, params));
+            rendered.put(trade, EntityJson.toJson(trade, params));
 
         // a trade's moving-average cost is computed as it is rendered and may
         // convert its fees on the way: a trade the filters leave out is
@@ -248,9 +255,34 @@ public final class TradesHandler
         FxWarnings.attach(json, collected.conversions());
         // always present so clients can detect partial success
         json.add("warnings", warnings); //$NON-NLS-1$
-        // every trade is rendered, the page only cut from them: fxWarnings and
-        // warnings describe the whole list, whichever page is asked for
-        params.paging().apply(json, items);
+        var keys = keys(collected.trades());
+        params.paging().apply(Paging.Kind.TRADES, json, collected.trades(), keys::get, rendered::get);
         return json;
+    }
+
+    /** a date-time that sorts as text in the order of time */
+    private static final DateTimeFormatter SORTABLE = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss"); //$NON-NLS-1$
+
+    /**
+     * What the trades are paged by: instrument, start, investment account and
+     * the real transaction that closes it - none of which an edit elsewhere in
+     * the file changes. The collector splits a lot sold in parts into copies
+     * with fresh ids, so the opening transaction cannot be part of the key;
+     * trades that agree on all of it are numbered in the collector's order,
+     * which is the same for the same file.
+     */
+    /* package */ static Map<Trade, String> keys(List<Trade> trades)
+    {
+        var keys = new IdentityHashMap<Trade, String>();
+        var seen = new HashMap<String, Integer>();
+        for (var trade : trades)
+        {
+            var closing = trade.getRealClosingTransaction().map(PortfolioTransaction::getUUID).orElse(""); //$NON-NLS-1$
+            var base = trade.getSecurity().getUUID() + '|' + SORTABLE.format(trade.getStart()) + '|'
+                            + trade.getPortfolio().getUUID() + '|' + closing;
+            var ordinal = seen.merge(base, 1, Integer::sum);
+            keys.put(trade, base + '|' + String.format("%04d", ordinal)); //$NON-NLS-1$
+        }
+        return keys;
     }
 }
