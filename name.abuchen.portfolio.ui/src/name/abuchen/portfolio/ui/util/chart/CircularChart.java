@@ -334,8 +334,9 @@ public class CircularChart extends Chart
 
     public static final class PieColors
     {
-        private static final int SIZE = 11;
-        private static final float STEP = 360.0f / SIZE;
+        // golden-angle hue progression: consecutive slices get a clearly
+        // distinguishable hue and hues do not repeat until after 144 slices
+        private static final float GOLDEN_ANGLE = 137.5f;
 
         private static final float HUE = 262.3f;
         private static final float SATURATION = 0.464f;
@@ -343,11 +344,26 @@ public class CircularChart extends Chart
 
         private int nextSlice = 0;
 
+        /**
+         * Calculates the next color as RGB (hue, saturation, brightness). Does
+         * not require a SWT display, which makes it testable without a UI.
+         */
+        public RGB nextRGB()
+        {
+            int index = nextSlice++;
+
+            // saturation and brightness tiers vary the color in case two slices
+            // map to the same hue, keeping the colors saturated (never white or
+            // a gray close to the background color)
+            float saturation = Math.min(1.0f, SATURATION + 0.1f * (index % 3));
+            float brightness = Math.max(0.35f, BRIGHTNESS - 0.12f * ((index / 3) % 5));
+
+            return new RGB((HUE + (GOLDEN_ANGLE * index)) % 360f, saturation, brightness);
+        }
+
         public Color next()
         {
-            float brightness = Math.min(1.0f, BRIGHTNESS + (0.05f * (nextSlice / (float) SIZE)));
-            return Colors.getColor(new RGB((HUE + (STEP * nextSlice++)) % 360f, SATURATION, brightness));
-
+            return Colors.getColor(nextRGB());
         }
     }
 

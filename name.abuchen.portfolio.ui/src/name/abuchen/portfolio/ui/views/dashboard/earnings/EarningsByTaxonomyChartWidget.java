@@ -245,7 +245,7 @@ public class EarningsByTaxonomyChartWidget extends CircularChartWidget<Map<Inves
                 String nodeId = classification.getId() + '/' + item.vehicle().getUUID();
                 Node n = rootNode.addChild(nodeId, item.value() / Values.Amount.divider());
                 n.setData(new ToolTipItem(classification, sum, item.vehicle(), item.value()));
-                id2color.put(nodeId, resources.createColor(ColorConversion.hex2RGB(classification.getColor())));
+                id2color.put(nodeId, resources.createColor(ColorConversion.ensureVisible(ColorConversion.hex2RGB(classification.getColor()))));
             }
         }
 
