@@ -567,25 +567,33 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         // mirror booking of this transfer inside the account. Nothing is
         // imported, because the "Compte Espèces" is a second view on the money
         // of the account and would duplicate the cash of the portfolio.
+        //
+        // "Virement depuis" moves money into the account (deposit), "Virement
+        // vers" moves money out of the account (removal). The type is kept so
+        // that the skipped item shows the correct direction.
         // @formatter:on
         Block blockTransferMoneyAccount = new Block("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}:[\\d]{2} "
                         + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
                         + "Virement (depuis|vers) votre Compte .* la flatexDEGIRO [\\w]{3} [\\.,'’\\d\\s]+$");
         type.addBlock(blockTransferMoneyAccount);
+        blockTransferMoneyAccount.setMaxSize(2);
         blockTransferMoneyAccount.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
-                        .section("date", "time", "note", "currency")
+                        .section("date", "time", "note", "type", "currency")
                         .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                         + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
-                                        + "(?<note>Virement (depuis|vers) votre Compte .* la flatexDEGIRO) "
+                                        + "(?<note>Virement (?<type>depuis|vers) votre Compte .* la flatexDEGIRO) "
                                         + "(?<currency>[\\w]{3}) "
                                         + "[\\.,'’\\d\\s]+$")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date"), v.get("time")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setNote(trim(v.get("note")));
+
+                            if ("vers".equals(v.get("type")))
+                                t.setType(AccountTransaction.Type.REMOVAL);
                         })
 
                         // @formatter:off
@@ -3186,4 +3194,4 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
     {
         return value == null ? null : value.replace('\u2019', '\'');
     }
-}
+}

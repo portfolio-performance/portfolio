@@ -4562,7 +4562,7 @@ public class DegiroPDFExtractorTest
         // Bank are internal transfers of the same bank group and are not
         // imported, therefore they are reported as skipped items
         assertThat(results, hasItem(skippedItem(Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
-                        deposit(hasDate("2026-05-08T07:33"), hasAmount("EUR", 22.59), //
+                        removal(hasDate("2026-05-08T07:33"), hasAmount("EUR", 22.59), //
                                         hasSource("AccountStatement_french01.txt"), //
                                         hasNote("Virement vers votre Compte Espèces à la flatexDEGIRO")))));
 
@@ -4652,12 +4652,12 @@ public class DegiroPDFExtractorTest
                                         hasNote("Virement depuis votre Compte Espèces à la flatexDEGIRO")))));
 
         assertThat(results, hasItem(skippedItem(Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
-                        deposit(hasDate("2026-10-22T15:21"), hasAmount("EUR", 906.90), //
+                        removal(hasDate("2026-10-22T15:21"), hasAmount("EUR", 906.90), //
                                         hasSource("AccountStatement_french03.txt"), //
                                         hasNote("Virement vers votre Compte Espèces à la flatexDEGIRO")))));
 
         assertThat(results, hasItem(skippedItem(Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
-                        deposit(hasDate("2026-10-19T15:21"), hasAmount("EUR", 869.56), //
+                        removal(hasDate("2026-10-19T15:21"), hasAmount("EUR", 869.56), //
                                         hasSource("AccountStatement_french03.txt"), //
                                         hasNote("Virement vers votre Compte Espèces à la flatexDEGIRO")))));
 
