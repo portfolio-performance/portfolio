@@ -10,6 +10,8 @@ import org.junit.Test;
 import com.google.gson.JsonObject;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
@@ -35,6 +37,34 @@ public class FxWarningsTest
         FxWarnings.attach(report, new ConversionRecorder(new ExchangeRateProviderFactory(new Client())));
 
         assertThat(report.get("fxWarnings").getAsJsonArray().size(), is(0));
+        assertThat(report.get("fxStaleRates").getAsJsonArray().size(), is(0));
+    }
+
+    /** a conversion at an old rate is described by its pair, the rate's date and its age */
+    @Test
+    public void testAttachDescribesAStaleRate()
+    {
+        var client = new Client();
+        var rates = new Security("ARS/EUR", "ARS");
+        rates.setTargetCurrencyCode(CurrencyUnit.EUR);
+        rates.addPrice(new SecurityPrice(LocalDate.of(2026, 1, 2), Values.Quote.factorize(965)));
+        client.addSecurity(rates);
+
+        var factory = new ExchangeRateProviderFactory(client);
+        var conversions = new ConversionRecorder(factory, LocalDate.of(2026, 10, 28));
+        conversions.wrap(new CurrencyConverterImpl(factory, CurrencyUnit.EUR)).convert(LocalDate.of(2026, 3, 1),
+                        Money.of("ARS", Values.Amount.factorize(10)));
+
+        var report = new JsonObject();
+        FxWarnings.attach(report, conversions);
+
+        var stale = report.get("fxStaleRates").getAsJsonArray();
+        assertThat(stale.size(), is(1));
+        var entry = stale.get(0).getAsJsonObject();
+        assertThat(entry.get("currency").getAsString(), is("ARS"));
+        assertThat(entry.get("reportingCurrency").getAsString(), is("EUR"));
+        assertThat(entry.get("rateDate").getAsString(), is("2026-01-02"));
+        assertThat(entry.get("daysOld").getAsLong(), is(58L));
     }
 
     /** what a converter fell back on is what the warning describes */
