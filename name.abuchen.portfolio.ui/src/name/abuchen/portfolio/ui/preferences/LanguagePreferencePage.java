@@ -420,7 +420,9 @@ public class LanguagePreferencePage extends PreferencePage
             else
                 userProperties.setProperty(OSGI_NL, previousValue);
 
-            return true;
+            // keep the dialog open with the selection, so that the user can
+            // retry
+            return false;
         }
 
         // only a changed language explains a difference to the active one
