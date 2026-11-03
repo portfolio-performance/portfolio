@@ -470,6 +470,140 @@ public class UiDeadlineHonestyTest
         assertThat(slots.available(), is(1));
     }
 
+    /**
+     * A server that stops interrupts the requests that wait: a calculation that
+     * has not started then never does, and its slot comes back.
+     */
+    @Test
+    public void testAnInterruptedWaitGivesUpACalculationThatNeverStarted() throws Exception
+    {
+        var slots = slots(1, 0, Duration.ofSeconds(5));
+        var ran = new AtomicBoolean();
+        var busy = new CountDownLatch(1);
+        var executor = Executors.newSingleThreadExecutor();
+        try
+        {
+            executor.execute(() -> {
+                try
+                {
+                    busy.await(10, TimeUnit.SECONDS);
+                }
+                catch (InterruptedException e)
+                {
+                    Thread.currentThread().interrupt();
+                }
+            });
+
+            var outcome = new java.util.concurrent.CompletableFuture<Throwable>();
+            var waiter = Thread.ofPlatform().start(() -> {
+                try
+                {
+                    ApiRoutes.computeBounded(() -> {
+                        ran.set(true);
+                        return null;
+                    }, Duration.ofSeconds(10), slots, executor);
+                    outcome.complete(null);
+                }
+                catch (Throwable t)
+                {
+                    outcome.complete(t);
+                }
+            });
+            Thread.sleep(200);
+            waiter.interrupt();
+
+            assertThat(outcome.get(5, TimeUnit.SECONDS) instanceof InterruptedException, is(true));
+            assertThat(slots.available(), is(1));
+        }
+        finally
+        {
+            busy.countDown();
+            executor.shutdown();
+            assertThat(executor.awaitTermination(5, TimeUnit.SECONDS), is(true));
+        }
+        assertThat(ran.get(), is(false));
+    }
+
+    /**
+     * A UI thread that takes nothing on must not collect one task per request
+     * that gave up on it: beyond the bound, a request is refused at once and
+     * not queued at all.
+     */
+    @Test
+    public void testTheQueueForTheUiThreadIsBounded() throws Exception
+    {
+        var queued = new java.util.ArrayList<Runnable>();
+        var stuck = new name.abuchen.portfolio.rest.spi.HostApplication()
+        {
+            @Override
+            public List<name.abuchen.portfolio.rest.spi.OpenFile> listOpenFiles()
+            {
+                return List.of();
+            }
+
+            @Override
+            public <T> java.util.concurrent.CompletableFuture<T> asyncExec(java.util.concurrent.Callable<T> callable)
+            {
+                var future = new java.util.concurrent.CompletableFuture<T>();
+                synchronized (queued)
+                {
+                    queued.add(() -> {
+                        try
+                        {
+                            future.complete(callable.call());
+                        }
+                        catch (Exception e)
+                        {
+                            future.completeExceptionally(e);
+                        }
+                    });
+                }
+                return future;
+            }
+
+            @Override
+            public boolean isUserEditing()
+            {
+                return false;
+            }
+
+            @Override
+            public void requestApiAccessApproval(name.abuchen.portfolio.rest.spi.ApiAccessRequest request)
+            {
+                // not asked for here
+            }
+        };
+
+        try
+        {
+            for (int ii = 0; ii < 40; ii++)
+            {
+                try
+                {
+                    ApiRoutes.uiExecBounded(stuck, () -> "never", Duration.ofMillis(5));
+                    fail("expected ui-busy");
+                }
+                catch (ApiException e)
+                {
+                    assertThat(e.getType(), is("ui-busy"));
+                }
+            }
+            synchronized (queued)
+            {
+                assertThat(queued.size(), is(32));
+            }
+        }
+        finally
+        {
+            // the UI thread comes free: the queued tasks run, do nothing, and
+            // leave the bound for the tests after this one
+            synchronized (queued)
+            {
+                queued.forEach(Runnable::run);
+            }
+        }
+    }
+
     /** a failure inside the calculation is that failure, not a timeout */
     @Test
     public void testACalculationFailureIsPassedThrough() throws Exception

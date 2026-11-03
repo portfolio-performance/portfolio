@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -12,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiFunction;
@@ -21,6 +23,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
+import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.rest.internal.AccountsHandler;
@@ -121,6 +124,24 @@ public final class ApiRoutes
      * <p/>
      * Not private: a test in this package drives it directly.
      */
+    /** the slots of the process, see {@link #sharedSlots()} */
+    private static CalculationSlots shared;
+
+    /**
+     * One set of slots for the process, as there is one pool of calculation
+     * threads: a calculation outlives a restart of the server - the engines
+     * cannot be stopped - and a new router with fresh slots would run new
+     * calculations next to the ones still holding the old. Sized when the
+     * server first starts.
+     */
+    private static synchronized CalculationSlots sharedSlots()
+    {
+        if (shared == null)
+            shared = new CalculationSlots(RestApiLimits.calculationSlots(), RestApiLimits.calculationQueue(),
+                            Deadlines.DEFAULT_CALCULATION_QUEUE);
+        return shared;
+    }
+
     /* package */ static final class CalculationSlots
     {
         private final int slots;
@@ -267,8 +288,10 @@ public final class ApiRoutes
                     Deadlines deadlines)
     {
         var ui = new UiThread(host, deadlines.uiThread());
-        var calculation = new Calculation(deadlines.calculation(), new CalculationSlots(
-                        RestApiLimits.calculationSlots(), RestApiLimits.calculationQueue(), deadlines.calculationQueue()));
+        var calculation = new Calculation(deadlines.calculation(),
+                        Deadlines.DEFAULT.equals(deadlines) ? sharedSlots()
+                                        : new CalculationSlots(RestApiLimits.calculationSlots(),
+                                                        RestApiLimits.calculationQueue(), deadlines.calculationQueue()));
         var router = new Router();
         var resolver = new FileResolver(registry, host);
         var files = new FilesHandler(registry, host);
@@ -393,6 +416,16 @@ public final class ApiRoutes
     private static final int ABANDONED = 2;
 
     /**
+     * How many tasks may wait for the UI thread at once - more than requests
+     * are served at once (at most 30), so that only tasks left behind by
+     * requests that gave up on a blocked UI thread run into it.
+     */
+    private static final int MAX_QUEUED_UI_TASKS = 32;
+
+    /** the tasks handed to the UI thread that it has not taken up yet */
+    private static final AtomicInteger QUEUED_UI_TASKS = new AtomicInteger();
+
+    /**
      * {@link HostApplication#asyncExec} with a deadline, and with exactly two
      * outcomes when it passes.
      * <p/>
@@ -424,15 +457,38 @@ public final class ApiRoutes
     /* package */ static <T> T uiExecBounded(HostApplication host, Callable<T> callable, Duration deadline,
                     boolean idempotent) throws Exception
     {
-        var state = new AtomicInteger(NOT_STARTED);
+        // a UI thread that takes nothing on would collect one task per request
+        // that gave up on it: beyond the bound, the answer is ui-busy at once
+        if (QUEUED_UI_TASKS.incrementAndGet() > MAX_QUEUED_UI_TASKS)
+        {
+            QUEUED_UI_TASKS.decrementAndGet();
+            throw ApiException.uiBusy(deadline.toMillis());
+        }
 
-        var future = host.asyncExec(() -> {
-            if (!state.compareAndSet(NOT_STARTED, STARTED))
-                // the caller gave up before the UI thread got here; the model
-                // is not touched
-                return null;
-            return callable.call();
-        });
+        var state = new AtomicInteger(NOT_STARTED);
+        // the task holds the request - its body among it - only until it is
+        // given up on: a task left in the queue then holds nothing
+        var work = new AtomicReference<Callable<T>>(callable);
+
+        CompletableFuture<T> future;
+        try
+        {
+            future = host.asyncExec(() -> {
+                QUEUED_UI_TASKS.decrementAndGet();
+                var task = work.getAndSet(null);
+                if (task == null || !state.compareAndSet(NOT_STARTED, STARTED))
+                    // the caller gave up before the UI thread got here; the model
+                    // is not touched
+                    return null;
+                return task.call();
+            });
+        }
+        catch (RuntimeException e)
+        {
+            // never queued, so never counted down
+            QUEUED_UI_TASKS.decrementAndGet();
+            throw e;
+        }
 
         try
         {
@@ -441,18 +497,28 @@ public final class ApiRoutes
         catch (TimeoutException e)
         {
             if (state.compareAndSet(NOT_STARTED, ABANDONED))
+            {
+                work.set(null);
                 throw ApiException.uiBusy(deadline.toMillis());
+            }
 
             if (idempotent)
                 throw ApiException.uiReadTimedOut(deadline.toMillis());
 
+            // the write runs on, and nobody waits for it any more: if it
+            // fails, the log is the only place that can say so
+            future.whenComplete((result, failure) -> {
+                if (failure != null)
+                    PortfolioLog.error(failure);
+            });
             throw ApiException.uiRequestUnderway(deadline.toMillis());
         }
         catch (InterruptedException e)
         {
             // the server is stopping: given up on like a timeout, so that work
             // still queued for the UI thread never runs for nobody
-            state.compareAndSet(NOT_STARTED, ABANDONED);
+            if (state.compareAndSet(NOT_STARTED, ABANDONED))
+                work.set(null);
             Thread.currentThread().interrupt();
             throw e;
         }
@@ -532,6 +598,14 @@ public final class ApiRoutes
         {
             abandon(future, claimed, slots);
             throw ApiException.calculationTimeout(deadline.toSeconds());
+        }
+        catch (InterruptedException e)
+        {
+            // the server is stopping: a calculation that has not started never
+            // will, and one that runs is interrupted like one past its deadline
+            abandon(future, claimed, slots);
+            Thread.currentThread().interrupt();
+            throw e;
         }
         catch (ExecutionException e)
         {

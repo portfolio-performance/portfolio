@@ -14,6 +14,8 @@ import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
@@ -55,36 +57,35 @@ public class DevServer
      */
     private record DevHost(List<OpenFile> files) implements HostApplication
     {
-        /** stands in for the UI thread: one callable, or one read, at a time */
-        private static final Object UI = new Object();
+        /**
+         * Stands in for the UI thread: one thread that runs the callables one at
+         * a time, queued - so that the caller's deadline runs while it waits, as
+         * it does in the application.
+         */
+        private static final ExecutorService UI = Executors.newSingleThreadExecutor(
+                        Thread.ofPlatform().name("DevServer UI thread").daemon(true).factory()); //$NON-NLS-1$
 
         @Override
         public List<OpenFile> listOpenFiles()
         {
-            synchronized (UI)
-            {
-                return files;
-            }
+            return files;
         }
 
-        /**
-         * headless: there is no UI thread, so the callable runs on the caller's -
-         * but one at a time, as the UI thread would run them
-         */
         @Override
         public <T> CompletableFuture<T> asyncExec(Callable<T> callable)
         {
-            try
-            {
-                synchronized (UI)
+            var future = new CompletableFuture<T>();
+            UI.execute(() -> {
+                try
                 {
-                    return CompletableFuture.completedFuture(callable.call());
+                    future.complete(callable.call());
                 }
-            }
-            catch (Exception e)
-            {
-                return CompletableFuture.failedFuture(e);
-            }
+                catch (Exception e)
+                {
+                    future.completeExceptionally(e);
+                }
+            });
+            return future;
         }
 
         @Override
