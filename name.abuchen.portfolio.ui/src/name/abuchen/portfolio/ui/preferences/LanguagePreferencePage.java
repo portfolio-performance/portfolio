@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Properties;
 
 import org.eclipse.core.runtime.Platform;
@@ -225,17 +226,21 @@ public class LanguagePreferencePage extends PreferencePage
         if (commands == null)
             return null;
 
+        // the launcher applies every -nl argument in turn, so the last one wins
+        String nlArgument = null;
+
         String[] arguments = commands.split("\\R"); //$NON-NLS-1$
         for (int ii = 0; ii < arguments.length - 1; ii++)
         {
             if (NL_ARGUMENT.equalsIgnoreCase(arguments[ii].trim()))
             {
                 String value = arguments[ii + 1].trim();
-                return value.isEmpty() ? null : value;
+                if (!value.isEmpty())
+                    nlArgument = value;
             }
         }
 
-        return null;
+        return nlArgument;
     }
 
     private static boolean isSameLocale(String value, String other)
@@ -399,6 +404,7 @@ public class LanguagePreferencePage extends PreferencePage
         if (languageCombo == null)
             return true;
 
+        String previousValue = userProperties.getProperty(OSGI_NL);
         String nlValue = getNlValueFromSelection();
         if (nlValue == null)
         {
@@ -409,7 +415,8 @@ public class LanguagePreferencePage extends PreferencePage
             userProperties.setProperty(OSGI_NL, nlValue);
         }
 
-        if (storeUserPreferences())
+        // only a changed language explains a difference to the active one
+        if (storeUserPreferences() && !Objects.equals(previousValue, nlValue))
             isChangedInSession = true;
 
         return true;
