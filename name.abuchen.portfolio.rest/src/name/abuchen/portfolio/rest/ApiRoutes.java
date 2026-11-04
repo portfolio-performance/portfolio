@@ -316,8 +316,9 @@ public final class ApiRoutes
 
         router.add("GET", "/v1/files", onUiThread(ui, true, files::list)); //$NON-NLS-1$ //$NON-NLS-2$
 
-        router.add("GET", "/v1/files/{file}/instruments", read(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$
-                        (client, req) -> SecuritiesHandler.list(client, req.queryParam("query"), //$NON-NLS-1$
+        router.add("GET", "/v1/files/{file}/instruments", readFile(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$
+                        (resolved, req) -> SecuritiesHandler.list(resolved.file().getClient(),
+                                        resolved.access().uuid(), req.queryParam("query"), //$NON-NLS-1$
                                         req.queryParam("cursor"), req.queryParam("limit"))), //$NON-NLS-1$ //$NON-NLS-2$
                         "query", "cursor", "limit"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         // literal sub-collection: the Router prefers it over the {uuid} route
@@ -384,14 +385,15 @@ public final class ApiRoutes
         // matched trades for the whole file or one instrument sub-collection
         router.add("GET", "/v1/files/{file}/trades", calc(resolver, ui, calculation, //$NON-NLS-1$ //$NON-NLS-2$
                         (context, req) -> Response.json(200, TradesHandler.list(context.client(), context.factory(),
-                                        req.queryParam("status"), req.queryParam("grouping"), //$NON-NLS-1$ //$NON-NLS-2$
+                                        context.fileId(), req.queryParam("status"), req.queryParam("grouping"), //$NON-NLS-1$ //$NON-NLS-2$
                                         req.queryParam("costMethod"), req.queryParam("taxesAndFees"), //$NON-NLS-1$ //$NON-NLS-2$
                                         req.queryParam("reportingCurrency"), req.queryParam("from"), //$NON-NLS-1$ //$NON-NLS-2$
                                         req.queryParam("to"), req.queryParam("cursor"), req.queryParam("limit")))), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                         TRADE_PARAMS);
         router.add("GET", "/v1/files/{file}/instruments/{uuid}/trades", calc(resolver, ui, calculation, //$NON-NLS-1$ //$NON-NLS-2$
                         (context, req) -> Response.json(200, TradesHandler.forInstrument(context.client(),
-                                        context.factory(), req.pathParam("uuid"), req.queryParam("status"), //$NON-NLS-1$ //$NON-NLS-2$
+                                        context.factory(), context.fileId(), req.pathParam("uuid"), //$NON-NLS-1$
+                                        req.queryParam("status"), //$NON-NLS-1$
                                         req.queryParam("grouping"), req.queryParam("costMethod"), //$NON-NLS-1$ //$NON-NLS-2$
                                         req.queryParam("taxesAndFees"), req.queryParam("reportingCurrency"), //$NON-NLS-1$ //$NON-NLS-2$
                                         req.queryParam("from"), req.queryParam("to"), req.queryParam("cursor"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -664,14 +666,25 @@ public final class ApiRoutes
     private static Router.Handler read(FileResolver resolver, UiThread ui,
                     BiFunction<Client, Request, JsonElement> body)
     {
+        return readFile(resolver, ui, (resolved, request) -> body.apply(resolved.file().getClient(), request));
+    }
+
+    /** as {@link #read}, for a body that needs the resolved file itself - its id, say */
+    private static Router.Handler readFile(FileResolver resolver, UiThread ui,
+                    BiFunction<FileResolver.ResolvedFile, Request, JsonElement> body)
+    {
         return request -> Response.json(200, uiExecBounded(ui.host(), () -> {
             var resolved = resolver.resolve(request.pathParam("file")); //$NON-NLS-1$
-            return body.apply(resolved.file().getClient(), request);
+            return body.apply(resolved, request);
         }, ui.deadline(), true));
     }
 
-    /** what a calculation endpoint needs, fetched from the host on the UI thread */
-    /* package */ record CalcContext(Client client, ExchangeRateProviderFactory factory)
+    /**
+     * What a calculation endpoint needs, fetched from the host on the UI
+     * thread. The file id is the resolved one, never the alias it was asked
+     * by: a paging cursor binds to it.
+     */
+    /* package */ record CalcContext(Client client, ExchangeRateProviderFactory factory, String fileId)
     {
     }
 
@@ -689,8 +702,10 @@ public final class ApiRoutes
     {
         return request -> {
             var context = uiExecBounded(ui.host(), () -> {
-                var file = resolver.resolve(request.pathParam("file")).file(); //$NON-NLS-1$
-                return new CalcContext(file.getClient(), file.getExchangeRateProviderFactory());
+                var resolved = resolver.resolve(request.pathParam("file")); //$NON-NLS-1$
+                var file = resolved.file();
+                return new CalcContext(file.getClient(), file.getExchangeRateProviderFactory(),
+                                resolved.access().uuid());
             }, ui.deadline(), true);
             return computeBounded(() -> body.apply(context, request), calculation.deadline(), calculation.slots());
         };

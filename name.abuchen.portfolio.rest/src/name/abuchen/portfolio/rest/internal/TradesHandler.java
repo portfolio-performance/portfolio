@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -99,8 +100,17 @@ public final class TradesHandler
                     String groupingParam, String costMethodParam, String taxesAndFeesParam, String currencyParam,
                     String fromParam, String toParam, String cursorParam, String limitParam)
     {
-        var params = parse(client, statusParam, groupingParam, costMethodParam, taxesAndFeesParam, currencyParam,
-                        fromParam, toParam, cursorParam, limitParam);
+        return list(client, factory, null, statusParam, groupingParam, costMethodParam, taxesAndFeesParam,
+                        currencyParam, fromParam, toParam, cursorParam, limitParam);
+    }
+
+    /** as above, for the file of this id: a cursor is good only for the file and the filters it came with */
+    public static JsonElement list(Client client, ExchangeRateProviderFactory factory, String fileId,
+                    String statusParam, String groupingParam, String costMethodParam, String taxesAndFeesParam,
+                    String currencyParam, String fromParam, String toParam, String cursorParam, String limitParam)
+    {
+        var params = parse(client, fileId, null, statusParam, groupingParam, costMethodParam, taxesAndFeesParam,
+                        currencyParam, fromParam, toParam, cursorParam, limitParam);
         return respond(collect(client, factory, client.getSecurities(), params), params);
     }
 
@@ -124,19 +134,29 @@ public final class TradesHandler
                     String statusParam, String groupingParam, String costMethodParam, String taxesAndFeesParam,
                     String currencyParam, String fromParam, String toParam, String cursorParam, String limitParam)
     {
+        return forInstrument(client, factory, null, uuid, statusParam, groupingParam, costMethodParam,
+                        taxesAndFeesParam, currencyParam, fromParam, toParam, cursorParam, limitParam);
+    }
+
+    /** as above, for the file of this id: a cursor is good only for the file, the instrument and the filters */
+    public static JsonElement forInstrument(Client client, ExchangeRateProviderFactory factory, String fileId,
+                    String uuid, String statusParam, String groupingParam, String costMethodParam,
+                    String taxesAndFeesParam, String currencyParam, String fromParam, String toParam,
+                    String cursorParam, String limitParam)
+    {
         // resolve the resource before validating query parameters
         var security = SecuritiesHandler.find(client, uuid);
 
-        var params = parse(client, statusParam, groupingParam, costMethodParam, taxesAndFeesParam, currencyParam,
-                        fromParam, toParam, cursorParam, limitParam);
+        var params = parse(client, fileId, security.getUUID(), statusParam, groupingParam, costMethodParam,
+                        taxesAndFeesParam, currencyParam, fromParam, toParam, cursorParam, limitParam);
 
         // sub-collection: an untraded instrument has an empty list, not a 404
         return respond(collect(client, factory, List.of(security), params), params);
     }
 
-    private static Params parse(Client client, String statusParam, String groupingParam, String costMethodParam,
-                    String taxesAndFeesParam, String currencyParam, String fromParam, String toParam,
-                    String cursorParam, String limitParam)
+    private static Params parse(Client client, String fileId, String instrument, String statusParam,
+                    String groupingParam, String costMethodParam, String taxesAndFeesParam, String currencyParam,
+                    String fromParam, String toParam, String cursorParam, String limitParam)
     {
         var errors = new ArrayList<ApiException.FieldError>();
 
@@ -151,7 +171,14 @@ public final class TradesHandler
         if (from != null && to != null && to.isBefore(from))
             errors.add(new ApiException.FieldError("to", "invalid-range", "to must not be before from")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
-        var paging = Paging.parse(Paging.Kind.TRADES, cursorParam, limitParam, errors);
+        // what decides which trades the list holds; cost method, taxes and the
+        // currency change only the figures of the same trades
+        var scope = "file=" + (fileId == null ? "" : fileId) //$NON-NLS-1$ //$NON-NLS-2$
+                        + "|instrument=" + (instrument == null ? "" : instrument) //$NON-NLS-1$ //$NON-NLS-2$
+                        + "|status=" + status.stream().map(Enum::name).sorted().toList() //$NON-NLS-1$
+                        + "|grouping=" + grouping //$NON-NLS-1$
+                        + "|from=" + from + "|to=" + to; //$NON-NLS-1$ //$NON-NLS-2$
+        var paging = Paging.parse(Paging.Kind.TRADES, scope, cursorParam, limitParam, errors);
 
         if (!errors.isEmpty())
             throw ApiException.badRequest(errors);
@@ -246,12 +273,14 @@ public final class TradesHandler
     private static final DateTimeFormatter SORTABLE = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss"); //$NON-NLS-1$
 
     /**
-     * What the trades are paged by: instrument, start, investment account and
-     * the real transaction that closes it - none of which an edit elsewhere in
-     * the file changes. The collector splits a lot sold in parts into copies
-     * with fresh ids, so the opening transaction cannot be part of the key;
-     * trades that agree on all of it are numbered in the collector's order,
-     * which is the same for the same file.
+     * What the trades are paged by: instrument, start, investment account, the
+     * real transaction that closes it, and the shares and native amount of the
+     * transaction that opens it - none of which an edit elsewhere in the file
+     * changes. The collector splits a lot sold in parts into copies with fresh
+     * ids, so the opening transaction's id cannot be part of the key, but its
+     * shares and amount can. Only lots that agree on all of it are numbered,
+     * in the collector's order, which is the same for the same file; removing
+     * one of those renumbers the ones after it.
      */
     /* package */ static Map<Trade, String> keys(List<Trade> trades)
     {
@@ -260,10 +289,14 @@ public final class TradesHandler
         for (var trade : trades)
         {
             var closing = trade.getRealClosingTransaction().map(PortfolioTransaction::getUUID).orElse(""); //$NON-NLS-1$
+            var opening = trade.getTransactions().get(0).getTransaction();
+            var amount = opening.getMonetaryAmount();
             var base = trade.getSecurity().getUUID() + '|' + SORTABLE.format(trade.getStart()) + '|'
-                            + trade.getPortfolio().getUUID() + '|' + closing;
+                            + trade.getPortfolio().getUUID() + '|' + closing + '|' + opening.getShares() + '|'
+                            + amount.getCurrencyCode() + ' ' + amount.getAmount();
             var ordinal = seen.merge(base, 1, Integer::sum);
-            keys.put(trade, base + '|' + String.format("%04d", ordinal)); //$NON-NLS-1$
+            // Locale.ROOT: digits that sort and parse the same everywhere
+            keys.put(trade, base + '|' + String.format(Locale.ROOT, "%04d", ordinal)); //$NON-NLS-1$
         }
         return keys;
     }

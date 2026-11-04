@@ -119,9 +119,14 @@ asks for a page: `cursor` and `limit` on the instruments and the trades are opt-
 response to them carries `page` — `limit` (or `null`), `total` and `nextCursor` (`null` on the last
 page) — and a `cursor` on every item. An empty `cursor` asks for the first page; a page continues
 after the key of the cursor it was given. Paged, a list is in an order of keys that an edit
-elsewhere does not change — instruments by `uuid`, trades by instrument, start, investment account
-and closing transaction — so an item added or removed between two pages shifts nothing: no item is
-skipped or sent twice. REST never truncates.
+elsewhere does not change — instruments by `uuid`; trades by instrument, start, investment account,
+closing transaction and the shares and amount of the opening transaction — so an item added or
+removed between two pages does not shift the others: every item that stays in the list for the
+whole walk comes exactly once. An item added before the cursor comes only with a new walk from the
+first page, and a trade whose start, investment account or closing transaction changes gets a new
+key. A cursor is good only for its own list — the same file, for one instrument's trades that
+instrument, and the same filters (`query`; `status`, `grouping`, `from`, `to`) — and is refused as
+`invalid-value` otherwise. REST never truncates.
 
 ### `GET /v1/files` — the files you may address
 
@@ -152,7 +157,8 @@ blank `query` is a `400`. `?cursor=` and `?limit=` return one page of the list, 
 `uuid`; without them the list is in the file's order.
 
 The trades (`GET .../trades`, `GET .../instruments/{uuid}/trades`) take the same `cursor` and
-`limit`; their `fxWarnings` and `warnings` describe the whole list, whichever page is asked for.
+`limit`; their `fxWarnings` and `warnings` describe the whole list, whichever page is asked for —
+also the trades `status`, `from` and `to` leave out, which the collector matches all the same.
 
 ### `PATCH /v1/files/{file}/instruments/{uuid}`
 
