@@ -390,7 +390,8 @@ public class RestApiServerTest
         var router = new Router();
         router.add("GET", "/v1/slow", request -> {
             entered.countDown();
-            release.await(10, TimeUnit.SECONDS);
+            // held until the test lets go - in its finally block at the latest
+            release.await();
             return Response.json(200, JsonParser.parseString("{}"));
         });
 
@@ -500,7 +501,8 @@ public class RestApiServerTest
         var router = new Router();
         router.add("GET", "/v1/slow", request -> {
             entered.countDown();
-            release.await(10, TimeUnit.SECONDS);
+            // held until the test lets go - in its finally block at the latest
+            release.await();
             return Response.json(200, JsonParser.parseString("{}"));
         });
 
@@ -541,7 +543,8 @@ public class RestApiServerTest
         var router = new Router();
         router.add("GET", "/v1/slow", request -> {
             entered.countDown();
-            release.await(10, TimeUnit.SECONDS);
+            // held until the test lets go - in its finally block at the latest
+            release.await();
             return Response.json(200, JsonParser.parseString("{}"));
         });
 
@@ -590,7 +593,8 @@ public class RestApiServerTest
         var router = new Router();
         router.add("GET", "/v1/slow", request -> {
             entered.countDown();
-            release.await(10, TimeUnit.SECONDS);
+            // held until the test lets go - in its finally block at the latest
+            release.await();
             return Response.json(200, JsonParser.parseString("{}"));
         });
 
