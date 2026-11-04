@@ -1622,7 +1622,11 @@ components:
         Where a page continues: the `page.nextCursor` of the page before, or
         the `cursor` of any item of a page - the page then starts after that
         item. Empty for the first page. Opaque, and only good for the list it
-        came from (`invalid-value` otherwise). With `cursor` or `limit` the
+        came from: the same file, for one instrument's trades that instrument,
+        and the same filters that decide which items the list holds (`query`;
+        `status`, `grouping`, `from`, `to`) - `invalid-value` otherwise, as for
+        a cursor this API did not write. Cost method, taxes and currency change
+        only the figures and keep a cursor good. With `cursor` or `limit` the
         response carries `page`, and every item its `cursor`.
       schema:
         type: string
@@ -1760,14 +1764,15 @@ components:
           $ref: "#/components/schemas/FxWarnings"
           description: |
             As on every report - here for every trade the collector matched for
-            the instruments of the request, also one that `status` leaves out
-            of `items`: the collector matches all of an instrument's trades, and
-            a conversion cannot be traced back to one of them.
+            the instruments of the request, also one that `status`, `from` or
+            `to` leaves out of `items`: the collector matches all of an
+            instrument's trades, and a conversion cannot be traced back to one
+            of them.
         fxStaleRates:
           $ref: "#/components/schemas/FxStaleRates"
           description: |
-            Like `fxWarnings`, for every trade matched, also one that `status`
-            leaves out of `items`.
+            Like `fxWarnings`, for every trade matched, also one that `status`,
+            `from` or `to` leaves out of `items`.
         page:
           $ref: "#/components/schemas/Page"
         warnings:
@@ -1790,11 +1795,15 @@ components:
         How a paged list goes on - present only when the request named
         `cursor` or `limit`. A paged list is in an order of keys that an edit
         elsewhere in the file does not change: instruments by `uuid`; trades by
-        instrument, start, investment account and closing transaction. A page
-        continues after the key of its cursor, so an item added or removed
-        between two pages shifts nothing: no item is skipped or sent twice.
-        For trades, `fxWarnings` and `warnings` describe the whole list, not
-        only the page.
+        instrument, start, investment account, closing transaction and the
+        shares and amount of the opening transaction. A page continues after
+        the key of its cursor, so an item added or removed between two pages
+        does not shift the others: every item that stays in the list for the
+        whole walk comes exactly once. An item added before the cursor comes
+        only with a new walk from the first page; a trade whose start,
+        investment account or closing transaction changes gets a new key, and
+        may then come twice or not at all. For trades, `fxWarnings` and
+        `warnings` describe the whole list, not only the page.
       required: [limit, total, nextCursor]
       properties:
         limit:

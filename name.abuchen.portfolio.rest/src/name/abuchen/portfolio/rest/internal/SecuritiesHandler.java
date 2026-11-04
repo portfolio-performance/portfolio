@@ -102,6 +102,16 @@ public final class SecuritiesHandler
      */
     public static JsonElement list(Client client, String query, String cursorParam, String limitParam)
     {
+        return list(client, null, query, cursorParam, limitParam);
+    }
+
+    /**
+     * As above, for the file of this id: a cursor is good only for the file
+     * and the {@code query} it came with.
+     */
+    public static JsonElement list(Client client, String fileId, String query, String cursorParam,
+                    String limitParam)
+    {
         var errors = new ArrayList<ApiException.FieldError>();
 
         var wanted = query == null ? null : query.strip();
@@ -109,7 +119,10 @@ public final class SecuritiesHandler
             errors.add(new ApiException.FieldError("query", "invalid-value", //$NON-NLS-1$ //$NON-NLS-2$
                             "query must not be blank; omit it to list every instrument")); //$NON-NLS-1$
 
-        var paging = Paging.parse(Paging.Kind.INSTRUMENTS, cursorParam, limitParam, errors);
+        // the query matches ignoring case: queries that differ in case are one list
+        var scope = "file=" + (fileId == null ? "" : fileId) + "|query=" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                        + (wanted == null ? "" : wanted.toLowerCase(Locale.ROOT)); //$NON-NLS-1$
+        var paging = Paging.parse(Paging.Kind.INSTRUMENTS, scope, cursorParam, limitParam, errors);
 
         if (!errors.isEmpty())
             throw ApiException.badRequest(errors);
