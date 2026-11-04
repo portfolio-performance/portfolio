@@ -587,6 +587,8 @@ public class ClientStoreTest
 
             var token = store.addPersistentClient("Claude Code");
             assertThat(store.authenticate(token).isPresent(), is(true));
+            // unwritten: listed as session-only until a write works
+            assertThat(store.authenticate(token).get().session(), is(true));
             // not known to be in the file: not reported as surviving a restart
             assertThat(store.survivesRestart(token), is(false));
 
@@ -774,7 +776,7 @@ public class ClientStoreTest
     @Test
     public void testAClientAddedOverAProtectedFileIsASessionClient() throws Exception
     {
-        newStore().addPersistentClient("Existing");
+        var existing = newStore().addPersistentClient("Existing");
         var file = dir().resolve("api-clients.json");
         try
         {
@@ -802,6 +804,55 @@ public class ClientStoreTest
         {
             Files.setPosixFilePermissions(file, PosixFilePermissions.fromString("rw-------"));
         }
+
+        // the protected file was left as it was
+        assertThat(newStore().authenticate(existing).isPresent(), is(true));
+    }
+
+    /**
+     * Reported in review: a failed write may have cut the earlier clients from
+     * the file. A client that then becomes session-only leaves the store
+     * unsaved, so that a later request - also its own - writes the file again.
+     * Cannot be arranged for a user who may write everywhere.
+     */
+    @Test
+    public void testAFileCutShortIsWrittenAgainAfterAClientBecameSessionOnly() throws Exception
+    {
+        var store = newStore();
+        var existing = store.addPersistentClient("Existing");
+        var file = dir().resolve("api-clients.json");
+        var dir = dir();
+
+        // cut short by a write that failed halfway, and no longer replaceable
+        Files.writeString(file, "{\"clients\":[");
+        try
+        {
+            Files.setPosixFilePermissions(file, PosixFilePermissions.fromString("r--------"));
+            Files.setPosixFilePermissions(dir, PosixFilePermissions.fromString("r-x------"));
+        }
+        catch (UnsupportedOperationException e)
+        {
+            Assume.assumeNoException("no POSIX permissions here", e);
+        }
+
+        String token;
+        try
+        {
+            Assume.assumeTrue("this user may write to anything", !Files.isWritable(dir) && !Files.isWritable(file));
+
+            token = store.addPersistentClient("Claude Code");
+            assertThat(store.survivesRestart(token), is(false));
+        }
+        finally
+        {
+            Files.setPosixFilePermissions(dir, PosixFilePermissions.fromString("rwx------"));
+            Files.setPosixFilePermissions(file, PosixFilePermissions.fromString("rw-------"));
+        }
+
+        // the next request after the retry interval - the session client's own - writes the file again
+        now = now.plusSeconds(61);
+        assertThat(store.authenticate(token).isPresent(), is(true));
+        assertThat(newStore().authenticate(existing).isPresent(), is(true));
     }
 
     /**

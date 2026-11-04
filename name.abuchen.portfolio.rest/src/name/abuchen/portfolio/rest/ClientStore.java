@@ -205,8 +205,13 @@ public class ClientStore
                                     + "persistent and written again with a later request"); //$NON-NLS-1$
                 }
                 default -> {
-                    // NO: the file does not hold it, so it dies with this run
+                    // NO: the file does not hold it, so it dies with this run.
+                    // A write that failed halfway may also have cut the earlier
+                    // clients from the file: a later request writes it again -
+                    // unless the file is protected, which is never written
                     entry.session = true;
+                    if (!unreadable)
+                        unsaved = true;
                     PortfolioLog.warning("Client \"" + name + "\" was added but not persisted; its token dies with " //$NON-NLS-1$ //$NON-NLS-2$
                                     + "this application run"); //$NON-NLS-1$
                 }
