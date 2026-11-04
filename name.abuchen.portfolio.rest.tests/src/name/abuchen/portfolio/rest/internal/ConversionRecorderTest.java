@@ -246,6 +246,28 @@ public class ConversionRecorderTest
         assertThat(conversions.staleRates(), contains(new FxWarnings.StaleRate("ARS", "EUR", "2026-01-02", 122)));
     }
 
+    /**
+     * Reported in review: only stale conversions describe the pair. An older
+     * rate that was recent for its own date is no finding, so it does not
+     * become the pair's {@code rateDate}.
+     */
+    @Test
+    public void testAnOlderRecentRateIsNotTheStaleRateDate()
+    {
+        var client = new Client();
+        var rates = rates();
+        rates.addPrice(new SecurityPrice(LocalDate.of(2026, 1, 2), Values.Quote.factorize(965)));
+        rates.addPrice(new SecurityPrice(LocalDate.of(2026, 6, 1), Values.Quote.factorize(1100)));
+        client.addSecurity(rates);
+        var conversions = new ConversionRecorder(new ExchangeRateProviderFactory(client), LocalDate.of(2026, 10, 28));
+
+        var converter = converter(conversions, client, CurrencyUnit.EUR);
+        converter.convert(LocalDate.of(2026, 1, 5), Money.of("ARS", Values.Amount.factorize(10))); // 3 days
+        converter.convert(LocalDate.of(2026, 10, 1), Money.of("ARS", Values.Amount.factorize(10))); // 122 days
+
+        assertThat(conversions.staleRates(), contains(new FxWarnings.StaleRate("ARS", "EUR", "2026-06-01", 122)));
+    }
+
     /** a week-old rate is a weekend with holidays, not a stale one */
     @Test
     public void testARecentRateIsNotStale()

@@ -108,8 +108,8 @@ public final class ConversionRecorder
 
     /**
      * the pairs converted at a stale rate at least once, each with the oldest
-     * rate it used and the largest gap it met - not necessarily of the same
-     * conversion - in a stable order
+     * rate and the largest gap of its stale conversions - not necessarily of
+     * the same one; a recent rate never counts - in a stable order
      */
     public List<FxWarnings.StaleRate> staleRates()
     {
