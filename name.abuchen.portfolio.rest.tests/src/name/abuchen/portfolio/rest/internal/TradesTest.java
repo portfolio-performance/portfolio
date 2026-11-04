@@ -678,7 +678,7 @@ public class TradesTest
     {
         var client = closedTrade();
 
-        for (var bad : List.of(new String[] { "x", null }, new String[] { Paging.encode(Paging.Kind.INSTRUMENTS, "u"),
+        for (var bad : List.of(new String[] { "x", null }, new String[] { Paging.encode(Paging.Kind.INSTRUMENTS, Paging.scopeHash(""), "u"),
                         null }, new String[] { null, "0" }, new String[] { null, "1.5" }))
         {
             try
@@ -692,6 +692,121 @@ public class TradesTest
                 assertThat(e.getErrors().get(0).field(), is(bad[0] != null ? "cursor" : "limit"));
                 assertThat(e.getErrors().get(0).code(), is("invalid-value"));
             }
+        }
+    }
+
+    /**
+     * Reported in review: a trade cursor is good only for the list it came
+     * from - the file, the instrument of a sub-collection, and the filters that
+     * decide which trades it holds. Cost method and currency change only the
+     * figures, so they keep the cursor.
+     */
+    @Test
+    public void testATradeCursorOfAnotherScopeIsRefused()
+    {
+        var client = closedTrade();
+        var other = new SecurityBuilder().addPrice("2026-07-01", Values.Quote.factorize(50)).addTo(client);
+        other.setName("BETA");
+        new PortfolioBuilder(client.getAccounts().get(0)) //
+                        .buy(other, "2026-02-01", Values.Share.factorize(10), Values.Amount.factorize(400)) //
+                        .addTo(client);
+        var factory = new ExchangeRateProviderFactory(client);
+
+        var cursor = TradesHandler.list(client, factory, "file-a", null, null, null, null, null, null, null, "", "1")
+                        .getAsJsonObject().getAsJsonObject("page").get("nextCursor").getAsString();
+
+        // the same list with other figures
+        assertThat(TradesHandler.list(client, factory, "file-a", null, null, "moving-average", null, null, null,
+                        null, cursor, "1").getAsJsonObject().get("items").getAsJsonArray().size(), is(1));
+
+        var uuid = client.getSecurities().get(0).getUUID();
+        List<java.util.function.Supplier<Object>> others = List.of( //
+                        () -> TradesHandler.list(client, factory, "file-b", null, null, null, null, null, null, null,
+                                        cursor, "1"),
+                        () -> TradesHandler.list(client, factory, "file-a", "open", null, null, null, null, null,
+                                        null, cursor, "1"),
+                        () -> TradesHandler.list(client, factory, "file-a", null, null, null, null, null,
+                                        "2026-01-01", null, cursor, "1"),
+                        () -> TradesHandler.forInstrument(client, factory, "file-a", uuid, null, null, null, null,
+                                        null, null, null, cursor, "1"));
+        for (var call : others)
+        {
+            try
+            {
+                call.get();
+                Assert.fail("expected ApiException");
+            }
+            catch (ApiException e)
+            {
+                assertThat(e.getErrors().get(0).field(), is("cursor"));
+                assertThat(e.getErrors().get(0).code(), is("invalid-value"));
+            }
+        }
+    }
+
+    /**
+     * Reported in review: two lots bought at the same time differ in shares and
+     * amount, so their keys do not depend on each other. Removing the one a page
+     * ended with does not renumber the other into the cursor - it comes with the
+     * next page instead of being skipped.
+     */
+    @Test
+    public void testRemovingALotOfTheSameStartSkipsNoOther()
+    {
+        var client = new Client();
+        var security = new SecurityBuilder().addPrice("2026-01-02", Values.Quote.factorize(100)).addTo(client);
+        security.setName("ACME");
+        var account = new AccountBuilder().deposit_("2026-01-01", Values.Amount.factorize(10000)).addTo(client);
+        new PortfolioBuilder(account) //
+                        .buy(security, "2026-01-02", Values.Share.factorize(10), Values.Amount.factorize(1000)) //
+                        .buy(security, "2026-01-02", Values.Share.factorize(5), Values.Amount.factorize(500)) //
+                        .addTo(client);
+        var portfolio = client.getPortfolios().get(0);
+
+        var first = TradesHandler.list(client, new ExchangeRateProviderFactory(client), null, null, "per-lot", null,
+                        null, null, null, null, "", "1").getAsJsonObject();
+        var item = first.get("items").getAsJsonArray().get(0).getAsJsonObject();
+        var shares = item.get("shares").getAsBigDecimal();
+        var cursor = first.getAsJsonObject("page").get("nextCursor").getAsString();
+
+        var gone = portfolio.getTransactions().stream()
+                        .filter(t -> java.math.BigDecimal.valueOf(t.getShares(), Values.Share.precision())
+                                        .compareTo(shares) == 0)
+                        .findFirst().orElseThrow();
+        portfolio.deleteTransaction(gone, client);
+
+        var next = TradesHandler.list(client, new ExchangeRateProviderFactory(client), null, null, "per-lot", null,
+                        null, null, null, null, cursor, "1").getAsJsonObject();
+        assertThat(next.get("items").getAsJsonArray().size(), is(1));
+        assertThat(next.get("items").getAsJsonArray().get(0).getAsJsonObject().get("shares").getAsBigDecimal()
+                        .compareTo(shares) != 0, is(true));
+    }
+
+    /**
+     * The ordinal of a key is written with ASCII digits whatever the default
+     * locale: with native digits the cursor would not read back, and paging
+     * would stop after the first page.
+     */
+    @Test
+    public void testPagingWorksWhateverTheDefaultLocale()
+    {
+        var previous = java.util.Locale.getDefault();
+        try
+        {
+            java.util.Locale.setDefault(java.util.Locale.forLanguageTag("ar-EG-u-nu-arab"));
+            var client = closedTrade();
+            var other = new SecurityBuilder().addPrice("2026-07-01", Values.Quote.factorize(50)).addTo(client);
+            other.setName("BETA");
+            new PortfolioBuilder(client.getAccounts().get(0)) //
+                            .buy(other, "2026-02-01", Values.Share.factorize(10), Values.Amount.factorize(400)) //
+                            .addTo(client);
+
+            var cursor = page(client, "", "1").getAsJsonObject("page").get("nextCursor").getAsString();
+            assertThat(page(client, cursor, "1").get("items").getAsJsonArray().size(), is(1));
+        }
+        finally
+        {
+            java.util.Locale.setDefault(previous);
         }
     }
 

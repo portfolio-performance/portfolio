@@ -3,7 +3,10 @@ package name.abuchen.portfolio.rest.internal;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
 
@@ -186,12 +189,81 @@ public class ReadEndpointsTest
         // a trade cursor is no instrument cursor
         try
         {
-            SecuritiesHandler.list(client, null, Paging.encode(Paging.Kind.TRADES, "x"), null);
+            SecuritiesHandler.list(client, null,
+                            Paging.encode(Paging.Kind.TRADES, Paging.scopeHash("file=|query="), "x"), null);
             Assert.fail("expected ApiException");
         }
         catch (ApiException e)
         {
             assertThat(e.getErrors().get(0).field(), is("cursor"));
+        }
+    }
+
+    /**
+     * Reported in review: a cursor is good only for the list it came from - the
+     * same file and the same query (ignoring case, as the query does). One of
+     * another file or query is refused, not answered with a page of a
+     * different list.
+     */
+    @Test
+    public void testACursorOfAnotherFileOrQueryIsRefused()
+    {
+        var client = new Client();
+        for (var name : List.of("ACME 1", "ACME 2", "ACME 3"))
+            new SecurityBuilder().addTo(client).setName(name);
+
+        var cursor = SecuritiesHandler.list(client, "file-a", "acme", "", "1").getAsJsonObject()
+                        .getAsJsonObject("page").get("nextCursor").getAsString();
+
+        // the same list: also with the query in another case
+        assertThat(SecuritiesHandler.list(client, "file-a", "ACME", cursor, "1").getAsJsonObject().get("items")
+                        .getAsJsonArray().size(), is(1));
+
+        for (var other : List.of(new String[] { "file-b", "acme" }, new String[] { "file-a", "acme 1" },
+                        new String[] { "file-a", null }))
+        {
+            try
+            {
+                SecuritiesHandler.list(client, other[0], other[1], cursor, "1");
+                Assert.fail("expected ApiException for " + other[0] + ", " + other[1]);
+            }
+            catch (ApiException e)
+            {
+                assertThat(e.getErrors().get(0).field(), is("cursor"));
+                assertThat(e.getErrors().get(0).code(), is("invalid-value"));
+            }
+        }
+    }
+
+    /**
+     * Reported in review: a cursor this API did not write is refused - bytes
+     * that are no UTF-8, or a key that no instrument could have.
+     */
+    @Test
+    public void testACursorThatIsNoUtf8OrNoKeyIsRefused()
+    {
+        var client = new Client();
+        new SecurityBuilder().addTo(client).setName("ACME");
+
+        var prefix = ("v1:i:" + Paging.scopeHash("file=|query=") + ":").getBytes(StandardCharsets.UTF_8);
+        var notUtf8 = Arrays.copyOf(prefix, prefix.length + 2);
+        notUtf8[prefix.length] = (byte) 0xC3;
+        notUtf8[prefix.length + 1] = (byte) 0x28;
+        var withControl = ("v1:i:" + Paging.scopeHash("file=|query=") + ":a\u0000b").getBytes(StandardCharsets.UTF_8);
+
+        for (var bytes : List.of(notUtf8, withControl, prefix))
+        {
+            try
+            {
+                SecuritiesHandler.list(client, null, Base64.getUrlEncoder().withoutPadding().encodeToString(bytes),
+                                null);
+                Assert.fail("expected ApiException");
+            }
+            catch (ApiException e)
+            {
+                assertThat(e.getErrors().get(0).field(), is("cursor"));
+                assertThat(e.getErrors().get(0).code(), is("invalid-value"));
+            }
         }
     }
 
