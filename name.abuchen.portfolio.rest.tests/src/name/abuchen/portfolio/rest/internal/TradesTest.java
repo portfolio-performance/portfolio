@@ -606,6 +606,35 @@ public class TradesTest
         assertThat(trades(client).has("page"), is(false));
     }
 
+    /**
+     * Reported in review: every page carries the fx warnings of the whole list,
+     * also a page that holds none of the trades the warning comes from.
+     */
+    @Test
+    public void testEveryPageCarriesTheFxWarningsOfTheWholeList()
+    {
+        var client = closedTrade(); // ACME, in EUR
+        var ars = new SecurityBuilder("ARS").addPrice("2026-07-01", Values.Quote.factorize(130)).addTo(client);
+        ars.setName("ACME ARS");
+        new PortfolioBuilder(client.getAccounts().get(0)) //
+                        .buy(ars, "2026-01-15", Values.Share.factorize(10), Values.Amount.factorize(1000)) //
+                        .addTo(client);
+
+        var pages = 0;
+        String cursor = "";
+        while (cursor != null)
+        {
+            var response = page(client, cursor, "1");
+            var warnings = response.get("fxWarnings").getAsJsonArray();
+            assertThat(warnings.size(), is(1));
+            assertThat(warnings.get(0).getAsJsonObject().get("currency").getAsString(), is("ARS"));
+            pages++;
+            var next = response.getAsJsonObject("page").get("nextCursor");
+            cursor = next.isJsonNull() ? null : next.getAsString();
+        }
+        assertThat(pages, is(2));
+    }
+
     /** a lot sold in two parts makes three trades of one purchase; each has a key of its own */
     @Test
     public void testThePartsOfOneLotHaveKeysOfTheirOwn()
