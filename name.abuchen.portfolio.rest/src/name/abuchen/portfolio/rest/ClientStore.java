@@ -6,6 +6,7 @@ import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -476,21 +477,46 @@ public class ClientStore
             var target = target();
             Files.createDirectories(target.getParent());
 
-            // written next to the file and moved over it: a crash halfway
-            // through leaves the previous file intact rather than a truncated
-            // one, and the permissions are tightened before the content is
-            // visible under the real name
             // a move replaces an empty directory where the file belongs, which
             // writing in place never did - that is not a file we may overwrite
             if (Files.isDirectory(target))
                 throw new IOException(target + " is a directory"); //$NON-NLS-1$
 
-            // a fresh name, created exclusively - on POSIX already owner-only -
-            // in the same directory, so that the move stays on one file system
-            var temp = Files.createTempFile(target.getParent(), FILE_NAME, ".tmp"); //$NON-NLS-1$
+            var content = root.toString();
+
+            // a file that is not this name's alone is written in place, as
+            // before: the target of a link keeps its own permissions, and a
+            // file with further hard links shows the new content under each
+            if (Files.exists(target) && (!target.equals(file) || hasOtherNames(target)))
+            {
+                writeInPlace(target, content);
+                return true;
+            }
+
+            // otherwise written next to the file and moved over it: a crash
+            // halfway through leaves the previous file intact rather than a
+            // truncated one, and the permissions are tightened before the
+            // content is visible under the real name. A fresh name, created
+            // exclusively - on POSIX already owner-only - in the same
+            // directory, so that the move stays on one file system.
+            Path temp;
             try
             {
-                Files.writeString(temp, root.toString(), StandardCharsets.UTF_8);
+                temp = Files.createTempFile(target.getParent(), FILE_NAME, ".tmp"); //$NON-NLS-1$
+            }
+            catch (IOException e)
+            {
+                // a directory that takes no new file can still hold a client
+                // file that may be written
+                if (!Files.isWritable(target))
+                    throw e;
+                writeInPlace(target, content);
+                return true;
+            }
+
+            try
+            {
+                Files.writeString(temp, content, StandardCharsets.UTF_8);
                 restrictToOwner(temp);
                 try
                 {
@@ -515,12 +541,10 @@ public class ClientStore
     }
 
     /**
-     * The file a write replaces: the client file, or the file it links to - also
+     * The file a write goes to: the client file, or the file it links to - also
      * one that does not exist yet. A move replaces a link rather than what it
      * points at, which would leave the linked file with the clients it had -
-     * revoked ones included - so a link is written through, as writing in
-     * place did. The temporary file is created next to the target, so its
-     * directory must be writable.
+     * revoked ones included - so a link is written through.
      */
     private Path target() throws IOException
     {
@@ -533,6 +557,30 @@ public class ClientStore
             path = path.resolveSibling(Files.readSymbolicLink(path));
         }
         return path;
+    }
+
+    /**
+     * Writes over the existing file, keeping its permissions and every name it
+     * has. Not atomic - a crash halfway through can leave it truncated - so it
+     * is used only where replacing the file would lose more.
+     */
+    private static void writeInPlace(Path target, String content) throws IOException
+    {
+        Files.writeString(target, content, StandardCharsets.UTF_8, StandardOpenOption.WRITE,
+                        StandardOpenOption.TRUNCATE_EXISTING);
+    }
+
+    /** whether the file has hard links besides this name; false where the file system does not say */
+    private static boolean hasOtherNames(Path path)
+    {
+        try
+        {
+            return ((Number) Files.getAttribute(path, "unix:nlink")).intValue() > 1; //$NON-NLS-1$
+        }
+        catch (UnsupportedOperationException | IllegalArgumentException | IOException e)
+        {
+            return false;
+        }
     }
 
     /**
