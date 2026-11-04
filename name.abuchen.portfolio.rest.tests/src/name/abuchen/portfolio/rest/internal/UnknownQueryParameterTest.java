@@ -174,7 +174,7 @@ public class UnknownQueryParameterTest
     @Test
     public void testRouteWithoutParametersAcceptsNone()
     {
-        var problem = expectRejection("/v1/files/" + fileId + "/instruments", "limit=10");
+        var problem = expectRejection("/v1/files/" + fileId + "/cash-accounts", "limit=10");
 
         assertThat(problem.getStatus(), is(400));
         assertThat(problem.getErrors().get(0).field(), is("limit"));

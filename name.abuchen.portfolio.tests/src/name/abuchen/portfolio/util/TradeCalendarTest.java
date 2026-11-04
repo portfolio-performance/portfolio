@@ -4,6 +4,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.junit.Test;
@@ -758,5 +765,58 @@ public class TradeCalendarTest
 
         // in the empty calendar, every day is a (potential) trading day
         assertThat(calendar.isHoliday(randomDate), is(false));
+    }
+
+    /**
+     * A calendar is shared; several threads asking it for holidays of years it
+     * has not computed yet must neither fail nor see a different answer. Each
+     * thread starts at another of the years, so that first computations of
+     * different years run at the same time, and the answer compared is the
+     * holidays themselves - on weekdays, which a calendar without holidays
+     * would not have.
+     */
+    @Test
+    public void testConcurrentLookupsOfUncomputedYears() throws Exception
+    {
+        // the shared instance, as the application uses it; years far ahead
+        // that nothing else asks for, so that their holidays are computed here
+        var calendar = TradeCalendarManager.getInstance("de"); //$NON-NLS-1$
+
+        var threads = 8;
+        var firstYear = 2200;
+        var years = 60;
+        var start = new CountDownLatch(1);
+        var pool = Executors.newFixedThreadPool(threads);
+        try
+        {
+            var results = new ArrayList<Future<Set<LocalDate>>>();
+            for (int ii = 0; ii < threads; ii++)
+            {
+                var offset = ii * years / threads;
+                results.add(pool.submit(() -> {
+                    start.await();
+                    var holidays = new HashSet<LocalDate>();
+                    for (var step = 0; step < years; step++)
+                    {
+                        var year = firstYear + (offset + step) % years;
+                        for (var day = LocalDate.of(year, 1, 1); day.getYear() == year; day = day.plusDays(1))
+                            if (!calendar.isWeekend(day) && calendar.isHoliday(day))
+                                holidays.add(day);
+                    }
+                    return holidays;
+                }));
+            }
+
+            start.countDown();
+
+            var expected = results.get(0).get(30, TimeUnit.SECONDS);
+            assertThat(expected.isEmpty(), is(false));
+            for (var result : results)
+                assertThat(result.get(30, TimeUnit.SECONDS), is(expected));
+        }
+        finally
+        {
+            pool.shutdownNow();
+        }
     }
 }
