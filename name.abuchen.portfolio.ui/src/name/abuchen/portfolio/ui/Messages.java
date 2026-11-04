@@ -440,6 +440,7 @@ public class Messages extends NLS
     public static String EditWizardMasterDataMsgDuplicateClassification;
     public static String EditWizardMasterDataMsgWeightEqualsZero;
     public static String EditWizardMasterDataMsgWeightNot100Percent;
+    public static String EditWizardMasterDataSelectClassification;
     public static String EditWizardMasterDataTitle;
     public static String EditWizardMasterDataUnlink;
     public static String EditWizardMasterDataUnlink_ToolTip;
@@ -999,6 +1000,7 @@ public class Messages extends NLS
     public static String LabelViewTaxonomyDefinition;
     public static String LabelViewTreeMap;
     public static String LabelVolatility;
+    public static String LabelVolatilityAnnualized;
     public static String LabelWatchlist;
     public static String LabelWeeksAgo;
     public static String LabelWithoutClassification;
@@ -1526,6 +1528,7 @@ public class Messages extends NLS
     public static String TooltipSharpeRatio;
     public static String TooltipTurnoverRate;
     public static String TooltipVolatility;
+    public static String TooltipVolatilityAnnualized;
     public static String TransactionFilter;
     public static String TransactionFilterBuy;
     public static String TransactionFilterBuyAndSell;

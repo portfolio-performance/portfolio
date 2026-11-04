@@ -124,6 +124,9 @@ public class PaymentsPerQuarterMatrixTab extends PaymentsMatrixTab
         };
 
         var column = new TableViewerColumn(records, SWT.RIGHT);
+        // register layout data first: on GTK, configuring the column can trigger a layout
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(50));
+
         column.getColumn().setText(columnCaption);
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -152,8 +155,6 @@ public class PaymentsPerQuarterMatrixTab extends PaymentsMatrixTab
 
         createSorter((l1, l2) -> Long.compare(valueFunction.applyAsLong(l1), valueFunction.applyAsLong(l2)))
                         .attachTo(records, column);
-
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(50));
     }
 
     private int getNoOfQuarters(int nMonths)
@@ -166,6 +167,9 @@ public class PaymentsPerQuarterMatrixTab extends PaymentsMatrixTab
     protected void createAveragePerQuarterColumn(TableViewer records, TableColumnLayout layout)
     {
         var column = new TableViewerColumn(records, SWT.RIGHT);
+        // register layout data first: on GTK, configuring the column can trigger a layout
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(200));
+
         column.getColumn().setText(Messages.ColumnAverage);
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -215,8 +219,6 @@ public class PaymentsPerQuarterMatrixTab extends PaymentsMatrixTab
 
             return Long.compare(avg1, avg2);
         }).attachTo(records, column);
-
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(200));
     }
 
 }

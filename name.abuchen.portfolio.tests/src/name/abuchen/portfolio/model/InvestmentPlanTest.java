@@ -4,11 +4,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThrows;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -288,6 +290,30 @@ public class InvestmentPlanTest
         investmentPlan.setStart(LocalDateTime.parse("2016-01-31T00:00:00"));
 
         investmentPlan.generateTransactions(new TestCurrencyConverter());
+    }
+
+    @Test
+    public void testPartiallyGeneratedTransactionsWhenQuoteIsMissing()
+    {
+        // a zero price from 15 March 2016 on aborts the plan at 31 March
+        security.addPrice(new SecurityPrice(LocalDate.parse("2016-03-15"), 0));
+
+        investmentPlan.setType(InvestmentPlan.Type.PURCHASE_OR_DELIVERY);
+
+        investmentPlan.setAccount(account);
+        investmentPlan.setPortfolio(portfolio);
+        investmentPlan.setSecurity(security);
+        investmentPlan.setStart(LocalDateTime.parse("2016-01-31T00:00:00"));
+
+        List<TransactionPair<?>> newlyCreated = new ArrayList<>();
+        assertThrows(IOException.class,
+                        () -> investmentPlan.generateTransactions(new TestCurrencyConverter(), newlyCreated));
+
+        // 31 January 2016 is a Sunday, therefore 1 February and 29 February
+        assertThat(newlyCreated, hasSize(2));
+        assertThat(newlyCreated.get(0).getTransaction().getDateTime(), is(LocalDateTime.parse("2016-02-01T00:00")));
+        assertThat(newlyCreated.get(1).getTransaction().getDateTime(), is(LocalDateTime.parse("2016-02-29T00:00")));
+        assertThat(investmentPlan.getTransactions(), hasSize(2));
     }
 
     @Test

@@ -107,9 +107,13 @@ public class OpenSampleHandler
             };
             new ProgressMonitorDialog(shell).run(true, true, loadResourceOperation);
         }
-        catch (InvocationTargetException | InterruptedException e)
+        catch (InvocationTargetException e)
         {
             PortfolioPlugin.log(e);
+        }
+        catch (InterruptedException e)
+        {
+            Thread.currentThread().interrupt();
         }
     }
 

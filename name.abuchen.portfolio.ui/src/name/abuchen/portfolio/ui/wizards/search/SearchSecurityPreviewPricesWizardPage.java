@@ -174,9 +174,13 @@ public class SearchSecurityPreviewPricesWizardPage extends WizardPage
 
                         });
                     }
-                    catch (InvocationTargetException | InterruptedException e)
+                    catch (InvocationTargetException e)
                     {
                         PortfolioPlugin.log(e);
+                    }
+                    catch (InterruptedException e)
+                    {
+                        Thread.currentThread().interrupt();
                     }
                 }
 

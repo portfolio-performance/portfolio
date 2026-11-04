@@ -35,7 +35,7 @@ public class N26BankAGPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^(?!(Zinsertrag|Abgeltungssteuer|Solidarit.tszuschlag)).* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\-|\\+][\\.,\\d]+\\p{Sc}$");
+        var firstRelevantLine = new Block("^(?!(Zinsertrag|Abgeltungssteuer|Solidarit.tszuschlag)).* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\-\\+][\\.,\\d]+\\p{Sc}$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -49,7 +49,7 @@ public class N26BankAGPDFExtractor extends AbstractPDFExtractor
                         // ZEwXCk bZcrf dE erY fRJEH 18.04.2026 -7,00€
                         // @formatter:on
                         .section("date", "type", "amount", "currency") //
-                        .match("^(?!(Zinsertrag|Abgeltungssteuer|Solidarit.tszuschlag)).* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<type>[\\-|\\+])(?<amount>[\\.,\\d]+)(?<currency>\\p{Sc})$") //
+                        .match("^(?!(Zinsertrag|Abgeltungssteuer|Solidarit.tszuschlag)).* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<type>[\\-\\+])(?<amount>[\\.,\\d]+)(?<currency>\\p{Sc})$") //
                         .assign((t, v) -> {
                             // @formatter:off
                             // Is type is "-" change from DEPOSIT to REMOVAL

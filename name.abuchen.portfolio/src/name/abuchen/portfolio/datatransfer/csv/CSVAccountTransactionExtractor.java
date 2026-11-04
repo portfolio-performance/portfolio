@@ -207,6 +207,10 @@ import name.abuchen.portfolio.money.Money;
 
                     t.addUnit(grossAmount.get());
                 }
+                else if (t.getSecurity() != null)
+                {
+                    createGrossValueIfNecessary(rawValues, field2column, t);
+                }
 
                 item = new TransactionItem(t);
                 break;

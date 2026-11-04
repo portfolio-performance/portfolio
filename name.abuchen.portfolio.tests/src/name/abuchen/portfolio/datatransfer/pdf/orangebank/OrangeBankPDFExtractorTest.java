@@ -2,8 +2,11 @@ package name.abuchen.portfolio.datatransfer.pdf.orangebank;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundCash;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundCash;
@@ -51,8 +54,12 @@ public class OrangeBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-03-10"), hasAmount("EUR", 150.83), //
-                        hasSource("Kontoauszug01.txt"), hasNote(null))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2024-03-10"), //
+                        hasSource("Kontoauszug01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 150.83), hasGrossValue("EUR", 150.83), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 1st cash transfer transaction
         assertThat(results, hasItem(outboundCash(hasDate("2024-03-12"), hasAmount("EUR", 150.83), //

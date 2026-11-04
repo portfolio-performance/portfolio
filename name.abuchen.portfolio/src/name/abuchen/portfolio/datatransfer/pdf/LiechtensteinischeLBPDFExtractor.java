@@ -58,9 +58,9 @@ public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
         final var type = new DocumentType("(Storno: )?B.rsenabrechnung \\- Ihr (Kauf|Verkauf)");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^(Storno: )?B.rsenabrechnung \\- Ihr (Kauf|Verkauf).*$");
+        var firstRelevantLine = new Block("^(Storno: )?B.rsenabrechnung \\- Ihr (Kauf|Verkauf).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -172,19 +172,19 @@ public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
                         // Bruttobetrag ZAR 34'080.00
                         // Umrechnungskurs EUR/ZAR 19.179094
                         // @formatter:on
-                        .section("fxCurrency", "fxGross", "baseCurrency", "termCurrency", "exchangeRate").optional()
+                        .section("fxCurrency", "fxGross", "baseCurrency", "termCurrency", "exchangeRate").optional() //
                         .match("^Bruttobetrag (?<fxCurrency>[A-Z]{3}) (?<fxGross>[\\.'\\d]+)$") //
                         .match("^Umrechnungskurs (?<baseCurrency>[A-Z]{3})\\/(?<termCurrency>[A-Z]{3}) (?<exchangeRate>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             // The exchange rate is quoted with the account currency either
                             // as base or as term currency, depending on the document.
-                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                            var fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
 
-                            ExtrExchangeRate rate = fixExchangeRateQuotedPer100Units(asExchangeRate(v), fxGross,
+                            var rate = fixExchangeRateQuotedPer100Units(asExchangeRate(v), fxGross,
                                             t.getPortfolioTransaction().getMonetaryAmount());
                             type.getCurrentContext().putType(rate);
 
-                            Money gross = rate.convert(t.getPortfolioTransaction().getCurrencyCode(), fxGross);
+                            var gross = rate.convert(t.getPortfolioTransaction().getCurrencyCode(), fxGross);
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
@@ -222,13 +222,13 @@ public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
                         + "|R.ckzahlung von Reserven aus Kapitaleinlagen)");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
         // @formatter:off
         // The heading is repeated on the following pages without any booking
         // data, therefore the end of the block is required.
         // @formatter:on
-        Block firstRelevantLine = new Block("^(Bardividende \\(Ordentliche Dividende\\)" //
+        var firstRelevantLine = new Block("^(Bardividende \\(Ordentliche Dividende\\)" //
                         + "|Wahldividende" //
                         + "|R.ckzahlung von Reserven aus Kapitaleinlagen)$", //
                         "^Den Betrag haben wir gutgeschrieben.*$");
@@ -274,7 +274,7 @@ public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Ihr Bestand per 06.11.2023 25.114744 Stück
                         // @formatter:on
-                        .section("shares")
+                        .section("shares") //
                         .match("^Ihr Bestand per .* (?<shares>[\\.'\\d]+) St.ck$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
@@ -306,19 +306,19 @@ public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
                         // Bruttobetrag USD 7.53
                         // Umrechnungskurs USD/CHF 0.882477
                         // @formatter:on
-                        .section("fxCurrency", "fxGross", "baseCurrency", "termCurrency", "exchangeRate").optional()
+                        .section("fxCurrency", "fxGross", "baseCurrency", "termCurrency", "exchangeRate").optional() //
                         .match("^Bruttobetrag (?<fxCurrency>[A-Z]{3}) (?<fxGross>[\\.'\\d]+)$") //
                         .match("^Umrechnungskurs (?<baseCurrency>[A-Z]{3})\\/(?<termCurrency>[A-Z]{3}) (?<exchangeRate>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             // The exchange rate is quoted with the account currency either
                             // as base or as term currency, depending on the document.
-                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                            var fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
 
-                            ExtrExchangeRate rate = fixExchangeRateQuotedPer100Units(asExchangeRate(v), fxGross,
+                            var rate = fixExchangeRateQuotedPer100Units(asExchangeRate(v), fxGross,
                                             t.getMonetaryAmount());
                             type.getCurrentContext().putType(rate);
 
-                            Money gross = rate.convert(t.getCurrencyCode(), fxGross);
+                            var gross = rate.convert(t.getCurrencyCode(), fxGross);
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
@@ -340,9 +340,9 @@ public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
         final var type = new DocumentType("Depoteingang");
         this.addDocumentTyp(type);
 
-        Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<PortfolioTransaction>();
 
-        Block firstRelevantLine = new Block("^Depoteingang$");
+        var firstRelevantLine = new Block("^Depoteingang$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -405,9 +405,9 @@ public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
         final var type = new DocumentType("Festgeldanlage");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^Festgeldanlage$");
+        var firstRelevantLine = new Block("^Festgeldanlage$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -461,7 +461,7 @@ public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
         // XXXXX XXXXX
         // Auftragsnummer: XXXXXXXXX
         // @formatter:on
-        Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. Gutschrift [\\d]{2}\\.[\\d]{2}\\..*$");
+        var depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. Gutschrift [\\d]{2}\\.[\\d]{2}\\..*$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
@@ -485,7 +485,7 @@ public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
         // Auftrag von XXXXX XXXXX
         // Auftragsnummer: 824427279
         // @formatter:on
-        Block depositBlock_Format02 = new Block("^[\\d]{2}\\.[\\d]{2}\\. E\\-Banking Konto.bertrag.* [\\d]{2}\\.[\\d]{2}\\..*$");
+        var depositBlock_Format02 = new Block("^[\\d]{2}\\.[\\d]{2}\\. E\\-Banking Konto.bertrag.* [\\d]{2}\\.[\\d]{2}\\..*$");
         type.addBlock(depositBlock_Format02);
         depositBlock_Format02.set(new Transaction<AccountTransaction>()
 
@@ -510,7 +510,7 @@ public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
         // Periode 14.05.2024-30.06.2024
         // Auftragsnummer: 668110724
         // @formatter:on
-        Block feesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. Geb.hren [\\d]{2}\\.[\\d]{2}\\..*$");
+        var feesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. Geb.hren [\\d]{2}\\.[\\d]{2}\\..*$");
         type.addBlock(feesBlock);
         feesBlock.set(new Transaction<AccountTransaction>()
 
@@ -535,7 +535,7 @@ public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
         // Call Deposit CHF, 0.65%, 10.05.23 (1965781)
         // Auftragsnummer: 669550491
         // @formatter:on
-        Block interestBlock_Format02 = new Block("^[\\d]{2}\\.[\\d]{2}\\. Zinszahlung .* [\\d]{2}\\.[\\d]{2}\\..*$");
+        var interestBlock_Format02 = new Block("^[\\d]{2}\\.[\\d]{2}\\. Zinszahlung .* [\\d]{2}\\.[\\d]{2}\\..*$");
         type.addBlock(interestBlock_Format02);
         interestBlock_Format02.set(new Transaction<AccountTransaction>()
 
@@ -559,7 +559,7 @@ public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
         // Abrechnungsperiode 30.09.2023-31.12.2023
         // Habenzins 456.60
         // @formatter:on
-        Block interestBlock = new Block("^Per [\\d]{1,2}\\. .* [\\d]{4}$");
+        var interestBlock = new Block("^Per [\\d]{1,2}\\. .* [\\d]{4}$");
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
@@ -642,7 +642,7 @@ public class LiechtensteinischeLBPDFExtractor extends AbstractPDFExtractor
         if (amount.getAmount() == 0)
             return rate;
 
-        Money gross = rate.convert(amount.getCurrencyCode(), fxGross);
+        var gross = rate.convert(amount.getCurrencyCode(), fxGross);
 
         if (gross.getAmount() <= amount.getAmount() * 10)
             return rate;
