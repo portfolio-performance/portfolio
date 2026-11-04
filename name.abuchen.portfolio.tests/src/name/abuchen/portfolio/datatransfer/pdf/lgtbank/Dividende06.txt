@@ -1,0 +1,54 @@
+PDFBox Version: 3.0.8
+Portfolio Performance Version: 0.89.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+LGT Bank AG 
+Zweigniederlassung Österreich 
+Bankgasse 9, A-1010 Wien 
+Tel. +43 1 22759-0 
+lgt.austria@lgt.com, www.lgt.at, BIC BLFLATWW 
+FN 383530s HG Wien, Sitz Wien, UID Nr. ATU57631067 
+Herr 
+ukwMR wkUZAjq DOn hkyYH 
+AJjmedraFq 16/28 
+3277 rmmW 1 /  2 
+Wien, 30. September 2026 
+Barausschüttung Portfolio: 3850070.004 
+Auftragsnummer: 203526408 Kontonummer: 3908370.174 
+Kunde: OyHwR pBj ZWwre IBAN: AT96 4430 0038 1408 9241   
+Ihr Bestand am 31. August 2026: 
+100 Union Pacific Corp 
+ Namen-Aktien 
+ ISIN: US9078181081, Valoren-Nr.: 979840 
+Wir rechnen folgende Erträge unter Eingangsvorbehalt ab: 
+Ausschüttung USD 1,42 
+Ex-Datum 31. August 2026 
+Ausschüttungsart Ordentliche Dividende 
+Betrag USD 142,00 
+KESt USD -17,76 
+Quellensteuer 15 % USD -21,30 
+Netto USD 102,94 
+Zu Ihren Gunsten  USD 102,94 
+Valuta 30. September 2026 
+3852370 13E T VIE I SEA0107 8799436 10:47 30.09.2026 %Media:XML-A4H 
+LGT Bank AG 
+Zweigniederlassung Österreich 
+Bankgasse 9, A-1010 Wien 
+Tel. +43 1 22759-0 
+lgt.austria@lgt.com, www.lgt.at, BIC BLFLATWW 
+FN 383530s HG Wien, Sitz Wien, UID Nr. ATU57631067 
+2 /  2 
+Barausschüttung Portfolio: 3874570.004 
+Auftragsnummer: 203526408 Kontonummer: 3827570.174 
+Kunde: uPOJV fZf SWFeC 
+Steuerliche Informationen (Werte in EUR) 
+Wechselkurs EUR/USD 1,134020 
+KESt Zusammenfassung 
+KESt Bemessungsgrundlage EUR 125,22 
+KESt vor Anrechnung EUR 34,44 
+anrechenbare ausl. Quellensteuer EUR - 18,78 
+Bezahlte KESt EUR 15,66 
+Eine allfällige KESt-Abfuhr erfolgt an das Finanzamt für Großbetriebe. 
+LGT Bank AG, Zweigniederlassung Österreich ist eine Zweigniederlassung der LGT Bank AG, eingetragen im Handelsregister des Fürstentum Liechtenstein; 
+HR Nr.: 1122356-7, Sitz: 9490 Vaduz, MWST-Nr. 50119, CH-260 887 880 
+3852370 13E T VIE I SEA0107 8799436 10:47 30.09.2026 %Media:XML-A4H

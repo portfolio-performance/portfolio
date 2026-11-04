@@ -1,0 +1,78 @@
+PDFBox Version: 3.0.8
+Portfolio Performance Version: 0.89.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+LGT Bank AG 
+Zweigniederlassung Österreich 
+Bankgasse 9, A-1010 Wien 
+Tel. +43 1 22759-0 
+lgt.austria@lgt.com, www.lgt.at, BIC BLFLATWW 
+FN 383530s HG Wien, Sitz Wien, UID Nr. ATU57631067 
+zoSE 
+aHSRM lRZumif AfB qCazS 
+ZSemDnvGrF 25/99 
+0765 MAKy 
+1 /  2 
+Wien, 1. Oktober 2026 
+Kontoauszug EUR Konto 
+Periode: 01.07.2026 - 30.09.2026 Kontonummer: 9867240.112 
+Kunde: ZsLZe Quf SAdlX IBAN: AT90 7026 0038 8229 3832   
+Portfolio: 5978370.885 Aktienmandat Global  
+Quality Leaders 
+Datum Text Valuta Soll in EUR Haben in EUR Saldo in EUR 
+30.06.2026 Saldovortrag   26.286,50 
+14.07.2026 Auftrag 196472808   16.07.2026   9.881,14   36.167,64 
+Verkauf 
+1.790,00 Stk.  
+R Dav Cam Mil 
+(55832266) 
+15.07.2026 Auftrag 196569483  16.07.2026   6.004,39   30.163,25 
+Devisenkassageschäft  
+CHF 5.498,32  
+Kurs EUR/CHF 0,915717 
+22.07.2026 Auftrag 197135683 22.07.2026   261,43   30.424,68 
+Bardividende N Enel 
+05.08.2026 Steuerkorrektur 05.08.2026   187,17   30.611,85 
+07.08.2026 Steuerkorrektur 07.08.2026   597,28   31.209,13 
+07.08.2026 Auftrag 198827910  07.08.2026   804,64   30.404,49 
+Devisenkassageschäft  
+USD 920,93  
+Kurs EUR/USD 1,144523 
+28.08.2026 Steuerkorrektur 28.08.2026   98,59   30.305,90 
+02.09.2026 Auftrag 200724455   04.09.2026   4.745,88   35.051,78 
+Verkauf 
+555,00 Stk.  
+R Enel 
+(1250633) 
+03.09.2026 Auftrag 200938574  04.09.2026   3.790,95   31.260,83 
+Devisenkassageschäft  
+USD 4.363,99  
+Kurs EUR/USD 1,151159 
+17.09.2026 Quartalsgebühren 30.09.2026   1.146,34   30.114,49 
+28.09.2026 Auftrag 203310356 28.09.2026   339,15   30.453,64 
+Bardividende N BNP A 
+30.09.2026 Abschlussbuchung 203567900 30.09.2026   0,00   30.453,64 
+Summe   11.844,91   16.012,05 
+Saldo   30.453,64 
+Zinssatz für Kontoüberziehung: 9,5000 % p.a. 
+3852370 13E T VIE I ACC0005 8799436 0:05 01.10.2026 %Media:XML-A4H 
+LGT Bank AG 
+Zweigniederlassung Österreich 
+Bankgasse 9, A-1010 Wien 
+Tel. +43 1 22759-0 
+lgt.austria@lgt.com, www.lgt.at, BIC BLFLATWW 
+FN 383530s HG Wien, Sitz Wien, UID Nr. ATU57631067 
+2 /  2 
+Kontoauszug EUR Konto 
+Periode: 01.07.2026 - 30.09.2026 Kontonummer: 7902370.385 
+Kunde: fbmhx GjV oIgBu IBAN: AT90 2868 3466 3487 5684   
+Portfolio: 3896750.935 Aktienmandat Global  
+Quality Leaders 
+Einlagen auf diesem Konto sind nach Massgabe des Einlagensicherungs- und Anlegerentschädigungsgesetzes (EAG) grundsätzlich 
+erstattungsfähig. Nähere Informationen können dem Informationsbogen für Einlegerinnen und Einleger entnommen werden, den Sie  
+auch unter https://www.lgt.com/de/eag/ einsehen können. 
+Wir bitten Sie, diesen Auszug zu prüfen und uns allfällige Unstimmigkeiten innerhalb von zwei Monaten schriftlich mitzuteilen, 
+andernfalls gilt dieser Auszug als genehmigt (siehe Allgemeine Geschäftsbedingungen). 
+LGT Bank AG, Zweigniederlassung Österreich ist eine Zweigniederlassung der LGT Bank AG, eingetragen im Handelsregister des Fürstentum Liechtenstein; 
+HR Nr.: 1122356-7, Sitz: 9490 Vaduz, MWST-Nr. 50119, CH-260 887 880 
+3852370 13E T VIE I ACC0005 8799436 0:05 01.10.2026 %Media:XML-A4H
