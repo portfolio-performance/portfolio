@@ -58,6 +58,8 @@ public class FxWarningsTest
         var report = new JsonObject();
         FxWarnings.attach(report, conversions);
 
+        // a stale rate is not a 1:1 conversion
+        assertThat(report.get("fxWarnings").getAsJsonArray().size(), is(0));
         var stale = report.get("fxStaleRates").getAsJsonArray();
         assertThat(stale.size(), is(1));
         var entry = stale.get(0).getAsJsonObject();
@@ -86,5 +88,33 @@ public class FxWarningsTest
         assertThat(warning.get("currency").getAsString(), is("EUR"));
         assertThat(warning.get("reportingCurrency").getAsString(), is("ARS"));
         assertThat(warning.get("reason").getAsString(), is("no-series"));
+    }
+
+    /** a pair that fell back on one date and converted at a stale rate on another is in both lists */
+    @Test
+    public void testAttachReportsBothFindingsForOnePair()
+    {
+        var client = new Client();
+        var rates = new Security("ARS/EUR", "ARS");
+        rates.setTargetCurrencyCode(CurrencyUnit.EUR);
+        rates.addPrice(new SecurityPrice(LocalDate.of(2026, 1, 2), Values.Quote.factorize(965)));
+        rates.addPrice(new SecurityPrice(LocalDate.of(2026, 7, 15), 0));
+        client.addSecurity(rates);
+
+        var factory = new ExchangeRateProviderFactory(client);
+        var conversions = new ConversionRecorder(factory, LocalDate.of(2026, 10, 28));
+        var converter = conversions.wrap(new CurrencyConverterImpl(factory, CurrencyUnit.EUR));
+        converter.convert(LocalDate.of(2026, 7, 20), Money.of("ARS", Values.Amount.factorize(10)));
+        converter.convert(LocalDate.of(2026, 3, 1), Money.of("ARS", Values.Amount.factorize(10)));
+
+        var report = new JsonObject();
+        FxWarnings.attach(report, conversions);
+
+        var warnings = report.get("fxWarnings").getAsJsonArray();
+        assertThat(warnings.size(), is(1));
+        assertThat(warnings.get(0).getAsJsonObject().get("currency").getAsString(), is("ARS"));
+        var stale = report.get("fxStaleRates").getAsJsonArray();
+        assertThat(stale.size(), is(1));
+        assertThat(stale.get(0).getAsJsonObject().get("currency").getAsString(), is("ARS"));
     }
 }
