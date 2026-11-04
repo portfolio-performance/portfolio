@@ -2187,8 +2187,10 @@ components:
         days older than the date it converted at (or than today, for a later
         date) — a series that stopped being published goes on answering with
         its last rate, and the currency effect of those amounts is then frozen
-        at it rather than measured. Not a 1:1 conversion, so not in
-        `fxWarnings`. Always present, empty when every rate used was recent.
+        at it rather than measured. A stale conversion is not 1:1, so it is
+        no `fxWarnings` entry itself; the same pair can still be one for
+        another conversion that fell back. Always present, empty when every
+        rate used was recent.
       items:
         $ref: "#/components/schemas/FxStaleRate"
 
@@ -2208,14 +2210,16 @@ components:
           type: string
           format: date
           description: |
-            The date of the oldest rate a conversion of this pair used. For a
-            pair reached through a third currency (USD to CHF through EUR),
-            the oldest of its steps.
+            The date of the oldest rate a stale conversion of this pair used;
+            a conversion at a rate that was recent for its date does not count,
+            however old that date. For a pair reached through a third currency
+            (USD to CHF through EUR), the oldest of its steps.
         daysOld:
           type: integer
           description: |
-            How many days that rate was older than the date it converted at —
-            the largest gap the calculation met for this pair.
+            How many days a rate was older than the date it converted at — the
+            largest gap the stale conversions of this pair met, not necessarily
+            that of the conversion at `rateDate`.
 
     Holding:
       type: object
