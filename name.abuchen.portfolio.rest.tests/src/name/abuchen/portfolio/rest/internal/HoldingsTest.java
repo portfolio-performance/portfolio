@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.not;
 import java.time.LocalDate;
 
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Test;
 
 import com.google.gson.JsonObject;
@@ -210,6 +211,8 @@ public class HoldingsTest
         var holdings = list(client, today.plusDays(66).toString(), null).getAsJsonObject();
         var instrument = holdings.get("items").getAsJsonArray().get(0).getAsJsonObject();
 
+        // the handler reads today itself: past midnight the quote is a day old
+        Assume.assumeTrue("the date changed during the test", LocalDate.now().equals(today));
         assertThat(instrument.get("priceStale").getAsBoolean(), is(false));
         assertThat(instrument.get("priceAgeDays").getAsLong(), is(0L));
         assertThat(instrument.get("priceMissedTradingDays").getAsLong(), is(0L));
