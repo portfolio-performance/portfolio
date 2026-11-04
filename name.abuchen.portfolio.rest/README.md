@@ -195,7 +195,9 @@ Any field that is unknown or not writable is a **422, never a silent no-op**: a 
 like success. All violations come back at once so you can fix them in one round-trip.
 
 A patch that only restates values the instrument already has changes nothing and does not mark the
-file dirty. The response header `X-Portfolio-Changed: true|false` says which of the two happened.
+file dirty. The response header `X-Portfolio-Changed: true|false` says which of the two happened —
+for this patch only: `false` does not mean the file has no unsaved changes, which earlier edits may
+have left.
 
 ### `DELETE /v1/files/{file}/instruments/{uuid}`
 
