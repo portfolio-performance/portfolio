@@ -25,6 +25,7 @@ import java.util.function.Supplier;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
@@ -189,14 +190,27 @@ public class ClientStore
         return token;
     }
 
-    /** whether the client file, as it is now, holds this token hash; false when it cannot be read */
+    /**
+     * Whether the client file, as it is now, lists a client with this token
+     * hash - as the next start would read it. A file cut short by a write that
+     * failed halfway does not, even if the hash made it into the file.
+     */
     private boolean fileHolds(String tokenHash)
     {
         try
         {
-            return Files.readString(file, StandardCharsets.UTF_8).contains(tokenHash);
+            var root = JsonParser.parseString(Files.readString(file, StandardCharsets.UTF_8));
+            var clients = root.isJsonObject() ? root.getAsJsonObject().get("clients") : null; //$NON-NLS-1$
+            if (clients == null || !clients.isJsonArray())
+                return false;
+            for (var element : clients.getAsJsonArray())
+            {
+                if (element.isJsonObject() && tokenHash.equals(asString(element.getAsJsonObject(), "tokenHash"))) //$NON-NLS-1$
+                    return true;
+            }
+            return false;
         }
-        catch (IOException e)
+        catch (IOException | JsonParseException e)
         {
             return false;
         }
@@ -593,8 +607,19 @@ public class ClientStore
     {
         Files.writeString(target, content, StandardCharsets.UTF_8, StandardOpenOption.WRITE,
                         StandardOpenOption.TRUNCATE_EXISTING);
-        // owner-only on POSIX, as a replaced file is; elsewhere its ACL stays
-        restrictToOwner(target);
+
+        // owner-only on POSIX, as a replaced file is; elsewhere its ACL stays.
+        // The content is written by now, so a file whose permissions are not
+        // ours to change - a link target owned by someone else - is logged,
+        // not reported as a failed save
+        try
+        {
+            restrictToOwner(target);
+        }
+        catch (IOException e)
+        {
+            PortfolioLog.error(e);
+        }
     }
 
     /** whether the file has hard links besides this name; false where the file system does not say */
