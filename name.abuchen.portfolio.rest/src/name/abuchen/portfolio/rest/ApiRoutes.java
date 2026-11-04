@@ -425,6 +425,12 @@ public final class ApiRoutes
     /** the tasks handed to the UI thread that it has not taken up yet */
     private static final AtomicInteger QUEUED_UI_TASKS = new AtomicInteger();
 
+    /** how many tasks wait for the UI thread; not private: the bound is process-wide, and a test waits for it to drain */
+    /* package */ static int queuedUiTasks()
+    {
+        return QUEUED_UI_TASKS.get();
+    }
+
     /**
      * {@link HostApplication#asyncExec} with a deadline, and with exactly two
      * outcomes when it passes.
