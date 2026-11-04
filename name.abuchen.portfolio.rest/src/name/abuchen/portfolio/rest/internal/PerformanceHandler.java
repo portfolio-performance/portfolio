@@ -43,17 +43,42 @@ public final class PerformanceHandler
         if (!errors.isEmpty())
             throw ApiException.badRequest(errors);
 
-        var converter = new CurrencyConverterImpl(factory, currency);
+        var conversions = new ConversionRecorder(factory);
+        var converter = conversions.wrap(new CurrencyConverterImpl(factory, currency));
         var interval = Interval.of(openingDate, closingDate);
 
         var performance = new ClientPerformanceSnapshot(client, converter, interval, costMethod.useFifo());
 
         // TTWROR comes from a second engine; IRR is money-weighted, both are
         // independent of the cost method
-        var ttwror = PerformanceIndex.forClient(client, converter, interval, new ArrayList<>())
-                        .getFinalAccumulatedPercentage();
-        var irr = performance.getPerformanceIRR();
+        // a period entirely after today has no price movement to measure: the
+        // engines would answer 0, which reads as a measured flat return
+        var measurable = CalcParams.hasAPast(openingDate);
+        var index = measurable ? PerformanceIndex.forClient(client, converter, interval, new ArrayList<>()) : null;
 
-        return EntityJson.performance(openingDate, closingDate, currency, costMethod, ttwror, irr, performance);
+        // a period in which the file held nothing at all - before its first
+        // transaction, say - has no capital to measure a return on: the engines
+        // answer 0 there too, which would read as a measured flat result
+        if (index != null && !heldAnything(index))
+            measurable = false;
+
+        var ttwror = measurable ? index.getFinalAccumulatedPercentage() : Double.NaN;
+        var irr = measurable ? performance.getPerformanceIRR() : Double.NaN;
+
+        var report = EntityJson.performance(openingDate, closingDate, currency, costMethod, ttwror, irr, performance);
+        FxWarnings.attach(report, conversions);
+        return report;
+    }
+
+    /** whether any day of the index valued the file above zero, or moved money in or out of it */
+    private static boolean heldAnything(PerformanceIndex index)
+    {
+        for (var total : index.getTotals())
+            if (total != 0)
+                return true;
+        for (var transferal : index.getTransferals())
+            if (transferal != 0)
+                return true;
+        return false;
     }
 }
