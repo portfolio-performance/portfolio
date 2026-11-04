@@ -60,6 +60,12 @@ public class ClientStore
         private final Instant created;
         /** mutable: an entry that could not be written is a session client after all */
         private boolean session;
+        /**
+         * A persistent entry whose save failed while the file could not be read:
+         * it may or may not be in the file, so it is not reported as surviving a
+         * restart until a save works.
+         */
+        private boolean unwritten;
         private Instant lastUsed;
         private Instant lastUsedPersisted;
 
@@ -76,7 +82,7 @@ public class ClientStore
 
         private ApiClient toApiClient()
         {
-            return new ApiClient(id, name, created, lastUsed, session);
+            return new ApiClient(id, name, created, lastUsed, session || unwritten);
         }
     }
 
@@ -180,20 +186,26 @@ public class ClientStore
         // the file holds decides.
         if (!session && !save())
         {
-            switch (fileHolds(entry.tokenHash))
+            // a file protected as unreadable since it was loaded is never
+            // written, so it cannot hold the new token
+            var holds = unreadable ? Holds.NO : fileHolds(entry.tokenHash);
+            switch (holds)
             {
                 case YES -> PortfolioLog.warning("Saving client \"" + name //$NON-NLS-1$
                                 + "\" reported an error, but the client file holds it"); //$NON-NLS-1$
                 case UNKNOWN -> {
                     // the file may hold the token: kept as persistent, so that
                     // a revoke writes the file rather than taking a session
-                    // client's shortcut, and written again with a later request
+                    // client's shortcut, and written again with a later request.
+                    // Until then it is not reported as surviving a restart.
+                    entry.unwritten = true;
                     unsaved = true;
                     PortfolioLog.warning("Saving client \"" + name //$NON-NLS-1$
                                     + "\" reported an error and the client file cannot be read; it is kept as " //$NON-NLS-1$
                                     + "persistent and written again with a later request"); //$NON-NLS-1$
                 }
-                case NO -> {
+                default -> {
+                    // NO: the file does not hold it, so it dies with this run
                     entry.session = true;
                     PortfolioLog.warning("Client \"" + name + "\" was added but not persisted; its token dies with " //$NON-NLS-1$ //$NON-NLS-2$
                                     + "this application run"); //$NON-NLS-1$
@@ -220,7 +232,8 @@ public class ClientStore
      */
     private Holds fileHolds(String tokenHash)
     {
-        if (!Files.exists(file) || Files.isDirectory(file))
+        // read directly: Files.exists also answers false when it cannot tell
+        if (Files.isDirectory(file))
             return Holds.NO;
 
         String content;
@@ -312,7 +325,8 @@ public class ClientStore
     public synchronized boolean survivesRestart(String token)
     {
         var tokenHash = hash(token);
-        return entries.stream().anyMatch(entry -> entry.tokenHash.equals(tokenHash) && !entry.session);
+        return entries.stream()
+                        .anyMatch(entry -> entry.tokenHash.equals(tokenHash) && !entry.session && !entry.unwritten);
     }
 
     /**
@@ -514,6 +528,7 @@ public class ClientStore
         {
             unsaved = false;
             lastFailedSave = null;
+            entries.forEach(entry -> entry.unwritten = false);
         }
         else
         {
@@ -596,16 +611,17 @@ public class ClientStore
 
             try
             {
-                Files.writeString(temp, content, StandardCharsets.UTF_8);
-                restrictToOwner(temp);
-
                 // a file whose ACL cannot be carried over is written in place
-                // rather than replaced by one that is readable more widely
+                // rather than replaced by one that is readable more widely. The
+                // ACL comes first, so the content is never in a file that is.
                 if (!carryOverAcl(target, temp))
                 {
                     writeInPlace(target, content);
                     return true;
                 }
+
+                Files.writeString(temp, content, StandardCharsets.UTF_8);
+                restrictToOwner(temp);
 
                 try
                 {
@@ -702,7 +718,8 @@ public class ClientStore
      */
     private static boolean carryOverAcl(Path existing, Path replacement)
     {
-        if (!Files.exists(existing) || Files.getFileAttributeView(existing, PosixFileAttributeView.class) != null)
+        // notExists: a file whose existence cannot be told still gets its ACL carried over
+        if (Files.notExists(existing) || Files.getFileAttributeView(existing, PosixFileAttributeView.class) != null)
             return true;
 
         var from = Files.getFileAttributeView(existing, AclFileAttributeView.class);

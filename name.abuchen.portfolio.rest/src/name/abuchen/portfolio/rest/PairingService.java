@@ -175,26 +175,22 @@ public class PairingService
         if (pending != null && pending.id.equals(id))
             return new PollResult(PairingStatus.PENDING, null, false);
 
-        var outcome = outcomes.remove(id);
+        var outcome = outcomes.get(id);
         if (outcome == null)
             throw ApiException.notFound();
 
         if (outcome.status() != PairingStatus.APPROVED)
+        {
+            outcomes.remove(id);
             return new PollResult(outcome.status(), null, false);
+        }
 
-        // minted on delivery, not at approval
-        String token;
-        try
-        {
-            token = outcome.session() ? clientStore.addSessionClient(outcome.clientName())
-                            : clientStore.addPersistentClient(outcome.clientName());
-        }
-        catch (RuntimeException e)
-        {
-            // not delivered: the grant stays, so that the next poll can still mint it
-            outcomes.put(id, outcome);
-            throw e;
-        }
+        // minted on delivery, not at approval. Removed only once minted: a mint
+        // that throws leaves the grant where it was - also in the order in
+        // which outcomes are dropped - so that the next poll can still mint it
+        var token = outcome.session() ? clientStore.addSessionClient(outcome.clientName())
+                        : clientStore.addPersistentClient(outcome.clientName());
+        outcomes.remove(id);
 
         // the client has to learn when a grant it asked to keep will not be kept
         return new PollResult(outcome.status(), token, clientStore.survivesRestart(token));
