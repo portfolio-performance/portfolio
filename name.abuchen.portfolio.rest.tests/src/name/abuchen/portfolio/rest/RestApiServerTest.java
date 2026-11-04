@@ -678,15 +678,17 @@ public class RestApiServerTest
     /**
      * The path is normalized before authorization, so its cost is anyone's to
      * choose. A long run of slashes in the middle used to take quadratic time.
+     * <p/>
+     * No wall-clock bound of its own: a linear pass answers in milliseconds,
+     * a quadratic one needs some 10^10 steps for this path and so runs into
+     * the read timeout of {@link #rawHead}, which fails the test.
      */
     @Test
     public void testALongRunOfSlashesIsNormalizedInLinearTime() throws Exception
     {
-        var started = System.nanoTime();
         var head = rawHead("GET", "/v1" + "/".repeat(150_000) + "x", "Bearer " + TOKEN);
 
         assertThat(head, containsString(" 404 "));
-        assertThat(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - started) < 3_000, is(true));
     }
 
     /** whether the server closed the socket: end of stream within its read timeout */

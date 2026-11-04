@@ -187,6 +187,10 @@ public class UiDeadlineHonestyTest
         var started = new CountDownLatch(1);
         var release = new CountDownLatch(1);
 
+        // the UI thread of the fake host is created by its first task; start it
+        // now, so that the 300 ms deadline below is not spent waiting for it
+        host.asyncExec(() -> null).get(10, TimeUnit.SECONDS);
+
         try
         {
             ApiRoutes.uiExecBounded(host, () -> {
@@ -420,6 +424,60 @@ public class UiDeadlineHonestyTest
                 assertThat(e.getType(), is("server-busy"));
             }
             assertThat(slots.waiting(), is(0));
+        }
+        finally
+        {
+            release.countDown();
+        }
+    }
+
+    /**
+     * A waiter that gives up leaves only its own place in the queue - also when
+     * it is not at the front: the one ahead of it keeps waiting and gets the
+     * slot that comes free.
+     */
+    @Test
+    public void testAnInterruptedWaiterBehindAnotherLeavesOnlyItsOwnPlace() throws Exception
+    {
+        var slots = slots(1, 2, Duration.ofSeconds(10));
+        var release = new CountDownLatch(1);
+        var order = new CopyOnWriteArrayList<String>();
+
+        try
+        {
+            var first = holdSlot(slots, release);
+            waitUntil(() -> slots.available() == 0);
+
+            var b = new CompletableFuture<Response>();
+            Thread.ofPlatform().start(() -> complete(b, () -> ApiRoutes.computeBounded(() -> {
+                order.add("b");
+                return null;
+            }, Duration.ofSeconds(5), slots)));
+            waitUntil(() -> slots.waiting() == 1);
+
+            var c = new CompletableFuture<Response>();
+            var waiter = Thread.ofPlatform().start(() -> complete(c, () -> ApiRoutes.computeBounded(() -> {
+                order.add("c");
+                return null;
+            }, Duration.ofSeconds(5), slots)));
+            waitUntil(() -> slots.waiting() == 2);
+
+            waiter.interrupt();
+            waitUntil(c::isDone);
+            assertThat(c.isCompletedExceptionally(), is(true));
+            assertThat(c.exceptionNow() instanceof InterruptedException, is(true));
+
+            // the one ahead is still queued, and still waits for its turn
+            assertThat(slots.waiting(), is(1));
+            assertThat(b.isDone(), is(false));
+
+            release.countDown();
+            b.get(5, TimeUnit.SECONDS);
+            first.get(5, TimeUnit.SECONDS);
+
+            assertThat(order, is(List.of("b")));
+            assertThat(slots.waiting(), is(0));
+            assertThat(slots.available(), is(1));
         }
         finally
         {
