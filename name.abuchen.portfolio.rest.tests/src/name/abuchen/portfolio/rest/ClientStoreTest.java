@@ -434,7 +434,7 @@ public class ClientStoreTest
         }
         catch (UnsupportedOperationException | IllegalArgumentException e)
         {
-            Assume.assumeNoException("no Unix file attributes here", e);
+            // no Unix file attributes: only the identity check below is left out
         }
 
         var store = newStore();
@@ -448,8 +448,9 @@ public class ClientStoreTest
         assertThat(Files.readString(real).contains("Claude Code"), is(false));
         assertThat(newStore().authenticate(token).isPresent(), is(false));
 
-        // written in place, not replaced: the linked file keeps its permissions
-        assertThat(Files.getAttribute(real, "unix:ino"), is(identity));
+        // written in place, not replaced: the linked file keeps its identity
+        if (identity != null)
+            assertThat(Files.getAttribute(real, "unix:ino"), is(identity));
     }
 
     /**
