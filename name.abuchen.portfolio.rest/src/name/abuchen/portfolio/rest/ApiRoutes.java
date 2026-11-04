@@ -276,9 +276,10 @@ public final class ApiRoutes
     }
 
     /**
-     * On a PATCH: {@code true} when a stored value changed and the file now has
-     * unsaved changes, {@code false} when the patch only restated what was
-     * already there.
+     * On a PATCH: {@code true} when this patch changed a stored value - the file
+     * then has unsaved changes - {@code false} when it only restated what was
+     * already there. About this patch only: after {@code false} the file may
+     * still hold unsaved changes of earlier edits.
      */
     public static final String CHANGED_HEADER = "X-Portfolio-Changed"; //$NON-NLS-1$
 
