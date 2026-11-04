@@ -135,8 +135,11 @@ public class TaxonomyPieChartSWT implements IPieChart
                         getModel().isSecuritiesInPieChartExcluded());
 
         // recalculate the model once for all nodes. Must happen before
-        // setting the colors because the update overwrites the slice colors
-        circularSeries.getNodeDataModel().update();
+        // setting the colors because the update overwrites the slice colors.
+        // Without any node, the update would make the axis range of the pie
+        // zero-width and painting would fail.
+        if (!id2color.isEmpty())
+            circularSeries.getNodeDataModel().update();
 
         id2color.entrySet().forEach(e -> circularSeries.setColor(e.getKey(), e.getValue()));
 
