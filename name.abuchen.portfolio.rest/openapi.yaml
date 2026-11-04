@@ -1667,8 +1667,16 @@ components:
             enum: [open, closed]
         fxWarnings:
           $ref: "#/components/schemas/FxWarnings"
+          description: |
+            As on every report - here for every trade the collector matched for
+            the instruments of the request, also one that `status` leaves out
+            of `items`: the collector matches all of an instrument's trades, and
+            a conversion cannot be traced back to one of them.
         fxStaleRates:
           $ref: "#/components/schemas/FxStaleRates"
+          description: |
+            Like `fxWarnings`, for every trade matched, also one that `status`
+            leaves out of `items`.
         warnings:
           type: array
           description: |
