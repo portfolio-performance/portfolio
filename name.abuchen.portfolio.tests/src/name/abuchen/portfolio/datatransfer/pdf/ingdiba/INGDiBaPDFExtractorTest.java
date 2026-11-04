@@ -3414,6 +3414,50 @@ public class INGDiBaPDFExtractorTest
     }
 
     @Test
+    public void testGiroKontoauszug09()
+    {
+        var extractor = new INGDiBaPDFExtractor(new Client());
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(6L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(6));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2011-01-03"), hasAmount("EUR", 210.00), //
+                        hasSource("GiroKontoauszug09.txt"), hasNote("Dauerauftrag NlVGY XqGftpNsedJToJhgza"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2011-01-05"), hasAmount("EUR", 50.49), //
+                        hasSource("GiroKontoauszug09.txt"), hasNote("Lastschrift VISA SB-TANK 9873"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2011-01-06"), hasAmount("EUR", 0.50), //
+                        hasSource("GiroKontoauszug09.txt"), hasNote("Gutschrift ING-DIBA"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2011-01-17"), hasAmount("EUR", 64.66), //
+                        hasSource("GiroKontoauszug09.txt"), hasNote("Lastschrift uAgiJOq"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2011-01-18"), hasAmount("EUR", 250.00), //
+                        hasSource("GiroKontoauszug09.txt"), hasNote("Gutschrift-Dauerauftrag pJQC PnFa"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2011-01-26"), hasAmount("EUR", 5.14), //
+                        hasSource("GiroKontoauszug09.txt"), hasNote("Lastschrift pVSQVUp D GMBH, iVVCBsjSg"))));
+    }
+
+    @Test
     public void testKGiroKontoauszug03()
     {
         var extractor = new INGDiBaPDFExtractor(new Client());
