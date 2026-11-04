@@ -110,9 +110,12 @@ public class UiDeadlineHonestyTest
         // the UI thread finishes whatever it was busy with and reaches the
         // queued request - which must now leave the model alone
         gate.countDown();
-        waitUntil(() -> host.callablesRun() == 1);
+        // counted as it starts: wait for it to have returned (or failed)
+        // before looking at the model
+        waitUntil(() -> host.uiThreadResults().size() == 1 || host.callableFailure().isPresent());
 
         assertThat(host.callableFailure().map(Throwable::toString).orElse("none"), is("none"));
+        assertThat(host.callablesRun(), is(1));
         assertThat(security.getName(), is(not("Renamed")));
     }
 
