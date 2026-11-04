@@ -240,9 +240,10 @@ public class RestApiPreferencePage extends PreferencePage
     /**
      * Which of the three refusals this was. A header in the wrong shape reads as
      * "no token offered" otherwise, and that is a misdiagnosis the user cannot
-     * act on: nothing is missing, only the scheme is spelled wrong.
+     * act on: nothing is missing, only the scheme is spelled wrong. Not
+     * private: a test checks the choice without opening the page.
      */
-    private static String messageFor(RejectedConnections.Rejection rejection)
+    /* package */ static String messageFor(RejectedConnections.Rejection rejection)
     {
         if (rejection.tokenPresented())
             return Messages.PrefMsgRestApiRejectedInvalidToken;

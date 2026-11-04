@@ -427,6 +427,8 @@ public class ClientStoreTest
             Assume.assumeNoException("no symbolic links here", e);
         }
 
+        var identity = Files.getAttribute(real, "unix:ino");
+
         var store = newStore();
         var token = store.addPersistentClient("Claude Code");
         assertThat(Files.isSymbolicLink(link), is(true));
@@ -437,6 +439,66 @@ public class ClientStoreTest
         assertThat(Files.isSymbolicLink(link), is(true));
         assertThat(Files.readString(real).contains("Claude Code"), is(false));
         assertThat(newStore().authenticate(token).isPresent(), is(false));
+
+        // written in place, not replaced: the linked file keeps its permissions
+        assertThat(Files.getAttribute(real, "unix:ino"), is(identity));
+    }
+
+    /**
+     * Reported in review: a client file with a further hard link is written in
+     * place, so that the other name does not keep the old clients - a revoked
+     * one among them.
+     */
+    @Test
+    public void testAHardLinkedClientFileIsWrittenUnderEveryName() throws Exception
+    {
+        var store = newStore();
+        var token = store.addPersistentClient("Claude Code");
+        var other = dir().resolve("clients-copy.json");
+        try
+        {
+            Files.createLink(other, dir().resolve("api-clients.json"));
+        }
+        catch (UnsupportedOperationException | java.io.IOException e)
+        {
+            Assume.assumeNoException("no hard links here", e);
+        }
+
+        assertThat(store.revoke(store.listClients().get(0).id()), is(true));
+        assertThat(Files.readString(other).contains("Claude Code"), is(false));
+        assertThat(newStore().authenticate(token).isPresent(), is(false));
+    }
+
+    /**
+     * Reported in review: a directory that takes no new file - so no temporary
+     * file either - does not stop a revoke from reaching a client file that may
+     * be written. Cannot be arranged for a user who may write everywhere.
+     */
+    @Test
+    public void testAClientFileInADirectoryThatTakesNoNewFileIsWrittenInPlace() throws Exception
+    {
+        var store = newStore();
+        var token = store.addPersistentClient("Claude Code");
+        var dir = dir();
+        try
+        {
+            Files.setPosixFilePermissions(dir, PosixFilePermissions.fromString("r-x------"));
+        }
+        catch (UnsupportedOperationException e)
+        {
+            Assume.assumeNoException("no POSIX permissions here", e);
+        }
+        try
+        {
+            Assume.assumeTrue("this user may write to any directory", !Files.isWritable(dir));
+
+            assertThat(store.revoke(store.listClients().get(0).id()), is(true));
+            assertThat(newStore().authenticate(token).isPresent(), is(false));
+        }
+        finally
+        {
+            Files.setPosixFilePermissions(dir, PosixFilePermissions.fromString("rwx------"));
+        }
     }
 
     /**
@@ -540,7 +602,8 @@ public class ClientStoreTest
         store.addPersistentClient("Other");
 
         var content = Files.readString(dir().resolve("api-clients.json"));
-        assertThat(content.contains("\"tokenDigest\":\"x\""), is(true));
+        // the whole entry, as it was - not only the field this version does not know
+        assertThat(content.contains(bad), is(true));
         assertThat(newStore().listClients(), hasSize(1));
     }
 

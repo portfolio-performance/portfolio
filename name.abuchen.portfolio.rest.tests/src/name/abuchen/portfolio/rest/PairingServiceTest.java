@@ -212,9 +212,15 @@ public class PairingServiceTest
         }
 
         assertStatusIs(first, 404);
-        // only the oldest goes: the next one, the oldest kept, still has its token
-        assertThat(service.poll(second).token(), is(notNullValue()));
+
+        // the bound holds after every decision, not only the first beyond it
+        var third = service.create("Client extra");
+        host.lastAccessRequest().allowAlways();
+        assertStatusIs(second, 404);
+
+        // only the oldest go: the newest still have their tokens
         assertThat(service.poll(last).token(), is(notNullValue()));
+        assertThat(service.poll(third).token(), is(notNullValue()));
     }
 
     /** a decision that arrives after the request is gone grants nothing, and says so */
