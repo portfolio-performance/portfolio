@@ -33,7 +33,7 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
      * Documents of the Austrian branch use the German number format (1.234,56)
      * instead of the Swiss number format (1'234.56). Amounts always have two
      * decimal places and are detected automatically, shares and exchange rates
-     * depend on this flag.
+     * without a comma depend on this flag.
      */
     private static final String IS_AUSTRIAN_BRANCH = "isAustrianBranch";
 
@@ -333,7 +333,7 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^(?<note>Auftragsnummer: [\\d]+) .*$") //
-                        .assign((t, v) -> t.setNote(concatenate(trim(v.get("note")), "Fondsthesaurierung", " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(v.get("note"), "Fondsthesaurierung", " | ")))
 
                         .wrap(TransactionItem::new);
     }
@@ -676,19 +676,25 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
                         .assign((ctx, v) -> ctx.putBoolean(IS_AUSTRIAN_BRANCH, true));
     }
 
-    private Locale numberLocale(DocumentType type)
+    private Locale numberLocale(String value, DocumentType type)
     {
-        return type.getCurrentContext().getBoolean(IS_AUSTRIAN_BRANCH) ? Locale.GERMANY : Locale.of("de", "CH");
+        // The Swiss number format never contains a comma, therefore a comma is
+        // always the decimal separator of the German number format, even if
+        // the branch could not be detected
+        if (type.getCurrentContext().getBoolean(IS_AUSTRIAN_BRANCH) || value.indexOf(',') >= 0)
+            return Locale.GERMANY;
+
+        return Locale.of("de", "CH");
     }
 
     private long asShares(String value, DocumentType type)
     {
-        return ExtractorUtils.convertToNumberLong(value, Values.Share, numberLocale(type));
+        return ExtractorUtils.convertToNumberLong(value, Values.Share, numberLocale(value, type));
     }
 
     private BigDecimal asExchangeRate(String value, DocumentType type)
     {
-        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, numberLocale(type));
+        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, numberLocale(value, type));
     }
 
     private BigDecimal asBalance(String value)
