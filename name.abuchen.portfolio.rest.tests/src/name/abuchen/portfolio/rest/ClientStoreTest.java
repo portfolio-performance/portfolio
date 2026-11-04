@@ -8,6 +8,11 @@ import static org.hamcrest.Matchers.nullValue;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.AclEntry;
+import java.nio.file.attribute.AclEntryPermission;
+import java.nio.file.attribute.AclEntryType;
+import java.nio.file.attribute.AclFileAttributeView;
+import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.time.Instant;
 import java.util.List;
@@ -77,6 +82,35 @@ public class ClientStoreTest
         {
             // non-POSIX file system: nothing to assert
         }
+    }
+
+    /**
+     * Without POSIX permissions the ACL keeps the file private. Replacing the
+     * file must not swap it for the wider one a new file inherits from the
+     * directory (Windows; skipped where the file system has no ACLs).
+     */
+    @Test
+    public void testAReplacedClientFileKeepsItsAclWithoutPosix() throws Exception
+    {
+        var store = newStore();
+        store.addPersistentClient("Claude Code");
+
+        var file = dir().resolve("api-clients.json");
+        var view = Files.getFileAttributeView(file, AclFileAttributeView.class);
+        Assume.assumeTrue("no ACLs without POSIX permissions here", //
+                        view != null && Files.getFileAttributeView(file, PosixFileAttributeView.class) == null);
+
+        // the owner alone, nothing inherited
+        var ownerOnly = List.of(AclEntry.newBuilder().setType(AclEntryType.ALLOW) //
+                        .setPrincipal(Files.getOwner(file)) //
+                        .setPermissions(AclEntryPermission.values()) //
+                        .build());
+        view.setAcl(ownerOnly);
+
+        store.addPersistentClient("Codex");
+
+        assertThat(Files.readString(file).contains("Codex"), is(true));
+        assertThat(Files.getFileAttributeView(file, AclFileAttributeView.class).getAcl(), is(ownerOnly));
     }
 
     @Test
@@ -437,10 +471,23 @@ public class ClientStoreTest
             // no Unix file attributes: only the identity check below is left out
         }
 
+        // readable by others before: the write through makes it owner-only
+        var posix = true;
+        try
+        {
+            Files.setPosixFilePermissions(real, PosixFilePermissions.fromString("rw-r--r--"));
+        }
+        catch (UnsupportedOperationException e)
+        {
+            posix = false;
+        }
+
         var store = newStore();
         var token = store.addPersistentClient("Claude Code");
         assertThat(Files.isSymbolicLink(link), is(true));
         assertThat(Files.readString(real).contains("Claude Code"), is(true));
+        if (posix)
+            assertThat(Files.getPosixFilePermissions(real), is(PosixFilePermissions.fromString("rw-------")));
         assertThat(newStore().authenticate(token).isPresent(), is(true));
 
         assertThat(store.revoke(store.listClients().get(0).id()), is(true));

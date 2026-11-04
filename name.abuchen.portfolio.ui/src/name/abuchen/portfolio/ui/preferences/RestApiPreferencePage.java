@@ -440,9 +440,9 @@ public class RestApiPreferencePage extends PreferencePage
             {
                 // takes effect immediately; a misclick is recoverable (re-pair)
                 if (!clientStore.revoke(selected.id()))
-                    // gone from this run, but the file still holds the hash: the
-                    // token comes back with the next start, and the table alone
-                    // would say it did not
+                    // gone from this run, but the file may still hold the hash:
+                    // then the token comes back with the next start, and the
+                    // table alone would say it did not
                     MessageDialog.openWarning(getShell(), Messages.PrefTitleRestApi,
                             Messages.PrefMsgRestApiRevokeNotPersisted);
 

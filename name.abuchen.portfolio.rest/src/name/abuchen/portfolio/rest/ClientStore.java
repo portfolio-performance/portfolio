@@ -8,6 +8,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.AclFileAttributeView;
+import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -277,10 +279,11 @@ public class ClientStore
 
     /**
      * Removes a client, answering whether the removal reached the file. False
-     * means the entry is gone from memory while the file still holds its token
-     * hash, so the token authenticates again after a restart unless a later
-     * write works - the caller has to say that rather than presenting the
-     * client as revoked. The write is tried again with later authentications.
+     * means the entry is gone from memory but the change was not written. The
+     * file may still hold its token hash, and then the token authenticates
+     * again after a restart unless a later write works - the caller has to say
+     * that rather than presenting the client as revoked. The write is tried
+     * again with later authentications.
      */
     public synchronized boolean revoke(String id)
     {
@@ -301,7 +304,7 @@ public class ClientStore
         if (!save())
         {
             unsaved = true;
-            PortfolioLog.warning("A revoked client is gone for this run only; its token still authenticates after a " //$NON-NLS-1$
+            PortfolioLog.warning("A revoked client is gone for this run only; its token may still authenticate after a " //$NON-NLS-1$
                             + "restart unless a later write of the client file works"); //$NON-NLS-1$
             return false;
         }
@@ -557,6 +560,15 @@ public class ClientStore
             {
                 Files.writeString(temp, content, StandardCharsets.UTF_8);
                 restrictToOwner(temp);
+
+                // a file whose ACL cannot be carried over is written in place
+                // rather than replaced by one that is readable more widely
+                if (!carryOverAcl(target, temp))
+                {
+                    writeInPlace(target, content);
+                    return true;
+                }
+
                 try
                 {
                     Files.move(temp, target, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
@@ -622,7 +634,43 @@ public class ClientStore
         }
     }
 
-    /** whether the file has hard links besides this name; false where the file system does not say */
+    /**
+     * Without POSIX permissions the ACL is what keeps the client file private,
+     * and a move would swap it for the one the new file inherited from the
+     * directory. Copies the ACL of the existing file over to the new one;
+     * false where that fails. Nothing to do on POSIX, for a file that does not
+     * exist yet, or where the file system has no ACLs.
+     */
+    private static boolean carryOverAcl(Path existing, Path replacement)
+    {
+        if (!Files.exists(existing) || Files.getFileAttributeView(existing, PosixFileAttributeView.class) != null)
+            return true;
+
+        var from = Files.getFileAttributeView(existing, AclFileAttributeView.class);
+        if (from == null)
+            return true;
+
+        var to = Files.getFileAttributeView(replacement, AclFileAttributeView.class);
+        try
+        {
+            if (to == null)
+                return false;
+            to.setAcl(from.getAcl());
+            return true;
+        }
+        catch (IOException | UnsupportedOperationException | SecurityException e)
+        {
+            PortfolioLog.warning("The ACL of the client file cannot be carried over, it is written in place: " //$NON-NLS-1$
+                            + e);
+            return false;
+        }
+    }
+
+    /**
+     * Whether the file has hard links besides this name; false where the file
+     * system does not say - Windows has no way to tell, so a file with further
+     * names is replaced there (documented in the README).
+     */
     private static boolean hasOtherNames(Path path)
     {
         try
