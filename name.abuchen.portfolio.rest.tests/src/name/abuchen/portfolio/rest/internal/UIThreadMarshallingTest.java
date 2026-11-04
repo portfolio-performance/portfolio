@@ -26,7 +26,7 @@ import name.abuchen.portfolio.rest.testsupport.FakeHost;
 
 /**
  * The model and the list of open files may only be touched on the UI thread.
- * The FakeHost flags any access that does not go through syncExec.
+ * The FakeHost flags any access that does not go through its UI thread.
  */
 @SuppressWarnings("nls")
 public class UIThreadMarshallingTest
@@ -86,9 +86,9 @@ public class UIThreadMarshallingTest
 
     /**
      * Calculation endpoints resolve the {file} scope on the UI thread but run
-     * the calculation itself on the HTTP worker thread, so an expensive
+     * the calculation itself off it, so an expensive
      * computation cannot freeze the UI. Hence the response must never be
-     * produced inside syncExec.
+     * produced on the UI thread.
      */
     @Test
     public void testHoldingsCalculationRunsOffTheUIThread() throws Exception
@@ -96,7 +96,7 @@ public class UIThreadMarshallingTest
         call("GET", "/v1/files/" + fileId + "/holdings", null);
 
         assertThat(host.hasAccessedOutsideUIThread(), is(false));
-        assertThat(host.syncExecResults().stream().anyMatch(Response.class::isInstance), is(false));
+        assertThat(host.uiThreadResults().stream().anyMatch(Response.class::isInstance), is(false));
     }
 
     @Test
@@ -105,13 +105,13 @@ public class UIThreadMarshallingTest
         callWithInterval("/v1/files/" + fileId + "/performance");
 
         assertThat(host.hasAccessedOutsideUIThread(), is(false));
-        assertThat(host.syncExecResults().stream().anyMatch(Response.class::isInstance), is(false));
+        assertThat(host.uiThreadResults().stream().anyMatch(Response.class::isInstance), is(false));
     }
 
     /**
      * The per-instrument report is the most expensive endpoint of all - one
-     * daily series per instrument - so it above all must not compute inside
-     * syncExec.
+     * daily series per instrument - so it above all must not compute on the UI
+     * thread.
      */
     @Test
     public void testInstrumentPerformanceCollectionRunsOffTheUIThread() throws Exception
@@ -119,7 +119,7 @@ public class UIThreadMarshallingTest
         callWithInterval("/v1/files/" + fileId + "/performance/instruments");
 
         assertThat(host.hasAccessedOutsideUIThread(), is(false));
-        assertThat(host.syncExecResults().stream().anyMatch(Response.class::isInstance), is(false));
+        assertThat(host.uiThreadResults().stream().anyMatch(Response.class::isInstance), is(false));
     }
 
     @Test
@@ -127,7 +127,7 @@ public class UIThreadMarshallingTest
     {
         // the fixture instrument carries no transactions, so the member lookup
         // ends in a 404 - raised on the worker thread, which is the point here:
-        // the failure path must not be produced inside syncExec either
+        // the failure path must not be produced on the UI thread either
         try
         {
             callWithInterval("/v1/files/" + fileId + "/performance/instruments/" + security.getUUID());
@@ -138,7 +138,7 @@ public class UIThreadMarshallingTest
         }
 
         assertThat(host.hasAccessedOutsideUIThread(), is(false));
-        assertThat(host.syncExecResults().stream().anyMatch(Response.class::isInstance), is(false));
+        assertThat(host.uiThreadResults().stream().anyMatch(Response.class::isInstance), is(false));
     }
 
     private void callWithInterval(String path) throws Exception

@@ -1,13 +1,17 @@
 package name.abuchen.portfolio.rest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.fail;
 
+import java.nio.file.Files;
 import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -70,6 +74,7 @@ public class PairingServiceTest
         assertThat(client.isPresent(), is(true));
         assertThat(client.get().session(), is(false));
         assertThat(client.get().name(), is("Claude Code"));
+        assertThat(result.persistent(), is(true));
 
         assertStatusIs(id, 404);
     }
@@ -83,6 +88,28 @@ public class PairingServiceTest
         var result = service.poll(id);
         assertThat(result.status(), is(PairingStatus.APPROVED));
         assertThat(store.authenticate(result.token()).get().session(), is(true));
+        assertThat(result.persistent(), is(false));
+    }
+
+    /**
+     * "Allow always" that the client file could not take is a session grant
+     * after all, and the client that asked to keep its token has to hear that.
+     */
+    @Test
+    public void testAPersistentGrantThatCouldNotBeWrittenSaysSo() throws Exception
+    {
+        Files.createDirectories(tempFolder.getRoot().toPath().resolve("api-clients.json"));
+        var unwritable = new ClientStore(tempFolder.getRoot().toPath(), () -> now);
+        var pairing = new PairingService(unwritable, host, () -> now);
+
+        var id = pairing.create("Claude Code");
+        host.lastAccessRequest().allowAlways();
+
+        var result = pairing.poll(id);
+        assertThat(result.status(), is(PairingStatus.APPROVED));
+        assertThat(result.token(), is(notNullValue()));
+        assertThat(result.persistent(), is(false));
+        assertThat(unwritable.authenticate(result.token()).isPresent(), is(true));
     }
 
     @Test
@@ -130,6 +157,194 @@ public class PairingServiceTest
         assertThat(service.create("Claude Code"), is(notNullValue()));
     }
 
+    /**
+     * The token is minted when it is delivered, not when the user approves. A
+     * request the client never polls must not leave a client in the store whose
+     * token nobody holds - it would be a grant that cannot be revoked by anyone.
+     */
+    @Test
+    public void testAnApprovedRequestThatIsNeverPolledCreatesNoClient()
+    {
+        var id = service.create("Claude Code");
+        host.lastAccessRequest().allowAlways();
+        // the approval alone mints nothing: the client is created by the poll
+        assertThat(store.listClients(), is(List.of()));
+
+        advanceSeconds(PairingService.OUTCOME_TTL.toSeconds() + 1);
+
+        assertStatusIs(id, 404);
+        assertThat(store.listClients(), is(List.of()));
+    }
+
+    /** outcomes nobody polled are dropped, so a long-running server does not accumulate them */
+    @Test
+    public void testPairingsNobodyPollsDoNotAccumulate()
+    {
+        for (int ii = 0; ii < 120; ii++)
+        {
+            service.create("Client " + ii);
+            host.lastAccessRequest().allowAlways();
+            // the expired outcome before it is gone with this decision
+            assertThat(service.outcomeCount(), is(1));
+            advanceSeconds(PairingService.OUTCOME_TTL.toSeconds() + 1);
+            assertThat(store.listClients(), is(List.of()));
+        }
+
+        var id = service.create("Last");
+        host.lastAccessRequest().allowAlways();
+
+        assertThat(service.poll(id).token(), is(notNullValue()));
+        assertThat(store.listClients(), hasSize(1));
+    }
+
+    /**
+     * Reported in review: requests nobody decides expire into outcomes, and
+     * each new request clears the ones past their time - without a decision,
+     * which clears them as well.
+     */
+    @Test
+    public void testExpiredRequestsNobodyDecidedDoNotAccumulate()
+    {
+        for (int ii = 0; ii < 12; ii++)
+        {
+            service.create("Client " + ii);
+            advanceSeconds(PairingService.PENDING_TTL.toSeconds() + PairingService.OUTCOME_TTL.toSeconds() + 1);
+        }
+
+        // the last request has expired, the ones before it are gone
+        service.create("Last");
+        assertThat(service.outcomeCount(), is(1));
+    }
+
+    /**
+     * Reported in review: an approval whose token could not be minted is not
+     * lost - the failing poll leaves it, and the next poll delivers the token.
+     */
+    @Test
+    public void testAnApprovalWhoseMintingFailedCanBePolledAgain() throws Exception
+    {
+        var failing = new AtomicBoolean();
+        var flaky = new ClientStore(tempFolder.newFolder().toPath(), () -> {
+            if (failing.get())
+                throw new IllegalStateException("minting failed");
+            return now;
+        });
+        var pairing = new PairingService(flaky, host, () -> now);
+
+        var id = pairing.create("Claude Code");
+        host.lastAccessRequest().allowAlways();
+
+        failing.set(true);
+        try
+        {
+            pairing.poll(id);
+            fail("expected the minting to fail");
+        }
+        catch (IllegalStateException e)
+        {
+            assertThat(e.getMessage(), is("minting failed"));
+        }
+        failing.set(false);
+
+        var result = pairing.poll(id);
+        assertThat(result.status(), is(PairingStatus.APPROVED));
+        assertThat(flaky.authenticate(result.token()).isPresent(), is(true));
+        assertThat(flaky.listClients(), hasSize(1));
+    }
+
+    /**
+     * Reported in review: a grant whose mint failed keeps its place in the
+     * order in which outcomes are dropped - the oldest still goes first, not a
+     * newer one behind it.
+     */
+    @Test
+    public void testAFailedMintKeepsTheOutcomeInItsPlace() throws Exception
+    {
+        var failing = new AtomicBoolean();
+        var flaky = new ClientStore(tempFolder.newFolder().toPath(), () -> {
+            if (failing.get())
+                throw new IllegalStateException("minting failed");
+            return now;
+        });
+        var pairing = new PairingService(flaky, host, () -> now);
+
+        var oldest = pairing.create("Oldest");
+        host.lastAccessRequest().allowAlways();
+        var next = pairing.create("Next");
+        host.lastAccessRequest().allowAlways();
+
+        failing.set(true);
+        try
+        {
+            pairing.poll(oldest);
+            fail("expected the minting to fail");
+        }
+        catch (IllegalStateException e)
+        {
+            assertThat(e.getMessage(), is("minting failed"));
+        }
+        failing.set(false);
+
+        for (int ii = 1; ii < PairingService.MAX_OUTCOMES; ii++)
+        {
+            pairing.create("Client " + ii);
+            host.lastAccessRequest().allowAlways();
+        }
+
+        // one beyond the bound: the oldest goes, the next one keeps its token
+        assertThat(pairing.outcomeCount(), is(PairingService.MAX_OUTCOMES));
+        assertThat(pairing.poll(next).token(), is(notNullValue()));
+        try
+        {
+            pairing.poll(oldest);
+            fail("expected the oldest outcome to be gone");
+        }
+        catch (ApiException e)
+        {
+            assertThat(e.getStatus(), is(404));
+        }
+    }
+
+    /**
+     * The count bound, apart from the TTL: decisions in a burst keep only the
+     * newest MAX_OUTCOMES outcomes, and the oldest one polls 404.
+     */
+    @Test
+    public void testTheOldestOutcomeGoesBeyondTheBound()
+    {
+        var first = service.create("Client 0");
+        host.lastAccessRequest().allowAlways();
+
+        String second = null;
+        String middle = null;
+        String last = first;
+        for (int ii = 1; ii <= PairingService.MAX_OUTCOMES; ii++)
+        {
+            last = service.create("Client " + ii);
+            host.lastAccessRequest().allowAlways();
+            if (ii == 1)
+                second = last;
+            if (ii == PairingService.MAX_OUTCOMES / 2)
+                middle = last;
+        }
+
+        // bounded by the decisions themselves, before any poll prunes
+        assertThat(service.outcomeCount(), is(PairingService.MAX_OUTCOMES));
+        assertStatusIs(first, 404);
+
+        // the bound holds after every decision, not only the first beyond it
+        var third = service.create("Client extra");
+        host.lastAccessRequest().allowAlways();
+        assertThat(service.outcomeCount(), is(PairingService.MAX_OUTCOMES));
+        assertStatusIs(second, 404);
+
+        // only the oldest go: one from the middle and the newest keep their tokens
+        assertThat(service.poll(middle).token(), is(notNullValue()));
+        assertThat(service.poll(last).token(), is(notNullValue()));
+        assertThat(service.poll(third).token(), is(notNullValue()));
+    }
+
+    /** a decision that arrives after the request is gone grants nothing, and says so */
     @Test
     public void testDecisionAfterExpiryIsIgnored()
     {
