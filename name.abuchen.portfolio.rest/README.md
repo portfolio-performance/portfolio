@@ -53,10 +53,10 @@ for headless setups where nobody watches the screen. Tokens are stored hashed; a
 be re-displayed, only replaced. When the client file cannot be written as a client is revoked, the
 page says so: the revocation holds for this run and is written with a later request once the file
 can be written again, tried at most once a minute. The client file is replaced in one step, so a
-crash cannot leave it half written. Three cases are written in place instead, keeping the file's
-permissions and every name it has: a client file that is a symbolic link (its target is written; a
-target that does not exist yet is created), one with further hard links, and one in a directory
-that takes no new file.
+crash cannot leave it half written. Three cases are written in place instead, keeping every name
+the file has (and, without POSIX permissions, its ACL): a client file that is a symbolic link (its
+target is written; a target that does not exist yet is created), one with further hard links, and
+one in a directory that refuses a new file. On POSIX the file is owner-only either way.
 
 ## Talking to it
 

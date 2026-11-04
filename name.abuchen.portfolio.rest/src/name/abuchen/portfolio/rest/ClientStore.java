@@ -2,6 +2,7 @@ package name.abuchen.portfolio.rest;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -169,14 +170,36 @@ public class ClientStore
         // persisted before the token is handed out: it exists exactly once. A write
         // that failed cannot outlive this run, so the entry is recorded as a session
         // client - the UI says session-only rather than implying a token that
-        // survives a restart, which is the one claim it cannot make here.
+        // survives a restart, which is the one claim it cannot make here. A
+        // failure reported after the content reached the file is not one: what
+        // the file holds decides.
         if (!session && !save())
         {
-            entry.session = true;
-            PortfolioLog.warning("Client \"" + name + "\" was added but not persisted; its token dies with " //$NON-NLS-1$ //$NON-NLS-2$
-                            + "this application run"); //$NON-NLS-1$
+            if (fileHolds(entry.tokenHash))
+            {
+                PortfolioLog.warning("Saving client \"" + name + "\" reported an error, but the client file holds it"); //$NON-NLS-1$ //$NON-NLS-2$
+            }
+            else
+            {
+                entry.session = true;
+                PortfolioLog.warning("Client \"" + name + "\" was added but not persisted; its token dies with " //$NON-NLS-1$ //$NON-NLS-2$
+                                + "this application run"); //$NON-NLS-1$
+            }
         }
         return token;
+    }
+
+    /** whether the client file, as it is now, holds this token hash; false when it cannot be read */
+    private boolean fileHolds(String tokenHash)
+    {
+        try
+        {
+            return Files.readString(file, StandardCharsets.UTF_8).contains(tokenHash);
+        }
+        catch (IOException e)
+        {
+            return false;
+        }
     }
 
     /** validates a presented token and tracks its use; empty if the token is unknown or revoked */
@@ -504,10 +527,12 @@ public class ClientStore
             {
                 temp = Files.createTempFile(target.getParent(), FILE_NAME, ".tmp"); //$NON-NLS-1$
             }
-            catch (IOException e)
+            catch (AccessDeniedException e)
             {
                 // a directory that takes no new file can still hold a client
-                // file that may be written
+                // file that may be written. Only a refusal, though: any other
+                // failure - a full disk, say - would hit the in-place write as
+                // well, and that one could leave the file truncated.
                 if (!Files.isWritable(target))
                     throw e;
                 writeInPlace(target, content);
@@ -560,14 +585,16 @@ public class ClientStore
     }
 
     /**
-     * Writes over the existing file, keeping its permissions and every name it
-     * has. Not atomic - a crash halfway through can leave it truncated - so it
+     * Writes over the existing file, keeping every name it has - and on a file
+     * system without POSIX permissions its ACL. Not atomic - a crash halfway through can leave it truncated - so it
      * is used only where replacing the file would lose more.
      */
     private static void writeInPlace(Path target, String content) throws IOException
     {
         Files.writeString(target, content, StandardCharsets.UTF_8, StandardOpenOption.WRITE,
                         StandardOpenOption.TRUNCATE_EXISTING);
+        // owner-only on POSIX, as a replaced file is; elsewhere its ACL stays
+        restrictToOwner(target);
     }
 
     /** whether the file has hard links besides this name; false where the file system does not say */
