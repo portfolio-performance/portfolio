@@ -47,7 +47,10 @@ public class DonutChartBuilder
             // assigned to multiple classifications
             String id = pair.getLeft().getId() + pair.getRight().getId();
 
-            Node childNode = rootNode.addChild(id, getMoney(pair.getRight()).getAmount() / Values.Amount.divider());
+            // unlike Node#addChild, the constructor does not recalculate the
+            // whole model for every node. The model is updated once after all
+            // nodes have been created.
+            Node childNode = new Node(id, getMoney(pair.getRight()).getAmount() / Values.Amount.divider(), rootNode);
             childNode.setData(pair.getRight());
 
             Color color = Colors.getColor(ColorConversion.hex2RGB(pair.getLeft().getColor()));
@@ -58,6 +61,13 @@ public class DonutChartBuilder
         {
             circularSeries.setSeries(new String[] { Messages.LabelErrorNoHoldings }, new double[] { 100 });
             circularSeries.setColor(Messages.LabelErrorNoHoldings, Colors.LIGHT_GRAY);
+        }
+        else
+        {
+            // recalculate the model once for all nodes. Must happen before
+            // setting the colors because the update overwrites the slice
+            // colors
+            circularSeries.getNodeDataModel().update();
         }
 
         id2color.forEach(circularSeries::setColor);

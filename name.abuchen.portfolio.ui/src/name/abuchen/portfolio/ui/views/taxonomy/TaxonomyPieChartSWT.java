@@ -134,6 +134,10 @@ public class TaxonomyPieChartSWT implements IPieChart
         addNodes(id2color, rootNode, taxRoot, taxRoot.getChildren(), taxRoot.getActual(),
                         getModel().isSecuritiesInPieChartExcluded());
 
+        // recalculate the model once for all nodes. Must happen before
+        // setting the colors because the update overwrites the slice colors
+        circularSeries.getNodeDataModel().update();
+
         id2color.entrySet().forEach(e -> circularSeries.setColor(e.getKey(), e.getValue()));
 
         chart.updateAngleBounds();
@@ -160,7 +164,10 @@ public class TaxonomyPieChartSWT implements IPieChart
 
                 String id = parentNode.getId() + child.getId();
 
-                Node childNode = node.addChild(id, child.getActual().getAmount() / Values.Amount.divider());
+                // unlike Node#addChild, the constructor does not recalculate
+                // the whole model for every node. The model is updated once
+                // after all nodes have been created.
+                Node childNode = new Node(id, child.getActual().getAmount() / Values.Amount.divider(), node);
                 childNode.setData(child);
 
                 Color color = Colors.getColor(ColorConversion.hex2RGB(
