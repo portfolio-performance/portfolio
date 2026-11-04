@@ -566,9 +566,11 @@ paths:
           headers:
             X-Portfolio-Changed:
               description: |
-                `true` when a stored value changed and the file now has unsaved
-                changes; `false` when the patch named only values the instrument
-                already had, so nothing changed and nothing needs saving.
+                Whether this patch changed a stored value: `true` when it did,
+                and the file then has unsaved changes; `false` when it named only
+                values the instrument already had, so this patch changed nothing.
+                It says nothing about the file as a whole - earlier edits may
+                still be unsaved after a `false`.
               schema:
                 type: string
                 enum: ["true", "false"]
