@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.FileSystemException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
@@ -123,7 +125,7 @@ public class ClientStore
 
     /**
      * Whether the file still holds a client that was revoked in memory, because
-     * the write failed. Any later write that works removes it; until then an
+     * the write failed - or may lack a client added since. Any later write that works removes it; until then an
      * authentication - also one with that client's token - tries again, once a
      * minute at most, so that a lasting failure does not log every request.
      */
@@ -178,43 +180,79 @@ public class ClientStore
         // the file holds decides.
         if (!session && !save())
         {
-            if (fileHolds(entry.tokenHash))
+            switch (fileHolds(entry.tokenHash))
             {
-                PortfolioLog.warning("Saving client \"" + name + "\" reported an error, but the client file holds it"); //$NON-NLS-1$ //$NON-NLS-2$
-            }
-            else
-            {
-                entry.session = true;
-                PortfolioLog.warning("Client \"" + name + "\" was added but not persisted; its token dies with " //$NON-NLS-1$ //$NON-NLS-2$
-                                + "this application run"); //$NON-NLS-1$
+                case YES -> PortfolioLog.warning("Saving client \"" + name //$NON-NLS-1$
+                                + "\" reported an error, but the client file holds it"); //$NON-NLS-1$
+                case UNKNOWN -> {
+                    // the file may hold the token: kept as persistent, so that
+                    // a revoke writes the file rather than taking a session
+                    // client's shortcut, and written again with a later request
+                    unsaved = true;
+                    PortfolioLog.warning("Saving client \"" + name //$NON-NLS-1$
+                                    + "\" reported an error and the client file cannot be read; it is kept as " //$NON-NLS-1$
+                                    + "persistent and written again with a later request"); //$NON-NLS-1$
+                }
+                case NO -> {
+                    entry.session = true;
+                    PortfolioLog.warning("Client \"" + name + "\" was added but not persisted; its token dies with " //$NON-NLS-1$ //$NON-NLS-2$
+                                    + "this application run"); //$NON-NLS-1$
+                }
             }
         }
         return token;
     }
 
+    /** what the client file says about a token hash */
+    private enum Holds
+    {
+        YES, NO,
+        /** the file cannot be read now; a later read - the next start's - may find the hash */
+        UNKNOWN
+    }
+
     /**
      * Whether the client file, as it is now, lists a client with this token
      * hash - as the next start would read it. A file cut short by a write that
-     * failed halfway does not, even if the hash made it into the file.
+     * failed halfway does not, even if the hash made it into the file; nor
+     * does a missing file or a directory in its place. A file that exists but
+     * cannot be read is no proof either way.
      */
-    private boolean fileHolds(String tokenHash)
+    private Holds fileHolds(String tokenHash)
     {
+        if (!Files.exists(file) || Files.isDirectory(file))
+            return Holds.NO;
+
+        String content;
         try
         {
-            var root = JsonParser.parseString(Files.readString(file, StandardCharsets.UTF_8));
+            content = Files.readString(file, StandardCharsets.UTF_8);
+        }
+        catch (NoSuchFileException e)
+        {
+            return Holds.NO;
+        }
+        catch (IOException e)
+        {
+            return Holds.UNKNOWN;
+        }
+
+        try
+        {
+            var root = JsonParser.parseString(content);
             var clients = root.isJsonObject() ? root.getAsJsonObject().get("clients") : null; //$NON-NLS-1$
             if (clients == null || !clients.isJsonArray())
-                return false;
+                return Holds.NO;
             for (var element : clients.getAsJsonArray())
             {
                 if (element.isJsonObject() && tokenHash.equals(asString(element.getAsJsonObject(), "tokenHash"))) //$NON-NLS-1$
-                    return true;
+                    return Holds.YES;
             }
-            return false;
+            return Holds.NO;
         }
-        catch (IOException | JsonParseException e)
+        catch (JsonParseException e)
         {
-            return false;
+            return Holds.NO;
         }
     }
 
@@ -571,11 +609,20 @@ public class ClientStore
 
                 try
                 {
-                    Files.move(temp, target, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+                    replace(temp, target);
                 }
-                catch (AtomicMoveNotSupportedException e)
+                catch (FileSystemException e)
                 {
-                    Files.move(temp, target, StandardCopyOption.REPLACE_EXISTING);
+                    // a file that may not be replaced - on Windows one another
+                    // program holds open, on POSIX one in a sticky directory
+                    // owned by someone else - can still be one that may be
+                    // written, as before. The temporary file goes first: the
+                    // space it frees is at least what the write needs, so a
+                    // nearly full disk does not leave the file cut short.
+                    if (e instanceof NoSuchFileException || !Files.isWritable(target))
+                        throw e;
+                    deleteQuietly(temp);
+                    writeInPlace(target, content);
                 }
             }
             finally
@@ -588,6 +635,18 @@ public class ClientStore
         {
             PortfolioLog.error(e);
             return false;
+        }
+    }
+
+    private static void replace(Path temp, Path target) throws IOException
+    {
+        try
+        {
+            Files.move(temp, target, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+        }
+        catch (AtomicMoveNotSupportedException e)
+        {
+            Files.move(temp, target, StandardCopyOption.REPLACE_EXISTING);
         }
     }
 

@@ -183,8 +183,18 @@ public class PairingService
             return new PollResult(outcome.status(), null, false);
 
         // minted on delivery, not at approval
-        var token = outcome.session() ? clientStore.addSessionClient(outcome.clientName())
-                        : clientStore.addPersistentClient(outcome.clientName());
+        String token;
+        try
+        {
+            token = outcome.session() ? clientStore.addSessionClient(outcome.clientName())
+                            : clientStore.addPersistentClient(outcome.clientName());
+        }
+        catch (RuntimeException e)
+        {
+            // not delivered: the grant stays, so that the next poll can still mint it
+            outcomes.put(id, outcome);
+            throw e;
+        }
 
         // the client has to learn when a grant it asked to keep will not be kept
         return new PollResult(outcome.status(), token, clientStore.survivesRestart(token));
