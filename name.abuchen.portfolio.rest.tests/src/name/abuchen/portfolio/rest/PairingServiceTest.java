@@ -253,6 +253,59 @@ public class PairingServiceTest
     }
 
     /**
+     * Reported in review: a grant whose mint failed keeps its place in the
+     * order in which outcomes are dropped - the oldest still goes first, not a
+     * newer one behind it.
+     */
+    @Test
+    public void testAFailedMintKeepsTheOutcomeInItsPlace() throws Exception
+    {
+        var failing = new AtomicBoolean();
+        var flaky = new ClientStore(tempFolder.newFolder().toPath(), () -> {
+            if (failing.get())
+                throw new IllegalStateException("minting failed");
+            return now;
+        });
+        var pairing = new PairingService(flaky, host, () -> now);
+
+        var oldest = pairing.create("Oldest");
+        host.lastAccessRequest().allowAlways();
+        var next = pairing.create("Next");
+        host.lastAccessRequest().allowAlways();
+
+        failing.set(true);
+        try
+        {
+            pairing.poll(oldest);
+            fail("expected the minting to fail");
+        }
+        catch (IllegalStateException e)
+        {
+            assertThat(e.getMessage(), is("minting failed"));
+        }
+        failing.set(false);
+
+        for (int ii = 1; ii < PairingService.MAX_OUTCOMES; ii++)
+        {
+            pairing.create("Client " + ii);
+            host.lastAccessRequest().allowAlways();
+        }
+
+        // one beyond the bound: the oldest goes, the next one keeps its token
+        assertThat(pairing.outcomeCount(), is(PairingService.MAX_OUTCOMES));
+        assertThat(pairing.poll(next).token(), is(notNullValue()));
+        try
+        {
+            pairing.poll(oldest);
+            fail("expected the oldest outcome to be gone");
+        }
+        catch (ApiException e)
+        {
+            assertThat(e.getStatus(), is(404));
+        }
+    }
+
+    /**
      * The count bound, apart from the TTL: decisions in a burst keep only the
      * newest MAX_OUTCOMES outcomes, and the oldest one polls 404.
      */

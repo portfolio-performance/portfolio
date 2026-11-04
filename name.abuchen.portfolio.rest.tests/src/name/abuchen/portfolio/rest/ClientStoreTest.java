@@ -586,9 +586,9 @@ public class ClientStoreTest
                             !Files.isWritable(dir) && !Files.isReadable(file));
 
             var token = store.addPersistentClient("Claude Code");
-            var client = store.authenticate(token);
-            assertThat(client.isPresent(), is(true));
-            assertThat(client.get().session(), is(false));
+            assertThat(store.authenticate(token).isPresent(), is(true));
+            // not known to be in the file: not reported as surviving a restart
+            assertThat(store.survivesRestart(token), is(false));
 
             // the file may hold it, and the write still fails: not reported as done
             var id = store.listClients().stream().filter(c -> c.name().equals("Claude Code")).findFirst()
@@ -764,6 +764,44 @@ public class ClientStoreTest
         newStore().addPersistentClient("Claude Code");
 
         assertThat(Files.readString(dir().resolve("api-clients.json")), is("{ clients: ["));
+    }
+
+    /**
+     * Reported in review: a file protected as unreadable since it was loaded is
+     * never written, so it cannot hold a client added since - that client is a
+     * session client at once, not one waiting for a write that never comes.
+     */
+    @Test
+    public void testAClientAddedOverAProtectedFileIsASessionClient() throws Exception
+    {
+        newStore().addPersistentClient("Existing");
+        var file = dir().resolve("api-clients.json");
+        try
+        {
+            Files.setPosixFilePermissions(file, PosixFilePermissions.fromString("---------"));
+        }
+        catch (UnsupportedOperationException e)
+        {
+            Assume.assumeNoException("no POSIX permissions here", e);
+        }
+        try
+        {
+            Assume.assumeTrue("this user may read anything", !Files.isReadable(file));
+
+            // the file cannot be read as the store loads it: protected from then on
+            var store = newStore();
+            var token = store.addPersistentClient("Claude Code");
+
+            assertThat(store.authenticate(token).isPresent(), is(true));
+            assertThat(store.listClients().get(0).session(), is(true));
+            assertThat(store.survivesRestart(token), is(false));
+            // nothing was written, so the revoke is complete
+            assertThat(store.revoke(store.listClients().get(0).id()), is(true));
+        }
+        finally
+        {
+            Files.setPosixFilePermissions(file, PosixFilePermissions.fromString("rw-------"));
+        }
     }
 
     /**
