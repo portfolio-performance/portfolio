@@ -558,6 +558,51 @@ public class ClientStoreTest
     }
 
     /**
+     * Reported in review: a save that failed while the client file cannot even
+     * be read proves nothing about the file. The new client is kept as
+     * persistent, so that its revoke writes the file and says when that fails,
+     * rather than reporting a session client's revoke as done. Cannot be
+     * arranged for a user who may read and write everywhere.
+     */
+    @Test
+    public void testAFailedSaveWithAnUnreadableFileKeepsTheClientPersistent() throws Exception
+    {
+        var store = newStore();
+        store.addPersistentClient("Existing");
+        var file = dir().resolve("api-clients.json");
+        var dir = dir();
+        try
+        {
+            Files.setPosixFilePermissions(file, PosixFilePermissions.fromString("---------"));
+            Files.setPosixFilePermissions(dir, PosixFilePermissions.fromString("r-x------"));
+        }
+        catch (UnsupportedOperationException e)
+        {
+            Assume.assumeNoException("no POSIX permissions here", e);
+        }
+        try
+        {
+            Assume.assumeTrue("this user may read and write anything",
+                            !Files.isWritable(dir) && !Files.isReadable(file));
+
+            var token = store.addPersistentClient("Claude Code");
+            var client = store.authenticate(token);
+            assertThat(client.isPresent(), is(true));
+            assertThat(client.get().session(), is(false));
+
+            // the file may hold it, and the write still fails: not reported as done
+            var id = store.listClients().stream().filter(c -> c.name().equals("Claude Code")).findFirst()
+                            .orElseThrow().id();
+            assertThat(store.revoke(id), is(false));
+        }
+        finally
+        {
+            Files.setPosixFilePermissions(dir, PosixFilePermissions.fromString("rwx------"));
+            Files.setPosixFilePermissions(file, PosixFilePermissions.fromString("rw-------"));
+        }
+    }
+
+    /**
      * Reported in review: a link whose target does not exist yet is written
      * through as well - the target is created, the link stays.
      */

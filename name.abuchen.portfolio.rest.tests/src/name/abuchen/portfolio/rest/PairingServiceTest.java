@@ -5,11 +5,13 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.fail;
 
 import java.nio.file.Files;
 import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -193,6 +195,61 @@ public class PairingServiceTest
 
         assertThat(service.poll(id).token(), is(notNullValue()));
         assertThat(store.listClients(), hasSize(1));
+    }
+
+    /**
+     * Reported in review: requests nobody decides expire into outcomes, and
+     * each new request clears the ones past their time - without a decision,
+     * which clears them as well.
+     */
+    @Test
+    public void testExpiredRequestsNobodyDecidedDoNotAccumulate()
+    {
+        for (int ii = 0; ii < 12; ii++)
+        {
+            service.create("Client " + ii);
+            advanceSeconds(PairingService.PENDING_TTL.toSeconds() + PairingService.OUTCOME_TTL.toSeconds() + 1);
+        }
+
+        // the last request has expired, the ones before it are gone
+        service.create("Last");
+        assertThat(service.outcomeCount(), is(1));
+    }
+
+    /**
+     * Reported in review: an approval whose token could not be minted is not
+     * lost - the failing poll leaves it, and the next poll delivers the token.
+     */
+    @Test
+    public void testAnApprovalWhoseMintingFailedCanBePolledAgain() throws Exception
+    {
+        var failing = new AtomicBoolean();
+        var flaky = new ClientStore(tempFolder.newFolder().toPath(), () -> {
+            if (failing.get())
+                throw new IllegalStateException("minting failed");
+            return now;
+        });
+        var pairing = new PairingService(flaky, host, () -> now);
+
+        var id = pairing.create("Claude Code");
+        host.lastAccessRequest().allowAlways();
+
+        failing.set(true);
+        try
+        {
+            pairing.poll(id);
+            fail("expected the minting to fail");
+        }
+        catch (IllegalStateException e)
+        {
+            assertThat(e.getMessage(), is("minting failed"));
+        }
+        failing.set(false);
+
+        var result = pairing.poll(id);
+        assertThat(result.status(), is(PairingStatus.APPROVED));
+        assertThat(flaky.authenticate(result.token()).isPresent(), is(true));
+        assertThat(flaky.listClients(), hasSize(1));
     }
 
     /**
