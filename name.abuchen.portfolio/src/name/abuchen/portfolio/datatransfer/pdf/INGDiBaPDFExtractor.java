@@ -690,7 +690,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
         // @formatter:off
         // 13.07.2016 Ueberweisung Mustermann -5.000,00
-        // 13.02.2020 Gutschrift/Dauerauftrag Max Mustermann 1,01
+        // 14.02.2020 Dauerauftrag/Terminueberw. Max Mustermann -30,00
         // 16.02.2020 Lastschrift XYZ GmbH -10,00
         // 16.02.2020 Abbuchung XYZ GmbH -10,00
         // 16.03.2026 Echtzeitüberweisung Peter Pan Bla -1.000,00
@@ -742,7 +742,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
         // @formatter:off
         // 27.06.2016 Gutschrift Max Mustermann 10.000,00
-        // 14.02.2020 Dauerauftrag/Terminueberw. Max Mustermann -30,00
+        // 13.02.2020 Gutschrift/Dauerauftrag Max Mustermann 1,01
         // 29.04.2021 Gehalt/Rente Hauptkasse des Freistaates Sachsen 806,83
         // 13.10.2020 Gutschrift-VWL 40,00
         // 13.10.2020 Retoure XYZ GmbH 40,00
@@ -791,10 +791,12 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
         // @formatter:off
         // 03.11.10 Lastschrift SB-TANK. 5128, uKava -54,52 445,48
+        // 03.01.11 Dauerauftrag NlVGY XqGftpNsedJToJhgza -210,00 613,23
         // @formatter:on
         var removalBlock_Format02 = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} " //
                         + "(Ueberweisung" //
                         + "|Dauerauftrag\\/Terminueberw\\." //
+                        + "|Dauerauftrag" //
                         + "|Lastschrift" //
                         + "|Abbuchung" //
                         + "|Echtzeit.berweisung" //
@@ -810,6 +812,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) " //
                                         + "(?<note>(Ueberweisung" //
                                         + "|Dauerauftrag\\/Terminueberw\\." //
+                                        + "|Dauerauftrag" //
                                         + "|Lastschrift" //
                                         + "|Abbuchung" //
                                         + "|Echtzeit.berweisung" //
