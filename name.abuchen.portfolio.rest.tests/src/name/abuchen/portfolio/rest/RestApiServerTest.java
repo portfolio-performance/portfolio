@@ -725,6 +725,8 @@ public class RestApiServerTest
     {
         try (var socket = new Socket(InetAddress.getLoopbackAddress(), server.getPort()))
         {
+            // an answer that never comes fails the test instead of hanging it
+            socket.setSoTimeout(5_000);
             var request = method + " " + path + " HTTP/1.1\r\n" //
                             + "Host: 127.0.0.1:" + server.getPort() + "\r\n" //
                             + "Authorization: " + authorization + "\r\n" //
