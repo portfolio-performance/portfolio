@@ -142,6 +142,10 @@ public class UiDeadlineHonestyTest
         {
             gate.countDown();
         }
+
+        // the queued read runs and does nothing - and leaves the process-wide
+        // bound of the UI queue to the tests after this one
+        waitUntil(() -> host.uiThreadResults().size() == 1 || host.callableFailure().isPresent());
     }
 
     /**
@@ -651,6 +655,9 @@ public class UiDeadlineHonestyTest
                 // not asked for here
             }
         };
+
+        // the bound is process-wide: tasks another test left queued would take places
+        waitUntil(() -> ApiRoutes.queuedUiTasks() == 0);
 
         try
         {
