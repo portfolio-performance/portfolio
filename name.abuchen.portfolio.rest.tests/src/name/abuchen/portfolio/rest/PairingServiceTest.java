@@ -165,6 +165,8 @@ public class PairingServiceTest
     {
         var id = service.create("Claude Code");
         host.lastAccessRequest().allowAlways();
+        // the approval alone mints nothing: the client is created by the poll
+        assertThat(store.listClients(), is(List.of()));
 
         advanceSeconds(PairingService.OUTCOME_TTL.toSeconds() + 1);
 
@@ -180,6 +182,8 @@ public class PairingServiceTest
         {
             service.create("Client " + ii);
             host.lastAccessRequest().allowAlways();
+            // the expired outcome before it is gone with this decision
+            assertThat(service.outcomeCount(), is(1));
             advanceSeconds(PairingService.OUTCOME_TTL.toSeconds() + 1);
             assertThat(store.listClients(), is(List.of()));
         }
@@ -202,6 +206,7 @@ public class PairingServiceTest
         host.lastAccessRequest().allowAlways();
 
         String second = null;
+        String middle = null;
         String last = first;
         for (int ii = 1; ii <= PairingService.MAX_OUTCOMES; ii++)
         {
@@ -209,16 +214,22 @@ public class PairingServiceTest
             host.lastAccessRequest().allowAlways();
             if (ii == 1)
                 second = last;
+            if (ii == PairingService.MAX_OUTCOMES / 2)
+                middle = last;
         }
 
+        // bounded by the decisions themselves, before any poll prunes
+        assertThat(service.outcomeCount(), is(PairingService.MAX_OUTCOMES));
         assertStatusIs(first, 404);
 
         // the bound holds after every decision, not only the first beyond it
         var third = service.create("Client extra");
         host.lastAccessRequest().allowAlways();
+        assertThat(service.outcomeCount(), is(PairingService.MAX_OUTCOMES));
         assertStatusIs(second, 404);
 
-        // only the oldest go: the newest still have their tokens
+        // only the oldest go: one from the middle and the newest keep their tokens
+        assertThat(service.poll(middle).token(), is(notNullValue()));
         assertThat(service.poll(last).token(), is(notNullValue()));
         assertThat(service.poll(third).token(), is(notNullValue()));
     }

@@ -190,6 +190,12 @@ public class PairingService
         return new PollResult(outcome.status(), token, clientStore.survivesRestart(token));
     }
 
+    /** how many outcomes are kept; not private: a test checks the bound right after a decision */
+    /* package */ synchronized int outcomeCount()
+    {
+        return outcomes.size();
+    }
+
     private synchronized void decide(String id, PairingStatus decision, boolean session)
     {
         var now = clock.get();

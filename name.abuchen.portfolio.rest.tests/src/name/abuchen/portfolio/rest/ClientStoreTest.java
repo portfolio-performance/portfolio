@@ -427,7 +427,15 @@ public class ClientStoreTest
             Assume.assumeNoException("no symbolic links here", e);
         }
 
-        var identity = Files.getAttribute(real, "unix:ino");
+        Object identity = null;
+        try
+        {
+            identity = Files.getAttribute(real, "unix:ino");
+        }
+        catch (UnsupportedOperationException | IllegalArgumentException e)
+        {
+            Assume.assumeNoException("no Unix file attributes here", e);
+        }
 
         var store = newStore();
         var token = store.addPersistentClient("Claude Code");
