@@ -248,7 +248,10 @@ public class EarningsByTaxonomyChartWidget extends CircularChartWidget<Map<Inves
             for (Item item : nodes)
             {
                 String nodeId = classification.getId() + '/' + item.vehicle().getUUID();
-                Node n = rootNode.addChild(nodeId, item.value() / Values.Amount.divider());
+                // unlike Node#addChild, the constructor does not recalculate
+                // the whole model for every node. The model is updated once
+                // after all nodes have been created.
+                Node n = new Node(nodeId, item.value() / Values.Amount.divider(), rootNode);
                 n.setData(new ToolTipItem(classification, sum, item.vehicle(), item.value()));
                 id2color.put(nodeId, resources.createColor(ColorConversion.hex2RGB(classification.getColor())));
             }
@@ -263,7 +266,7 @@ public class EarningsByTaxonomyChartWidget extends CircularChartWidget<Map<Inves
                         .sorted((a, b) -> Long.compare(b.value(), a.value())) //
                         .forEach(item -> {
                             String nodeId = item.vehicle().getUUID();
-                            Node n = rootNode.addChild(nodeId, item.value() / Values.Amount.divider());
+                            Node n = new Node(nodeId, item.value() / Values.Amount.divider(), rootNode);
                             n.setData(new ToolTipItem(unassigned, sum, item.vehicle(), item.value()));
                             id2color.put(nodeId, Colors.OTHER_CATEGORY);
                         });
@@ -273,6 +276,13 @@ public class EarningsByTaxonomyChartWidget extends CircularChartWidget<Map<Inves
         {
             circularSeries.setSeries(new String[] { Messages.MsgWarningPieChartNoValues }, new double[] { 0 });
             circularSeries.setColor(Messages.MsgWarningPieChartNoValues, Colors.LIGHT_GRAY);
+        }
+        else
+        {
+            // recalculate the model once for all nodes. Must happen before
+            // setting the colors because the update overwrites the slice
+            // colors
+            circularSeries.getNodeDataModel().update();
         }
 
         id2color.forEach(circularSeries::setColor);
