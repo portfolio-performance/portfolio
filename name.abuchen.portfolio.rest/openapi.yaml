@@ -2708,8 +2708,10 @@ components:
         semiVolatility:
           type: [number, "null"]
           description: |
-            The standard deviation of the negative returns only. `null` under
-            the same condition as `volatility`.
+            The downside spread: like `volatility`, but summing only the daily
+            log returns below their mean - which can be positive ones, so a
+            series that only rose can have a semi-volatility above 0. `null`
+            under the same condition as `volatility`.
         maxDrawdown:
           type: [number, "null"]
           description: |
