@@ -1,8 +1,9 @@
 package name.abuchen.portfolio.rest;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.AccessDeniedException;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.FileSystemException;
 import java.nio.file.Files;
@@ -88,6 +89,13 @@ public class ClientStore
 
     private static final String FILE_NAME = "api-clients.json"; //$NON-NLS-1$
 
+    /**
+     * Next to the client file: the content an in-place write is about to
+     * write, so that a write cut short can be completed from it at the next
+     * start.
+     */
+    private static final String BACKUP_NAME = FILE_NAME + ".bak"; //$NON-NLS-1$
+
     /** how many links in a row are followed to the client file, as a file system would */
     private static final int MAX_LINK_HOPS = 40;
 
@@ -101,6 +109,7 @@ public class ClientStore
     private static final Duration LAST_USED_WRITE_THROTTLE = Duration.ofMinutes(1);
 
     private final Path file;
+    private final Path backup;
     private final Supplier<Instant> clock;
     private final SecureRandom random = new SecureRandom();
     private final List<Entry> entries = new ArrayList<>();
@@ -149,6 +158,7 @@ public class ClientStore
     {
         // absolute, so that the file always has a parent to create
         this.file = directory.toAbsolutePath().resolve(FILE_NAME);
+        this.backup = file.resolveSibling(BACKUP_NAME);
         this.clock = clock;
         load();
     }
@@ -233,9 +243,18 @@ public class ClientStore
      * hash - as the next start would read it. A file cut short by a write that
      * failed halfway does not, even if the hash made it into the file; nor
      * does a missing file or a directory in its place. A file that exists but
-     * cannot be read is no proof either way.
+     * cannot be read is no proof either way - and neither is a backup that
+     * holds the hash: the next start reads it when it finds the file cut short.
      */
     private Holds fileHolds(String tokenHash)
+    {
+        var holds = holds(file, tokenHash);
+        if (holds == Holds.NO && holds(backup, tokenHash) == Holds.YES)
+            return Holds.UNKNOWN;
+        return holds;
+    }
+
+    private static Holds holds(Path file, String tokenHash)
     {
         // read directly: Files.exists also answers false when it cannot tell
         if (Files.isDirectory(file))
@@ -430,9 +449,14 @@ public class ClientStore
         }
 
         // an empty file holds no tokens, so there is nothing a save could
-        // destroy - an interrupted write of an older version can leave one
+        // destroy - an interrupted write of an older version can leave one,
+        // and an interrupted write in place of this one has left its content
+        // in the backup
         if (raw.isBlank())
+        {
+            recoverFromBackup("empty"); //$NON-NLS-1$
             return;
+        }
 
         JsonElement root;
         try
@@ -441,6 +465,9 @@ public class ClientStore
         }
         catch (JsonSyntaxException e)
         {
+            if (recoverFromBackup("not valid JSON")) //$NON-NLS-1$
+                return;
+
             // not valid JSON at all: log, start empty, and keep the content so
             // that a save does not write over something the user still needs
             PortfolioLog.error(e);
@@ -459,9 +486,52 @@ public class ClientStore
             return;
         }
 
+        read(clients.getAsJsonArray());
+    }
+
+    /**
+     * A client file found empty or cut short, with a backup beside it: an
+     * in-place write wrote its content to the backup first and was then cut
+     * short. The clients are taken from the backup - the state that write was
+     * to leave, a revocation included - and the file is written again with a
+     * later request. Not for a file that cannot be read or that holds a shape
+     * this version does not know: that is no write of ours cut short.
+     *
+     * @return whether the clients came from the backup
+     */
+    private boolean recoverFromBackup(String what)
+    {
+        JsonElement clients;
+        try
+        {
+            var root = JsonParser.parseString(Files.readString(backup, StandardCharsets.UTF_8));
+            clients = root.isJsonObject() ? root.getAsJsonObject().get("clients") : null; //$NON-NLS-1$
+        }
+        catch (NoSuchFileException e)
+        {
+            return false;
+        }
+        catch (IOException | JsonParseException e)
+        {
+            PortfolioLog.error(e);
+            return false;
+        }
+
+        if (clients == null || !clients.isJsonArray())
+            return false;
+
+        read(clients.getAsJsonArray());
+        unsaved = true;
+        PortfolioLog.warning("The API client file is " + what + "; its clients are taken from " + BACKUP_NAME //$NON-NLS-1$ //$NON-NLS-2$
+                        + ", which a write cut short left, and the file is written again"); //$NON-NLS-1$
+        return true;
+    }
+
+    private void read(JsonArray clients)
+    {
         // parse each entry defensively: a single malformed entry is skipped, not
         // fatal, so one bad record cannot revoke every other client
-        for (var element : clients.getAsJsonArray())
+        for (var element : clients)
         {
             if (element.isJsonObject() && element.getAsJsonObject().has("scopes")) //$NON-NLS-1$
             {
@@ -531,6 +601,8 @@ public class ClientStore
         var saved = write();
         if (saved)
         {
+            // what the backup was kept for is in the file now
+            deleteQuietly(backup);
             unsaved = false;
             lastFailedSave = null;
             entries.forEach(entry -> entry.unwritten = false);
@@ -597,22 +669,10 @@ public class ClientStore
             // content is visible under the real name. A fresh name, created
             // exclusively - on POSIX already owner-only - in the same
             // directory, so that the move stays on one file system.
-            Path temp;
-            try
-            {
-                temp = Files.createTempFile(target.getParent(), FILE_NAME, ".tmp"); //$NON-NLS-1$
-            }
-            catch (AccessDeniedException e)
-            {
-                // a directory that takes no new file can still hold a client
-                // file that may be written. Only a refusal, though: any other
-                // failure - a full disk, say - would hit the in-place write as
-                // well, and that one could leave the file truncated.
-                if (!Files.isWritable(target))
-                    throw e;
-                writeInPlace(target, content);
-                return true;
-            }
+            // A directory that takes no new file takes no backup either, so
+            // the file is not written in place there: the save fails and the
+            // file stays as it was.
+            var temp = Files.createTempFile(target.getParent(), FILE_NAME, ".tmp"); //$NON-NLS-1$
 
             try
             {
@@ -638,8 +698,7 @@ public class ClientStore
                     // program holds open, on POSIX one in a sticky directory
                     // owned by someone else - can still be one that may be
                     // written, as before. The temporary file goes first: the
-                    // space it frees is at least what the write needs, so a
-                    // nearly full disk does not leave the file cut short.
+                    // space it frees is at least what the backup needs.
                     if (e instanceof NoSuchFileException || !Files.isWritable(target))
                         throw e;
                     deleteQuietly(temp);
@@ -692,11 +751,16 @@ public class ClientStore
 
     /**
      * Writes over the existing file, keeping every name it has - and on a file
-     * system without POSIX permissions its ACL. Not atomic - a crash halfway through can leave it truncated - so it
-     * is used only where replacing the file would lose more.
+     * system without POSIX permissions its ACL. Not atomic - a crash halfway
+     * through can leave it truncated - so it is used only where replacing the
+     * file would lose more, and the content goes to the backup first: a file
+     * cut short is completed from it at the next start. Where the backup cannot
+     * be written, nothing is: the file stays as it was.
      */
-    private static void writeInPlace(Path target, String content) throws IOException
+    private void writeInPlace(Path target, String content) throws IOException
     {
+        writeBackup(content);
+
         Files.writeString(target, content, StandardCharsets.UTF_8, StandardOpenOption.WRITE,
                         StandardOpenOption.TRUNCATE_EXISTING);
 
@@ -711,6 +775,35 @@ public class ClientStore
         catch (IOException e)
         {
             PortfolioLog.error(e);
+        }
+    }
+
+    /**
+     * Writes the content to the backup, on disk before it returns: written to a
+     * fresh file - on POSIX already owner-only - and moved over the backup, so
+     * that a crash during this write leaves the previous backup, and the client
+     * file is not touched yet. Without POSIX permissions the backup has the ACL
+     * of the directory it is in, the application's own configuration
+     * directory.
+     */
+    private void writeBackup(String content) throws IOException
+    {
+        var temp = Files.createTempFile(backup.getParent(), BACKUP_NAME, ".tmp"); //$NON-NLS-1$
+        try
+        {
+            try (var channel = FileChannel.open(temp, StandardOpenOption.WRITE))
+            {
+                var buffer = ByteBuffer.wrap(content.getBytes(StandardCharsets.UTF_8));
+                while (buffer.hasRemaining())
+                    channel.write(buffer);
+                channel.force(true);
+            }
+            restrictToOwner(temp);
+            replace(temp, backup);
+        }
+        finally
+        {
+            deleteQuietly(temp);
         }
     }
 
@@ -765,9 +858,10 @@ public class ClientStore
     }
 
     /**
-     * Removes a temporary file that is left over only when the move failed.
-     * Failing to remove it is logged, not reported: whether the save worked is
-     * decided by the move alone.
+     * Removes a temporary file that is left over only when the move failed, or
+     * the backup once the client file holds its content. Failing to remove it
+     * is logged, not reported: whether the save worked is decided by the write
+     * of the client file alone.
      */
     private static void deleteQuietly(Path temp)
     {
