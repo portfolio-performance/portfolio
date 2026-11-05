@@ -2700,10 +2700,11 @@ components:
         volatility:
           type: [number, "null"]
           description: |
-            The standard deviation of the return series. `null` when the
-            interval has fewer than two daily returns (counted over weekdays up
-            to `timeWeightedUntil`): one return has no spread, and 0 would read
-            as a measured absence of risk.
+            The standard deviation of the return series. `null` when fewer
+            than two daily returns went into it - only days the instrument was
+            held on, as was the day before, and that are no holiday, up to
+            `timeWeightedUntil`: one return has no spread, and 0 would read as
+            a measured absence of risk.
         semiVolatility:
           type: [number, "null"]
           description: |
