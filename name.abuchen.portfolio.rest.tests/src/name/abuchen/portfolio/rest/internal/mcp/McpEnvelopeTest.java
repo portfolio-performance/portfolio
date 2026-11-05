@@ -232,6 +232,28 @@ public class McpEnvelopeTest
         assertThat(rendered, containsString("risk"));
     }
 
+    /**
+     * Reported in review: a narrowed report keeps the currency lists of the full
+     * calculation, so the guidance says that they also cover the groups cut.
+     */
+    @Test
+    public void testTheCurrencyListsOfANarrowedReportSayTheyCoverTheCutGroups()
+    {
+        var payload = JsonParser.parseString("{\"items\":[],"
+                        + "\"fxWarnings\":[{\"currency\":\"ARS\",\"reportingCurrency\":\"EUR\",\"reason\":\"no-series\"}],"
+                        + "\"fxStaleRates\":[{\"currency\":\"USD\",\"reportingCurrency\":\"EUR\","
+                        + "\"rateDate\":\"2020-01-02\",\"daysOld\":2000}]}");
+
+        var narrowed = McpEnvelope.render(PERFORMANCE, new JsonObject(), payload, List.of("income"));
+        var note = "This list is for the full calculation, including the groups cut from this response";
+        assertThat(narrowed.indexOf(note), is(greaterThan(-1)));
+        // once with each list
+        assertThat(narrowed.indexOf(note, narrowed.indexOf(note) + 1), is(greaterThan(-1)));
+
+        var whole = McpEnvelope.render(PERFORMANCE, new JsonObject(), payload, List.of());
+        assertThat(whole, not(containsString(note)));
+    }
+
     /** an annualized rate is a fraction too; reading it as a percentage is off by 100 */
     @Test
     public void testAnAnnualizedRateIsTreatedAsAFraction()
@@ -319,6 +341,37 @@ public class McpEnvelopeTest
 
         for (var item : parsed)
             assertThat("item cut mid-field", item.getAsJsonObject().size(), is(5));
+    }
+
+    /**
+     * Reported in review: an array inside an item - its prices, say - is not
+     * the list of items, and a comma in it is no place to cut.
+     */
+    @Test
+    public void testACutNeverEndsInsideAnArrayOfAnItem()
+    {
+        var prices = new StringBuilder();
+        for (int ii = 0; ii < 80; ii++)
+        {
+            if (ii > 0)
+                prices.append(",");
+            prices.append("{\"date\":\"2026-01-01\",\"value\":").append(100 + ii).append("}");
+        }
+        var item = "{\"name\":\"ACME\",\"prices\":[" + prices + "]}";
+        var payload = "{\"items\":[" + item + "," + item + "]}";
+
+        // room for the first item and part of the second one's prices
+        var capped = McpEnvelope.cap(payload, item.length() + 1500);
+        assertThat(capped, containsString("TRUNCATED"));
+
+        if (capped.contains("not parseable JSON"))
+            return; // a fragment that says it is broken is honest about being broken
+
+        var kept = capped.substring(0, capped.indexOf("\n\n[TRUNCATED"));
+        var items = JsonParser.parseString(kept).getAsJsonObject().getAsJsonArray("items");
+        assertThat(items.size(), is(greaterThan(0)));
+        for (var element : items)
+            assertThat("prices cut mid-item", element.getAsJsonObject().getAsJsonArray("prices").size(), is(80));
     }
 
     /**

@@ -614,13 +614,6 @@ paths:
       responses:
         "204":
           description: Deleted
-          headers:
-            X-Portfolio-Deleted-Name:
-              description: |
-                The name of the instrument that was deleted, percent-encoded
-                UTF-8 - read together with the delete, so it names what is gone.
-              schema:
-                type: string
         "400":
           $ref: "#/components/responses/BadRequest"
         "401":
