@@ -41,6 +41,7 @@ import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.util.TradeCalendarManager;
 
 @SuppressWarnings("nls")
 public class InstrumentPerformanceTest
@@ -79,14 +80,16 @@ public class InstrumentPerformanceTest
     @Test
     public void testOneDailyReturnHasNoSpread()
     {
-        var oneDay = onlyItem(list(heldPosition(), "2024-12-30", "2024-12-31", null, null, null, "risk"))
-                        .getAsJsonObject("risk");
+        var oneDay = withMinimalCalendar(
+                        () -> onlyItem(list(heldPosition(), "2024-12-30", "2024-12-31", null, null, null, "risk"))
+                                        .getAsJsonObject("risk"));
         assertThat(oneDay.get("volatility").isJsonNull(), is(true));
         assertThat(oneDay.get("semiVolatility").isJsonNull(), is(true));
         assertThat(oneDay.get("maxDrawdown").isJsonNull(), is(false));
 
-        var twoDays = onlyItem(list(heldPosition(), "2024-12-27", "2024-12-31", null, null, null, "risk"))
-                        .getAsJsonObject("risk");
+        var twoDays = withMinimalCalendar(
+                        () -> onlyItem(list(heldPosition(), "2024-12-27", "2024-12-31", null, null, null, "risk"))
+                                        .getAsJsonObject("risk"));
         assertThat(twoDays.get("volatility").isJsonNull(), is(false));
     }
 
@@ -112,7 +115,8 @@ public class InstrumentPerformanceTest
                         .buy(security, "2024-12-17", Values.Share.factorize(1), Values.Amount.factorize(101)) //
                         .addTo(client);
 
-        var risk = onlyItem(list(client, "2024-06-03", "2024-12-18", null, null, null, "risk")).getAsJsonObject("risk");
+        var risk = withMinimalCalendar(() -> onlyItem(list(client, "2024-06-03", "2024-12-18", null, null, null, "risk"))
+                        .getAsJsonObject("risk"));
         assertThat(risk.get("volatility").isJsonNull(), is(true));
         assertThat(risk.get("semiVolatility").isJsonNull(), is(true));
     }
@@ -924,6 +928,27 @@ public class InstrumentPerformanceTest
     }
 
     // -- fixtures --------------------------------------------------------
+
+    /**
+     * The returns a volatility is measured from skip the holidays of the
+     * process-wide default calendar - with the German one, December 31 is not
+     * a trading day. The tests that count returns fix the calendar to the
+     * minimal one, whose few holidays none of their dates is, and give the
+     * previous one back.
+     */
+    private static <T> T withMinimalCalendar(java.util.function.Supplier<T> call)
+    {
+        var previous = TradeCalendarManager.getDefaultInstance().getCode();
+        TradeCalendarManager.setDefaultCalendarCode(TradeCalendarManager.MINIMAL_CALENDAR_CODE);
+        try
+        {
+            return call.get();
+        }
+        finally
+        {
+            TradeCalendarManager.setDefaultCalendarCode(previous);
+        }
+    }
 
     /** 10 shares bought at 100 before the interval, valued at 120 at its end */
     private static Client heldPosition()
