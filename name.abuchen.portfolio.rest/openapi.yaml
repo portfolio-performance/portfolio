@@ -2700,18 +2700,22 @@ components:
         volatility:
           type: [number, "null"]
           description: |
-            The standard deviation of the return series. `null` when fewer
-            than two daily returns went into it - only days the instrument was
-            held on, as was the day before, and that are no holiday, up to
-            `timeWeightedUntil`: one return has no spread, and 0 would read as
-            a measured absence of risk.
+            The spread of the daily returns over the whole interval - not per
+            day, and not annualized. With r = ln(1 + daily return) for each of
+            the n returns that count and m their mean, it is
+            sqrt(n · Σ (r − m)² / (n − 1)), as the application computes it,
+            rounded. Only days the instrument was held on, as was the day
+            before, and that are no holiday count, up to `timeWeightedUntil`.
+            `null` when fewer than two returns count: one return has no spread,
+            and 0 would read as a measured absence of risk.
         semiVolatility:
           type: [number, "null"]
           description: |
-            The downside spread: like `volatility`, but summing only the daily
-            log returns below their mean - which can be positive ones, so a
-            series that only rose can have a semi-volatility above 0. `null`
-            under the same condition as `volatility`.
+            The downside spread: the same formula with the sum taken only over
+            the returns with r below m - which can be positive ones, so a
+            series that only rose can have a semi-volatility above 0. The
+            divisor stays n − 1 for all n returns. `null` under the same
+            condition as `volatility`.
         maxDrawdown:
           type: [number, "null"]
           description: |
