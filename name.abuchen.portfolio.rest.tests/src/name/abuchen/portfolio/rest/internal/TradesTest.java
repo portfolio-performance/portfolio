@@ -620,6 +620,14 @@ public class TradesTest
         var expected = client.getSecurities().stream().sorted(Comparator.comparing(Security::getUUID))
                         .map(Security::getName).toList();
 
+        // a security the collector gives up on: its warning belongs to every page
+        var broken = new SecurityBuilder().addTo(client);
+        broken.setName("BROKEN");
+        new PortfolioBuilder(client.getAccounts().get(0)) //
+                        .buy(broken, "2026-02-01", Values.Share.factorize(10), Values.Amount.factorize(1000)) //
+                        .sell(broken, "2026-02-10", Values.Share.factorize(15), Values.Amount.factorize(1500)) //
+                        .addTo(client);
+
         var first = page(client, "", "1");
         assertThat(names(first), is(expected.subList(0, 1)));
         var page = first.getAsJsonObject("page");
@@ -628,11 +636,12 @@ public class TradesTest
         var cursor = page.get("nextCursor").getAsString();
         assertThat(first.get("items").getAsJsonArray().get(0).getAsJsonObject().get("cursor").getAsString(),
                         is(cursor));
-        assertThat(first.has("warnings"), is(true));
+        assertThat(warningCodes(first), is(List.of("missing-holdings-for-sell")));
         assertThat(first.has("fxWarnings"), is(true));
 
         var second = page(client, cursor, null);
         assertThat(names(second), is(expected.subList(1, 2)));
+        assertThat(warningCodes(second), is(List.of("missing-holdings-for-sell")));
         assertThat(second.getAsJsonObject("page").get("nextCursor").isJsonNull(), is(true));
         assertThat(second.getAsJsonObject("page").get("limit").isJsonNull(), is(true));
 
@@ -883,6 +892,14 @@ public class TradesTest
     {
         return TradesHandler.list(client, new ExchangeRateProviderFactory(client), status, null, null, null, null,
                         from, to).getAsJsonObject();
+    }
+
+    private static List<String> warningCodes(JsonObject trades)
+    {
+        var codes = new ArrayList<String>();
+        for (var warning : trades.get("warnings").getAsJsonArray())
+            codes.add(warning.getAsJsonObject().get("code").getAsString());
+        return codes;
     }
 
     private static List<String> names(JsonObject trades)
