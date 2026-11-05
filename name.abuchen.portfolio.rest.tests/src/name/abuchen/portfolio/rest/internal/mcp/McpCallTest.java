@@ -161,18 +161,26 @@ public class McpCallTest
         });
 
         var started = System.nanoTime();
-        call.heartbeatOffThread();
-        call.heartbeatOffThread();
-        call.heartbeatOffThread();
+        assertThat(call.heartbeatOffThread(), is(true));
+        // the first one is underway: the next ones start nothing
+        assertThat(call.heartbeatOffThread(), is(false));
+        assertThat(call.heartbeatOffThread(), is(false));
         assertThat(java.util.concurrent.TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - started) < 1_000, is(true));
 
-        Thread.sleep(200);
-        assertThat(writes.get(), is(1));
-
+        // once it is written, the next one starts again
         release.countDown();
-        Thread.sleep(200);
-        call.heartbeatOffThread();
-        Thread.sleep(200);
+        var deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(5);
+        var again = false;
+        while (!again && System.nanoTime() < deadline)
+        {
+            again = call.heartbeatOffThread();
+            if (!again)
+                Thread.onSpinWait();
+        }
+        assertThat(again, is(true));
+        var written = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(5);
+        while (writes.get() < 2 && System.nanoTime() < written)
+            Thread.onSpinWait();
         assertThat(writes.get(), is(2));
     }
 }

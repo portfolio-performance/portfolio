@@ -79,7 +79,10 @@ becomes a later thin adapter over the same service layer. The individual decisio
   held one of two pooled worker threads; with a virtual thread per request a waiting stream costs no
   worker, and the calculation it waits for holds its slot either way. REST stays request/response.
   Receiving a request and sending its response are each bounded by a 30 s watchdog against clients
-  that stall; a stream is bounded per piece it sends, since it may rightly be quiet between them.
+  that stall. A stream cannot be cut that way: once its headers are out, closing it writes the last
+  chunk, which blocks like any other write to a client that stopped reading. A stalled stream holds
+  its thread and its request permit until the JDK's `sun.net.httpserver.maxRspTime` of 600 s closes
+  the connection; the watchdog only keeps it from stopping the other deadlines.
   The request head, which the JDK reads before any of this code runs, is bounded by its own
   `sun.net.httpserver.maxReqTime` of 60 s, set before the first server of the process starts. At
   most three requests per calculation slot plus six are served at

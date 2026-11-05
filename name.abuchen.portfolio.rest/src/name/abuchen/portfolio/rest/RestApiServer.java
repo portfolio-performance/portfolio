@@ -625,9 +625,15 @@ public class RestApiServer
     /**
      * Writes a streamed response. The length is unknown, so the body is sent
      * chunked, and each piece is flushed at once - a progress message held in
-     * a buffer reaches nobody. Every piece is bounded by the watchdog on its
-     * own: the stream may be silent between pieces for as long as its request
-     * runs, but a client that stops reading cannot hold the connection.
+     * a buffer reaches nobody. Every write - the headers, each piece and the
+     * last chunk - goes through {@link #guarded}, since the stream may rightly be
+     * silent between pieces for as long as its request runs.
+     * <p/>
+     * That is no bound on a client that stops reading: once the headers are out,
+     * closing the exchange writes the last chunk, which blocks like the write it
+     * should end. A stalled stream holds its thread and its request permit
+     * until the JDK's {@code sun.net.httpserver.maxRspTime} (600 s, see
+     * {@code HttpServerDefaults}) closes the connection.
      */
     private void stream(HttpExchange exchange, Response response) throws IOException
     {
@@ -635,35 +641,73 @@ public class RestApiServer
             exchange.getResponseHeaders().set(header.getKey(), header.getValue());
         exchange.getResponseHeaders().set("Content-Type", response.contentType()); //$NON-NLS-1$
         exchange.getResponseHeaders().set("Cache-Control", "no-cache"); //$NON-NLS-1$ //$NON-NLS-2$
-        exchange.sendResponseHeaders(response.status(), 0);
+        guarded(exchange, () -> exchange.sendResponseHeaders(response.status(), 0));
 
         // the pieces come from more than one thread - the request, its
         // calculation, the heartbeat - and a lock rather than a monitor keeps a
         // virtual thread that writes to the socket from being pinned
         var writing = new ReentrantLock();
-        try (var out = exchange.getResponseBody())
+        var out = exchange.getResponseBody();
+        try
         {
             response.stream().writeTo(text -> {
                 var bytes = text.getBytes(StandardCharsets.UTF_8);
                 writing.lock();
-                // closed on a platform thread of its own: closing a chunked
-                // response writes its last chunk and blocks exactly as this write
-                // does, so on the one watchdog thread it would stop every other
-                // deadline, and on a virtual thread it would need a carrier that a
-                // pinned write may already have taken - a dead end when every
-                // carrier is pinned. maxRspTime is the backstop that ends it.
-                var sending = watchdog.schedule(() -> closeOffThread(exchange), ioDeadlineMillis, TimeUnit.MILLISECONDS);
                 try
                 {
-                    out.write(bytes);
-                    out.flush();
+                    guarded(exchange, () -> {
+                        out.write(bytes);
+                        out.flush();
+                    });
                 }
                 finally
                 {
-                    sending.cancel(false);
                     writing.unlock();
                 }
             });
+        }
+        finally
+        {
+            // the last chunk is a write to the client like any other
+            writing.lock();
+            try
+            {
+                guarded(exchange, out::close);
+            }
+            finally
+            {
+                writing.unlock();
+            }
+        }
+    }
+
+    /** a write of a streamed response */
+    @FunctionalInterface
+    private interface StreamWrite
+    {
+        void run() throws IOException;
+    }
+
+    /**
+     * One write of a streamed response, with the watchdog closing the exchange
+     * when it takes longer than the I/O deadline. The close runs on a platform
+     * thread of its own: closing a chunked response writes its last chunk and
+     * blocks exactly as this write does, so on the one watchdog thread it would
+     * stop every other deadline, and on a virtual thread it would need a carrier
+     * that a pinned write may already have taken - a dead end when every
+     * carrier is pinned. For the same reason the close does not end a write
+     * that blocks; maxRspTime does.
+     */
+    private void guarded(HttpExchange exchange, StreamWrite write) throws IOException
+    {
+        var sending = watchdog.schedule(() -> closeOffThread(exchange), ioDeadlineMillis, TimeUnit.MILLISECONDS);
+        try
+        {
+            write.run();
+        }
+        finally
+        {
+            sending.cancel(false);
         }
     }
 
