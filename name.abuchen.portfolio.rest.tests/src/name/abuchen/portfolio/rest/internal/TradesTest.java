@@ -142,6 +142,12 @@ public class TradesTest
         var closedOnly = trades(client, "closed", null, "moving-average", null, null);
         assertThat(closedOnly.get("items").getAsJsonArray().size(), is(0));
         assertThat(currenciesOfWarnings(closedOnly), is(List.of("ARS")));
+
+        // likewise for a period the trade does not touch
+        var before = TradesHandler.list(client, new ExchangeRateProviderFactory(client), null, null,
+                        "moving-average", null, null, null, "2025-12-31").getAsJsonObject();
+        assertThat(before.get("items").getAsJsonArray().size(), is(0));
+        assertThat(currenciesOfWarnings(before), is(List.of("ARS")));
     }
 
     /**
