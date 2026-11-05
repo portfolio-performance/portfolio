@@ -57,9 +57,10 @@ crash cannot leave it half written. Three cases are written in place instead, ke
 the file has (and, without POSIX permissions, its ACL): a client file that is a symbolic link (its
 target is written; a target that does not exist yet is created), one with further hard links, and
 one that cannot be replaced - in a directory that refuses a new file, or where the replace itself
-is refused (on Windows, a file another program holds open). On POSIX the file is owner-only either
-way; without POSIX permissions a replaced file takes over the ACL of the previous one, or is
-written in place where that fails. Windows does not tell whether a file has further hard links, so
+is refused (on Windows, a file another program holds open). On POSIX a replaced file is
+owner-only; one written in place is made owner-only where its permissions may be changed - a link
+target owned by someone else keeps its own, and that is logged. Without POSIX permissions a
+replaced file takes over the ACL of the previous one, or is written in place where that fails. Windows does not tell whether a file has further hard links, so
 there such a file is replaced and the other names keep the previous content.
 
 ## Talking to it
