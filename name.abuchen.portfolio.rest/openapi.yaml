@@ -1778,11 +1778,14 @@ components:
         persistent:
           type: boolean
           description: |
-            Present with `token`. Whether the token survives a restart of the
-            application: `false` when the user allowed access for this session
-            only, and when access was allowed permanently but the application
-            could not record it — the token then works until the application
-            quits, and pairing has to be repeated after that.
+            Present with `token`. Whether the token is confirmed to survive a
+            restart of the application: `false` when the user allowed access
+            for this session only, and when access was allowed permanently but
+            the application could not confirm it in its client file. Such a
+            grant may still work after a restart - the file may already hold
+            it, or a later write may add it - so a client that pairs again
+            should have the user check or revoke the earlier grant on the
+            preference page.
 
     Instrument:
       type: object

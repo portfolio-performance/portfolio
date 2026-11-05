@@ -39,8 +39,10 @@ public class PairingService
      * @param token
      *            the access token, delivered exactly once with an approval
      * @param persistent
-     *            whether the token survives a restart: false for a session
-     *            grant, and for a persistent one the client file could not take
+     *            whether the token is confirmed to survive a restart: false for
+     *            a session grant, and for a persistent one the client file could
+     *            not be confirmed to hold - that one may still work after a
+     *            restart
      */
     public record PollResult(PairingStatus status, String token, boolean persistent)
     {

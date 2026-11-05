@@ -322,9 +322,9 @@ public class ClientStore
     }
 
     /**
-     * Whether the client holding this token survives a restart: false for a
-     * session client, and for a persistent one whose entry could not be written
-     * to the file. Changes nothing - unlike {@link #authenticate}, it does not
+     * Whether the client holding this token is confirmed to survive a restart:
+     * false for a session client, and for a persistent one whose entry is not
+     * known to be in the file - which may still be there. Changes nothing - unlike {@link #authenticate}, it does not
      * count as a use of the token.
      */
     public synchronized boolean survivesRestart(String token)
