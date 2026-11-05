@@ -91,6 +91,8 @@ exists. Same switch, same port, same tokens; there is nothing extra to install.
   thread, for a calculation slot or for the calculation — if the call carries a
   `_meta.progressToken` — a `: keepalive` comment every 15 seconds in any case, and the result as
   the last event. Everything else, and a client that accepts only JSON, gets `application/json`.
+  A client that stops reading a stream holds its request for up to 10 minutes — the JDK's response
+  time limit — not for the 30 seconds after which a plain answer is given up.
   `GET` answers `405`: the server has nothing to say unasked.
 - **A session is optional.** `initialize` returns an `Mcp-Session-Id`. With it, a
   `notifications/cancelled` stops the streamed call it names: a call still waiting for the UI
