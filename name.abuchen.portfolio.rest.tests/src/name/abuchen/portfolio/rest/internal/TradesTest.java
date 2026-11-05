@@ -22,6 +22,7 @@ import name.abuchen.portfolio.junit.AccountBuilder;
 import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
@@ -106,6 +107,39 @@ public class TradesTest
         assertThat(warnings.size(), is(1));
         assertThat(warnings.get(0).getAsJsonObject().get("currency").getAsString(), is("ARS"));
         assertThat(warnings.get(0).getAsJsonObject().get("reason").getAsString(), is("no-series"));
+    }
+
+    /**
+     * Reported in review: the moving-average cost of a trade is computed as it
+     * is rendered, and converts the instrument's fees on the way - here one in
+     * a currency without rates. A trade the status filter leaves out is
+     * computed all the same, so its conversion is named like every other one
+     * of the trades matched.
+     */
+    @Test
+    public void testFxWarningsNameAConversionOfATradeTheStatusLeavesOut()
+    {
+        var client = new Client();
+        var security = new SecurityBuilder().addPrice("2026-07-01", Values.Quote.factorize(110)).addTo(client);
+        security.setName("ACME");
+        var account = new AccountBuilder().deposit_("2026-01-01", Values.Amount.factorize(5000)).addTo(client);
+        new PortfolioBuilder(account) //
+                        .buy(security, "2026-01-15", Values.Share.factorize(10), Values.Amount.factorize(1000)) //
+                        .addTo(client);
+
+        // a fee for the instrument, paid from an account in a currency without rates
+        var ars = new AccountBuilder("ARS").deposit_("2026-01-01", Values.Amount.factorize(100)).addTo(client);
+        ars.addTransaction(new AccountTransaction(LocalDateTime.of(2026, 2, 1, 0, 0), "ARS",
+                        Values.Amount.factorize(10), security, AccountTransaction.Type.FEES));
+
+        // the open trade converts the fee as it is computed
+        assertThat(currenciesOfWarnings(trades(client, null, null, "moving-average", null, null)),
+                        is(List.of("ARS")));
+
+        // the open trade is left out of the items, its conversion is not
+        var closedOnly = trades(client, "closed", null, "moving-average", null, null);
+        assertThat(closedOnly.get("items").getAsJsonArray().size(), is(0));
+        assertThat(currenciesOfWarnings(closedOnly), is(List.of("ARS")));
     }
 
     /**
