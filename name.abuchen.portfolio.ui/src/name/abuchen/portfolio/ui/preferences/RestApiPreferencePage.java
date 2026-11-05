@@ -15,7 +15,6 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
@@ -49,6 +48,7 @@ import name.abuchen.portfolio.rest.RestApiWorkspace;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.ClientInputFactory;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 
 /**
  * Configures both local front doors - the MCP server and the REST API - which
@@ -284,7 +284,7 @@ public class RestApiPreferencePage extends PreferencePage
         }
 
         var tableContainer = new Composite(container, SWT.NONE);
-        var layout = new TableColumnLayout();
+        var layout = new SafeTableColumnLayout();
         tableContainer.setLayout(layout);
         GridDataFactory.fillDefaults().span(2, 1).grab(true, true).hint(SWT.DEFAULT, 150).applyTo(tableContainer);
 
@@ -363,7 +363,7 @@ public class RestApiPreferencePage extends PreferencePage
         GridDataFactory.fillDefaults().span(2, 1).indent(0, 10).applyTo(label);
 
         var tableContainer = new Composite(container, SWT.NONE);
-        var layout = new TableColumnLayout();
+        var layout = new SafeTableColumnLayout();
         tableContainer.setLayout(layout);
         GridDataFactory.fillDefaults().span(2, 1).grab(true, false).hint(SWT.DEFAULT, 120).applyTo(tableContainer);
 

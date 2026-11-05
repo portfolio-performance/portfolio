@@ -45,6 +45,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 
 public class CommandPalettePopup extends PopupDialog
 {
@@ -247,7 +248,7 @@ public class CommandPalettePopup extends PopupDialog
         Composite tableComposite = new Composite(composite, SWT.NONE);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(tableComposite);
 
-        TableColumnLayout layout = new TableColumnLayout();
+        TableColumnLayout layout = new SafeTableColumnLayout();
         tableComposite.setLayout(layout);
 
         table = new Table(tableComposite, SWT.SINGLE | SWT.FULL_SELECTION);
