@@ -553,6 +553,10 @@ public class TradesTest
         var beforeBetaOpened = period(client, null, null, "2026-01-31");
         assertThat(names(beforeBetaOpened), is(List.of("ACME")));
 
+        // status and period together: the open BETA is held through the period, but not closed
+        assertThat(names(period(client, "closed", "2026-04-01", null)), is(List.of()));
+        assertThat(names(period(client, "closed", null, "2026-03-31")), is(List.of("ACME")));
+
         // the day ACME closed is inside a period that ends on it
         assertThat(names(period(client, null, "2026-03-16", "2026-03-16")), is(List.of("ACME", "BETA")));
 
