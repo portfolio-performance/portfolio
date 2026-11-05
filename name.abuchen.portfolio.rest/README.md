@@ -129,7 +129,8 @@ closing transaction and the shares and amount of the opening transaction — so 
 removed between two pages does not shift the others: every item that stays in the list for the
 whole walk comes exactly once. An item added before the cursor comes only with a new walk from the
 first page, and a trade whose start, investment account or closing transaction changes gets a new
-key. A cursor is good only for its own list — the same file, for one instrument's trades that
+key. Lots that agree in all of these are told apart only by their order: when one of them is removed
+between two pages, the next one may be left out of the walk. A cursor is good only for its own list — the same file, for one instrument's trades that
 instrument, and the same filters (`query`; `status`, `grouping`, `from`, `to`) — and is refused as
 `invalid-value` otherwise. REST never truncates.
 

@@ -25,9 +25,10 @@ import com.google.gson.JsonObject;
  * as before, in its usual order, and the response carries no {@code page} - a
  * client that never pages sees no change.
  * <p/>
- * A paged list is in an order of keys that never change: an instrument's
- * uuid; a trade's instrument uuid, start and the ids of the transactions that
- * open and close it. Every item of a page carries its {@code cursor}, and
+ * A paged list is in an order of keys that an edit elsewhere does not change:
+ * an instrument's uuid; a trade's instrument uuid, start, investment account,
+ * closing transaction and the shares and amount of its opening transaction.
+ * Every item of a page carries its {@code cursor}, and
  * {@code page.nextCursor} is the cursor of the page's last item - or
  * {@code null} on the last page. The next page holds the items after that key.
  * An item added or removed between two pages therefore does not shift the
@@ -35,7 +36,9 @@ import com.google.gson.JsonObject;
  * whole walk through it comes exactly once. An item added before the cursor
  * comes only with a new walk from the first page; a trade whose start,
  * investment account or closing transaction changes gets a new key and may
- * then come twice or not at all.
+ * then come twice or not at all. Lots that agree in all of these are told apart
+ * only by an ordinal of their order: when one of them is removed between two
+ * pages, the next one may be left out of the walk.
  * <p/>
  * A cursor is good only for the list it came from: it carries a short hash of
  * the scope - the file, for trades of one instrument that instrument, and the

@@ -1803,7 +1803,9 @@ components:
         whole walk comes exactly once. An item added before the cursor comes
         only with a new walk from the first page; a trade whose start,
         investment account or closing transaction changes gets a new key, and
-        may then come twice or not at all. For trades, `fxWarnings` and
+        may then come twice or not at all. Lots that agree in all of these are
+        told apart only by their order: when one of them is removed between two
+        pages, the next one may be left out of the walk. For trades, `fxWarnings` and
         `warnings` describe the whole list, not only the page.
       required: [limit, total, nextCursor]
       properties:
