@@ -234,7 +234,7 @@ public class LibertyVorsorgeAGPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("termCurrency", "baseCurrency", "exchangeRate", "fxGross") //
                                                         .match("^T[\\s]*o[\\s]*t[\\s]*a[\\s]*l[\\s]*K[\\s]*u[\\s]*r[\\s]*s[\\s]*w[\\s]*e[\\s]*r[\\s]*t[\\s]*(?<currency>[A-Z\\s]{3,}) (?<fxGross>[\\.'\\d]+)$") //
-                                                        .match("^C[\\s]*h[\\s]*a[\\s]*n[\\s]*g[\\s]*e[\\s]*(?<baseCurrency>[A-Z\\s]{3,})[\\s]*\\/[\\s]*(?<termCurrency>[A-Z\\s]{3,}) (?<exchangeRate>[\\.,\\d]+) [A-Z\\s]{3,} [\\.,\\d]+$") //
+                                                        .match("^C[\\s]*h[\\s]*a[\\s]*n[\\s]*g[\\s]*e[\\s]*(?<baseCurrency>[A-Z\\s]{3,})[\\s]*\\/[\\s]*(?<termCurrency>[A-Z\\s]{3,}) (?<exchangeRate>[\\.,\\d]+) [A-Z\\s]{3,} [\\.'\\d]+$") //
                                                         .assign((t, v) -> {
                                                             v.put("termCurrency", asCurrencyCode(stripBlanks(v.get("termCurrency"))));
                                                             v.put("baseCurrency", asCurrencyCode(stripBlanks(v.get("baseCurrency"))));
