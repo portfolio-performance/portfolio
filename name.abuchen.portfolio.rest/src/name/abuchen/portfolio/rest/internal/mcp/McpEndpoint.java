@@ -273,13 +273,6 @@ public final class McpEndpoint
         if (declared == null && (message.has("result") || message.has("error")))
             return null;
 
-        // A notification is a well-formed call without an id, and gets no
-        // response. A message that merely looks like one - no method, or a method
-        // that is not a string - is malformed, and 202 would tell a client that
-        // waits for an answer that all was well.
-        if (id == null && methodIsString)
-            return null;
-
         // An id is a string or a number, never null, an object, an array or a
         // boolean. JSON-RPC 2.0 says so; an id that is not a scalar cannot be
         // echoed as one, so a client sending it gets an error it can act on
@@ -289,12 +282,20 @@ public final class McpEndpoint
                     "\"id\" must be a string or a number; a notification omits it");
 
         // A message carrying method as well as result or error is not a reply: it
-        // is a call that was built wrongly, and 202 would tell a client that waits
-        // for an answer that all was well. Its id is echoed because a batch is only
-        // readable if every refusal names the message it belongs to.
+        // is a call that was built wrongly - with an id or without - and 202 would
+        // tell a client that waits for an answer that all was well. Its id is
+        // echoed because a batch is only readable if every refusal names the
+        // message it belongs to.
         if (message.has("result") || message.has("error"))
-            return error(id, INVALID_REQUEST,
+            return error(id == null ? JsonNull.INSTANCE : id, INVALID_REQUEST,
                     "a JSON-RPC request carries \"params\", not \"result\" or \"error\"");
+
+        // A notification is a well-formed call without an id, and gets no
+        // response. A message that merely looks like one - no method, or a method
+        // that is not a string - is malformed, and 202 would tell a client that
+        // waits for an answer that all was well.
+        if (id == null && methodIsString)
+            return null;
 
         if (!methodIsString)
             return error(id == null ? JsonNull.INSTANCE : id, INVALID_REQUEST,
