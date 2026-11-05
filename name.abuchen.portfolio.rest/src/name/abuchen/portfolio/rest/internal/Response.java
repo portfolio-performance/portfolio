@@ -6,8 +6,20 @@ import java.util.Map;
 
 import com.google.gson.JsonElement;
 
-public record Response(int status, String contentType, byte[] body, Map<String, String> headers)
+/**
+ * What a route answers. {@code inProcess} is for a caller inside this process
+ * only - the MCP endpoint dispatching into the routes - and is never written to
+ * the wire: what a route can say about its own work that the HTTP answer does
+ * not carry, such as the record a delete removed.
+ */
+public record Response(int status, String contentType, byte[] body, Map<String, String> headers,
+                JsonElement inProcess)
 {
+    public Response(int status, String contentType, byte[] body, Map<String, String> headers)
+    {
+        this(status, contentType, body, headers, null);
+    }
+
     public static Response json(int status, JsonElement element)
     {
         return new Response(status, "application/json", element.toString().getBytes(StandardCharsets.UTF_8), Map.of()); //$NON-NLS-1$
@@ -29,6 +41,12 @@ public record Response(int status, String contentType, byte[] body, Map<String, 
     {
         var merged = new LinkedHashMap<String, String>(headers);
         merged.put(name, value);
-        return new Response(status, contentType, body, Map.copyOf(merged));
+        return new Response(status, contentType, body, Map.copyOf(merged), inProcess);
+    }
+
+    /** the same response, telling an in-process caller what it may need besides */
+    public Response withInProcess(JsonElement element)
+    {
+        return new Response(status, contentType, body, headers, element);
     }
 }

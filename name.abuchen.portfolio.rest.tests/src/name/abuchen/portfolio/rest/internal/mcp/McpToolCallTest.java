@@ -226,8 +226,7 @@ public class McpToolCallTest
     @Test
     public void testADeleteNamesWhatItRemovedAndSaysItIsNotSaved()
     {
-        // the name travels back from the delete percent-encoded: spaces, + and
-        // letters outside ASCII must arrive as they were
+        // spaces, + and letters outside ASCII arrive as they were
         security.setName("M\u00FCller + S\u00F6hne AG");
         var name = security.getName();
         var result = call("pp_delete_instrument",
@@ -240,6 +239,36 @@ public class McpToolCallTest
         assertThat(text(result), not(containsString("returned nothing to show")));
         assertThat(text(result), containsString("not saved to disk"));
         assertThat(client.getSecurities().size(), is(0));
+    }
+
+    /**
+     * Reported in review: what a delete reports is read in the UI task that
+     * removes it. One task, so no edit can fall between the record described
+     * and the record gone - and no read before it can fail on its own.
+     */
+    @Test
+    public void testADeleteDescribesTheRecordFromTheTaskThatRemovedIt()
+    {
+        security.setIsin("DE0001234567");
+        var before = host.callablesRun();
+
+        var result = call("pp_delete_instrument", "{\"file\":\"sample\",\"uuid\":\"" + security.getUUID() + "\"}");
+
+        assertThat(isError(result), is(false));
+        assertThat(host.callablesRun() - before, is(1));
+        assertThat(text(result), containsString("\"isin\":\"DE0001234567\""));
+        assertThat(text(result), containsString("\"name\":\"ACME\""));
+        assertThat(client.getSecurities().size(), is(0));
+    }
+
+    /** a refused delete removes nothing and describes nothing */
+    @Test
+    public void testARefusedDeleteIsAnErrorWithoutARecord()
+    {
+        var result = call("pp_delete_instrument", "{\"file\":\"sample\",\"uuid\":\"no-such-instrument\"}");
+
+        assertThat(isError(result), is(true));
+        assertThat(text(result), not(containsString("\"deleted\":true")));
     }
 
     /** `query` and the trade period reach their routes as query parameters */

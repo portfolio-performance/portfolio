@@ -140,6 +140,21 @@ public final class McpEnvelope
     }
 
     /** what changes what the payload means: warnings, unconverted money, what was dropped */
+    /**
+     * A narrowed report keeps the currency lists of the full calculation, the
+     * groups cut from it among it: said where the lists are, so that a pair only
+     * a cut group converted is not read as touching the figures shown.
+     */
+    private static String coversCutGroups(List<String> droppedMetrics)
+    {
+        if (droppedMetrics.isEmpty())
+            return ""; //$NON-NLS-1$
+
+        return " This list is for the full calculation, including the groups cut from this response (see below): "
+                        + "a pair on it may have been used only by one of those, so it does not by itself mean that "
+                        + "a figure shown here was converted with it.";
+    }
+
     private static List<String> guidanceBefore(Scan found, JsonElement payload, List<String> droppedMetrics)
     {
         var sections = new ArrayList<String>();
@@ -162,7 +177,8 @@ public final class McpEnvelope
                     + " currency pair" + (found.fxWarnings().size() == 1 ? " in this report has" : "s in this report have")
                     + " nothing to convert with, so amounts in those currencies were multiplied by "
                     + "1 and are shown at face value. Say that they are unconverted; do not present them as if the "
-                    + "exchange rate had been applied. The pairs:\n" + preview(found.fxWarnings(), "fxWarnings"));
+                    + "exchange rate had been applied." + coversCutGroups(droppedMetrics) + " The pairs:\n"
+                    + preview(found.fxWarnings(), "fxWarnings"));
         }
 
         // a real rate, but an old one: the currency effect is frozen, not measured
@@ -174,7 +190,8 @@ public final class McpEnvelope
                             + " converted at a rate that had not been updated for a long time (`daysOld`, from "
                             + "`rateDate`) - the series stopped being published - so the currency effect of those "
                             + "amounts is frozen at that rate, not measured. Say so when you report figures in or "
-                            + "from those currencies. The pairs:\n" + preview(stale, "fxStaleRates"));
+                            + "from those currencies." + coversCutGroups(droppedMetrics) + " The pairs:\n"
+                            + preview(stale, "fxStaleRates"));
         }
 
         // an open trade that counts transactions booked ahead is not the
@@ -657,8 +674,11 @@ public final class McpEnvelope
      * groups; asking the engines a second time would pay again, and take a
      * second calculation slot to do it.
      * <p/>
-     * {@code fxWarnings} stay as computed. They name the pairs the full
-     * calculation converted, which for the kept groups are the same pairs.
+     * {@code fxWarnings} and {@code fxStaleRates} stay as computed: they name
+     * the pairs the full calculation converted, the cut groups among it - a
+     * dividend's gross amount, say, converts only in {@code income}. Telling
+     * them apart would take the calculation again; the guidance says instead
+     * that the lists cover the full calculation.
      */
     public static JsonElement narrow(JsonElement payload, List<String> keep)
     {
@@ -877,11 +897,13 @@ public final class McpEnvelope
      * as text: a comma ends an item, a closing bracket ends a container, and
      * neither counts inside a string.
      * <p/>
-     * A boundary counts only where the innermost open container is an array. A
-     * comma between two fields of one object, or the closing brace of an object
-     * nested inside an item, would produce parseable JSON that ends mid-item - and
-     * a marker claiming "after the last complete item" on a half-written item is
-     * the one thing this function must not say.
+     * A boundary counts only where the innermost open container is an array and
+     * no other array is open - the list of items, not an array inside an item. A
+     * comma between two fields of one object, the closing brace of an object
+     * nested inside an item, or a comma between the prices of one item would
+     * produce parseable JSON that ends mid-item - and a marker claiming "after
+     * the last complete item" on a half-written item is the one thing this
+     * function must not say.
      */
     private static Cut lastCompleteItem(String json, int budget)
     {
@@ -937,10 +959,22 @@ public final class McpEnvelope
         return cut;
     }
 
-    /** whether the containers still open end in an array, which is where an item boundary is */
+    /**
+     * whether the containers still open end in the one array open, which is
+     * where an item boundary is
+     */
     private static boolean endsArrayElement(ArrayDeque<Character> open)
     {
-        return !open.isEmpty() && open.peek() == '[';
+        if (open.isEmpty() || open.peek() != '[')
+            return false;
+
+        var arrays = 0;
+        for (var character : open)
+        {
+            if (character == '[')
+                arrays++;
+        }
+        return arrays == 1;
     }
 
     /** the brackets that close the containers still open, innermost first */

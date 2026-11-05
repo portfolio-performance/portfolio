@@ -411,6 +411,22 @@ public class McpEndpointTest
         assertThat(body(response).getAsJsonObject().getAsJsonObject("error").get("code").getAsInt(), is(-32700));
     }
 
+    /**
+     * Reported in review: a raw control character inside a string is malformed
+     * JSON (RFC 8259), not text - written as an escape, the same character is
+     * fine.
+     */
+    @Test
+    public void testARawControlCharacterInAStringIsAParseError() throws Exception
+    {
+        var raw = rpc(null, "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"ping\",\"params\":{\"a\":\"x\u0001y\"}}");
+        assertThat(raw.statusCode(), is(400));
+        assertThat(body(raw).getAsJsonObject().getAsJsonObject("error").get("code").getAsInt(), is(-32700));
+
+        var escaped = rpc(null, "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"ping\",\"params\":{\"a\":\"x\\u0001y\"}}");
+        assertThat(escaped.statusCode(), is(200));
+    }
+
     @Test
     public void testATopLevelScalarIsInvalid() throws Exception
     {
