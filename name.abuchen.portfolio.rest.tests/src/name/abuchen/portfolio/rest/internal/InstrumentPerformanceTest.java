@@ -91,6 +91,33 @@ public class InstrumentPerformanceTest
     }
 
     /**
+     * Reported in review: the returns a spread is measured from are those of
+     * days the instrument was held on. A long interval whose position starts on
+     * a Tuesday and closes on the Wednesday after has one such return - no
+     * spread, so null, not the 0 the calculation gives for one return.
+     */
+    @Test
+    public void testAPositionHeldForOneReturnHasNoSpreadInALongInterval()
+    {
+        var client = new Client();
+        var security = new SecurityBuilder() //
+                        .addPrice("2024-06-03", Values.Quote.factorize(100)) //
+                        .addPrice("2024-12-16", Values.Quote.factorize(100)) //
+                        .addPrice("2024-12-17", Values.Quote.factorize(101)) //
+                        .addPrice("2024-12-18", Values.Quote.factorize(103)) //
+                        .addTo(client);
+        security.setName("ACME");
+        var account = new AccountBuilder().deposit_("2024-06-03", Values.Amount.factorize(1000)).addTo(client);
+        new PortfolioBuilder(account) //
+                        .buy(security, "2024-12-17", Values.Share.factorize(1), Values.Amount.factorize(101)) //
+                        .addTo(client);
+
+        var risk = onlyItem(list(client, "2024-06-03", "2024-12-18", null, null, null, "risk")).getAsJsonObject("risk");
+        assertThat(risk.get("volatility").isJsonNull(), is(true));
+        assertThat(risk.get("semiVolatility").isJsonNull(), is(true));
+    }
+
+    /**
      * A position carried through the whole interval: 10 shares valued 1000 at
      * the start and 1200 at the end, no trades. Per M1 the cost basis of a
      * carried-in lot is its opening valuation, not what was once paid for it -

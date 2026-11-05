@@ -422,9 +422,10 @@ public final class EntityJson
             var drawdown = record.getDrawdown();
             var volatility = record.getVolatility();
 
-            // a spread needs two returns; one would come back as 0, which reads
-            // as a measured absence of risk
-            var spread = CalcParams.hasTwoReturns(params.openingDate(), params.closingDate());
+            // a spread needs two returns - those the calculation accepts, on days
+            // the instrument was held; with one it comes back as 0, which would
+            // read as a measured absence of risk
+            var spread = volatility.getCount() >= 2;
 
             var risk = new JsonObject();
             risk.add("volatility", ratio(spread ? volatility.getStandardDeviation() : Double.NaN)); //$NON-NLS-1$
