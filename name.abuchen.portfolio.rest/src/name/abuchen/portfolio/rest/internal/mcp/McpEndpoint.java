@@ -2,7 +2,6 @@ package name.abuchen.portfolio.rest.internal.mcp;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -18,6 +17,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.Strictness;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 
@@ -113,6 +113,9 @@ public final class McpEndpoint
             // message is read here name by name. A message that names one key
             // twice is a fault in whatever built it, and the caller has to hear it.
             var reader = new JsonReader(new StringReader(new String(request.body(), StandardCharsets.UTF_8)));
+            // RFC 8259 as written: a raw control character inside a string is
+            // malformed, not text
+            reader.setStrictness(Strictness.STRICT);
             message = readMessage(reader);
         }
         catch (JsonSyntaxException | IOException e)
@@ -406,29 +409,21 @@ public final class McpEndpoint
 
         try
         {
-            // A delete answers 204, which leaves a model unable to say what it
-            // removed. The record is read first - through the same routing
-            // table - so the result can describe it, and its name is the one
-            // the delete reports: a rename in between must not be what the
-            // model announces as gone.
-            var doomed = "DELETE".equals(tool.method()) ? McpDispatch.readBeforeDelete(router, tool, arguments)
-                            : null;
-
             var response = McpDispatch.call(router, tool, arguments);
             // a PATCH says whether a stored value changed, which decides whether
             // the user has anything to save
             var changed = response.headers().get(ApiRoutes.CHANGED_HEADER);
 
             var payload = payloadOf(response);
-            if (doomed != null && payload.isJsonNull())
+            // A delete answers 204, which leaves a model unable to say what it
+            // removed. The route hands over the record it read in the UI task
+            // that removed it - so no edit can fall between what is described
+            // and what is gone.
+            if ("DELETE".equals(tool.method()) && payload.isJsonNull())
             {
-                var removed = response.headers().get(ApiRoutes.DELETED_NAME_HEADER);
-                if (removed != null && doomed.isJsonObject())
-                    doomed.getAsJsonObject().addProperty("name", URLDecoder.decode(removed, StandardCharsets.UTF_8));
-
                 var deleted = new JsonObject();
                 deleted.addProperty("deleted", true);
-                deleted.add("instrument", doomed);
+                deleted.add("instrument", response.inProcess() == null ? JsonNull.INSTANCE : response.inProcess());
                 payload = deleted;
             }
 
