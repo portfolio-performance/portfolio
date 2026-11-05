@@ -494,6 +494,8 @@ public class ClientStoreTest
         assertThat(Files.isSymbolicLink(link), is(true));
         assertThat(Files.readString(real).contains("Claude Code"), is(false));
         assertThat(newStore().authenticate(token).isPresent(), is(false));
+        // the backup the write in place took first is gone once the write worked
+        assertThat(Files.exists(dir().resolve("api-clients.json.bak")), is(false));
 
         // written in place, not replaced: the linked file keeps its identity
         if (identity != null)
@@ -526,16 +528,19 @@ public class ClientStoreTest
     }
 
     /**
-     * Reported in review: a directory that takes no new file - so no temporary
-     * file either - does not stop a revoke from reaching a client file that may
-     * be written. Cannot be arranged for a user who may write everywhere.
+     * Reported in review: a directory that takes no new file takes no backup
+     * either, so the client file is not written in place there - a crash could
+     * leave it cut short with nothing to complete it from. The save fails, the
+     * file stays as it was, and the revoke says so. Cannot be arranged for a
+     * user who may write everywhere.
      */
     @Test
-    public void testAClientFileInADirectoryThatTakesNoNewFileIsWrittenInPlace() throws Exception
+    public void testAClientFileInADirectoryThatTakesNoBackupIsNotWritten() throws Exception
     {
         var store = newStore();
         var token = store.addPersistentClient("Claude Code");
         var dir = dir();
+        var before = Files.readString(dir.resolve("api-clients.json"));
         try
         {
             Files.setPosixFilePermissions(dir, PosixFilePermissions.fromString("r-x------"));
@@ -548,12 +553,123 @@ public class ClientStoreTest
         {
             Assume.assumeTrue("this user may write to any directory", !Files.isWritable(dir));
 
-            assertThat(store.revoke(store.listClients().get(0).id()), is(true));
-            assertThat(newStore().authenticate(token).isPresent(), is(false));
+            assertThat(store.revoke(store.listClients().get(0).id()), is(false));
+            assertThat(Files.readString(dir.resolve("api-clients.json")), is(before));
         }
         finally
         {
             Files.setPosixFilePermissions(dir, PosixFilePermissions.fromString("rwx------"));
+        }
+        // nothing was written: the token still works after a restart, as the
+        // revoke said it might
+        assertThat(newStore().authenticate(token).isPresent(), is(true));
+    }
+
+    /**
+     * Reported in review: an in-place write that is cut short leaves the
+     * client file empty or broken. The content it was writing is in the backup,
+     * so the next start takes the clients from there - and writes the file
+     * again with a later request.
+     */
+    @Test
+    public void testAClientFileCutShortIsCompletedFromTheBackup() throws Exception
+    {
+        var source = newStore();
+        source.addPersistentClient("Claude Code");
+        var intended = Files.readString(dir().resolve("api-clients.json"));
+
+        for (var cut : List.of("{\"clients\":[{\"id\":", "", "  \n"))
+        {
+            writeStore(cut);
+            Files.writeString(dir().resolve("api-clients.json.bak"), intended);
+
+            var store = newStore();
+            assertThat(cut, store.listClients(), hasSize(1));
+            assertThat(store.listClients().get(0).name(), is("Claude Code"));
+
+            // the next request writes the file again, and the backup goes
+            store.authenticate("a-token-nobody-has");
+            assertThat(Files.readString(dir().resolve("api-clients.json")), is(intended));
+            assertThat(Files.exists(dir().resolve("api-clients.json.bak")), is(false));
+        }
+    }
+
+    /**
+     * A backup beside a client file that reads well is left over from a write
+     * that finished: the file decides.
+     */
+    @Test
+    public void testAClientFileThatReadsWellIsNotReplacedByTheBackup() throws Exception
+    {
+        var store = newStore();
+        store.addPersistentClient("In the file");
+        var inFile = Files.readString(dir().resolve("api-clients.json"));
+        store.addPersistentClient("Only in the backup");
+        Files.writeString(dir().resolve("api-clients.json.bak"), Files.readString(dir().resolve("api-clients.json")));
+        writeStore(inFile);
+
+        var names = newStore().listClients().stream().map(ClientStore.ApiClient::name).toList();
+        assertThat(names, is(List.of("In the file")));
+    }
+
+    /**
+     * A file of a later version, or one that cannot be read, is no write of
+     * ours cut short: a backup does not replace it, and it is not written over.
+     */
+    @Test
+    public void testAForeignClientFileIsNotReplacedByTheBackup() throws Exception
+    {
+        var foreign = "{\"tokens\":[{\"value\":\"a-token-a-later-version-understands\"}]}";
+        writeStore(foreign);
+        var other = new ClientStore(Files.createDirectories(dir().resolve("other")), () -> now);
+        other.addPersistentClient("Claude Code");
+        Files.copy(dir().resolve("other").resolve("api-clients.json"), dir().resolve("api-clients.json.bak"));
+
+        var store = newStore();
+        assertThat(store.listClients(), hasSize(0));
+        store.addPersistentClient("New");
+        assertThat(Files.readString(dir().resolve("api-clients.json")), is(foreign));
+    }
+
+    /**
+     * Reported in review: the content of an in-place write is in the backup
+     * before the client file is touched. When the write of the file itself
+     * fails, the new client may come back at the next start - so it is kept as
+     * persistent and unconfirmed, and a revoke writes the file rather than
+     * taking a session client's shortcut. Cannot be arranged for a user who may
+     * write everywhere.
+     */
+    @Test
+    public void testAFailedInPlaceWriteLeavesItsContentInTheBackup() throws Exception
+    {
+        var real = Files.createDirectories(dir().resolve("elsewhere")).resolve("clients.json");
+        Files.writeString(real, "{\"clients\":[]}");
+        var link = dir().resolve("api-clients.json");
+        try
+        {
+            Files.createSymbolicLink(link, real);
+            Files.setPosixFilePermissions(real, PosixFilePermissions.fromString("r--------"));
+        }
+        catch (UnsupportedOperationException | java.io.IOException e)
+        {
+            Assume.assumeNoException("no symbolic links or POSIX permissions here", e);
+        }
+
+        try
+        {
+            Assume.assumeTrue("this user may write to anything", !Files.isWritable(real));
+
+            var store = newStore();
+            var token = store.addPersistentClient("Claude Code");
+
+            assertThat(Files.readString(dir().resolve("api-clients.json.bak")).contains("Claude Code"), is(true));
+            assertThat(store.survivesRestart(token), is(false));
+            // persistent, unconfirmed: the revoke has to reach the file, and cannot
+            assertThat(store.revoke(store.listClients().get(0).id()), is(false));
+        }
+        finally
+        {
+            Files.setPosixFilePermissions(real, PosixFilePermissions.fromString("rw-------"));
         }
     }
 

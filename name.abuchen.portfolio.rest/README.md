@@ -57,11 +57,14 @@ page says so: the revocation holds for this run and is written with a later requ
 can be written again, tried at most once a minute. The client file is replaced in one step where
 the file system can move a file over it atomically, so a crash cannot leave it half written; where
 it cannot, a plain move replaces it, which gives no such guarantee. Three cases are written in place
-instead - a crash during that write can leave the file cut short - keeping every name
-the file has (and, without POSIX permissions, its ACL): a client file that is a symbolic link (its
-target is written; a target that does not exist yet is created), one with further hard links, and
-one that cannot be replaced - in a directory that refuses a new file, or where the replace itself
-is refused (on Windows, a file another program holds open). On POSIX a replaced file is
+instead, keeping every name the file has (and, without POSIX permissions, its ACL): a client file
+that is a symbolic link (its target is written; a target that does not exist yet is created), one
+with further hard links, and one whose replace is refused (on Windows, a file another program holds
+open). Such a write first puts the new content into `api-clients.json.bak` beside the client file,
+on disk and replaced in one step; a crash that leaves the client file empty or cut short is
+completed from it at the next start, a revocation included. Where that file cannot be written - in
+a directory that refuses a new file, say - nothing is written, and the save is reported as failed.
+On POSIX a replaced file is
 owner-only; one written in place is made owner-only where its permissions may be changed - a link
 target owned by someone else keeps its own, and that is logged. Without POSIX permissions a
 replaced file takes over the ACL of the previous one, or is written in place where that fails. Windows does not tell whether a file has further hard links, so
