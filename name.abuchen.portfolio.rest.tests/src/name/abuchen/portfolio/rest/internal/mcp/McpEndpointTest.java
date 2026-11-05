@@ -350,6 +350,32 @@ public class McpEndpointTest
         assertThat(events(body).stream().anyMatch(event -> event.has("id")), is(false));
     }
 
+    /**
+     * Reported in review: a cancellation that carries a result or an error is a
+     * message built wrongly - it is refused, and the call it names runs on.
+     */
+    @Test
+    public void testACancellationCarryingAResultCancelsNothing() throws Exception
+    {
+        var id = initialize();
+        var gate = new CountDownLatch(1);
+        host.blockUiThreadUntil(gate);
+
+        var pending = http.sendAsync(
+                        streamRequest(callWithToken("pp_list_holdings", "{\"file\":\"sample\"}", "\"c-1\""), id).build(),
+                        HttpResponse.BodyHandlers.ofString());
+        waitUntil(() -> host.callablesQueued() >= 1);
+
+        var cancel = send(session(HttpRequest.newBuilder(uri()), id).POST(HttpRequest.BodyPublishers.ofString(
+                        "{\"jsonrpc\":\"2.0\",\"method\":\"notifications/cancelled\",\"params\":{\"requestId\":9},"
+                                        + "\"result\":{}}")));
+        assertThat(body(cancel).getAsJsonObject().getAsJsonObject("error").get("code").getAsInt(), is(-32600));
+        gate.countDown();
+
+        var body = pending.get(10, TimeUnit.SECONDS).body();
+        assertThat(events(body).stream().anyMatch(event -> event.has("id")), is(true));
+    }
+
     /** a write cancelled while it waits for the UI thread is not applied */
     @Test
     public void testACancelledWriteIsNotApplied() throws Exception

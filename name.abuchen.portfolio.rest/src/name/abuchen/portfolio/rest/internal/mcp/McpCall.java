@@ -140,11 +140,13 @@ import name.abuchen.portfolio.rest.internal.Response;
      * heartbeats of all others. At most one is underway per call - while it
      * blocks, the next ones are skipped - and the JDK's response time limit
      * ends the block.
+     *
+     * @return whether a heartbeat was started, false when one is underway
      */
-    /* package */ void heartbeatOffThread()
+    /* package */ boolean heartbeatOffThread()
     {
         if (!heartbeatUnderway.compareAndSet(false, true))
-            return;
+            return false;
 
         Thread.ofPlatform().daemon(true).name("Portfolio Performance MCP heartbeat").start(() -> { //$NON-NLS-1$
             try
@@ -156,6 +158,7 @@ import name.abuchen.portfolio.rest.internal.Response;
                 heartbeatUnderway.set(false);
             }
         });
+        return true;
     }
 
     /** one JSON-RPC message as one SSE event */
