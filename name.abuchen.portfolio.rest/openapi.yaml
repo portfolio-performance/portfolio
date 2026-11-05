@@ -1585,7 +1585,8 @@ components:
         Only the instruments this finds: one whose name contains it, or whose
         ISIN, WKN or ticker symbol equals it — all ignoring case and
         surrounding whitespace. Omit it to list every instrument; a blank
-        value is rejected `400 invalid-request`.
+        value is rejected `400 invalid-request`, with an `errors` entry for
+        `query` whose code is `invalid-value`.
       schema:
         type: string
         minLength: 1
