@@ -135,6 +135,7 @@ public final class Risk
         private final double stdDeviation;
         private final double semiDeviation;
         private final double annualizedStdDeviation;
+        private final int count;
 
         public Volatility(double[] returns, IntPredicate filter)
         {
@@ -160,6 +161,8 @@ public final class Risk
                 if (logReturn < averageLogReturn)
                     tempSemi += add;
             }
+
+            this.count = count;
 
             if (count <= 1)
             {
@@ -190,6 +193,16 @@ public final class Risk
             }
 
             return count == 0 ? 0 : sum / count;
+        }
+
+        /**
+         * How many returns the filter accepted. With fewer than two, both
+         * deviations are 0 - not a measured absence of risk, but nothing to
+         * measure a spread from.
+         */
+        public int getCount()
+        {
+            return count;
         }
 
         public double getStandardDeviation()
