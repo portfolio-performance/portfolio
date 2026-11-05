@@ -46,6 +46,8 @@ import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
+import name.abuchen.portfolio.ui.util.viewers.SafeTreeColumnLayout;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.util.TextUtil;
 
@@ -198,7 +200,7 @@ public class TroubleshootBalanceDiscrepancyDialog extends Dialog
         GridDataFactory.fillDefaults().grab(false, true).applyTo(tableArea);
         tableArea.setLayout(new FillLayout());
 
-        TableColumnLayout layout = new TableColumnLayout();
+        TableColumnLayout layout = new SafeTableColumnLayout();
         tableArea.setLayout(layout);
 
         Table table = new Table(tableArea, SWT.BORDER | SWT.SINGLE);
@@ -317,7 +319,7 @@ public class TroubleshootBalanceDiscrepancyDialog extends Dialog
         GridDataFactory.fillDefaults().grab(false, true).applyTo(treeArea);
         treeArea.setLayout(new FillLayout());
 
-        TreeColumnLayout layout = new TreeColumnLayout();
+        TreeColumnLayout layout = new SafeTreeColumnLayout();
         treeArea.setLayout(layout);
 
         Tree tree = new Tree(treeArea, SWT.BORDER | SWT.SINGLE);

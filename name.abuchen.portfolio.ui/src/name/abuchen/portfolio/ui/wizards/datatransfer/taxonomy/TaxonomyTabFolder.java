@@ -3,8 +3,6 @@ package name.abuchen.portfolio.ui.wizards.datatransfer.taxonomy;
 import java.util.ArrayList;
 
 import org.eclipse.e4.ui.services.IStylingEngine;
-import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -38,6 +36,8 @@ import name.abuchen.portfolio.model.TaxonomyJSONImporter.Operation;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.LogoManager;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
+import name.abuchen.portfolio.ui.util.viewers.SafeTreeColumnLayout;
 
 /* package */ class TaxonomyTabFolder
 {
@@ -93,7 +93,7 @@ import name.abuchen.portfolio.ui.util.LogoManager;
     private Control createTaxonomyTree(Composite parent)
     {
         var treeContainer = new Composite(parent, SWT.NONE);
-        var layout = new TreeColumnLayout();
+        var layout = new SafeTreeColumnLayout();
         treeContainer.setLayout(layout);
 
         var tree = new Tree(treeContainer, SWT.BORDER | SWT.SINGLE);
@@ -198,7 +198,7 @@ import name.abuchen.portfolio.ui.util.LogoManager;
         var tableContainer = new Composite(parent, SWT.NONE);
         tableContainer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-        var layout = new TableColumnLayout();
+        var layout = new SafeTableColumnLayout();
         tableContainer.setLayout(layout);
 
         changeViewer = new TableViewer(tableContainer, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL);
