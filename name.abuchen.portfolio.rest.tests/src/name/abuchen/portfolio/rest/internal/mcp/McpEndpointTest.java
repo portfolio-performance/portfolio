@@ -267,6 +267,22 @@ public class McpEndpointTest
         assertThat(reply.getAsJsonObject("error").get("code").getAsInt(), is(-32600));
     }
 
+    /**
+     * Reported in review: a notification that carries a result or an error is
+     * no notification but a message built wrongly, and is told so rather than
+     * accepted with 202.
+     */
+    @Test
+    public void testANotificationWithAResultIsAnsweredAsMalformed() throws Exception
+    {
+        var response = rpc(null, "{\"jsonrpc\":\"2.0\",\"method\":\"notifications/initialized\",\"result\":{}}");
+
+        assertThat(response.statusCode(), is(200));
+        var reply = body(response).getAsJsonObject();
+        assertThat(reply.get("id").isJsonNull(), is(true));
+        assertThat(reply.getAsJsonObject("error").get("code").getAsInt(), is(-32600));
+    }
+
     /** a reply, by contrast, answers a request - and none is ever sent from here */
     @Test
     public void testAReplyToARequestWeNeverSentIsIgnored() throws Exception
