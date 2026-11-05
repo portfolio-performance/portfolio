@@ -41,8 +41,10 @@ curl -s http://127.0.0.1:5712/v1/auth/requests/<id>
 
 The approval prompt offers **Allow for this session** (the token dies when the application quits),
 **Always allow** (persistent), and **Decline**. The token is delivered **exactly once** — store it.
-`persistent` says whether it survives a restart: `false` for a session grant, and also for an
-always-allow grant the application could not record — pair again after the next start.
+`persistent` says whether the token is confirmed to survive a restart: `false` for a session grant,
+and also for an always-allow grant the application could not confirm in its client file. That one
+may still work after a restart — the file may already hold it, or a later write may add it — so
+look it up on the preference page and revoke it there before pairing again.
 A request expires after 2 minutes; only one may be pending at a time, and a decline imposes a
 cool-down (both reported `429` with `Retry-After`). Every `401` names the pairing endpoint in its
 `pairingEndpoint` field, so the flow is discoverable at runtime.
@@ -52,8 +54,10 @@ individually (effective immediately), and can mint a token manually via **Add cl
 for headless setups where nobody watches the screen. Tokens are stored hashed; a lost token cannot
 be re-displayed, only replaced. When the client file cannot be written as a client is revoked, the
 page says so: the revocation holds for this run and is written with a later request once the file
-can be written again, tried at most once a minute. The client file is replaced in one step, so a
-crash cannot leave it half written. Three cases are written in place instead, keeping every name
+can be written again, tried at most once a minute. The client file is replaced in one step where
+the file system can move a file over it atomically, so a crash cannot leave it half written; where
+it cannot, a plain move replaces it, which gives no such guarantee. Three cases are written in place
+instead - a crash during that write can leave the file cut short - keeping every name
 the file has (and, without POSIX permissions, its ACL): a client file that is a symbolic link (its
 target is written; a target that does not exist yet is created), one with further hard links, and
 one that cannot be replaced - in a directory that refuses a new file, or where the replace itself
