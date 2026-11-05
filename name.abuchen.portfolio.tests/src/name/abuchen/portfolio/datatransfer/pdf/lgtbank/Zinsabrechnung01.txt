@@ -1,0 +1,32 @@
+PDFBox Version: 3.0.8
+Portfolio Performance Version: 0.89.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+LGT Bank AG 
+Zweigniederlassung Österreich 
+Bankgasse 9, A-1010 Wien 
+Tel. +43 1 22759-0 
+lgt.austria@lgt.com, www.lgt.at, BIC BLFLATWW 
+FN 383530s HG Wien, Sitz Wien, UID Nr. ATU57631067 
+jXzHl vVaw 
+xjUhjSTEoj 78/00 
+6275 JkdB 
+1 /  1 
+Wien, 30. September 2026 
+Zinsabrechnung Callgeld EUR Callgeld AT.850340 
+Auftragsnummer: 203545881 Portfolio: 3569975.224 
+Kunde: NlHml HPyG 
+EUR Callgeld AT.858930 06.07.2023 Soll in EUR Haben in EUR 
+Zinsperioden  
+Von Bis Zinssatz p.a. Kapital 
+30.06.2026 16.09.2026 78 Tage 1,9500 % 88.000,00 366,71 
+16.09.2026 28.09.2026 12 Tage 2,2000 % 88.000,00 63,65 
+28.09.2026 30.09.2026 2 Tage 2,2000 % 63.000,00 7,59 
+Zinsusanz Act/365 
+Total 437,95 
+Gutschrift EUR Konto 2005875.935 437,95 
+Valuta 30.09.2026 
+Eine allfällige KESt-Abfuhr erfolgt an das Finanzamt für Großbetriebe. 
+LGT Bank AG, Zweigniederlassung Österreich ist eine Zweigniederlassung der LGT Bank AG, eingetragen im Handelsregister des Fürstentum Liechtenstein; 
+HR Nr.: 1122356-7, Sitz: 9490 Vaduz, MWST-Nr. 50119, CH-260 887 880 
+3004375 13E T VIE I TRD3028 10276194 17:35 30.09.2026 %Media:XML-A4H
