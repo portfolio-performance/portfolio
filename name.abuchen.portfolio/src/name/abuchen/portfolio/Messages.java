@@ -351,6 +351,9 @@ public class Messages extends NLS
     public static String OAuthNotConfigured;
     public static String OAuthOngoingAuthentication;
     public static String OAuthPortInUse;
+    public static String LightyearCSVLabel;
+    public static String LightyearCSVMsgFileNotSupported;
+    public static String LightyearCSVMsgUnsupportedTransactionType;
     public static String PDFdbMsgCannotDetermineFileType;
     public static String PDFMsgExtracingFiles;
     public static String PDFMsgFileNotSupported;
