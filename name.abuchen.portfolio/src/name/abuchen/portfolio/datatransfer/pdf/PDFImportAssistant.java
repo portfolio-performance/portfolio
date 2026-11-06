@@ -2,10 +2,13 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -29,7 +32,7 @@ public class PDFImportAssistant
     public PDFImportAssistant(Client client, List<File> files)
     {
         this.client = client;
-        this.files = files;
+        this.files = distinctFiles(files);
 
         extractors.add(new ABNAMROGroupPDFExtractor(client));
         extractors.add(new AdvanziaBankPDFExtractor(client));
@@ -291,6 +294,18 @@ public class PDFImportAssistant
     {
         var sourceKey = inputFile.getFile().getAbsolutePath();
         items.forEach(item -> item.setData(DetectDuplicatesAction.SOURCE_KEY, sourceKey));
+    }
+
+    /**
+     * Removes repeated input files (same absolute path, e.g. a file selected
+     * twice). Otherwise the transactions of both copies carry the same source
+     * key, are considered to stem from one document and are not detected as
+     * duplicates between the files.
+     */
+    /* testing */ static List<File> distinctFiles(List<File> files)
+    {
+        Set<Path> paths = new HashSet<>();
+        return files.stream().filter(file -> paths.add(file.getAbsoluteFile().toPath().normalize())).toList();
     }
 
     public Map<File, PDFInputFile> getFailedInputFiles()
