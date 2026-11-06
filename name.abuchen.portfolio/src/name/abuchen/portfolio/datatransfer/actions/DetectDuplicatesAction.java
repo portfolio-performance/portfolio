@@ -132,6 +132,10 @@ public class DetectDuplicatesAction implements ImportAction
     {
         private List<Check> checks = List.of();
 
+        /**
+         * Returns the checks of the item, or an empty list if the item is no
+         * transaction or cannot be applied (e.g. no matching account).
+         */
         List<Check> collect(Extractor.Item item, Context context)
         {
             checks = List.of();
@@ -294,9 +298,9 @@ public class DetectDuplicatesAction implements ImportAction
      * day.
      * <p>
      * Transactions with a time are split into clusters of transactions whose
-     * times are at most {@link #TIME_TOLERANCE_MINUTES} apart from the
-     * previous one. Each cluster keeps as many transactions as the input file
-     * with the most occurrences in that cluster.
+     * times are at most {@link #TIME_TOLERANCE_MINUTES} apart (see
+     * {@link #clustersByTime}). Each cluster keeps as many transactions as the
+     * input file with the most occurrences in that cluster.
      * <p>
      * Transactions without time (midnight) can be a duplicate of any of them.
      * They are only kept if the input file with the most occurrences in the
@@ -339,31 +343,39 @@ public class DetectDuplicatesAction implements ImportAction
     /**
      * Splits the candidates (sorted by time) into clusters: a new cluster
      * starts if the time is more than {@link #TIME_TOLERANCE_MINUTES} after the
-     * time of the previous candidate.
+     * time of the first candidate of the current cluster. Therefore all
+     * candidates of a cluster are within the tolerance of each other, and the
+     * number of clusters is the smallest possible number of distinct
+     * transactions (e.g. 10:00, 10:02 and 10:04 form two clusters, because
+     * 10:00 and 10:04 cannot be the same transaction).
      */
     private static List<List<Candidate>> clustersByTime(List<Candidate> sortedByTime)
     {
         List<List<Candidate>> clusters = new ArrayList<>();
         List<Candidate> current = null;
-        LocalDateTime previous = null;
+        LocalDateTime start = null;
 
         for (var candidate : sortedByTime)
         {
             var time = truncatedToMinutes(candidate.transaction());
 
-            if (current == null || ChronoUnit.MINUTES.between(previous, time) > TIME_TOLERANCE_MINUTES)
+            if (current == null || ChronoUnit.MINUTES.between(start, time) > TIME_TOLERANCE_MINUTES)
             {
                 current = new ArrayList<>();
                 clusters.add(current);
+                start = time;
             }
 
             current.add(candidate);
-            previous = time;
         }
 
         return clusters;
     }
 
+    /**
+     * Returns the largest number of candidates which stem from the same input
+     * file.
+     */
     private static int maxOccurrencesPerSource(List<Candidate> candidates)
     {
         Map<String, Integer> occurrencesPerSource = new HashMap<>();
@@ -564,6 +576,10 @@ public class DetectDuplicatesAction implements ImportAction
         return item.getSource();
     }
 
+    /**
+     * Returns the key which groups identical transactions within the import
+     * (see {@link DuplicateKey}).
+     */
     private static DuplicateKey duplicateKeyOf(Transaction transaction)
     {
         Set<?> types;
@@ -604,6 +620,10 @@ public class DetectDuplicatesAction implements ImportAction
         return List.of(new Check(entry.getTargetTransaction(), source.getTransactions()));
     }
 
+    /**
+     * Checks an account transaction against the transactions of the account
+     * and against the other transactions of the import.
+     */
     @Override
     public Status process(AccountTransaction transaction, Account account)
     {
@@ -613,6 +633,10 @@ public class DetectDuplicatesAction implements ImportAction
         return checkWithinImport(transaction);
     }
 
+    /**
+     * Checks a portfolio transaction against the transactions of the portfolio
+     * and against the other transactions of the import.
+     */
     @Override
     public Status process(PortfolioTransaction transaction, Portfolio portfolio)
     {
@@ -622,6 +646,11 @@ public class DetectDuplicatesAction implements ImportAction
         return checkWithinImport(transaction);
     }
 
+    /**
+     * Checks a buy or sell against the transactions of an investment plan, of
+     * the account and of the portfolio, and against the other transactions of
+     * the import.
+     */
     @Override
     public Status process(BuySellEntry entry, Account account, Portfolio portfolio)
     {
@@ -649,6 +678,10 @@ public class DetectDuplicatesAction implements ImportAction
         return checkWithinImport(entry.getPortfolioTransaction());
     }
 
+    /**
+     * Checks an account transfer against the transactions of the source
+     * account and against the other transactions of the import.
+     */
     @Override
     public Status process(AccountTransferEntry entry, Account source, Account target)
     {
@@ -658,6 +691,10 @@ public class DetectDuplicatesAction implements ImportAction
         return checkWithinImport(entry.getSourceTransaction());
     }
 
+    /**
+     * Checks a portfolio transfer against the transactions of the source
+     * portfolio and against the other transactions of the import.
+     */
     @Override
     public Status process(PortfolioTransferEntry entry, Portfolio source, Portfolio target)
     {
@@ -667,6 +704,10 @@ public class DetectDuplicatesAction implements ImportAction
         return checkWithinImport(entry.getTargetTransaction());
     }
 
+    /**
+     * Returns the transaction generated by an investment plan which is a
+     * potential duplicate of the subject, or null if there is none.
+     */
     public Transaction findInvestmentPlanTransaction(Transaction subject, List<Transaction> transactions)
     {
         for (Transaction t : transactions)
@@ -678,6 +719,10 @@ public class DetectDuplicatesAction implements ImportAction
         return null;
     }
 
+    /**
+     * Returns a warning if the subject is a duplicate of another transaction of
+     * the import.
+     */
     private Status checkWithinImport(Transaction subject)
     {
         if (duplicatesWithinImport.contains(subject))
@@ -710,6 +755,10 @@ public class DetectDuplicatesAction implements ImportAction
         return Status.OK_STATUS;
     }
 
+    /**
+     * Returns true if both transactions have the same or an equivalent type
+     * (e.g. buy and inbound delivery).
+     */
     private static boolean isEquivalentType(Transaction subject, Transaction other)
     {
         if (subject instanceof AccountTransaction s && other instanceof AccountTransaction o)
@@ -720,6 +769,10 @@ public class DetectDuplicatesAction implements ImportAction
             return false;
     }
 
+    /**
+     * Returns the account transaction types which are considered equivalent:
+     * deposit and inbound transfer, removal and outbound transfer.
+     */
     private static EnumSet<AccountTransaction.Type> equivalentTypesOf(AccountTransaction.Type type)
     {
         return switch (type)
@@ -732,6 +785,10 @@ public class DetectDuplicatesAction implements ImportAction
         };
     }
 
+    /**
+     * Returns the portfolio transaction types which are considered equivalent:
+     * buy and inbound delivery, sell and outbound delivery.
+     */
     private static EnumSet<PortfolioTransaction.Type> equivalentTypesOf(PortfolioTransaction.Type type)
     {
         return switch (type)
@@ -744,6 +801,12 @@ public class DetectDuplicatesAction implements ImportAction
         };
     }
 
+    /**
+     * Returns true if the other (existing) transaction is a potential duplicate
+     * of the subject: same date, time within the tolerance, same currency,
+     * amount, shares and security. Interest with and without taxes and
+     * dividends without number of shares are accepted as well.
+     */
     private static boolean isPotentialDuplicate(Transaction subject, Transaction other)
     {
         if (!other.getDateTime().toLocalDate().equals(subject.getDateTime().toLocalDate()))
@@ -806,12 +869,20 @@ public class DetectDuplicatesAction implements ImportAction
         return minutesBetween(subject.getDateTime(), other.getDateTime());
     }
 
+    /**
+     * Returns the absolute difference in minutes, compared with minute
+     * precision.
+     */
     private static long minutesBetween(LocalDateTime a, LocalDateTime b)
     {
         return Math.abs(ChronoUnit.MINUTES.between(a.truncatedTo(ChronoUnit.MINUTES),
                         b.truncatedTo(ChronoUnit.MINUTES)));
     }
 
+    /**
+     * Returns true if one interest transaction states the gross amount with
+     * taxes and the other one the net amount without taxes.
+     */
     private static boolean hasEquivalentInterestAmount(Transaction subject, Transaction other)
     {
         if (!(subject instanceof AccountTransaction accountTransaction)
@@ -824,6 +895,10 @@ public class DetectDuplicatesAction implements ImportAction
                         || (otherTax > 0 && subjectTax == 0 && other.getGrossValue().getAmount() == subject.getAmount());
     }
 
+    /**
+     * Returns true if one of two dividend transactions has no number of
+     * shares.
+     */
     private static boolean hasMissingDividendShares(Transaction subject, Transaction other)
     {
         return subject instanceof AccountTransaction accountTransaction
@@ -831,9 +906,9 @@ public class DetectDuplicatesAction implements ImportAction
                         && (subject.getShares() == 0 || other.getShares() == 0);
     }
 
-    /*
-     * The other transaction is one generated by an investment plan, stored in
-     * the client
+    /**
+     * Returns true if the other transaction, generated by an investment plan
+     * and stored in the client, is a potential duplicate of the subject.
      */
     private boolean isInvestmentPlanDuplicate(Transaction subject, Transaction other)
     {

@@ -815,6 +815,63 @@ public class DetectDuplicatesActionTest
         assertThat(statusOf(items), is(List.of(Code.OK, Code.WARNING, Code.OK)));
     }
 
+    @SuppressWarnings("nls")
+    @Test
+    public void testTimeClustersDoNotSpanMoreThanTolerance()
+    {
+        // 10:00 and 10:04 cannot be the same transaction: at least two
+        // transactions must be kept although 10:02 is within the tolerance of
+        // both
+        var items = List.<Extractor.Item>of( //
+                        new TransactionItem(fee("Gebuehr01.pdf", LocalDateTime.of(2025, 12, 15, 10, 0))),
+                        new TransactionItem(fee("Gebuehr02.pdf", LocalDateTime.of(2025, 12, 15, 10, 2))),
+                        new TransactionItem(fee("Gebuehr03.pdf", LocalDateTime.of(2025, 12, 15, 10, 4))));
+
+        assertThat(statusOf(items), is(List.of(Code.OK, Code.WARNING, Code.OK)));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testIdenticalBuysWithDifferentTimesFromDifferentFilesInPDFImport()
+    {
+        // issue #6301 as in the PDF import (duplicates within the import are
+        // detected as well): the documents state different times, therefore
+        // the buys are distinct transactions and only the existing one is
+        // marked
+        var security = new Security("Example", "EUR");
+        var account = eurAccount();
+        var portfolio = new Portfolio();
+        existingBuy(security, "Kauf02.pdf", LocalDateTime.of(2025, 12, 15, 11, 30, 12), account, portfolio);
+
+        var items = List.<Extractor.Item>of( //
+                        new BuySellEntryItem(buy(security, "Kauf01.pdf", LocalDateTime.of(2025, 12, 15, 10, 0, 5))),
+                        new BuySellEntryItem(buy(security, "Kauf02.pdf", LocalDateTime.of(2025, 12, 15, 11, 30, 12))),
+                        new BuySellEntryItem(buy(security, "Kauf03.pdf", LocalDateTime.of(2025, 12, 15, 14, 5, 47))));
+
+        assertThat(statusOf(items, account, portfolio, true), is(List.of(Code.OK, Code.WARNING, Code.OK)));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testIdenticalBuysWithoutTimeFromDifferentFilesInPDFImport()
+    {
+        // without time, identical buys from different files cannot be told
+        // apart from copies of the same document: within the import they are
+        // considered copies (see #6148), the remaining one is the existing buy.
+        // All are marked, the user can still import them.
+        var security = new Security("Example", "EUR");
+        var account = eurAccount();
+        var portfolio = new Portfolio();
+        existingBuy(security, "Kauf02.pdf", LocalDateTime.of(2025, 12, 15, 0, 0), account, portfolio);
+
+        var items = List.<Extractor.Item>of( //
+                        new BuySellEntryItem(buy(security, "Kauf01.pdf", LocalDateTime.of(2025, 12, 15, 0, 0))),
+                        new BuySellEntryItem(buy(security, "Kauf02.pdf", LocalDateTime.of(2025, 12, 15, 0, 0))),
+                        new BuySellEntryItem(buy(security, "Kauf03.pdf", LocalDateTime.of(2025, 12, 15, 0, 0))));
+
+        assertThat(statusOf(items, account, portfolio, true), is(List.of(Code.WARNING, Code.WARNING, Code.WARNING)));
+    }
+
     private Code statusAgainstExisting(LocalDateTime existing, LocalDateTime imported)
     {
         var account = eurAccount();
