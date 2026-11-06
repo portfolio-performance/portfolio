@@ -213,6 +213,44 @@ public class LightyearCSVExtractorTest
     }
 
     @Test
+    public void testParserErrorIsReportedWhenBothDelimitersFail() throws IOException
+    {
+        var csv = "Date,Type,Net Amt.,CCY,Reference,\n";
+        var file = File.createTempFile("invalid_lightyear_header", ".csv");
+        file.deleteOnExit();
+        Files.writeString(file.toPath(), csv, StandardCharsets.UTF_8);
+
+        var client = new Client();
+        var errors = new ArrayList<Exception>();
+        var results = new LightyearCSVExtractor(client).extract(new SecurityCache(client), new InputFile(file), errors);
+
+        assertThat(results, empty());
+        assertThat(errors.size(), is(1));
+        assertThat(errors.get(0).getMessage().contains(file.getName()), is(false));
+    }
+
+    @Test
+    public void testBlankCurrencyDoesNotAffectSecurityLookup() throws IOException
+    {
+        var csv = String.join("\n", //
+                        "Date,Reference,Ticker,ISIN,Type,Quantity,CCY,Price/share,Gross Amount,FX Rate,Fee,Net Amt.,Tax Amt.",
+                        "15/03/2025 10:30:00,OR-01,AAPL,US0378331005,Buy,10.00,,185.50,1855.00,,0.00,1855.00,",
+                        "16/03/2025 10:30:00,OR-02,AAPL,US0378331005,Buy,10.00,USD,185.50,1855.00,,0.00,1855.00,");
+
+        var file = File.createTempFile("lightyear_blank_currency", ".csv");
+        file.deleteOnExit();
+        Files.writeString(file.toPath(), csv, StandardCharsets.UTF_8);
+
+        var client = new Client();
+        var errors = new ArrayList<Exception>();
+        var results = new LightyearCSVExtractor(client).extract(new SecurityCache(client), new InputFile(file), errors);
+
+        assertThat(errors.size(), is(1));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(results.get(0).getSecurity().getCurrencyCode(), is("USD"));
+    }
+
+    @Test
     public void testSemicolonWithQuotedHeadersFallback() throws IOException
     {
         var csv = String.join("\n", //
@@ -281,6 +319,37 @@ public class LightyearCSVExtractorTest
                         hasShares(10.00), //
                         hasAmount("USD", 1855.00), //
                         hasForexGrossValue("EUR", 1706.60))));
+    }
+
+    @Test
+    public void testForexCurrencyMismatchWithoutRateIsReported() throws IOException
+    {
+        var client = new Client();
+        var apple = new Security("Apple Inc", "EUR");
+        apple.setIsin("US0378331005");
+        apple.setTickerSymbol("AAPL");
+        client.addSecurity(apple);
+
+        var alphabet = new Security("Alphabet Inc", "EUR");
+        alphabet.setIsin("US02079K1079");
+        alphabet.setTickerSymbol("GOOG");
+        client.addSecurity(alphabet);
+
+        var csv = String.join("\n", //
+                        "Date,Reference,Ticker,ISIN,Type,Quantity,CCY,Price/share,Gross Amount,FX Rate,Fee,Net Amt.,Tax Amt.",
+                        "15/03/2025 10:30:00,OR-01,AAPL,US0378331005,Buy,10.00,USD,185.50,1855.00,,0.00,1855.00,",
+                        "16/12/2025 06:02:35,IN-01,GOOG,US02079K1079,Dividend,52.0,USD,,14.09,,0.00,11.98,2.11");
+        var file = File.createTempFile("lightyear_missing_fx_rate", ".csv");
+        file.deleteOnExit();
+        Files.writeString(file.toPath(), csv, StandardCharsets.UTF_8);
+
+        var errors = new ArrayList<Exception>();
+        var results = new LightyearCSVExtractor(client).extract(new SecurityCache(client), new InputFile(file), errors);
+
+        assertThat(results, empty());
+        assertThat(errors.size(), is(2));
+        assertThat(errors.get(0).getMessage().contains("Missing FX Rate"), is(true));
+        assertThat(errors.get(1).getMessage().contains("Missing FX Rate"), is(true));
     }
 
     @Test

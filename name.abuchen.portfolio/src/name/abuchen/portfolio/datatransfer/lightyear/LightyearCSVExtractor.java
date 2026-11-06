@@ -38,7 +38,6 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -85,12 +84,27 @@ public class LightyearCSVExtractor implements Extractor
             var content = readContent(inputFile);
 
             // try comma first, fall back to semicolon
-            if (!tryParse(content, ',', securityCache, source, items, errors)
-                            && !tryParse(content, ';', securityCache, source, items, errors))
+            var commaErrors = new ArrayList<Exception>();
+            if (tryParse(content, ',', securityCache, source, items, commaErrors))
             {
+                errors.addAll(commaErrors);
+                return items;
+            }
+
+            var semicolonErrors = new ArrayList<Exception>();
+            if (tryParse(content, ';', securityCache, source, items, semicolonErrors))
+            {
+                errors.addAll(semicolonErrors);
+                return items;
+            }
+
+            if (!semicolonErrors.isEmpty())
+                errors.addAll(semicolonErrors);
+            else if (!commaErrors.isEmpty())
+                errors.addAll(commaErrors);
+            else
                 errors.add(new IllegalArgumentException(
                                 MessageFormat.format(Messages.LightyearCSVMsgFileNotSupported, source)));
-            }
         }
         catch (IOException e)
         {
@@ -156,6 +170,7 @@ public class LightyearCSVExtractor implements Extractor
         }
         catch (Exception e)
         {
+            errors.add(e);
             return false;
         }
     }
@@ -315,6 +330,8 @@ public class LightyearCSVExtractor implements Extractor
         var isBuy = "buy".equalsIgnoreCase(type);
         var date = parseDate(getField(record, "Date"));
         var ccy = getField(record, "CCY");
+        if (ccy.isBlank())
+            throw new IllegalArgumentException("Missing currency for " + type);
 
         var quantityStr = getField(record, "Quantity");
         if (quantityStr.isEmpty())
@@ -378,6 +395,8 @@ public class LightyearCSVExtractor implements Extractor
         var isDistribution = "distribution".equalsIgnoreCase(type);
         var date = parseDate(getField(record, "Date"));
         var ccy = getField(record, "CCY");
+        if (ccy.isBlank())
+            throw new IllegalArgumentException("Missing currency for " + type);
 
         var netAmtStr = getField(record, "Net Amt.");
         var grossAmtStr = getField(record, "Gross Amount");
@@ -496,26 +515,28 @@ public class LightyearCSVExtractor implements Extractor
             return;
 
         var fxRateStr = getField(record, "FX Rate");
-        if (!fxRateStr.isEmpty())
+        if (fxRateStr.isEmpty())
+            throw new IllegalArgumentException("Missing FX Rate for transaction currency " + transactionCurrency
+                            + " and security currency " + securityCurrency
+                            + "; provide an FX Rate or correct the security currency");
+
+        try
         {
-            try
-            {
-                var rate = new BigDecimal(fxRateStr.replace(',', '.'));
-                if (rate.compareTo(BigDecimal.ZERO) > 0)
-                {
-                    var fxGrossAmount = new BigDecimal(grossAmount).multiply(rate)
-                                    .setScale(0, RoundingMode.HALF_UP).longValue();
-                    var invertedRate = BigDecimal.ONE.divide(rate, 10, RoundingMode.HALF_DOWN);
-                    t.addUnit(new Unit(Unit.Type.GROSS_VALUE, //
-                                    Money.of(transactionCurrency, grossAmount), //
-                                    Money.of(securityCurrency, fxGrossAmount), //
-                                    invertedRate));
-                }
-            }
-            catch (Exception ignored)
-            {
-                // Leave for PP validation wizard to prompt
-            }
+            var rate = new BigDecimal(fxRateStr.replace(',', '.'));
+            if (rate.compareTo(BigDecimal.ZERO) <= 0)
+                throw new IllegalArgumentException("Invalid FX Rate: " + fxRateStr);
+
+            var fxGrossAmount = new BigDecimal(grossAmount).multiply(rate)
+                            .setScale(0, RoundingMode.HALF_UP).longValue();
+            var invertedRate = BigDecimal.ONE.divide(rate, 10, RoundingMode.HALF_DOWN);
+            t.addUnit(new Unit(Unit.Type.GROSS_VALUE, //
+                            Money.of(transactionCurrency, grossAmount), //
+                            Money.of(securityCurrency, fxGrossAmount), //
+                            invertedRate));
+        }
+        catch (NumberFormatException e)
+        {
+            throw new IllegalArgumentException("Invalid FX Rate: " + fxRateStr, e);
         }
     }
 
@@ -534,8 +555,6 @@ public class LightyearCSVExtractor implements Extractor
             name = !ticker.isEmpty() ? ticker : isin;
 
         var ccy = getField(record, "CCY");
-        if (ccy.isEmpty())
-            ccy = CurrencyUnit.EUR;
 
         final var finalIsin = isin.isEmpty() ? null : isin;
         final var finalTicker = ticker.isEmpty() ? null : ticker;
