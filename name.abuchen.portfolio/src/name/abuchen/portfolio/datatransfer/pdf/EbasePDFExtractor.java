@@ -17,8 +17,6 @@ import name.abuchen.portfolio.money.Money;
 @SuppressWarnings("nls")
 public class EbasePDFExtractor extends AbstractPDFExtractor
 {
-    private static final String SKIP_TRANSACTION = "skipTransaction";
-
     public EbasePDFExtractor(Client client)
     {
         super(client);
@@ -27,6 +25,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("European Bank for Financial Services AG");
         addBankIdentifier("FNZ Bank AG");
         addBankIdentifier("FNZ Bank SE");
+        addBankIdentifier("ebase GmbH");
 
         addDividendeTransaction();
         addDepotStatement_BuySellTransaction();
@@ -36,6 +35,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
         addDepotStatement_FeesWithSecurityTransaction();
         addDepotStatement_FeesWithDeliveryInOutBoundTransaction();
         addAccountStatementTransaction();
+        addNonImportableTransaction();
     }
 
     @Override
@@ -85,6 +85,13 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                         .section("date") //
                         .match("^Den Betrag buchen wir mit Wertstellung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Ex-Tag 24.06.2021 Art der Dividende Schlussdividende
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Ex\\-Tag (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
 
                         // @formatter:off
                         // Ausmachender Betrag 84,05+ EUR
@@ -170,7 +177,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                                             || "Entgelt Verkauf".equals(v.get("type")) //
                                             || "Entgeltbelastung Verkauf".equals(v.get("type")) //
                                             || "Entnahmeplan".equals(v.get("type")) //
-                                            || "Fondsumschichtung (Abgang)".equals(v.get("type"))
+                                            || "Fondsumschichtung (Abgang)".equals(v.get("type")) //
                                             || "Ausgang externer Übertrag".equals(v.get("type")))
                             {
                                 t.setType(PortfolioTransaction.Type.SELL);
@@ -184,10 +191,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("type").optional() //
                         .match("^(?<type>Fondsertrag) .*$") //
-                        .assign((t, v) -> {
-                            if ("Fondsertrag".equals(v.get("type")))
-                                type.getCurrentContext().put(SKIP_TRANSACTION, Messages.MsgErrorTransactionSkipIfDetailsMissing);
-                        })
+                        .assign((t, v) -> v.skipTransaction(Messages.MsgErrorTransactionSkipIfDetailsMissing))
 
                         .oneOf( //
                                         // @formatter:off
@@ -253,7 +257,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^Wiederanlage Ertragsaussch.ttung .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ (?<shares>[\\.,\\d]+) [\\.,\\d]+ [A-Z]{3}") //
+                                                        .match("^Wiederanlage Ertragsaussch.ttung .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ (?<shares>[\\.,\\d]+) [\\.,\\d]+ [A-Z]{3}$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
                         .oneOf( //
@@ -309,7 +313,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount", "currency") //
-                                                        .match("^Wiederanlage Ertragsaussch.ttung .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ [\\.,\\d]+ (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})") //
+                                                        .match("^Wiederanlage Ertragsaussch.ttung .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ [\\.,\\d]+ (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -452,22 +456,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<note>Wiederanlage Ertragsaussch.ttung) .*$") //
                                                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | "))))
 
-                        .wrap(t -> {
-                            var item = new BuySellEntryItem(t);
-
-                            if (type.getCurrentContext().containsKey(SKIP_TRANSACTION))
-                            {
-                                // @formatter:off
-                                // If we have multiple entries in the document,
-                                // then the "skipTransaction" flag must be removed.
-                                // @formatter:on
-                                type.getCurrentContext().remove(SKIP_TRANSACTION);
-
-                                return new SkippedItem(item, type.getCurrentContext().get(SKIP_TRANSACTION));
-                            }
-
-                            return item;
-                        });
+                        .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -709,18 +698,19 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                        }),
+                                                        }),
+                                        // @formatter:off
                                         // Abwicklung über IBAN Institut Zahlungsbetrag
                                         // DE54700130001234567890 FNZ Bank 1,18 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount", "currency") //
-                                                        .find("^Abwicklung über IBAN Institut Zahlungsbetrag") //
+                                                        .find("Abwicklung .ber IBAN Institut Zahlungsbetrag") //
                                                         .match("^.* (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                        }))
+                                                        }))
 
                         // @formatter:off
                         // Ref. Nr. XXXXXXXX/XXXXXXXX, Buchungsdatum 21.11.2019
@@ -995,17 +985,20 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
+                        // The exchange rate is taken from the security line, but the
+                        // gross value is the fee amount and not the amount of the
+                        // (partial) sale in that line.
                         // @formatter:off
                         // IE00B4L5Y983 -0,167976 71,243400 USD 1,227400 9,75 EUR
                         // IE00BJZ2DC62 12,729132 26,002300 USD 1,105500 299,40 EUR
                         // @formatter:on
-                        .section("termCurrency", "baseCurrency", "exchangeRate", "gross").optional() //
-                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] (\\-)?[\\.,\\d]+ [\\.,\\d]+ (?<termCurrency>[A-Z]{3}) (?<exchangeRate>[\\.,\\d]+) (?<gross>[\\.,\\d]+) (?<baseCurrency>[A-Z]{3})$") //
+                        .section("termCurrency", "baseCurrency", "exchangeRate").optional() //
+                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] (\\-)?[\\.,\\d]+ [\\.,\\d]+ (?<termCurrency>[A-Z]{3}) (?<exchangeRate>[\\.,\\d]+) [\\.,\\d]+ (?<baseCurrency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                            var gross = t.getMonetaryAmount();
                             var fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
@@ -1115,6 +1108,66 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
+    }
+
+    private void addNonImportableTransaction()
+    {
+        // The transaction overview ("Umsätze im Zeitraum") from the online
+        // depot is only a list of bookings without taxes and fees. It cannot be
+        // imported, the settlement documents must be imported instead.
+
+        final var type = new DocumentType("Ums.tze im Zeitraum", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // Umsätze im Zeitraum: 01.01.2020 -
+                                        // 15.01.2023 15.01.2023 09:30 Uhr
+                                        // @formatter:on
+                                        .section("periodFrom", "periodTo", "date", "time") //
+                                        .match("^Ums.tze im Zeitraum: (?<periodFrom>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\-[\\s]*$") //
+                                        .match("^(?<periodTo>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}) Uhr$") //
+                                        .assign((ctx, v) -> {
+                                            ctx.put("periodFrom", v.get("periodFrom"));
+                                            ctx.put("periodTo", v.get("periodTo"));
+                                            ctx.put("date", v.get("date"));
+                                            ctx.put("time", v.get("time"));
+                                        })
+
+                                        // @formatter:off
+                                        // Bestand: 0,00 EUR
+                                        // @formatter:on
+                                        .section("currency") //
+                                        .match("^Bestand: [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        // The header is repeated on every page, therefore the block starts
+        // at the page footer of the first page to create only one item.
+        var firstRelevantLine = new Block("^Seite 1 von [\\d]+$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
+
+                        // @formatter:off
+                        // Seite 1 von 6
+                        // @formatter:on
+                        .section() //
+                        .documentContext("periodFrom", "periodTo", "date", "time", "currency") //
+                        .match("^Seite 1 von [\\d]+$") //
+                        .assign((t, v) -> {
+                            v.markAsFailure(Messages.MsgErrorTransactionAlternativeDocumentRequired);
+
+                            t.setDateTime(asDate(v.get("date"), v.get("time")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(0L);
+                            t.setNote("Zeitraum: " + v.get("periodFrom") + " - " + v.get("periodTo"));
+                        })
+
+                        .wrap(TransactionItem::new);
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
