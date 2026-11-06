@@ -10,6 +10,7 @@ name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed
 name.abuchen.portfolio.online.impl.CSQuoteFeed
 name.abuchen.portfolio.online.impl.EODHistoricalDataQuoteFeed
 name.abuchen.portfolio.online.impl.FinnhubQuoteFeed
+name.abuchen.portfolio.online.impl.FXMacroDataQuoteFeed
 name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed
 name.abuchen.portfolio.online.impl.ECBDataPortalQuoteFeed
 name.abuchen.portfolio.online.impl.MFAPIQuoteFeed

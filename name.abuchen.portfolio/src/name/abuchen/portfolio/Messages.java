@@ -281,6 +281,7 @@ public class Messages extends NLS
     public static String MsgErrorDuplicateTicker;
     public static String MsgErrorDuplicateWKN;
     public static String MsgErrorEncrypting;
+    public static String MsgErrorFXMacroDataInvalidCurrencyPair;
     public static String MsgErrorFeedCurrencyMismatch;
     public static String MsgErrorIllegalForexUnit;
     public static String MsgErrorInvalidURL;
