@@ -507,8 +507,8 @@ public class LightyearCSVExtractor implements Extractor
         items.add(new TransactionItem(t));
     }
 
-    private void addFxUnitsIfNeeded(CSVRecord record, Transaction t, Security security,
-                    String transactionCurrency, long grossAmount)
+    private void addFxUnitsIfNeeded(CSVRecord record, Transaction t, Security security, String transactionCurrency,
+                    long grossAmount)
     {
         var securityCurrency = security.getCurrencyCode();
         if (securityCurrency == null || securityCurrency.equals(transactionCurrency))
@@ -526,8 +526,8 @@ public class LightyearCSVExtractor implements Extractor
             if (rate.compareTo(BigDecimal.ZERO) <= 0)
                 throw new IllegalArgumentException("Invalid FX Rate: " + fxRateStr);
 
-            var fxGrossAmount = new BigDecimal(grossAmount).multiply(rate)
-                            .setScale(0, RoundingMode.HALF_UP).longValue();
+            var fxGrossAmount = new BigDecimal(grossAmount).multiply(rate).setScale(0, RoundingMode.HALF_UP)
+                            .longValue();
             var invertedRate = BigDecimal.ONE.divide(rate, 10, RoundingMode.HALF_DOWN);
             t.addUnit(new Unit(Unit.Type.GROSS_VALUE, //
                             Money.of(transactionCurrency, grossAmount), //

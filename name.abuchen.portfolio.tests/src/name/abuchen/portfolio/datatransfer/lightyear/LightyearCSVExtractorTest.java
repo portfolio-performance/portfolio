@@ -361,7 +361,8 @@ public class LightyearCSVExtractorTest
         sec.setTickerSymbol("AAPL");
         client.addSecurity(sec);
 
-        // Buy with a $5 fee: gross = 1855, net = 1860 (gross + fee), totalAmount = 1860
+        // Buy with a $5 fee: gross = 1855, net = 1860 (gross + fee),
+        // totalAmount = 1860
         // GROSS_VALUE must use the gross value (1855), not totalAmount (1860)
         var csv = String.join("\n", //
                         "Date,Reference,Ticker,ISIN,Type,Quantity,CCY,Price/share,Gross Amount,FX Rate,Fee,Net Amt.,Tax Amt.",
@@ -395,7 +396,8 @@ public class LightyearCSVExtractorTest
         client.addSecurity(sec);
 
         // Dividend with tax: gross = 14.09, tax = 2.11, net = 11.98
-        // GROSS_VALUE must use grossValue (net + tax = 14.09), not netAmount (11.98)
+        // GROSS_VALUE must use grossValue (net + tax = 14.09), not netAmount
+        // (11.98)
         var csv = String.join("\n", //
                         "Date,Reference,Ticker,ISIN,Type,Quantity,CCY,Price/share,Gross Amount,FX Rate,Fee,Net Amt.,Tax Amt.",
                         "16/12/2025 06:02:35,IN-01,GOOG,US02079K1079,Dividend,52.0,USD,,14.09,0.92,0.00,11.98,2.11");
