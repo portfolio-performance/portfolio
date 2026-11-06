@@ -155,8 +155,7 @@ public class LightyearCSVExtractor implements Extractor
         }
         catch (IOException e)
         {
-            errors.add(e);
-            return true;
+            return false;
         }
     }
 
@@ -181,7 +180,8 @@ public class LightyearCSVExtractor implements Extractor
             if ("Conversion".equalsIgnoreCase(type))
             {
                 var ref = getField(record, "Reference");
-                conversionGroups.computeIfAbsent(ref, k -> new ArrayList<>()).add(record);
+                if (!ref.isEmpty())
+                    conversionGroups.computeIfAbsent(ref, k -> new ArrayList<>()).add(record);
             }
         }
 
@@ -190,22 +190,22 @@ public class LightyearCSVExtractor implements Extractor
             var group = entryGroup.getValue();
             if (group.size() == 2)
             {
-                CSVRecord outRecord = null;
-                CSVRecord inRecord = null;
-
-                for (CSVRecord record : group)
+                try
                 {
-                    var grossAmt = parseSignedDecimal(record, "Gross Amount", Values.Amount.factor());
-                    var netAmt = parseSignedDecimal(record, "Net Amt.", Values.Amount.factor());
-                    if (grossAmt < 0 || netAmt < 0)
-                        outRecord = record;
-                    else
-                        inRecord = record;
-                }
+                    CSVRecord outRecord = null;
+                    CSVRecord inRecord = null;
 
-                if (outRecord != null && inRecord != null)
-                {
-                    try
+                    for (CSVRecord record : group)
+                    {
+                        var grossAmt = parseSignedDecimal(record, "Gross Amount", Values.Amount.factor());
+                        var netAmt = parseSignedDecimal(record, "Net Amt.", Values.Amount.factor());
+                        if (grossAmt < 0 || netAmt < 0)
+                            outRecord = record;
+                        else
+                            inRecord = record;
+                    }
+
+                    if (outRecord != null && inRecord != null)
                     {
                         var transferEntry = new AccountTransferEntry();
                         var date = parseDate(getField(outRecord, "Date"));
@@ -237,9 +237,10 @@ public class LightyearCSVExtractor implements Extractor
                         var note = "Currency conversion Ref: " + reference;
                         transferEntry.setNote(note);
 
-                        items.add(new AccountTransferItem(transferEntry, true));
+                        var transferItem = new AccountTransferItem(transferEntry, true);
 
                         // Fee on conversion if present
+                        TransactionItem feeItem = null;
                         var fee = Math.abs(parseSignedDecimal(outRecord, "Fee", Values.Amount.factor()));
                         if (fee > 0)
                         {
@@ -250,16 +251,23 @@ public class LightyearCSVExtractor implements Extractor
                             feeTx.setAmount(fee);
                             feeTx.setNote("Currency conversion fee Ref: " + reference);
                             feeTx.setSource(source);
-                            items.add(new TransactionItem(feeTx));
+                            feeItem = new TransactionItem(feeTx);
                         }
+
+                        // Add both items only after complete validation
+                        items.add(transferItem);
+                        if (feeItem != null)
+                            items.add(feeItem);
 
                         processedRecords.add(outRecord);
                         processedRecords.add(inRecord);
                     }
-                    catch (Exception e)
-                    {
-                        errors.add(new IllegalArgumentException("Failed to pair conversion: " + e.getMessage(), e));
-                    }
+                }
+                catch (Exception e)
+                {
+                    errors.add(new IllegalArgumentException(
+                                    "Failed to pair conversion for ref " + entryGroup.getKey() + ": " + e.getMessage(),
+                                    e));
                 }
             }
         }
@@ -299,7 +307,19 @@ public class LightyearCSVExtractor implements Extractor
         var security = lookupSecurity(record, securityCache);
         var date = parseDate(getField(record, "Date"));
         var ccy = getField(record, "CCY");
+
+        var quantityStr = getField(record, "Quantity");
+        if (quantityStr.isEmpty())
+            throw new IllegalArgumentException("Missing quantity for " + type);
         var shares = Math.abs(parseSignedDecimal(record, "Quantity", Values.Share.factor()));
+        if (shares == 0)
+            throw new IllegalArgumentException("Zero quantity for " + type);
+
+        var netAmtStr = getField(record, "Net Amt.");
+        var grossAmtStr = getField(record, "Gross Amount");
+        if (netAmtStr.isEmpty() && grossAmtStr.isEmpty())
+            throw new IllegalArgumentException("Missing transaction amount for " + type);
+
         var fee = Math.abs(parseSignedDecimal(record, "Fee", Values.Amount.factor()));
         var netAmt = Math.abs(parseSignedDecimal(record, "Net Amt.", Values.Amount.factor()));
         var grossAmt = Math.abs(parseSignedDecimal(record, "Gross Amount", Values.Amount.factor()));
@@ -319,6 +339,9 @@ public class LightyearCSVExtractor implements Extractor
             totalAmount = netAmt;
         }
 
+        if (totalAmount == 0)
+            throw new IllegalArgumentException("Zero total amount for " + type);
+
         var entry = new BuySellEntry();
         entry.setType(isBuy ? PortfolioTransaction.Type.BUY : PortfolioTransaction.Type.SELL);
         entry.setSecurity(security);
@@ -332,6 +355,8 @@ public class LightyearCSVExtractor implements Extractor
         if (fee > 0)
             entry.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, Money.of(ccy, fee)));
 
+        addFxUnitsIfNeeded(record, entry.getPortfolioTransaction(), security, ccy, totalAmount);
+
         items.add(new BuySellEntryItem(entry));
     }
 
@@ -342,6 +367,12 @@ public class LightyearCSVExtractor implements Extractor
         var security = lookupSecurity(record, securityCache);
         var date = parseDate(getField(record, "Date"));
         var ccy = getField(record, "CCY");
+
+        var netAmtStr = getField(record, "Net Amt.");
+        var grossAmtStr = getField(record, "Gross Amount");
+        if (netAmtStr.isEmpty() && grossAmtStr.isEmpty())
+            throw new IllegalArgumentException("Missing amount for " + type);
+
         var netAmount = Math.abs(parseSignedDecimal(record, "Net Amt.", Values.Amount.factor()));
         var shares = Math.abs(parseSignedDecimal(record, "Quantity", Values.Share.factor()));
         var reference = getField(record, "Reference");
@@ -377,6 +408,8 @@ public class LightyearCSVExtractor implements Extractor
         if (fee > 0)
             t.addUnit(new Unit(Unit.Type.FEE, Money.of(ccy, fee)));
 
+        addFxUnitsIfNeeded(record, t, security, ccy, netAmount);
+
         items.add(new TransactionItem(t));
     }
 
@@ -385,7 +418,13 @@ public class LightyearCSVExtractor implements Extractor
         var isDeposit = "deposit".equalsIgnoreCase(type);
         var date = parseDate(getField(record, "Date"));
         var ccy = getField(record, "CCY");
+
+        var netAmtStr = getField(record, "Net Amt.");
+        if (netAmtStr.isEmpty())
+            throw new IllegalArgumentException("Missing amount for " + type);
         var amount = Math.abs(parseSignedDecimal(record, "Net Amt.", Values.Amount.factor()));
+        if (amount == 0)
+            throw new IllegalArgumentException("Zero amount for " + type);
 
         var t = new AccountTransaction();
         t.setType(isDeposit ? AccountTransaction.Type.DEPOSIT : AccountTransaction.Type.REMOVAL);
@@ -403,7 +442,14 @@ public class LightyearCSVExtractor implements Extractor
         var isInterest = "interest".equalsIgnoreCase(type);
         var date = parseDate(getField(record, "Date"));
         var ccy = getField(record, "CCY");
+
+        var netAmtStr = getField(record, "Net Amt.");
+        if (netAmtStr.isEmpty())
+            throw new IllegalArgumentException("Missing amount for " + type);
         var netAmount = Math.abs(parseSignedDecimal(record, "Net Amt.", Values.Amount.factor()));
+        if (netAmount == 0)
+            throw new IllegalArgumentException("Zero amount for " + type);
+
         var tax = Math.abs(parseSignedDecimal(record, "Tax Amt.", Values.Amount.factor()));
         var reference = getField(record, "Reference");
 
@@ -419,6 +465,37 @@ public class LightyearCSVExtractor implements Extractor
             t.addUnit(new Unit(Unit.Type.TAX, Money.of(ccy, tax)));
 
         items.add(new TransactionItem(t));
+    }
+
+    private void addFxUnitsIfNeeded(CSVRecord record, name.abuchen.portfolio.model.Transaction t, Security security,
+                    String transactionCurrency, long transactionAmount)
+    {
+        var securityCurrency = security.getCurrencyCode();
+        if (securityCurrency == null || securityCurrency.equals(transactionCurrency))
+            return;
+
+        var fxRateStr = getField(record, "FX Rate");
+        if (!fxRateStr.isEmpty())
+        {
+            try
+            {
+                var rate = new BigDecimal(fxRateStr.replace(',', '.'));
+                if (rate.compareTo(BigDecimal.ZERO) > 0)
+                {
+                    var fxGrossAmount = new BigDecimal(transactionAmount).multiply(rate)
+                                    .setScale(0, RoundingMode.HALF_UP).longValue();
+                    var invertedRate = BigDecimal.ONE.divide(rate, 10, RoundingMode.HALF_DOWN);
+                    t.addUnit(new Unit(Unit.Type.GROSS_VALUE, //
+                                    Money.of(transactionCurrency, transactionAmount), //
+                                    Money.of(securityCurrency, fxGrossAmount), //
+                                    invertedRate));
+                }
+            }
+            catch (Exception ignored)
+            {
+                // Leave for PP validation wizard to prompt
+            }
+        }
     }
 
     private Security lookupSecurity(CSVRecord record, SecurityCache securityCache)

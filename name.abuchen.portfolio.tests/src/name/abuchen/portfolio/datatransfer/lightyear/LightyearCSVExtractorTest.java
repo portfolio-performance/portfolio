@@ -38,6 +38,7 @@ import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.datatransfer.TestExtractorHelper;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
 
 @SuppressWarnings("nls")
 public class LightyearCSVExtractorTest
@@ -209,5 +210,76 @@ public class LightyearCSVExtractorTest
 
         assertThat(results, empty());
         assertThat(errors.size(), is(1));
+    }
+
+    @Test
+    public void testSemicolonWithQuotedHeadersFallback() throws IOException
+    {
+        var csv = String.join("\n", //
+                        "\"Date\";\"Reference\";\"Ticker\";\"ISIN\";\"Type\";\"Quantity\";\"CCY\";\"Price/share\";\"Gross Amount\";\"FX Rate\";\"Fee\";\"Net Amt.\";\"Tax Amt.\"",
+                        "\"2025-04-07 16:04:53\";\"DT-0000000013\";\"\";\"\";\"Deposit\";\"\";\"EUR\";\"\";\"100.00\";\"\";\"0.00\";\"100.00\";\"\"");
+
+        var file = File.createTempFile("lightyear_quoted_semicolon", ".csv");
+        file.deleteOnExit();
+        Files.writeString(file.toPath(), csv, StandardCharsets.UTF_8);
+
+        var client = new Client();
+        var errors = new ArrayList<Exception>();
+        var results = new LightyearCSVExtractor(client).extract(new SecurityCache(client), new InputFile(file), errors);
+
+        assertThat(errors, empty());
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results, hasItem(deposit(hasDate("2025-04-07T16:04:53"), hasAmount("EUR", 100.00))));
+    }
+
+    @Test
+    public void testMissingRequiredFieldsThrowErrors() throws IOException
+    {
+        var csv = String.join("\n", //
+                        "Date,Reference,Ticker,ISIN,Type,Quantity,CCY,Price/share,Gross Amount,FX Rate,Fee,Net Amt.,Tax Amt.",
+                        "15/03/2025 10:30:00,OR-01,AAPL,US0378331005,Buy,,USD,185.50,,,0.00,,",
+                        "07/04/2025 16:04:53,DT-01,,,Deposit,,EUR,,,,0.00,,");
+
+        var file = File.createTempFile("lightyear_blank_fields", ".csv");
+        file.deleteOnExit();
+        Files.writeString(file.toPath(), csv, StandardCharsets.UTF_8);
+
+        var client = new Client();
+        var errors = new ArrayList<Exception>();
+        var results = new LightyearCSVExtractor(client).extract(new SecurityCache(client), new InputFile(file), errors);
+
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(errors.size(), is(2));
+    }
+
+    @Test
+    public void testForexGrossValueOnCurrencyMismatch() throws IOException
+    {
+        var client = new Client();
+        // Existing security in EUR
+        var sec = new Security("Apple Inc", "EUR");
+        sec.setIsin("US0378331005");
+        sec.setTickerSymbol("AAPL");
+        client.addSecurity(sec);
+
+        var csv = String.join("\n", //
+                        "Date,Reference,Ticker,ISIN,Type,Quantity,CCY,Price/share,Gross Amount,FX Rate,Fee,Net Amt.,Tax Amt.",
+                        "15/03/2025 10:30:00,OR-01,AAPL,US0378331005,Buy,10.00,USD,185.50,1855.00,0.92,0.00,1855.00,");
+
+        var file = File.createTempFile("lightyear_forex", ".csv");
+        file.deleteOnExit();
+        Files.writeString(file.toPath(), csv, StandardCharsets.UTF_8);
+
+        var errors = new ArrayList<Exception>();
+        var results = new LightyearCSVExtractor(client).extract(new SecurityCache(client), new InputFile(file), errors);
+
+        assertThat(errors, empty());
+        assertThat(countBuySell(results), is(1L));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-03-15T10:30:00"), //
+                        hasShares(10.00), //
+                        hasAmount("USD", 1855.00), //
+                        hasForexGrossValue("EUR", 1706.60))));
     }
 }
