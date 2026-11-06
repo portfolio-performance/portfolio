@@ -324,7 +324,7 @@ public class LightyearCSVExtractorTest
                         "2025-04-08 19:09:30,CN-AMOUNT,EUR,,Conversion,,EUR,,not-a-number,,0.00,-10.00,",
                         "2025-04-08 19:09:30,CN-AMOUNT,USD,,Conversion,,USD,,11.00,0.90,0.00,11.00,",
                         "2025-04-09 19:09:30,CN-FEE,EUR,,Conversion,,EUR,,-10.00,,not-a-number,-10.00,",
-                        "2025-04-09 19:09:30,CN-FEE,USD,,Conversion,,USD,,11.00,0.90,0.00,11.00,",
+                        "2025-04-09 19:09:30,CN-FEE,USD,,Conversion,,USD,,10.00,1.00,0.00,10.00,",
                         "2025-04-10 19:09:30,CN-NO-FX,EUR,,Conversion,,EUR,,-59.03,,0.00,-59.03,",
                         "2025-04-10 19:09:30,CN-NO-FX,USD,,Conversion,,USD,,64.50,,0.00,64.50,",
                         "2025-04-11 16:04:53,DT-VALID,,,Deposit,,EUR,,100.00,,0.00,100.00,");
@@ -470,5 +470,59 @@ public class LightyearCSVExtractorTest
                         hasAmount("USD", 11.98), //
                         hasTaxes("USD", 2.11), //
                         hasForexGrossValue("EUR", 12.96))));
+    }
+
+    @Test
+    public void testMissingSecurityInformationThrowsError() throws IOException
+    {
+        var csv = String.join("\n", //
+                        "Date,Reference,Ticker,ISIN,Type,Quantity,CCY,Price/share,Gross Amount,FX Rate,Fee,Net Amt.,Tax Amt.",
+                        "15/03/2025 10:30:00,OR-01,,,Buy,10.00,USD,185.50,1855.00,,0.00,1855.00,");
+
+        var file = File.createTempFile("lightyear_no_security", ".csv");
+        file.deleteOnExit();
+        Files.writeString(file.toPath(), csv, StandardCharsets.UTF_8);
+
+        var client = new Client();
+        var errors = new ArrayList<Exception>();
+        var results = new LightyearCSVExtractor(client).extract(new SecurityCache(client), new InputFile(file), errors);
+
+        assertThat(results, empty());
+        assertThat(errors.size(), is(1));
+        assertThat(errors.get(0).getMessage().contains("Missing security name, ISIN, and ticker"), is(true));
+        assertThat(client.getSecurities(), empty());
+    }
+
+    @Test
+    public void testUtf8BomAndWindows1252Decoding() throws IOException
+    {
+        // 1. Test UTF-8 with BOM
+        var csvBom = "\uFEFFDate,Reference,Ticker,ISIN,Type,Quantity,CCY,Price/share,Gross Amount,FX Rate,Fee,Net Amt.,Tax Amt.\n" //
+                        + "2025-04-07 16:04:53,DT-01,,,Deposit,,EUR,,100.00,,0.00,100.00,";
+        var fileBom = File.createTempFile("lightyear_bom", ".csv");
+        fileBom.deleteOnExit();
+        Files.writeString(fileBom.toPath(), csvBom, StandardCharsets.UTF_8);
+
+        var client = new Client();
+        var errors = new ArrayList<Exception>();
+        var resultsBom = new LightyearCSVExtractor(client).extract(new SecurityCache(client), new InputFile(fileBom), errors);
+
+        assertThat(errors, empty());
+        assertThat(countAccountTransactions(resultsBom), is(1L));
+
+        // 2. Test Windows-1252 fallback with a non-ASCII character (e.g. '€' or 'é')
+        // In Windows-1252, '€' is byte 0x80 (invalid single byte in UTF-8)
+        var csvWin1252 = "Date,Reference,Ticker,ISIN,Type,Quantity,CCY,Price/share,Gross Amount,FX Rate,Fee,Net Amt.,Tax Amt.\n" //
+                        + "2025-04-07 16:04:53,DT-Acción,,,Deposit,,EUR,,100.00,,0.00,100.00,";
+        var fileWin1252 = File.createTempFile("lightyear_win1252", ".csv");
+        fileWin1252.deleteOnExit();
+        Files.write(fileWin1252.toPath(), csvWin1252.getBytes(java.nio.charset.Charset.forName("windows-1252")));
+
+        var errorsWin = new ArrayList<Exception>();
+        var resultsWin = new LightyearCSVExtractor(client).extract(new SecurityCache(client), new InputFile(fileWin1252), errorsWin);
+
+        assertThat(errorsWin, empty());
+        assertThat(countAccountTransactions(resultsWin), is(1L));
+        assertThat(resultsWin, hasItem(deposit(hasDate("2025-04-07T16:04:53"), hasAmount("EUR", 100.00))));
     }
 }

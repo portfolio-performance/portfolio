@@ -756,6 +756,9 @@ public class LightyearCSVExtractor implements Extractor
         if (name.isEmpty())
             name = !ticker.isEmpty() ? ticker : isin;
 
+        if (name.isEmpty())
+            throw new IllegalArgumentException("Missing security name, ISIN, and ticker");
+
         var ccy = getField(record, "CCY");
 
         final var finalIsin = isin.isEmpty() ? null : isin;
