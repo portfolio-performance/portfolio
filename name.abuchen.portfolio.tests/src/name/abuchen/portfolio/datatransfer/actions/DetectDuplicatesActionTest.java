@@ -566,6 +566,311 @@ public class DetectDuplicatesActionTest
         }
     }
 
+    @SuppressWarnings("nls")
+    @Test
+    public void testExistingTransactionMarksOnlyOneOfIdenticalImportedBuys()
+    {
+        // issue #6301: one buy exists, three identical buys are imported (one
+        // of them is the existing one). Only one is marked, two are importable.
+        var security = new Security("Example", "EUR");
+        var account = eurAccount();
+        var portfolio = new Portfolio();
+        existingBuy(security, "Kauf02.pdf", LocalDateTime.of(2025, 12, 15, 0, 0), account, portfolio);
+
+        var items = List.<Extractor.Item>of( //
+                        new BuySellEntryItem(buy(security, "Kauf01.pdf", LocalDateTime.of(2025, 12, 15, 0, 0))),
+                        new BuySellEntryItem(buy(security, "Kauf02.pdf", LocalDateTime.of(2025, 12, 15, 0, 0))),
+                        new BuySellEntryItem(buy(security, "Kauf03.pdf", LocalDateTime.of(2025, 12, 15, 0, 0))));
+
+        // the item with the same file name as the existing buy is marked
+        assertThat(statusOf(items, account, portfolio, false), is(List.of(Code.OK, Code.WARNING, Code.OK)));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testExistingTransactionsMarkAsManyImportedTransactions()
+    {
+        var account = eurAccount();
+        account.addTransaction(fee("Gebuehr01.pdf", LocalDateTime.of(2025, 12, 15, 0, 0)));
+        account.addTransaction(fee("Gebuehr02.pdf", LocalDateTime.of(2025, 12, 15, 0, 0)));
+
+        var items = fees(LocalDateTime.of(2025, 12, 15, 0, 0), "Gebuehr01.pdf", "Gebuehr02.pdf", "Gebuehr03.pdf");
+
+        assertThat(statusOf(items, account, new Portfolio(), false),
+                        is(List.of(Code.WARNING, Code.WARNING, Code.OK)));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testOldConstructorStillMarksAllMatchingTransactions()
+    {
+        var account = eurAccount();
+        account.addTransaction(fee("Gebuehr01.pdf", LocalDateTime.of(2025, 12, 15, 0, 0)));
+
+        var action = new DetectDuplicatesAction(new Client());
+
+        assertThat(action.process(fee("Gebuehr01.pdf", LocalDateTime.of(2025, 12, 15, 0, 0)), account).getCode(),
+                        is(Code.WARNING));
+        assertThat(action.process(fee("Gebuehr02.pdf", LocalDateTime.of(2025, 12, 15, 0, 0)), account).getCode(),
+                        is(Code.WARNING));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testTransactionWithoutTimeIsDuplicateOfTransactionWithTime()
+    {
+        assertThat(statusAgainstExisting(LocalDateTime.of(2025, 12, 15, 0, 0), LocalDateTime.of(2025, 12, 15, 10, 15)),
+                        is(Code.WARNING));
+        assertThat(statusAgainstExisting(LocalDateTime.of(2025, 12, 15, 10, 15), LocalDateTime.of(2025, 12, 15, 0, 0)),
+                        is(Code.WARNING));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testTimesWithinToleranceAreDuplicates()
+    {
+        // same time with and without seconds
+        assertThat(statusAgainstExisting(LocalDateTime.of(2025, 12, 15, 10, 15),
+                        LocalDateTime.of(2025, 12, 15, 10, 15, 32)), is(Code.WARNING));
+
+        // two minutes apart
+        assertThat(statusAgainstExisting(LocalDateTime.of(2025, 12, 15, 10, 15),
+                        LocalDateTime.of(2025, 12, 15, 10, 17)), is(Code.WARNING));
+        assertThat(statusAgainstExisting(LocalDateTime.of(2025, 12, 15, 10, 17),
+                        LocalDateTime.of(2025, 12, 15, 10, 15)), is(Code.WARNING));
+
+        // compared with minute precision: 10:15:59 and 10:17:00 are two
+        // minutes apart
+        assertThat(statusAgainstExisting(LocalDateTime.of(2025, 12, 15, 10, 15, 59),
+                        LocalDateTime.of(2025, 12, 15, 10, 17, 0)), is(Code.WARNING));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testTimesBeyondToleranceAreNoDuplicates()
+    {
+        assertThat(statusAgainstExisting(LocalDateTime.of(2025, 12, 15, 10, 15),
+                        LocalDateTime.of(2025, 12, 15, 10, 18)), is(Code.OK));
+        assertThat(statusAgainstExisting(LocalDateTime.of(2025, 12, 15, 10, 15),
+                        LocalDateTime.of(2025, 12, 15, 14, 5)), is(Code.OK));
+
+        // also with the old constructor (no one to one assignment)
+        var account = eurAccount();
+        account.addTransaction(fee("Gebuehr01.pdf", LocalDateTime.of(2025, 12, 15, 10, 15)));
+        var action = new DetectDuplicatesAction(new Client());
+        assertThat(action.process(fee("Gebuehr02.pdf", LocalDateTime.of(2025, 12, 15, 14, 5)), account).getCode(),
+                        is(Code.OK));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testAssignmentPrefersClosestTime()
+    {
+        var account = eurAccount();
+        account.addTransaction(fee("Kontoauszug01.pdf", LocalDateTime.of(2025, 12, 15, 10, 15)));
+
+        var items = List.<Extractor.Item>of( //
+                        new TransactionItem(fee("Gebuehr01.pdf", LocalDateTime.of(2025, 12, 15, 10, 14))),
+                        new TransactionItem(fee("Gebuehr02.pdf", LocalDateTime.of(2025, 12, 15, 10, 15))),
+                        new TransactionItem(fee("Gebuehr03.pdf", LocalDateTime.of(2025, 12, 15, 0, 0))));
+
+        assertThat(statusOf(items, account, new Portfolio(), false), is(List.of(Code.OK, Code.WARNING, Code.OK)));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testAssignmentPrefersSameFileNameOverClosestTime()
+    {
+        var account = eurAccount();
+        account.addTransaction(fee("Gebuehr02.pdf", LocalDateTime.of(2025, 12, 15, 10, 15)));
+
+        var items = List.<Extractor.Item>of( //
+                        new TransactionItem(fee("Gebuehr01.pdf", LocalDateTime.of(2025, 12, 15, 10, 15))),
+                        new TransactionItem(fee("Gebuehr02.pdf", LocalDateTime.of(2025, 12, 15, 10, 16))));
+
+        assertThat(statusOf(items, account, new Portfolio(), false), is(List.of(Code.OK, Code.WARNING)));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testAssignmentMarksAsManyImportedTransactionsAsPossible()
+    {
+        // 10:01 matches both existing fees, 09:59 only the one at 10:00. The
+        // preferred assignment (10:01 -> 10:00) is changed so that both
+        // imported fees are marked.
+        var account = eurAccount();
+        account.addTransaction(fee("Kontoauszug01.pdf", LocalDateTime.of(2025, 12, 15, 10, 0)));
+        account.addTransaction(fee("Kontoauszug01.pdf", LocalDateTime.of(2025, 12, 15, 10, 3)));
+
+        var items = List.<Extractor.Item>of( //
+                        new TransactionItem(fee("Gebuehr01.pdf", LocalDateTime.of(2025, 12, 15, 10, 1))),
+                        new TransactionItem(fee("Gebuehr02.pdf", LocalDateTime.of(2025, 12, 15, 9, 59))));
+
+        assertThat(statusOf(items, account, new Portfolio(), false), is(List.of(Code.WARNING, Code.WARNING)));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testAssignmentDoesNotDependOnOrderOfItems()
+    {
+        var account = eurAccount();
+        account.addTransaction(fee("Kontoauszug01.pdf", LocalDateTime.of(2025, 12, 15, 0, 0)));
+        account.addTransaction(fee("Kontoauszug01.pdf", LocalDateTime.of(2025, 12, 15, 0, 0)));
+
+        List<Extractor.Item> all = List.of( //
+                        new TransactionItem(fee("Gebuehr01.pdf", LocalDateTime.of(2025, 12, 15, 10, 0))),
+                        new TransactionItem(fee("Gebuehr02.pdf", LocalDateTime.of(2025, 12, 15, 11, 0))),
+                        new TransactionItem(fee("Gebuehr03.pdf", LocalDateTime.of(2025, 12, 15, 0, 0))),
+                        new TransactionItem(fee("Kontoauszug01.pdf", LocalDateTime.of(2025, 12, 15, 0, 0))));
+
+        Set<Extractor.Item> expected = null;
+
+        for (var order : permutations(List.of(0, 1, 2, 3)))
+        {
+            var items = order.stream().map(all::get).toList();
+            var codes = statusOf(items, account, new Portfolio(), false);
+
+            Set<Extractor.Item> marked = Collections.newSetFromMap(new IdentityHashMap<>());
+            for (int ii = 0; ii < items.size(); ii++)
+            {
+                if (codes.get(ii) == Code.WARNING)
+                    marked.add(items.get(ii));
+            }
+
+            // two existing fees mark two imported fees
+            assertThat(order.toString(), marked.size(), is(2));
+
+            if (expected == null)
+                expected = marked;
+            else
+                assertThat(order.toString(), marked, is(expected));
+        }
+
+        // the fee from the same file is preferred
+        assertThat(expected.contains(all.get(3)), is(true));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testDuplicatesWithinImportDoNotUseUpExistingTransactions()
+    {
+        // the fee exists already, the import contains the same document twice
+        var account = eurAccount();
+        account.addTransaction(fee("Gebuehr01.pdf", LocalDateTime.of(2025, 12, 15, 10, 0)));
+
+        var items = fees(LocalDateTime.of(2025, 12, 15, 10, 0), "Gebuehr01.pdf", "Gebuehr01 (Kopie).pdf");
+
+        assertThat(statusOf(items, account, new Portfolio(), true), is(List.of(Code.WARNING, Code.WARNING)));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testNoDuplicateWithinImportWithDifferentTimes()
+    {
+        var items = List.<Extractor.Item>of( //
+                        new TransactionItem(fee("Gebuehr01.pdf", LocalDateTime.of(2025, 12, 15, 10, 0))),
+                        new TransactionItem(fee("Gebuehr02.pdf", LocalDateTime.of(2025, 12, 15, 14, 0))));
+
+        assertThat(statusOf(items), is(List.of(Code.OK, Code.OK)));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testDuplicateWithinImportWithTimesWithinTolerance()
+    {
+        var items = List.<Extractor.Item>of( //
+                        new TransactionItem(fee("Gebuehr01.pdf", LocalDateTime.of(2025, 12, 15, 10, 0, 12))),
+                        new TransactionItem(fee("Gebuehr02.pdf", LocalDateTime.of(2025, 12, 15, 10, 2))));
+
+        assertThat(statusOf(items), is(List.of(Code.OK, Code.WARNING)));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testStatementWithoutTimeAndDetailDocumentsWithTimes()
+    {
+        // the account statement lists two fees without time, the fee
+        // documents state different times: two fees are kept, the ones with
+        // time
+        var items = List.<Extractor.Item>of( //
+                        new TransactionItem(fee("Kontoauszug01.pdf", LocalDateTime.of(2025, 12, 15, 0, 0))),
+                        new TransactionItem(fee("Kontoauszug01.pdf", LocalDateTime.of(2025, 12, 15, 0, 0))),
+                        new TransactionItem(fee("Gebuehr01.pdf", LocalDateTime.of(2025, 12, 15, 10, 0))),
+                        new TransactionItem(fee("Gebuehr02.pdf", LocalDateTime.of(2025, 12, 15, 14, 0))));
+
+        assertThat(statusOf(items), is(List.of(Code.WARNING, Code.WARNING, Code.OK, Code.OK)));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testStatementWithoutTimeAndOneDetailDocumentWithTime()
+    {
+        // one fee document is missing: the account statement determines that
+        // there are two fees
+        var items = List.<Extractor.Item>of( //
+                        new TransactionItem(fee("Kontoauszug01.pdf", LocalDateTime.of(2025, 12, 15, 0, 0))),
+                        new TransactionItem(fee("Kontoauszug01.pdf", LocalDateTime.of(2025, 12, 15, 0, 0))),
+                        new TransactionItem(fee("Gebuehr01.pdf", LocalDateTime.of(2025, 12, 15, 10, 0))));
+
+        assertThat(statusOf(items), is(List.of(Code.OK, Code.WARNING, Code.OK)));
+    }
+
+    private Code statusAgainstExisting(LocalDateTime existing, LocalDateTime imported)
+    {
+        var account = eurAccount();
+        account.addTransaction(fee("Gebuehr01.pdf", existing)); //$NON-NLS-1$
+
+        var items = List.<Extractor.Item>of(new TransactionItem(fee("Gebuehr02.pdf", imported))); //$NON-NLS-1$
+
+        return statusOf(items, account, new Portfolio(), false).get(0);
+    }
+
+    private List<Code> statusOf(List<Extractor.Item> items, Account account, Portfolio portfolio,
+                    boolean withinImport)
+    {
+        var context = context(account, portfolio);
+        var action = new DetectDuplicatesAction(new Client(), items, withinImport, context);
+
+        return items.stream().map(item -> item.apply(action, context).getCode()).toList();
+    }
+
+    private Account eurAccount()
+    {
+        var account = new Account();
+        account.setCurrencyCode("EUR"); //$NON-NLS-1$
+        return account;
+    }
+
+    private AccountTransaction fee(String source, LocalDateTime dateTime)
+    {
+        var transaction = getTestEntry(AccountTransaction.Type.FEES, source);
+        transaction.setDateTime(dateTime);
+        return transaction;
+    }
+
+    private List<Extractor.Item> fees(LocalDateTime dateTime, String... sources)
+    {
+        return Arrays.stream(sources) //
+                        .<Extractor.Item>map(source -> new TransactionItem(fee(source, dateTime))) //
+                        .toList();
+    }
+
+    private BuySellEntry buy(Security security, String source, LocalDateTime dateTime)
+    {
+        var entry = getTestEntry(PortfolioTransaction.Type.BUY, security, 1000L, source);
+        entry.setDate(dateTime);
+        return entry;
+    }
+
+    private void existingBuy(Security security, String source, LocalDateTime dateTime, Account account,
+                    Portfolio portfolio)
+    {
+        var entry = buy(security, source, dateTime);
+        entry.setAccount(account);
+        entry.setPortfolio(portfolio);
+        entry.insert();
+    }
+
     private List<Code> statusOf(List<Extractor.Item> items)
     {
         var account = new Account();

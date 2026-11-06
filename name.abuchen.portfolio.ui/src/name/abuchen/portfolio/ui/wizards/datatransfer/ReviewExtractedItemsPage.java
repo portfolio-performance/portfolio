@@ -680,8 +680,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         actions.add(new CheckTransactionDateAction());
         actions.add(new CheckValidTypesAction());
         actions.add(new CheckSecurityRelatedValuesAction());
-        actions.add(new DetectDuplicatesAction(client,
-                        detectDuplicatesWithinImport ? importedItems(entries) : List.of()));
+        actions.add(new DetectDuplicatesAction(client, importedItems(entries), detectDuplicatesWithinImport, this));
         actions.add(new CheckCurrenciesAction());
         actions.add(new CheckForexGrossValueAction());
 
