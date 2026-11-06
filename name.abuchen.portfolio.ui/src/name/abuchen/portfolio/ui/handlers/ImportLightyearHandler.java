@@ -46,6 +46,17 @@ public class ImportLightyearHandler
         MenuHelper.getActiveClient(part).ifPresent(client -> runImport(part, shell, client));
     }
 
+    /**
+     * Selects Lightyear CSV files, extracts their contents, and opens the
+     * import wizard.
+     *
+     * @param part
+     *                   active portfolio workbench part
+     * @param shell
+     *                   shell used to display dialogs
+     * @param client
+     *                   portfolio client receiving the imported transactions
+     */
     private void runImport(MPart part, Shell shell, Client client)
     {
         if (client.getAccounts().isEmpty())
@@ -119,4 +130,3 @@ public class ImportLightyearHandler
         }
     }
 }
-

@@ -292,6 +292,58 @@ public class LightyearCSVExtractorTest
     }
 
     @Test
+    public void testCashTransactionsWithMissingCurrencyAreRejected() throws IOException
+    {
+        var csv = String.join("\n", //
+                        "Date,Reference,Ticker,ISIN,Type,Quantity,CCY,Price/share,Gross Amount,FX Rate,Fee,Net Amt.,Tax Amt.",
+                        "2025-04-07 16:04:53,DT-01,,,Deposit,,,,,,0.00,100.00,",
+                        "2025-04-08 16:04:53,WL-01,,,Withdrawal,,,,,,0.00,-25.00,",
+                        "2025-04-09 16:04:53,IN-01,,,Interest,,,,,,0.00,1.00,0.10",
+                        "2025-04-10 16:04:53,RW-01,,,Reward,,,,,,0.00,0.50,");
+
+        var file = File.createTempFile("lightyear_cash_missing_currency", ".csv");
+        file.deleteOnExit();
+        Files.writeString(file.toPath(), csv, StandardCharsets.UTF_8);
+
+        var client = new Client();
+        var errors = new ArrayList<Exception>();
+        var results = new LightyearCSVExtractor(client).extract(new SecurityCache(client), new InputFile(file), errors);
+
+        assertThat(results, empty());
+        assertThat(errors.size(), is(4));
+        for (var error : errors)
+            assertThat(error.getMessage().contains("Missing currency"), is(true));
+    }
+
+    @Test
+    public void testIncompleteAndMalformedConversionsAreRejectedAtomically() throws IOException
+    {
+        var csv = String.join("\n", //
+                        "Date,Reference,Ticker,ISIN,Type,Quantity,CCY,Price/share,Gross Amount,FX Rate,Fee,Net Amt.,Tax Amt.",
+                        "2025-04-07 19:09:30,CN-INCOMPLETE,EUR,,Conversion,,EUR,,-10.00,,0.00,-10.00,",
+                        "2025-04-08 19:09:30,CN-AMOUNT,EUR,,Conversion,,EUR,,not-a-number,,0.00,-10.00,",
+                        "2025-04-08 19:09:30,CN-AMOUNT,USD,,Conversion,,USD,,11.00,0.90,0.00,11.00,",
+                        "2025-04-09 19:09:30,CN-FEE,EUR,,Conversion,,EUR,,-10.00,,not-a-number,-10.00,",
+                        "2025-04-09 19:09:30,CN-FEE,USD,,Conversion,,USD,,11.00,0.90,0.00,11.00,",
+                        "2025-04-10 19:09:30,CN-NO-FX,EUR,,Conversion,,EUR,,-59.03,,0.00,-59.03,",
+                        "2025-04-10 19:09:30,CN-NO-FX,USD,,Conversion,,USD,,64.50,,0.00,64.50,",
+                        "2025-04-11 16:04:53,DT-VALID,,,Deposit,,EUR,,100.00,,0.00,100.00,");
+
+        var file = File.createTempFile("lightyear_malformed_conversions", ".csv");
+        file.deleteOnExit();
+        Files.writeString(file.toPath(), csv, StandardCharsets.UTF_8);
+
+        var client = new Client();
+        var errors = new ArrayList<Exception>();
+        var results = new LightyearCSVExtractor(client).extract(new SecurityCache(client), new InputFile(file), errors);
+
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results, hasItem(deposit(hasDate("2025-04-11T16:04:53"), hasAmount("EUR", 100.00))));
+        assertThat(errors.size(), is(4));
+    }
+
+    @Test
     public void testForexGrossValueOnCurrencyMismatch() throws IOException
     {
         var client = new Client();

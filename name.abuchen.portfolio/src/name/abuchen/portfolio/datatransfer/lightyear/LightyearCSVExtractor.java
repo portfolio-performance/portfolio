@@ -73,6 +73,18 @@ public class LightyearCSVExtractor implements Extractor
         return Messages.LightyearCSVLabel;
     }
 
+    /**
+     * Extracts transactions from a Lightyear CSV file, trying comma and
+     * semicolon delimiters.
+     *
+     * @param securityCache
+     *                          cache used to reuse and create securities
+     * @param inputFile
+     *                          CSV file to import
+     * @param errors
+     *                          receives file-level and row-level parsing errors
+     * @return the transactions successfully extracted from the file
+     */
     @Override
     public List<Item> extract(SecurityCache securityCache, InputFile inputFile, List<Exception> errors)
     {
@@ -114,6 +126,16 @@ public class LightyearCSVExtractor implements Extractor
         return items;
     }
 
+    /**
+     * Reads and decodes the input file, falling back to Windows-1252 when it is
+     * not valid UTF-8.
+     *
+     * @param inputFile
+     *                      file whose contents are read
+     * @return decoded CSV contents without a UTF-8 byte-order mark
+     * @throws IOException
+     *                         if the file cannot be read
+     */
     private String readContent(InputFile inputFile) throws IOException
     {
         var bytes = Files.readAllBytes(inputFile.getFile().toPath());
@@ -130,6 +152,26 @@ public class LightyearCSVExtractor implements Extractor
         }
     }
 
+    /**
+     * Parses records with one delimiter and processes them when the required
+     * headers are present.
+     *
+     * @param content
+     *                          decoded CSV contents
+     * @param delimiter
+     *                          delimiter used for this parsing attempt
+     * @param securityCache
+     *                          cache used to resolve securities
+     * @param source
+     *                          source filename attached to imported items
+     * @param items
+     *                          receives successfully extracted items
+     * @param errors
+     *                          receives parsing and row-processing errors for
+     *                          this attempt
+     * @return whether the file has the required Lightyear headers and was
+     *         processed
+     */
     private boolean tryParse(String content, char delimiter, SecurityCache securityCache, String source,
                     List<Item> items, List<Exception> errors)
     {
@@ -175,6 +217,16 @@ public class LightyearCSVExtractor implements Extractor
         }
     }
 
+    /**
+     * Checks whether a CSV header map contains the requested name, ignoring
+     * case and surrounding whitespace.
+     *
+     * @param headerMap
+     *                         parsed CSV headers
+     * @param expectedName
+     *                         header name to find
+     * @return {@code true} when the expected header is present
+     */
     private boolean hasHeader(Map<String, Integer> headerMap, String expectedName)
     {
         for (String header : headerMap.keySet())
@@ -185,6 +237,23 @@ public class LightyearCSVExtractor implements Extractor
         return false;
     }
 
+    /**
+     * Pairs conversion rows by reference and imports each complete pair
+     * atomically. Invalid, incomplete, or unpaired conversion rows are reported
+     * and marked as processed.
+     *
+     * @param records
+     *                             all parsed CSV records
+     * @param processedRecords
+     *                             records handled here so they are not
+     *                             processed as standalone transactions
+     * @param source
+     *                             source filename attached to imported items
+     * @param items
+     *                             receives complete transfer and fee items
+     * @param errors
+     *                             receives conversion-specific errors
+     */
     private void processConversions(List<CSVRecord> records, Set<CSVRecord> processedRecords, String source,
                     List<Item> items, List<Exception> errors)
     {
@@ -197,106 +266,150 @@ public class LightyearCSVExtractor implements Extractor
                 var type = getField(record, "Type");
                 if ("Conversion".equalsIgnoreCase(type))
                 {
-                    var ref = getField(record, "Reference");
-                    if (!ref.isEmpty())
-                        conversionGroups.computeIfAbsent(ref, k -> new ArrayList<>()).add(record);
+                    var reference = getField(record, "Reference");
+                    if (reference.isBlank())
+                        throw new IllegalArgumentException("Missing conversion reference");
+                    conversionGroups.computeIfAbsent(reference, key -> new ArrayList<>()).add(record);
                 }
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
+                processedRecords.add(record);
                 errors.add(new IllegalArgumentException(
-                                "Lightyear CSV line " + record.getRecordNumber() + ": " + e.getMessage(), e));
+                                "Lightyear CSV line " + record.getRecordNumber() + ": " + exception.getMessage(),
+                                exception));
             }
         }
 
         for (var entryGroup : conversionGroups.entrySet())
         {
             var group = entryGroup.getValue();
-            if (group.size() == 2)
+            if (group.size() != 2)
             {
-                try
+                for (CSVRecord record : group)
                 {
-                    CSVRecord outRecord = null;
-                    CSVRecord inRecord = null;
-
-                    for (CSVRecord record : group)
-                    {
-                        var grossAmt = parseSignedDecimal(record, "Gross Amount", Values.Amount.factor());
-                        var netAmt = parseSignedDecimal(record, "Net Amt.", Values.Amount.factor());
-                        if (grossAmt < 0 || netAmt < 0)
-                            outRecord = record;
-                        else
-                            inRecord = record;
-                    }
-
-                    if (outRecord != null && inRecord != null)
-                    {
-                        var transferEntry = new AccountTransferEntry();
-                        var date = parseDate(getField(outRecord, "Date"));
-                        var reference = entryGroup.getKey();
-
-                        var outCcy = getField(outRecord, "CCY");
-                        var outAmount = Math.abs(parseSignedDecimal(outRecord, "Net Amt.", Values.Amount.factor()));
-                        transferEntry.getSourceTransaction().setCurrencyCode(outCcy);
-                        transferEntry.getSourceTransaction().setAmount(outAmount);
-                        transferEntry.getSourceTransaction().setDateTime(date);
-                        transferEntry.getSourceTransaction().setSource(source);
-
-                        var inCcy = getField(inRecord, "CCY");
-                        var inAmount = Math.abs(parseSignedDecimal(inRecord, "Net Amt.", Values.Amount.factor()));
-                        var exchangeRate = getField(inRecord, "FX Rate");
-                        if (!exchangeRate.isEmpty())
-                        {
-                            transferEntry.getSourceTransaction()
-                                            .addUnit(new Unit(Unit.Type.GROSS_VALUE, Money.of(outCcy, outAmount),
-                                                            Money.of(inCcy, inAmount),
-                                                            new BigDecimal(exchangeRate.replace(',', '.'))));
-                        }
-                        transferEntry.getTargetTransaction().setCurrencyCode(inCcy);
-                        transferEntry.getTargetTransaction().setAmount(inAmount);
-                        transferEntry.getTargetTransaction().setDateTime(parseDate(getField(inRecord, "Date")));
-                        transferEntry.getTargetTransaction().setSource(source);
-
-                        transferEntry.setDate(date);
-                        var note = "Currency conversion Ref: " + reference;
-                        transferEntry.setNote(note);
-
-                        var transferItem = new AccountTransferItem(transferEntry, true);
-
-                        // Fee on conversion if present
-                        TransactionItem feeItem = null;
-                        var fee = Math.abs(parseSignedDecimal(outRecord, "Fee", Values.Amount.factor()));
-                        if (fee > 0)
-                        {
-                            var feeTx = new AccountTransaction();
-                            feeTx.setType(AccountTransaction.Type.FEES);
-                            feeTx.setDateTime(date);
-                            feeTx.setCurrencyCode(outCcy);
-                            feeTx.setAmount(fee);
-                            feeTx.setNote("Currency conversion fee Ref: " + reference);
-                            feeTx.setSource(source);
-                            feeItem = new TransactionItem(feeTx);
-                        }
-
-                        // Add both items only after complete validation
-                        items.add(transferItem);
-                        if (feeItem != null)
-                            items.add(feeItem);
-
-                        processedRecords.add(outRecord);
-                        processedRecords.add(inRecord);
-                    }
+                    processedRecords.add(record);
+                    errors.add(new IllegalArgumentException("Lightyear CSV line " + record.getRecordNumber()
+                                    + ": Expected two conversion rows for reference " + entryGroup.getKey()));
                 }
-                catch (Exception e)
+                continue;
+            }
+
+            CSVRecord outRecord = null;
+            CSVRecord inRecord = null;
+            try
+            {
+                for (CSVRecord record : group)
                 {
-                    errors.add(new IllegalArgumentException(
-                                    "Failed to pair conversion for ref " + entryGroup.getKey() + ": " + e.getMessage(),
-                                    e));
+                    var grossAmountText = getField(record, "Gross Amount");
+                    var netAmountText = getField(record, "Net Amt.");
+                    if (grossAmountText.isBlank() || netAmountText.isBlank())
+                        throw new IllegalArgumentException("Missing conversion amount");
+
+                    var grossAmount = parseSignedDecimal(record, "Gross Amount", Values.Amount.factor());
+                    var netAmount = parseSignedDecimal(record, "Net Amt.", Values.Amount.factor());
+                    if (grossAmount == 0 || netAmount == 0)
+                        throw new IllegalArgumentException("Zero conversion amount");
+
+                    if (grossAmount < 0 || netAmount < 0)
+                        outRecord = record;
+                    else
+                        inRecord = record;
                 }
+
+                if (outRecord == null || inRecord == null)
+                    throw new IllegalArgumentException(
+                                    "Conversion rows must contain one outgoing and one incoming leg");
+
+                var outCurrency = getField(outRecord, "CCY");
+                var inCurrency = getField(inRecord, "CCY");
+                if (outCurrency.isBlank() || inCurrency.isBlank())
+                    throw new IllegalArgumentException("Missing currency for conversion");
+
+                var date = parseDate(getField(outRecord, "Date"));
+                var outAmount = Math.abs(parseSignedDecimal(outRecord, "Net Amt.", Values.Amount.factor()));
+                var inAmount = Math.abs(parseSignedDecimal(inRecord, "Net Amt.", Values.Amount.factor()));
+                var exchangeRate = getField(inRecord, "FX Rate");
+                if (!outCurrency.equals(inCurrency) && exchangeRate.isBlank())
+                    throw new IllegalArgumentException(
+                                    "Missing FX Rate for conversion from " + outCurrency + " to " + inCurrency);
+
+                BigDecimal rate = null;
+                if (!exchangeRate.isBlank())
+                {
+                    rate = new BigDecimal(exchangeRate.replace(',', '.'));
+                    if (rate.compareTo(BigDecimal.ZERO) <= 0)
+                        throw new IllegalArgumentException("Invalid FX Rate: " + exchangeRate);
+                }
+
+                var transferEntry = new AccountTransferEntry();
+                transferEntry.getSourceTransaction().setCurrencyCode(outCurrency);
+                transferEntry.getSourceTransaction().setAmount(outAmount);
+                transferEntry.getSourceTransaction().setDateTime(date);
+                transferEntry.getSourceTransaction().setSource(source);
+
+                if (rate != null)
+                {
+                    transferEntry.getSourceTransaction().addUnit(new Unit(Unit.Type.GROSS_VALUE,
+                                    Money.of(outCurrency, outAmount), Money.of(inCurrency, inAmount), rate));
+                }
+
+                transferEntry.getTargetTransaction().setCurrencyCode(inCurrency);
+                transferEntry.getTargetTransaction().setAmount(inAmount);
+                transferEntry.getTargetTransaction().setDateTime(parseDate(getField(inRecord, "Date")));
+                transferEntry.getTargetTransaction().setSource(source);
+
+                transferEntry.setDate(date);
+                var reference = entryGroup.getKey();
+                transferEntry.setNote("Currency conversion Ref: " + reference);
+
+                var transferItem = new AccountTransferItem(transferEntry, true);
+
+                // Validate and stage the fee before adding either conversion
+                // item.
+                var fee = Math.abs(parseSignedDecimal(outRecord, "Fee", Values.Amount.factor()));
+                TransactionItem feeItem = null;
+                if (fee > 0)
+                {
+                    var feeTransaction = new AccountTransaction();
+                    feeTransaction.setType(AccountTransaction.Type.FEES);
+                    feeTransaction.setDateTime(date);
+                    feeTransaction.setCurrencyCode(outCurrency);
+                    feeTransaction.setAmount(fee);
+                    feeTransaction.setNote("Currency conversion fee Ref: " + reference);
+                    feeTransaction.setSource(source);
+                    feeItem = new TransactionItem(feeTransaction);
+                }
+
+                items.add(transferItem);
+                if (feeItem != null)
+                    items.add(feeItem);
+            }
+            catch (Exception exception)
+            {
+                errors.add(new IllegalArgumentException("Lightyear CSV lines " + group.get(0).getRecordNumber()
+                                + " and " + group.get(1).getRecordNumber() + ": Failed to pair conversion for ref "
+                                + entryGroup.getKey() + ": " + exception.getMessage(), exception));
+            }
+            finally
+            {
+                processedRecords.addAll(group);
             }
         }
     }
 
+    /**
+     * Dispatches a record to the transaction processor for its Lightyear type.
+     *
+     * @param record
+     *                          CSV record to process
+     * @param securityCache
+     *                          cache used by security-backed transactions
+     * @param source
+     *                          source filename attached to imported items
+     * @param items
+     *                          receives the extracted transaction
+     */
     private void processRecord(CSVRecord record, SecurityCache securityCache, String source, List<Item> items)
     {
         var type = getField(record, "Type");
@@ -324,6 +437,22 @@ public class LightyearCSVExtractor implements Extractor
         }
     }
 
+    /**
+     * Validates and converts a buy or sell record, including fees and any
+     * required forex gross-value unit.
+     *
+     * @param record
+     *                          buy or sell CSV record
+     * @param type
+     *                          transaction type from the record
+     * @param securityCache
+     *                          cache used to resolve the traded security after
+     *                          validation
+     * @param source
+     *                          source filename attached to the transaction
+     * @param items
+     *                          receives the extracted buy or sell
+     */
     private void processBuySell(CSVRecord record, String type, SecurityCache securityCache, String source,
                     List<Item> items)
     {
@@ -389,6 +518,22 @@ public class LightyearCSVExtractor implements Extractor
         items.add(new BuySellEntryItem(entry));
     }
 
+    /**
+     * Validates and converts a dividend or fund distribution, including its
+     * deductions and forex gross value.
+     *
+     * @param record
+     *                          dividend or distribution CSV record
+     * @param type
+     *                          transaction type from the record
+     * @param securityCache
+     *                          cache used to resolve the underlying security
+     *                          after validation
+     * @param source
+     *                          source filename attached to the transaction
+     * @param items
+     *                          receives the extracted dividend
+     */
     private void processDividendOrDistribution(CSVRecord record, String type, SecurityCache securityCache,
                     String source, List<Item> items)
     {
@@ -453,11 +598,25 @@ public class LightyearCSVExtractor implements Extractor
         items.add(new TransactionItem(t));
     }
 
+    /**
+     * Validates and converts a deposit or withdrawal record.
+     *
+     * @param record
+     *                   cash-flow CSV record
+     * @param type
+     *                   transaction type from the record
+     * @param source
+     *                   source filename attached to the transaction
+     * @param items
+     *                   receives the extracted cash transaction
+     */
     private void processDepositWithdrawal(CSVRecord record, String type, String source, List<Item> items)
     {
         var isDeposit = "deposit".equalsIgnoreCase(type);
         var date = parseDate(getField(record, "Date"));
         var ccy = getField(record, "CCY");
+        if (ccy.isBlank())
+            throw new IllegalArgumentException("Missing currency for " + type);
 
         var netAmtStr = getField(record, "Net Amt.");
         if (netAmtStr.isEmpty())
@@ -477,11 +636,26 @@ public class LightyearCSVExtractor implements Extractor
         items.add(new TransactionItem(t));
     }
 
+    /**
+     * Validates and converts an interest or reward record, including any
+     * withholding tax.
+     *
+     * @param record
+     *                   interest or reward CSV record
+     * @param type
+     *                   transaction type from the record
+     * @param source
+     *                   source filename attached to the transaction
+     * @param items
+     *                   receives the extracted cash transaction
+     */
     private void processInterestOrReward(CSVRecord record, String type, String source, List<Item> items)
     {
         var isInterest = "interest".equalsIgnoreCase(type);
         var date = parseDate(getField(record, "Date"));
         var ccy = getField(record, "CCY");
+        if (ccy.isBlank())
+            throw new IllegalArgumentException("Missing currency for " + type);
 
         var netAmtStr = getField(record, "Net Amt.");
         if (netAmtStr.isEmpty())
@@ -507,6 +681,23 @@ public class LightyearCSVExtractor implements Extractor
         items.add(new TransactionItem(t));
     }
 
+    /**
+     * Adds the forex gross-value unit required when a transaction and its
+     * security use different currencies.
+     *
+     * @param record
+     *                                CSV record containing the exchange rate
+     * @param t
+     *                                transaction receiving the unit
+     * @param security
+     *                                traded security whose currency is the
+     *                                forex currency
+     * @param transactionCurrency
+     *                                currency in which the transaction is
+     *                                recorded
+     * @param grossAmount
+     *                                gross amount before fees or taxes
+     */
     private void addFxUnitsIfNeeded(CSVRecord record, Transaction t, Security security, String transactionCurrency,
                     long grossAmount)
     {
@@ -540,6 +731,17 @@ public class LightyearCSVExtractor implements Extractor
         }
     }
 
+    /**
+     * Resolves a security by ISIN or ticker and creates it using the row's
+     * currency when necessary.
+     *
+     * @param record
+     *                          CSV record containing the security identifiers
+     *                          and currency
+     * @param securityCache
+     *                          cache used to find or create the security
+     * @return the matching or newly created security
+     */
     private Security lookupSecurity(CSVRecord record, SecurityCache securityCache)
     {
         var isin = getField(record, "ISIN");
@@ -571,6 +773,17 @@ public class LightyearCSVExtractor implements Extractor
         });
     }
 
+    /**
+     * Parses a Lightyear date or timestamp in slash-separated, ISO, or offset
+     * date-time format.
+     *
+     * @param dateStr
+     *                    date text from the CSV record
+     * @return parsed local date and time
+     * @throws IllegalArgumentException
+     *                                      if the value is missing or cannot be
+     *                                      parsed
+     */
     private LocalDateTime parseDate(String dateStr)
     {
         if (dateStr == null || dateStr.isBlank())
@@ -608,6 +821,17 @@ public class LightyearCSVExtractor implements Extractor
         return LocalDateTime.parse(trimmed, DATE_FORMAT_ISO);
     }
 
+    /**
+     * Retrieves a CSV value by case-insensitive header name and trims
+     * surrounding whitespace.
+     *
+     * @param record
+     *                   CSV record to read
+     * @param column
+     *                   requested header name
+     * @return trimmed field value, or an empty string when the header has no
+     *         value
+     */
     private String getField(CSVRecord record, String column)
     {
         for (String key : record.getParser().getHeaderMap().keySet())
@@ -621,6 +845,21 @@ public class LightyearCSVExtractor implements Extractor
         return "";
     }
 
+    /**
+     * Parses a signed decimal field and converts it to the model's integer
+     * value scale.
+     *
+     * @param record
+     *                   CSV record containing the value
+     * @param column
+     *                   header name of the numeric field
+     * @param factor
+     *                   scale factor for the target value type
+     * @return scaled amount, or zero when the field is empty
+     * @throws NumberFormatException
+     *                                   if the field is not a valid decimal or
+     *                                   exceeds the supported range
+     */
     private long parseSignedDecimal(CSVRecord record, String column, long factor)
     {
         var value = getField(record, column);
