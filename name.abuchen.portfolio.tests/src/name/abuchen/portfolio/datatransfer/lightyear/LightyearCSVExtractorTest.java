@@ -282,4 +282,70 @@ public class LightyearCSVExtractorTest
                         hasAmount("USD", 1855.00), //
                         hasForexGrossValue("EUR", 1706.60))));
     }
+
+    @Test
+    public void testForexGrossValueWithFee() throws IOException
+    {
+        var client = new Client();
+        var sec = new Security("Apple Inc", "EUR");
+        sec.setIsin("US0378331005");
+        sec.setTickerSymbol("AAPL");
+        client.addSecurity(sec);
+
+        // Buy with a $5 fee: gross = 1855, net = 1860 (gross + fee), totalAmount = 1860
+        // GROSS_VALUE must use the gross value (1855), not totalAmount (1860)
+        var csv = String.join("\n", //
+                        "Date,Reference,Ticker,ISIN,Type,Quantity,CCY,Price/share,Gross Amount,FX Rate,Fee,Net Amt.,Tax Amt.",
+                        "15/03/2025 10:30:00,OR-01,AAPL,US0378331005,Buy,10.00,USD,185.50,1855.00,0.92,5.00,1860.00,");
+
+        var file = File.createTempFile("lightyear_forex_fee", ".csv");
+        file.deleteOnExit();
+        Files.writeString(file.toPath(), csv, StandardCharsets.UTF_8);
+
+        var errors = new ArrayList<Exception>();
+        var results = new LightyearCSVExtractor(client).extract(new SecurityCache(client), new InputFile(file), errors);
+
+        assertThat(errors, empty());
+        assertThat(countBuySell(results), is(1L));
+        // grossValue = totalAmount - fee = 1860 - 5 = 1855
+        // forexGrossValue = 1855 * 0.92 = 1706.60
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-03-15T10:30:00"), //
+                        hasShares(10.00), //
+                        hasAmount("USD", 1860.00), //
+                        hasForexGrossValue("EUR", 1706.60))));
+    }
+
+    @Test
+    public void testForexDividendWithTax() throws IOException
+    {
+        var client = new Client();
+        var sec = new Security("Alphabet Inc", "EUR");
+        sec.setIsin("US02079K1079");
+        sec.setTickerSymbol("GOOG");
+        client.addSecurity(sec);
+
+        // Dividend with tax: gross = 14.09, tax = 2.11, net = 11.98
+        // GROSS_VALUE must use grossValue (net + tax = 14.09), not netAmount (11.98)
+        var csv = String.join("\n", //
+                        "Date,Reference,Ticker,ISIN,Type,Quantity,CCY,Price/share,Gross Amount,FX Rate,Fee,Net Amt.,Tax Amt.",
+                        "16/12/2025 06:02:35,IN-01,GOOG,US02079K1079,Dividend,52.0,USD,,14.09,0.92,0.00,11.98,2.11");
+
+        var file = File.createTempFile("lightyear_forex_div_tax", ".csv");
+        file.deleteOnExit();
+        Files.writeString(file.toPath(), csv, StandardCharsets.UTF_8);
+
+        var errors = new ArrayList<Exception>();
+        var results = new LightyearCSVExtractor(client).extract(new SecurityCache(client), new InputFile(file), errors);
+
+        assertThat(errors, empty());
+        assertThat(countAccountTransactions(results), is(1L));
+        // grossValue = netAmount + tax = 11.98 + 2.11 = 14.09
+        // forexGrossValue = 14.09 * 0.92 = 12.9628 -> 12.96
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-12-16T06:02:35"), //
+                        hasAmount("USD", 11.98), //
+                        hasTaxes("USD", 2.11), //
+                        hasForexGrossValue("EUR", 12.96))));
+    }
 }

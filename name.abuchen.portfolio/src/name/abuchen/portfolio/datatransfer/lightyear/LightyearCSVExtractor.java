@@ -36,6 +36,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
@@ -153,7 +154,7 @@ public class LightyearCSVExtractor implements Extractor
             }
             return true;
         }
-        catch (IOException e)
+        catch (Exception e)
         {
             return false;
         }
@@ -176,12 +177,20 @@ public class LightyearCSVExtractor implements Extractor
         var conversionGroups = new HashMap<String, List<CSVRecord>>();
         for (CSVRecord record : records)
         {
-            var type = getField(record, "Type");
-            if ("Conversion".equalsIgnoreCase(type))
+            try
             {
-                var ref = getField(record, "Reference");
-                if (!ref.isEmpty())
-                    conversionGroups.computeIfAbsent(ref, k -> new ArrayList<>()).add(record);
+                var type = getField(record, "Type");
+                if ("Conversion".equalsIgnoreCase(type))
+                {
+                    var ref = getField(record, "Reference");
+                    if (!ref.isEmpty())
+                        conversionGroups.computeIfAbsent(ref, k -> new ArrayList<>()).add(record);
+                }
+            }
+            catch (Exception e)
+            {
+                errors.add(new IllegalArgumentException(
+                                "Lightyear CSV line " + record.getRecordNumber() + ": " + e.getMessage(), e));
             }
         }
 
@@ -304,7 +313,6 @@ public class LightyearCSVExtractor implements Extractor
                     List<Item> items)
     {
         var isBuy = "buy".equalsIgnoreCase(type);
-        var security = lookupSecurity(record, securityCache);
         var date = parseDate(getField(record, "Date"));
         var ccy = getField(record, "CCY");
 
@@ -342,6 +350,9 @@ public class LightyearCSVExtractor implements Extractor
         if (totalAmount == 0)
             throw new IllegalArgumentException("Zero total amount for " + type);
 
+        // Lookup security only after validation succeeds
+        var security = lookupSecurity(record, securityCache);
+
         var entry = new BuySellEntry();
         entry.setType(isBuy ? PortfolioTransaction.Type.BUY : PortfolioTransaction.Type.SELL);
         entry.setSecurity(security);
@@ -355,7 +366,8 @@ public class LightyearCSVExtractor implements Extractor
         if (fee > 0)
             entry.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, Money.of(ccy, fee)));
 
-        addFxUnitsIfNeeded(record, entry.getPortfolioTransaction(), security, ccy, totalAmount);
+        addFxUnitsIfNeeded(record, entry.getPortfolioTransaction(), security, ccy,
+                        entry.getPortfolioTransaction().getGrossValue().getAmount());
 
         items.add(new BuySellEntryItem(entry));
     }
@@ -364,7 +376,6 @@ public class LightyearCSVExtractor implements Extractor
                     String source, List<Item> items)
     {
         var isDistribution = "distribution".equalsIgnoreCase(type);
-        var security = lookupSecurity(record, securityCache);
         var date = parseDate(getField(record, "Date"));
         var ccy = getField(record, "CCY");
 
@@ -374,6 +385,7 @@ public class LightyearCSVExtractor implements Extractor
             throw new IllegalArgumentException("Missing amount for " + type);
 
         var netAmount = Math.abs(parseSignedDecimal(record, "Net Amt.", Values.Amount.factor()));
+        var grossAmount = Math.abs(parseSignedDecimal(record, "Gross Amount", Values.Amount.factor()));
         var shares = Math.abs(parseSignedDecimal(record, "Quantity", Values.Share.factor()));
         var reference = getField(record, "Reference");
 
@@ -393,6 +405,15 @@ public class LightyearCSVExtractor implements Extractor
             fee = Math.abs(parseSignedDecimal(record, "Fee", Values.Amount.factor()));
         }
 
+        // Allow zero net amount only when deductions account for the full gross
+        if (netAmount == 0 && grossAmount > 0 && (tax + fee) != grossAmount)
+            throw new IllegalArgumentException("Zero net amount does not reconcile with gross for " + type);
+        if (netAmount == 0 && grossAmount == 0)
+            throw new IllegalArgumentException("Zero amount for " + type);
+
+        // Lookup security only after validation succeeds
+        var security = lookupSecurity(record, securityCache);
+
         var t = new AccountTransaction();
         t.setType(AccountTransaction.Type.DIVIDENDS);
         t.setSecurity(security);
@@ -408,7 +429,7 @@ public class LightyearCSVExtractor implements Extractor
         if (fee > 0)
             t.addUnit(new Unit(Unit.Type.FEE, Money.of(ccy, fee)));
 
-        addFxUnitsIfNeeded(record, t, security, ccy, netAmount);
+        addFxUnitsIfNeeded(record, t, security, ccy, t.getGrossValue().getAmount());
 
         items.add(new TransactionItem(t));
     }
@@ -467,8 +488,8 @@ public class LightyearCSVExtractor implements Extractor
         items.add(new TransactionItem(t));
     }
 
-    private void addFxUnitsIfNeeded(CSVRecord record, name.abuchen.portfolio.model.Transaction t, Security security,
-                    String transactionCurrency, long transactionAmount)
+    private void addFxUnitsIfNeeded(CSVRecord record, Transaction t, Security security,
+                    String transactionCurrency, long grossAmount)
     {
         var securityCurrency = security.getCurrencyCode();
         if (securityCurrency == null || securityCurrency.equals(transactionCurrency))
@@ -482,11 +503,11 @@ public class LightyearCSVExtractor implements Extractor
                 var rate = new BigDecimal(fxRateStr.replace(',', '.'));
                 if (rate.compareTo(BigDecimal.ZERO) > 0)
                 {
-                    var fxGrossAmount = new BigDecimal(transactionAmount).multiply(rate)
+                    var fxGrossAmount = new BigDecimal(grossAmount).multiply(rate)
                                     .setScale(0, RoundingMode.HALF_UP).longValue();
                     var invertedRate = BigDecimal.ONE.divide(rate, 10, RoundingMode.HALF_DOWN);
                     t.addUnit(new Unit(Unit.Type.GROSS_VALUE, //
-                                    Money.of(transactionCurrency, transactionAmount), //
+                                    Money.of(transactionCurrency, grossAmount), //
                                     Money.of(securityCurrency, fxGrossAmount), //
                                     invertedRate));
                 }
