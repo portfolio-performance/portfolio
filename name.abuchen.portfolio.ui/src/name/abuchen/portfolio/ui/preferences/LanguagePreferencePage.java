@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Properties;
 
 import org.eclipse.core.runtime.Platform;
@@ -46,6 +47,18 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 public class LanguagePreferencePage extends PreferencePage
 {
     private static final String OSGI_NL = "osgi.nl"; //$NON-NLS-1$
+
+    // The launcher passes all start arguments, including those of its ini
+    // file, as eclipse.commands. A -nl argument sets osgi.nl before the
+    // config.ini is read and therefore takes precedence over this page.
+    private static final String ECLIPSE_COMMANDS = "eclipse.commands"; //$NON-NLS-1$
+    private static final String NL_ARGUMENT = "-nl"; //$NON-NLS-1$
+
+    /**
+     * Set once the language has been saved: until the next restart the stored
+     * language then differs from the active one by intention.
+     */
+    private static boolean isChangedInSession = false;
 
     public enum Language
     {
@@ -162,11 +175,89 @@ public class LanguagePreferencePage extends PreferencePage
             }
         });
 
+        createLanguageHint(area);
+
         createSampleArea(area);
 
         updateSelection(userProperties.getProperty(OSGI_NL));
 
         return area;
+    }
+
+    /**
+     * Explains why the language stored on this page is not or will not be
+     * applied. The page stores the language as osgi.nl in the config.ini of
+     * the configuration area. A -nl start argument takes precedence over that
+     * file, and launches from the development environment create the file anew
+     * at every start.
+     */
+    private void createLanguageHint(Composite area)
+    {
+        String hint = getLanguageHintOrNull();
+        if (hint == null)
+            return;
+
+        var label = new Label(area, SWT.WRAP);
+        label.setText(hint);
+        GridDataFactory.fillDefaults().span(2, 1).grab(true, false).hint(400, SWT.DEFAULT).applyTo(label);
+    }
+
+    private String getLanguageHintOrNull()
+    {
+        String nlArgument = getNlArgumentOrNull();
+        if (nlArgument != null)
+            return MessageFormat.format(Messages.PrefMsgLanguageOverriddenByArgument, nlArgument);
+
+        if (Platform.inDevelopmentMode())
+            return Messages.PrefMsgLanguageDevelopmentLaunch;
+
+        String storedValue = userProperties.getProperty(OSGI_NL);
+        String activeValue = Platform.getNL();
+        if (storedValue != null && !isChangedInSession && !isSameLocale(storedValue, activeValue))
+            return MessageFormat.format(Messages.PrefMsgLanguageNotApplied, storedValue, activeValue,
+                            getUserConfigFileName());
+
+        return null;
+    }
+
+    private String getNlArgumentOrNull()
+    {
+        String commands = System.getProperty(ECLIPSE_COMMANDS);
+        if (commands == null)
+            return null;
+
+        // the launcher applies every -nl argument in turn, so the last one wins
+        // - also if it is empty. The limit keeps trailing empty values.
+        String nlArgument = null;
+
+        String[] arguments = commands.split("\\R", -1); //$NON-NLS-1$
+        for (int ii = 0; ii < arguments.length - 1; ii++)
+        {
+            if (NL_ARGUMENT.equalsIgnoreCase(arguments[ii].trim()))
+                nlArgument = arguments[ii + 1].trim();
+        }
+
+        return nlArgument == null || nlArgument.isEmpty() ? null : nlArgument;
+    }
+
+    private static boolean isSameLocale(String value, String other)
+    {
+        if (other == null)
+            return false;
+
+        return value.replace('-', '_').equalsIgnoreCase(other.replace('-', '_'));
+    }
+
+    private String getUserConfigFileName()
+    {
+        try
+        {
+            return getUserConfigFile().toString();
+        }
+        catch (URISyntaxException e)
+        {
+            return "config.ini"; //$NON-NLS-1$
+        }
     }
 
     private void createSampleArea(Composite area)
@@ -310,6 +401,7 @@ public class LanguagePreferencePage extends PreferencePage
         if (languageCombo == null)
             return true;
 
+        String previousValue = userProperties.getProperty(OSGI_NL);
         String nlValue = getNlValueFromSelection();
         if (nlValue == null)
         {
@@ -320,7 +412,22 @@ public class LanguagePreferencePage extends PreferencePage
             userProperties.setProperty(OSGI_NL, nlValue);
         }
 
-        storeUserPreferences();
+        if (!storeUserPreferences())
+        {
+            // keep the stored value, so that a retry compares against it
+            if (previousValue == null)
+                userProperties.remove(OSGI_NL);
+            else
+                userProperties.setProperty(OSGI_NL, previousValue);
+
+            // keep the dialog open with the selection, so that the user can
+            // retry
+            return false;
+        }
+
+        // only a changed language explains a difference to the active one
+        if (!Objects.equals(previousValue, nlValue))
+            isChangedInSession = true;
 
         return true;
     }
@@ -359,7 +466,7 @@ public class LanguagePreferencePage extends PreferencePage
         }
     }
 
-    private void storeUserPreferences()
+    private boolean storeUserPreferences()
     {
         try
         {
@@ -369,11 +476,14 @@ public class LanguagePreferencePage extends PreferencePage
             {
                 userProperties.store(out, null);
             }
+
+            return true;
         }
         catch (IOException | URISyntaxException e)
         {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.LabelError,
                             MessageFormat.format(Messages.MsgErrorSavingIniFile, e.getMessage()));
+            return false;
         }
     }
 
