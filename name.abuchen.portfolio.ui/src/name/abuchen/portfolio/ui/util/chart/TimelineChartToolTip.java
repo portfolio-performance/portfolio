@@ -23,9 +23,9 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swtchart.Chart;
@@ -51,6 +51,15 @@ public class TimelineChartToolTip extends AbstractChartToolTip
 
     private boolean categoryEnabled = false;
     private boolean reverseLabels = false;
+
+    private Composite container;
+    private Label dateValueLabel;
+    private final List<Row> rows = new ArrayList<>();
+    private final List<Control> extraInfoControls = new ArrayList<>();
+
+    private record Row(String seriesId, Color color, Label value, Format format)
+    {
+    }
 
     /**
      * If given, the tool tip is shown only for dates that are present in the
@@ -191,7 +200,16 @@ public class TimelineChartToolTip extends AbstractChartToolTip
     @Override
     protected void createComposite(Composite parent)
     {
-        final Composite container = new Composite(parent, SWT.NONE);
+        rows.clear();
+        extraInfoControls.clear();
+        container = null;
+        dateValueLabel = null;
+
+        container = new Composite(parent, SWT.NONE);
+        // inherit the background down to every child: a control that is created
+        // while the tool tip is already visible is otherwise painted in black
+        // until the CSS styles are applied to it
+        container.setBackgroundMode(SWT.INHERIT_FORCE);
         RowLayout layout = new RowLayout(SWT.VERTICAL);
         layout.center = true;
         container.setLayout(layout);
@@ -204,6 +222,7 @@ public class TimelineChartToolTip extends AbstractChartToolTip
 
         Label right = new Label(data, SWT.NONE);
         right.setText(formatXAxisData(getFocusedObject()));
+        dateValueLabel = right;
 
         List<Pair<ISeries<?>, Double>> values = computeValues(getChart().getSeriesSet().getSeries());
 
@@ -217,8 +236,7 @@ public class TimelineChartToolTip extends AbstractChartToolTip
         {
             ISeries<?> series = value.getKey();
 
-            Color color = series instanceof ILineSeries<?> lineSeries ? lineSeries.getLineColor()
-                            : ((IBarSeries<?>) series).getBarColor();
+            Color color = colorOf(series);
 
             ColoredLabel cl = new ColoredLabel(data, SWT.NONE);
             cl.setBackdropColor(color);
@@ -234,23 +252,88 @@ public class TimelineChartToolTip extends AbstractChartToolTip
             Format valueFormat = overrideValueFormat.getOrDefault(series.getId(), defaultValueFormat);
             right.setText(valueFormat.format(value.getRight()));
             GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(right);
+
+            rows.add(new Row(series.getId(), color, right, valueFormat));
         }
 
-        Object focus = getFocusedObject();
-        extraInfoProvider.forEach(provider -> provider.accept(container, focus));
+        addExtraInfo(container, getFocusedObject());
 
         Label hint = new Label(data, SWT.WRAP);
         hint.setText(MessageFormat.format(Messages.TooltipHintPressAlt,
                         Platform.OS_MACOSX.equals(Platform.getOS()) ? "Option" : "Alt")); //$NON-NLS-1$ //$NON-NLS-2$
-        // first set a small width and then update later
-        GridData hintData = GridDataFactory.fillDefaults().span(2, 1).hint(10, SWT.DEFAULT).span(2, 1).create();
-        hint.setLayoutData(hintData);
 
-        hint.getParent().pack();
-        hintData.widthHint = hint.getBounds().width;
-        hint.getParent().pack();
+        // the preferred width of the label as a hint: packing the composite
+        // would resize the tool tip window again while it is being built
+        GridDataFactory.fillDefaults() //
+                        .span(2, 1) //
+                        .hint(hint.computeSize(SWT.DEFAULT, SWT.DEFAULT).x, SWT.DEFAULT) //
+                        .applyTo(hint);
+
         hint.setFont(this.resourceManager
                         .create(FontDescriptor.createFrom(data.getFont()).increaseHeight(-3).withStyle(SWT.ITALIC)));
+    }
+
+    @Override
+    protected boolean updateContent()
+    {
+        if (container == null || container.isDisposed() //
+                        || dateValueLabel == null || dateValueLabel.isDisposed())
+            return false;
+
+        List<Pair<ISeries<?>, Double>> values = computeValues(getChart().getSeriesSet().getSeries());
+
+        if (reverseLabels)
+            Collections.reverse(values);
+
+        if (isAltPressed())
+            Collections.sort(values, (l, r) -> r.getValue().compareTo(l.getValue()));
+
+        // an update in place needs exactly the same rows, i.e. the same series
+        // in the same order and with the same color - otherwise the controls
+        // of the tool tip have to be re-created
+
+        if (values.size() != rows.size())
+            return false;
+
+        for (int i = 0; i < values.size(); i++)
+        {
+            ISeries<?> series = values.get(i).getKey();
+
+            if (!series.getId().equals(rows.get(i).seriesId()) || !colorOf(series).equals(rows.get(i).color()))
+                return false;
+        }
+
+        dateValueLabel.setText(formatXAxisData(getFocusedObject()));
+
+        for (int i = 0; i < values.size(); i++)
+            rows.get(i).value().setText(rows.get(i).format().format(values.get(i).getValue()));
+
+        // the extra information, i.e. the transactions around the focused date,
+        // depends on the focus object: dispose it and re-create it
+
+        extraInfoControls.forEach(Control::dispose);
+        extraInfoControls.clear();
+
+        addExtraInfo(container, getFocusedObject());
+
+        return true;
+    }
+
+    private Color colorOf(ISeries<?> series)
+    {
+        return series instanceof ILineSeries<?> lineSeries ? lineSeries.getLineColor()
+                        : ((IBarSeries<?>) series).getBarColor();
+    }
+
+    private void addExtraInfo(Composite container, Object focus)
+    {
+        int numChildren = container.getChildren().length;
+
+        extraInfoProvider.forEach(provider -> provider.accept(container, focus));
+
+        Control[] children = container.getChildren();
+        for (int i = numChildren; i < children.length; i++)
+            extraInfoControls.add(children[i]);
     }
 
     private List<Pair<ISeries<?>, Double>> computeValues(ISeries<?>[] allSeries)
