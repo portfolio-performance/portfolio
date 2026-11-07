@@ -343,10 +343,6 @@ public final class ThemePreferencePage extends PreferencePage
             customPositiveArrowRGB = ColorConversion.hex2RGB("#00E000"); //$NON-NLS-1$
             customNegativeRGB = ColorConversion.hex2RGB("#FF6B6B"); //$NON-NLS-1$
             customNegativeArrowRGB = ColorConversion.hex2RGB("#FF6B6B"); //$NON-NLS-1$
-            ValueColorScheme.getCustomScheme().setPositiveForeground(customPositiveRGB);
-            ValueColorScheme.getCustomScheme().setUpArrowColor(customPositiveArrowRGB);
-            ValueColorScheme.getCustomScheme().setNegativeForeground(customNegativeRGB);
-            ValueColorScheme.getCustomScheme().setDownArrowColor(customNegativeArrowRGB);
         }
         catch (Exception ignored)
         {
@@ -470,11 +466,6 @@ public final class ThemePreferencePage extends PreferencePage
                     customPositiveArrowRGB = dialog.getPositiveArrowRGB();
                     customNegativeRGB = dialog.getNegativeRGB();
                     customNegativeArrowRGB = dialog.getNegativeArrowRGB();
-
-                    ValueColorScheme.getCustomScheme().setPositiveForeground(customPositiveRGB);
-                    ValueColorScheme.getCustomScheme().setUpArrowColor(customPositiveArrowRGB);
-                    ValueColorScheme.getCustomScheme().setNegativeForeground(customNegativeRGB);
-                    ValueColorScheme.getCustomScheme().setDownArrowColor(customNegativeArrowRGB);
 
                     positiveLabel.setTextColor(Colors.getColor(customPositiveRGB));
                     positiveLabel.redraw();
