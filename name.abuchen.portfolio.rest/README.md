@@ -36,11 +36,15 @@ curl -s -X POST -d '{"clientName": "My Script"}' http://127.0.0.1:5712/v1/auth/r
 
 # 2. the user approves or declines inside Portfolio Performance; poll every 1–2s
 curl -s http://127.0.0.1:5712/v1/auth/requests/<id>
-# → {"status": "pending"} … then {"status": "approved", "token": "…"}
+# → {"status": "pending"} … then {"status": "approved", "token": "…", "persistent": true}
 ```
 
 The approval prompt offers **Allow for this session** (the token dies when the application quits),
 **Always allow** (persistent), and **Decline**. The token is delivered **exactly once** — store it.
+`persistent` says whether the token is confirmed to survive a restart: `false` for a session grant,
+and also for an always-allow grant the application could not confirm in its client file. That one
+may still work after a restart — the file may already hold it, or a later write may add it — so
+look it up on the preference page and revoke it there before pairing again.
 A request expires after 2 minutes; only one may be pending at a time, and a decline imposes a
 cool-down (both reported `429` with `Retry-After`). Every `401` names the pairing endpoint in its
 `pairingEndpoint` field, so the flow is discoverable at runtime.
@@ -48,7 +52,23 @@ cool-down (both reported `429` with `Retry-After`). Every `401` names the pairin
 The preference page lists all authorized clients with their last use, lets the user **revoke** each
 individually (effective immediately), and can mint a token manually via **Add client** — the path
 for headless setups where nobody watches the screen. Tokens are stored hashed; a lost token cannot
-be re-displayed, only replaced.
+be re-displayed, only replaced. When the client file cannot be written as a client is revoked, the
+page says so: the revocation holds for this run and is written with a later request once the file
+can be written again, tried at most once a minute. The client file is replaced in one step where
+the file system can move a file over it atomically, so a crash cannot leave it half written; where
+it cannot, a plain move replaces it, which gives no such guarantee. Three cases are written in place
+instead, keeping every name the file has (and, without POSIX permissions, its ACL): a client file
+that is a symbolic link (its target is written; a target that does not exist yet is created), one
+with further hard links, and one whose replace is refused (on Windows, a file another program holds
+open). Such a write first puts the new content into `api-clients.json.bak` beside the client file,
+on disk and replaced in one step; a crash that leaves the client file empty or cut short is
+completed from it at the next start, a revocation included. Where that file cannot be written - in
+a directory that refuses a new file, say - nothing is written, and the save is reported as failed.
+On POSIX a replaced file is
+owner-only; one written in place is made owner-only where its permissions may be changed - a link
+target owned by someone else keeps its own, and that is logged. Without POSIX permissions a
+replaced file takes over the ACL of the previous one, or is written in place where that fails. Windows does not tell whether a file has further hard links, so
+there such a file is replaced and the other names keep the previous content.
 
 ## Talking to it
 
@@ -326,6 +346,10 @@ endpoint takes none, so a new endpoint is strict without doing anything. Documen
 `openapi.yaml` in the same change, and give the operation a `400` response — every endpoint can
 now return one. `OpenApiSpecDriftTest` fails if any of that drifts apart, and `McpToolsDriftTest`
 fails until the new route either has a tool or is listed as one that deliberately has none.
+
+`Authorization` is read case-insensitively (`bearer …` is accepted); a header that carries a token
+under a different scheme is refused as a wrong scheme rather than as a missing token, and the
+preference page says which of the two happened.
 
 The drift tests compare the specification with the code; the `openapi-compat` Maven profile
 compares it with the published contract. It runs [oasdiff](https://github.com/oasdiff/oasdiff)

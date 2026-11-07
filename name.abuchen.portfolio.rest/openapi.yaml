@@ -366,6 +366,7 @@ paths:
                   value:
                     status: approved
                     token: wZ4mJc9Y3K…
+                    persistent: true
         "400":
           $ref: "#/components/responses/BadRequest"
         "403":
@@ -1774,6 +1775,17 @@ components:
           description: |
             The bearer token; present only while `status` is `approved`, and
             delivered exactly once.
+        persistent:
+          type: boolean
+          description: |
+            Present with `token`. Whether the token is confirmed to survive a
+            restart of the application: `false` when the user allowed access
+            for this session only, and when access was allowed permanently but
+            the application could not confirm it in its client file. Such a
+            grant may still work after a restart - the file may already hold
+            it, or a later write may add it - so a client that pairs again
+            should have the user check or revoke the earlier grant on the
+            preference page.
 
     Instrument:
       type: object
