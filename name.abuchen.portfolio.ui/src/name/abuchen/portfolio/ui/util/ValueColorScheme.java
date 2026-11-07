@@ -206,15 +206,15 @@ public final class ValueColorScheme
         if (image != null && !image.isDisposed())
             return image;
 
-        Path tempFile = null;
         try
         {
             String pathData = up ? "M12 3l12 18h-24z" : "M12 21l-12-18h24z"; //$NON-NLS-1$ //$NON-NLS-2$
             String svg = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"-6 -6 36 36\" width=\"16\" height=\"16\" fill=\"" //$NON-NLS-1$
                             + hex + "\"><path d=\"" + pathData + "\"/></svg>"; //$NON-NLS-1$ //$NON-NLS-2$
 
-            tempFile = Files.createTempFile("pp_arrow_" + (up ? "up_" : "down_"), ".svg"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            Path tempFile = Files.createTempFile("pp_arrow_" + (up ? "up_" : "down_"), ".svg"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             Files.writeString(tempFile, svg, StandardCharsets.UTF_8);
+            tempFile.toFile().deleteOnExit();
 
             ImageDescriptor descriptor = ImageDescriptor.createFromURL(tempFile.toUri().toURL());
             image = descriptor.createImage();
@@ -226,20 +226,6 @@ public final class ValueColorScheme
         {
             return up ? Images.resolve("scheme/standard/light/up_arrow.svg", false) //$NON-NLS-1$
                             : Images.resolve("scheme/standard/light/down_arrow.svg", false); //$NON-NLS-1$
-        }
-        finally
-        {
-            if (tempFile != null)
-            {
-                try
-                {
-                    Files.deleteIfExists(tempFile);
-                }
-                catch (Exception ignored)
-                {
-                    tempFile.toFile().deleteOnExit();
-                }
-            }
         }
     }
 
