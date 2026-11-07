@@ -1,0 +1,69 @@
+pp-cli apply operation transaction.update: Changes a whole transaction record, found by the UUID of either of its sides. Only the fields present change; null clears an optional field. The patch is overlaid on the current record and then validated exactly like an add, so a partial edit can't bypass validation and nothing is recomputed: fees, taxes and forex units that no longer fit a changed amount or shares are refused with a field-level error. The type, and the kind of a transfer, can't change; delete the record and add a new one. Both sides stay in step and keep their UUIDs. The response is one updated change, with before and after for the changed fields, whose uuid is the record id. A change that would make an investment account's holding of an instrument negative at the end of any date is refused.
+
+Input: one element of "operations" in the batch given with --input. The fields of a transaction to change, in the shape the transactions output uses. Only the fields present change; null clears an optional field.
+  operation (string, one of transaction.update) Operation name.
+  uuid (string) UUID of either side of the record to change.
+  type (string, one of BUY, SELL, DEPOSIT, REMOVAL, INTEREST, INTEREST_CHARGE, DIVIDENDS, FEES, FEES_REFUND, TAXES, TAX_REFUND, DELIVERY_INBOUND, DELIVERY_OUTBOUND, TRANSFER, optional) Transaction type. TRANSFER needs a kind, from and to; BUY and SELL need an investmentAccount and a cashAccount; deliveries need an investmentAccount; the others need a cashAccount.
+  kind (string or null, one of cash, security, optional) Of a TRANSFER only: cash or security.
+  date (string, optional) ISO date of the event.
+  time (string or null, optional) HH:mm; omit for midnight.
+  amount (number, optional) Positive net amount. Of a BUY or SELL in the cash account's currency, of a cash transfer in the currency of from, of a security transfer in the instrument's currency.
+  currencyCode (string, optional) ISO currency code of amount: the cash account's, or for a transfer the currency of from (cash) or of the instrument (security). A delivery may use any currency; if it is not the instrument's, a GROSS_VALUE unit is required.
+  targetAmount (number or null, optional) Of a cash transfer between accounts of different currencies: positive, in the currency of to. Refused when the currencies are the same.
+  exchangeRate (number or null, optional) Of a cross-currency cash transfer: optional, only checked against core's rounding tolerance. The stored rate is always amount divided by targetAmount and is returned in the record.
+  instrument (string or null, optional) UUID of the instrument. Required for DIVIDENDS, BUY, SELL, deliveries and security transfers; optional for fees and taxes; refused for deposits, removals, interest and cash transfers.
+  shares (number or null, optional) Positive number of shares. Required for BUY, SELL, deliveries and security transfers; accepted on a dividend; refused otherwise.
+  investmentAccount (string or null, optional) UUID of the investment account; it must already be in the file. Required for BUY, SELL and deliveries; refused for cash-account events and transfers.
+  cashAccount (string or null, optional) UUID of the cash account; it must already be in the file. Required for cash-account events, BUY and SELL; refused for deliveries and transfers.
+  from (string or null, optional) Of a TRANSFER only: UUID of the account it leaves, a cash account for a cash transfer and an investment account for a security transfer. Must differ from to.
+  to (string or null, optional) Of a TRANSFER only: UUID of the account it enters, of the same kind as from.
+  exDate (string or null, optional) ISO ex-date; accepted only on a dividend with an instrument and never after the date.
+  grossAmount (number or null, optional) Optional cross-check: amount plus or minus fees and taxes (for a BUY or inbound delivery amount minus them). Refused if it does not reconcile and on transfers; amount stays authoritative.
+  note (string or null, optional) Note.
+  source (string or null, optional) Where the record came from.
+  units (array of object, optional) Fees, taxes and the forex gross value an instrument in another currency needs. Taxes are accepted only on DIVIDENDS and INTEREST and fees only on DIVIDENDS, as in core's import check; refused on transfers.
+    type (string, one of FEE, TAX, GROSS_VALUE) Kind of unit.
+    amount (number) Positive amount, in the transaction's currency.
+    currencyCode (string) ISO currency code of amount; the transaction's currency.
+    forexAmount (number, optional) Original amount in the instrument's currency.
+    forexCurrencyCode (string, optional) ISO currency code of forexAmount.
+    exchangeRate (number, optional) Positive, unrounded: forexAmount times exchangeRate is approximately amount.
+
+Failure codes (failures[].code of validation-failed):
+  reference-not-found  No entity of the expected kind matches the reference.
+  unknown-field  The object has no such field.
+  required  A required field is missing or empty.
+  invalid-type  A field has the wrong JSON type.
+  not-positive  A number that must be positive is not.
+  invalid-amount  More decimal places than are stored.
+  duplicate-target  An earlier operation changes the entity.
+  invalid-currency  Not a known ISO currency code.
+  type-immutable  An update can't change the type.
+  kind-immutable  An update can't change the kind.
+  record-incomplete  The record lacks a side; delete it instead.
+  kind-not-allowed  kind is refused.
+  target-amount-not-allowed  targetAmount is refused.
+  exchange-rate-not-allowed  exchangeRate is refused.
+  instrument-not-allowed  instrument is refused.
+  shares-not-allowed  shares is refused.
+  investment-account-not-allowed  investmentAccount is refused.
+  cash-account-not-allowed  cashAccount is refused.
+  from-not-allowed  from is refused.
+  to-not-allowed  to is refused.
+  exdate-not-allowed  exDate is refused.
+  gross-amount-not-allowed  grossAmount is refused.
+  units-not-allowed  units is refused.
+  invalid-date  Not an ISO date (yyyy-MM-dd).
+  invalid-time  Not a time of day (HH:mm).
+  currency-mismatch  Not the currency the record needs.
+  gross-amount-mismatch  grossAmount does not reconcile.
+  exdate-after-payment  The ex-date is after the date.
+  unsupported-unit-type  Not a unit type.
+  forex-required  A GROSS_VALUE unit needs forex.
+  forex-incomplete  Forex fields given only in part.
+  forex-currency-mismatch  The forex is not in the instrument's currency.
+  forex-mismatch  The exchange rate does not fit the amounts.
+  forex-gross-value-required  The instrument's currency needs a GROSS_VALUE unit.
+  same-account  A transfer names the same account twice.
+  import-check-failed  Core's import check refused the record; check names it.
+  negative-holding  A holding would go negative.

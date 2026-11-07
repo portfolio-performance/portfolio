@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>pp-cli architecture review</title>
+<script src="https://cdn.tailwindcss.com/3.4.5"></script>
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.esm.min.mjs";
+  mermaid.initialize({ startOnLoad: true, theme: "neutral", securityLevel: "loose", flowchart: { curve: "basis" } });
+</script>
+<style>
+  .seam { border-style: dashed; }
+  .deep { background: linear-gradient(135deg, #0f172a, #1e293b); color: #e2e8f0; }
+  .lbl { font-size: .68rem; text-transform: uppercase; letter-spacing: .08em; }
+  .mod { border: 1px solid #94a3b8; background: #fff; border-radius: .375rem; padding: .3rem .5rem; }
+  .leakmod { border: 1.5px solid #dc2626; background: #fef2f2; }
+  .ghost { color: #94a3b8; border: 1px solid #475569; border-radius: .25rem; padding: .15rem .4rem; }
+  pre.mermaid { background: transparent; }
+</style>
+</head>
+<body class="bg-stone-50 text-slate-900 font-sans">
+<main class="max-w-5xl mx-auto px-4 sm:px-6 py-12 space-y-12">
+
+<header class="space-y-3">
+  <p class="lbl text-slate-500">Architecture review · 2026-10-26 · branch feat/cli-support</p>
+  <h1 class="font-serif text-4xl">name.abuchen.portfolio.cli</h1>
+  <p class="text-sm text-slate-600">Scope: the CLI module and its tests. Core is out of scope (ADR 0002 keeps it untouched anyway).</p>
+  <div class="flex flex-wrap gap-4 text-xs text-slate-600 pt-2">
+    <span class="flex items-center gap-2"><span class="mod lbl">module</span> module</span>
+    <span class="flex items-center gap-2"><span class="inline-block w-10 border-t-2 border-slate-500 seam"></span> seam</span>
+    <span class="flex items-center gap-2"><span class="inline-block w-10 border-t-2 border-red-600"></span> leakage</span>
+    <span class="flex items-center gap-2"><span class="deep lbl rounded px-2 py-1">deep</span> deep module</span>
+  </div>
+</header>
+
+<section id="candidates" class="space-y-14">
+
+<!-- ============ 1 ============ -->
+<article id="c1" class="rounded-xl border border-slate-200 bg-white p-6 space-y-5 shadow-sm">
+  <div class="flex flex-wrap items-center gap-2">
+    <h2 class="font-serif text-2xl mr-2">1 · Deepen the Transaction record module</h2>
+    <span class="rounded-full bg-emerald-100 text-emerald-800 text-xs font-semibold px-3 py-1">Strong</span>
+    <span class="rounded-full bg-slate-100 text-slate-700 text-xs px-3 py-1">in-process</span>
+  </div>
+  <ul class="font-mono text-sm text-slate-600 grid sm:grid-cols-2 gap-x-6">
+    <li>query/TransactionRecord.java</li><li>query/TransactionShape.java</li>
+    <li>query/TransactionsCommand.java <span class="text-slate-400">(render)</span></li><li>query/BuiltRecord.java</li>
+    <li>apply/TransactionInput.java</li><li>apply/TransactionOperations.java</li>
+    <li>apply/TradeOperations.java</li><li>apply/TransferOperations.java</li>
+    <li>apply/TransactionUpdates.java</li><li>apply/OversellGuard.java</li>
+    <li>apply/OperationContext.java <span class="text-slate-400">(replacing)</span></li><li>apply/EntityKind.java</li>
+  </ul>
+
+  <div class="grid md:grid-cols-2 gap-4">
+    <div class="rounded-lg border border-slate-200 p-3">
+      <p class="lbl text-slate-500 mb-1">Before: one concept, two packages, a round trip through JSON</p>
+      <pre class="mermaid">
+flowchart LR
+  subgraph query
+    TR[TransactionRecord<br/>join]
+    TS[TransactionShape<br/>schema + inputOf]
+    TC[TransactionsCommand<br/>.render]
+    BR[BuiltRecord]
+  end
+  subgraph apply
+    TI[TransactionInput<br/>parse by string keys]
+    TO[TransactionOperations<br/>per-type refusals]
+    TT[Trade/TransferOperations]
+    TU[TransactionUpdates<br/>render→Gson→overlay→add]
+    OC[OperationContext<br/>.replacing]
+    OG[OversellGuard]
+  end
+  TU -->|render| TC
+  TU -->|inputOf| TS
+  TU --> OC
+  OC --> TO
+  TO --> TI
+  TO --> TT
+  TO --> BR
+  TO --> OG
+  TO -->|allOf rescans| TR
+  TI -. same members by hand .-> TS
+  TC -. same members by hand .-> TS
+  classDef leak stroke:#dc2626,stroke-width:2px,fill:#fef2f2;
+  class TU,OC,TC leak
+  linkStyle 0,1,2 stroke:#dc2626,stroke-width:2px
+      </pre>
+    </div>
+    <div class="rounded-lg border border-slate-200 p-3 flex flex-col">
+      <p class="lbl text-slate-500 mb-3">After: one deep module, operations call one interface</p>
+      <div class="flex gap-2 justify-center mb-2 text-xs">
+        <span class="mod lbl">transactions cmd</span><span class="mod lbl">transaction.add</span><span class="mod lbl">.update</span><span class="mod lbl">.delete</span>
+      </div>
+      <div class="text-center text-slate-400 text-xs">▼ ▼ ▼ ▼</div>
+      <div class="border-t-2 border-slate-500 seam my-1"></div>
+      <div class="deep rounded-lg p-4 flex-1 space-y-3">
+        <p class="lbl text-slate-300">Transaction records · interface</p>
+        <p class="font-mono text-xs text-emerald-300">records(client) · render(record) · build(json) · update(record, patch) · delete(record)</p>
+        <p class="lbl text-slate-400 pt-2">internal</p>
+        <div class="flex flex-wrap gap-2 text-xs">
+          <span class="ghost">side join + batch index</span>
+          <span class="ghost">per-type member rules → refusals + help prose</span>
+          <span class="ghost">one parser</span>
+          <span class="ghost">shape (read/write)</span>
+          <span class="ghost">copy onto existing sides</span>
+          <span class="ghost">oversell guard</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <dl class="grid sm:grid-cols-[7rem_1fr] gap-y-2 text-sm">
+    <dt class="font-semibold">Problem</dt>
+    <dd>The <b>Transaction record</b> is split over ~12 modules in two packages. Members are keyed by hand in three places, per-type rules live in prose and code, and update round-trips the read render through Gson to reuse the add path.</dd>
+    <dt class="font-semibold">Solution</dt>
+    <dd>One module owns the side join, shape, member rules, parsing, building and replacing. <code>apply</code> operations and the <code>transactions</code> command become thin callers. <code>OperationContext</code> loses <code>replacing</code>.</dd>
+    <dt class="font-semibold">Wins</dt>
+    <dd><ul class="list-disc pl-5 space-y-0.5">
+      <li>Locality: member rules declared once</li>
+      <li>Round trip tested in memory</li>
+      <li>Delete the fake query/apply seam</li>
+      <li>Update stops depending on render</li>
+      <li>One index replaces repeated <code>allOf</code> scans</li>
+    </ul></dd>
+    <dt class="font-semibold">Tests</dt>
+    <dd>TransactionShape, TransactionInput, the side join, OversellGuard and <code>replace</code> have <b>no</b> direct tests today. ~1,500 lines of add/update/delete tests go through CliFixture (XML write, SafeWrite, reload) for each case. After the change: per-type render → build → equal tests at the interface, plus a few CLI smoke tests.</dd>
+  </dl>
+  <div class="rounded-md bg-red-50 border border-red-200 text-red-900 text-sm px-4 py-2">
+    Likely bug found on the way: <code>TransactionUpdates.update</code> (apply/TransactionUpdates.java:61) records <code>type-immutable</code> or <code>kind-immutable</code> on the outer context but still runs the inner add. The inner context counts failures separately, so it can go on to commit the replacement.
+  </div>
+</article>
+
+<!-- ============ 2 ============ -->
+<article id="c2" class="rounded-xl border border-slate-200 bg-white p-6 space-y-5 shadow-sm">
+  <div class="flex flex-wrap items-center gap-2">
+    <h2 class="font-serif text-2xl mr-2">2 · One valuation module behind the Reporting currency</h2>
+    <span class="rounded-full bg-emerald-100 text-emerald-800 text-xs font-semibold px-3 py-1">Strong</span>
+    <span class="rounded-full bg-slate-100 text-slate-700 text-xs px-3 py-1">local-substitutable</span>
+  </div>
+  <ul class="font-mono text-sm text-slate-600 grid sm:grid-cols-2 gap-x-6">
+    <li>currency/ReportingCurrency.java</li><li>currency/ExchangeRates.java</li>
+    <li>currency/StrictConverter.java</li><li>currency/StalePrices.java · Prices.java</li>
+    <li>query/HoldingsCommand.java</li><li>query/AllocationCommand.java</li>
+    <li>query/TransactionsCommand.java</li><li>performance/PerformanceCommand.java · PerformanceByInstrument.java</li>
+  </ul>
+
+  <div class="grid md:grid-cols-2 gap-4">
+    <div class="rounded-lg border border-slate-200 p-3">
+      <p class="lbl text-slate-500 mb-3">Before: ~7 touch points in each converting command, three trust strategies</p>
+      <div class="overflow-x-auto">
+      <table class="w-full text-xs">
+        <thead><tr class="lbl text-slate-500"><th class="text-left font-normal py-1">touch point</th><th class="font-normal">Hold.</th><th class="font-normal">Alloc.</th><th class="font-normal">Txn</th><th class="font-normal">Perf.</th></tr></thead>
+        <tbody class="text-center">
+          <tr class="border-t"><td class="text-left py-1">--currency option</td><td>●</td><td>●</td><td>●</td><td>●</td></tr>
+          <tr class="border-t"><td class="text-left py-1">requested / orBase</td><td>●</td><td>●</td><td>●</td><td>●</td></tr>
+          <tr class="border-t"><td class="text-left py-1">meta currency + rates schema</td><td>●</td><td>●</td><td>●</td><td>●</td></tr>
+          <tr class="border-t"><td class="text-left py-1">putRatesInto</td><td>●</td><td>●</td><td>●</td><td>●</td></tr>
+          <tr class="border-t"><td class="text-left py-1">WARNINGS declared</td><td>●</td><td>●</td><td>●</td><td>●</td></tr>
+          <tr class="border-t"><td class="text-left py-1">warning order</td><td>●</td><td>●</td><td>●</td><td>●</td></tr>
+          <tr class="border-t bg-red-50"><td class="text-left py-1 text-red-800">never-guess strategy</td><td class="text-red-700">own Figure</td><td class="text-red-700">allRated pre-check</td><td class="text-red-700">own</td><td class="text-red-700">StrictConverter reset / isComplete</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+    <div class="rounded-lg border border-slate-200 p-3 flex flex-col">
+      <p class="lbl text-slate-500 mb-3">After: commands ask, the module checks every rate</p>
+      <div class="grid grid-cols-4 gap-2 text-center mb-1">
+        <span class="mod lbl">holdings</span><span class="mod lbl">allocation</span><span class="mod lbl">txns</span><span class="mod lbl">perf.</span>
+      </div>
+      <div class="border-t-2 border-slate-500 seam my-2"></div>
+      <div class="deep rounded-lg p-4 flex-1 space-y-3">
+        <p class="lbl text-slate-300">Valuation · interface</p>
+        <p class="font-mono text-xs text-emerald-300">declares option + meta + warnings · trusted(() → core figures) : Optional · putInto(response)</p>
+        <p class="lbl text-slate-400 pt-2">internal</p>
+        <div class="flex flex-wrap gap-2 text-xs">
+          <span class="ghost">StrictConverter (reset → read → isComplete)</span>
+          <span class="ghost">ExchangeRates chain lookup</span>
+          <span class="ghost">ECB cache locator</span>
+          <span class="ghost">stale prices</span>
+          <span class="ghost">warning order</span>
+        </div>
+      </div>
+      <div class="flex justify-end mt-2 gap-2 text-xs items-center">
+        <span class="text-slate-500">adapters at the cache seam:</span><span class="mod">desktop ECB file</span><span class="mod">in-memory rates</span>
+      </div>
+    </div>
+  </div>
+
+  <dl class="grid sm:grid-cols-[7rem_1fr] gap-y-2 text-sm">
+    <dt class="font-semibold">Problem</dt>
+    <dd>ADR 0005's never-guess rule is enforced three different ways. StrictConverter only gives a right answer if callers reset it and read every lazy core figure before <code>isComplete()</code>; get the order wrong and figures computed at core's 1.0 rate are reported silently.</dd>
+    <dt class="font-semibold">Solution</dt>
+    <dd>One module that a command declares and asks. It owns option, meta, warnings, the strict converter and rate lookup, and takes an injected cache locator instead of the whole CommandContext.</dd>
+    <dt class="font-semibold">Wins</dt>
+    <dd><ul class="list-disc pl-5 space-y-0.5">
+      <li>Leverage: one interface, four commands</li>
+      <li>Locality: never-guess lives once</li>
+      <li>Temporal coupling hidden inside</li>
+      <li>Tests skip the 7-arg CommandContext</li>
+    </ul></dd>
+    <dt class="font-semibold">Tests</dt>
+    <dd>StrictConverter and ExchangeRates have no direct tests. With the change, "a figure is left out when a rate is missing" is tested once against in-memory rates, not separately for each command.</dd>
+  </dl>
+  <div class="rounded-md bg-amber-50 border border-amber-200 text-amber-900 text-sm px-4 py-2">
+    Fits ADR 0005: what a total does when a rate is missing can still differ per command. Only rate checking is shared. StrictConverter stays as the adapter over core (ADR 0002), just hidden.
+  </div>
+</article>
+
+<!-- ============ 3 ============ -->
+<article id="c3" class="rounded-xl border border-slate-200 bg-white p-6 space-y-5 shadow-sm">
+  <div class="flex flex-wrap items-center gap-2">
+    <h2 class="font-serif text-2xl mr-2">3 · Command facets: declare and emit each concern once</h2>
+    <span class="rounded-full bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1">Worth exploring</span>
+    <span class="rounded-full bg-slate-100 text-slate-700 text-xs px-3 py-1">in-process</span>
+  </div>
+  <ul class="font-mono text-sm text-slate-600 grid sm:grid-cols-2 gap-x-6">
+    <li>command/CommandSpec.java · OptionSpec.java</li><li>command/ResponseMeta.java · Response.java</li>
+    <li>command/DateRange.java · Paging.java · Sorting.java</li><li>ErrorSpec.java · HelpText.java</li>
+    <li>apply/ApplyCommand.java · RestoreCommand.java</li><li>every *Command.java</li>
+  </ul>
+
+  <div class="grid md:grid-cols-2 gap-4">
+    <div class="rounded-lg border border-slate-200 p-3">
+      <p class="lbl text-slate-500 mb-3">Before: one option, four places (TransactionsCommand)</p>
+      <div class="space-y-2 text-xs">
+        <div class="h-10 border-l-4 border-slate-400 bg-slate-50 px-3 flex items-center justify-between"><span>static OptionSpec field</span><span class="font-mono text-slate-400">:48–66</span></div>
+        <div class="h-10 border-l-4 border-slate-400 bg-slate-50 px-3 flex items-center justify-between"><span>SPEC option list</span><span class="font-mono text-slate-400">:95</span></div>
+        <div class="h-10 border-l-4 border-slate-400 bg-slate-50 px-3 flex items-center justify-between"><span>META declared</span><span class="font-mono text-slate-400">:83–90</span></div>
+        <div class="h-10 border-l-4 border-slate-400 bg-slate-50 px-3 flex items-center justify-between"><span>read + meta.put in execute</span><span class="font-mono text-slate-400">:120–149</span></div>
+        <div class="h-10 border-l-4 border-red-500 bg-red-50 px-3 flex items-center justify-between text-red-900"><span>ErrorSpec scope by command name string</span><span class="font-mono">ErrorSpec:98</span></div>
+      </div>
+    </div>
+    <div class="rounded-lg border border-slate-200 p-3">
+      <p class="lbl text-slate-500 mb-3">After: CommandSpec is made of facets</p>
+      <div class="space-y-2 text-xs">
+        <div class="deep rounded-md h-20 px-4 flex flex-col justify-center">
+          <span class="lbl text-slate-300">facet interface</span>
+          <span class="font-mono text-emerald-300">options · meta schema · warnings · errors · putMeta</span>
+        </div>
+        <div class="flex flex-wrap gap-2 pt-2">
+          <span class="mod">DateRange</span><span class="mod">Paging</span><span class="mod">Sorting</span><span class="mod">filters</span><span class="mod">Valuation (#2)</span><span class="mod">WriteCommand</span>
+        </div>
+        <div class="h-10 border-l-4 border-emerald-500 bg-emerald-50 px-3 flex items-center mt-3">command: <code class="ml-1">spec(facets…)</code> + one read per facet</div>
+        <div class="h-10 border-l-4 border-emerald-500 bg-emerald-50 px-3 flex items-center">error scope comes from the facets that raise it</div>
+      </div>
+    </div>
+  </div>
+
+  <dl class="grid sm:grid-cols-[7rem_1fr] gap-y-2 text-sm">
+    <dt class="font-semibold">Problem</dt>
+    <dd>Declaration and execution drift apart. Meta is declared in one place and put by hand in another. Error scope is a hard-coded list of command names, checked only by a source-text regex. ApplyCommand and RestoreCommand repeat the same write scaffolding.</dd>
+    <dt class="font-semibold">Solution</dt>
+    <dd>Use the existing <code>declareIn</code>/<code>putInto</code> pattern of DateRange, Sorting and PerformanceScope everywhere, as one facet interface, and add a WriteCommand facet for dry-run, SafeWrite options, warnings and write errors.</dd>
+    <dt class="font-semibold">Wins</dt>
+    <dd><ul class="list-disc pl-5 space-y-0.5">
+      <li>Help follows from use</li>
+      <li>Drop the regex code scan</li>
+      <li>New command: fewer files to touch</li>
+      <li>Facet tests: putMeta matches its schema</li>
+    </ul></dd>
+  </dl>
+  <div class="rounded-md bg-amber-50 border border-amber-200 text-amber-900 text-sm px-4 py-2">
+    Fits ADR 0006: facets produce the CommandSpec, OptionSpec and Schema declarations that help is generated from. No new parser.
+  </div>
+</article>
+
+<!-- ============ 4 ============ -->
+<article id="c4" class="rounded-xl border border-slate-200 bg-white p-6 space-y-5 shadow-sm">
+  <div class="flex flex-wrap items-center gap-2">
+    <h2 class="font-serif text-2xl mr-2">4 · One Master data kind, four registries collapsed</h2>
+    <span class="rounded-full bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1">Worth exploring</span>
+    <span class="rounded-full bg-slate-100 text-slate-700 text-xs px-3 py-1">in-process</span>
+  </div>
+  <ul class="font-mono text-sm text-slate-600 grid sm:grid-cols-2 gap-x-6">
+    <li>command/References.java <span class="text-slate-400">(Kind)</span></li><li>command/MasterDataList.java <span class="text-slate-400">(Source)</span></li>
+    <li>apply/EntityKind.java</li><li>apply/EntityOperations.java <span class="text-slate-400">(Definition, Field)</span></li>
+    <li>apply/InstrumentOperations.java · AccountOperations.java</li><li>query/InstrumentsCommand.java · CashAccountsCommand.java <span class="text-slate-400">(render)</span></li>
+  </ul>
+
+  <div class="grid md:grid-cols-2 gap-4">
+    <div class="rounded-lg border border-slate-200 p-3">
+      <p class="lbl text-slate-500 mb-1">Before: an Instrument is described six times</p>
+      <pre class="mermaid">
+flowchart TB
+  I((Instrument))
+  I --- A[References.Kind<br/>ISIN / ticker / name]
+  I --- B[MasterDataList.Source<br/>list + sort]
+  I --- C[EntityKind<br/>UUID, existing entity]
+  I --- D[EntityOperations.Field<br/>write fields]
+  I --- E[InstrumentsCommand.render<br/>read fields]
+  I --- F["Change.entity string<br/>'taxonomy-assignment' undocumented"]
+  classDef leak stroke:#dc2626,stroke-width:2px,fill:#fef2f2;
+  class F leak
+  A -. command imports query .-> B
+      </pre>
+    </div>
+    <div class="rounded-lg border border-slate-200 p-3 flex flex-col">
+      <p class="lbl text-slate-500 mb-3">After: one module per kind, others are views of it</p>
+      <div class="deep rounded-lg p-4 space-y-2">
+        <p class="lbl text-slate-300">Master data kind · interface</p>
+        <p class="font-mono text-xs text-emerald-300">uuid · name · lookup keys · render · write fields · retired</p>
+      </div>
+      <div class="flex flex-wrap gap-2 mt-3 text-xs opacity-80">
+        <span class="mod">reference lookup</span><span class="mod">paged list</span><span class="mod">existing-entity check</span><span class="mod">entity.update</span><span class="mod">Change.entity enum</span>
+      </div>
+      <p class="text-xs text-slate-500 mt-3">Every write field is a member of the read item: checked in memory, not by convention.</p>
+    </div>
+  </div>
+
+  <dl class="grid sm:grid-cols-[7rem_1fr] gap-y-2 text-sm">
+    <dt class="font-semibold">Problem</dt>
+    <dd>"Write fields are named as in the output" is a convention only. The <code>entity</code> member of a change is a free string, and it has already drifted: the schema at ApplyCommand.java:38 lists four kinds, but TaxonomyOperations.java:83 emits <code>taxonomy-assignment</code>.</dd>
+    <dt class="font-semibold">Solution</dt>
+    <dd>One module per <b>Master data</b> kind holds what is known about it. References, lists, the existing-entity check and entity operations derive from it.</dd>
+    <dt class="font-semibold">Wins</dt>
+    <dd><ul class="list-disc pl-5 space-y-0.5">
+      <li>Locality: new field, one place</li>
+      <li>Breaks the command→query cycle</li>
+      <li>Schema catches entity drift</li>
+    </ul></dd>
+  </dl>
+</article>
+
+<!-- ============ 5 ============ -->
+<article id="c5" class="rounded-xl border border-slate-200 bg-white p-6 space-y-5 shadow-sm">
+  <div class="flex flex-wrap items-center gap-2">
+    <h2 class="font-serif text-2xl mr-2">5 · Declared failure codes for write operations</h2>
+    <span class="rounded-full bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1">Worth exploring</span>
+    <span class="rounded-full bg-slate-100 text-slate-700 text-xs px-3 py-1">in-process</span>
+  </div>
+  <ul class="font-mono text-sm text-slate-600 grid sm:grid-cols-2 gap-x-6">
+    <li>apply/OperationSpec.java · OperationContext.java</li><li>apply/*Operations.java <span class="text-slate-400">(~54 free-string codes)</span></li>
+    <li>HelpText.java</li><li>tests: SkillDriftTest.java</li>
+  </ul>
+
+  <div class="grid md:grid-cols-2 gap-4">
+    <div class="rounded-lg border border-slate-200 p-3">
+      <p class="lbl text-slate-500 mb-3">Before: interface wider than anything it declares</p>
+      <svg viewBox="0 0 300 200" class="w-full h-48">
+        <text x="60" y="16" font-size="10" text-anchor="middle" fill="#64748b">DECLARED</text>
+        <text x="220" y="16" font-size="10" text-anchor="middle" fill="#64748b">ACTUALLY RETURNED</text>
+        <rect x="30" y="150" width="60" height="40" fill="#e2e8f0" stroke="#64748b"/>
+        <text x="60" y="174" font-size="9" text-anchor="middle">schema</text>
+        <rect x="190" y="30" width="60" height="160" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>
+        <text x="220" y="80" font-size="9" text-anchor="middle" fill="#991b1b">negative-holding</text>
+        <text x="220" y="96" font-size="9" text-anchor="middle" fill="#991b1b">currency-mismatch</text>
+        <text x="220" y="112" font-size="9" text-anchor="middle" fill="#991b1b">type-immutable</text>
+        <text x="220" y="128" font-size="9" text-anchor="middle" fill="#991b1b">duplicate-target</text>
+        <text x="220" y="144" font-size="9" text-anchor="middle" fill="#991b1b">… ~50 more</text>
+        <rect x="190" y="150" width="60" height="40" fill="#e2e8f0" stroke="#64748b"/>
+        <text x="220" y="174" font-size="9" text-anchor="middle">schema</text>
+      </svg>
+    </div>
+    <div class="rounded-lg border border-slate-200 p-3">
+      <p class="lbl text-slate-500 mb-3">After: each operation declares its failure codes</p>
+      <svg viewBox="0 0 300 200" class="w-full h-48">
+        <rect x="40" y="30" width="220" height="40" fill="#0f172a"/>
+        <text x="150" y="54" font-size="10" text-anchor="middle" fill="#6ee7b7">OperationSpec: schema + failure codes</text>
+        <line x1="150" y1="70" x2="70" y2="120" stroke="#475569"/>
+        <line x1="150" y1="70" x2="150" y2="120" stroke="#475569"/>
+        <line x1="150" y1="70" x2="230" y2="120" stroke="#475569"/>
+        <rect x="25" y="120" width="90" height="30" fill="#fff" stroke="#94a3b8" rx="4"/><text x="70" y="139" font-size="9" text-anchor="middle">apply --help op</text>
+        <rect x="115" y="160" width="70" height="30" fill="#fff" stroke="#94a3b8" rx="4"/><text x="150" y="179" font-size="9" text-anchor="middle">context.fail</text>
+        <rect x="190" y="120" width="85" height="30" fill="#fff" stroke="#94a3b8" rx="4"/><text x="232" y="139" font-size="9" text-anchor="middle">SkillDriftTest</text>
+        <line x1="150" y1="120" x2="150" y2="160" stroke="#475569"/>
+      </svg>
+    </div>
+  </div>
+
+  <dl class="grid sm:grid-cols-[7rem_1fr] gap-y-2 text-sm">
+    <dt class="font-semibold">Problem</dt>
+    <dd>Field-level failure codes are part of the <b>interface</b> that agents depend on, but nothing declares them. Help can't list them, and the skill can only say "explain each failure".</dd>
+    <dt class="font-semibold">Solution</dt>
+    <dd><code>context.fail</code> takes a code declared by the operation or by a shared failure catalog, and help renders the codes for each operation.</dd>
+    <dt class="font-semibold">Wins</dt>
+    <dd><ul class="list-disc pl-5 space-y-0.5">
+      <li>Interface becomes discoverable</li>
+      <li>Drift test covers write failures</li>
+    </ul></dd>
+  </dl>
+  <div class="rounded-md bg-amber-50 border border-amber-200 text-amber-900 text-sm px-4 py-2">
+    Same idea as #3 (codes declared by whatever raises them), applied to operations instead of commands. It is cheaper to do after #1, once the transaction codes live in one module.
+  </div>
+</article>
+
+<!-- ============ 6 ============ -->
+<article id="c6" class="rounded-xl border border-slate-200 bg-white p-6 space-y-5 shadow-sm">
+  <div class="flex flex-wrap items-center gap-2">
+    <h2 class="font-serif text-2xl mr-2">6 · An amounts &amp; rates module for rounding</h2>
+    <span class="rounded-full bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-1">Speculative</span>
+    <span class="rounded-full bg-slate-100 text-slate-700 text-xs px-3 py-1">in-process</span>
+  </div>
+  <ul class="font-mono text-sm text-slate-600 grid sm:grid-cols-2 gap-x-6">
+    <li>command/Decimals.java</li><li>currency/ExchangeRates.java:99, :245</li>
+    <li>query/TransactionsCommand.java:302</li><li>apply/TransferOperations.java:23, :178</li>
+    <li>query/AllocationCommand.java:193</li><li>apply/TransactionInput.java:171–188</li>
+  </ul>
+  <div class="grid md:grid-cols-2 gap-4">
+    <div class="rounded-lg border border-slate-200 p-3">
+      <p class="lbl text-slate-500 mb-3">Before: rounding decided at each call site</p>
+      <div class="grid grid-cols-2 gap-2 text-xs">
+        <span class="mod">Rate.convert · HALF_DOWN</span>
+        <span class="mod">invert · scale 10 HALF_DOWN</span>
+        <span class="mod">invert again · TransactionsCommand</span>
+        <span class="mod leakmod">transfer rate · HALF_UP</span>
+        <span class="mod leakmod">share · double division</span>
+        <span class="mod">gross sign · TransactionInput</span>
+      </div>
+    </div>
+    <div class="rounded-lg border border-slate-200 p-3">
+      <p class="lbl text-slate-500 mb-3">After</p>
+      <div class="deep rounded-lg p-4 space-y-2">
+        <p class="lbl text-slate-300">Amounts · interface</p>
+        <p class="font-mono text-xs text-emerald-300">toStored · toDecimal · invert(rate) · convert · share · signed-vs-magnitude</p>
+      </div>
+    </div>
+  </div>
+  <dl class="grid sm:grid-cols-[7rem_1fr] gap-y-2 text-sm">
+    <dt class="font-semibold">Problem</dt>
+    <dd>Rounding modes are inconsistent: HALF_UP in one place, HALF_DOWN elsewhere, and a share computed with doubles. ADR 0003's sign rule is not enforced in any one place.</dd>
+    <dt class="font-semibold">Solution</dt>
+    <dd>Move these into one small module with direct tests. It is a small module, so check first that it passes the deletion test rather than just moving code.</dd>
+    <dt class="font-semibold">Wins</dt>
+    <dd><ul class="list-disc pl-5 space-y-0.5"><li>Rounding tested directly</li><li>One rate inversion</li></ul></dd>
+  </dl>
+</article>
+
+</section>
+
+<section id="top-recommendation" class="rounded-xl deep p-8 space-y-3">
+  <p class="lbl text-slate-400">Top recommendation</p>
+  <h2 class="font-serif text-3xl"><a href="#c1" class="underline decoration-emerald-400 underline-offset-4">1 · Deepen the Transaction record module</a></h2>
+  <p class="text-slate-300 max-w-3xl">It is the hottest code in the history, the least directly tested, and the only candidate with a likely bug in its seam (an update that refuses a type change but still builds the replacement). Making it one module also removes most of the query↔apply cycle and makes #5 cheap.</p>
+</section>
+
+</main>
+</body>
+</html>

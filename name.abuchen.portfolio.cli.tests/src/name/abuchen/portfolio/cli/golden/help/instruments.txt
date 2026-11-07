@@ -1,0 +1,33 @@
+pp-cli instruments: Instruments (securities, indices, exchange rates): UUID, name, currency, ISIN, ticker, WKN, note, retired flag and attributes, sorted by name (default) or updatedAt, then UUID; --order desc reverses.
+
+Usage: pp-cli instruments [options]
+
+Options:
+  --limit <n>  Maximum number of items to return. (integer 1 to 1000, default 200)
+  --offset <n>  Number of items to skip; continue with nextOffset of the previous page. (integer at least 0, default 0)
+  --sort <field>  Field to sort by. (one of name, updatedAt, default name)
+  --order <asc|desc>  Direction of the sort. desc reverses the whole order, ties by id included. (one of asc, desc, default asc)
+  Global options (pp-cli --help): --file <path>, --format <format> (json, table), --verbose
+
+Response data: A page of the list.
+  items (array of object) The items of this page.
+    uuid (string) Canonical UUID.
+    name (string) Instrument name; empty if the file has none.
+    currencyCode (string, optional) ISO currency code; absent for indices. The currency may be a minor currency unit, such as ILA (1/100 ILS) or GBX (1/100 GBP); the figure is then in that unit. This command does not convert: holdings has the market value in the reporting currency in converted.
+    isin (string, optional) ISIN, if set.
+    wkn (string, optional) WKN, if set.
+    tickerSymbol (string, optional) Ticker symbol, if set.
+    note (string, optional) Note, if set.
+    retired (boolean) Whether the instrument is retired.
+    attributes (array of object) User-defined attributes that have a value.
+      id (string) Attribute type id.
+      name (string) Attribute type name.
+      type (string, one of string, boolean, date, amount, quote, shares, percent, number) How to read the value.
+      value (string or number or boolean) The value: a string, a boolean, an ISO date string, a decimal number (amount, quote, shares), a fraction (percent, 0.0022 means 0.22%) or an unscaled number.
+    updatedAt (string, optional) When the entity last changed in the file, as an ISO-8601 UTC instant to the second, for example 2026-10-24T15:04:57Z. Absent if the file has none.
+  total (integer) Number of items in the whole list.
+  nextOffset (integer, optional) Offset of the next page. Absent on the last page.
+
+Response meta: fileVersion, asOf, limit, offset, sort, order
+
+Error codes (meanings: pp-cli --help): unexpected-argument, unknown-option, option-value-required, invalid-option-value, file-required, file-not-found, file-unreadable, file-version-unsupported, password-required, incorrect-password, internal-error

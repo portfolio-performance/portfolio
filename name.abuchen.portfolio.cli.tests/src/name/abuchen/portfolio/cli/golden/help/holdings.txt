@@ -1,0 +1,60 @@
+pp-cli holdings: What is held at a date and what it is worth: holdings aggregated across investment accounts, or per account, with cash balances in a separate section, in the base currency or --currency.
+
+Usage: pp-cli holdings [options]
+
+Options:
+  --date <yyyy-MM-dd>  Day to value the holdings at. Defaults to today. Holdings use the prices on or before this day, and conversions the rates on or before it.
+  --investment-account <ref>  Only the holdings of this investment account. The cash section is not affected.
+  --by-account  Split the holdings into one block per investment account instead of one aggregate. (switch, default off)
+  --include-zero  Also list instruments held before the date and fully sold by it, with zero shares. They are hidden by default. (switch, default off)
+  --currency <code>  ISO currency of the totals and converted amounts. Defaults to the base currency of the file. Amounts stay in their native currency as well.
+  Global options (pp-cli --help): --file <path>, --format <format> (json), --verbose
+
+Response data: What is held at the date.
+  holdings (array of object) One block of holdings: the aggregate, or one block per investment account.
+    investmentAccount (object, optional) The investment account of the block. Absent for the aggregate of all accounts.
+      uuid (string) Canonical UUID.
+      name (string) Account name; empty if the file has none.
+    items (array of object) The holdings, ordered by name then UUID.
+      instrument (string) UUID of the instrument.
+      name (string) Instrument name; empty if the file has none.
+      shares (number) Number of shares held.
+      price (object, optional) The price valuation used: the last one on or before the date, or the last transaction's price if there is none. Absent for a sold-out holding.
+        date (string) ISO date of the price.
+        value (number) Price per share in the currency of the instrument. The currency may be a minor currency unit, such as ILA (1/100 ILS) or GBX (1/100 GBP); the figure is then in that unit. The value in the reporting currency is in converted.
+      amount (number) Market value in the currency of the instrument. Minor units: as above.
+      currencyCode (string) ISO currency code of the instrument. Minor units: as above.
+      converted (object, optional) The market value in the reporting currency, at the rate of the date. Absent if no rate was found.
+        currencyCode (string) The ISO currency code asked for.
+        amount (number) The amount converted, rounded to minor units like core does.
+        rate (number) Unrounded factor from the native to the converted currency.
+        rateDate (string) ISO date of the rate; of the oldest if chained.
+        rateSource (string, one of identity, transaction, instrument, ecb, fixed) Where the rate comes from: transaction is the record's own forex unit or transfer rate, instrument an exchange-rate instrument of the file, ecb the desktop app's ECB cache, fixed one of core's fixed pairs such as GBX to GBP.
+    total (object, optional) Value of the block in the reporting currency. Absent if a holding has no rate.
+      currencyCode (string) The reporting currency.
+      amount (number) Sum of the converted amounts.
+  cash (object) The cash accounts, whatever the investment-account filter.
+    items (array of object) The balances, ordered by name then UUID.
+      cashAccount (string) UUID of the cash account.
+      name (string) Account name; empty if the file has none.
+      amount (number) Balance at the date in the currency of the account.
+      currencyCode (string) ISO currency code of the account.
+      converted (object, optional) The balance in the reporting currency, at the rate of the date. Absent if no rate was found.
+        currencyCode (string) The ISO currency code asked for.
+        amount (number) The amount converted, rounded to minor units like core does.
+        rate (number) Unrounded factor from the native to the converted currency.
+        rateDate (string) ISO date of the rate; of the oldest if chained.
+        rateSource (string, one of identity, transaction, instrument, ecb, fixed) Where the rate comes from: transaction is the record's own forex unit or transfer rate, instrument an exchange-rate instrument of the file, ecb the desktop app's ECB cache, fixed one of core's fixed pairs such as GBX to GBP.
+    total (object, optional) Sum of the balances in the reporting currency. Absent if a balance has no rate.
+      currencyCode (string) The reporting currency.
+      amount (number) Sum of the converted amounts.
+
+Response meta: fileVersion, asOf, date, currency; optional: investmentAccount, exchangeRates
+
+Warnings:
+  stale-price  The latest price is more than 7 days old. Not emitted for retired instruments, instruments with a manual quote feed or instruments without a price.
+  exchange-rate-missing  No usable exchange rate for a currency pair; its figures are left out. Carries baseCurrency, termCurrency and the count of affected items.
+  stale-exchange-rate  An exchange rate over 7 days older than the day needed was used. Carries baseCurrency, termCurrency, the count of records and maxAgeDays.
+  exchange-rate-cache-unavailable  The desktop app's ECB rate cache is missing, unreadable or invalid, so it is not used. Carries the path if known and a reason: not-configured, not-found, unreadable or unparsable.
+
+Error codes (meanings: pp-cli --help): unexpected-argument, unknown-option, option-value-required, invalid-option-value, file-required, file-not-found, file-unreadable, file-version-unsupported, password-required, incorrect-password, reference-not-found, reference-ambiguous, internal-error

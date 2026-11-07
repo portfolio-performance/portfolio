@@ -1,0 +1,110 @@
+# 15: Master-data lists with pagination
+
+Type: task
+Status: ready-for-agent
+Blocked by: 13
+
+Spec: [spec.md](../spec.md), user stories 28–31 and 62–63.
+
+## What to build
+
+An agent can list the **master data** in a client file:
+
+- `pp-cli instruments`: UUID, name, currency, ISIN, ticker, WKN, note, retired flag and user-defined attributes.
+- `pp-cli investment-accounts`: UUID, name, reference cash account, note and retired flag.
+- `pp-cli cash-accounts`: UUID, name, currency, note and retired flag.
+
+UUIDs are canonical in all output. List commands share pagination: `--limit` (default 200) and `--offset`, returning `total` and `nextOffset`, with stable ordering. Field names are camelCase and match the upstream #5870 names where an equivalent exists. The exact contract is under "Decisions" below and is binding.
+
+## Acceptance criteria
+
+- [x] All three commands return the documented fields for a fixture built with the shared JUnit builders
+- [x] `--limit` and `--offset` page through results, and `total` and `nextOffset` are correct, with `nextOffset` absent on the last page
+- [x] Ordering is stable across calls: name (case-insensitive, ordinal), then UUID
+- [x] Null and blank optional strings are omitted; `name` and `retired` are always present, and `attributes` is always present (`[]` when empty)
+- [x] Invalid `--limit`/`--offset` values give the `invalid-option-value` usage error; an offset past the end gives an empty page
+- [x] Attributes use the typed encoding below; unsupported, orphaned and mismatched values are skipped without failing the command
+- [x] All three commands are declared, appear in `describe` (including option types, defaults and ranges) and pass its consistency test
+
+## Decisions
+
+Settled with the owner in a design session (2026-10-16). Implement them as written; don't re-ask.
+
+### Response shape (shared by every list command, including ticket 17)
+
+```json
+{
+  "data": { "items": [ ... ], "total": 412, "nextOffset": 200 },
+  "meta": { "fileVersion": 66, "asOf": "2026-10-16", "limit": 200, "offset": 0 },
+  "warnings": []
+}
+```
+
+- `data` is an object `{items, total, nextOffset}`, not a bare array. Upstream #5870 wraps lists in `{items}` too.
+- `nextOffset` is **omitted** on the last page.
+- `meta` echoes the resolved `limit` and `offset`, alongside `fileVersion` and `asOf` as in `info`.
+- The `fileVersion`/`asOf` meta schema, currently duplicated in `InfoCommand` and `DescribeCommand`, moves into one shared helper. Every list command uses a paging extension of it that adds `limit` and `offset`.
+- These two deviations from upstream (paging fields in `data`, and the attribute array below) are recorded in [ADR 0004](../../../docs/adr/0004-list-output-deviates-from-upstream-rest-api.md).
+
+### Paging input
+
+- `--limit`: integer, 1–1000, default 200. `--offset`: integer ≥ 0, default 0.
+- Anything else (0, negative, non-integer, over 1000) is a usage error: code `invalid-option-value`, exit code 2 (`CliException.usage`), with `option` and `value` extensions (`CliException.with`).
+- An offset at or past the end returns empty `items`, the correct `total`, and no `nextOffset`.
+- `OptionSpec` gains an optional type, default and range, so that `describe` publishes them.
+
+### Ordering
+
+- Master data is ordered by name, case-insensitive with ordinal comparison (e.g. `String.CASE_INSENSITIVE_ORDER`, **not** a locale `Collator`), then by UUID as the tie-break.
+- The spec's "date then UUID" applies only to dated records (transactions).
+
+### Field rules
+
+- Unset optional fields are **omitted**, never `null` (`Schema.optionalProperty`). Upstream does the same.
+- A null or blank (empty or whitespace-only) string counts as unset. This applies to `note`, `isin`, `wkn`, `tickerSymbol`, the instrument's `currencyCode` (a blank code is omitted like an index's) and string attribute values. Values that are present are emitted untrimmed.
+- Exceptions: `name` is always present on all three entities. A null name is emitted as `""`, and a blank name as stored. For ordering, null counts as `""`. The app never saves a nameless entity, so this only covers damaged or hand-edited files. The cash account's `currencyCode` is always present and emitted as stored (core defaults it to EUR).
+- `retired` is always present as a boolean on all three entities. The core getter is `isRetired()`. The UI calls it "deactivated"; we use **Retired** (see `GLOSSARY.md`). Upstream doesn't expose it.
+- `note` is included on all three entities when set.
+
+### Instruments
+
+- Fields: `uuid`, `name`, `currencyCode`, `isin`, `wkn`, `tickerSymbol`, `note`, `retired`, `attributes`.
+- List **every** security in the client, including indices and exchange-rate securities. This matches `info`'s `counts.instruments`. Indices have no currency, so `currencyCode` is optional and omitted for them. There are no filters or flags for these kinds in this ticket.
+
+### Investment accounts
+
+- Fields: `uuid`, `name`, `referenceCashAccount`, `note`, `retired`.
+- `referenceCashAccount` is a bare UUID string, as upstream does it, and is omitted if the portfolio has none.
+
+### Cash accounts
+
+- Fields: `uuid`, `name`, `currencyCode`, `note`, `retired`.
+
+### Instrument attributes
+
+- `attributes` is an array of `{id, name, type, value}`, a deliberate deviation from upstream's id-keyed map. User-created attribute type ids are random UUIDs and there is no `attribute-types` command, so an agent needs `name` and `type` inline.
+- `attributes` is always present, `[]` when nothing is set. Upstream omits the key when it's empty.
+- Attributes are exposed on instruments only. Core also supports them on cash and investment accounts; that is deferred, because the only built-in type there (`logo`) is skipped anyway and adding the field later doesn't break anything.
+- Iterate `client.getSettings().getAttributeTypes()` filtered by `supports(Security.class)`. This gives a stable order and skips orphaned stored entries. Include only attributes with a non-null stored value.
+- Value encoding copies upstream #5870's `AttributeCodec`. It deliberately avoids core's `AttributeType.Converter.toString`, which is locale-dependent. Our pinned core has no `AttributeFieldType`, so map from `AttributeType.getConverter()`'s class:
+
+  | Converter | `type` | `value` |
+  |---|---|---|
+  | `StringConverter` | `string` | string |
+  | `BooleanConverter` | `boolean` | boolean |
+  | `DateConverter` | `date` | ISO `yyyy-MM-dd` string |
+  | `AmountConverter`, `AmountPlainConverter` | `amount` | decimal: stored long ÷ 10^precision of `Values.Amount` / `Values.AmountPlain` |
+  | `QuoteConverter` | `quote` | decimal, `Values.Quote` precision |
+  | `ShareConverter` | `shares` | decimal, `Values.Share` precision |
+  | `PercentConverter` | `percent` | stored double as is (a fraction: 0.0022 means 0.22%) |
+  | `PercentPlainConverter` | `number` | stored double as is (unscaled; not a percent despite the name) |
+  | `LimitPriceConverter`, `BookmarkConverter`, `ImageConverter`, unknown | skipped | n/a |
+
+- A value that doesn't match its declared type (e.g. a type edited after values were stored, or a non-finite double) is skipped silently. It must not fail the command.
+- `type` is published as an enum in `describe`. `value` needs a multi-type schema (`string | number | boolean`), so extend `Schema` and the test-side `SchemaValidator` accordingly.
+
+### Tests
+
+- Test seam: the in-process `PpCli.execute`, with fixtures from the shared JUnit builders.
+- Each new command needs a case in `DescribeConsistencyTest.sampleArguments` and a declaration in `Commands.ALL`.
+
