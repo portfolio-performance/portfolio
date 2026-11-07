@@ -26,6 +26,9 @@ public class ValueColorSchemeCSSHandler implements ICSSPropertyHandler
 
     private boolean applyTo(ValueColorScheme scheme, String property, CSSValue value)
     {
+        if (scheme.isCustom() && ("positive-foreground".equals(property) || "negative-foreground".equals(property))) //$NON-NLS-1$ //$NON-NLS-2$
+            return true;
+
         switch (property)
         {
             case "positive-foreground": //$NON-NLS-1$

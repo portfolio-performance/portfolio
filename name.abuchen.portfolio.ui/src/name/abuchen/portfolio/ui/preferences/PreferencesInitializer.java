@@ -47,6 +47,8 @@ public class PreferencesInitializer extends AbstractPreferenceInitializer
 
         // Value color scheme
         store.setDefault(UIConstants.Preferences.VALUE_COLOR_SCHEME, ValueColorScheme.STANDARD_SCHEME);
+        store.setDefault(UIConstants.Preferences.VALUE_COLOR_SCHEME_CUSTOM_POSITIVE, "#00E000"); //$NON-NLS-1$
+        store.setDefault(UIConstants.Preferences.VALUE_COLOR_SCHEME_CUSTOM_NEGATIVE, "#FF6B6B"); //$NON-NLS-1$
     }
 
     public static int compareOSVersion(String version)

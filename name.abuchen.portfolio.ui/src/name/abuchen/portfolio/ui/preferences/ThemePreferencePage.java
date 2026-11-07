@@ -28,7 +28,9 @@ import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.ColorDialog;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -44,6 +46,7 @@ import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ValueColorScheme;
 import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
 import name.abuchen.portfolio.ui.util.swt.ControlDecoration;
+import name.abuchen.portfolio.util.ColorConversion;
 
 @SuppressWarnings("restriction")
 public final class ThemePreferencePage extends PreferencePage
@@ -72,6 +75,8 @@ public final class ThemePreferencePage extends PreferencePage
 
     private List<Button> valueColorSchemeOptions = new ArrayList<>();
     private List<Runnable> previewBackgroundUpdaters = new ArrayList<>();
+    private RGB customPositiveRGB;
+    private RGB customNegativeRGB;
 
     public ThemePreferencePage(IThemeEngine themeEngine)
     {
@@ -168,6 +173,28 @@ public final class ThemePreferencePage extends PreferencePage
         label.setText(Messages.LabelColorValueScheme);
         GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(label);
 
+        String customPosHex = getPreferenceStore().getString(UIConstants.Preferences.VALUE_COLOR_SCHEME_CUSTOM_POSITIVE);
+        try
+        {
+            customPositiveRGB = customPosHex != null && !customPosHex.isBlank() ? ColorConversion.hex2RGB(customPosHex)
+                            : ValueColorScheme.getCustomScheme().positiveForeground().getRGB();
+        }
+        catch (Exception e)
+        {
+            customPositiveRGB = ValueColorScheme.getCustomScheme().positiveForeground().getRGB();
+        }
+
+        String customNegHex = getPreferenceStore().getString(UIConstants.Preferences.VALUE_COLOR_SCHEME_CUSTOM_NEGATIVE);
+        try
+        {
+            customNegativeRGB = customNegHex != null && !customNegHex.isBlank() ? ColorConversion.hex2RGB(customNegHex)
+                            : ValueColorScheme.getCustomScheme().negativeForeground().getRGB();
+        }
+        catch (Exception e)
+        {
+            customNegativeRGB = ValueColorScheme.getCustomScheme().negativeForeground().getRGB();
+        }
+
         var selectedSchemaId = getPreferenceStore().getString(UIConstants.Preferences.VALUE_COLOR_SCHEME);
         var schemes = ValueColorScheme.getAvailableSchemes();
 
@@ -235,6 +262,19 @@ public final class ThemePreferencePage extends PreferencePage
             }
         }
 
+        if (customPositiveRGB != null)
+        {
+            getPreferenceStore().setValue(UIConstants.Preferences.VALUE_COLOR_SCHEME_CUSTOM_POSITIVE,
+                            ColorConversion.toHex(customPositiveRGB));
+            ValueColorScheme.getCustomScheme().setPositiveForeground(customPositiveRGB);
+        }
+        if (customNegativeRGB != null)
+        {
+            getPreferenceStore().setValue(UIConstants.Preferences.VALUE_COLOR_SCHEME_CUSTOM_NEGATIVE,
+                            ColorConversion.toHex(customNegativeRGB));
+            ValueColorScheme.getCustomScheme().setNegativeForeground(customNegativeRGB);
+        }
+
         Display.getDefault().asyncExec(() -> previewBackgroundUpdaters.forEach(Runnable::run));
 
         return super.performOk();
@@ -253,6 +293,17 @@ public final class ThemePreferencePage extends PreferencePage
         {
             var scheme = (ValueColorScheme) button.getData();
             button.setSelection(ValueColorScheme.STANDARD_SCHEME.equals(scheme.getIdentifier()));
+        }
+
+        try
+        {
+            customPositiveRGB = ColorConversion.hex2RGB("#00E000"); //$NON-NLS-1$
+            customNegativeRGB = ColorConversion.hex2RGB("#FF6B6B"); //$NON-NLS-1$
+            ValueColorScheme.getCustomScheme().setPositiveForeground(customPositiveRGB);
+            ValueColorScheme.getCustomScheme().setNegativeForeground(customNegativeRGB);
+        }
+        catch (Exception ignored)
+        {
         }
 
         Display.getDefault().asyncExec(() -> previewBackgroundUpdaters.forEach(Runnable::run));
@@ -335,7 +386,8 @@ public final class ThemePreferencePage extends PreferencePage
         // Color preview composite
         var previewComposite = new Composite(parent, SWT.NONE);
         previewComposite.setBackgroundMode(SWT.INHERIT_FORCE);
-        GridLayoutFactory.fillDefaults().numColumns(4).margins(20, 5).spacing(10, 5).applyTo(previewComposite);
+        int numColumns = scheme.isCustom() ? 6 : 4;
+        GridLayoutFactory.fillDefaults().numColumns(numColumns).margins(20, 5).spacing(10, 5).applyTo(previewComposite);
         GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(previewComposite);
 
         // Positive
@@ -344,7 +396,25 @@ public final class ThemePreferencePage extends PreferencePage
 
         var positiveLabel = new ColoredLabel(previewComposite, SWT.NONE);
         positiveLabel.setText(Values.Amount.format(Values.Amount.factorize(1234.56)));
-        positiveLabel.setTextColor(scheme.positiveForeground());
+        positiveLabel.setTextColor(scheme.isCustom() ? Colors.getColor(customPositiveRGB) : scheme.positiveForeground());
+
+        if (scheme.isCustom())
+        {
+            var btnPositive = new Button(previewComposite, SWT.PUSH);
+            btnPositive.setText(Messages.ValueColorSchemeCustomPositive);
+            btnPositive.addListener(SWT.Selection, event -> {
+                ColorDialog dialog = new ColorDialog(getShell());
+                dialog.setRGB(customPositiveRGB);
+                RGB newRGB = dialog.open();
+                if (newRGB != null)
+                {
+                    customPositiveRGB = newRGB;
+                    positiveLabel.setTextColor(Colors.getColor(customPositiveRGB));
+                    previewComposite.redraw();
+                    selectScheme(radioButton);
+                }
+            });
+        }
 
         // Negative
         var negativeArrowLabel = new Label(previewComposite, SWT.NONE);
@@ -352,7 +422,25 @@ public final class ThemePreferencePage extends PreferencePage
 
         var negativeLabel = new ColoredLabel(previewComposite, SWT.NONE);
         negativeLabel.setText(Values.Amount.format(Values.Amount.factorize(-1234.56)));
-        negativeLabel.setTextColor(scheme.negativeForeground());
+        negativeLabel.setTextColor(scheme.isCustom() ? Colors.getColor(customNegativeRGB) : scheme.negativeForeground());
+
+        if (scheme.isCustom())
+        {
+            var btnNegative = new Button(previewComposite, SWT.PUSH);
+            btnNegative.setText(Messages.ValueColorSchemeCustomNegative);
+            btnNegative.addListener(SWT.Selection, event -> {
+                ColorDialog dialog = new ColorDialog(getShell());
+                dialog.setRGB(customNegativeRGB);
+                RGB newRGB = dialog.open();
+                if (newRGB != null)
+                {
+                    customNegativeRGB = newRGB;
+                    negativeLabel.setTextColor(Colors.getColor(customNegativeRGB));
+                    previewComposite.redraw();
+                    selectScheme(radioButton);
+                }
+            });
+        }
 
         Runnable updatePreviewBackground = () -> {
             if (previewComposite.isDisposed())
@@ -364,14 +452,20 @@ public final class ThemePreferencePage extends PreferencePage
             negativeArrowLabel.setBackground(previewBackground);
             negativeArrowLabel.setImage(scheme.downArrow());
             positiveLabel.setBackdropColor(previewBackground);
-            positiveLabel.setTextColor(scheme.positiveForeground());
+            positiveLabel.setTextColor(scheme.isCustom() ? Colors.getColor(customPositiveRGB) : scheme.positiveForeground());
             negativeLabel.setBackdropColor(previewBackground);
-            negativeLabel.setTextColor(scheme.negativeForeground());
+            negativeLabel.setTextColor(scheme.isCustom() ? Colors.getColor(customNegativeRGB) : scheme.negativeForeground());
             previewComposite.redraw();
         };
         previewBackgroundUpdaters.add(updatePreviewBackground);
         Display.getDefault().asyncExec(updatePreviewBackground);
 
         return radioButton;
+    }
+
+    private void selectScheme(Button targetRadioButton)
+    {
+        for (var button : valueColorSchemeOptions)
+            button.setSelection(button == targetRadioButton);
     }
 }

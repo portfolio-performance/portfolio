@@ -322,6 +322,16 @@ public interface UIConstants
          */
         String VALUE_COLOR_SCHEME = "VALUE_COLOR_SCHEME"; //$NON-NLS-1$
 
+        /**
+         * Preference key for custom value color scheme positive color (hex string)
+         */
+        String VALUE_COLOR_SCHEME_CUSTOM_POSITIVE = "VALUE_COLOR_SCHEME_CUSTOM_POSITIVE"; //$NON-NLS-1$
+
+        /**
+         * Preference key for custom value color scheme negative color (hex string)
+         */
+        String VALUE_COLOR_SCHEME_CUSTOM_NEGATIVE = "VALUE_COLOR_SCHEME_CUSTOM_NEGATIVE"; //$NON-NLS-1$
+
     }
 
     interface Theme // NOSONAR

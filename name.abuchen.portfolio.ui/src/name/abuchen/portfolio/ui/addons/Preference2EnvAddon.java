@@ -7,6 +7,7 @@ import jakarta.inject.Inject;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.swt.graphics.RGB;
 
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
@@ -28,6 +29,7 @@ import name.abuchen.portfolio.ui.dialogs.transactions.PresetValues;
 import name.abuchen.portfolio.ui.preferences.Experiments;
 import name.abuchen.portfolio.ui.util.ValueColorScheme;
 import name.abuchen.portfolio.ui.util.chart.ChartLineWidth;
+import name.abuchen.portfolio.util.ColorConversion;
 import name.abuchen.portfolio.util.FormatHelper;
 import name.abuchen.portfolio.util.TradeCalendarManager;
 import name.abuchen.portfolio.util.WebAccess;
@@ -46,6 +48,46 @@ public class Preference2EnvAddon
 
         if (broker != null && !Objects.equals(currentScheme, ValueColorScheme.current().getIdentifier()))
             broker.post(UIConstants.Event.Global.VALUE_COLOR_SCHEME_CHANGED, scheme);
+    }
+
+    @Inject
+    @Optional
+    public void setCustomValueColorPositive(
+                    @Preference(value = UIConstants.Preferences.VALUE_COLOR_SCHEME_CUSTOM_POSITIVE) String color)
+    {
+        if (color != null && !color.isBlank())
+        {
+            try
+            {
+                RGB rgb = ColorConversion.hex2RGB(color);
+                ValueColorScheme.getCustomScheme().setPositiveForeground(rgb);
+                if (broker != null && ValueColorScheme.CUSTOM_SCHEME.equals(ValueColorScheme.current().getIdentifier()))
+                    broker.post(UIConstants.Event.Global.VALUE_COLOR_SCHEME_CHANGED, ValueColorScheme.CUSTOM_SCHEME);
+            }
+            catch (Exception ignored)
+            {
+            }
+        }
+    }
+
+    @Inject
+    @Optional
+    public void setCustomValueColorNegative(
+                    @Preference(value = UIConstants.Preferences.VALUE_COLOR_SCHEME_CUSTOM_NEGATIVE) String color)
+    {
+        if (color != null && !color.isBlank())
+        {
+            try
+            {
+                RGB rgb = ColorConversion.hex2RGB(color);
+                ValueColorScheme.getCustomScheme().setNegativeForeground(rgb);
+                if (broker != null && ValueColorScheme.CUSTOM_SCHEME.equals(ValueColorScheme.current().getIdentifier()))
+                    broker.post(UIConstants.Event.Global.VALUE_COLOR_SCHEME_CHANGED, ValueColorScheme.CUSTOM_SCHEME);
+            }
+            catch (Exception ignored)
+            {
+            }
+        }
     }
 
     @Inject

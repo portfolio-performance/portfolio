@@ -99,6 +99,11 @@ ValueColorScheme.vivid {
 	down-arrow: "scheme/vivid/dark/down_arrow.svg";
 }
 
+ValueColorScheme.custom {
+	up-arrow: "scheme/standard/dark/up_arrow.svg";
+	down-arrow: "scheme/standard/dark/down_arrow.svg";
+}
+
 SecuritiesChart {
 	quote-color: #4ddaff;
 	quote-area-positive-color: #23b0d7;

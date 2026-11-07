@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.RGBA;
 
 import name.abuchen.portfolio.ui.Images;
@@ -18,9 +19,11 @@ import name.abuchen.portfolio.util.ColorConversion;
 public final class ValueColorScheme
 {
     public static final String STANDARD_SCHEME = "standard"; //$NON-NLS-1$
+    public static final String CUSTOM_SCHEME = "custom"; //$NON-NLS-1$
 
     private static final List<ValueColorScheme> schemes;
     private static ValueColorScheme currentScheme;
+    private static ValueColorScheme customScheme;
 
     static
     {
@@ -50,7 +53,14 @@ public final class ValueColorScheme
         vivid.setUpArrow("scheme/vivid/light/up_arrow.svg"); //$NON-NLS-1$
         vivid.setDownArrow("scheme/vivid/light/down_arrow.svg"); //$NON-NLS-1$
 
-        schemes = List.of(standard, blueOrange, asia, vivid);
+        var custom = new ValueColorScheme(CUSTOM_SCHEME, Messages.ValueColorSchemeCustom);
+        custom.setPositiveForeground(ColorConversion.hex2RGBA("#00E000")); //$NON-NLS-1$
+        custom.setNegativeForeground(ColorConversion.hex2RGBA("#FF6B6B")); //$NON-NLS-1$
+        custom.setUpArrow("scheme/standard/light/up_arrow.svg"); //$NON-NLS-1$
+        custom.setDownArrow("scheme/standard/light/down_arrow.svg"); //$NON-NLS-1$
+        customScheme = custom;
+
+        schemes = List.of(standard, blueOrange, asia, vivid, custom);
         currentScheme = standard;
     }
 
@@ -88,6 +98,11 @@ public final class ValueColorScheme
         this.positiveForeground = Colors.getColor(color.rgb);
     }
 
+    public void setPositiveForeground(RGB color)
+    {
+        this.positiveForeground = Colors.getColor(color);
+    }
+
     public Color negativeForeground()
     {
         return negativeForeground;
@@ -96,6 +111,21 @@ public final class ValueColorScheme
     public void setNegativeForeground(RGBA color)
     {
         this.negativeForeground = Colors.getColor(color.rgb);
+    }
+
+    public void setNegativeForeground(RGB color)
+    {
+        this.negativeForeground = Colors.getColor(color);
+    }
+
+    public boolean isCustom()
+    {
+        return CUSTOM_SCHEME.equals(identifier);
+    }
+
+    public static ValueColorScheme getCustomScheme()
+    {
+        return customScheme;
     }
 
     public Image upArrow()
