@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertTrue;
 
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
 import org.junit.After;
 import org.junit.Test;
@@ -81,6 +82,21 @@ public class ValueColorSchemeTest
 
         assertThat(upImg, is(notNullValue()));
         assertThat(downImg, is(notNullValue()));
+    }
+
+    @Test
+    public void testArrowImageCacheDisposesOldImages()
+    {
+        Image firstImage = ValueColorScheme.getArrowImage(new RGB(1, 254, 1), true);
+
+        for (int i = 2; i < 80; i++)
+        {
+            RGB color = new RGB(i, 255 - i, i);
+            ValueColorScheme.getArrowImage(color, true);
+            ValueColorScheme.getArrowImage(color, false);
+        }
+
+        assertTrue(firstImage.isDisposed());
     }
 
     @Test

@@ -3,7 +3,8 @@ package name.abuchen.portfolio.ui.util;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -72,7 +73,8 @@ public final class ValueColorScheme
         currentScheme = standard;
     }
 
-    private static final Map<String, Image> ARROW_CACHE = new HashMap<>();
+    private static final int MAX_CACHED_ARROW_IMAGES = 32;
+    private static final Map<String, Image> ARROW_CACHE = new LinkedHashMap<>(MAX_CACHED_ARROW_IMAGES, 0.75f, true);
 
     private final String identifier;
     private final String name;
@@ -204,20 +206,20 @@ public final class ValueColorScheme
         if (image != null && !image.isDisposed())
             return image;
 
+        Path tempFile = null;
         try
         {
             String pathData = up ? "M12 3l12 18h-24z" : "M12 21l-12-18h24z"; //$NON-NLS-1$ //$NON-NLS-2$
             String svg = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"-6 -6 36 36\" width=\"16\" height=\"16\" fill=\"" //$NON-NLS-1$
                             + hex + "\"><path d=\"" + pathData + "\"/></svg>"; //$NON-NLS-1$ //$NON-NLS-2$
 
-            Path tempFile = Files.createTempFile("pp_arrow_" + (up ? "up_" : "down_"), ".svg"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            tempFile = Files.createTempFile("pp_arrow_" + (up ? "up_" : "down_"), ".svg"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             Files.writeString(tempFile, svg, StandardCharsets.UTF_8);
-            tempFile.toFile().deleteOnExit();
 
             ImageDescriptor descriptor = ImageDescriptor.createFromURL(tempFile.toUri().toURL());
             image = descriptor.createImage();
             if (image != null)
-                ARROW_CACHE.put(key, image);
+                cacheArrowImage(key, image);
             return image;
         }
         catch (Exception e)
@@ -225,6 +227,45 @@ public final class ValueColorScheme
             return up ? Images.resolve("scheme/standard/light/up_arrow.svg", false) //$NON-NLS-1$
                             : Images.resolve("scheme/standard/light/down_arrow.svg", false); //$NON-NLS-1$
         }
+        finally
+        {
+            if (tempFile != null)
+            {
+                try
+                {
+                    Files.deleteIfExists(tempFile);
+                }
+                catch (Exception ignored)
+                {
+                    tempFile.toFile().deleteOnExit();
+                }
+            }
+        }
+    }
+
+    private static void cacheArrowImage(String key, Image image)
+    {
+        ARROW_CACHE.put(key, image);
+
+        Iterator<Map.Entry<String, Image>> iterator = ARROW_CACHE.entrySet().iterator();
+        while (ARROW_CACHE.size() > MAX_CACHED_ARROW_IMAGES && iterator.hasNext())
+        {
+            Map.Entry<String, Image> entry = iterator.next();
+            if (!isCurrentCustomArrow(entry.getKey()))
+            {
+                iterator.remove();
+                if (!entry.getValue().isDisposed())
+                    entry.getValue().dispose();
+            }
+        }
+    }
+
+    private static boolean isCurrentCustomArrow(String key)
+    {
+        RGB upColor = customScheme.getUpArrowColor();
+        RGB downColor = customScheme.getDownArrowColor();
+        return (upColor != null && key.equals("up_" + ColorConversion.toHex(upColor))) //$NON-NLS-1$
+                        || (downColor != null && key.equals("down_" + ColorConversion.toHex(downColor))); //$NON-NLS-1$
     }
 
     public static ValueColorScheme current()
