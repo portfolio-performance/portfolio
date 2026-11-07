@@ -287,7 +287,10 @@ public class ListSelectionDialog extends Dialog
 
     private Object[] enabledElements(IStructuredSelection selection)
     {
-        return selection.toList().stream().filter(e -> !disabledElements.contains(e)).toArray();
+        // JFace declares toList() with a raw List, which turns the whole stream
+        // chain into a raw one - use the parameterized type instead
+        List<?> elements = selection.toList();
+        return elements.stream().filter(e -> !disabledElements.contains(e)).toArray();
     }
 
     private void updateOkButton()

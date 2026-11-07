@@ -5,8 +5,10 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import org.eclipse.jface.action.IMenuManager;
@@ -308,24 +310,35 @@ public class TimelineChart extends Chart // NOSONAR
         LocalDate start = LocalDate.ofEpochDay((long) range.lower);
         LocalDate end = LocalDate.ofEpochDay((long) range.upper);
         long days = ChronoUnit.DAYS.between(start, end);
+        long upper = (long) range.upper;
         double dayWidth = Math.ceil((eventNonTradingDay.width) / (days - 1d));
         int markerWidthXLeft = (int) (dayWidth / 2);
-        ArrayList<LocalDate> nonTradingDayDates = new ArrayList<>();
+
+        // lookup of the marked dates by epoch day: the loop below asks for
+        // every day of a run whether it is marked, so a lookup in a list (as
+        // before) turns into a quadratic scan over all markers with every
+        // single repaint of the chart
+        Set<Long> nonTradingDayEpochDays = new HashSet<>();
         for (NonTradingDayMarker marker : nonTradingDayMarkers)
-        {
-            nonTradingDayDates.add(marker.date);
-        }
+            nonTradingDayEpochDays.add(marker.getEpochDay());
+
         for (NonTradingDayMarker marker : nonTradingDayMarkers)
         {
             int x = xAxis.getPixelCoordinate(marker.getEpochDay());
+
+            // the markers are sorted by date: everything right of the plot area
+            // cannot be seen anyway
+            if (x > eventNonTradingDay.width)
+                break;
+
             double barWidth = 0;
-            for (LocalDate date = marker.date; date.isBefore(end); date = date.plusDays(1))
+            for (long epochDay = marker.getEpochDay(); epochDay < upper; epochDay++)
             {
-                if (!nonTradingDayDates.contains(date))
+                if (!nonTradingDayEpochDays.contains(epochDay))
                     break;
                 barWidth = barWidth + dayWidth;
             }
-            if (nonTradingDayDates.contains(marker.date.minusDays(1)))
+            if (nonTradingDayEpochDays.contains(marker.getEpochDay() - 1))
                 continue;
 
             if (barWidth < 3)
