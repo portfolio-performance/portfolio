@@ -328,9 +328,19 @@ public interface UIConstants
         String VALUE_COLOR_SCHEME_CUSTOM_POSITIVE = "VALUE_COLOR_SCHEME_CUSTOM_POSITIVE"; //$NON-NLS-1$
 
         /**
+         * Preference key for custom value color scheme positive arrow color (hex string)
+         */
+        String VALUE_COLOR_SCHEME_CUSTOM_POSITIVE_ARROW = "VALUE_COLOR_SCHEME_CUSTOM_POSITIVE_ARROW"; //$NON-NLS-1$
+
+        /**
          * Preference key for custom value color scheme negative color (hex string)
          */
         String VALUE_COLOR_SCHEME_CUSTOM_NEGATIVE = "VALUE_COLOR_SCHEME_CUSTOM_NEGATIVE"; //$NON-NLS-1$
+
+        /**
+         * Preference key for custom value color scheme negative arrow color (hex string)
+         */
+        String VALUE_COLOR_SCHEME_CUSTOM_NEGATIVE_ARROW = "VALUE_COLOR_SCHEME_CUSTOM_NEGATIVE_ARROW"; //$NON-NLS-1$
 
     }
 

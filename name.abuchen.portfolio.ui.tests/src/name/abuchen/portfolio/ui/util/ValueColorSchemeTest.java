@@ -56,6 +56,34 @@ public class ValueColorSchemeTest
     }
 
     @Test
+    public void testSetCustomArrowColors()
+    {
+        var custom = ValueColorScheme.getCustomScheme();
+        RGB testUp = new RGB(0, 255, 128);
+        RGB testDown = new RGB(255, 64, 64);
+
+        custom.setUpArrowColor(testUp);
+        custom.setDownArrowColor(testDown);
+
+        assertThat(custom.getUpArrowColor(), is(testUp));
+        assertThat(custom.getDownArrowColor(), is(testDown));
+
+        assertThat(custom.upArrow(), is(notNullValue()));
+        assertThat(custom.downArrow(), is(notNullValue()));
+    }
+
+    @Test
+    public void testGetArrowImage()
+    {
+        RGB testColor = new RGB(255, 100, 0);
+        var upImg = ValueColorScheme.getArrowImage(testColor, true);
+        var downImg = ValueColorScheme.getArrowImage(testColor, false);
+
+        assertThat(upImg, is(notNullValue()));
+        assertThat(downImg, is(notNullValue()));
+    }
+
+    @Test
     public void testInitializeCustomScheme()
     {
         ValueColorScheme.initialize(ValueColorScheme.CUSTOM_SCHEME);

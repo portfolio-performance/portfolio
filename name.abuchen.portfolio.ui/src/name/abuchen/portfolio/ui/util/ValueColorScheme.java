@@ -1,7 +1,13 @@
 package name.abuchen.portfolio.ui.util;
 
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
@@ -56,6 +62,8 @@ public final class ValueColorScheme
         var custom = new ValueColorScheme(CUSTOM_SCHEME, Messages.ValueColorSchemeCustom);
         custom.setPositiveForeground(ColorConversion.hex2RGBA("#00E000")); //$NON-NLS-1$
         custom.setNegativeForeground(ColorConversion.hex2RGBA("#FF6B6B")); //$NON-NLS-1$
+        custom.setUpArrowColor(ColorConversion.hex2RGB("#00E000")); //$NON-NLS-1$
+        custom.setDownArrowColor(ColorConversion.hex2RGB("#FF6B6B")); //$NON-NLS-1$
         custom.setUpArrow("scheme/standard/light/up_arrow.svg"); //$NON-NLS-1$
         custom.setDownArrow("scheme/standard/light/down_arrow.svg"); //$NON-NLS-1$
         customScheme = custom;
@@ -64,11 +72,15 @@ public final class ValueColorScheme
         currentScheme = standard;
     }
 
+    private static final Map<String, Image> ARROW_CACHE = new HashMap<>();
+
     private final String identifier;
     private final String name;
 
     private Color positiveForeground;
     private Color negativeForeground;
+    private RGB upArrowColor;
+    private RGB downArrowColor;
     private Image upArrow;
     private Image downArrow;
 
@@ -130,6 +142,12 @@ public final class ValueColorScheme
 
     public Image upArrow()
     {
+        if (isCustom() && upArrowColor != null)
+        {
+            Image customArrow = getArrowImage(upArrowColor, true);
+            if (customArrow != null)
+                return customArrow;
+        }
         return upArrow;
     }
 
@@ -140,12 +158,73 @@ public final class ValueColorScheme
 
     public Image downArrow()
     {
+        if (isCustom() && downArrowColor != null)
+        {
+            Image customArrow = getArrowImage(downArrowColor, false);
+            if (customArrow != null)
+                return customArrow;
+        }
         return downArrow;
     }
 
     public void setDownArrow(String icon)
     {
         this.downArrow = Images.resolve(icon, false);
+    }
+
+    public RGB getUpArrowColor()
+    {
+        return upArrowColor;
+    }
+
+    public void setUpArrowColor(RGB rgb)
+    {
+        this.upArrowColor = rgb;
+    }
+
+    public RGB getDownArrowColor()
+    {
+        return downArrowColor;
+    }
+
+    public void setDownArrowColor(RGB rgb)
+    {
+        this.downArrowColor = rgb;
+    }
+
+    public static Image getArrowImage(RGB rgb, boolean up)
+    {
+        if (rgb == null)
+            return null;
+
+        String hex = ColorConversion.toHex(rgb);
+        String key = (up ? "up_" : "down_") + hex; //$NON-NLS-1$ //$NON-NLS-2$
+
+        Image image = ARROW_CACHE.get(key);
+        if (image != null && !image.isDisposed())
+            return image;
+
+        try
+        {
+            String pathData = up ? "M12 3l12 18h-24z" : "M12 21l-12-18h24z"; //$NON-NLS-1$ //$NON-NLS-2$
+            String svg = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"-6 -6 36 36\" width=\"16\" height=\"16\" fill=\"" //$NON-NLS-1$
+                            + hex + "\"><path d=\"" + pathData + "\"/></svg>"; //$NON-NLS-1$ //$NON-NLS-2$
+
+            Path tempFile = Files.createTempFile("pp_arrow_" + (up ? "up_" : "down_"), ".svg"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            Files.writeString(tempFile, svg, StandardCharsets.UTF_8);
+            tempFile.toFile().deleteOnExit();
+
+            ImageDescriptor descriptor = ImageDescriptor.createFromURL(tempFile.toUri().toURL());
+            image = descriptor.createImage();
+            if (image != null)
+                ARROW_CACHE.put(key, image);
+            return image;
+        }
+        catch (Exception e)
+        {
+            return up ? Images.resolve("scheme/standard/light/up_arrow.svg", false) //$NON-NLS-1$
+                            : Images.resolve("scheme/standard/light/down_arrow.svg", false); //$NON-NLS-1$
+        }
     }
 
     public static ValueColorScheme current()

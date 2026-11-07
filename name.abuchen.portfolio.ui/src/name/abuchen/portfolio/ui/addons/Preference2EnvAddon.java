@@ -72,6 +72,26 @@ public class Preference2EnvAddon
 
     @Inject
     @Optional
+    public void setCustomValueColorPositiveArrow(
+                    @Preference(value = UIConstants.Preferences.VALUE_COLOR_SCHEME_CUSTOM_POSITIVE_ARROW) String color)
+    {
+        if (color != null && !color.isBlank())
+        {
+            try
+            {
+                RGB rgb = ColorConversion.hex2RGB(color);
+                ValueColorScheme.getCustomScheme().setUpArrowColor(rgb);
+                if (broker != null && ValueColorScheme.CUSTOM_SCHEME.equals(ValueColorScheme.current().getIdentifier()))
+                    broker.post(UIConstants.Event.Global.VALUE_COLOR_SCHEME_CHANGED, ValueColorScheme.CUSTOM_SCHEME);
+            }
+            catch (Exception ignored)
+            {
+            }
+        }
+    }
+
+    @Inject
+    @Optional
     public void setCustomValueColorNegative(
                     @Preference(value = UIConstants.Preferences.VALUE_COLOR_SCHEME_CUSTOM_NEGATIVE) String color)
     {
@@ -81,6 +101,26 @@ public class Preference2EnvAddon
             {
                 RGB rgb = ColorConversion.hex2RGB(color);
                 ValueColorScheme.getCustomScheme().setNegativeForeground(rgb);
+                if (broker != null && ValueColorScheme.CUSTOM_SCHEME.equals(ValueColorScheme.current().getIdentifier()))
+                    broker.post(UIConstants.Event.Global.VALUE_COLOR_SCHEME_CHANGED, ValueColorScheme.CUSTOM_SCHEME);
+            }
+            catch (Exception ignored)
+            {
+            }
+        }
+    }
+
+    @Inject
+    @Optional
+    public void setCustomValueColorNegativeArrow(
+                    @Preference(value = UIConstants.Preferences.VALUE_COLOR_SCHEME_CUSTOM_NEGATIVE_ARROW) String color)
+    {
+        if (color != null && !color.isBlank())
+        {
+            try
+            {
+                RGB rgb = ColorConversion.hex2RGB(color);
+                ValueColorScheme.getCustomScheme().setDownArrowColor(rgb);
                 if (broker != null && ValueColorScheme.CUSTOM_SCHEME.equals(ValueColorScheme.current().getIdentifier()))
                     broker.post(UIConstants.Event.Global.VALUE_COLOR_SCHEME_CHANGED, ValueColorScheme.CUSTOM_SCHEME);
             }
