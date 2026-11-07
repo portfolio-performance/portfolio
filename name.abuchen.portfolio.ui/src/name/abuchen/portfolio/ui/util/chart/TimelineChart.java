@@ -311,7 +311,13 @@ public class TimelineChart extends Chart // NOSONAR
         LocalDate end = LocalDate.ofEpochDay((long) range.upper);
         long days = ChronoUnit.DAYS.between(start, end);
         long upper = (long) range.upper;
-        double dayWidth = Math.ceil((eventNonTradingDay.width) / (days - 1d));
+
+        // the width and the height of a paint event describe the damaged area,
+        // which can be smaller than the plot area: use the plot area itself to
+        // place and to drop the markers
+        var plotArea = ((Composite) getPlotArea().getControl()).getClientArea();
+
+        double dayWidth = Math.ceil((plotArea.width) / (days - 1d));
         int markerWidthXLeft = (int) (dayWidth / 2);
 
         // lookup of the marked dates by epoch day: the loop below asks for
@@ -328,7 +334,7 @@ public class TimelineChart extends Chart // NOSONAR
 
             // the markers are sorted by date: everything right of the plot area
             // cannot be seen anyway
-            if (x > eventNonTradingDay.width)
+            if (x > plotArea.width)
                 break;
 
             double barWidth = 0;
@@ -347,7 +353,7 @@ public class TimelineChart extends Chart // NOSONAR
             eventNonTradingDay.gc.setLineWidth(0);
             eventNonTradingDay.gc.setAlpha(100);
             eventNonTradingDay.gc.fillRectangle(x - markerWidthXLeft, 25, (int) barWidth,
-                            eventNonTradingDay.height - 25);
+                            plotArea.height - 25);
             eventNonTradingDay.gc.setBackgroundPattern(null);
             eventNonTradingDay.gc.setAlpha(255); // Dirty fix to avoid that the
                                                  // whole chart is adjusted
