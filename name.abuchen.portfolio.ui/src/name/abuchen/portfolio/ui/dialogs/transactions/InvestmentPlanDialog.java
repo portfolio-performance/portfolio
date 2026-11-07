@@ -21,6 +21,8 @@ import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
@@ -35,6 +37,7 @@ import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.InvestmentPlan.Type;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.WeekendAdjustment;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanModel.Properties;
@@ -246,13 +249,46 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
 
         startingWith(valueDate.getControl()).thenRight(interval.label).thenRight(interval.value.getControl());
 
+        // Weekend Adjustment Label and Viewer
+        var lblWeekendAdjustment = new Label(editArea, SWT.NONE);
+        lblWeekendAdjustment.setText(Messages.InvestmentPlanWeekendAdjustment);
+
+        var weekendAdjustmentViewer = new ComboViewer(editArea, SWT.READ_ONLY);
+        weekendAdjustmentViewer.setContentProvider(ArrayContentProvider.getInstance());
+        weekendAdjustmentViewer.setLabelProvider(LabelProvider.createTextProvider(element -> {
+            if (element instanceof WeekendAdjustment adjustment)
+            {
+                return switch (adjustment)
+                {
+                    case PREVIOUS_BUSINESS_DAY -> Messages.InvestmentPlanWeekendAdjustment_PREVIOUS_BUSINESS_DAY;
+                    case NEXT_BUSINESS_DAY -> Messages.InvestmentPlanWeekendAdjustment_NEXT_BUSINESS_DAY;
+                };
+            }
+            return element.toString();
+        }));
+        weekendAdjustmentViewer.setInput(WeekendAdjustment.values());
+
+        weekendAdjustmentViewer.setSelection(new org.eclipse.jface.viewers.StructuredSelection(
+                        ((InvestmentPlanModel) model).getWeekendAdjustment()));
+
+        weekendAdjustmentViewer.addSelectionChangedListener(event -> {
+            var selection = (org.eclipse.jface.viewers.IStructuredSelection) event.getSelection();
+            if (!selection.isEmpty())
+            {
+                ((InvestmentPlanModel) model).setWeekendAdjustment((WeekendAdjustment) selection.getFirstElement());
+            }
+        });
+
         // measuring the width requires that the font has been applied before
         stylingEngine.style(editArea);
 
         int widest = widest(lblName, securities != null ? securities.label : null,
                         portfolio != null ? portfolio.label : null, account.label, lblDate, interval.label,
-                        amount.label, fees != null ? fees.label : null, taxes != null ? taxes.label : null);
+                        amount.label, fees != null ? fees.label : null, taxes != null ? taxes.label : null,
+                        lblWeekendAdjustment);
+
         startingWith(lblName).width(widest);
+        startingWith(amount.value).thenBelow(weekendAdjustmentViewer.getControl(), 10).label(lblWeekendAdjustment);
 
         WarningMessages warnings = new WarningMessages(this);
         warnings.add(() -> model().getStart().isAfter(LocalDate.now()) ? Messages.MsgDateIsInTheFuture : null);
