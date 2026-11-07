@@ -126,6 +126,22 @@ public class DuplicatesWithinImportTest
     }
 
     @Test
+    public void testTransactionWithoutDateIsIgnored()
+    {
+        // the missing date is reported by the import actions, the detection
+        // must not fail
+        var withoutDate = getTestEntry(AccountTransaction.Type.FEES, "Gebuehr01.pdf");
+        withoutDate.setDateTime(null);
+
+        var items = List.<Extractor.Item>of( //
+                        new TransactionItem(withoutDate),
+                        new TransactionItem(getTestEntry(AccountTransaction.Type.FEES, "Gebuehr02.pdf")),
+                        new TransactionItem(getTestEntry(AccountTransaction.Type.FEES, "Gebuehr03.pdf")));
+
+        assertThat(statusOf(items), is(List.of(Code.OK, Code.OK, Code.WARNING)));
+    }
+
+    @Test
     public void testDuplicate4PortfolioTransactionFromDifferentSources()
     {
         var security = new Security();

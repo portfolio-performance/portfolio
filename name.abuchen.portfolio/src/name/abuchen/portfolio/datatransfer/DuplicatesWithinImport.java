@@ -116,8 +116,8 @@ public final class DuplicatesWithinImport
 
     /**
      * Determines the duplicates within the given items. Items without input
-     * file (neither {@link #SOURCE_KEY} nor source) and items which are no
-     * transactions are ignored.
+     * file (neither {@link #SOURCE_KEY} nor source), items which are no
+     * transactions and transactions without date are ignored.
      * <ul>
      * <li>If all occurrences of a transaction stem from the same input file,
      * none of them is a duplicate (a document can legitimately contain
@@ -137,8 +137,10 @@ public final class DuplicatesWithinImport
 
         for (var item : items)
         {
+            // transactions without date are reported by the import actions
+            // (CheckTransactionDateAction)
             var transaction = representativeTransactionOf(item);
-            if (transaction == null)
+            if (transaction == null || transaction.getDateTime() == null)
                 continue;
 
             var sourceKey = sourceKeyOf(item);
