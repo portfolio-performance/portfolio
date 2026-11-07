@@ -471,12 +471,24 @@ public final class ThemePreferencePage extends PreferencePage
                     customNegativeRGB = dialog.getNegativeRGB();
                     customNegativeArrowRGB = dialog.getNegativeArrowRGB();
 
+                    ValueColorScheme.getCustomScheme().setPositiveForeground(customPositiveRGB);
+                    ValueColorScheme.getCustomScheme().setUpArrowColor(customPositiveArrowRGB);
+                    ValueColorScheme.getCustomScheme().setNegativeForeground(customNegativeRGB);
+                    ValueColorScheme.getCustomScheme().setDownArrowColor(customNegativeArrowRGB);
+
                     positiveLabel.setTextColor(Colors.getColor(customPositiveRGB));
+                    positiveLabel.redraw();
                     positiveArrowLabel.setImage(ValueColorScheme.getArrowImage(customPositiveArrowRGB, true));
+                    positiveArrowLabel.redraw();
+
                     negativeLabel.setTextColor(Colors.getColor(customNegativeRGB));
+                    negativeLabel.redraw();
                     negativeArrowLabel.setImage(ValueColorScheme.getArrowImage(customNegativeArrowRGB, false));
-                    previewComposite.layout(true);
+                    negativeArrowLabel.redraw();
+
+                    previewComposite.layout(true, true);
                     previewComposite.redraw();
+                    previewComposite.update();
 
                     selectScheme(radioButton);
                 }
@@ -492,14 +504,18 @@ public final class ThemePreferencePage extends PreferencePage
             positiveArrowLabel.setImage(scheme.isCustom() && customPositiveArrowRGB != null
                             ? ValueColorScheme.getArrowImage(customPositiveArrowRGB, true)
                             : scheme.upArrow());
+            positiveArrowLabel.redraw();
             negativeArrowLabel.setBackground(previewBackground);
             negativeArrowLabel.setImage(scheme.isCustom() && customNegativeArrowRGB != null
                             ? ValueColorScheme.getArrowImage(customNegativeArrowRGB, false)
                             : scheme.downArrow());
+            negativeArrowLabel.redraw();
             positiveLabel.setBackdropColor(previewBackground);
             positiveLabel.setTextColor(scheme.isCustom() ? Colors.getColor(customPositiveRGB) : scheme.positiveForeground());
+            positiveLabel.redraw();
             negativeLabel.setBackdropColor(previewBackground);
             negativeLabel.setTextColor(scheme.isCustom() ? Colors.getColor(customNegativeRGB) : scheme.negativeForeground());
+            negativeLabel.redraw();
             previewComposite.redraw();
         };
         previewBackgroundUpdaters.add(updatePreviewBackground);
