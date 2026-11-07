@@ -7,7 +7,7 @@ public class Currency implements Macro
 {
     public Currency(CharSequence input)
     {
-        if (!"CURRENCY".equals(input)) //$NON-NLS-1$
+        if (!"CURRENCY".contentEquals(input)) //$NON-NLS-1$
             throw new IllegalArgumentException(input.toString());
     }
 

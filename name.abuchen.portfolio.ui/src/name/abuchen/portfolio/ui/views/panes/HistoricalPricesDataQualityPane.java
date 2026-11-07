@@ -35,6 +35,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.SecurityQuoteQualityMetricsViewer;
 import name.abuchen.portfolio.util.Holiday;
@@ -150,7 +151,7 @@ public class HistoricalPricesDataQualityPane implements InformationPanePage
     protected Pair<Composite, TableViewer> createTable(Composite parent, String showHideColumnHelperSuffix)
     {
         Composite container = new Composite(parent, SWT.NONE);
-        TableColumnLayout layout = new TableColumnLayout();
+        TableColumnLayout layout = new SafeTableColumnLayout();
         container.setLayout(layout);
 
         TableViewer tableViewer = new TableViewer(container, SWT.FULL_SELECTION);

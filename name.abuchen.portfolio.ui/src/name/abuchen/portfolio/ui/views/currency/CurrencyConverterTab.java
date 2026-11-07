@@ -40,6 +40,7 @@ import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SWTHelper;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.SafeTreeColumnLayout;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.AbstractTabbedView;
 
@@ -249,7 +250,7 @@ public class CurrencyConverterTab implements AbstractTabbedView.Tab
     private Composite createTree(Composite container)
     {
         Composite area = new Composite(container, SWT.NONE);
-        TreeColumnLayout layout = new TreeColumnLayout();
+        TreeColumnLayout layout = new SafeTreeColumnLayout();
         area.setLayout(layout);
 
         int amountWidth = SWTHelper.amountWidth(area);

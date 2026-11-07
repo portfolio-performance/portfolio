@@ -23,6 +23,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 /* package */ class MarkSecurityAsIndexPage extends AbstractWizardPage
@@ -68,7 +69,7 @@ import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
         Composite tableArea = new Composite(container, SWT.NONE);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(tableArea);
-        TableColumnLayout layout = new TableColumnLayout();
+        TableColumnLayout layout = new SafeTableColumnLayout();
         tableArea.setLayout(layout);
 
         tableViewer = CheckboxTableViewer.newCheckList(tableArea, SWT.BORDER | SWT.CHECK | SWT.MULTI);

@@ -21,6 +21,7 @@ import name.abuchen.portfolio.online.impl.MarketIdentifierCodes;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.QuotesTableViewer;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 
 public class SearchSecurityPreviewPricesWizardPage extends WizardPage
 {
@@ -53,7 +54,7 @@ public class SearchSecurityPreviewPricesWizardPage extends WizardPage
     public void createControl(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NONE);
-        TableColumnLayout layout = new TableColumnLayout();
+        TableColumnLayout layout = new SafeTableColumnLayout();
         container.setLayout(layout);
 
         tableSampleData = new QuotesTableViewer(container);
@@ -174,9 +175,13 @@ public class SearchSecurityPreviewPricesWizardPage extends WizardPage
 
                         });
                     }
-                    catch (InvocationTargetException | InterruptedException e)
+                    catch (InvocationTargetException e)
                     {
                         PortfolioPlugin.log(e);
+                    }
+                    catch (InterruptedException e)
+                    {
+                        Thread.currentThread().interrupt();
                     }
                 }
 

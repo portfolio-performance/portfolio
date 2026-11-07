@@ -74,6 +74,8 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.MarkDirtyClie
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateTimeLabelProvider;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
+import name.abuchen.portfolio.ui.util.viewers.SafeTreeColumnLayout;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.ToolTipCustomProviderSupport;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
@@ -267,7 +269,7 @@ public class PerformanceView extends AbstractHistoricView
     private void createCalculationItem(CTabFolder folder, String title)
     {
         Composite container = new Composite(folder, SWT.NONE);
-        TreeColumnLayout layout = new TreeColumnLayout();
+        TreeColumnLayout layout = new SafeTreeColumnLayout();
         container.setLayout(layout);
 
         calculation = new TreeViewer(container, SWT.FULL_SELECTION);
@@ -476,7 +478,7 @@ public class PerformanceView extends AbstractHistoricView
     private TableViewer createTransactionViewer(CTabFolder folder, String title)
     {
         Composite container = new Composite(folder, SWT.NONE);
-        TableColumnLayout layout = new TableColumnLayout();
+        TableColumnLayout layout = new SafeTableColumnLayout();
         container.setLayout(layout);
 
         TableViewer transactionViewer = new TableViewer(container, SWT.FULL_SELECTION);
@@ -791,7 +793,7 @@ public class PerformanceView extends AbstractHistoricView
     private void createEarningsByAccountsItem(CTabFolder folder, String title)
     {
         Composite container = new Composite(folder, SWT.NONE);
-        TableColumnLayout layout = new TableColumnLayout();
+        TableColumnLayout layout = new SafeTableColumnLayout();
         container.setLayout(layout);
 
         earningsByAccount = new TableViewer(container, SWT.FULL_SELECTION);

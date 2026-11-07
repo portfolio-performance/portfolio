@@ -87,6 +87,7 @@ import name.abuchen.portfolio.ui.util.viewers.DateLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ParameterizedColumnLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ReportingPeriodColumnOptions;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
@@ -132,7 +133,7 @@ public final class SecuritiesTable implements ModificationListener
         this.view = view;
 
         Composite container = new Composite(parent, SWT.NONE);
-        TableColumnLayout layout = new TableColumnLayout();
+        TableColumnLayout layout = new SafeTableColumnLayout();
         container.setLayout(layout);
 
         this.securities = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);

@@ -30,6 +30,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.DisplayTextDialog;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.SafeTreeColumnLayout;
 
 public class ErrorLogPart
 {
@@ -86,7 +87,7 @@ public class ErrorLogPart
         this.entries = cache.getEntries();
 
         Composite container = new Composite(parent, SWT.NONE);
-        TreeColumnLayout layout = new TreeColumnLayout();
+        TreeColumnLayout layout = new SafeTreeColumnLayout();
         container.setLayout(layout);
 
         logViewer = new TreeViewer(container, SWT.FULL_SELECTION);

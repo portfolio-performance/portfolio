@@ -66,7 +66,7 @@ public class TradeCollector
                 return dt1.compareTo(dt2);
 
             // otherwise sort: inbounds, transfers, outbounds
-            return getSortOrder(t1) - getSortOrder(t2);
+            return Integer.compare(getSortOrder(t1), getSortOrder(t2));
         }
 
         /**

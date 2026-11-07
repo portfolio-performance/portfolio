@@ -28,7 +28,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
     private static final String IS_JOINT_ACCOUNT = "isJointAccount";
 
     BiConsumer<DocumentContext, String[]> isJointAccount = (context, lines) -> {
-        var pJointAccount = Pattern.compile("^(?i).*(Kapitalertragssteuer|KAPST)[\\s]*(anteilig|ANTEILIG) [\\d]{2},[\\d]{2}.*$");
+        var pJointAccount = Pattern.compile("^(?i).*(Kapitalertragssteuer|KAPST)[\\s]*anteilig [\\d]{2},[\\d]{2}.*$");
 
         for (String line : lines)
         {

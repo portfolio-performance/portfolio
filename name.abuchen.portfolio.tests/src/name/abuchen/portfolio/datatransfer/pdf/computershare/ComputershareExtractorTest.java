@@ -4,8 +4,13 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
@@ -34,7 +39,6 @@ import name.abuchen.portfolio.model.Client;
 @SuppressWarnings("nls")
 public class ComputershareExtractorTest
 {
-
     @Test
     public void testDepotAuszugWithPurchase01()
     {
@@ -56,24 +60,80 @@ public class ComputershareExtractorTest
 
         // check security
         assertThat(results, hasItem(security( //
-                        hasWkn("023135106"), hasTicker("AMZN"), //
+                        hasIsin(null), hasWkn("023135106"), hasTicker("AMZN"), //
+                        hasName(null), //
                         hasCurrencyCode("USD"))));
 
-        // check one buy transaction - without fees
-
+        // check 1st buy transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-02-28"), hasShares(7.5), //
+                        hasDate("2023-01-31T00:00"), hasShares(7.50), //
                         hasSource("Depotauszug01.txt"), //
-                        hasAmount("USD", 750.00), //
-                        hasFees("USD", 0.00))));
+                        hasNote(null), //
+                        hasAmount("USD", 756.00), hasGrossValue("USD", 750.00), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 6.00))));
 
-        // check one buy transaction - with fees
-
+        // check 2nd buy transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-01-31"), hasShares(7.5), //
+                        hasDate("2023-02-28T00:00"), hasShares(7.50), //
                         hasSource("Depotauszug01.txt"), //
-                        hasAmount("USD", 756.00), //
-                        hasFees("USD", 6.00))));
+                        hasNote(null), //
+                        hasAmount("USD", 750.00), hasGrossValue("USD", 750.00), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+
+        // check 3rd buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-03-31T00:00"), hasShares(7.50), //
+                        hasSource("Depotauszug01.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 750.00), hasGrossValue("USD", 750.00), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+
+        // check 4th buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-04-28T00:00"), hasShares(7.50), //
+                        hasSource("Depotauszug01.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 750.00), hasGrossValue("USD", 750.00), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+
+        // check 5th buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-05-31T00:00"), hasShares(7.50), //
+                        hasSource("Depotauszug01.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 750.00), hasGrossValue("USD", 750.00), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+
+        // check 6th buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-06-30T00:00"), hasShares(7.50), //
+                        hasSource("Depotauszug01.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 750.00), hasGrossValue("USD", 750.00), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+
+        // check 7th buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-07-31T00:00"), hasShares(7.50), //
+                        hasSource("Depotauszug01.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 756.00), hasGrossValue("USD", 750.00), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 6.00))));
+
+        // check 8th buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-08-31T00:00"), hasShares(7.50), //
+                        hasSource("Depotauszug01.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 750.00), hasGrossValue("USD", 750.00), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+
+        // check 9th buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-09-29T00:00"), hasShares(7.50), //
+                        hasSource("Depotauszug01.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 750.00), hasGrossValue("USD", 750.00), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
     }
-
 }
