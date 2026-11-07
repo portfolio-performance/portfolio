@@ -15,10 +15,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
+import name.abuchen.portfolio.datatransfer.DuplicatesWithinImport;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
-import name.abuchen.portfolio.datatransfer.actions.DetectDuplicatesAction;
 import name.abuchen.portfolio.model.Client;
 
 public class PDFImportAssistant
@@ -293,7 +293,7 @@ public class PDFImportAssistant
     /* testing */ static void markSourceKey(List<Item> items, PDFInputFile inputFile)
     {
         var sourceKey = inputFile.getFile().getAbsolutePath();
-        items.forEach(item -> item.setData(DetectDuplicatesAction.SOURCE_KEY, sourceKey));
+        items.forEach(item -> item.setData(DuplicatesWithinImport.SOURCE_KEY, sourceKey));
     }
 
     /**

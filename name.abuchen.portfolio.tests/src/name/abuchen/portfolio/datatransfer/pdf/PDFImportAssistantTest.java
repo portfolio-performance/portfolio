@@ -19,11 +19,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import name.abuchen.portfolio.datatransfer.DuplicatesWithinImport;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
-import name.abuchen.portfolio.datatransfer.actions.DetectDuplicatesAction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -46,7 +46,7 @@ public class PDFImportAssistantTest
         assertThat(items.isEmpty(), is(false));
         for (var item : items)
         {
-            assertThat(item.getData(DetectDuplicatesAction.SOURCE_KEY), is(file.getAbsolutePath()));
+            assertThat(item.getData(DuplicatesWithinImport.SOURCE_KEY), is(file.getAbsolutePath()));
 
             // the visible source of the transaction remains the file name
             assertThat(item.getSource(), is("Kauf01.txt"));
@@ -63,7 +63,7 @@ public class PDFImportAssistantTest
         var items = run(List.of(file1, file2));
 
         assertThat(items.size(), is(2 * items1.size()));
-        assertThat(items.stream().map(item -> item.getData(DetectDuplicatesAction.SOURCE_KEY)).distinct().count(),
+        assertThat(items.stream().map(item -> item.getData(DuplicatesWithinImport.SOURCE_KEY)).distinct().count(),
                         is(2L));
     }
 
@@ -102,7 +102,7 @@ public class PDFImportAssistantTest
 
         for (var item : items)
         {
-            assertThat(item.getData(DetectDuplicatesAction.SOURCE_KEY), is(file.getAbsolutePath()));
+            assertThat(item.getData(DuplicatesWithinImport.SOURCE_KEY), is(file.getAbsolutePath()));
 
             // the visible source of the transaction remains the file name
             assertThat(item.getSource(), is("Kauf01.pdf"));
@@ -124,8 +124,8 @@ public class PDFImportAssistantTest
         PDFImportAssistant.markSourceKey(List.of(item2), new PDFInputFile(file2));
 
         assertThat(item1.getSource(), is(item2.getSource()));
-        assertThat(item1.getData(DetectDuplicatesAction.SOURCE_KEY),
-                        is(not(item2.getData(DetectDuplicatesAction.SOURCE_KEY))));
+        assertThat(item1.getData(DuplicatesWithinImport.SOURCE_KEY),
+                        is(not(item2.getData(DuplicatesWithinImport.SOURCE_KEY))));
     }
 
     /**

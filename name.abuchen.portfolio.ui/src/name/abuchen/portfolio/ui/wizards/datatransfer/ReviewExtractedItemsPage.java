@@ -37,6 +37,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 
+import name.abuchen.portfolio.datatransfer.DuplicatesWithinImport;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.SkippedItem;
 import name.abuchen.portfolio.datatransfer.ImportAction;
@@ -663,8 +664,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     }
 
     /**
-     * Returns the items which are checked by the import actions, i.e. without
-     * failures and skipped items
+     * Returns the items which are checked for duplicates within the import,
+     * i.e. without failures and skipped items
      */
     private static List<Extractor.Item> importedItems(List<ExtractedEntry> entries)
     {
@@ -680,10 +681,13 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         actions.add(new CheckTransactionDateAction());
         actions.add(new CheckValidTypesAction());
         actions.add(new CheckSecurityRelatedValuesAction());
-        actions.add(new DetectDuplicatesAction(client,
-                        detectDuplicatesWithinImport ? importedItems(entries) : List.of()));
+        actions.add(new DetectDuplicatesAction(client));
         actions.add(new CheckCurrenciesAction());
         actions.add(new CheckForexGrossValueAction());
+
+        var duplicatesWithinImport = detectDuplicatesWithinImport
+                        ? DuplicatesWithinImport.of(importedItems(entries))
+                        : DuplicatesWithinImport.none();
 
         List<Exception> allErrors = new ArrayList<>(extractionErrors);
 
@@ -723,6 +727,14 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                         PortfolioPlugin.log(e);
                     }
                 }
+
+                // duplicates between the files of the import are checked in
+                // addition to the import actions, so that the item shows
+                // which file contains the kept copy
+                duplicatesWithinImport.keptCopyOf(entry.getItem())
+                                .ifPresent(kept -> entry.addStatus(new ImportAction.Status(Code.WARNING,
+                                                MessageFormat.format(Messages.LabelAlsoContainedInFile,
+                                                                kept.getSource()))));
 
                 entry.getStatus().filter(s -> s.getCode() == ImportAction.Status.Code.ERROR)
                                 .forEach(status -> allErrors

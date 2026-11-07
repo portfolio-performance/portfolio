@@ -18,11 +18,11 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 
+import name.abuchen.portfolio.datatransfer.DuplicatesWithinImport;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.ImportAction;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
-import name.abuchen.portfolio.datatransfer.actions.DetectDuplicatesAction;
 import name.abuchen.portfolio.datatransfer.actions.InsertAction;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.Account;
@@ -207,7 +207,7 @@ public final class ImportExtractedItemsWizard extends Wizard
                             // stems from (the extractor itself might be wrapped,
                             // e.g. when grouping documents by broker)
                             page.setDetectDuplicatesWithinImport(entry.getValue().stream()
-                                            .anyMatch(item -> item.getData(DetectDuplicatesAction.SOURCE_KEY) != null));
+                                            .anyMatch(item -> item.getData(DuplicatesWithinImport.SOURCE_KEY) != null));
 
                             if (account != null)
                                 page.setAccount(account);

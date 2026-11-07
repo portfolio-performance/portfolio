@@ -578,6 +578,7 @@ public class Messages extends NLS
     public static String LabelAllTimeHigh;
     public static String LabelAllTrades;
     public static String LabelAllTransactions;
+    public static String LabelAlsoContainedInFile;
     public static String LabelAspect;
     public static String LabelAssetChart;
     public static String LabelAuthenticationRequiredToRetrieveHistoricalPrices;
