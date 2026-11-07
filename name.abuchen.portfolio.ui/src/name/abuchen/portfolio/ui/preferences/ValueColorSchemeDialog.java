@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.preferences;
 
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -14,7 +15,9 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.ColorDialog;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -37,10 +40,10 @@ public class ValueColorSchemeDialog extends Dialog
     private RGB negativeRGB;
     private RGB negativeArrowRGB;
 
-    private Label positiveTextSwatch;
-    private Label positiveArrowSwatch;
-    private Label negativeTextSwatch;
-    private Label negativeArrowSwatch;
+    private Canvas positiveTextSwatch;
+    private Canvas positiveArrowSwatch;
+    private Canvas negativeTextSwatch;
+    private Canvas negativeArrowSwatch;
 
     private Table previewTable;
     private TableItem itemApple;
@@ -74,7 +77,7 @@ public class ValueColorSchemeDialog extends Dialog
     @Override
     protected Point getInitialSize()
     {
-        return new Point(540, 480);
+        return new Point(640, 520);
     }
 
     @Override
@@ -94,12 +97,16 @@ public class ValueColorSchemeDialog extends Dialog
         GridLayoutFactory.fillDefaults().numColumns(3).margins(10, 10).spacing(10, 8).applyTo(upGroup);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(upGroup);
 
-        new Label(upGroup, SWT.NONE).setText(Messages.ValueColorSchemeDialogTextColor);
-        positiveTextSwatch = createColorSwatch(upGroup, true, () -> chooseColor(positiveRGB, rgb -> positiveRGB = rgb));
+        Label lblPosText = new Label(upGroup, SWT.NONE);
+        lblPosText.setText(Messages.ValueColorSchemeDialogTextColor);
+        GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(lblPosText);
+        positiveTextSwatch = createColorSwatch(upGroup, () -> positiveRGB, () -> chooseColor(positiveRGB, rgb -> positiveRGB = rgb));
         createColorButton(upGroup, () -> chooseColor(positiveRGB, rgb -> positiveRGB = rgb));
 
-        new Label(upGroup, SWT.NONE).setText(Messages.ValueColorSchemeDialogArrowColor);
-        positiveArrowSwatch = createArrowSwatch(upGroup, () -> chooseColor(positiveArrowRGB, rgb -> positiveArrowRGB = rgb));
+        Label lblPosArrow = new Label(upGroup, SWT.NONE);
+        lblPosArrow.setText(Messages.ValueColorSchemeDialogArrowColor);
+        GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(lblPosArrow);
+        positiveArrowSwatch = createArrowSwatch(upGroup, () -> ValueColorScheme.getArrowImage(positiveArrowRGB, true), () -> chooseColor(positiveArrowRGB, rgb -> positiveArrowRGB = rgb));
         createColorButton(upGroup, () -> chooseColor(positiveArrowRGB, rgb -> positiveArrowRGB = rgb));
 
         // Group 2: Falling values
@@ -108,12 +115,16 @@ public class ValueColorSchemeDialog extends Dialog
         GridLayoutFactory.fillDefaults().numColumns(3).margins(10, 10).spacing(10, 8).applyTo(downGroup);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(downGroup);
 
-        new Label(downGroup, SWT.NONE).setText(Messages.ValueColorSchemeDialogTextColor);
-        negativeTextSwatch = createColorSwatch(downGroup, true, () -> chooseColor(negativeRGB, rgb -> negativeRGB = rgb));
+        Label lblNegText = new Label(downGroup, SWT.NONE);
+        lblNegText.setText(Messages.ValueColorSchemeDialogTextColor);
+        GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(lblNegText);
+        negativeTextSwatch = createColorSwatch(downGroup, () -> negativeRGB, () -> chooseColor(negativeRGB, rgb -> negativeRGB = rgb));
         createColorButton(downGroup, () -> chooseColor(negativeRGB, rgb -> negativeRGB = rgb));
 
-        new Label(downGroup, SWT.NONE).setText(Messages.ValueColorSchemeDialogArrowColor);
-        negativeArrowSwatch = createArrowSwatch(downGroup, () -> chooseColor(negativeArrowRGB, rgb -> negativeArrowRGB = rgb));
+        Label lblNegArrow = new Label(downGroup, SWT.NONE);
+        lblNegArrow.setText(Messages.ValueColorSchemeDialogArrowColor);
+        GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(lblNegArrow);
+        negativeArrowSwatch = createArrowSwatch(downGroup, () -> ValueColorScheme.getArrowImage(negativeArrowRGB, false), () -> chooseColor(negativeArrowRGB, rgb -> negativeArrowRGB = rgb));
         createColorButton(downGroup, () -> chooseColor(negativeArrowRGB, rgb -> negativeArrowRGB = rgb));
 
         // Group 3: Preview table
@@ -172,11 +183,20 @@ public class ValueColorSchemeDialog extends Dialog
         return container;
     }
 
-    private Label createColorSwatch(Composite parent, boolean border, Runnable onClick)
+    private Canvas createColorSwatch(Composite parent, Supplier<RGB> rgbSupplier, Runnable onClick)
     {
-        Label swatch = new Label(parent, border ? SWT.BORDER : SWT.NONE);
-        GridDataFactory.swtDefaults().hint(32, 20).applyTo(swatch);
+        Canvas swatch = new Canvas(parent, SWT.BORDER);
+        GridDataFactory.swtDefaults().hint(36, 20).applyTo(swatch);
         swatch.setCursor(parent.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
+        swatch.addPaintListener(e -> {
+            RGB rgb = rgbSupplier.get();
+            if (rgb != null)
+            {
+                e.gc.setBackground(Colors.getColor(rgb));
+                Rectangle clientArea = swatch.getClientArea();
+                e.gc.fillRectangle(clientArea);
+            }
+        });
         swatch.addMouseListener(new MouseAdapter()
         {
             @Override
@@ -188,11 +208,27 @@ public class ValueColorSchemeDialog extends Dialog
         return swatch;
     }
 
-    private Label createArrowSwatch(Composite parent, Runnable onClick)
+    private Canvas createArrowSwatch(Composite parent, Supplier<Image> imageSupplier, Runnable onClick)
     {
-        Label swatch = new Label(parent, SWT.CENTER);
-        GridDataFactory.swtDefaults().hint(32, 20).applyTo(swatch);
+        Canvas swatch = new Canvas(parent, SWT.BORDER);
+        GridDataFactory.swtDefaults().hint(36, 20).applyTo(swatch);
         swatch.setCursor(parent.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
+        swatch.addPaintListener(e -> {
+            Color bg = Colors.theme().defaultBackground();
+            e.gc.setBackground(bg);
+            Rectangle clientArea = swatch.getClientArea();
+            e.gc.fillRectangle(clientArea);
+
+            Image img = imageSupplier.get();
+            if (img != null)
+            {
+                int imgW = img.getBounds().width;
+                int imgH = img.getBounds().height;
+                int x = (clientArea.width - imgW) / 2;
+                int y = (clientArea.height - imgH) / 2;
+                e.gc.drawImage(img, x, y);
+            }
+        });
         swatch.addMouseListener(new MouseAdapter()
         {
             @Override
@@ -235,13 +271,14 @@ public class ValueColorSchemeDialog extends Dialog
         Image posArrow = ValueColorScheme.getArrowImage(positiveArrowRGB, true);
         Image negArrow = ValueColorScheme.getArrowImage(negativeArrowRGB, false);
 
-        positiveTextSwatch.setBackground(posColor);
-        positiveArrowSwatch.setBackground(themeBg);
-        positiveArrowSwatch.setImage(posArrow);
-
-        negativeTextSwatch.setBackground(negColor);
-        negativeArrowSwatch.setBackground(themeBg);
-        negativeArrowSwatch.setImage(negArrow);
+        if (positiveTextSwatch != null && !positiveTextSwatch.isDisposed())
+            positiveTextSwatch.redraw();
+        if (positiveArrowSwatch != null && !positiveArrowSwatch.isDisposed())
+            positiveArrowSwatch.redraw();
+        if (negativeTextSwatch != null && !negativeTextSwatch.isDisposed())
+            negativeTextSwatch.redraw();
+        if (negativeArrowSwatch != null && !negativeArrowSwatch.isDisposed())
+            negativeArrowSwatch.redraw();
 
         if (previewTable != null && !previewTable.isDisposed())
         {
@@ -295,6 +332,7 @@ public class ValueColorSchemeDialog extends Dialog
         Button btnDefaults = createButton(parent, IDialogConstants.CLIENT_ID,
                         Messages.ValueColorSchemeDialogResetDefaults, false);
         btnDefaults.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> resetDefaults()));
+        GridDataFactory.swtDefaults().grab(true, false).align(SWT.BEGINNING, SWT.CENTER).applyTo(btnDefaults);
 
         createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
         createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
