@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import org.eclipse.core.runtime.Platform;
@@ -23,9 +22,9 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swtchart.Chart;
@@ -55,7 +54,7 @@ public class TimelineChartToolTip extends AbstractChartToolTip
     private Composite container;
     private Label dateValueLabel;
     private final List<Row> rows = new ArrayList<>();
-    private final List<Control> extraInfoControls = new ArrayList<>();
+    private final List<Label> extraInfoLabels = new ArrayList<>();
 
     private record Row(String seriesId, Color color, Label value, Format format)
     {
@@ -129,9 +128,14 @@ public class TimelineChartToolTip extends AbstractChartToolTip
         this.showToolTipOnlyForDatesInThisDataSeries = seriesId;
     }
 
-    private List<BiConsumer<Composite, Object>> extraInfoProvider = new ArrayList<>();
+    private List<Function<Object, List<String>>> extraInfoProvider = new ArrayList<>();
 
-    public void addExtraInfo(BiConsumer<Composite, Object> extraInfoProvider)
+    /**
+     * Adds lines that are shown below the values of the data series, i.e. the
+     * transactions around the focused date. The tool tip keeps the labels it
+     * needs to show them, therefore a provider only has to deliver the text.
+     */
+    public void addExtraInfo(Function<Object, List<String>> extraInfoProvider)
     {
         this.extraInfoProvider.add(extraInfoProvider);
     }
@@ -201,7 +205,7 @@ public class TimelineChartToolTip extends AbstractChartToolTip
     protected void createComposite(Composite parent)
     {
         rows.clear();
-        extraInfoControls.clear();
+        extraInfoLabels.clear();
         container = null;
         dateValueLabel = null;
 
@@ -256,18 +260,19 @@ public class TimelineChartToolTip extends AbstractChartToolTip
             rows.add(new Row(series.getId(), color, right, valueFormat));
         }
 
-        addExtraInfo(container, getFocusedObject());
+        updateExtraInfo(container, getFocusedObject());
 
         Label hint = new Label(data, SWT.WRAP);
         hint.setText(MessageFormat.format(Messages.TooltipHintPressAlt,
                         Platform.OS_MACOSX.equals(Platform.getOS()) ? "Option" : "Alt")); //$NON-NLS-1$ //$NON-NLS-2$
 
-        // the preferred width of the label as a hint: packing the composite
-        // would resize the tool tip window again while it is being built
-        GridDataFactory.fillDefaults() //
-                        .span(2, 1) //
-                        .hint(hint.computeSize(SWT.DEFAULT, SWT.DEFAULT).x, SWT.DEFAULT) //
-                        .applyTo(hint);
+        // the data, and not the hint, determine the width of the tool tip: with
+        // a tiny width hint the label cannot influence that width. Measuring the
+        // composite (instead of packing it) gets that width without laying out
+        // or resizing the tool tip window while it is being built
+        GridData hintData = GridDataFactory.fillDefaults().span(2, 1).hint(10, SWT.DEFAULT).create();
+        hint.setLayoutData(hintData);
+        hintData.widthHint = data.computeSize(SWT.DEFAULT, SWT.DEFAULT, false).x;
 
         hint.setFont(this.resourceManager
                         .create(FontDescriptor.createFrom(data.getFont()).increaseHeight(-3).withStyle(SWT.ITALIC)));
@@ -308,32 +313,46 @@ public class TimelineChartToolTip extends AbstractChartToolTip
         for (int i = 0; i < values.size(); i++)
             rows.get(i).value().setText(rows.get(i).format().format(values.get(i).getValue()));
 
-        // the extra information, i.e. the transactions around the focused date,
-        // depends on the focus object: dispose it and re-create it
-
-        extraInfoControls.forEach(Control::dispose);
-        extraInfoControls.clear();
-
-        addExtraInfo(container, getFocusedObject());
+        updateExtraInfo(container, getFocusedObject());
 
         return true;
+    }
+
+    /**
+     * Shows the extra information of the focused date, re-using the labels of
+     * the previous date: a control created while the tool tip is visible is not
+     * painted before the next paint cycle.
+     */
+    private void updateExtraInfo(Composite container, Object focus)
+    {
+        List<String> lines = new ArrayList<>();
+        extraInfoProvider.forEach(provider -> lines.addAll(provider.apply(focus)));
+
+        while (extraInfoLabels.size() < lines.size())
+            extraInfoLabels.add(new Label(container, SWT.NONE));
+
+        for (int i = 0; i < extraInfoLabels.size(); i++)
+        {
+            Label label = extraInfoLabels.get(i);
+
+            if (i < lines.size())
+            {
+                label.setText(lines.get(i));
+                label.setVisible(true);
+            }
+            else
+            {
+                // not needed for this date: an invisible child does not occupy
+                // any space in the layout
+                label.setVisible(false);
+            }
+        }
     }
 
     private Color colorOf(ISeries<?> series)
     {
         return series instanceof ILineSeries<?> lineSeries ? lineSeries.getLineColor()
                         : ((IBarSeries<?>) series).getBarColor();
-    }
-
-    private void addExtraInfo(Composite container, Object focus)
-    {
-        int numChildren = container.getChildren().length;
-
-        extraInfoProvider.forEach(provider -> provider.accept(container, focus));
-
-        Control[] children = container.getChildren();
-        for (int i = numChildren; i < children.length; i++)
-            extraInfoControls.add(children[i]);
     }
 
     private List<Pair<ISeries<?>, Double>> computeValues(ISeries<?>[] allSeries)
