@@ -1,11 +1,14 @@
 package name.abuchen.portfolio.util;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -18,6 +21,7 @@ import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.cookie.BasicCookieStore;
 import org.apache.hc.client5.http.cookie.StandardCookieSpec;
+import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
@@ -30,12 +34,14 @@ import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.HttpHeaders;
 import org.apache.hc.core5.http.HttpRequest;
 import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.ParseException;
 import org.apache.hc.core5.http.impl.EnglishReasonPhraseCatalog;
 import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.http.message.BasicHeader;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.apache.hc.core5.http.protocol.HttpContext;
 import org.apache.hc.core5.net.URIBuilder;
 import org.apache.hc.core5.util.TimeValue;
@@ -295,6 +301,9 @@ public class WebAccess
     private List<Header> headers = new ArrayList<>();
     private String userAgent = OnlineHelper.getUserAgent();
 
+    private volatile HttpUriRequestBase currentRequest;
+    private volatile boolean canceled;
+
     public WebAccess(String host, String path)
     {
         this.builder = new URIBuilder();
@@ -371,12 +380,51 @@ public class WebAccess
         });
     }
 
+    /**
+     * Aborts the request currently executed by this instance (if any) from
+     * another thread, e.g. when the user presses cancel. The executing thread
+     * receives an {@link IOException}. Requests started after calling this
+     * method are aborted immediately.
+     */
+    public void cancel()
+    {
+        canceled = true;
+        var request = currentRequest;
+        if (request != null)
+            request.cancel();
+    }
+
+    /**
+     * Sends a POST request with the given parameters as form-encoded body
+     * (application/x-www-form-urlencoded) and returns the response body.
+     */
+    public String postForm(Map<String, String> form) throws IOException
+    {
+        var response = executeWith(uri -> {
+            var request = new HttpPost(uri);
+            var pairs = form.entrySet().stream()
+                            .map(e -> (NameValuePair) new BasicNameValuePair(e.getKey(), e.getValue())).toList();
+            request.setEntity(new UrlEncodedFormEntity(pairs, StandardCharsets.UTF_8));
+            return request;
+        });
+
+        if (response == null)
+            throw new IOException("No message entity in response: " + builder.toString());
+        return response;
+    }
+
     private String executeWith(Request function) throws IOException
     {
         try
         {
             URI uri = builder.build();
             HttpUriRequestBase request = function.create(uri);
+
+            // publish the request before checking the flag so that cancel()
+            // either sees the request or the request sees the flag
+            currentRequest = request;
+            if (canceled)
+                throw new InterruptedIOException("Request canceled");
 
             if (!reuseConnections)
             {
