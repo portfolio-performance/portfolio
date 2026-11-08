@@ -23,6 +23,7 @@ import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
@@ -334,18 +335,23 @@ public class TimelineChartToolTip extends AbstractChartToolTip
         for (int i = 0; i < extraInfoLabels.size(); i++)
         {
             Label label = extraInfoLabels.get(i);
+            boolean show = i < lines.size();
 
-            if (i < lines.size())
-            {
+            if (show)
                 label.setText(lines.get(i));
-                label.setVisible(true);
-            }
-            else
+
+            // a row layout keeps the space of an invisible child - the label is
+            // only taken out of the layout if its layout data is excluded,
+            // otherwise a longer list of a previous date would keep its height
+            RowData layoutData = (RowData) label.getLayoutData();
+            if (layoutData == null)
             {
-                // not needed for this date: an invisible child does not occupy
-                // any space in the layout
-                label.setVisible(false);
+                layoutData = new RowData();
+                label.setLayoutData(layoutData);
             }
+            layoutData.exclude = !show;
+
+            label.setVisible(show);
         }
     }
 
