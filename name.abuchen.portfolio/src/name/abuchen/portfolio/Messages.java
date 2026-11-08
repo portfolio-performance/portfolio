@@ -115,6 +115,7 @@ public class Messages extends NLS
     public static String IBFlexMsgErrorHttpRequest;
     public static String IBFlexMsgErrorInterrupted;
     public static String IBFlexMsgErrorNoReferenceCode;
+    public static String IBFlexMsgErrorNoStatementUrl;
     public static String IBFlexMsgErrorParsingResponse;
     public static String IBFlexMsgErrorStatementNotReady;
     public static String IBFlexMsgErrorUnknown;

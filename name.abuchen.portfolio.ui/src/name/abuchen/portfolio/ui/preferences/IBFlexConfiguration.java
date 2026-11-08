@@ -43,7 +43,7 @@ public class IBFlexConfiguration
         }
     }
 
-    public record Cutoff(String queryId, LocalDateTime date)
+    public record LastImport(String queryId, LocalDateTime date)
     {
     }
 
@@ -83,13 +83,13 @@ public class IBFlexConfiguration
         return parseDate(dates.get(queryId.trim()));
     }
 
-    public static List<Cutoff> getLastImportDates(Client client)
+    public static List<LastImport> getLastImportDates(Client client)
     {
         if (client == null)
             return List.of();
 
         var dates = loadLastImportDates(client);
-        return dates.entrySet().stream().map(e -> new Cutoff(e.getKey(), parseDate(e.getValue())))
+        return dates.entrySet().stream().map(e -> new LastImport(e.getKey(), parseDate(e.getValue())))
                         .filter(c -> c.date() != null).toList();
     }
 
@@ -108,20 +108,20 @@ public class IBFlexConfiguration
         storeLastImportDates(client, dates);
     }
 
-    public static void setLastImportDates(Client client, List<Cutoff> cutoffs)
+    public static void setLastImportDates(Client client, List<LastImport> lastImports)
     {
         if (client == null)
             return;
 
         var dates = new TreeMap<String, String>();
-        if (cutoffs != null)
+        if (lastImports != null)
         {
-            for (var cutoff : cutoffs)
+            for (var lastImport : lastImports)
             {
-                if (cutoff == null || cutoff.queryId() == null || cutoff.queryId().isBlank() || cutoff.date() == null)
+                if (lastImport == null || lastImport.queryId() == null || lastImport.queryId().isBlank() || lastImport.date() == null)
                     continue;
 
-                dates.put(cutoff.queryId().trim(), cutoff.date().toString());
+                dates.put(lastImport.queryId().trim(), lastImport.date().toString());
             }
         }
 

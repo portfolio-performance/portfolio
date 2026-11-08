@@ -36,7 +36,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.preferences.IBFlexConfiguration.Credential;
-import name.abuchen.portfolio.ui.preferences.IBFlexConfiguration.Cutoff;
+import name.abuchen.portfolio.ui.preferences.IBFlexConfiguration.LastImport;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
 
 public class IBFlexPreferencePage extends PreferencePage
@@ -149,13 +149,14 @@ public class IBFlexPreferencePage extends PreferencePage
 
     private final Optional<Client> client;
     private List<Credential> credentials;
-    private List<Cutoff> cutoffs;
+    private List<LastImport> lastImports;
+    private boolean lastImportsChanged = false;
     private TableViewer credentialsTableViewer;
-    private TableViewer cutoffsTableViewer;
+    private TableViewer lastImportsTableViewer;
     private Button editCredentialButton;
     private Button removeCredentialButton;
-    private Button clearCutoffButton;
-    private Button clearAllCutoffsButton;
+    private Button clearLastImportButton;
+    private Button clearAllLastImportsButton;
 
     public IBFlexPreferencePage(Optional<Client> client)
     {
@@ -177,7 +178,7 @@ public class IBFlexPreferencePage extends PreferencePage
                         .browse("https://www.interactivebrokers.com/campus/ibkr-api-page/flex-web-service/"))); //$NON-NLS-1$
 
         credentials = new ArrayList<>(IBFlexConfiguration.getCredentials());
-        cutoffs = client.map(
+        lastImports = client.map(
                         activeClient -> new ArrayList<>(IBFlexConfiguration.getLastImportDates(activeClient)))
                         .orElseGet(ArrayList::new);
 
@@ -244,50 +245,51 @@ public class IBFlexPreferencePage extends PreferencePage
         var separator = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
         GridDataFactory.fillDefaults().span(2, 1).grab(true, false).indent(0, 10).applyTo(separator);
 
-        var cutoffsLabel = new Label(composite, SWT.NONE);
-        cutoffsLabel.setText(Messages.IBFlexCurrentPortfolioCutoffs);
-        GridDataFactory.fillDefaults().span(2, 1).applyTo(cutoffsLabel);
+        var lastImportsLabel = new Label(composite, SWT.NONE);
+        lastImportsLabel.setText(Messages.IBFlexLastImports);
+        GridDataFactory.fillDefaults().span(2, 1).applyTo(lastImportsLabel);
 
-        cutoffsTableViewer = new TableViewer(composite, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE);
-        Table cutoffsTable = cutoffsTableViewer.getTable();
-        cutoffsTable.setHeaderVisible(true);
-        cutoffsTable.setLinesVisible(true);
-        GridDataFactory.fillDefaults().grab(true, true).hint(SWT.DEFAULT, 120).applyTo(cutoffsTable);
+        lastImportsTableViewer = new TableViewer(composite, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE);
+        Table lastImportsTable = lastImportsTableViewer.getTable();
+        lastImportsTable.setHeaderVisible(true);
+        lastImportsTable.setLinesVisible(true);
+        GridDataFactory.fillDefaults().grab(true, true).hint(SWT.DEFAULT, 120).applyTo(lastImportsTable);
 
-        var cutoffQueryIdColumn = new TableViewerColumn(cutoffsTableViewer, SWT.NONE);
-        cutoffQueryIdColumn.getColumn().setText(Messages.IBFlexQueryId);
-        cutoffQueryIdColumn.getColumn().setWidth(200);
-        cutoffQueryIdColumn.setLabelProvider(ColumnLabelProvider.createTextProvider(e -> ((Cutoff) e).queryId()));
+        var lastImportQueryIdColumn = new TableViewerColumn(lastImportsTableViewer, SWT.NONE);
+        lastImportQueryIdColumn.getColumn().setText(Messages.IBFlexQueryId);
+        lastImportQueryIdColumn.getColumn().setWidth(200);
+        lastImportQueryIdColumn.setLabelProvider(ColumnLabelProvider.createTextProvider(e -> ((LastImport) e).queryId()));
 
-        var cutoffDateColumn = new TableViewerColumn(cutoffsTableViewer, SWT.NONE);
-        cutoffDateColumn.getColumn().setText(Messages.IBFlexLastImportDate);
-        cutoffDateColumn.getColumn().setWidth(180);
-        cutoffDateColumn.setLabelProvider(
-                        ColumnLabelProvider.createTextProvider(e -> formatIBFlexLastImportDate(((Cutoff) e).date())));
+        var lastImportDateColumn = new TableViewerColumn(lastImportsTableViewer, SWT.NONE);
+        lastImportDateColumn.getColumn().setText(Messages.IBFlexLastImportDate);
+        lastImportDateColumn.getColumn().setWidth(180);
+        lastImportDateColumn.setLabelProvider(
+                        ColumnLabelProvider.createTextProvider(e -> formatIBFlexLastImportDate(((LastImport) e).date())));
 
-        cutoffsTableViewer.setContentProvider(ArrayContentProvider.getInstance());
-        cutoffsTableViewer.setInput(cutoffs);
-        cutoffsTableViewer.addSelectionChangedListener(event -> updateCutoffButtons());
+        lastImportsTableViewer.setContentProvider(ArrayContentProvider.getInstance());
+        lastImportsTableViewer.setInput(lastImports);
+        lastImportsTableViewer.addSelectionChangedListener(event -> updateLastImportButtons());
 
-        var cutoffButtonComposite = new Composite(composite, SWT.NONE);
-        GridLayoutFactory.fillDefaults().applyTo(cutoffButtonComposite);
-        GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.BEGINNING).applyTo(cutoffButtonComposite);
+        var lastImportButtonComposite = new Composite(composite, SWT.NONE);
+        GridLayoutFactory.fillDefaults().applyTo(lastImportButtonComposite);
+        GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.BEGINNING).applyTo(lastImportButtonComposite);
 
-        clearCutoffButton = new Button(cutoffButtonComposite, SWT.PUSH);
-        clearCutoffButton.setText(Messages.IBFlexClearLastImportDate);
-        clearCutoffButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
-        clearCutoffButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> removeSelectedCutoff()));
+        clearLastImportButton = new Button(lastImportButtonComposite, SWT.PUSH);
+        clearLastImportButton.setText(Messages.IBFlexClearLastImportDate);
+        clearLastImportButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+        clearLastImportButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> removeSelectedLastImport()));
 
-        clearAllCutoffsButton = new Button(cutoffButtonComposite, SWT.PUSH);
-        clearAllCutoffsButton.setText(Messages.IBFlexClearAllLastImportDates);
-        clearAllCutoffsButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
-        clearAllCutoffsButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
-            cutoffs.clear();
-            refreshCutoffs();
+        clearAllLastImportsButton = new Button(lastImportButtonComposite, SWT.PUSH);
+        clearAllLastImportsButton.setText(Messages.IBFlexClearAllLastImportDates);
+        clearAllLastImportsButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+        clearAllLastImportsButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            lastImports.clear();
+            lastImportsChanged = true;
+            refreshLastImports();
         }));
 
         refreshCredentials();
-        refreshCutoffs();
+        refreshLastImports();
         return composite;
     }
 
@@ -348,32 +350,33 @@ public class IBFlexPreferencePage extends PreferencePage
         removeCredentialButton.setEnabled(!selection.isEmpty());
     }
 
-    private void removeSelectedCutoff()
+    private void removeSelectedLastImport()
     {
-        var selection = (IStructuredSelection) cutoffsTableViewer.getSelection();
+        var selection = (IStructuredSelection) lastImportsTableViewer.getSelection();
         if (selection.isEmpty())
             return;
 
         for (Object element : selection.toList())
-            cutoffs.remove(element);
+            lastImports.remove(element);
+        lastImportsChanged = true;
 
-        refreshCutoffs();
+        refreshLastImports();
     }
 
-    private void refreshCutoffs()
+    private void refreshLastImports()
     {
-        cutoffs.sort(Comparator.comparing(Cutoff::queryId));
-        cutoffsTableViewer.refresh();
-        updateCutoffButtons();
+        lastImports.sort(Comparator.comparing(LastImport::queryId));
+        lastImportsTableViewer.refresh();
+        updateLastImportButtons();
     }
 
-    private void updateCutoffButtons()
+    private void updateLastImportButtons()
     {
-        if (clearCutoffButton == null || clearAllCutoffsButton == null || cutoffsTableViewer == null)
+        if (clearLastImportButton == null || clearAllLastImportsButton == null || lastImportsTableViewer == null)
             return;
 
-        clearCutoffButton.setEnabled(!cutoffsTableViewer.getSelection().isEmpty());
-        clearAllCutoffsButton.setEnabled(!cutoffs.isEmpty());
+        clearLastImportButton.setEnabled(!lastImportsTableViewer.getSelection().isEmpty());
+        clearAllLastImportsButton.setEnabled(!lastImports.isEmpty());
     }
 
     @Override
@@ -381,7 +384,12 @@ public class IBFlexPreferencePage extends PreferencePage
     {
         getPreferenceStore().setValue(UIConstants.Preferences.IBFLEX_CREDENTIALS,
                         IBFlexConfiguration.serialize(credentials));
-        client.ifPresent(activeClient -> IBFlexConfiguration.setLastImportDates(activeClient, cutoffs));
+        // only write if edited: storing the dates marks the file as dirty
+        if (lastImportsChanged)
+        {
+            client.ifPresent(activeClient -> IBFlexConfiguration.setLastImportDates(activeClient, lastImports));
+            lastImportsChanged = false;
+        }
         return true;
     }
 
@@ -390,8 +398,9 @@ public class IBFlexPreferencePage extends PreferencePage
     {
         credentials.clear();
         refreshCredentials();
-        cutoffs.clear();
-        refreshCutoffs();
+        lastImports.clear();
+        lastImportsChanged = true;
+        refreshLastImports();
         super.performDefaults();
     }
 

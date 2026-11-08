@@ -495,14 +495,15 @@ public class Messages extends NLS
     public static String HoldingsWarningAssetsWithNegativeValuation;
     public static String HoldingsWarningAssetsWithNegativeValuationDetails;
     public static String IBFlexCredentialsNotConfigured;
-    public static String IBFlexCurrentPortfolioCutoffs;
     public static String IBFlexClearAllLastImportDates;
     public static String IBFlexClearLastImportDate;
     public static String IBFlexEdit;
     public static String IBFlexFetching;
+    public static String IBFlexFetchingRange;
+    public static String IBFlexFetchingRangePart;
     public static String IBFlexLastImportDate;
+    public static String IBFlexLastImports;
     public static String IBFlexNoItemsExtracted;
-    public static String IBFlexNoNewItemsExtracted;
     public static String IBFlexQueryId;
     public static String IBFlexRequestInvalid;
     public static String IBFlexToken;

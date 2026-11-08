@@ -2,7 +2,17 @@ package name.abuchen.portfolio.datatransfer.ibflex;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.MessageFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -68,11 +78,21 @@ public class IBFlexWebServiceClient
         }
 
         /**
-         * Returns true if this error indicates the token has expired.
+         * Returns true if IB reports a temporary condition and the request
+         * should be retried.
+         */
+        public boolean isRetryable()
+        {
+            return RETRYABLE_ERRORS.contains(errorCode);
+        }
+
+        /**
+         * Returns true if this error indicates the token has expired or is
+         * invalid.
          */
         public boolean isTokenExpired()
         {
-            return errorCode == ERROR_TOKEN_INVALID;
+            return errorCode == ERROR_TOKEN_EXPIRED || errorCode == ERROR_TOKEN_INVALID;
         }
 
         /**
@@ -95,38 +115,110 @@ public class IBFlexWebServiceClient
     }
 
     /**
-     * Functional interface for making HTTP GET requests. Allows mocking in
+     * Functional interface for making HTTP POST requests. Allows mocking in
      * tests.
      */
     @FunctionalInterface
     public interface HttpRequestExecutor
     {
-        String execute(String host, String path, String token, String queryOrRef, int version) throws IOException;
+        /**
+         * @param query
+         *            non-sensitive parameters sent in the URL
+         * @param form
+         *            parameters sent form-encoded in the request body,
+         *            including the token
+         */
+        String execute(String host, String path, Map<String, String> query, Map<String, String> form)
+                        throws IOException;
     }
 
-    private static final String SEND_REQUEST_HOST = "gdcdyn.interactivebrokers.com"; //$NON-NLS-1$
-    private static final String SEND_REQUEST_PATH = "/Universal/servlet/FlexStatementService.SendRequest"; //$NON-NLS-1$
-    private static final String GET_STATEMENT_PATH = "/Universal/servlet/FlexStatementService.GetStatement"; //$NON-NLS-1$
+    /**
+     * Receives progress updates while fetching statements.
+     */
+    @FunctionalInterface
+    public interface ProgressListener
+    {
+        /**
+         * @param current
+         *            1-based number of the request about to be sent
+         * @param total
+         *            total number of requests
+         * @param range
+         *            the date range covered by this request
+         */
+        void onRequest(int current, int total, IBFlexDateRange range);
+    }
+
+    /**
+     * Functional interface for waiting between requests. Allows tests to run
+     * without delays.
+     */
+    @FunctionalInterface
+    public interface Sleeper
+    {
+        void sleep(long millis) throws InterruptedException;
+    }
+
+    /**
+     * Response of SendRequest: the reference code of the statement and the URL
+     * to retrieve it from.
+     */
+    /* package */ record StatementAccess(String referenceCode, URI url)
+    {
+    }
+
+    // see https://www.ibkrguides.com/complianceportal/complianceportal/flexweb3.htm
+    /* package */ static final String SEND_REQUEST_HOST = "ndcdyn.interactivebrokers.com";
+    /* package */ static final String SEND_REQUEST_PATH = "/AccountManagement/FlexWebService/SendRequest";
     private static final int VERSION = 3;
 
-    // Error codes from IB documentation
+    // Error codes from IB documentation, see
+    // https://www.ibkrguides.com/clientportal/performanceandstatements/flex3error.htm
+    /* package */ static final int ERROR_COULD_NOT_GENERATE = 1001;
+    /* package */ static final int ERROR_TOKEN_EXPIRED = 1012;
+    /* package */ static final int ERROR_TOKEN_INVALID = 1015;
+    /* package */ static final int ERROR_TOO_MANY_REQUESTS = 1018;
     /* package */ static final int ERROR_STATEMENT_GENERATING = 1019;
-    /* package */ static final int ERROR_TOKEN_INVALID = 1003;
     /* package */ static final int ERROR_REQUEST_INVALID = 1020;
 
-    // Retry configuration
+    /**
+     * Temporary errors ("Please try again shortly").
+     */
+    private static final Set<Integer> RETRYABLE_ERRORS = Set.of(ERROR_COULD_NOT_GENERATE, 1004, 1005, 1006, 1007,
+                    1008, 1009, ERROR_TOO_MANY_REQUESTS, ERROR_STATEMENT_GENERATING, 1021);
+
+    /**
+     * Pause between SendRequest and the first attempt to retrieve the
+     * statement.
+     */
+    /* package */ static final long STATEMENT_DELAY_MS = 1000;
+
+    /**
+     * Pause between the requests for consecutive date ranges. IB allows at
+     * most one request per second per token (error 1018).
+     */
+    /* package */ static final long REQUEST_DELAY_MS = 1000;
+
+    // Retry configuration for retrieving the statement
     /* package */ static final int MAX_RETRIES = 10;
     /* package */ static final long INITIAL_DELAY_MS = 2000;
-    /* package */ static final long MAX_DELAY_MS = 30000;
+    /* package */ static final long MAX_DELAY_MS = 10000;
+
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.BASIC_ISO_DATE;
 
     private final HttpRequestExecutor httpExecutor;
+    private final Sleeper sleeper;
+
+    private final AtomicReference<WebAccess> inFlight = new AtomicReference<>();
+    private volatile boolean canceled;
 
     /**
      * Creates a client using the default HTTP executor (WebAccess).
      */
     public IBFlexWebServiceClient()
     {
-        this(IBFlexWebServiceClient::defaultHttpExecutor);
+        this.httpExecutor = this::defaultHttpExecutor;
+        this.sleeper = Thread::sleep;
     }
 
     /**
@@ -134,25 +226,50 @@ public class IBFlexWebServiceClient
      */
     public IBFlexWebServiceClient(HttpRequestExecutor httpExecutor)
     {
-        this.httpExecutor = httpExecutor;
+        this(httpExecutor, Thread::sleep);
     }
 
-    private static String defaultHttpExecutor(String host, String path, String token, String queryOrRef, int version)
-                    throws IOException
+    /**
+     * Creates a client with a custom HTTP executor and sleeper (for testing).
+     */
+    public IBFlexWebServiceClient(HttpRequestExecutor httpExecutor, Sleeper sleeper)
+    {
+        this.httpExecutor = httpExecutor;
+        this.sleeper = sleeper;
+    }
+
+    /**
+     * Sends the request as POST with the token and query id / reference code
+     * as form-encoded body.
+     * <p>
+     * This diverges from IB's documentation and the reference implementations,
+     * which send all parameters in the URL of a GET request. Error messages of
+     * the HTTP layer (and therefore the log) include the URL, which would leak
+     * the token. IB accepts both SendRequest and GetStatement as POST.
+     */
+    private String defaultHttpExecutor(String host, String path, Map<String, String> query,
+                    Map<String, String> form) throws IOException
     {
         try
         {
             var appVersion = FrameworkUtil.getBundle(IBFlexWebServiceClient.class).getVersion().toString();
-            return new WebAccess(host, path) //
-                            .addUserAgent("PortfolioPerformance/" + appVersion) //$NON-NLS-1$
-                            .addParameter("t", token) //$NON-NLS-1$
-                            .addParameter("q", queryOrRef) //$NON-NLS-1$
-                            .addParameter("v", String.valueOf(version)) //$NON-NLS-1$
-                            .get();
+            var request = new WebAccess(host, path) //
+                            .addUserAgent("PortfolioPerformance/" + appVersion); //$NON-NLS-1$
+            query.forEach(request::addParameter);
+
+            inFlight.set(request);
+            if (canceled)
+                request.cancel();
+
+            return request.postForm(form);
         }
         catch (WebAccess.WebAccessException e)
         {
             throw new IOException(MessageFormat.format(Messages.IBFlexMsgErrorHttpRequest, e.getHttpErrorCode()), e);
+        }
+        finally
+        {
+            inFlight.set(null);
         }
     }
 
@@ -172,14 +289,134 @@ public class IBFlexWebServiceClient
      */
     public String fetchStatement(String token, String queryId) throws IBFlexException, IOException
     {
-        String requestStatementResponse = httpExecutor.execute(SEND_REQUEST_HOST, SEND_REQUEST_PATH, token, queryId,
-                        VERSION);
-        String referenceCode = parseReferenceCode(requestStatementResponse);
-
-        return fetchStatementWithRetry(token, referenceCode);
+        return fetchStatement(token, queryId, null);
     }
 
-    /* package */ String parseReferenceCode(String xml) throws IBFlexException, IOException
+    /**
+     * Fetches a Flex statement for the given date range.
+     *
+     * @param range
+     *            the date range to report on, at most
+     *            {@link IBFlexDateRange#MAX_DAYS_PER_REQUEST} days; if null,
+     *            the period configured in the Flex Query is used
+     */
+    public String fetchStatement(String token, String queryId, IBFlexDateRange range)
+                    throws IBFlexException, IOException
+    {
+        var query = new LinkedHashMap<String, String>();
+
+        if (range != null)
+        {
+            if (range.split().size() > 1)
+                throw new IllegalArgumentException("date range exceeds " + IBFlexDateRange.MAX_DAYS_PER_REQUEST
+                                + " days: " + range);
+
+            query.put("fd", DATE_FORMAT.format(range.from()));
+            query.put("td", DATE_FORMAT.format(range.to()));
+        }
+
+        // do not send another request once the user canceled
+        checkCanceled();
+
+        // errors of the initial request are not retried
+        var access = parseStatementAccess(execute(SEND_REQUEST_HOST, SEND_REQUEST_PATH, query,
+                        credentials(token, queryId)));
+
+        // the statement is never ready immediately
+        sleep(STATEMENT_DELAY_MS);
+
+        return withRetry(() -> fetchStatementOnce(token, access));
+    }
+
+    /**
+     * Fetches Flex statements covering the given date range. Ranges longer
+     * than {@link IBFlexDateRange#MAX_DAYS_PER_REQUEST} days are split into
+     * multiple requests.
+     *
+     * @param progress
+     *            called before each request; may be null
+     * @return one statement per request, in chronological order
+     */
+    public List<String> fetchStatements(String token, String queryId, IBFlexDateRange range,
+                    ProgressListener progress) throws IBFlexException, IOException
+    {
+        var chunks = range.split();
+        var statements = new ArrayList<String>();
+
+        for (int index = 0; index < chunks.size(); index++)
+        {
+            if (index > 0)
+                sleep(REQUEST_DELAY_MS);
+
+            if (progress != null)
+                progress.onRequest(index + 1, chunks.size(), chunks.get(index));
+
+            statements.add(fetchStatement(token, queryId, chunks.get(index)));
+        }
+
+        checkCanceled();
+
+        return statements;
+    }
+
+    /**
+     * Cancels the fetch: aborts the HTTP request currently in flight and
+     * prevents further requests. May be called from any thread. The fetching
+     * thread fails with an {@link IBFlexException} for which
+     * {@link IBFlexException#isCanceled()} is true.
+     */
+    public void cancel()
+    {
+        canceled = true;
+        var request = inFlight.get();
+        if (request != null)
+            request.cancel();
+    }
+
+    private void checkCanceled() throws IBFlexException
+    {
+        if (canceled || Thread.currentThread().isInterrupted())
+            throw new IBFlexException(Messages.IBFlexMsgErrorInterrupted, new InterruptedException());
+    }
+
+    private String execute(String host, String path, Map<String, String> query, Map<String, String> form)
+                    throws IBFlexException, IOException
+    {
+        try
+        {
+            return httpExecutor.execute(host, path, query, form);
+        }
+        catch (IOException e)
+        {
+            // an aborted request fails with an I/O error
+            checkCanceled();
+            throw e;
+        }
+    }
+
+    private static Map<String, String> credentials(String token, String queryOrRef)
+    {
+        var parameters = new LinkedHashMap<String, String>();
+        parameters.put("t", token);
+        parameters.put("q", queryOrRef);
+        parameters.put("v", String.valueOf(VERSION));
+        return parameters;
+    }
+
+    private void sleep(long millis) throws IBFlexException
+    {
+        try
+        {
+            sleeper.sleep(millis);
+        }
+        catch (InterruptedException e)
+        {
+            Thread.currentThread().interrupt();
+            throw new IBFlexException(Messages.IBFlexMsgErrorInterrupted, e);
+        }
+    }
+
+    /* package */ StatementAccess parseStatementAccess(String xml) throws IBFlexException, IOException
     {
         try
         {
@@ -194,57 +431,73 @@ public class IBFlexWebServiceClient
                                 new IllegalStateException("Missing ReferenceCode in response")); //$NON-NLS-1$
             }
 
-            return refNodes.item(0).getTextContent().trim();
+            // Get the URL to retrieve the statement from
+            NodeList urlNodes = doc.getElementsByTagName("Url");
+            if (urlNodes.getLength() == 0)
+            {
+                throw new IBFlexException(Messages.IBFlexMsgErrorNoStatementUrl,
+                                new IllegalStateException("Missing Url in response"));
+            }
+
+            var url = new URI(urlNodes.item(0).getTextContent().trim());
+            if (url.getHost() == null)
+                throw new IBFlexException(Messages.IBFlexMsgErrorNoStatementUrl,
+                                new IllegalStateException("Invalid Url in response: " + url));
+
+            return new StatementAccess(refNodes.item(0).getTextContent().trim(), url);
         }
-        catch (ParserConfigurationException | SAXException e)
+        catch (ParserConfigurationException | SAXException | URISyntaxException e)
         {
             throw new IBFlexException(Messages.IBFlexMsgErrorParsingResponse, e);
         }
     }
 
-    private String fetchStatementWithRetry(String token, String referenceCode) throws IBFlexException, IOException
+    @FunctionalInterface
+    private interface Request
+    {
+        String run() throws IBFlexException, IOException;
+    }
+
+    /**
+     * Runs the request, retrying with exponential backoff as long as IB
+     * reports a temporary error.
+     */
+    private String withRetry(Request request) throws IBFlexException, IOException
     {
         long delay = INITIAL_DELAY_MS;
+        IBFlexException lastError = null;
 
         for (int attempt = 0; attempt < MAX_RETRIES; attempt++)
         {
-            // Check for cancellation before each attempt
-            if (Thread.currentThread().isInterrupted())
-                throw new IBFlexException(Messages.IBFlexMsgErrorInterrupted, new InterruptedException());
+            if (attempt > 0)
+            {
+                sleep(delay);
+                delay = Math.min(delay * 2, MAX_DELAY_MS);
+            }
+
+            checkCanceled();
 
             try
             {
-                return fetchStatementOnce(token, referenceCode);
+                return request.run();
             }
             catch (IBFlexException e)
             {
-                if (!e.isStatementGenerating())
+                if (!e.isRetryable())
                     throw e;
-
-                // Statement still generating, wait and retry
-                try
-                {
-                    Thread.sleep(delay);
-                }
-                catch (InterruptedException ie)
-                {
-                    Thread.currentThread().interrupt();
-                    throw new IBFlexException(Messages.IBFlexMsgErrorInterrupted, ie);
-                }
-
-                // Exponential backoff, capped at MAX_DELAY_MS
-                delay = Math.min(delay * 2, MAX_DELAY_MS);
+                lastError = e;
             }
         }
 
-        throw new IBFlexException(ERROR_STATEMENT_GENERATING, Messages.IBFlexMsgErrorStatementNotReady);
+        throw new IBFlexException(lastError.getErrorCode(),
+                        Messages.IBFlexMsgErrorStatementNotReady + "\n\n" + lastError.getMessage());
     }
 
-    private String fetchStatementOnce(String token, String referenceCode) throws IBFlexException, IOException
+    private String fetchStatementOnce(String token, StatementAccess access) throws IBFlexException, IOException
     {
-        String response = httpExecutor.execute(SEND_REQUEST_HOST, GET_STATEMENT_PATH, token, referenceCode, VERSION);
+        String response = execute(access.url().getHost(), access.url().getPath(), Map.of(),
+                        credentials(token, access.referenceCode()));
 
-        // Parse response as XML to check for error
         checkForErrorResponse(response);
 
         // Response is the actual Flex statement XML
@@ -253,19 +506,23 @@ public class IBFlexWebServiceClient
 
     /* package */ void checkForErrorResponse(String xml) throws IBFlexException, IOException
     {
+        // statements can be large, so do not parse them just to tell them
+        // apart from the (small) error responses
+        if (xml.contains("<FlexQueryResponse"))
+            return;
+
         try
         {
-            Document doc = parseXml(xml);
-
-            if (!"FlexStatementResponse".equals(doc.getDocumentElement().getTagName())) //$NON-NLS-1$
-                return;
-
-            throwOnError(doc);
+            throwOnError(parseXml(xml));
         }
         catch (ParserConfigurationException | SAXException e)
         {
             throw new IBFlexException(Messages.IBFlexMsgErrorParsingResponse, e);
         }
+
+        // neither a statement nor an error
+        throw new IBFlexException(Messages.IBFlexMsgErrorParsingResponse,
+                        new IllegalStateException("Unexpected response from GetStatement"));
     }
 
     private void throwOnError(Document doc) throws IBFlexException

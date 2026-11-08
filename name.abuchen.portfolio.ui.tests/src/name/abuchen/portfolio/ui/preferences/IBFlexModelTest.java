@@ -18,7 +18,7 @@ import org.junit.Test;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.preferences.IBFlexConfiguration.Credential;
-import name.abuchen.portfolio.ui.preferences.IBFlexConfiguration.Cutoff;
+import name.abuchen.portfolio.ui.preferences.IBFlexConfiguration.LastImport;
 
 @SuppressWarnings("nls")
 public class IBFlexModelTest
@@ -146,12 +146,12 @@ public class IBFlexModelTest
 
         assertThat(IBFlexConfiguration.getLastImportDate(client, "11111"), is(firstDate));
         assertThat(IBFlexConfiguration.getLastImportDate(client, "22222"), is(secondDate));
-        assertThat(IBFlexConfiguration.getLastImportDates(client).stream().map(Cutoff::queryId)
+        assertThat(IBFlexConfiguration.getLastImportDates(client).stream().map(LastImport::queryId)
                         .collect(Collectors.toList()), contains("11111", "22222"));
     }
 
     @Test
-    public void testClearingOneQueryIdLeavesOtherCutoffsUntouched()
+    public void testClearingOneQueryIdLeavesOtherLastImportsUntouched()
     {
         var firstDate = LocalDateTime.of(2024, 6, 15, 14, 30, 45);
         var secondDate = LocalDateTime.of(2025, 1, 2, 3, 4, 5);
@@ -163,27 +163,27 @@ public class IBFlexModelTest
 
         assertThat(IBFlexConfiguration.getLastImportDate(client, "11111"), is(nullValue()));
         assertThat(IBFlexConfiguration.getLastImportDate(client, "22222"), is(secondDate));
-        assertThat(IBFlexConfiguration.getLastImportDates(client).stream().map(Cutoff::queryId)
+        assertThat(IBFlexConfiguration.getLastImportDates(client).stream().map(LastImport::queryId)
                         .collect(Collectors.toList()), contains("22222"));
     }
 
     @Test
     public void testSetLastImportDatesStoresStableSortedList()
     {
-        var cutoffs = List.of(
-                        new Cutoff("33333", LocalDateTime.of(2024, 3, 3, 3, 3)),
-                        new Cutoff("11111", LocalDateTime.of(2024, 1, 1, 1, 1)),
-                        new Cutoff("22222", LocalDateTime.of(2024, 2, 2, 2, 2)));
+        var lastImports = List.of(
+                        new LastImport("33333", LocalDateTime.of(2024, 3, 3, 3, 3)),
+                        new LastImport("11111", LocalDateTime.of(2024, 1, 1, 1, 1)),
+                        new LastImport("22222", LocalDateTime.of(2024, 2, 2, 2, 2)));
 
-        IBFlexConfiguration.setLastImportDates(client, cutoffs);
+        IBFlexConfiguration.setLastImportDates(client, lastImports);
 
         var loaded = IBFlexConfiguration.getLastImportDates(client);
-        assertThat(loaded.stream().map(Cutoff::queryId).collect(Collectors.toList()),
+        assertThat(loaded.stream().map(LastImport::queryId).collect(Collectors.toList()),
                         contains("11111", "22222", "33333"));
     }
 
     @Test
-    public void testClearAllLastImportDatesRemovesQueryScopedCutoffs()
+    public void testClearAllLastImportDatesRemovesQueryScopedLastImports()
     {
         IBFlexConfiguration.setLastImportDate(client, "11111", LocalDateTime.of(2024, 1, 1, 1, 1));
         IBFlexConfiguration.setLastImportDate(client, "22222", LocalDateTime.of(2024, 2, 2, 2, 2));
