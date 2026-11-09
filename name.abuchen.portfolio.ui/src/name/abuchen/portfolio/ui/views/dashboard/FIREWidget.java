@@ -223,6 +223,15 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             delegate.getClient().touch();
         }
 
+        /**
+         * Hook to restrict a parsed value before it is stored. Returns the
+         * value unchanged by default.
+         */
+        protected double normalize(double value)
+        {
+            return value;
+        }
+
         @Override
         public void menuAboutToShow(IMenuManager manager)
         {
@@ -240,7 +249,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
 
                 try
                 {
-                    setValue(parsePercents(dialog.getValue()));
+                    setValue(normalize(parsePercents(dialog.getValue())));
                 }
                 catch (IllegalArgumentException ignore)
                 {
@@ -291,6 +300,12 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         public void setWithdrawal(Double withdrawal)
         {
             setValue(withdrawal);
+        }
+
+        @Override
+        protected double normalize(double value)
+        {
+            return capWithdrawal(value);
         }
     }
 
@@ -714,7 +729,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         {
             var withdrawal = parsePercents(withdrawalInput.getText());
 
-            withdrawal = Double.min(withdrawal, 1);
+            withdrawal = capWithdrawal(withdrawal);
 
             if (currentWithdrawal == null || Double.compare(currentWithdrawal, withdrawal) != 0)
                 get(FIREWithdrawalConfig.class).setWithdrawal(withdrawal);
@@ -741,6 +756,15 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
     {
         Double saved = get(FIREWithdrawalConfig.class).getWithdrawal();
         return saved != null ? saved : DEFAULT_WITHDRAWAL;
+    }
+
+    /**
+     * Caps a withdrawal rate at 100%. Shared by the inline editor and the
+     * configuration menu so both apply the same limit.
+     */
+    private static double capWithdrawal(double withdrawal)
+    {
+        return Double.min(withdrawal, 1);
     }
 
     private void showWithdrawal(double withdrawal)
