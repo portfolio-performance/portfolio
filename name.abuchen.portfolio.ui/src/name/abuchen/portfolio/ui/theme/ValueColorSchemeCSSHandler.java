@@ -29,10 +29,12 @@ public class ValueColorSchemeCSSHandler implements ICSSPropertyHandler
         switch (property)
         {
             case "positive-foreground": //$NON-NLS-1$
-                scheme.setPositiveForeground(CSSSWTColorHelper.getRGBA(value));
+                if (!scheme.hasCustomPositive())
+                    scheme.setPositiveForeground(CSSSWTColorHelper.getRGBA(value));
                 return true;
             case "negative-foreground": //$NON-NLS-1$
-                scheme.setNegativeForeground(CSSSWTColorHelper.getRGBA(value));
+                if (!scheme.hasCustomNegative())
+                    scheme.setNegativeForeground(CSSSWTColorHelper.getRGBA(value));
                 return true;
             case "up-arrow": //$NON-NLS-1$
                 var upArrow = getText(value);

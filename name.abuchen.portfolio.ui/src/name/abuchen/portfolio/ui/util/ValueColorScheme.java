@@ -1,10 +1,17 @@
 package name.abuchen.portfolio.ui.util;
 
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import java.util.List;
 
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageDataProvider;
+import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGBA;
+import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -18,6 +25,7 @@ import name.abuchen.portfolio.util.ColorConversion;
 public final class ValueColorScheme
 {
     public static final String STANDARD_SCHEME = "standard"; //$NON-NLS-1$
+    public static final String CUSTOM_SCHEME = "custom"; //$NON-NLS-1$
 
     private static final List<ValueColorScheme> schemes;
     private static ValueColorScheme currentScheme;
@@ -50,7 +58,11 @@ public final class ValueColorScheme
         vivid.setUpArrow("scheme/vivid/light/up_arrow.svg"); //$NON-NLS-1$
         vivid.setDownArrow("scheme/vivid/light/down_arrow.svg"); //$NON-NLS-1$
 
-        schemes = List.of(standard, blueOrange, asia, vivid);
+        var custom = new ValueColorScheme(CUSTOM_SCHEME, Messages.ValueColorSchemeCustom);
+        custom.setPositiveForeground(ColorConversion.hex2RGBA("#007A00")); //$NON-NLS-1$
+        custom.setNegativeForeground(ColorConversion.hex2RGBA("#C62828")); //$NON-NLS-1$
+
+        schemes = List.of(standard, blueOrange, asia, vivid, custom);
         currentScheme = standard;
     }
 
@@ -61,6 +73,8 @@ public final class ValueColorScheme
     private Color negativeForeground;
     private Image upArrow;
     private Image downArrow;
+    private boolean hasCustomPositive;
+    private boolean hasCustomNegative;
 
     private ValueColorScheme(String identifier, String name)
     {
@@ -78,6 +92,16 @@ public final class ValueColorScheme
         return name;
     }
 
+    public boolean hasCustomPositive()
+    {
+        return hasCustomPositive;
+    }
+
+    public boolean hasCustomNegative()
+    {
+        return hasCustomNegative;
+    }
+
     public Color positiveForeground()
     {
         return positiveForeground;
@@ -86,6 +110,8 @@ public final class ValueColorScheme
     public void setPositiveForeground(RGBA color)
     {
         this.positiveForeground = Colors.getColor(color.rgb);
+        if (CUSTOM_SCHEME.equals(identifier))
+            upArrow = createArrowImage(positiveForeground, true);
     }
 
     public Color negativeForeground()
@@ -96,10 +122,14 @@ public final class ValueColorScheme
     public void setNegativeForeground(RGBA color)
     {
         this.negativeForeground = Colors.getColor(color.rgb);
+        if (CUSTOM_SCHEME.equals(identifier))
+            downArrow = createArrowImage(negativeForeground, false);
     }
 
     public Image upArrow()
     {
+        if (upArrow == null && CUSTOM_SCHEME.equals(identifier) && positiveForeground != null)
+            upArrow = createArrowImage(positiveForeground, true);
         return upArrow;
     }
 
@@ -110,6 +140,8 @@ public final class ValueColorScheme
 
     public Image downArrow()
     {
+        if (downArrow == null && CUSTOM_SCHEME.equals(identifier) && negativeForeground != null)
+            downArrow = createArrowImage(negativeForeground, false);
         return downArrow;
     }
 
@@ -126,6 +158,101 @@ public final class ValueColorScheme
     public static List<ValueColorScheme> getAvailableSchemes()
     {
         return schemes;
+    }
+
+    public static ValueColorScheme getCustomScheme()
+    {
+        for (var scheme : schemes)
+        {
+            if (CUSTOM_SCHEME.equals(scheme.getIdentifier()))
+                return scheme;
+        }
+        return null;
+    }
+
+    public static boolean setCustomPositiveColor(String hex)
+    {
+        var custom = getCustomScheme();
+        if (custom == null)
+            return false;
+
+        if (hex != null && !hex.isBlank())
+        {
+            custom.hasCustomPositive = true;
+            custom.setPositiveForeground(ColorConversion.hex2RGBA(hex));
+        }
+        else
+        {
+            custom.hasCustomPositive = false;
+        }
+        return true;
+    }
+
+    public static boolean setCustomNegativeColor(String hex)
+    {
+        var custom = getCustomScheme();
+        if (custom == null)
+            return false;
+
+        if (hex != null && !hex.isBlank())
+        {
+            custom.hasCustomNegative = true;
+            custom.setNegativeForeground(ColorConversion.hex2RGBA(hex));
+        }
+        else
+        {
+            custom.hasCustomNegative = false;
+        }
+        return true;
+    }
+
+    private static Image createArrowImage(Color color, boolean up)
+    {
+        var display = Display.getCurrent() != null ? Display.getCurrent() : Display.getDefault();
+        if (display == null || color == null || color.isDisposed())
+            return null;
+
+        int r = color.getRed();
+        int g = color.getGreen();
+        int b = color.getBlue();
+
+        return new Image(display, (ImageDataProvider) zoom -> {
+            int size = Math.max(1, Math.round(16f * zoom / 100f));
+            var bImg = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+            var g2 = bImg.createGraphics();
+            try
+            {
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(new java.awt.Color(r, g, b));
+                int pTop = Math.round(3f * zoom / 100f);
+                int pBottom = Math.round(12f * zoom / 100f);
+                int pMid = Math.round(8f * zoom / 100f);
+                int pLeft = Math.round(2f * zoom / 100f);
+                int pRight = Math.round(14f * zoom / 100f);
+                if (up)
+                    g2.fillPolygon(new int[] { pMid, pRight, pLeft }, new int[] { pTop, pBottom, pBottom }, 3);
+                else
+                    g2.fillPolygon(new int[] { pMid, pRight, pLeft }, new int[] { pBottom, pTop, pTop }, 3);
+            }
+            finally
+            {
+                g2.dispose();
+            }
+
+            var palette = new PaletteData(0x00FF0000, 0x0000FF00, 0x000000FF);
+            var data = new ImageData(size, size, 32, palette);
+            data.alphaData = new byte[size * size];
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    int argb = bImg.getRGB(x, y);
+                    data.setPixel(x, y, argb & 0x00FFFFFF);
+                    data.alphaData[y * size + x] = (byte) ((argb >> 24) & 0xFF);
+                }
+            }
+            return data;
+        });
     }
 
     public static void initialize(String schemeId)

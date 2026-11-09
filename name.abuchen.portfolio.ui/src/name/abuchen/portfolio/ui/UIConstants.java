@@ -321,6 +321,8 @@ public interface UIConstants
          * Preference key for value color scheme (green/red or blue/orange)
          */
         String VALUE_COLOR_SCHEME = "VALUE_COLOR_SCHEME"; //$NON-NLS-1$
+        String VALUE_COLOR_SCHEME_CUSTOM_POSITIVE = "value-color-scheme-custom-positive"; //$NON-NLS-1$
+        String VALUE_COLOR_SCHEME_CUSTOM_NEGATIVE = "value-color-scheme-custom-negative"; //$NON-NLS-1$
 
     }
 

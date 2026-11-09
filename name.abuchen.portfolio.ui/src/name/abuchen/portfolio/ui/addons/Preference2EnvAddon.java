@@ -39,6 +39,10 @@ public class Preference2EnvAddon
 
     @Inject
     @Optional
+    private org.eclipse.e4.ui.css.swt.theme.IThemeEngine themeEngine;
+
+    @Inject
+    @Optional
     public void setValueColorScheme(@Preference(value = UIConstants.Preferences.VALUE_COLOR_SCHEME) String scheme)
     {
         String currentScheme = ValueColorScheme.current().getIdentifier();
@@ -46,6 +50,34 @@ public class Preference2EnvAddon
 
         if (broker != null && !Objects.equals(currentScheme, ValueColorScheme.current().getIdentifier()))
             broker.post(UIConstants.Event.Global.VALUE_COLOR_SCHEME_CHANGED, scheme);
+    }
+
+    @Inject
+    @Optional
+    public void setCustomPositiveColor(
+                    @Preference(value = UIConstants.Preferences.VALUE_COLOR_SCHEME_CUSTOM_POSITIVE) String hex)
+    {
+        if (ValueColorScheme.setCustomPositiveColor(hex))
+        {
+            if ((hex == null || hex.isBlank()) && themeEngine != null)
+                themeEngine.applyStyles(ValueColorScheme.getCustomScheme(), false);
+            if (broker != null)
+                broker.post(UIConstants.Event.Global.VALUE_COLOR_SCHEME_CHANGED, hex);
+        }
+    }
+
+    @Inject
+    @Optional
+    public void setCustomNegativeColor(
+                    @Preference(value = UIConstants.Preferences.VALUE_COLOR_SCHEME_CUSTOM_NEGATIVE) String hex)
+    {
+        if (ValueColorScheme.setCustomNegativeColor(hex))
+        {
+            if ((hex == null || hex.isBlank()) && themeEngine != null)
+                themeEngine.applyStyles(ValueColorScheme.getCustomScheme(), false);
+            if (broker != null)
+                broker.post(UIConstants.Event.Global.VALUE_COLOR_SCHEME_CHANGED, hex);
+        }
     }
 
     @Inject

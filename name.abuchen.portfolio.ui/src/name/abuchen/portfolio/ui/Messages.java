@@ -1545,6 +1545,7 @@ public class Messages extends NLS
     public static String MsgWarningWayland;
     public static String ValueColorSchemeAsia;
     public static String ValueColorSchemeBlueOrange;
+    public static String ValueColorSchemeCustom;
     public static String ValueColorSchemeStandard;
     public static String ValueColorSchemeVividContrast;
     public static String WatchlistDelete;
