@@ -1,5 +1,5 @@
 pp-cli reads and writes a Portfolio Performance client file. Output is one JSON document on stdout.
-Built from upstream tag 0.89.0; reads client files up to version 70 (pp-cli info reports both).
+Built from upstream tag 0.90.0; reads client files up to version 70 (pp-cli info reports both).
 
 Usage:
   pp-cli <command> [options]

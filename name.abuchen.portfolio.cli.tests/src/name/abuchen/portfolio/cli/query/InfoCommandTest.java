@@ -44,7 +44,7 @@ public class InfoCommandTest
         assertThat(data.get("maxSupportedVersion").getAsInt(), is(Client.CURRENT_VERSION));
         assertThat(data.get("format").getAsString(), is("xml"));
         assertThat(data.get("baseCurrency").getAsString(), is("EUR"));
-        assertThat(data.get("pinnedUpstreamTag").getAsString(), is("0.89.0"));
+        assertThat(data.get("pinnedUpstreamTag").getAsString(), is("0.90.0"));
 
         var counts = data.getAsJsonObject("counts");
         assertThat(counts.get("instruments").getAsInt(), is(2));
