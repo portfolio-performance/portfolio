@@ -440,7 +440,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         withdrawalInput = withdrawalRow.input();
 
         Double currentWithdrawal = get(FIREWithdrawalConfig.class).getWithdrawal();
-        if (currentReturns != null)
+        if (currentWithdrawal != null)
         {
             withdrawalLabel.setText(Values.Percent2.format(currentWithdrawal));
             withdrawalInput.setText(Values.Percent.format(currentWithdrawal));
@@ -757,9 +757,9 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
     {
         Double currentWithdrawal = get(FIREWithdrawalConfig.class).getWithdrawal();
         if (currentWithdrawal != null)
-            twrorInput.setText(Values.Percent.format(currentWithdrawal));
+            withdrawalInput.setText(Values.Percent.format(currentWithdrawal));
         else
-            twrorInput.setText(getDefaultWithdrawalInput());
+            withdrawalInput.setText(getDefaultWithdrawalInput());
     }
 
     private String getDefaultWithdrawalInput()
@@ -907,6 +907,12 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         {
             cancelReturnsEditing();
             showLabel(twrorLabel, twrorInput);
+        }
+
+        if (withdrawalInput.isVisible() && !isSameOrDescendant(clickedControl, withdrawalInput))
+        {
+            cancelWithdrawalEditing();
+            showLabel(withdrawalLabel, withdrawalInput);
         }
     }
 
