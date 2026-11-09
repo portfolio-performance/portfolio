@@ -439,17 +439,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         withdrawalLabel = withdrawalRow.valueLabel();
         withdrawalInput = withdrawalRow.input();
 
-        Double currentWithdrawal = get(FIREWithdrawalConfig.class).getWithdrawal();
-        if (currentWithdrawal != null)
-        {
-            withdrawalLabel.setText(Values.Percent2.format(currentWithdrawal));
-            withdrawalInput.setText(Values.Percent.format(currentWithdrawal));
-        }
-        else
-        {
-            withdrawalLabel.setText(Messages.LabelFIREClickToSet);
-            withdrawalInput.setText(getDefaultWithdrawalInput());
-        }
+        showWithdrawal(getEffectiveWithdrawal());
 
         // Yearly Withdrawal
         new Label(container, SWT.NONE); // Empty sign column
@@ -566,16 +556,10 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                 }
             }
 
-            var userWithdrawal = get(FIREWithdrawalConfig.class).getWithdrawal();
-            double withdrawal = userWithdrawal != null ? userWithdrawal : Double.NaN;
+            double withdrawal = getEffectiveWithdrawal();
 
-            Money yearlyWithdrawal = null;
-            Money currentYearlyWithdrawal = null;
-            if (fireNumber != null && currentValue != null && !Double.isNaN(withdrawal))
-            {
-                yearlyWithdrawal = fireNumber.multiplyAndRound(withdrawal);
-                currentYearlyWithdrawal = currentValue.multiplyAndRound(withdrawal);
-            }
+            Money yearlyWithdrawal = fireNumber != null ? fireNumber.multiplyAndRound(withdrawal) : null;
+            Money currentYearlyWithdrawal = currentValue != null ? currentValue.multiplyAndRound(withdrawal) : null;
 
             return new FIREData(fireNumber, currentValue, monthlySavings, twror, timeToFire, targetDate,
                             yearlyWithdrawal, currentYearlyWithdrawal);
@@ -735,36 +719,34 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             if (currentWithdrawal == null || Double.compare(currentWithdrawal, withdrawal) != 0)
                 get(FIREWithdrawalConfig.class).setWithdrawal(withdrawal);
 
-            withdrawalLabel.setText(Values.Percent2.format(withdrawal));
-            withdrawalInput.setText(Values.Percent.format(withdrawal));
+            showWithdrawal(withdrawal);
         }
         catch (IllegalArgumentException e)
         {
-            if (currentWithdrawal != null)
-            {
-                withdrawalLabel.setText(Values.Percent2.format(currentWithdrawal));
-                withdrawalInput.setText(Values.Percent.format(currentWithdrawal));
-            }
-            else
-            {
-                withdrawalLabel.setText(Messages.LabelFIREClickToSet);
-                withdrawalInput.setText(getDefaultWithdrawalInput());
-            }
+            showWithdrawal(getEffectiveWithdrawal());
         }
     }
 
     private void cancelWithdrawalEditing()
     {
-        Double currentWithdrawal = get(FIREWithdrawalConfig.class).getWithdrawal();
-        if (currentWithdrawal != null)
-            withdrawalInput.setText(Values.Percent.format(currentWithdrawal));
-        else
-            withdrawalInput.setText(getDefaultWithdrawalInput());
+        withdrawalInput.setText(Values.Percent.format(getEffectiveWithdrawal()));
     }
 
-    private String getDefaultWithdrawalInput()
+    /**
+     * Returns the saved withdrawal rate, or the default (4% rule) if none has
+     * been saved yet. Used for both display and calculation so they stay
+     * consistent.
+     */
+    private double getEffectiveWithdrawal()
     {
-        return Values.Percent.format(DEFAULT_WITHDRAWAL);
+        Double saved = get(FIREWithdrawalConfig.class).getWithdrawal();
+        return saved != null ? saved : DEFAULT_WITHDRAWAL;
+    }
+
+    private void showWithdrawal(double withdrawal)
+    {
+        withdrawalLabel.setText(Values.Percent2.format(withdrawal));
+        withdrawalInput.setText(Values.Percent.format(withdrawal));
     }
 
     private void commitMoneyField(Text input, ColoredLabel label, Money currentValue, Consumer<Money> setter,
@@ -1055,17 +1037,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             targetDateLabel.setTextColor(Colors.theme().defaultForeground());
         }
 
-        Double userWithdrawal = get(FIREWithdrawalConfig.class).getWithdrawal();
-        if (userWithdrawal != null)
-        {
-            withdrawalLabel.setText(Values.Percent2.format(userWithdrawal));
-            withdrawalInput.setText(Values.Percent.format(userWithdrawal));
-        }
-        else
-        {
-            withdrawalLabel.setText(Messages.LabelFIREClickToSet);
-            withdrawalInput.setText(getDefaultWithdrawalInput());
-        }
+        showWithdrawal(getEffectiveWithdrawal());
 
         if (data.yearlyWithdrawal() == null)
         {
