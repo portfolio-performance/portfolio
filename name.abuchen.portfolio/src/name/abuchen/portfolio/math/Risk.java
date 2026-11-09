@@ -130,8 +130,11 @@ public final class Risk
 
     public static class Volatility
     {
+        private static final int TRADING_DAYS_PER_YEAR = 252;
+
         private final double stdDeviation;
         private final double semiDeviation;
+        private final double annualizedStdDeviation;
 
         public Volatility(double[] returns, IntPredicate filter)
         {
@@ -162,11 +165,13 @@ public final class Risk
             {
                 stdDeviation = 0d;
                 semiDeviation = 0d;
+                annualizedStdDeviation = 0d;
             }
             else
             {
                 stdDeviation = Math.sqrt(tempStandard / (count - 1) * count);
                 semiDeviation = Math.sqrt(tempSemi / (count - 1) * count);
+                annualizedStdDeviation = Math.sqrt(tempStandard / (count - 1) * TRADING_DAYS_PER_YEAR);
             }
         }
 
@@ -190,6 +195,20 @@ public final class Risk
         public double getStandardDeviation()
         {
             return stdDeviation;
+        }
+
+        /**
+         * Returns the annualized standard deviation: the standard deviation of
+         * the daily returns scaled to one year by the square root of the number
+         * of trading days per year (252). In contrast to
+         * {@link #getStandardDeviation()}, which scales to the length of the
+         * reporting period, this value is independent of the period and
+         * therefore comparable across periods and with externally quoted
+         * (annualized) volatility figures.
+         */
+        public double getAnnualizedStandardDeviation()
+        {
+            return annualizedStdDeviation;
         }
 
         public double getSemiDeviation()

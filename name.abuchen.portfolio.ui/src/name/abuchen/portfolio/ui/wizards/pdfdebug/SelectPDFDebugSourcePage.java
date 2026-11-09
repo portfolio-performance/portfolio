@@ -7,7 +7,6 @@ import java.time.format.FormatStyle;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -25,6 +24,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.UnrecognizedPDFCache;
 import name.abuchen.portfolio.ui.util.UnrecognizedPDFCache.Entry;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 
 @SuppressWarnings("nls")
 public class SelectPDFDebugSourcePage extends WizardPage
@@ -69,7 +69,7 @@ public class SelectPDFDebugSourcePage extends WizardPage
         // table spans left column, grabs all available space
         var tableComposite = new Composite(container, SWT.NULL);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(tableComposite);
-        var tableColumnLayout = new TableColumnLayout();
+        var tableColumnLayout = new SafeTableColumnLayout();
         tableComposite.setLayout(tableColumnLayout);
 
         viewer = new TableViewer(tableComposite, SWT.BORDER | SWT.SINGLE | SWT.FULL_SELECTION);

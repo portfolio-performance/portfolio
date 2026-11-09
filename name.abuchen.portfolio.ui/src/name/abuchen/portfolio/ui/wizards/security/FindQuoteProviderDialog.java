@@ -69,6 +69,7 @@ import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.LoginButton;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.util.Pair;
 import name.abuchen.portfolio.util.TextUtil;
@@ -408,7 +409,7 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
 
         Composite compositeTable = new Composite(tableArea, SWT.NONE);
 
-        TableColumnLayout layout = new TableColumnLayout();
+        TableColumnLayout layout = new SafeTableColumnLayout();
         compositeTable.setLayout(layout);
 
         tableViewer = new TableViewer(compositeTable, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.VIRTUAL);
@@ -485,10 +486,14 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
             {
                 ModalContext.run(job, true, progressMonitor, Display.getDefault());
             }
-            catch (InvocationTargetException | InterruptedException e)
+            catch (InvocationTargetException e)
             {
                 PortfolioPlugin.log(e);
                 MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError, e.getMessage());
+            }
+            catch (InterruptedException e)
+            {
+                Thread.currentThread().interrupt();
             }
         });
 

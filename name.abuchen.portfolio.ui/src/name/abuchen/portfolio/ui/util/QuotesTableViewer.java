@@ -23,6 +23,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 
 public class QuotesTableViewer
 {
@@ -30,7 +31,7 @@ public class QuotesTableViewer
 
     public QuotesTableViewer(Composite container)
     {
-        TableColumnLayout layout = new TableColumnLayout();
+        TableColumnLayout layout = new SafeTableColumnLayout();
         container.setLayout(layout);
 
         tableViewer = new TableViewer(container, SWT.BORDER);

@@ -17,6 +17,8 @@ public class PKCE
     private static final int CODE_VERIFIER_LENGTH = 128;
     private static final String CODE_CHALLENGE_ALGORITHM = "SHA-256"; //$NON-NLS-1$
 
+    private static final SecureRandom RANDOM = new SecureRandom();
+
     private final String codeVerifier;
     private final String codeChallenge;
 
@@ -52,12 +54,11 @@ public class PKCE
 
     private static String generateCodeVerifier()
     {
-        SecureRandom random = new SecureRandom();
         StringBuilder verifier = new StringBuilder(CODE_VERIFIER_LENGTH);
 
         for (int ii = 0; ii < CODE_VERIFIER_LENGTH; ii++)
         {
-            int index = random.nextInt(CHARACTERS.length());
+            int index = RANDOM.nextInt(CHARACTERS.length());
             verifier.append(CHARACTERS.charAt(index));
         }
 

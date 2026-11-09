@@ -220,11 +220,15 @@ public class ImportPDFHandler
                 }
             });
         }
-        catch (IllegalArgumentException | InvocationTargetException | InterruptedException e)
+        catch (IllegalArgumentException | InvocationTargetException e)
         {
             PortfolioPlugin.log(e);
             String message = e.getCause() != null ? e.getCause().getMessage() : e.getMessage();
             MessageDialog.openError(shell, Messages.LabelError, message);
+        }
+        catch (InterruptedException e)
+        {
+            Thread.currentThread().interrupt();
         }
     }
 

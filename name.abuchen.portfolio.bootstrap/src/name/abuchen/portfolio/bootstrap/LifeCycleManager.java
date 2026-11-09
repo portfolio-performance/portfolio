@@ -11,6 +11,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import jakarta.inject.Inject;
@@ -22,6 +23,7 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.statusreporter.StatusReporter;
+import org.eclipse.e4.ui.internal.workbench.E4XMIResource;
 import org.eclipse.e4.ui.internal.workbench.swt.IEventLoopAdvisor;
 import org.eclipse.e4.ui.model.application.MAddon;
 import org.eclipse.e4.ui.model.application.MApplication;
@@ -306,7 +308,8 @@ public class LifeCycleManager
 
             try (BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file))) // NOSONAR
             {
-                resource.save(out, null);
+                // like the workbench, skip elements that must not be persisted
+                resource.save(out, Map.of(E4XMIResource.OPTION_FILTER_PERSIST_STATE, Boolean.TRUE));
             }
             catch (IOException e)
             {

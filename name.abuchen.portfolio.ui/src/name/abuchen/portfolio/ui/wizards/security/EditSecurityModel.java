@@ -1,11 +1,17 @@
 package name.abuchen.portfolio.ui.wizards.security;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.common.base.Strings;
+
+import org.eclipse.core.databinding.validation.ValidationStatus;
+import org.eclipse.core.runtime.IStatus;
 
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Attributes;
@@ -16,7 +22,9 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.Taxonomy.Visitor;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 
 /* package */final class EditSecurityModel extends BindingHelper.Model
@@ -36,6 +44,8 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         private Taxonomy taxonomy;
         private Security security;
         private List<Classification> elements;
+        private Map<Classification, String> pathNames;
+        private Map<Classification, Integer> elementIndex;
 
         private List<ClassificationLink> links = new ArrayList<>();
 
@@ -66,6 +76,42 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         public List<Classification> getElements()
         {
             return elements;
+        }
+
+        /**
+         * Path name of a classification, calculated once per classification. The
+         * selection dialog filters every element on each keystroke, which would
+         * otherwise traverse the taxonomy tree thousands of times.
+         */
+        public String getPathName(Classification classification)
+        {
+            if (classification == null)
+                return null;
+
+            if (pathNames == null)
+                pathNames = new HashMap<>();
+
+            return pathNames.computeIfAbsent(classification, c -> c.getPathName(false, 80));
+        }
+
+        /**
+         * Position in {@link #getElements()}, or -1 if the classification is not
+         * part of this taxonomy. Replaces the list scan inside the sort
+         * comparator.
+         */
+        public int indexOf(Classification classification)
+        {
+            if (classification == null)
+                return -1;
+
+            if (elementIndex == null)
+            {
+                elementIndex = new HashMap<>();
+                for (int ii = 0; ii < elements.size(); ii++)
+                    elementIndex.put(elements.get(ii), ii);
+            }
+
+            return elementIndex.getOrDefault(classification, -1);
         }
 
         public List<ClassificationLink> getLinks()
@@ -114,6 +160,41 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
                 assignment.setRank(Integer.MAX_VALUE);
                 link.getClassification().addAssignment(assignment);
             }
+        }
+
+        /*
+         * Validates the assignments of the security in this taxonomy. The
+         * validators of the taxonomy page are created together with its
+         * controls, which are created when the tab is opened. Saving must not
+         * depend on that, hence the same rules are checked here.
+         */
+        /* package */IStatus validateAssignments()
+        {
+            Set<Classification> selected = new HashSet<>();
+            int weights = 0;
+
+            for (ClassificationLink link : links)
+            {
+                Classification classification = link.getClassification();
+
+                if (classification == null)
+                    return ValidationStatus.error(Messages.EditWizardMasterDataMsgClassificationMissing);
+
+                if (!selected.add(classification))
+                    return ValidationStatus.error(MessageFormat.format(
+                                    Messages.EditWizardMasterDataMsgDuplicateClassification, classification.getName()));
+
+                if (link.getWeight() <= 0)
+                    return ValidationStatus.error(Messages.EditWizardMasterDataMsgWeightEqualsZero);
+
+                weights += link.getWeight();
+            }
+
+            if (weights > Classification.ONE_HUNDRED_PERCENT)
+                return ValidationStatus.error(MessageFormat.format(Messages.EditWizardMasterDataMsgWeightNot100Percent,
+                                taxonomy.getName(), Values.Weight.format(weights)));
+
+            return ValidationStatus.ok();
         }
     }
 
@@ -467,6 +548,18 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         setAttributes(security);
         for (TaxonomyDesignation designation : taxonomies)
             designation.applyChanges();
+    }
+
+    public IStatus validateAssignments()
+    {
+        for (TaxonomyDesignation designation : taxonomies)
+        {
+            IStatus status = designation.validateAssignments();
+            if (!status.isOK())
+                return status;
+        }
+
+        return ValidationStatus.ok();
     }
 
     /**

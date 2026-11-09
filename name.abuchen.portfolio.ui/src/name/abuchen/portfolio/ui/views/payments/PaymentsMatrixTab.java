@@ -51,6 +51,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 import name.abuchen.portfolio.ui.views.AccountContextMenu;
 import name.abuchen.portfolio.ui.views.SecurityContextMenu;
 import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel.Line;
@@ -177,7 +178,7 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
         showAverageColumn = preferences.getBoolean(getKeyForShowAverage());
         showOnlyFirstYear = preferences.getBoolean(getKeyForShowOnlyFirstYear());
 
-        tableLayout = new TableColumnLayout();
+        tableLayout = new SafeTableColumnLayout();
         container.setLayout(tableLayout);
 
         tableViewer = new TableViewer(container, SWT.FULL_SELECTION);
@@ -256,6 +257,9 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
     protected void createVehicleColumn(TableViewer records, TableColumnLayout layout, boolean isSorted)
     {
         TableViewerColumn column = new TableViewerColumn(records, SWT.NONE);
+        // register layout data first: on GTK, configuring the column can trigger a layout
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(200));
+
         column.getColumn().setText(Messages.ColumnSecurity);
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -287,8 +291,6 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
 
         createSorter((l1, l2) -> TextUtil.compare(l1.getVehicle().getName(), l2.getVehicle().getName()))
                         .attachTo(records, column, isSorted);
-
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(200));
     }
 
     protected ColumnViewerSorter createSorter(Comparator<PaymentsViewModel.Line> comparator)
@@ -330,6 +332,9 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
 
         TableViewerColumn column;
         column = new TableViewerColumn(records, SWT.RIGHT);
+        // register layout data first: on GTK, configuring the column can trigger a layout
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(200));
+
         column.getColumn().setText(Messages.ColumnSum);
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -349,12 +354,16 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
 
         createSorter((l1, l2) -> Long.compare(valueFunction.applyAsLong(l1), valueFunction.applyAsLong(l2)))
                         .attachTo(records, column);
-
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(200));
     }
 
     protected void updateColumns(TableViewer records, TableColumnLayout layout)
     {
+        // defer the layout of the table container until all columns have been
+        // recreated. Otherwise GTK may lay out the table while new columns are
+        // only partially initialized.
+        var container = records.getTable().getParent();
+        container.setLayoutDeferred(true);
+
         try
         {
             // first add, then remove columns
@@ -377,6 +386,7 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
         }
         finally
         {
+            container.setLayoutDeferred(false);
             records.refresh();
             records.getTable().setRedraw(true);
         }

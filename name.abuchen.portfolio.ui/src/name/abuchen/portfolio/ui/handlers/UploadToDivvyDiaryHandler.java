@@ -52,6 +52,7 @@ import name.abuchen.portfolio.ui.editor.ClientInput;
 import name.abuchen.portfolio.ui.jobs.AbstractClientJob;
 import name.abuchen.portfolio.ui.util.swt.ActiveShell;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 
 public class UploadToDivvyDiaryHandler
 {
@@ -120,6 +121,10 @@ public class UploadToDivvyDiaryHandler
         if (dialog.open() == Window.OK)
         {
             DDPortfolio selected = dialog.getSelectedDDPortfolio();
+
+            // the user can deselect the pre-selected DivvyDiary portfolio
+            if (selected == null)
+                return Optional.empty();
 
             Portfolio portfolio = null;
             if (dialog.getSelectedPPPortfolio() instanceof Portfolio p)
@@ -274,7 +279,7 @@ class PortfolioSelectionDialog extends Dialog
         GridDataFactory.fillDefaults().grab(false, true).applyTo(tableArea);
         tableArea.setLayout(new FillLayout());
 
-        TableColumnLayout layout = new TableColumnLayout();
+        TableColumnLayout layout = new SafeTableColumnLayout();
         tableArea.setLayout(layout);
 
         portfoliosTableViewer = new TableViewer(tableArea, SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL);
@@ -301,7 +306,7 @@ class PortfolioSelectionDialog extends Dialog
         GridDataFactory.fillDefaults().grab(false, true).applyTo(tableArea);
         tableArea.setLayout(new FillLayout());
 
-        TableColumnLayout layout = new TableColumnLayout();
+        TableColumnLayout layout = new SafeTableColumnLayout();
         tableArea.setLayout(layout);
 
         ddTableViewer = new TableViewer(tableArea, SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL);

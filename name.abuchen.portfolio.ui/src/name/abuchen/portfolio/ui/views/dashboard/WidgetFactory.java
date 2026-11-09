@@ -274,6 +274,17 @@ public enum WidgetFactory
                                     .withColoredValues(false) //
                                     .build()),
 
+    ANNUALIZED_VOLATILITY(Messages.LabelVolatilityAnnualized, Messages.LabelRiskIndicators, //
+                    (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
+                                    .with(Values.Percent2) //
+                                    .with((ds, period) -> {
+                                        PerformanceIndex index = data.calculate(ds, period);
+                                        return index.getVolatility().getAnnualizedStandardDeviation();
+                                    }) //
+                                    .withTooltip((ds, period) -> Messages.TooltipVolatilityAnnualized) //
+                                    .withColoredValues(false) //
+                                    .build()),
+
     SHARPE_RATIO(Messages.LabelSharpeRatio, Messages.LabelRiskIndicators, //
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
                                     .with(Values.PercentPlain) //
@@ -283,7 +294,7 @@ public enum WidgetFactory
                                         PerformanceIndex index = data.calculate(ds, period);
                                         double r = index.getPerformanceIRR();
                                         double rf = new ClientProperties(data.getClient()).getRiskFreeRateOfReturn();
-                                        double volatility = index.getVolatility().getStandardDeviation();
+                                        double volatility = index.getVolatility().getAnnualizedStandardDeviation();
 
                                         // handle invalid rf value
                                         if (Double.isNaN(rf))
@@ -296,7 +307,7 @@ public enum WidgetFactory
                                         PerformanceIndex index = data.calculate(ds, period);
                                         double r = index.getPerformanceIRR();
                                         double rf = new ClientProperties(data.getClient()).getRiskFreeRateOfReturn();
-                                        double volatility = index.getVolatility().getStandardDeviation();
+                                        double volatility = index.getVolatility().getAnnualizedStandardDeviation();
                                         double sharpeRatio = (r - rf) / volatility;
                                         return MessageFormat.format(Messages.TooltipSharpeRatio,
                                                         Values.Percent5.format(r), Values.Percent2.format(rf),

@@ -80,6 +80,7 @@ public enum Images
     QUICKFIX("quickfix.png"), //$NON-NLS-1$
     ADD("add.png"), //$NON-NLS-1$
     REMOVE("remove.png"), //$NON-NLS-1$
+    TRASH("trash.svg"), //$NON-NLS-1$
     NEXT("next.png"), //$NON-NLS-1$
     PREVIOUS("previous.png"), //$NON-NLS-1$
     CHEVRON("chevron.png"), //$NON-NLS-1$
