@@ -481,7 +481,8 @@ public interface Extractor
 
             Account accountSecondary = getAccountSecondary();
             if (accountSecondary == null)
-                accountSecondary = context.getSecondaryAccount(entry.getTargetTransaction().getCurrencyCode());
+                accountSecondary = context.getSecondaryAccount(entry.getSourceTransaction().getCurrencyCode(),
+                                entry.getTargetTransaction().getCurrencyCode());
             if (accountSecondary == null)
                 return new Status(Status.Code.ERROR,
                                 MessageFormat.format(Messages.MsgCheckTransactionCurrencyDoesNotMatchAccount,
@@ -497,10 +498,24 @@ public interface Extractor
     public static class PortfolioTransferItem extends Item
     {
         private final PortfolioTransferEntry entry;
+        private final boolean isOutbound;
 
         public PortfolioTransferItem(PortfolioTransferEntry entry)
         {
+            this(entry, true);
+        }
+
+        /**
+         * @param isOutbound
+         *            if true, the (primary) portfolio is the source of the
+         *            transfer and the secondary portfolio the target.
+         *            Otherwise, the portfolio is the target and the secondary
+         *            portfolio the source.
+         */
+        public PortfolioTransferItem(PortfolioTransferEntry entry, boolean isOutbound)
+        {
             this.entry = entry;
+            this.isOutbound = isOutbound;
         }
 
         @Override
@@ -512,7 +527,8 @@ public interface Extractor
         @Override
         public String getTypeInformation()
         {
-            return Messages.LabelTransferPortfolio;
+            return isOutbound ? PortfolioTransaction.Type.TRANSFER_OUT.toString()
+                            : PortfolioTransaction.Type.TRANSFER_IN.toString();
         }
 
         @Override
@@ -574,7 +590,10 @@ public interface Extractor
                 return new Status(Status.Code.ERROR, MessageFormat.format(Messages.CSVImportMissingField,
                                 Messages.CSVColumn_PortfolioName2nd));
 
-            return action.process(entry, portfolio, portfolioSecondary);
+            if (isOutbound)
+                return action.process(entry, portfolio, portfolioSecondary);
+            else
+                return action.process(entry, portfolioSecondary, portfolio);
         }
     }
 
